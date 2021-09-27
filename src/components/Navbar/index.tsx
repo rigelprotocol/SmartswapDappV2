@@ -8,6 +8,7 @@ import {
   Stack,
   Link,
   Button,
+  Image,
 } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
@@ -15,7 +16,9 @@ import { IoWalletOutline } from "react-icons/io5";
 import { ColorModeSwitcher } from "./../ColorModeSwitcher";
 import SocialMedia from "./SocialMedia";
 import DappsDropdown from "./DappsDropdown";
+import WalletConnection from "./WalletConnection";
 import Logo from "./../../assets/logoRGP.png";
+import MetamaskLogo from "./../../assets/metamaskLogo.png";
 
 const Nav = ({ to, label }: { to: string; label: string }) => (
   <NavLink
@@ -53,14 +56,8 @@ const index = () => (
     </Flex>
     <Spacer />
 
-    <Flex h="10" justify="flex-end">
-      <Button
-        rightIcon={<IoWalletOutline />}
-        colorScheme="teal"
-        variant="brand"
-      >
-        Connect Wallet
-      </Button>
+    <Flex h="8" justify="flex-end">
+      <WalletConnection />
       <SocialMedia />
       <ColorModeSwitcher />
     </Flex>

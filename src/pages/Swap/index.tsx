@@ -18,15 +18,6 @@ const App = () => {
         <VStack spacing={8}>
           <Heading>Swap page</Heading>
           <Button variant="brand"> Swap </Button>
-
-          <Link
-            href="#"
-            fontSize="2xl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Smartswap
-          </Link>
         </VStack>
       </Grid>
     </Box>
