@@ -6,19 +6,15 @@ import {
   Img,
   Text,
   Stack,
-  Link,
-  Button,
-  Image,
+  Link
 } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { IoWalletOutline } from "react-icons/io5";
-import { ColorModeSwitcher } from "./../ColorModeSwitcher";
+import { ColorModeSwitcher } from "../ColorModeSwitcher";
 import SocialMedia from "./SocialMedia";
 import DappsDropdown from "./DappsDropdown";
 import WalletConnection from "./WalletConnection";
 import Logo from "./../../assets/logoRGP.png";
-import MetamaskLogo from "./../../assets/metamaskLogo.png";
 
 const Nav = ({ to, label }: { to: string; label: string }) => (
   <NavLink
