@@ -91,7 +91,7 @@ export default function WalletConnection() {
                   bg="none"
                   size={'sm'}
                   mt={6}
-                  mr={5}
+                  mr={3}
                   cursor="pointer"
                   _focus={{ outline: 'none' }}
                   onClick={onClose}

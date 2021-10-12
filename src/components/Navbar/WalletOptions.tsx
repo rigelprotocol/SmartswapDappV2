@@ -20,7 +20,7 @@ const WalletItem = ({name, image, connect}: {name: string, image: string, connec
             my={4}
             border={'1px solid'}
             borderColor={borderColor}
-            rounded="2xl"
+            borderRadius={'6px'}
             onClick={() => connect()}
         >
             <Image src={image} alt="wallet image"  mr={4} boxSize={'30px'} />
