@@ -6,7 +6,9 @@ import {
   Img,
   Text,
   Stack,
-  Link
+  Link,
+  Button,
+  Image, useColorModeValue
 } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
@@ -14,7 +16,9 @@ import { ColorModeSwitcher } from "../ColorModeSwitcher";
 import SocialMedia from "./SocialMedia";
 import DappsDropdown from "./DappsDropdown";
 import WalletConnection from "./WalletConnection";
-import Logo from "./../../assets/logoRGP.png";
+import LightLogo from "./../../assets/logo/logo-light.svg";
+import DarkLogo from "./../../assets/logo/logo-dark.svg";
+import MetamaskLogo from "./../../assets/metamaskLogo.png";
 
 const Nav = ({ to, label }: { to: string; label: string }) => (
   <NavLink
@@ -27,17 +31,14 @@ const Nav = ({ to, label }: { to: string; label: string }) => (
   </NavLink>
 );
 
-const index = () => (
+const Index = () => {
+  const Logo = useColorModeValue(LightLogo, DarkLogo);
+  return (
   <Flex px={6} py={2} boxShadow="sm">
     <Flex h="10">
-      <Img src={Logo} />
+      
       <Box mr={6}>
-        <Stack spacing={3}>
-          <Text fontSize="lg">Rigel Protocol</Text>
-          <Text as="sup" color="brand.100">
-            Smartswap
-          </Text>
-        </Stack>
+        <Img src={Logo} />
       </Box>
       <DappsDropdown />
 
@@ -58,6 +59,7 @@ const index = () => (
       <ColorModeSwitcher />
     </Flex>
   </Flex>
-);
+)
+};
 
-export default index;
+export default Index;
