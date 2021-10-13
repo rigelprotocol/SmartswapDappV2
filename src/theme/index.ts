@@ -22,6 +22,17 @@ const overrides = {
         brand: {
             100: "#319EF6",
         },
+        darkBg: {
+            100: "#213345",
+        },
+        lightBg: {
+            100: "#EBF6FE",
+            200: "#F2F5F8"
+        },
+        gray: {
+            100: '#DCE6EF',
+            200: '#666666'
+        }
     },
-}
+};
 export default extendTheme(overrides)
