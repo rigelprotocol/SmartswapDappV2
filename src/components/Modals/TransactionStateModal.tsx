@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Text,
     Spinner,
@@ -9,9 +9,8 @@ import {
     ModalBody,
     useColorModeValue,
     useDisclosure,
-    Circle, Button
+    Circle, Button, Link
 } from "@chakra-ui/react";
-
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons'
 
 
@@ -25,16 +24,12 @@ export enum TrxState {
 export interface IProps {
     message: string;
     trxState: TrxState;
-    URLNetwork?: string
-    OpenModal: boolean
+    URLNetwork?: string;
+    isOpen: boolean;
+    onClose: () => void;
 }
-const TransactionStateModal: React.FC<IProps> = ({ message, trxState, URLNetwork, OpenModal }) => {
+const TransactionStateModal: React.FC<IProps> = ({ message, trxState, URLNetwork, onClose, isOpen }) => {
 
-    TransactionStateModal.defaultProps = {
-
-        OpenModal: true
-    }
-    const { isOpen, onOpen, onClose } = useDisclosure()
 
     const bgColour = useColorModeValue("#FFFFFF", "#15202B");
     const textColour = useColorModeValue("#333333", "#F1F5F8");
@@ -43,18 +38,20 @@ const TransactionStateModal: React.FC<IProps> = ({ message, trxState, URLNetwork
     const closeButtonBgColour = useColorModeValue("#319EF6", "#008DFF");
 
 
+
     const WaitingForConfirmationRender = (): JSX.Element => {
+
         return (
-            <Modal isOpen={OpenModal} onClose={onClose} isCentered>
+            <Modal isOpen={isOpen} onClose={onClose} isCentered>
                 <ModalOverlay />
-                <ModalContent bg={bgColour} color="#fff" borderRadius="20px" width="90%">
+                <ModalContent bg={bgColour} color="#fff" borderRadius="20px" width="70%">
                     <ModalCloseButton
                         bg="none"
                         border="0px"
                         color={closeBtnColour}
                         cursor="pointer"
                         _focus={{ outline: 'none' }}
-                        onClick={() => { alert("Closes") }}
+                        onClick={onClose}
 
                     />
                     <ModalBody align="center">
@@ -67,13 +64,13 @@ const TransactionStateModal: React.FC<IProps> = ({ message, trxState, URLNetwork
                             width="100px"
                             height="100px"
                         />
-                        <Text fontSize="18px" fontWeight="normal" color={textColour}>
+                        <Text fontSize="18px" fontWeight="normal" py={4} color={textColour}>
                             Waiting for Confirmation
                         </Text>
                         <Text fontSize="16px" fontWeight="bold" color={textColour}>
                             {message}
                         </Text>
-                        <Text fontSize="9px" font='Cera Pro' color={smallTxtColour} mt={'20px'} >
+                        <Text size="xs" color={smallTxtColour} mt={'20px'} >
                             Go to your wallet to confirm this
                         </Text>
 
@@ -84,9 +81,10 @@ const TransactionStateModal: React.FC<IProps> = ({ message, trxState, URLNetwork
 
     }
 
+
     const TransactionSuccessfulRender = (): JSX.Element => {
         return (
-            <Modal isOpen={OpenModal} onClose={onClose} isCentered>
+            <Modal isOpen={isOpen} onClose={onClose} isCentered>
                 <ModalOverlay />
                 <ModalContent bg={bgColour} color="#fff" borderRadius="20px" width="70%">
                     <ModalCloseButton
@@ -109,14 +107,16 @@ const TransactionStateModal: React.FC<IProps> = ({ message, trxState, URLNetwork
                             Transaction Succesful
                         </Text>
                         <Text
+                            py={3}
                             fontSize="14px"
                             fontWeight="normal"
                             color="#008DFF"
                         >
+
                             {URLNetwork && (
-                                <a href={`${"URLNetwork"}`} target="_blank">
-                                    View on BSCSCAN
-                                </a>
+                                <Link href="https://etherscan.io" isExternal>
+                                    View on Etherscan
+                                </Link>
                             )}
                         </Text>
                         <Button
@@ -141,9 +141,9 @@ const TransactionStateModal: React.FC<IProps> = ({ message, trxState, URLNetwork
 
     const TransactionFailedRender = (): JSX.Element => {
         return (
-            <Modal isOpen={OpenModal} onClose={onClose} isCentered>
+            <Modal isOpen={isOpen} onClose={onClose} isCentered>
                 <ModalOverlay />
-                <ModalContent bg={bgColour} color="#fff" borderRadius="20px" width="90%">
+                <ModalContent bg={bgColour} color="#fff" borderRadius="20px" width="70%">
                     <ModalCloseButton
                         bg="none"
                         border="0px"
@@ -166,15 +166,16 @@ const TransactionStateModal: React.FC<IProps> = ({ message, trxState, URLNetwork
                             Transaction Not Successful
                         </Text>
                         <Text
+                            py={3}
                             fontSize="14px"
                             fontWeight="normal"
                             color="#008DFF"
                         >
-                            {URLNetwork && (
-                                <a href={`${"URLNetwork"}`} target="_blank">
-                                    Retry
-                                </a>
-                            )}
+
+                            <a href="#" target="_blank">
+                                Retry
+                            </a>
+
                         </Text>
                         <Button
                             width="100%"

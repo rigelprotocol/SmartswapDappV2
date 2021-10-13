@@ -10,6 +10,8 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import { ColorModeSwitcher } from "./../../components/ColorModeSwitcher";
+import Test from "../../components/Modals/Test";
+
 
 const App = () => {
   return (
@@ -18,6 +20,7 @@ const App = () => {
         <VStack spacing={8}>
           <Heading>Swap page</Heading>
           <Button variant="brand"> Swap </Button>
+          <Test />
         </VStack>
       </Grid>
     </Box>
