@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import InputSelector from './InputSelector';
 
-const From = () => {
+const To = () => {
   return (
     <>
       <Box
@@ -22,10 +22,10 @@ const From = () => {
         border="1px"
         borderColor="#DEE5ED"
       >
-        <InputSelector max />
+        <InputSelector max={false} />
       </Box>
     </>
   );
 };
 
-export default From;
+export default To;
