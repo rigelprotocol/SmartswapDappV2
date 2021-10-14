@@ -22,10 +22,10 @@ export enum TrxState {
 }
 
 export interface IProps {
-    message: string;
+    message?: string;
     trxState: TrxState;
     URLNetwork?: string;
-    typeOfModal: string
+    typeOfModal?: string //for testing purpose please
 
 }
 const TransactionStateModal: React.FC<IProps> = ({ message, URLNetwork, trxState, typeOfModal }) => {
