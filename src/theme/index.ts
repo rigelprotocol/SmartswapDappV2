@@ -21,6 +21,7 @@ const overrides = {
     colors: {
         brand: {
             100: "#319EF6",
+            200: "#4CAFFF"
         },
         darkBg: {
             100: "#213345",

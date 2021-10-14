@@ -9,14 +9,26 @@ import FarmingV2 from "./FarmingV2";
 import Fonts from "./../theme/fonts";
 import AppWrapper from "./../components/AppWrapper";
 import Navbar from "./../components/Navbar";
+import {Toaster} from "react-hot-toast";
+import { useMediaQuery } from '@chakra-ui/react';
 
 export default function App() {
+    const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
   return (
     <Suspense fallback={null}>
       <Fonts />
       <AppWrapper>
         <HashRouter>
           <Navbar />
+          <Toaster
+              position={isMobileDevice ? 'top-center' : 'top-right'}
+              containerStyle={{
+                marginTop: isMobileDevice ? '50px' : '70px',
+              }}
+              toastOptions={{
+                duration: 3000,
+              }}
+          />
           <Switch>
             <Route exact strict path="/swap" component={Swap} />
             <Route exact strict path="/pool" component={Pool} />
