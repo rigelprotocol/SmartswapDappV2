@@ -1,18 +1,9 @@
 import React from 'react';
-import {
-  Box,
-  Text,
-  Link,
-  VStack,
-  Code,
-  Grid,
-  Button,
-  Heading,
-  Flex,
-} from '@chakra-ui/react';
+import { Box, useColorModeValue } from '@chakra-ui/react';
 import InputSelector from './InputSelector';
 
 const From = () => {
+  const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   return (
     <>
       <Box
@@ -20,7 +11,7 @@ const From = () => {
         m={4}
         borderRadius="6px"
         border="1px"
-        borderColor="#DEE5ED"
+        borderColor={borderColor}
       >
         <InputSelector max />
       </Box>

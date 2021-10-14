@@ -1,13 +1,27 @@
 import React from 'react';
-import { Flex, Input, Text, Menu, Button, Image } from '@chakra-ui/react';
+import {
+  Flex,
+  Input,
+  Text,
+  Menu,
+  Button,
+  Image,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
-import RGPLOGO from '../../../../assets/roundedLogo.png';
+import USDTLOGO from '../../../../assets/roundedlogo.svg';
 
 type InputSelectorProps = {
   max: Boolean;
 };
 
 const InputSelector = ({ max }: InputSelectorProps) => {
+  const inputColor = useColorModeValue('#666666', '#4A739B');
+  const balanceColor = useColorModeValue('#666666', '#DCE5EF');
+  const maxColor = useColorModeValue('#319ef6', '#4CAFFF');
+  const maxBgColor = useColorModeValue('#EBF6FE', '#EAF6FF');
+  const tokenListTriggerColor = useColorModeValue('', '#DCE5EF');
+  const tokenListTrgiggerBgColor = useColorModeValue('', '#213345');
   return (
     <>
       <Flex alignItems="center" mt={3} justifyContent="space-between">
@@ -15,9 +29,10 @@ const InputSelector = ({ max }: InputSelectorProps) => {
           fontSize="2xl"
           type="number"
           border="none"
-          color="#666666"
+          color={inputColor}
           isRequired
           placeholder="0.00"
+          value="0.00"
         />
         <Flex>
           <Menu>
@@ -27,27 +42,28 @@ const InputSelector = ({ max }: InputSelectorProps) => {
               w="120px"
               rightIcon={<ChevronDownIcon />}
               mr={3}
+              bgColor={tokenListTrgiggerBgColor}
             >
-              <Image mr={3} h="24px" w="24px" src={RGPLOGO} />
-              <Text>RGP</Text>
+              <Image mr={3} h="24px" w="24px" src={USDTLOGO} />
+              <Text color={tokenListTriggerColor}>USDT</Text>
             </Button>
           </Menu>
         </Flex>
       </Flex>
       <Flex mt={3} alignItems="center">
-        <Text ml={4} color="#666666" fontSize="14px">
+        <Text ml={4} color={balanceColor} fontSize="14px">
           Balance: 0.00 RGP
         </Text>
         {max ? (
           <Text
             ml={2}
-            color="#319ef6"
+            color={maxColor}
             h="22px"
             w="34px"
             pl="4px"
             pr="4px"
             borderRadius="4px"
-            bgColor="#EBF6FE"
+            bgColor={maxBgColor}
             fontSize="14px"
           >
             Max
