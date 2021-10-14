@@ -28,6 +28,7 @@ const App = () => {
                 border="1px"
                 borderColor={borderColor}
                 borderRadius="6px"
+                alignItems="center"
               >
                 <ShowDetails />
               </Flex>
@@ -39,6 +40,7 @@ const App = () => {
                 border="1px"
                 borderColor={borderColor}
                 borderRadius="6px"
+                alignItems="center"
               >
                 <History />
               </Flex>
