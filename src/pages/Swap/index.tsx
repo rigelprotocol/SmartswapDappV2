@@ -23,38 +23,39 @@ const App = () => {
             </Box>
 
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
-              <Box
-                h="56px"
+              <Flex
+                h="60px"
                 border="1px"
                 borderColor={borderColor}
                 borderRadius="6px"
               >
                 <ShowDetails />
-              </Box>
+              </Flex>
             </Box>
 
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
-              <Box
-                h="56px"
+              <Flex
+                h="60px"
                 border="1px"
                 borderColor={borderColor}
                 borderRadius="6px"
               >
                 <History />
-              </Box>
+              </Flex>
             </Box>
           </>
         ) : (
           <>
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
-              <Box
-                h="56px"
+              <Flex
+                h="60px"
                 border="1px"
                 borderColor={borderColor}
                 borderRadius="6px"
+                alignItems="center"
               >
                 <ShowDetails />
-              </Box>
+              </Flex>
             </Box>
 
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
@@ -62,14 +63,15 @@ const App = () => {
             </Box>
 
             <Box mx={5} w={['100%', '100%', '45%', '29.5%']} mb={4}>
-              <Box
-                h="56px"
+              <Flex
+                h="60px"
                 border="1px"
                 borderColor={borderColor}
                 borderRadius="6px"
+                alignItems="center"
               >
                 <History />
-              </Box>
+              </Flex>
             </Box>
           </>
         )}

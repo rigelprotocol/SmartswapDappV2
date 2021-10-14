@@ -13,7 +13,7 @@ const History = () => {
 
   return (
     <Box w="100%" pl={3} pr={3}>
-      <Flex mt="3.5" justifyContent="space-between" px={4}>
+      <Flex alignItems="center" justifyContent="space-between" px={4}>
         <Flex>
           <Text fontWeight="400" mr={3} fontSize="16px" color={activeTabColor}>
             Transaction History
@@ -22,13 +22,7 @@ const History = () => {
             Market History
           </Text>
         </Flex>
-        <Flex
-          alignItems="center"
-          fontWeight="bold"
-          mt={-1}
-          rounded={100}
-          bg="#"
-        >
+        <Flex alignItems="center" fontWeight="bold" rounded={100} bg="#">
           <Image
             w={8}
             padding="4px"

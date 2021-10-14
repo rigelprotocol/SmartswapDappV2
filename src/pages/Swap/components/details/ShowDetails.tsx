@@ -1,4 +1,3 @@
-// import { Box } from '@chakra-ui/layout';
 import React from 'react';
 import { Box, Text, Image, Flex, useColorModeValue } from '@chakra-ui/react';
 import lightaddsquareicon from '../../../../assets/lightaddsquareicon.svg';
@@ -12,17 +11,11 @@ const ShowDetails = () => {
 
   return (
     <Box w="100%" pl={3} pr={3}>
-      <Flex mt="3.5" justifyContent="space-between" px={4}>
+      <Flex alignItems="center" justifyContent="space-between" px={4}>
         <Text fontWeight="400" fontSize="16px" color={textColor}>
           Details
         </Text>
-        <Flex
-          alignItems="center"
-          mt={-1}
-          fontWeight="bold"
-          rounded={100}
-          bg="#"
-        >
+        <Flex alignItems="center" fontWeight="bold" rounded={100} bg="#">
           <Image
             w={8}
             padding="4px"
