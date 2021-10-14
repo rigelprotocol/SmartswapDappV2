@@ -33,6 +33,7 @@ const InputSelector = ({ max }: InputSelectorProps) => {
           isRequired
           placeholder="0.00"
           value="0.00"
+          focusBorderColor="none"
         />
         <Flex>
           <Menu>
