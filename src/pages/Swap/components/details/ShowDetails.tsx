@@ -1,13 +1,10 @@
 import React from 'react';
-import { Box, Text, Image, Flex, useColorModeValue } from '@chakra-ui/react';
-import lightaddsquareicon from '../../../../assets/lightaddsquareicon.svg';
-import darkcloseicon from '../../../../assets/darkcloseicon.svg';
-import lightcloseicon from '../../../../assets/lightcloseicon.svg';
-import darkaddsquareicon from '../../../../assets/darkaddsquareicon.svg';
+import { Box, Text, Flex, useColorModeValue } from '@chakra-ui/react';
+import { CloseIcon, AddIcon } from '../../../../theme/components/Icons';
 
 const ShowDetails = () => {
   const textColor = useColorModeValue('#333333', '#F1F5F8');
-  const lightmode = useColorModeValue(true, false);
+  const iconColor = useColorModeValue('#666666', '#DCE5EF');
 
   return (
     <Box w="100%" pl={3} pr={3}>
@@ -16,18 +13,31 @@ const ShowDetails = () => {
           Details
         </Text>
         <Flex alignItems="center" fontWeight="bold" rounded={100} bg="#">
-          <Image
-            w={8}
-            padding="4px"
-            h={8}
-            src={lightmode ? lightaddsquareicon : darkaddsquareicon}
-          />
-          <Image
-            w={8}
-            padding="4px"
-            h={8}
-            src={lightmode ? lightcloseicon : darkcloseicon}
-          />
+          <Flex
+            border="2px"
+            alignItems="center"
+            justifyContent="center"
+            mr={2}
+            color={iconColor}
+            borderColor={iconColor}
+            w="22px"
+            h="22px"
+            borderRadius="6px"
+          >
+            <AddIcon />
+          </Flex>
+          <Flex
+            border="2px"
+            alignItems="center"
+            justifyContent="center"
+            color={iconColor}
+            borderColor={iconColor}
+            w="22px"
+            h="22px"
+            borderRadius="6px"
+          >
+            <CloseIcon />
+          </Flex>
         </Flex>
       </Flex>
     </Box>

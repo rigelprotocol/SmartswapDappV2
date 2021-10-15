@@ -4,7 +4,7 @@ import ShowDetails from './components/details/ShowDetails';
 import SendToken from './components/sendToken/index';
 import History from './components/history/History';
 
-const App = () => {
+const Swap = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   return (
@@ -82,4 +82,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Swap;

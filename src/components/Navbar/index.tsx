@@ -8,16 +8,17 @@ import {
   Stack,
   Link,
   Button,
-  Image,
+  Image, useColorModeValue
 } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { IoWalletOutline } from "react-icons/io5";
-import { ColorModeSwitcher } from "./../ColorModeSwitcher";
+import { ColorModeSwitcher } from "../ColorModeSwitcher";
 import SocialMedia from "./SocialMedia";
 import DappsDropdown from "./DappsDropdown";
 import WalletConnection from "./WalletConnection";
-import Logo from "./../../assets/logoRGP.png";
+import SwapDropdown from "./SwapDropdown";
+import LightLogo from "./../../assets/logo/logo-light.svg";
+import DarkLogo from "./../../assets/logo/logo-dark.svg";
 import MetamaskLogo from "./../../assets/metamaskLogo.png";
 
 const Nav = ({ to, label }: { to: string; label: string }) => (
@@ -31,22 +32,19 @@ const Nav = ({ to, label }: { to: string; label: string }) => (
   </NavLink>
 );
 
-const index = () => (
+const Index = () => {
+  const Logo = useColorModeValue(LightLogo, DarkLogo);
+  return (
   <Flex px={6} py={2} boxShadow="sm">
     <Flex h="10">
-      <Img src={Logo} />
+
       <Box mr={6}>
-        <Stack spacing={3}>
-          <Text fontSize="lg">Rigel Protocol</Text>
-          <Text as="sup" color="brand.100">
-            Smartswap
-          </Text>
-        </Stack>
+        <Img src={Logo} />
       </Box>
       <DappsDropdown />
 
       <Flex w="350px" h="10" align="center" justify="space-between">
-        <Nav label="Swap" to="/swap" />
+        <SwapDropdown />
         <Nav label="Liquidity" to="/add" />
         <Nav label="Farming" to="/farming" />
         <Link href="https://rigelprotocol.com" isExternal>
@@ -62,6 +60,7 @@ const index = () => (
       <ColorModeSwitcher />
     </Flex>
   </Flex>
-);
+)
+};
 
-export default index;
+export default Index;

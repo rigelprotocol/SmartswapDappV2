@@ -3,8 +3,7 @@ import { Box, Button, Image, Flex, useColorModeValue } from '@chakra-ui/react';
 import SwapSettings from './SwapSettings';
 import From from './From';
 import To from './To';
-import darkswitch from '../../../../assets/darkswitch.svg';
-import lightswitch from '../../../../assets/lightswitch.svg';
+import { SwitchIcon } from '../../../../theme/components/Icons';
 
 const SendToken = () => {
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
@@ -18,16 +17,7 @@ const SendToken = () => {
         <SwapSettings />
         <From />
         <Flex justifyContent="center">
-          <Image
-            h="30px"
-            w="30px"
-            p={1}
-            borderRadius="6px"
-            border="2px"
-            borderColor={borderColor}
-            bgColor={switchBgcolor}
-            src={lightmode ? lightswitch : darkswitch}
-          />
+          <SwitchIcon />
         </Flex>
         <To />
         <Flex alignItems="center">
