@@ -34,6 +34,7 @@ const SendToken = () => {
             bgColor={buttonBgcolor}
             fontSize="18px"
             boxShadow={lightmode ? 'base' : 'lg'}
+            _hover={{ bgColor: buttonBgcolor }}
           >
             Connect Wallet
           </Button>
