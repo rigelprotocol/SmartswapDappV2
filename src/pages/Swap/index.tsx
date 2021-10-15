@@ -10,7 +10,7 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import { ColorModeSwitcher } from "./../../components/ColorModeSwitcher";
-import ConfirmModal from "../AddLiquidity/modals/ConfirmModal";
+import ConfirmModal from "./modals/confirmModal";
 
 const App = () => {
   const [show,setShow] = React.useState(true)
@@ -20,18 +20,20 @@ const App = () => {
       <Grid minH="100vh" p={3}>
         <VStack spacing={8}>
           <Heading>Swap page</Heading>
-          <Button variant="brand"> Swap </Button>
           <ConfirmModal 
-            title="confirm"
-            amount="3463"
-            from="RGP"
-            to="BUSD"
-            fromPrice="0.5464"
-            toPrice="1.3838"
-            fromDeposited="7.3838"
-            toDeposited="1.3838"
-            poolShare="0.12"
-            />
+          title="Confirm Swap"
+          from="RGP"
+          fromPrice="17383"
+          to="USDT"
+          toDeposited="1.7383"
+          fromDeposited="17383"
+          minRecieved="12.7484"
+          route={["RGP","BUSD","BNB"]}
+          slippage="0.23"
+          impact="0.45"
+          fee="1.234"
+          />
+          <Button variant="brand"> Swap </Button>
         </VStack>
       </Grid>
     </Box>
