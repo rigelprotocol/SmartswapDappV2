@@ -47,8 +47,8 @@ const ConfirmModal:React.FC<IModal> = ({
     fee
     }) => {
     const bgColor = useColorModeValue("#FFF", "#15202B");
-    const lightTextColor = useColorModeValue("#666", "#DCE6EF");
-    const heavyTextColor = useColorModeValue("#333", "#F1F5F8");
+    const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
+    const heavyTextColor = useColorModeValue("#333333", "#F1F5F8");
     const borderColor = useColorModeValue("#DEE6ED","#324D68")
     const boxColor = useColorModeValue("#F2F5F8","#213345")
     const {
@@ -99,7 +99,7 @@ const ConfirmModal:React.FC<IModal> = ({
                 fontWeight="normal"
                 fontSize="24px"
                 >
-                        <Text fontSize="16px" color="#666">From</Text>
+                        <Text fontSize="16px" color={lightTextColor}>From</Text>
                         <Flex justifyContent="space-between" mt="2">
                         <Flex><Image src={RGPImage} mr="2"/> <Text>{from}</Text></Flex>
                         <Text color={heavyTextColor}>{fromDeposited}</Text>
@@ -131,7 +131,7 @@ const ConfirmModal:React.FC<IModal> = ({
                 fontWeight="normal"
                 fontSize="24px"
                 >
-                        <Text fontSize="16px" color="#666">To</Text>
+                        <Text fontSize="16px" color={lightTextColor}>To</Text>
                         <Flex justifyContent="space-between" mt="2">
                         <Flex><Image src={USDTImage} mr="2"/> <Text>{to}</Text></Flex>
                         <Text color={heavyTextColor}>{toDeposited}</Text>
@@ -142,7 +142,7 @@ const ConfirmModal:React.FC<IModal> = ({
                 <Flex
                 justifyContent="space-between" fontSize="14px">
                     <Text color={lightTextColor}>Price</Text>
-                    <Text color={heavyTextColor}>1 {to} = {fromPrice} {from}</Text>
+                    <Text color={heavyTextColor} fontWeight="bold">1 {to} = {fromPrice} {from}</Text>
                 </Flex>
                 </Box>
                 <Box
@@ -155,30 +155,30 @@ const ConfirmModal:React.FC<IModal> = ({
                 margin="15px 0"
                 >
                         <Flex justifyContent="space-between">
-                        <Box>Minimum received <InfoOutlineIcon /></Box>
+                        <Box color={lightTextColor}>Minimum received <InfoOutlineIcon /></Box>
                         <Text color={heavyTextColor}>{minRecieved}</Text>
                         </Flex>
-                        <Flex justifyContent="space-between" my="3">
-                        <Box>Route <InfoOutlineIcon /></Box>
-                        <Text color={heavyTextColor}>{route.join(" > ")}</Text>
+                        <Flex justifyContent="space-between" my="4">
+                        <Box color={lightTextColor}>Route <InfoOutlineIcon /></Box>
+                        <Text color={heavyTextColor} fontWeight="500">{route.join(" > ")}</Text>
                         </Flex>
                         <Flex justifyContent="space-between">
-                        <Box>Allowed Slippage <InfoOutlineIcon /></Box>
+                        <Box color={lightTextColor}>Allowed Slippage <InfoOutlineIcon /></Box>
                         <Text color={heavyTextColor}>{slippage}%</Text>
                         </Flex>
-                        <Flex justifyContent="space-between" my="3">
-                        <Box>Price Impact <InfoOutlineIcon /></Box>
+                        <Flex justifyContent="space-between" my="4">
+                        <Box color={lightTextColor}>Price Impact <InfoOutlineIcon /></Box>
                         <Text color={heavyTextColor}>{impact}%</Text>
                         </Flex>
                         <Flex justifyContent="space-between">
-                        <Box>Liquidity Provider Fee <InfoOutlineIcon /></Box>
+                        <Box color={lightTextColor}>Liquidity Provider Fee <InfoOutlineIcon /></Box>
                         <Text color={heavyTextColor}>{fee} RGP</Text>
                         </Flex>
                     
                 </Box>
-                <Text mb="2" color={lightTextColor}>Output is estimated. You will receive at least {toDeposited} {to} or the transaction will revert.
+                <Text mb="2" color={lightTextColor}>Output is estimated. You will receive at least <Text as="span" color={heavyTextColor}>{toDeposited} {to}</Text> or the transaction will revert.
                 </Text>
-                <Button variant="brand" isFullWidth padding="24px 0" boxShadow="none"> Confirm Supply </Button>
+                <Button variant="brand" isFullWidth padding="24px 0" boxShadow="none"> Confirm Swap </Button>
                 
                 </Box>
                 
