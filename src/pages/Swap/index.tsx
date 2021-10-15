@@ -13,6 +13,8 @@ import { ColorModeSwitcher } from "./../../components/ColorModeSwitcher";
 import ConfirmModal from "./modals/confirmModal";
 
 const App = () => {
+  const [show,setShow] = React.useState(true)
+  
   return (
     <Box textAlign="center" fontSize="xl">
       <Grid minH="100vh" p={3}>
