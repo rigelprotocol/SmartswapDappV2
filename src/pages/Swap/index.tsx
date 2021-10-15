@@ -25,7 +25,7 @@ const App = () => {
         <VStack spacing={8}>
           <Heading>Swap page</Heading>
           <Button variant="brand" >Swap </Button>
-          <Button variant="brand" onClick={() => buttonClick('Swapped 4.32221 RGP for 2.3455 USDT')} >Add Toast </Button>
+          {/*<Button variant="brand" onClick={() => buttonClick('Swapped 4.32221 RGP for 2.3455 USDT')} >Add Toast </Button>*/}
         </VStack>
       </Grid>
     </Box>

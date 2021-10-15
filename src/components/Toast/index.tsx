@@ -8,8 +8,13 @@ import Tick from '../../assets/tick-circle.svg';
 import TickLight from '../../assets/tick-circle-light.svg';
 import toast from 'react-hot-toast';
 
+export interface ToastProps {
+    message: string,
+    URL: string
+}
 
-function Toast({message, URL }: {message: string, URL?: string}) {
+
+function Toast({message, URL }: ToastProps) {
     const bgColor3 = useColorModeValue( "#DEE6ED", "#324d68");
     const buttonBorder = useColorModeValue("gray.200", "gray.100");
     const successImage = useColorModeValue(TickLight, Tick);
