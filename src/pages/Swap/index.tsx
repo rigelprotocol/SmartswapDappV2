@@ -9,8 +9,8 @@ import {
   Button,
   Heading,
 } from "@chakra-ui/react";
-import { ColorModeSwitcher } from "./../../components/ColorModeSwitcher";
-import Test from "../../components/Modals/Test";
+import Test from "../../components/Modals/TransactionsModal/Test";
+
 
 
 const App = () => {

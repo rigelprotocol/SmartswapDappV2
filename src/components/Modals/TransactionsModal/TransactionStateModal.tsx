@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import {
     Text,
     Spinner,
@@ -12,7 +13,8 @@ import {
     Circle, Button, Link
 } from "@chakra-ui/react";
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons'
-
+import { hideModal } from './actions';
+import { RootState } from '../../../state'
 
 export enum TrxState {
     WaitingForConfirmation,
@@ -21,37 +23,49 @@ export enum TrxState {
     TransactionFailed
 }
 
-export interface IProps {
+export interface ModalProps {
     message?: string;
     trxState: TrxState;
-    URLNetwork?: string;
-    typeOfModal?: string //for testing purpose please
-
+    urlNetwork?: string;
 }
-const TransactionStateModal: React.FC<IProps> = ({ message, URLNetwork, trxState, typeOfModal }) => {
+
+const mapStateToProps = (state: RootState) => ({
+    modal: state.modalReducer.modal,
+});
+
+const mapDispatchToProps = {
+    dispatchHideModal: hideModal,
+};
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+type IProps = {} & ConnectedProps<typeof connector>;
 
 
+const TransactionStateModal: React.FC<IProps> = ({ dispatchHideModal, modal }) => {
     const bgColour = useColorModeValue("#FFFFFF", "#15202B");
     const textColour = useColorModeValue("#333333", "#F1F5F8");
     const smallTxtColour = useColorModeValue("#999999", "#DCE5EF");
     const closeBtnColour = useColorModeValue("#666666", "#DCE5EF");
     const closeButtonBgColour = useColorModeValue("#319EF6", "#008DFF");
     const successBgColour = useColorModeValue("#22BB33", "#75F083");
-    const errorBgColour = useColorModeValue("#CC334F", "#FF3358");
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    const errorBgColour = useColorModeValue("#CC334F", "#FF3358");    
+    const [modalOpen, setModalOpen] = useState(true)
 
+    if (!modal) {
+        return null;
+    }
 
+    const onCloseButtonClick = () => {
+        dispatchHideModal();
+    };
+
+    const { message, trxState, urlNetwork } = modal
 
     return (
-
         <>
-
-            <Button variant="brand" onClick={onOpen}>
-                {typeOfModal}
-            </Button>
-
             {console.log("transction state is ", trxState)}
-            <Modal isOpen={isOpen} onClose={onClose} isCentered>
+            <Modal isOpen={modalOpen} onClose={onCloseButtonClick} isCentered>
                 <ModalOverlay />
                 <ModalContent bg={bgColour} color="#fff" borderRadius="6px"
                     paddingBottom="15px" width="95vw">
@@ -60,7 +74,7 @@ const TransactionStateModal: React.FC<IProps> = ({ message, URLNetwork, trxState
                         color={closeBtnColour}
                         cursor="pointer"
                         _focus={{ outline: 'none' }}
-                        onClick={onClose}
+                        onClick={onCloseButtonClick}
                         border={'1px solid'}
                         size={'sm'}
                         mt={3}
@@ -122,7 +136,7 @@ const TransactionStateModal: React.FC<IProps> = ({ message, URLNetwork, trxState
                                     fontWeight="normal"
                                     color="#008DFF">
 
-                                    {URLNetwork && (<Link href={`https://${URLNetwork}`} isExternal> View on Etherscan </Link>)}
+                                    {urlNetwork && (<Link href={`https://${urlNetwork}`} isExternal> View on Etherscan </Link>)}
                                 </Text> : null}
 
                         {trxState === TrxState.WaitingForConfirmation ?
@@ -140,7 +154,7 @@ const TransactionStateModal: React.FC<IProps> = ({ message, URLNetwork, trxState
                                 background={closeButtonBgColour}
                                 color="#FFFFFF"
                                 cursor="pointer"
-                                onClick={onClose}
+                                onClick={onCloseButtonClick}
                             >
                                 Close
                             </Button>}
@@ -152,5 +166,4 @@ const TransactionStateModal: React.FC<IProps> = ({ message, URLNetwork, trxState
 
 }
 
-
-export default TransactionStateModal
+export default connector(TransactionStateModal)

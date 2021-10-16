@@ -1,8 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit'
+import modalReducer from '../components/Modals/TransactionsModal/reducers';
+
 
 const store = configureStore({
     reducer: {
-
+        modalReducer
     },
 
 })
