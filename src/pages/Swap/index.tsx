@@ -1,43 +1,85 @@
-import * as React from "react";
-import {
-  Box,
-  Text,
-  Link,
-  VStack,
-  Code,
-  Grid,
-  Button,
-  Heading,
-} from "@chakra-ui/react";
-import { ColorModeSwitcher } from "./../../components/ColorModeSwitcher";
-import ConfirmModal from "./modals/confirmModal";
+import * as React from 'react';
+import { Box, Flex, useMediaQuery, useColorModeValue } from '@chakra-ui/react';
+import ShowDetails from './components/details/ShowDetails';
+import SendToken from './components/sendToken/index';
+import History from './components/history/History';
 
-const App = () => {
-  const [show,setShow] = React.useState(true)
-  
+const Swap = () => {
+  const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
+  const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   return (
-    <Box textAlign="center" fontSize="xl">
-      <Grid minH="100vh" p={3}>
-        <VStack spacing={8}>
-          <Heading>Swap page</Heading>
-          <ConfirmModal 
-          title="Confirm Swap"
-          from="RGP"
-          fromPrice="17383"
-          to="USDT"
-          toDeposited="1.7383"
-          fromDeposited="17383"
-          minRecieved="12.7484"
-          route={["RGP","BUSD","BNB"]}
-          slippage="0.23"
-          impact="0.45"
-          fee="1.234"
-          />
-          <Button variant="brand"> Swap </Button>
-        </VStack>
-      </Grid>
+    <Box fontSize="xl">
+      <Flex
+        minH="100vh"
+        zIndex={1}
+        mt={6}
+        justifyContent="center"
+        flexWrap="wrap"
+      >
+        {isMobileDevice ? (
+          <>
+            <Box mx={4} mt={8} w={['100%', '100%', '45%', '29.5%']} mb={4}>
+              <SendToken />
+            </Box>
+
+            <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
+              <Flex
+                h="60px"
+                border="1px"
+                borderColor={borderColor}
+                borderRadius="6px"
+                alignItems="center"
+              >
+                <ShowDetails />
+              </Flex>
+            </Box>
+
+            <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
+              <Flex
+                h="60px"
+                border="1px"
+                borderColor={borderColor}
+                borderRadius="6px"
+                alignItems="center"
+              >
+                <History />
+              </Flex>
+            </Box>
+          </>
+        ) : (
+          <>
+            <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
+              <Flex
+                h="60px"
+                border="1px"
+                borderColor={borderColor}
+                borderRadius="6px"
+                alignItems="center"
+              >
+                <ShowDetails />
+              </Flex>
+            </Box>
+
+            <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
+              <SendToken />
+            </Box>
+
+            <Box mx={5} w={['100%', '100%', '45%', '29.5%']} mb={4}>
+              <Flex
+                h="60px"
+                border="1px"
+                borderColor={borderColor}
+                borderRadius="6px"
+                alignItems="center"
+              >
+                <History />
+              </Flex>
+            </Box>
+          </>
+        )}
+      </Flex>
     </Box>
   );
 };
 
-export default App;
+export default Swap;
