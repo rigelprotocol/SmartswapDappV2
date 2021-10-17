@@ -44,8 +44,8 @@ const Index = () => {
       <DappsDropdown />
 
       <Flex w="350px" h="10" align="center" justify="space-between">
-        <SwapDropdown />
-        <Nav label="Liquidity" to="/add" />
+        <Nav label="Swap" to="/swap" />
+        <Nav label="Liquidity" to="/pool" />
         <Nav label="Farming" to="/farming" />
         <Link href="https://rigelprotocol.com" isExternal>
           Analytics <ExternalLinkIcon mx="2px" />
