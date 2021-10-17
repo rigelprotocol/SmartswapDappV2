@@ -3,6 +3,7 @@ import React from 'react';
 import { CgArrowsExchangeAltV } from 'react-icons/cg';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { IoMdClose, IoMdAdd } from 'react-icons/io';
+import { FiCopy } from 'react-icons/fi'
 
 export const SwitchIcon = () => {
   const arrowColor = useColorModeValue('#333333', '#F1F5F8');
@@ -34,6 +35,19 @@ export const SettingsIcon = () => {
       padding="4px"
       h="32px"
       mr={2}
+    />
+  );
+};
+export const CopyIcon = () => {
+  const iconColor = useColorModeValue('#666666', '#DCE5EF');
+  return (
+    <Icon
+      as={FiCopy}
+      w="28px"
+      color={iconColor}
+      h="28px"
+      mr={4}
+      mt={1.5}
     />
   );
 };

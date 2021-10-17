@@ -3,12 +3,14 @@ import { Box, Flex, useMediaQuery, useColorModeValue } from '@chakra-ui/react';
 import ShowDetails from './components/details/ShowDetails';
 import SendToken from './components/sendToken/index';
 import History from './components/history/History';
+import WalletModal from '../../components/Navbar/modals/walletModal';
 
 const Swap = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   return (
     <Box fontSize="xl">
+      <WalletModal />
       <Flex
         minH="100vh"
         zIndex={1}

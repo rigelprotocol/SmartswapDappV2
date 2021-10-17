@@ -15,8 +15,7 @@ import {
 } from "@chakra-ui/react"
 import { shortenAddress } from "../../../utils";
 import MetamaskLogo from "./../../../assets/metamaskLogo.png";
-import {CopyIcon} from "@chakra-ui/icons"
-
+import { CopyIcon } from "../../../theme/components/Icons";
 export type IModal= {
     
 }
@@ -84,10 +83,10 @@ const WalletModal:React.FC<IModal> = ({
           >
             {shortenAddress("0x3552b618Dc1c3d5e53818C651Bc41Ae7A307F767")}
           </Button>
-          <CopyIcon mr="4" mt="3" w="20px" h="20px" />
+          <CopyIcon />
                       </Flex>
                <Box mt="4" fontSize="16px" color={lightTextColor}>
-                <CopyIcon mr="4" w="16px" h="16px" /> View on Etherscan
+                <CopyIcon /> View on Etherscan
                 </Box>
                 <Box>
                   <Flex
