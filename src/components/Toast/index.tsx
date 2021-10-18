@@ -18,11 +18,12 @@ export interface ToastProps {
 }
 
 
-
 function Toast({message, URL, remove }: ToastProps) {
     const bgColor3 = useColorModeValue( "#DEE6ED", "#324d68");
     const buttonBorder = useColorModeValue("gray.200", "gray.100");
     const successIcon = useColorModeValue('#22bb33', '#75f083');
+    const bg = useColorModeValue('#fff', '#15202b');
+    const shadow = useColorModeValue('0px 1px 7px rgba(41, 45, 50, 0.08)', '0px 2px 4px -2px rgba(178, 193, 230, 0.12), 0px 4px 4px -2px rgba(178, 193, 230, 0.08)');
 
     const faderStyle = useSpring({
         from: { width: '100%' },
@@ -37,8 +38,9 @@ function Toast({message, URL, remove }: ToastProps) {
     }, []);
 
     return (
-        <Box height={'140px'}
+        <Box height={'140px'} background={bg}
              width={'350px'} borderRadius={'6px'}
+             boxShadow={shadow}
              border={'1px solid'} position={"relative"} borderColor={bgColor3} justifyContent={'center'}>
             <Flex h={'100%'}>
                 <Box flex={'1'}>
@@ -79,7 +81,7 @@ export const Notify = () => {
     const dispatch = useDispatch();
 
     return (
-        <Box position={'fixed'} mt={'120px'} right={'50px'}>
+        <Box position={'fixed'} mt={'20px'} right={'50px'} zIndex={'1000'}>
             {toastDetails.message && <Toast message={toastDetails.message} URL={toastDetails.URL} remove={() => dispatch(removeToast())}/>}
         </Box>
     )
