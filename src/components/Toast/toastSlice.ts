@@ -2,7 +2,7 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 interface ToastState {
     message: string,
-    URL?: string
+    URL: string
 }
 
 const initialState: ToastState = {

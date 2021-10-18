@@ -1,23 +1,40 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {
     Box,
-    IconButton, Flex, Text, useColorModeValue, VStack, Image, HStack, Progress, Link
+    IconButton, Flex, Text, useColorModeValue, VStack, HStack, Link
 } from "@chakra-ui/react";
 import { CloseIcon } from '@chakra-ui/icons';
-import Tick from '../../assets/tick-circle.svg';
-import TickLight from '../../assets/tick-circle-light.svg';
-import toast from 'react-hot-toast';
+import {useDispatch, useSelector} from "react-redux";
+import {AiOutlineCheckCircle} from 'react-icons/ai';
+import {RootState} from "../../state";
+import {removeToast} from './toastSlice';
+import {animated, useSpring} from 'react-spring';
+import './toast.css';
 
 export interface ToastProps {
     message: string,
-    URL: string
+    URL: string,
+    remove: Function
 }
 
 
-function Toast({message, URL }: ToastProps) {
+
+function Toast({message, URL, remove }: ToastProps) {
     const bgColor3 = useColorModeValue( "#DEE6ED", "#324d68");
     const buttonBorder = useColorModeValue("gray.200", "gray.100");
-    const successImage = useColorModeValue(TickLight, Tick);
+    const successIcon = useColorModeValue('#22bb33', '#75f083');
+
+    const faderStyle = useSpring({
+        from: { width: '100%' },
+        to: { width: '0%' },
+        config: { duration: 3000 },
+    });
+
+    useEffect(() => {
+        setTimeout(() => {
+            remove()
+        }, 3000)
+    }, []);
 
     return (
         <Box height={'140px'}
@@ -26,7 +43,7 @@ function Toast({message, URL }: ToastProps) {
             <Flex h={'100%'}>
                 <Box flex={'1'}>
                     <HStack h={'100%'} p={3} w={'90%'}>
-                        <Image src={successImage} boxSize={'25px'} />
+                        <AiOutlineCheckCircle color={successIcon} size={'30px'}/>
                         <VStack alignItems={"start"} textAlign={'start'} px={'10px'}>
                             <Text fontSize={'16px'} fontWeight={'bold'}>{message}</Text>
                             <Link href={`https://${URL}`} isExternal variant={'link'} color={'brand.200'}>View on Etherscan</Link>
@@ -37,7 +54,7 @@ function Toast({message, URL }: ToastProps) {
             </Flex>
             <IconButton
                 icon={<CloseIcon />}
-                onClick={() => toast.dismiss()}
+                onClick={() => remove()}
                 aria-label={'Close Toast'}
                 backgroundColor="transparent"
                 position={'absolute'}
@@ -52,10 +69,20 @@ function Toast({message, URL }: ToastProps) {
                 borderColor={buttonBorder}
 
             />
-            <Progress position={'absolute'} borderRadius={'0px 0px 6px 6px'}
-                      bottom={'0px'} size={'sm'} width={'100%'} bg={'brand.100'} borderColor="brand.100" isIndeterminate />
+            <animated.div className={'progress'} style={faderStyle}/>
         </Box>
     );
 }
 
-export default Toast;
+export const Notify = () => {
+    const toastDetails = useSelector((state: RootState) => state.toast);
+    const dispatch = useDispatch();
+
+    return (
+        <Box position={'fixed'} mt={'120px'} right={'50px'}>
+            {toastDetails.message && <Toast message={toastDetails.message} URL={toastDetails.URL} remove={() => dispatch(removeToast())}/>}
+        </Box>
+    )
+};
+
+export default Notify;

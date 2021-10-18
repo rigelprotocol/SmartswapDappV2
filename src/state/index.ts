@@ -1,11 +1,12 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit';
+import toastReducers from '../components/Toast/toastSlice';
 
 const store = configureStore({
     reducer: {
-
+        toast: toastReducers
     },
 
-})
+});
 
 
 export default store
