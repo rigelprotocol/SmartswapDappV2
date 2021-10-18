@@ -1,8 +1,7 @@
-import React from "react";
+import React, {useCallback} from "react";
 import {
     Flex,
     Text,
-    Box,
     Button,
     Image,
     ModalOverlay, ModalContent, Modal, ModalCloseButton, useDisclosure, useColorModeValue
@@ -11,11 +10,11 @@ import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
 import { IoWalletOutline } from "react-icons/io5";
 import { shortenAddress } from "../../utils";
 import MetamaskLogo from "./../../assets/metamaskLogo.png";
-import { injected } from "../../connectors";
+import { injected, ConnectorNames, connectorsByName} from "../../connectors";
 import WalletOptions from "./WalletOptions";
 
 export default function WalletConnection() {
-  const { account, error, activate } = useWeb3React();
+  const { account, library, chainId, error, activate } = useWeb3React();
     const bg = useColorModeValue("#FFFFFF", "#15202B");
     const bgColor = useColorModeValue("lightBg.100", "darkBg.100");
     const bgColor2 = useColorModeValue("lightBg.200", "darkBg.100");
@@ -25,6 +24,14 @@ export default function WalletConnection() {
     const buttonBorder = useColorModeValue("gray.200", "gray.100");
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const connectWallet = useCallback((connectorID: ConnectorNames) => {
+      const connector = connectorsByName[connectorID];
+          try {
+              activate(connector);
+          } catch (e) {
+              console.log(e)
+          }
+  }, [activate]);
 
   const connectAccount = () => {
     try {
@@ -33,13 +40,14 @@ export default function WalletConnection() {
       console.log(error);
     }
   };
+
   if (account) {
     return (
       <>
         <Button variant="rgpButton" bg={bgColor}>349.0003 RGP</Button>
         <Flex
           ml={2}
-          w="270px"
+          w="280px"
           borderRadius="md"
           border={'1px solid'}
           borderColor={bgColor2}
@@ -100,7 +108,7 @@ export default function WalletConnection() {
                   borderColor={buttonBorder}
 
               />
-              <WalletOptions connect={connectAccount}/>
+              <WalletOptions connect={connectWallet}/>
             </ModalContent>
           </Modal>
         </>
