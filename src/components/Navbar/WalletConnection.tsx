@@ -14,7 +14,7 @@ import { injected, ConnectorNames, connectorsByName} from "../../connectors";
 import WalletOptions from "./WalletOptions";
 
 export default function WalletConnection() {
-  const { account, library, chainId, error, activate } = useWeb3React();
+    const { account, error, activate } = useWeb3React();
     const bg = useColorModeValue("#FFFFFF", "#15202B");
     const bgColor = useColorModeValue("lightBg.100", "darkBg.100");
     const bgColor2 = useColorModeValue("lightBg.200", "darkBg.100");
