@@ -6,6 +6,7 @@ import { Text } from "@chakra-ui/react";
 import React from "react";
 import Liquidities from "./liquidities";
 import { GearIcon, RefreshIcon, LightGearIcon, LightRefreshIcon } from "./Icons";
+import { useColorModeValue } from "@chakra-ui/react";
 
 const Index = () => {
   const allV2PairsWithLiquidity: any[] = [];
@@ -13,7 +14,8 @@ const Index = () => {
   const v2PairsWithoutStakedAmount: any[] = [];
   const stakingInfosWithBalance: any[] = [];
   const loading = false;
-  const darkMode = true;
+  const mode = useColorModeValue("light", "dark");
+
   return (
     <>
       <Flex
@@ -33,28 +35,28 @@ const Index = () => {
           <Box
             mt={5}
             p={5}
-            backgroundColor={darkMode ? "#15202B" : "#FFFFFF"}
-            border={darkMode ? "1px solid #324D68": "1px solid #DEE6ED"}
+            backgroundColor={mode === "dark" ? "#15202B" : "#FFFFFF"}
+            border={mode === "dark" ? "1px solid #324D68": "1px solid #DEE6ED"}
             borderRadius="6px"
           >
             <Flex justifyContent="left" mb={4} flexDirection="column">
               <Flex justifyContent="space-between">
-                <Text fontSize="16px" color={darkMode ? "#F1F5F8" : "rgba(51, 51, 51, 1)"}>
+                <Text fontSize="16px" color={mode === "dark" ? "#F1F5F8" : "rgba(51, 51, 51, 1)"}>
                   Liquidity
                 </Text>
                 <Flex>
                   <Box px={2}>
-                    { darkMode ? <LightGearIcon /> : <GearIcon /> }
+                    { mode === "dark" ? <LightGearIcon /> : <GearIcon /> }
                     
                   </Box>
                   <Box px={2}>
-                    { darkMode ? <LightRefreshIcon /> : <RefreshIcon /> }
+                    { mode === "dark" ? <LightRefreshIcon /> : <RefreshIcon /> }
                     
                   </Box>
                 </Flex>
               </Flex>
 
-              <Text fontSize="14px" color={ darkMode ? "#DCE5EF" : "#666666"} mt={2} cursor="pointer">
+              <Text fontSize="14px" color={ mode === "dark" ? "#DCE5EF" : "#666666"} mt={2} cursor="pointer">
                 Join liquidity pools to receive LP tokens
               </Text>
             </Flex>
@@ -105,7 +107,7 @@ const Index = () => {
             </Flex>
 
             <Flex justifyContent="center" mx={5} my={4}>
-              <Text fontSize="sm" color={ darkMode ? "#DCE5EF" : "#666666"}>
+              <Text fontSize="sm" color={ mode === "dark" ? "#DCE5EF" : "#666666"}>
                 Dont see a pool you joined?
               </Text>
               <Text fontSize="sm" color="blue.300" ml={3} cursor="pointer">
@@ -114,8 +116,8 @@ const Index = () => {
             </Flex>
           </Box>
           <Box
-            backgroundColor={darkMode ? "#15202B" : "#FFFFFF"}
-            border={darkMode ? "1px solid #324D68": "1px solid #DEE6ED"}
+            backgroundColor={mode === "dark" ? "#15202B" : "#FFFFFF"}
+            border={mode === "dark" ? "1px solid #324D68": "1px solid #DEE6ED"}
             borderRadius="6px"
             my={4}
           >
@@ -126,7 +128,7 @@ const Index = () => {
               rounded="lg"
               my={4}
             >
-              <Text color={darkMode ? "#F1F5F8" : "#000000"} fontSize="md">
+              <Text color={mode === "dark" ? "#F1F5F8" : "#000000"} fontSize="md">
                 My Liquidity Positions
               </Text>
             </Flex>
@@ -139,12 +141,12 @@ const Index = () => {
                 alignItems="center"
                 px={4}
                 mx={5}
-                backgroundColor={darkMode ? "#213345" : "#F2F5F8"}
-                border={darkMode ? "1px solid #324D68": "1px solid #DEE6ED"}
+                backgroundColor={mode === "dark" ? "#213345" : "#F2F5F8"}
+                border={mode === "dark" ? "1px solid #324D68": "1px solid #DEE6ED"}
 
                 borderRadius="6px"
               >
-                <Text fontSize="sm" color={ darkMode ? "#DCE5EF" : "#666666"}>
+                <Text fontSize="sm" color={ mode === "dark" ? "#DCE5EF" : "#666666"}>
                   Loading...
                 </Text>
               </Flex>
@@ -158,12 +160,12 @@ const Index = () => {
                 alignItems="center"
                 px={3}
                 mx={5}
-                backgroundColor={darkMode ? "#213345" : "#F2F5F8"}
-                border={darkMode ? "1px solid #324D68": "1px solid #DEE6ED"}
+                backgroundColor={mode === "dark" ? "#213345" : "#F2F5F8"}
+                border={mode === "dark" ? "1px solid #324D68": "1px solid #DEE6ED"}
 
                 borderRadius="6px"
               >
-                <Text fontSize="sm" color={ darkMode ? "#DCE5EF" : "#666666"}>
+                <Text fontSize="sm" color={ mode === "dark" ? "#DCE5EF" : "#666666"}>
                   No Liquidity Found.
                 </Text>
               </Flex>
