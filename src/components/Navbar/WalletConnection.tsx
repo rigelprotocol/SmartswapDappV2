@@ -48,7 +48,7 @@ export default function WalletConnection() {
     return (
       <>
         <Button variant="rgpButton" bg={bgColor}>
-          {RGPBalance} {RGPBalance ? 'RGP' : ''}
+          {RGPBalance} {RGPBalance ? 'RGP' : '0.0000 RGP'}
         </Button>
         <Flex
           ml={2}

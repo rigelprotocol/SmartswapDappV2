@@ -47,6 +47,7 @@ export const useRGPBalance = () => {
             parseFloat(ethers.utils.formatEther(balance)).toFixed(4)
           );
         } catch (err) {
+          setRGPBalance('');
           console.log(err);
         }
       } else {
