@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { Box, Flex, useMediaQuery } from '@chakra-ui/react';
 import ShowDetails from './components/details/ShowDetails';
@@ -9,15 +8,6 @@ import Test from "../../components/Modals/TransactionsModal/Test";
 const Swap = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
   return (
-    <Box textAlign="center" fontSize="xl">
-      <Grid minH="100vh" p={3}>
-        <VStack spacing={8}>
-          <Heading>Swap page</Heading>
-          <Button variant="brand"> Swap </Button>
-          <Test />
-        </VStack>
-      </Grid>
-
     <Box fontSize="xl">
       <Flex
         minH="100vh"
