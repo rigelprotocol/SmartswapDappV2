@@ -1,3 +1,4 @@
+
 import React, { Suspense } from 'react';
 import { HashRouter, Route, Switch, Redirect } from 'react-router-dom';
 import AddLiquidity from './AddLiquidity';
@@ -9,6 +10,8 @@ import FarmingV2 from './FarmingV2';
 import Fonts from './../theme/fonts';
 import AppWrapper from './../components/AppWrapper';
 import Navbar from './../components/Navbar';
+import TransactionStateModal from "../components/Modals/TransactionsModal/TransactionStateModal";
+
 export default function App() {
   return (
     <Suspense fallback={null}>
@@ -16,6 +19,7 @@ export default function App() {
       <AppWrapper>
         <HashRouter>
           <Navbar />
+          <TransactionStateModal/>
           <Switch>
             <Route exact strict path="/swap" component={Swap} />
             <Route exact strict path="/pool" component={Pool} />
