@@ -1,13 +1,19 @@
 import * as React from 'react';
-import { Box, Flex, useMediaQuery, useColorModeValue } from '@chakra-ui/react';
+import { Box, Flex, useMediaQuery, Button } from '@chakra-ui/react';
 import ShowDetails from './components/details/ShowDetails';
 import SendToken from './components/sendToken/index';
 import History from './components/history/History';
 import WalletModal from '../../components/Navbar/modals/walletModal';
+import {useDispatch} from "react-redux";
+import {addToast} from '../../components/Toast/toastSlice';
+
 
 const Swap = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
-  const borderColor = useColorModeValue('#DEE5ED', '#324D68');
+  const dispatch = useDispatch();
+  const add = () => {
+      dispatch(addToast({message: 'Swap 4.32221 RGP for 2.3455 USDT', URL: 'google.com'}));
+  };
   return (
     <Box fontSize="xl">
       <WalletModal />
@@ -25,41 +31,18 @@ const Swap = () => {
             </Box>
 
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
-              <Flex
-                h="60px"
-                border="1px"
-                borderColor={borderColor}
-                borderRadius="6px"
-                alignItems="center"
-              >
-                <ShowDetails />
-              </Flex>
+              <ShowDetails />
             </Box>
 
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
-              <Flex
-                h="60px"
-                border="1px"
-                borderColor={borderColor}
-                borderRadius="6px"
-                alignItems="center"
-              >
-                <History />
-              </Flex>
+              <History />
             </Box>
           </>
         ) : (
           <>
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
-              <Flex
-                h="60px"
-                border="1px"
-                borderColor={borderColor}
-                borderRadius="6px"
-                alignItems="center"
-              >
-                <ShowDetails />
-              </Flex>
+              <ShowDetails />
+              <Button variant={'brand'} mt={4} onClick={add}>Add Toast</Button>
             </Box>
 
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
@@ -67,15 +50,7 @@ const Swap = () => {
             </Box>
 
             <Box mx={5} w={['100%', '100%', '45%', '29.5%']} mb={4}>
-              <Flex
-                h="60px"
-                border="1px"
-                borderColor={borderColor}
-                borderRadius="6px"
-                alignItems="center"
-              >
-                <History />
-              </Flex>
+              <History />
             </Box>
           </>
         )}

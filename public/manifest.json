@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "RigelProtocol",
+  "name": "Smart Swapping Exchange, Margin Trading & Cross Chain Protocol",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,14 +8,14 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "images/android-chrome-192x192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "logo512.png",
+      "src": "images/favicon-150x150.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "150x150"
     }
   ],
   "start_url": ".",
