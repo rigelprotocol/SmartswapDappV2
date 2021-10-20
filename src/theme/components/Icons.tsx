@@ -1,4 +1,4 @@
-import { Icon, useColorModeValue, IconProps } from '@chakra-ui/react';
+import { Icon, useColorModeValue } from '@chakra-ui/react';
 import React from 'react';
 import { CgArrowsExchangeAltV } from 'react-icons/cg';
 import { IoSettingsOutline } from 'react-icons/io5';
