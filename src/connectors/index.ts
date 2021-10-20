@@ -10,11 +10,11 @@ import { NetworkConnector } from './NetworkConnector';
 
 const NETWORK_URL = process.env.REACT_APP_NETWORK_URL;
 
-export const ConnectorNames = {
-  Injected: 'injected',
-  WalletConnect: 'walletconnect',
-  BSC: 'bsc',
-};
+export enum ConnectorNames {
+    Injected = "injected",
+    WalletConnect = "walletconnect",
+    BSC = "bsc"
+}
 
 export const NETWORK_CHAIN_ID: number = parseInt(
   process.env.REACT_APP_CHAIN_ID ?? '56'
@@ -38,7 +38,7 @@ export function getNetworkLibrary(): Web3Provider {
 }
 
 export const injected = new InjectedConnector({
-  supportedChainIds: [1, 3, 56, 97, 137, 80001],
+    supportedChainIds: [1, 3, 56, 97],
 });
 
 export const bscConnector = new BscConnector({
@@ -63,4 +63,5 @@ export const connectorsByName = {
   [ConnectorNames.Injected]: injected,
   [ConnectorNames.WalletConnect]: walletconnect,
   [ConnectorNames.BSC]: bscConnector,
+
 };

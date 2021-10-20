@@ -10,6 +10,7 @@ import FarmingV2 from './FarmingV2';
 import Fonts from './../theme/fonts';
 import AppWrapper from './../components/AppWrapper';
 import Navbar from './../components/Navbar';
+import Notify from "../components/Toast";
 import TransactionStateModal from "../components/Modals/TransactionsModal/TransactionStateModal";
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
       <AppWrapper>
         <HashRouter>
           <Navbar />
+          <Notify/>
           <TransactionStateModal/>
           <Switch>
             <Route exact strict path="/swap" component={Swap} />
