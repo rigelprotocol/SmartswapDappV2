@@ -7,11 +7,8 @@ const To = () => {
   return (
     <>
       <Box
-        h="102px"
-        m={4}
-        borderRadius="6px"
-        border="1px"
-        borderColor={borderColor}
+        pl={3}
+        pr={3}
       >
         <InputSelector max={false} />
       </Box>

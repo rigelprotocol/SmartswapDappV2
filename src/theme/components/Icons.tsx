@@ -3,6 +3,8 @@ import React from 'react';
 import { CgArrowsExchangeAltV } from 'react-icons/cg';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { IoMdClose, IoMdAdd } from 'react-icons/io';
+import { BsExclamationCircle } from "react-icons/bs";
+import {BiPen} from 'react-icons/bi';
 
 export const SwitchIcon = () => {
   const arrowColor = useColorModeValue('#333333', '#F1F5F8');
@@ -44,4 +46,27 @@ export const CloseIcon = () => {
 
 export const AddIcon = () => {
   return <Icon as={IoMdAdd} h="18px" w="18px" />;
+};
+
+export const VectorIcon = () => {
+  const iconColor = useColorModeValue('#666666', '#DCE5EF');
+  return (
+    <Icon
+      as={BiPen}
+      w="15px"
+      color={iconColor}
+      h="15px"
+    />
+  );
+};
+export const ExclamationIcon = () => {
+  const iconColor = useColorModeValue('#666666', '#DCE5EF');
+  return (
+    <Icon
+      as={BsExclamationCircle}
+      w="16px"
+      color={iconColor}
+      h="16px"
+    />
+  );
 };

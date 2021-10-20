@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import {
   Menu,
   MenuButton,
@@ -7,6 +8,17 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
+
+const Nav = ({ to, label }: { to: string; label: string }) => (
+  <NavLink
+    to={to}
+    activeStyle={{
+      color: "#319EF6",
+    }}
+  >
+    {label}
+  </NavLink>
+);
 
 function SwapDropdown() {
   return (
@@ -22,9 +34,15 @@ function SwapDropdown() {
         Swap
       </MenuButton>
       <MenuList>
-        <MenuItem _focus={{color: "#319EF6"}}>Straight Swap</MenuItem>
-        <MenuItem _focus={{color: "#319EF6"}}>Auto-Time</MenuItem>
-        <MenuItem _focus={{color: "#319EF6"}}>Set Price</MenuItem>
+        <MenuItem _focus={{color: "#319EF6"}}>
+          <Nav label="Straight Swap" to="/swap" />
+        </MenuItem>
+        <MenuItem _focus={{color: "#319EF6"}}>
+          <Nav label="Auto-Time" to="/auto-time" />
+        </MenuItem>
+        <MenuItem _focus={{color: "#319EF6"}}>
+          <Nav label="Set Price" to="/set-price" />
+        </MenuItem>
       </MenuList>
     </Menu>
   );

@@ -8,10 +8,13 @@ const From = () => {
     <>
       <Box
         h="102px"
-        m={4}
+        mb={4}
+        mt={4}
         borderRadius="6px"
         border="1px"
         borderColor={borderColor}
+        pl={3}
+        pr={3}
       >
         <InputSelector max />
       </Box>
