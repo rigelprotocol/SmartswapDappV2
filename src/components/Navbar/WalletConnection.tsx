@@ -15,6 +15,7 @@ import { injected, ConnectorNames, connectorsByName, walletconnect, bscConnector
 import WalletOptions from "./WalletOptions";
 import WalletConnectLogo from '../../assets/walletconnect-logo.svg';
 import BinanceLogo from '../../assets/BNB.svg';
+import { useNativeBalance, useRGPBalance } from '../../utils/hooks/useBalances';        
 
 
 function StatusIcon({connector}: {connector?: AbstractConnector}) {
@@ -40,6 +41,9 @@ export default function WalletConnection() {
     const buttonBorder = useColorModeValue("gray.200", "gray.100");
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [Balance, Symbol] = useNativeBalance();
+  const [RGPBalance] = useRGPBalance();
+    
   const connectWallet = useCallback((connectorID: ConnectorNames) => {
       const connector = connectorsByName[connectorID];
           try {
@@ -48,6 +52,7 @@ export default function WalletConnection() {
               console.log(e)
           }
   }, [activate]);
+
 
   const connectAccount = () => {
     try {
@@ -60,7 +65,9 @@ export default function WalletConnection() {
   if (account) {
     return (
       <>
-        <Button variant="rgpButton" bg={bgColor}>349.0003 RGP</Button>
+        <Button variant="rgpButton" bg={bgColor}>
+          {RGPBalance} {RGPBalance ? 'RGP' : '0.0000 RGP'}
+        </Button>
         <Flex
           ml={2}
           w="280px"
@@ -71,10 +78,12 @@ export default function WalletConnection() {
           justify="space-between"
         >
           <Flex align="center" justify="center" bg={bgColor2} px={2}>
-            <Text ml={2} fontWeight={'bold'}>11.0787 ETH</Text>
+            <Text ml={2} fontWeight={'bold'}>
+              {Balance} {Symbol}
+            </Text>
           </Flex>
           <Button
-              variant={'ghost'}
+            variant={'ghost'}
             rightIcon={
               <StatusIcon connector={connector}/>
             }
@@ -87,20 +96,20 @@ export default function WalletConnection() {
   } else if (error) {
     return (
       <Button bg="red.300" rightIcon={<IoWalletOutline />} variant="brand">
-        {error instanceof UnsupportedChainIdError ? "Wrong Network" : "Error"}
+        {error instanceof UnsupportedChainIdError ? 'Wrong Network' : 'Error'}
       </Button>
     );
   } else {
     return (
-        <>
-          <Button
-              onClick={onOpen}
-              rightIcon={<IoWalletOutline />}
-              variant="brand"
-          >
-            Connect Wallet
-          </Button>
-          <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      <>
+        <Button
+          onClick={onOpen}
+          rightIcon={<IoWalletOutline />}
+          variant="brand"
+        >
+          Connect Wallet
+        </Button>
+        <Modal isOpen={isOpen} onClose={onClose} isCentered>
             <ModalOverlay />
             <ModalContent
                 width="90vw"

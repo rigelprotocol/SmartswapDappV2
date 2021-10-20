@@ -1,3 +1,4 @@
+
 import React, { Suspense } from 'react';
 import { HashRouter, Route, Switch, Redirect } from 'react-router-dom';
 import AddLiquidity from './AddLiquidity';
@@ -10,7 +11,7 @@ import Fonts from './../theme/fonts';
 import AppWrapper from './../components/AppWrapper';
 import Navbar from './../components/Navbar';
 import Notify from "../components/Toast";
-
+import TransactionStateModal from "../components/Modals/TransactionsModal/TransactionStateModal";
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <HashRouter>
           <Navbar />
           <Notify/>
+          <TransactionStateModal/>
           <Switch>
             <Route exact strict path="/swap" component={Swap} />
             <Route exact strict path="/pool" component={Pool} />
