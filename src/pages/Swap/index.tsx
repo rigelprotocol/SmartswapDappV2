@@ -3,7 +3,6 @@ import { Box, Flex, useMediaQuery } from '@chakra-ui/react';
 import ShowDetails from './components/details/ShowDetails';
 import SendToken from './components/sendToken/index';
 import History from './components/history/History';
-import Test from "../../components/Modals/TransactionsModal/Test";
 
 const Swap = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
@@ -46,7 +45,6 @@ const Swap = () => {
           </>
         )}
       </Flex>
-      <Test/>
     </Box>
   );
 };
