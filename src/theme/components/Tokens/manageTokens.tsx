@@ -63,12 +63,13 @@ type IToken ={
 
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const boxShadow= useColorModeValue('#DEE6ED', '#324D68');
-    const borderColor= useColorModeValue('#DEE6ED', '#324D68');
+    const borderColor= useColorModeValue('#319EF6', '#4CAFFF');
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
     const heavyTextColor = useColorModeValue("#333333", "#F1F5F8");
     const textColor = useColorModeValue("#319EF6","#4CAFFF")
+    const borderColor2 = useColorModeValue("#DEE6ED","#324D68")
     const boxColor = useColorModeValue("#F2F5F8","#213345")
-    const selectedList = useColorModeValue("#EBF6FE","#213345")
+    const selectedList = useColorModeValue("#EBF6FE","#4CAFFF")
     const [selectedText,setSelectedText] = useState(0)
     const [displayImportedToken,setDisplayImportedToken] = useState(false)
     const [importedToken,setImportedToken] = useState({})
@@ -201,7 +202,7 @@ const displayImportToken = (token:IToken):void => {
                        key={index}
                        cursor="pointer"
                        bgColor={obj.display === true ? selectedList : boxColor}
-                       border={`1px solid ${obj.display === true ? textColor : borderColor}`}
+                       border={`1px solid ${obj.display === true ? borderColor : borderColor2}`}
                        borderRadius="6px"
                        my="4">
                           <Flex>
