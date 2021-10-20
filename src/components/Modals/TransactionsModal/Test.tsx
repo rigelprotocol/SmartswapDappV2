@@ -6,41 +6,36 @@ import {
     Heading,
     useDisclosure
 } from "@chakra-ui/react";
-import TransactionStateModal, { TrxState } from './TransactionStateModal';
-import { showModal } from './actions';
+import { setOpenModal, TrxState } from '../../../state/application/reducer';
+import {useDispatch} from "react-redux";
 
-const mapDispatchToProps = {
-    dispatchShowModal: showModal,
-};
-const connector = connect(undefined, mapDispatchToProps);
 
-type AppProps = {} & ConnectedProps<typeof connector>;
-const Test = (props: AppProps) => {
-    const { dispatchShowModal } = props
+const Test = () => {
+    const dispatch = useDispatch();
     return (
         <div>
             <Button onClick={() => {
-                dispatchShowModal({
+                dispatch(setOpenModal({
+                    message: "Sending 2RGP Token to Williams", trxState: TrxState.TransactionFailed
+                }))
+            }} variant="brand"> Dispatch Failed Trx state </Button>
+
+<Button onClick={() => {
+                dispatch(setOpenModal({
                     message: "Sending 2RGP Token to Williams", trxState: TrxState.WaitingForConfirmation
-                })
+                }))
             }} variant="brand"> Dispatch waiting Trx state </Button>
 
-            <Button onClick={() => {
-                dispatchShowModal({
-                    message: "Couldnt 2RGP Token to Williams", trxState: TrxState.TransactionFailed
-                })
-            }} variant="brand"> Dispatch Failed Transaction </Button>
-
-            <Button onClick={() => {
-                dispatchShowModal({
-                    message: "Successfully sent 2RGP Token to Williams", urlNetwork:"https://etherscan.io/address/0x43b181891160414a092e5c363894a2329d2bb9fb", trxState: TrxState.TransactionSuccessful
-                })
-            }} variant="brand"> Dispatch Successfull Transaction </Button>
+<Button onClick={() => {
+                dispatch(setOpenModal({
+                    message: "Sending 2RGP Token to Williams", trxState: TrxState.TransactionSuccessful
+                }))
+            }} variant="brand"> Dispatch Successfull Trx state  </Button>
 
 
         </div>
     )
 }
 
-export default connector(Test) 
+export default Test
 

@@ -1,14 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
-import modalReducer from '../components/Modals/TransactionsModal/reducers';
-
+import application from './application/reducer'
 
 const store = configureStore({
     reducer: {
-        modalReducer
+        application
     },
 
 })
-
 
 export default store
 
