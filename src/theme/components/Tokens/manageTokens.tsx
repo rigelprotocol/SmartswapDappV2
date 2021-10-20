@@ -17,6 +17,9 @@ import {
     Image
 } from "@chakra-ui/react"
 import ModalInput from "./input"
+import { useDispatch, useSelector } from "react-redux";
+import { setTokenGroup } from "../../../state/application/reducer";
+import { RootState } from "../../../state";
 import USDTLOGO from '../../../assets/roundedlogo.svg';
 import { ArrowBackIcon } from "@chakra-ui/icons"
 import NewToken from "./newToken";
@@ -27,21 +30,6 @@ export type IModal= {
 }
 
 const ManageToken:React.FC<IModal> = ({open,setDisplayManageToken}) => {
-  let arr = [{
-    id:1,
-    img: USDTLOGO,
-    name:"RigelProtocol Extended",
-    type:"RigelProtocol Extended",
-    display:true
-}, {
-  id:2,
-  img: USDTLOGO,
-  name:"RigelProtocol Extended",
-  type:"RigelProtocol Token List",
-  display:false
-}
-]
-const [listToken,setListToken] = useState(arr)
 const selected:Array<{type:string}> = [
 {
 type : "LISTS",
@@ -70,6 +58,7 @@ type IToken ={
     const borderColor2 = useColorModeValue("#DEE6ED","#324D68")
     const boxColor = useColorModeValue("#F2F5F8","#213345")
     const selectedList = useColorModeValue("#EBF6FE","#4CAFFF")
+    const switchColor = useColorModeValue("#ffffff","#15202B")
     const [selectedText,setSelectedText] = useState(0)
     const [displayImportedToken,setDisplayImportedToken] = useState(false)
     const [importedToken,setImportedToken] = useState({})
@@ -79,17 +68,9 @@ type IToken ={
         onOpen,
         onClose,
       } = useDisclosure();
-      
+ const dispatch = useDispatch()
+ const tokenDetails = useSelector((state:RootState) =>state.application.tokenGroup)      
 
-const changeDisplay = (e:any,id:number) =>{
-let obj =arr.map(obj=>(id===obj.id) ? {...obj,
-  display:obj.display = e.target.checked} : 
-  {...obj,
-    display:obj.display = obj.display
-  })
-console.log(obj)
-setListToken(obj)
-}
 const displayImportToken = (token:IToken):void => {
   setDisplayImportedToken(state => !state)
   setImportedToken(token)
@@ -190,11 +171,10 @@ const displayImportToken = (token:IToken):void => {
                   
              
                 </Box>
-                <ModalBody maxHeight="70vh"
-                  overflowY="scroll">
+                <ModalBody maxHeight="70vh">
                     {selectedText===0 ? <Box
                 margin="0px auto">
-                {listToken.map((obj,index)=>{
+                {tokenDetails.map((obj,index)=>{
                   return (
                       <Flex 
                       justifyContent="space-between"
@@ -205,9 +185,9 @@ const displayImportToken = (token:IToken):void => {
                        border={`1px solid ${obj.display === true ? borderColor : borderColor2}`}
                        borderRadius="6px"
                        my="4">
-                          <Flex>
+                          <Flex width="80%">
                            <Image src={obj.img} mr="3"/>
-                           <Box>
+                           <Box mt="2">
                            <Text color={heavyTextColor} fontWeight="700" 
                       fontSize="15px">{obj.name}</Text>
                            <Text color={lightTextColor} 
@@ -216,9 +196,9 @@ const displayImportToken = (token:IToken):void => {
                           
                           </Flex> 
                           <Box mt="3">
-                               <Switch size="lg" py="3" 
+                               <Switch size="lg" py="2" 
                                defaultChecked={obj.display}
-                               colorScheme="#EBF6FE" onChange={(e) => changeDisplay(e,obj.id)}/>
+                               colorScheme={switchColor} onChange={(e) => dispatch(setTokenGroup({checked:e.target.checked,id:obj.id}))}/>
                            </Box>
                     </Flex>
                   )  

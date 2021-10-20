@@ -17,6 +17,7 @@ import {
 import USDTLOGO from '../../../assets/roundedlogo.svg';
 import { ArrowBackIcon } from "@chakra-ui/icons"
 import Warning from '../../../assets/warning.svg'; 
+import LightWarning from '../../../assets/lightWarning.svg'; 
 import { WarningIcon } from "../Icons";
 
 export type IModal= {
@@ -35,6 +36,7 @@ const NewToken:React.FC<IModal> = ({token,open, setDisplayImportedToken}) => {
     const boxColor = useColorModeValue("#F2F5F8","#213345")
     const dangerColor = useColorModeValue("#CC334F","#FF3358")
     const dangerBackground = useColorModeValue("#FFE5EA","#FFFFFF")
+    const WarningLogo = useColorModeValue(LightWarning,Warning)
     const {
         isOpen,
         onOpen,
@@ -50,7 +52,6 @@ const NewToken:React.FC<IModal> = ({token,open, setDisplayImportedToken}) => {
                 width="95vw"
                 borderRadius="6px"
                 bgColor={bgColor}
-                minHeight="90vh"
             >
                  <ModalCloseButton
                   bg="none"
@@ -82,9 +83,9 @@ const NewToken:React.FC<IModal> = ({token,open, setDisplayImportedToken}) => {
               </Text>
             </Flex>
           </ModalHeader>
-                <ModalBody maxHeight="100vh" pb="30px">
+                <ModalBody pb="30px">
                   <Flex justifyContent="center" py="30px" alignItems="center" flexDirection="column">
-                  <Image src={Warning}  pb="20px"/> 
+                  <Image src={WarningLogo}  pb="20px"/> 
                   <Text textAlign="center" color={heavyTextColor}>
                       This token doesn't appear on the active token list(s). Make sure this is the token that you want to trade.
                           </Text>

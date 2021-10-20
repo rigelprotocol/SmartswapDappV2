@@ -16,9 +16,8 @@ import {
     Image
 } from "@chakra-ui/react"
 import ModalInput from "./input"
-import USDTLOGO from '../../../assets/roundedlogo.svg';
 import ManageToken from "./manageTokens"
-
+import { arr } from "./tokens";
 
 export type IModal= {
 tokenModal:boolean,
@@ -42,89 +41,6 @@ const SelectToken:React.FC<IModal> = ({tokenModal,setTokenModal}) => {
 const openManageToken = ():void => {
 setDisplayManageToken(state => !state)
 }
-
-      const arr = [
-          {
-              symbol:"RGP",
-              name:"RigelCoin",
-              balance:"4.5554",
-              img:USDTLOGO,
-              imported:true
-          },
-          {
-              symbol:"RGP",
-              name:"RigelCoin",
-              balance:"4.5554",
-              img:USDTLOGO,
-          },
-          {
-              symbol:"RGP",
-              name:"RigelCoin",
-              balance:"4.5554",
-              img:USDTLOGO,
-              imported:true
-          },
-          {
-              symbol:"RGP",
-              name:"RigelCoin",
-              balance:"4.5554",
-              img:USDTLOGO,
-              imported:true
-          },
-          {
-              symbol:"RGP",
-              name:"RigelCoin",
-              balance:"4.5554",
-              img:USDTLOGO,
-          },
-          {
-              symbol:"RGP",
-              name:"RigelCoin",
-              balance:"4.5554",
-              img:USDTLOGO,
-              imported:true
-          },
-          {
-              symbol:"RGP",
-              name:"RigelCoin",
-              balance:"4.5554",
-              img:USDTLOGO,
-              imported:true
-          },
-          {
-              symbol:"RGP",
-              name:"RigelCoin",
-              balance:"4.5554",
-              img:USDTLOGO,
-          },
-          {
-              symbol:"RGP",
-              name:"RigelCoin",
-              balance:"4.5554",
-              img:USDTLOGO,
-              imported:true
-          },
-          {
-              symbol:"RGP",
-              name:"RigelCoin",
-              balance:"4.5554",
-              img:USDTLOGO,
-              imported:true
-          },
-          {
-              symbol:"RGP",
-              name:"RigelCoin",
-              balance:"4.5554",
-              img:USDTLOGO,
-          },
-          {
-              symbol:"RGP",
-              name:"RigelCoin",
-              balance:"4.5554",
-              img:USDTLOGO,
-              imported:true
-          },
-      ]
     return (
         
         <>
@@ -174,14 +90,14 @@ setDisplayManageToken(state => !state)
                   return (
                       <Flex 
                       justifyContent="space-between"
-                      py="3" 
+                      py="2" 
                       fontSize="16px"
                        key={index}
                        cursor="pointer">
                           <Flex>
                            <Image src={obj.img} mr="3"/>
                            <Box>
-                           <Text color={heavyTextColor} fontWeight="700">{obj.symbol}</Text>
+                           <Text color={heavyTextColor} fontWeight="700" mt="2">{obj.symbol}</Text>
                            <Text color={lightTextColor}>{obj.name} {obj.imported ? " . Added by user" : ""}</Text>
                            </Box>
                           
@@ -200,7 +116,11 @@ setDisplayManageToken(state => !state)
                    <Box
                     w="100%" 
                     textAlign="center">
-<Text fontSize="16px" color={textColor} cursor="pointer" onClick={() =>openManageToken()}>Manage Tokens</Text>
+                    <Text fontSize="16px" 
+                    color={textColor} 
+                    cursor="pointer" 
+                    onClick={() =>openManageToken()}>
+                        Manage Tokens</Text>
                        </Box>
                    
                </ModalFooter>
