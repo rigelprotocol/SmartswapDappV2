@@ -1,11 +1,12 @@
 import React from 'react';
-import { Flex, Text } from '@chakra-ui/layout';
-import {ModalBody, ModalHeader, Image, useColorModeValue} from '@chakra-ui/react';
+import {Flex, Text} from '@chakra-ui/layout';
+import {Image, ModalBody, ModalHeader, useColorModeValue} from '@chakra-ui/react';
 import MetaMaskImage from '../../assets/metamask.svg';
 import TrustWallet from '../../assets/TrustWallet.svg';
 import BinanceWallet from "../../assets/BNB.svg";
 import WalletConnect from "../../assets/walletconnect-logo.svg";
 import SafePal from '../../assets/safepal-sfp.svg';
+import {ConnectorNames} from "../../connectors";
 
 const WalletItem = ({name, image, connect}: {name: string, image: string, connect: Function}) => {
     const borderColor = useColorModeValue("lightBg.200", "darkBg.100");
@@ -36,22 +37,27 @@ const WalletOptions = ({connect}: {connect: Function}) => {
     const walletItems = [{
         name: 'Meta mask',
         image: MetaMaskImage,
+        id: ConnectorNames.Injected,
         connect
     }, {
         name: 'Trust Wallet',
         image: TrustWallet,
+        id: ConnectorNames.Injected,
         connect
     }, {
         name: 'Binance Chain Wallet',
         image: BinanceWallet,
+        id: ConnectorNames.BSC,
         connect
     }, {
         name: 'Wallet Connect',
         image: WalletConnect,
+        id: ConnectorNames.WalletConnect,
         connect
     }, {
         name: 'SafePal',
         image: SafePal,
+        id: ConnectorNames.Injected,
         connect
     }];
 
@@ -61,9 +67,9 @@ const WalletOptions = ({connect}: {connect: Function}) => {
                 Choose a wallet
             </ModalHeader>
             <ModalBody mt={4}>
-                {walletItems.map((item) => (
+                {walletItems.map((item, i) => (
                     <>
-                        <WalletItem name={item.name} image={item.image} connect={item.connect}/>
+                        <WalletItem key={i} name={item.name} image={item.image} connect={() => item.connect(item.id)}/>
                     </>
                 ))}
             </ModalBody>
