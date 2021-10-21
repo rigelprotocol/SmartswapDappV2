@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-
+import USDTLOGO from '../../assets/roundedlogo.svg';
 
 export enum TrxState {
     WaitingForConfirmation,
@@ -7,19 +7,41 @@ export enum TrxState {
     TransactionSuccessful,
     TransactionFailed,
 }
-
+interface IToken {
+    id:number;
+    img:string,
+    name:string;
+    type:string;
+    display:boolean
+}
 export interface modalState {
     message?: string;
     trxState: TrxState;
     urlNetwork?: string;
+    
 }
 
 type ModalState = {
-    modal: modalState | null | undefined
+    modal: modalState | null | undefined;
+    tokenGroup:Array<IToken>
 };
 
 const initialState: ModalState = {
     modal: null,
+    tokenGroup : [{
+        id:1,
+        img: USDTLOGO,
+        name:"RigelProtocol Extended",
+        type:"RigelProtocol Extended",
+        display:true
+    }, {
+      id:2,
+      img: USDTLOGO,
+      name:"RigelProtocol Extended",
+      type:"RigelProtocol Token List",
+      display:false
+    }
+    ]
 };
 
 const applicationSlice = createSlice({
@@ -32,11 +54,24 @@ const applicationSlice = createSlice({
         setCloseModal(state) {
             state.modal = null
         },
+        setTokenGroup(state,action){
+state.tokenGroup =state.tokenGroup.map(obj=> {
+  if(action.payload.id===obj.id){
+ return {
+   ...obj,
+  display:obj.display = action.payload.checked
+}  
+}else{
+  return obj
+}
+} )
     },
+}
 })
 
 export const {
     setOpenModal,
-    setCloseModal
+    setCloseModal,
+    setTokenGroup
 } = applicationSlice.actions
 export default applicationSlice.reducer

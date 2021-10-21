@@ -4,6 +4,7 @@ import { CgArrowsExchangeAltV } from 'react-icons/cg';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { IoMdClose, IoMdAdd } from 'react-icons/io';
 import {BiMinus} from 'react-icons/bi';
+import { RiErrorWarningLine } from 'react-icons/ri';
 
 export const SwitchIcon = () => {
   const arrowColor = useColorModeValue('#333333', '#F1F5F8');
@@ -32,6 +33,18 @@ export const SettingsIcon = () => {
       as={IoSettingsOutline}
       w="32px"
       color={iconColor}
+      padding="4px"
+      h="32px"
+      mr={2}
+    />
+  );
+};
+export const WarningIcon = ({color}:any) => {
+  return (
+    <Icon
+      as={RiErrorWarningLine}
+      w="32px"
+      color={color}
       padding="4px"
       h="32px"
       mr={2}
