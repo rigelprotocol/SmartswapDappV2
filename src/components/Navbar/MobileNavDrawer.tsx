@@ -45,7 +45,6 @@ const MobileNavDrawer = () => {
   return (
     <>
       <Flex
-        display={isMobileDevice ? undefined : 'none'}
         border="1px"
         borderColor={HamburgerIconBorderColor}
         alignItems="center"
@@ -53,12 +52,13 @@ const MobileNavDrawer = () => {
         w="40px"
         h="40px"
         justifyContent="center"
+        p="18px"
       >
         <HamburgerIcon
           color={HamburgerIconColor}
           onClick={onOpen}
-          w="30px"
-          h="30px"
+          w="24px"
+          h="24px"
         />
       </Flex>
       <Drawer placement="left" onClose={onClose} isOpen={isOpen}>

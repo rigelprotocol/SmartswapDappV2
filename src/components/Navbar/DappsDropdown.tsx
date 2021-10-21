@@ -15,31 +15,34 @@ import { ChevronDownIcon } from '@chakra-ui/icons';
 import { AiOutlineAppstore } from 'react-icons/ai';
 
 function DappsDropdown() {
-  const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
   return (
-    <Menu>
-      <MenuButton
-        mr={16}
-        variant="ghost"
-        as={Button}
-        transition="all 0.2s"
-        borderRadius="md"
-        borderWidth="1px"
-        _hover={{ bg: 'gray.100' }}
-        _focus={{ boxShadow: 'outline' }}
-        rightIcon={<ChevronDownIcon />}
-        leftIcon={isMobileDevice ? undefined : <AiOutlineAppstore />}
-      >
-        DApps
-      </MenuButton>
-      <MenuList>
-        <MenuItem>GiftDapp</MenuItem>
-        <MenuItem>Smart Bid</MenuItem>
-        <MenuDivider />
-        <MenuItem>Margin Trading</MenuItem>
-        <MenuItem>Smart swap</MenuItem>
-      </MenuList>
-    </Menu>
+    <>
+      <>
+        <Menu>
+          <MenuButton
+            mr={16}
+            variant="ghost"
+            as={Button}
+            transition="all 0.2s"
+            borderRadius="md"
+            borderWidth="1px"
+            _hover={{ bg: 'gray.100' }}
+            _focus={{ boxShadow: 'outline' }}
+            rightIcon={<ChevronDownIcon />}
+            leftIcon={<AiOutlineAppstore />}
+          >
+            DApps
+          </MenuButton>
+          <MenuList>
+            <MenuItem>GiftDapp</MenuItem>
+            <MenuItem>Smart Bid</MenuItem>
+            <MenuDivider />
+            <MenuItem>Margin Trading</MenuItem>
+            <MenuItem>Smart swap</MenuItem>
+          </MenuList>
+        </Menu>
+      </>
+    </>
   );
 }
 

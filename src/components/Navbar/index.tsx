@@ -42,59 +42,62 @@ const Index = () => {
   const mobileNavBorderColor = useColorModeValue('#DEE5ED', '#324D68');
   return (
     <Flex px={6} py={2} boxShadow="sm">
-      <Flex h="10">
-        <Box mr={6}>
-          <Img src={Logo} />
-        </Box>
-        <DappsDropdown />
-        <MobileNavDrawer />
-
-        <Flex
-          display={isMobileDevice ? 'none' : undefined}
-          w="350px"
-          h="10"
-          align="center"
-          justify="space-between"
-        >
-          <SwapDropdown />
-          <Nav label="Liquidity" to="/pool" />
-          <Nav label="Farming" to="/farming" />
-          <Link href="https://rigelprotocol.com" isExternal>
-            Analytics <ExternalLinkIcon mx="2px" />
-          </Link>
-        </Flex>
-      </Flex>
-      <Spacer />
-
       {isMobileDevice ? (
-        <Flex
-          h="70px"
-          zIndex="2"
-          position="fixed"
-          left={0}
-          bottom={0}
-          justify="space-between"
-          alignItems="center"
-          borderTop="1px"
-          borderColor={mobileNavBorderColor}
-          w="100%"
-          bgColor={mobileNavColor}
-          mr={4}
-        >
-          <Flex ml={4}>
-            <WalletConnection />
+        <>
+          <Flex w="100%" justifyContent="space-between" h="10">
+            <Box mr={6}>
+              <Img src={Logo} />
+            </Box>
+            <MobileNavDrawer />
           </Flex>
-          <Flex mr={4}>
-            <ColorModeSwitcher />
-            <SocialMedia />
+          <Flex
+            h="70px"
+            zIndex="2"
+            position="fixed"
+            left={0}
+            bottom={0}
+            justify="space-between"
+            alignItems="center"
+            borderTop="1px"
+            borderColor={mobileNavBorderColor}
+            w="100%"
+            bgColor={mobileNavColor}
+            mr={4}
+          >
+            <Flex ml={4}>
+              <WalletConnection />
+            </Flex>
+            <Flex mr={4}>
+              <ColorModeSwitcher />
+              <SocialMedia />
+            </Flex>
           </Flex>
-        </Flex>
+        </>
       ) : (
-        <Flex h="8" justify="flex-end">
-          <WalletConnection />
-          <SocialMedia />
-          <ColorModeSwitcher />
-        </Flex>
+        <>
+          <Flex h="10">
+            <Box mr={6}>
+              <Img src={Logo} />
+            </Box>
+            <DappsDropdown />
+
+            <Flex w="350px" h="10" align="center" justify="space-between">
+              <SwapDropdown />
+              <Nav label="Liquidity" to="/pool" />
+              <Nav label="Farming" to="/farming" />
+              <Link href="https://rigelprotocol.com" isExternal>
+                Analytics <ExternalLinkIcon mx="2px" />
+              </Link>
+            </Flex>
+          </Flex>
+          <Spacer />
+
+          <Flex h="8" justify="flex-end">
+            <WalletConnection />
+            <SocialMedia />
+            <ColorModeSwitcher />
+          </Flex>
+        </>
       )}
     </Flex>
   );
