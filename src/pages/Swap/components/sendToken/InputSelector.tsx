@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState} from 'react';
 import {
   Flex,
   Input,
@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import USDTLOGO from '../../../../assets/roundedlogo.svg';
+import SelectToken from "../../../../theme/components/Tokens/SelectToken"
 
 type InputSelectorProps = {
   max: Boolean;
@@ -22,6 +23,11 @@ const InputSelector = ({ max }: InputSelectorProps) => {
   const maxBgColor = useColorModeValue('#EBF6FE', '#EAF6FF');
   const tokenListTriggerColor = useColorModeValue('', '#DCE5EF');
   const tokenListTrgiggerBgColor = useColorModeValue('', '#213345');
+  const [tokenModal,setTokenModal] = useState(false)
+
+  const openTokenModal = () =>{
+    setTokenModal(state=>!state)
+  }
   return (
     <>
       <Flex alignItems="center" mt={3} justifyContent="space-between">
@@ -44,6 +50,7 @@ const InputSelector = ({ max }: InputSelectorProps) => {
               rightIcon={<ChevronDownIcon />}
               mr={3}
               bgColor={tokenListTrgiggerBgColor}
+              onClick={()=> openTokenModal()}
             >
               <Image mr={3} h="24px" w="24px" src={USDTLOGO} />
               <Text color={tokenListTriggerColor}>USDT</Text>
@@ -73,6 +80,7 @@ const InputSelector = ({ max }: InputSelectorProps) => {
           <></>
         )}
       </Flex>
+      <SelectToken tokenModal={tokenModal} setTokenModal={setTokenModal}/>
     </>
   );
 };
