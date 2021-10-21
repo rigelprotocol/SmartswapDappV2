@@ -144,7 +144,7 @@ const MobileNavDrawer = () => {
                   DAPPS
                 </Text>
                 <Flex mb={3} alignItems="center" ml={6}>
-                  <Nav label="SwapSwap" to="/swap" />
+                  <Nav label="SmartSwap" to="/swap" />
                 </Flex>
                 <Flex ml={6} mb={3}>
                   <Text>GiftDApp</Text>
