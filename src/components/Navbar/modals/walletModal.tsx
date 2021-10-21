@@ -17,11 +17,15 @@ import { shortenAddress } from "../../../utils";
 import MetamaskLogo from "./../../../assets/metamaskLogo.png";
 import { CopyIcon } from "../../../theme/components/Icons";
 export type IModal= {
-    
+    displayWallet:boolean,
+    accounts:string,
+    setDisplayWallet:React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const WalletModal:React.FC<IModal> = ({
-
+displayWallet,
+accounts,
+setDisplayWallet
     }) => {
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
@@ -36,10 +40,7 @@ const WalletModal:React.FC<IModal> = ({
       } = useDisclosure();
     return (
         <>
-        <button onClick={onOpen}>
-            click me
-        </button>
-        <Modal isOpen={isOpen} onClose={onClose} isCentered>
+          <Modal isCentered isOpen={displayWallet} onClose={()=>setDisplayWallet(false)}>
             <ModalOverlay />
             <ModalContent
                 width="95vw"
@@ -59,7 +60,7 @@ const WalletModal:React.FC<IModal> = ({
                   mr={3}
                   cursor="pointer"
                   _focus={{ outline: 'none' }}
-                  onClick={onClose}
+                  onClick={()=>setDisplayWallet(false)}
                   p={'7px'}
                   border={'1px solid'}
 
@@ -81,7 +82,7 @@ const WalletModal:React.FC<IModal> = ({
               <Image boxSize="30px" objectFit="contain" src={MetamaskLogo} mr="2"/>
             }
           >
-            {shortenAddress("0x3552b618Dc1c3d5e53818C651Bc41Ae7A307F767")}
+            {shortenAddress(accounts)}
           </Button>
           <CopyIcon />
                       </Flex>
@@ -128,7 +129,7 @@ const WalletModal:React.FC<IModal> = ({
                 
                
             </ModalContent>
-          </Modal>
+            </Modal>
           </>
     )
 }
