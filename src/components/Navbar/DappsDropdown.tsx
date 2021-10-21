@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Menu,
   MenuButton,
@@ -9,11 +9,13 @@ import {
   IconButton,
   Link,
   Icon,
-} from "@chakra-ui/react";
-import { ChevronDownIcon } from "@chakra-ui/icons";
-import { AiOutlineAppstore } from "react-icons/ai";
+  useMediaQuery,
+} from '@chakra-ui/react';
+import { ChevronDownIcon } from '@chakra-ui/icons';
+import { AiOutlineAppstore } from 'react-icons/ai';
 
 function DappsDropdown() {
+  const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
   return (
     <Menu>
       <MenuButton
@@ -23,10 +25,10 @@ function DappsDropdown() {
         transition="all 0.2s"
         borderRadius="md"
         borderWidth="1px"
-        _hover={{ bg: "gray.100" }}
-        _focus={{ boxShadow: "outline" }}
+        _hover={{ bg: 'gray.100' }}
+        _focus={{ boxShadow: 'outline' }}
         rightIcon={<ChevronDownIcon />}
-        leftIcon={<AiOutlineAppstore />}
+        leftIcon={isMobileDevice ? undefined : <AiOutlineAppstore />}
       >
         DApps
       </MenuButton>
