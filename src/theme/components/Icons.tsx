@@ -2,7 +2,7 @@ import { Icon, useColorModeValue } from '@chakra-ui/react';
 import React from 'react';
 import { CgArrowsExchangeAltV } from 'react-icons/cg';
 import { IoSettingsOutline } from 'react-icons/io5';
-import { IoMdClose, IoMdAdd } from 'react-icons/io';
+import { IoMdClose, IoMdAdd , IoMdArrowForward, IoMdRemove} from 'react-icons/io';
 
 export const SwitchIcon = () => {
   const arrowColor = useColorModeValue('#333333', '#F1F5F8');
@@ -45,3 +45,13 @@ export const CloseIcon = () => {
 export const AddIcon = () => {
   return <Icon as={IoMdAdd} h="18px" w="18px" />;
 };
+
+export const ArrowRightIcon = () => {
+  return <Icon as={IoMdArrowForward} h="18px" w="18px" />;
+};
+
+export const RemoveIcon = () => {
+  return <Icon as={IoMdRemove} h="18px" w="18px" />;
+};
+
+

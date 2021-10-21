@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Text, Flex, useColorModeValue } from '@chakra-ui/react';
-import { CloseIcon, AddIcon } from '../../../../theme/components/Icons';
+import { CloseIcon, AddIcon, RemoveIcon } from '../../../../theme/components/Icons';
 import { removeSideTab, checkSideTab } from '../../../../utils/utilsFunctions';
+import TransactionHistory from './TransactionHistory';
+import MarketHistory from './MarketHistory';
 
 const History = () => {
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
@@ -10,15 +12,18 @@ const History = () => {
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
 
   const [sideBarRemoved, setSideBarRemoved] = useState<Boolean>(false);
+  
+  const [show, setShow] = useState<Boolean>(false);
+  const [showMarketHistory, setShowMarketHistory] = useState(false);
 
   useEffect(() => {
     const isActive = checkSideTab('history');
     setSideBarRemoved(isActive);
   }, []);
 
+
   return (
     <Flex
-      h="60px"
       border="1px"
       borderColor={borderColor}
       borderRadius="6px"
@@ -32,16 +37,20 @@ const History = () => {
               fontWeight="400"
               mr={3}
               fontSize="16px"
-              color={activeTabColor}
+              color={!showMarketHistory? activeTabColor :  nonActiveTabColor}
+              cursor="pointer"
+              onClick={() => {
+                setShowMarketHistory(false);}}
             >
               Transaction History
             </Text>
-            <Text fontWeight="400" fontSize="16px" color={nonActiveTabColor}>
+            <Text fontWeight="400" cursor="pointer" fontSize="16px" color={showMarketHistory? activeTabColor :  nonActiveTabColor} onClick={() => {
+                setShowMarketHistory(true);}}>
               Market History
             </Text>
           </Flex>
           <Flex alignItems="center" fontWeight="bold" rounded={100} bg="#">
-            <Flex
+            {show ? (<Flex
               border="2px"
               alignItems="center"
               justifyContent="center"
@@ -51,9 +60,28 @@ const History = () => {
               w="22px"
               h="22px"
               borderRadius="6px"
+              onClick={() => {
+                setShow(false);}}
+            >
+              <RemoveIcon />
+              
+            </Flex>): (<Flex
+              border="2px"
+              alignItems="center"
+              justifyContent="center"
+              mr={2}
+              color={iconColor}
+              borderColor={iconColor}
+              w="22px"
+              h="22px"
+              borderRadius="6px"
+              onClick={() => {
+                setShow(true);}}
             >
               <AddIcon />
-            </Flex>
+              
+              
+            </Flex>)}
             <Flex
               border="2px"
               alignItems="center"
@@ -73,9 +101,13 @@ const History = () => {
             </Flex>
           </Flex>
         </Flex>
+       
+      </Box> 
+      <Box overflowY="auto" >
+        {show && showMarketHistory && <MarketHistory/>  }
+        {show && !showMarketHistory && <TransactionHistory/>}
       </Box>
     </Flex>
   );
 };
-
 export default History;
