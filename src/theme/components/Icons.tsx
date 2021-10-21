@@ -4,7 +4,9 @@ import { CgArrowsExchangeAltV } from 'react-icons/cg';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { IoMdClose, IoMdAdd } from 'react-icons/io';
 import {BiMinus} from 'react-icons/bi';
+import { IoMdClose, IoMdAdd , IoMdArrowForward, IoMdRemove} from 'react-icons/io';
 import { RiErrorWarningLine } from 'react-icons/ri';
+
 
 export const SwitchIcon = () => {
   const arrowColor = useColorModeValue('#333333', '#F1F5F8');
@@ -60,7 +62,15 @@ export const AddIcon = ({ onClick }: {onClick: Function}) => {
   return <Icon as={IoMdAdd} h="18px" w="18px" cursor={'pointer'} onClick={() => onClick()} />;
 };
 
-
 export const SubtractIcon = ({ onClick }: {onClick: Function}) => {
   return <Icon as={BiMinus} h={'18px'} w={'18px'} cursor={'pointer'} onClick={() => onClick()}/>
 };
+
+export const ArrowRightIcon = () => {
+  return <Icon as={IoMdArrowForward} h="18px" w="18px" />;
+};
+
+export const RemoveIcon = () => {
+  return <Icon as={IoMdRemove} h="18px" w="18px" />;
+};
+
