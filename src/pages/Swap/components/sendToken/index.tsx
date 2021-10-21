@@ -19,9 +19,7 @@ const SendToken = () => {
         <Flex justifyContent="center">
           <SwitchIcon />
         </Flex>
-        <Box borderRadius="6px" border="1px" borderColor={borderColor} mb={4} mt={4} h="102px">
-          <To />
-        </Box>
+        <To />
         <Flex alignItems="center">
           <Button
             w="100%"

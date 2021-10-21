@@ -1,9 +1,9 @@
 import React from 'react';
 import ShowDetails from './components/details/ShowDetails';
 import History from './components/history/History';
-import To from './components/sendToken/To';
 import From from './components/sendToken/From';
 import SwapSettings from './components/sendToken/SwapSettings';
+import USDTLOGO from '../../assets/roundedlogo.svg';
 import { VectorIcon, ExclamationIcon, SwitchIcon } from '../../theme/components/Icons';
 import {
   Box,
@@ -37,6 +37,9 @@ const SetPrice = () => {
   const color = useColorModeValue('#999999', '#7599BD');
   const lightmode = useColorModeValue(true, false);
   const borderTwo = useColorModeValue('#319EF6', '#4CAFFF');
+  const tokenListTriggerColor = useColorModeValue('', '#DCE5EF');
+  const tokenListTrgiggerBgColor = useColorModeValue('', '#213345');
+  const balanceColor = useColorModeValue('#666666', '#DCE5EF');
 
   return (
     <Box fontSize="xl">
@@ -67,7 +70,25 @@ const SetPrice = () => {
                 <SwitchIcon />
               </Flex>
               <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" p={3} mt={4}>
-                <To/>
+
+              <Box display="flex" justifyContent="space-between" alignItems="center" mb={5}>
+                <Text color={balanceColor} fontSize="14px">
+                  Balance: 2.2332 USDT
+                </Text>
+                <Menu>
+                    <Button
+                      border="0px"
+                      h="40px"
+                      w="120px"
+                      rightIcon={<ChevronDownIcon />}
+                      bgColor={tokenListTrgiggerBgColor}
+                    >
+                      <Image mr={3} h="24px" w="24px" src={USDTLOGO} />
+                      <Text color={tokenListTriggerColor}>USDT</Text>
+                    </Button>
+                  </Menu>
+                </Box>
+
                 <Box display="flex" pt={4} pb={4} pr={4} pl={4} borderColor={borderTwo} borderWidth="2px" borderRadius="2px" bg={buttonBgcolor}>
                   <Text color={textColorOne} fontSize="16px">
                     RigelProtocol
@@ -183,7 +204,25 @@ const SetPrice = () => {
                 <SwitchIcon />
               </Flex>
               <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" p={3} mt={4}>
-                <To/>
+
+              <Box display="flex" justifyContent="space-between" alignItems="center" mb={5}>
+                <Text color={balanceColor} fontSize="14px">
+                  Balance: 2.2332 USDT
+                </Text>
+                <Menu>
+                    <Button
+                      border="0px"
+                      h="40px"
+                      w="120px"
+                      rightIcon={<ChevronDownIcon />}
+                      bgColor={tokenListTrgiggerBgColor}
+                    >
+                      <Image mr={3} h="24px" w="24px" src={USDTLOGO} />
+                      <Text color={tokenListTriggerColor}>USDT</Text>
+                    </Button>
+                  </Menu>
+                </Box>
+
                 <Box display="flex" pt={4} pb={4} pr={4} pl={4} borderColor={borderTwo} borderWidth="2px" borderRadius="2px" bg={buttonBgcolor}>
                   <Text color={textColorOne} fontSize="16px">
                     RigelProtocol

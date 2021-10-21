@@ -53,10 +53,7 @@ const SetPrice = () => {
               <Flex justifyContent="center">
                 <SwitchIcon />
               </Flex>
-              <Box borderRadius="6px" border="1px" borderColor={borderColor} mb={4} mt={4} h="102px">
-                <To/>
-              </Box>
-
+              <To/>
               <Flex>
                 <Text fontSize="14px" color={setColor} mr={2}>
                   Set Price
@@ -118,10 +115,7 @@ const SetPrice = () => {
               <Flex justifyContent="center">
                 <SwitchIcon />
               </Flex>
-              <Box borderRadius="6px" border="1px" borderColor={borderColor} mb={4} mt={4} h="102px">
-                <To/>
-              </Box>
-
+              <To/>
               <Flex>
                 <Text fontSize="14px" color={setColor} mr={2}>
                   Set Price
