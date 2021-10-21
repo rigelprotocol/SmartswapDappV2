@@ -95,7 +95,7 @@ export default function WalletConnection() {
             {shortenAddress(account)}
           </Button>
         </Flex>
-        <WalletModal displayWallet={displayWallet} accounts={account} setDisplayWallet={setDisplayWallet}/>
+        <WalletModal displayWallet={displayWallet} accounts={account} setDisplayWallet={setDisplayWallet} />
       </>
     );
   } else if (error) {

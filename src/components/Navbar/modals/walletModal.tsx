@@ -123,7 +123,7 @@ setDisplayWallet
           </Flex>
                 </Box>
                 <Box padding="15px"border={`1px dashed ${dashedColor}`} borderRadius="6px" fontSize="16px" mt="9">
-<Text color={lightTextColor} mb="6">Your recent transactions will appear here</Text>
+<Text color={lightTextColor} mb="6" textAlign="center">Your recent transactions will appear here</Text>
                   </Box>
                 </Box>
                 
