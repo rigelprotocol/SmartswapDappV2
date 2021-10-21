@@ -13,8 +13,6 @@ const From = () => {
         borderRadius="6px"
         border="1px"
         borderColor={borderColor}
-        pl={3}
-        pr={3}
       >
         <InputSelector max />
       </Box>

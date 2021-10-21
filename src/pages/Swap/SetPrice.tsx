@@ -1,7 +1,7 @@
 import React from 'react';
 import ShowDetails from './components/details/ShowDetails';
 import History from './components/history/History';
-import { VectorIcon, ExclamationIcon } from '../../theme/components/Icons';
+import { VectorIcon, ExclamationIcon, SwitchIcon } from '../../theme/components/Icons';
 import To from './components/sendToken/To';
 import From from './components/sendToken/From';
 import SwapSettings from './components/sendToken/SwapSettings';
@@ -46,10 +46,13 @@ const SetPrice = () => {
             <Box
               mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}
               borderColor={borderColor} borderWidth="1px" borderRadius="6px" pl={3} pr={3}
-              h="500px"
+              h="550px"
               >
               <SwapSettings/>
               <From/>
+              <Flex justifyContent="center">
+                <SwitchIcon />
+              </Flex>
               <Box borderRadius="6px" border="1px" borderColor={borderColor} mb={4} mt={4} h="102px">
                 <To/>
               </Box>
@@ -106,11 +109,15 @@ const SetPrice = () => {
 
             <Box
               mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}
-              borderColor={borderColor} borderWidth="1px" borderRadius="6px" pl={3} pr={3}
-              h="500px"
+              borderColor={borderColor} borderWidth="1px"
+              borderRadius="6px" pl={3} pr={3}
+              h="550px"
               >
               <SwapSettings/>
               <From/>
+              <Flex justifyContent="center">
+                <SwitchIcon />
+              </Flex>
               <Box borderRadius="6px" border="1px" borderColor={borderColor} mb={4} mt={4} h="102px">
                 <To/>
               </Box>

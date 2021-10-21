@@ -6,10 +6,7 @@ const To = () => {
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   return (
     <>
-      <Box
-        pl={3}
-        pr={3}
-      >
+      <Box>
         <InputSelector max={false} />
       </Box>
     </>

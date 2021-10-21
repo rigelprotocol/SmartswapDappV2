@@ -4,7 +4,7 @@ import History from './components/history/History';
 import To from './components/sendToken/To';
 import From from './components/sendToken/From';
 import SwapSettings from './components/sendToken/SwapSettings';
-import { VectorIcon, ExclamationIcon } from '../../theme/components/Icons';
+import { VectorIcon, ExclamationIcon, SwitchIcon } from '../../theme/components/Icons';
 import {
   Box,
   Flex,
@@ -53,12 +53,22 @@ const SetPrice = () => {
               <ShowDetails />
             </Box>
 
-            <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
+            <Box mx={4} mb={4} w={['100%', '100%', '45%', '29.5%']}
+            borderColor={borderColor}
+            borderWidth="1px"
+            borderRadius="6px"
+            pl={3}
+            pr={3}
+            pb={4}
+            >
               <SwapSettings/>
-              <From/>
-              <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px">
+              <From />
+              <Flex justifyContent="center">
+                <SwitchIcon />
+              </Flex>
+              <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" p={3} mt={4}>
                 <To/>
-                <Flex mt={5} pt={4} pb={4} pr={2} pl={2}>
+                <Box display="flex" pt={4} pb={4} pr={4} pl={4} borderColor={borderTwo} borderWidth="2px" borderRadius="2px" bg={buttonBgcolor}>
                   <Text color={textColorOne} fontSize="16px">
                     RigelProtocol
                   </Text>
@@ -71,25 +81,26 @@ const SetPrice = () => {
                       -2.56
                     </Text>
                   </VStack>
-                </Flex>
-              </Box>
-              <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2}>
-                <Flex>
-                  <Text color={textColorOne} fontSize="16px">
-                    Uniswap
-                  </Text>
-                  <ChevronDownIcon mt={1}/>
-                  <Spacer/>
-                  <VStack>
-                    <Text fontSize="24px" color={textColorOne}>
-                      2.6766
+                </Box>
+                <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2}>
+                  <Flex>
+                    <Text color={textColorOne} fontSize="16px">
+                      Uniswap
                     </Text>
-                    <Text fontSize="14px" color={color}>
-                      -2.67
-                    </Text>
-                  </VStack>
-                </Flex>
+                    <ChevronDownIcon mt={1}/>
+                    <Spacer/>
+                    <VStack>
+                      <Text fontSize="24px" color={textColorOne}>
+                        2.6766
+                      </Text>
+                      <Text fontSize="14px" color={color}>
+                        -2.67
+                      </Text>
+                    </VStack>
+                  </Flex>
+                </Box>
               </Box>
+
               <Flex  mt={5}>
                 <Center borderColor={setColor} borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px">
                   <VectorIcon/>
@@ -100,7 +111,7 @@ const SetPrice = () => {
                 </Text>
                 <ExclamationIcon/>
               </Flex>
-              <Flex mt={5}>
+              <Box display="flex" mt={5}>
                 <VStack>
                   <Flex>
                     <Text fontSize="14px" mr={2}>
@@ -127,8 +138,8 @@ const SetPrice = () => {
                     </MenuButton>
                   </Menu>
                 </VStack>
-              </Flex>
-              <Flex alignItems="center" mt={5}>
+              </Box>
+              <Box mt={5}>
                 <Button
                   w="100%"
                   borderRadius="6px"
@@ -136,8 +147,6 @@ const SetPrice = () => {
                   borderColor={borderColor}
                   h="48px"
                   p="5px"
-                  m="16px"
-                  mt={1}
                   color={color}
                   bgColor={buttonBgcolor}
                   fontSize="18px"
@@ -146,7 +155,7 @@ const SetPrice = () => {
                 >
                   Enter Percentage
                 </Button>
-              </Flex>
+              </Box>
             </Box>
 
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
@@ -159,10 +168,21 @@ const SetPrice = () => {
               <ShowDetails />
             </Box>
 
-            <Box mx={4} w={['100%', '100%', '45%', '29.5%']} borderColor={borderColor} borderWidth="1px" borderRadius="6px" p={4}>
+            <Box
+              mx={4} mb={4} w={['100%', '100%', '45%', '29.5%']}
+              borderColor={borderColor}
+              borderWidth="1px"
+              borderRadius="6px"
+              pl={3}
+              pr={3}
+              pb={4}
+              >
               <SwapSettings/>
               <From />
-              <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" p={3}>
+              <Flex justifyContent="center">
+                <SwitchIcon />
+              </Flex>
+              <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" p={3} mt={4}>
                 <To/>
                 <Box display="flex" pt={4} pb={4} pr={4} pl={4} borderColor={borderTwo} borderWidth="2px" borderRadius="2px" bg={buttonBgcolor}>
                   <Text color={textColorOne} fontSize="16px">
