@@ -50,7 +50,7 @@ const TransactionHistory = () => {
 
           
             
-          <Grid templateColumns="repeat(3, 2fr)" gap={10} py={2}>
+          <Grid templateColumns="repeat(3, 2fr)" gap={7} py={2}>
               <Box>
                 <Text
                   fontSize="12px"
@@ -92,7 +92,7 @@ const TransactionHistory = () => {
               </Box>
             </Grid>
             
-          <Grid templateColumns="repeat(3, 2fr)" gap={10} py={2}>
+          <Grid templateColumns="repeat(3, 2fr)" gap={7} py={2}>
               <Box>
                 <Text
                   fontSize="12px"
