@@ -2,7 +2,6 @@ import { Icon, useColorModeValue } from '@chakra-ui/react';
 import React from 'react';
 import { CgArrowsExchangeAltV } from 'react-icons/cg';
 import { IoSettingsOutline } from 'react-icons/io5';
-import { IoMdClose, IoMdAdd } from 'react-icons/io';
 import {BiMinus} from 'react-icons/bi';
 import { IoMdClose, IoMdAdd , IoMdArrowForward, IoMdRemove} from 'react-icons/io';
 import { RiErrorWarningLine } from 'react-icons/ri';
