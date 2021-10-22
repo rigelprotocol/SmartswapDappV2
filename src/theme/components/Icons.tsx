@@ -2,6 +2,7 @@ import { Icon, useColorModeValue } from '@chakra-ui/react';
 import React from 'react';
 import { CgArrowsExchangeAltV } from 'react-icons/cg';
 import { IoSettingsOutline } from 'react-icons/io5';
+import {BiMinus} from 'react-icons/bi';
 import { IoMdClose, IoMdAdd , IoMdArrowForward, IoMdRemove} from 'react-icons/io';
 import { RiErrorWarningLine } from 'react-icons/ri';
 
@@ -56,8 +57,12 @@ export const CloseIcon = () => {
   return <Icon as={IoMdClose} h="18px" w="18px" />;
 };
 
-export const AddIcon = () => {
-  return <Icon as={IoMdAdd} h="18px" w="18px" />;
+export const AddIcon = ({ onClick }: {onClick: Function}) => {
+  return <Icon as={IoMdAdd} h="18px" w="18px" cursor={'pointer'} onClick={() => onClick()} />;
+};
+
+export const SubtractIcon = ({ onClick }: {onClick: Function}) => {
+  return <Icon as={BiMinus} h={'18px'} w={'18px'} cursor={'pointer'} onClick={() => onClick()}/>
 };
 
 export const ArrowRightIcon = () => {
@@ -67,5 +72,4 @@ export const ArrowRightIcon = () => {
 export const RemoveIcon = () => {
   return <Icon as={IoMdRemove} h="18px" w="18px" />;
 };
-
 
