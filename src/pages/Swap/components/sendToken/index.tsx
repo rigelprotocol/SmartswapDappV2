@@ -13,7 +13,7 @@ const SendToken = () => {
   const buttonBgcolor = useColorModeValue('#F2F5F8', '#213345');
   return (
     <div>
-      <Box border="1px" borderColor={borderColor} borderRadius="6px" h="420px">
+      <Box border="1px" borderColor={borderColor} borderRadius="6px" h="420px" pl={3} pr={3}>
         <SwapSettings />
         <From />
         <Flex justifyContent="center">
@@ -28,7 +28,6 @@ const SendToken = () => {
             borderColor={borderColor}
             h="48px"
             p="5px"
-            m="16px"
             mt={1}
             color={color}
             bgColor={buttonBgcolor}
