@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, {useCallback, useState} from "react";
 import {
   Flex,
   Text,
@@ -13,18 +13,13 @@ import {
   useMediaQuery,
 } from '@chakra-ui/react';
 import { AbstractConnector } from '@web3-react/abstract-connector';
-import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core';
-import { IoWalletOutline } from 'react-icons/io5';
-import { shortenAddress } from '../../utils';
-import MetamaskLogo from './../../assets/metamaskLogo.png';
-import {
-  injected,
-  ConnectorNames,
-  connectorsByName,
-  walletconnect,
-  bscConnector,
-} from '../../connectors';
-import WalletOptions from './WalletOptions';
+import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
+import { IoWalletOutline } from "react-icons/io5";
+import { shortenAddress } from "../../utils";
+import MetamaskLogo from "./../../assets/metamaskLogo.png";
+import { injected, ConnectorNames, connectorsByName, walletconnect, bscConnector} from "../../connectors";
+import WalletOptions from "./WalletOptions";
+import WalletModal from "./modals/walletModal";
 import WalletConnectLogo from '../../assets/walletconnect-logo.svg';
 import BinanceLogo from '../../assets/BNB.svg';
 import { useNativeBalance, useRGPBalance } from '../../utils/hooks/useBalances';
@@ -55,6 +50,7 @@ export default function WalletConnection() {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [Balance, Symbol] = useNativeBalance();
+  const [displayWallet,setDisplayWallet] = useState(false)
   const [RGPBalance] = useRGPBalance();
 
   const connectWallet = useCallback(
@@ -108,12 +104,14 @@ export default function WalletConnection() {
             </Text>
           </Flex>
           <Button
+          onClick={() =>setDisplayWallet(state => !state)}
             variant={'ghost'}
             rightIcon={<StatusIcon connector={connector} />}
           >
             {shortenAddress(account)}
           </Button>
         </Flex>
+        <WalletModal displayWallet={displayWallet} accounts={account} setDisplayWallet={setDisplayWallet} />
       </>
     );
   } else if (error) {

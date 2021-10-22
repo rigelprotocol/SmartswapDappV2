@@ -2,6 +2,7 @@ import { Icon, useColorModeValue } from '@chakra-ui/react';
 import React from 'react';
 import { CgArrowsExchangeAltV } from 'react-icons/cg';
 import { IoSettingsOutline } from 'react-icons/io5';
+import { FiCopy } from 'react-icons/fi'
 import {BiMinus} from 'react-icons/bi';
 import { IoMdClose, IoMdAdd , IoMdArrowForward, IoMdRemove} from 'react-icons/io';
 import { RiErrorWarningLine } from 'react-icons/ri';
@@ -41,6 +42,19 @@ export const SettingsIcon = () => {
     />
   );
 };
+export const CopyIcon = () => {
+  const iconColor = useColorModeValue('#666666', '#DCE5EF');
+  return (
+    <Icon
+      as={FiCopy}
+      w="28px"
+      color={iconColor}
+      h="28px"
+      mr={4}
+      mt={1.5}
+      />
+      );
+    };
 export const WarningIcon = ({color}:any) => {
   return (
     <Icon
