@@ -1,4 +1,3 @@
-
 import React, { Suspense } from 'react';
 import { HashRouter, Route, Switch, Redirect } from 'react-router-dom';
 import AddLiquidity from './AddLiquidity';
@@ -10,8 +9,8 @@ import FarmingV2 from './FarmingV2';
 import Fonts from './../theme/fonts';
 import AppWrapper from './../components/AppWrapper';
 import Navbar from './../components/Navbar';
-import Notify from "../components/Toast";
-import TransactionStateModal from "../components/Modals/TransactionsModal/TransactionStateModal";
+import Notify from '../components/Toast';
+import TransactionStateModal from '../components/Modals/TransactionsModal/TransactionStateModal';
 import SetPrice from './Swap/SetPrice';
 import AutoTime from './Swap/AutoTime';
 
@@ -22,8 +21,8 @@ export default function App() {
       <AppWrapper>
         <HashRouter>
           <Navbar />
-          <Notify/>
-          <TransactionStateModal/>
+          <Notify />
+          <TransactionStateModal />
           <Switch>
             <Route exact strict path="/swap" component={Swap} />
             <Route exact strict path="/pool" component={Pool} />
