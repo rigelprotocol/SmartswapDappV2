@@ -88,6 +88,10 @@ export const RemoveIcon = () => {
   return <Icon as={IoMdRemove} h="18px" w="18px" />;
 };
 
+export const PlusIcon = () => {
+  return <Icon as={IoMdAdd} h="18px" w="18px" />;
+};
+
 export const VectorIcon = () => {
   const iconColor = useColorModeValue('#666666', '#DCE5EF');
   return (

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Text, Flex, useColorModeValue } from '@chakra-ui/react';
-import { CloseIcon, AddIcon, RemoveIcon } from '../../../../theme/components/Icons';
+import { CloseIcon, PlusIcon, RemoveIcon } from '../../../../theme/components/Icons';
 import { removeSideTab, checkSideTab } from '../../../../utils/utilsFunctions';
 import TransactionHistory from './TransactionHistory';
 import MarketHistory from './MarketHistory';
@@ -78,7 +78,7 @@ const History = () => {
               onClick={() => {
                 setShow(true);}}
             >
-              <AddIcon />
+              <PlusIcon />
               
               
             </Flex>)}
