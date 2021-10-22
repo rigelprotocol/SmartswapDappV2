@@ -1,18 +1,13 @@
 import * as React from 'react';
-import { Box, Flex, useMediaQuery, Button } from '@chakra-ui/react';
+import { Box, Flex, useMediaQuery } from '@chakra-ui/react';
 import ShowDetails from './components/details/ShowDetails';
 import SendToken from './components/sendToken/index';
 import History from './components/history/History';
-import {useDispatch} from "react-redux";
-import {addToast} from '../../components/Toast/toastSlice';
 
 
 const Swap = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
-  const dispatch = useDispatch();
-  const add = () => {
-      dispatch(addToast({message: 'Swap 4.32221 RGP for 2.3455 USDT', URL: 'google.com'}));
-  };
+
   return (
     <Box fontSize="xl">
       <Flex
@@ -40,7 +35,6 @@ const Swap = () => {
           <>
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
               <ShowDetails />
-              <Button variant={'brand'} mt={4} onClick={add}>Add Toast</Button>
             </Box>
 
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>

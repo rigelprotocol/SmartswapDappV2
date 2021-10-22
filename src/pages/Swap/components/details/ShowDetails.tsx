@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Text, Flex, useColorModeValue } from '@chakra-ui/react';
-import { CloseIcon, AddIcon } from '../../../../theme/components/Icons';
+import { CloseIcon, AddIcon, SubtractIcon } from '../../../../theme/components/Icons';
 import { removeSideTab, checkSideTab } from '../../../../utils/utilsFunctions';
+import { ArrowDownIcon } from "@chakra-ui/icons";
+import DetailBox from "./DetailBox";
+import {animated, Transition} from 'react-spring';
 
 const ShowDetails = () => {
   const textColor = useColorModeValue('#333333', '#F1F5F8');
   const iconColor = useColorModeValue('#666666', '#DCE5EF');
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
+  const boxColor = useColorModeValue("#F2F5F8","#213345");
 
   const [sideBarRemoved, setSideBarRemoved] = useState<Boolean>(false);
+  const [viewInfo, setViewInfo] = useState<Boolean>(false);
 
   useEffect(() => {
     const isActive = checkSideTab('details');
@@ -17,7 +22,6 @@ const ShowDetails = () => {
 
   return (
     <Flex
-      h="60px"
       border="1px"
       borderColor={borderColor}
       borderRadius="6px"
@@ -41,7 +45,9 @@ const ShowDetails = () => {
               h="22px"
               borderRadius="6px"
             >
-              <AddIcon />
+              {viewInfo ?
+                  <SubtractIcon onClick={() => setViewInfo(!viewInfo)}/> :
+                  <AddIcon onClick={() => setViewInfo(!viewInfo)} />}
             </Flex>
             <Flex
               border="2px"
@@ -62,6 +68,37 @@ const ShowDetails = () => {
             </Flex>
           </Flex>
         </Flex>
+        <Transition
+            items={viewInfo}
+            from={{ opacity: 0, x: 0, y: -100}}
+            enter={{opacity: 1, x: 0, y: 0}}
+            leave={{opacity: 0, x: 0, y: -100}}
+            delay={1}
+        >
+          {(styles, viewInfo) =>
+              viewInfo &&
+              <animated.div style={styles}>
+                <DetailBox/>
+                <Flex justifyContent={'center'}>
+                       <Box
+                          display= "flex"
+                          flexDirection= "row"
+                          justifyContent= "center"
+                          alignItems= "center"
+                          width="40px"
+                          height="40px"
+                          my={'8px'}
+                          bgColor={boxColor}
+                          border={`3px solid ${borderColor}`}
+                          boxSizing= "border-box"
+                          borderRadius= "12px">
+                        <ArrowDownIcon w={5} h={10}/>
+                      </Box>
+                    </Flex>
+                <DetailBox/>
+              </animated.div>
+          }
+        </Transition>
       </Box>
     </Flex>
   );
