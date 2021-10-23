@@ -32,12 +32,13 @@ function NetworkIndicator() {
         <ModalOverlay />
         <ModalContent>
           <Flex flexDirection="column" mx={5}>
-            <Flex my={4}>
-              <ModalCloseButton />
+            <Flex my={4} >
+              <ModalCloseButton border={
+                mode === "dark" ? "1px solid #324D68" : "1px solid #DEE6ED"
+              }/>
             </Flex>
             <Flex mt={8}>
               <Text
-                fontFamily="Cera Pro"
                 fontSize="20px"
                 lineHeight="28px"
                 color={mode === "dark" ? "#F1F5F8" : "#333333"}
@@ -47,7 +48,6 @@ function NetworkIndicator() {
             </Flex>
             <Flex>
               <Text
-                fontFamily="Cera Pro"
                 fontSize="16px"
                 lineHeight="28px"
                 color={mode === "dark" ? "#F1F5F8" : "#333333"}
