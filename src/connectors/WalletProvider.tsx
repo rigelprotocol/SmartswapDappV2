@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { injected } from '../connectors'
+import { injected } from '.'
 import { useWeb3React } from '@web3-react/core'
 
-function MetamaskProvider({ children }: { children: JSX.Element }): JSX.Element  {
+function WalletProvider({ children }: { children: JSX.Element }): JSX.Element  {
   const { active: networkActive, error: networkError, activate: activateNetwork } = useWeb3React()
   const [loaded, setLoaded] = useState(false)
   useEffect(() => {
@@ -24,4 +24,4 @@ function MetamaskProvider({ children }: { children: JSX.Element }): JSX.Element 
   return <>Loading</>
 }
 
-export default MetamaskProvider
+export default WalletProvider
