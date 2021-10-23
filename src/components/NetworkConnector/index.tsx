@@ -34,7 +34,7 @@ function NetworkIndicator() {
           <Flex flexDirection="column" mx={5}>
             <Flex my={4} >
               <ModalCloseButton border={
-                mode === "dark" ? "1px solid #324D68" : "1px solid #DEE6ED"
+                mode === "dark" ? "1px solid #FFF" : "1px solid #666666"
               }/>
             </Flex>
             <Flex mt={8}>
