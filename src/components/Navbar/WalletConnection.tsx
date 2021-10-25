@@ -36,7 +36,7 @@ export default function WalletConnection() {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [Balance, Symbol] = useNativeBalance();
-  const [displayWallet,setDisplayWallet] = useState(false)
+  const [displayWallet,setDisplayWallet] = useState(false);
   const [RGPBalance] = useRGPBalance();
 
   const connectWallet = useCallback(
