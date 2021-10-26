@@ -36,7 +36,7 @@ const Liquidities = (props: Liquidity) => {
         borderRadius="6px"
         flexDirection="column"
         my={3}
-        h={!showDetails ? '' : '310px'}
+        h={!showDetails ? '' : '300px'}
       >
         <Flex justifyContent="space-between">
           <Flex>

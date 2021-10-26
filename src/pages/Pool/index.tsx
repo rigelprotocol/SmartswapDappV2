@@ -53,8 +53,8 @@ const Index = () => {
         mb={4}
       >
         <Box
-          minHeight="50vh"
-          w={['100%', '100%', '29.50%', '29.5%']}
+          minHeight="100%"
+          w={['100%', '100%', '29.5%', '29.5%']}
           rounded="lg"
         >
           <Box
@@ -113,9 +113,6 @@ const Index = () => {
                 borderRadius="6px"
                 _hover={{ background: 'rgba(64, 186, 213,0.35)' }}
                 _active={{ outline: '#29235E', background: '#29235E' }}
-                onClick={() => {
-                  console.log('hey add');
-                }}
               >
                 Add Liquidity
               </Button>
@@ -156,6 +153,7 @@ const Index = () => {
             border={mode === 'dark' ? '1px solid #324D68' : '1px solid #DEE6ED'}
             borderRadius="6px"
             my={4}
+            w="100%"
           >
             <Flex
               mx={5}
@@ -216,22 +214,13 @@ const Index = () => {
                 </Text>
               </Flex>
             ) : (
-              <Box>
-                {liquidities?.map((liquid, index) => (
-                  <Liquidities key={`${index}key`} pair={liquid} />
-                ))}
-
-                {/* {stakingPairs.map(
-                  (stakingPair, i) =>
-                    stakingPair[1] && ( 
-                      <Liquidities
-                        key={stakingInfosWithBalance[i].stakingRewardAddress}
-                        pair={stakingPair[1]}
-                        stakedBalance={stakingInfosWithBalance[i].stakedAmount}
-                      />
-                    )
-                )} */}
-              </Box>
+              <Flex mb={5} justify="center">
+                <Box w="100%">
+                  {liquidities?.map((liquid, index) => (
+                    <Liquidities key={`${index}key`} pair={liquid} />
+                  ))}
+                </Box>
+              </Flex>
             )}
           </Box>
           {/* LIQUIDITY */}

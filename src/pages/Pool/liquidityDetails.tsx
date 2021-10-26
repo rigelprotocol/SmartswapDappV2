@@ -66,9 +66,11 @@ const LiquidityDetails = (props: LiquidityDetail) => {
       <Flex w="100%" justifyContent="space-between">
         <Button
           color={addButtonColor}
-          h="50px"
+          h="40px"
           bgColor={addButtonBgColor}
           w="48%"
+          py={3}
+          mb={2}
           _hover={{ bgColor: addButtonBgColor, color: addButtonColor }}
           _active={{ bgColor: addButtonBgColor, color: addButtonColor }}
         >
@@ -81,8 +83,10 @@ const LiquidityDetails = (props: LiquidityDetail) => {
           bgColor={removeButtonBgColor}
           borderColor={removeButtonBorderColor}
           color={removeButtonColor}
-          h="50px"
+          h="40px"
           w="48%"
+          mb={2}
+          py={3}
         >
           Remove
         </Button>
