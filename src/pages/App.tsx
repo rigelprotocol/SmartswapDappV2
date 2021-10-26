@@ -11,6 +11,8 @@ import AppWrapper from './../components/AppWrapper';
 import Navbar from './../components/Navbar';
 import Notify from '../components/Toast';
 import TransactionStateModal from '../components/Modals/TransactionsModal/TransactionStateModal';
+import SetPrice from './Swap/SetPrice';
+import AutoTime from './Swap/AutoTime';
 
 export default function App() {
   return (
@@ -25,6 +27,8 @@ export default function App() {
             <Route exact strict path="/swap" component={Swap} />
             <Route exact strict path="/pool" component={Pool} />
             <Route exact path="/add" component={AddLiquidity} />
+            <Route exact strict path="/set-price" component={SetPrice} />
+            <Route exact path="/auto-time" component={AutoTime} />
             <Route
               exact
               strict

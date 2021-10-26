@@ -2,10 +2,12 @@ import { Icon, useColorModeValue } from '@chakra-ui/react';
 import React from 'react';
 import { CgArrowsExchangeAltV } from 'react-icons/cg';
 import { IoSettingsOutline } from 'react-icons/io5';
+import { FiCopy } from 'react-icons/fi'
 import {BiMinus} from 'react-icons/bi';
 import { IoMdClose, IoMdAdd , IoMdArrowForward, IoMdRemove} from 'react-icons/io';
 import { RiErrorWarningLine } from 'react-icons/ri';
-
+import { BsExclamationCircle } from "react-icons/bs";
+import {BiPen} from 'react-icons/bi';
 
 export const SwitchIcon = () => {
   const arrowColor = useColorModeValue('#333333', '#F1F5F8');
@@ -40,6 +42,19 @@ export const SettingsIcon = () => {
     />
   );
 };
+export const CopyIcon = () => {
+  const iconColor = useColorModeValue('#666666', '#DCE5EF');
+  return (
+    <Icon
+      as={FiCopy}
+      w="28px"
+      color={iconColor}
+      h="28px"
+      mr={4}
+      mt={1.5}
+      />
+      );
+    };
 export const WarningIcon = ({color}:any) => {
   return (
     <Icon
@@ -73,3 +88,25 @@ export const RemoveIcon = () => {
   return <Icon as={IoMdRemove} h="18px" w="18px" />;
 };
 
+export const VectorIcon = () => {
+  const iconColor = useColorModeValue('#666666', '#DCE5EF');
+  return (
+    <Icon
+      as={BiPen}
+      w="15px"
+      color={iconColor}
+      h="15px"
+    />
+  );
+};
+export const ExclamationIcon = () => {
+  const iconColor = useColorModeValue('#666666', '#DCE5EF');
+  return (
+    <Icon
+      as={BsExclamationCircle}
+      w="16px"
+      color={iconColor}
+      h="16px"
+    />
+  );
+};

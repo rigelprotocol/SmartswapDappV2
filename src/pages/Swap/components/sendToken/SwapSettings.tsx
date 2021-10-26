@@ -7,8 +7,8 @@ const SwapSettings = () => {
   const textColor = useColorModeValue('#333333', '#F1F5F8');
   const iconColor = useColorModeValue('#666666', '#DCE5EF');
   return (
-    <Box w="100%" pl={3} pr={3}>
-      <Flex mt="3.5" alignItems="center" justifyContent="space-between" px={4}>
+    <Box w="100%">
+      <Flex mt="3" alignItems="center" justifyContent="space-between">
         <Text fontWeight="400" fontSize="16px" color={textColor}>
           Swap
         </Text>
