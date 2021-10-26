@@ -62,3 +62,24 @@ export function EthereumIcon() {
     </svg>
   );
 }
+
+export function PolygonIcon() {
+  return (
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ width="32.000000pt" height="32.000000pt" viewBox="0 0 32.000000 32.000000"
+ preserveAspectRatio="xMidYMid meet">
+<metadata>
+Created by potrace 1.16, written by Peter Selinger 2001-2019
+</metadata>
+<g transform="translate(0.000000,32.000000) scale(0.100000,-0.100000)"
+fill="#000000" stroke="none">
+<path d="M42 284 c-42 -25 -42 -25 -42 -85 0 -56 2 -60 33 -79 45 -28 68 -25
+129 13 55 34 60 36 93 24 28 -9 26 -75 -2 -94 -25 -17 -69 -1 -76 28 -6 23
+-33 25 -41 4 -9 -25 4 -44 47 -69 38 -23 42 -24 71 -9 57 29 66 42 66 99 0 49
+-2 54 -34 73 -47 29 -73 26 -136 -14 -30 -19 -59 -35 -65 -35 -44 2 -63 84
+-24 108 27 17 58 6 69 -24 11 -27 38 -32 47 -8 9 23 -6 42 -52 70 l-40 23 -43
+-25z"/>
+</g>
+</svg>
+  )
+}

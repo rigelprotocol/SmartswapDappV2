@@ -12,19 +12,37 @@ import {
 import React from "react";
 import { BinanceIcon, EthereumIcon } from "./Icons";
 import { useColorModeValue } from "@chakra-ui/react";
+import { Web3Provider } from '@ethersproject/providers';
+import { useWeb3React } from '@web3-react/core';
+import { CHAIN_INFO } from "../../constants/chains";
 
 function NetworkIndicator() {
+function useActiveWeb3React() {
+    const context = useWeb3React<Web3Provider>()
+    const contextNetwork = useWeb3React<Web3Provider>('NETWORK')
+    return context.active ? context : contextNetwork
+  }
   const { isOpen, onOpen, onClose } = useDisclosure();
   const mode = useColorModeValue("light", "dark");
+  const { chainId, library } = useActiveWeb3React();
+
+  const info = chainId ? CHAIN_INFO[chainId] : undefined;
+
+  if (!chainId || !info || !library) {
+    return null
+  }
+
 
   return (
     <>
       <Button onClick={onOpen} mx={2}>
         <Flex alignItems="center">
           <Box mr={2}>
-            <BinanceIcon />
+          {info.label !== 'Binance' ? <EthereumIcon /> 
+          :  <BinanceIcon /> 
+          } 
           </Box>
-          <Text color="#319EF6">Rinkeby</Text>
+          <Text color="#319EF6">{info.label}</Text>
         </Flex>
       </Button>
 
@@ -54,8 +72,23 @@ function NetworkIndicator() {
                 mb={3}
               >
                 You are currently on the{" "}
-                <span style={{ color: "#319EF6" }}>Ethereum</span> network.
+                <span style={{ color: "#319EF6" }}>{info.label}</span> network.
               </Text>
+            </Flex>
+            <Flex
+              backgroundColor={mode === "dark" ? "#15202B" : "#FFFFFF"}
+              border={
+                mode === "dark" ? "1px solid #324D68" : "1px solid #DEE6ED"
+              }
+              borderRadius="6px"
+              py={4}
+              px={3}
+              mb={3}
+            >
+              <Box px={2}>
+                <EthereumIcon />
+              </Box>
+              <Box>{CHAIN_INFO[1].label}</Box>
             </Flex>
             <Flex
               backgroundColor={mode === "dark" ? "#15202B" : "#FFFFFF"}
@@ -70,22 +103,7 @@ function NetworkIndicator() {
               <Box px={2}>
                 <BinanceIcon />
               </Box>
-              <Box>Binance Smart Chain</Box>
-            </Flex>
-            <Flex
-              backgroundColor={mode === "dark" ? "#15202B" : "#FFFFFF"}
-              border={
-                mode === "dark" ? "1px solid #324D68" : "1px solid #DEE6ED"
-              }
-              borderRadius="6px"
-              py={4}
-              px={3}
-              mb={3}
-            >
-              <Box px={2}>
-                <EthereumIcon />
-              </Box>
-              <Box>Ethereum</Box>
+              <Box>{CHAIN_INFO[56].label} Smart Chain</Box>
             </Flex>
             <Flex
               backgroundColor={mode === "dark" ? "#15202B" : "#FFFFFF"}
@@ -100,7 +118,7 @@ function NetworkIndicator() {
               <Box px={2}>
                 <EthereumIcon />
               </Box>
-              <Box>Polygon</Box>
+              <Box>{CHAIN_INFO[137].label}</Box>
             </Flex>
           </Flex>
         </ModalContent>
