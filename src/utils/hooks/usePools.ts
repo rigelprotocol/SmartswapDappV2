@@ -13,6 +13,7 @@ export const useGetUserLiquidities = async () => {
   useEffect(() => {
     const loadUserPairs = async () => {
       if (account) {
+        setLoading(true);
         try {
           const SmartFactory = await smartFactory(
             SMARTSWAPFACTORYADDRESSES[chainId as number]
@@ -32,6 +33,9 @@ export const useGetUserLiquidities = async () => {
           setLoading(false);
         } catch (err) {
           console.log(err);
+          setLiquidities([]);
+          setLiquidityLength(0);
+          setLoading(false);
         }
       }
     };
