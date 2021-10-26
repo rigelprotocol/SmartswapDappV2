@@ -63,7 +63,7 @@ const LiquidityDetails = (props: LiquidityDetail) => {
           <Text>{parseFloat(props.pair.poolShare).toFixed(6)}%</Text>
         </Flex>
       </Flex>
-      <Flex w="100%" justifyContent="space-between">
+      <Flex mt={-1} alignItems="center" w="100%" justifyContent="space-between">
         <Button
           color={addButtonColor}
           h="40px"
