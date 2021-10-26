@@ -1,20 +1,45 @@
 /** @format */
 
-import { Box, Flex } from "@chakra-ui/layout";
-import { Button } from "@chakra-ui/button";
-import { Text } from "@chakra-ui/react";
-import React from "react";
-import Liquidities from "./liquidities";
-import { GearIcon, RefreshIcon, LightGearIcon, LightRefreshIcon } from "./Icons";
-import { useColorModeValue } from "@chakra-ui/react";
+import { Box, Flex } from '@chakra-ui/layout';
+import { Button } from '@chakra-ui/button';
+import { Text } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import Liquidities from './liquidities';
+import {
+  GearIcon,
+  RefreshIcon,
+  LightGearIcon,
+  LightRefreshIcon,
+} from './Icons';
+import { useColorModeValue } from '@chakra-ui/react';
+import { useGetUserLiquidities } from '../../utils/hooks/usePools';
 
 const Index = () => {
-  const allV2PairsWithLiquidity: any[] = [];
-  const stakingPairs: any[] = [];
-  const v2PairsWithoutStakedAmount: any[] = [];
-  const stakingInfosWithBalance: any[] = [];
-  const loading = false;
-  const mode = useColorModeValue("light", "dark");
+  const mode = useColorModeValue('light', 'dark');
+  const factory = useGetUserLiquidities();
+  const [liquidities, setLiquidities] = useState<any[] | undefined>([]);
+  const [liquidityLength, setLiquidityLength] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let cancel = false;
+    const load = async () => {
+      const details = await factory;
+      if (details && !cancel) {
+        try {
+          setLiquidities(details.liquidities);
+          setLiquidityLength(details.liquidityLength);
+          setLoading(details.Loading);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    };
+    load();
+    return () => {
+      cancel = true;
+    };
+  }, [factory]);
 
   return (
     <>
@@ -29,46 +54,52 @@ const Index = () => {
       >
         <Box
           minHeight="50vh"
-          w={["100%", "100%", "29.50%", "29.5%"]}
+          w={['100%', '100%', '29.50%', '29.5%']}
           rounded="lg"
         >
           <Box
             mt={5}
             p={5}
-            backgroundColor={mode === "dark" ? "#15202B" : "#FFFFFF"}
-            border={mode === "dark" ? "1px solid #324D68": "1px solid #DEE6ED"}
+            backgroundColor={mode === 'dark' ? '#15202B' : '#FFFFFF'}
+            border={mode === 'dark' ? '1px solid #324D68' : '1px solid #DEE6ED'}
             borderRadius="6px"
           >
             <Flex justifyContent="left" mb={4} flexDirection="column">
               <Flex justifyContent="space-between">
-                <Text fontSize="16px" color={mode === "dark" ? "#F1F5F8" : "rgba(51, 51, 51, 1)"}>
+                <Text
+                  fontSize="16px"
+                  color={mode === 'dark' ? '#F1F5F8' : 'rgba(51, 51, 51, 1)'}
+                >
                   Liquidity
                 </Text>
                 <Flex>
                   <Box px={2}>
-                    { mode === "dark" ? <LightGearIcon /> : <GearIcon /> }
-                    
+                    {mode === 'dark' ? <LightGearIcon /> : <GearIcon />}
                   </Box>
                   <Box px={2}>
-                    { mode === "dark" ? <LightRefreshIcon /> : <RefreshIcon /> }
-                    
+                    {mode === 'dark' ? <LightRefreshIcon /> : <RefreshIcon />}
                   </Box>
                 </Flex>
               </Flex>
 
-              <Text fontSize="14px" color={ mode === "dark" ? "#DCE5EF" : "#666666"} mt={2} cursor="pointer">
+              <Text
+                fontSize="14px"
+                color={mode === 'dark' ? '#DCE5EF' : '#666666'}
+                mt={2}
+                cursor="pointer"
+              >
                 Join liquidity pools to receive LP tokens
               </Text>
             </Flex>
 
             <Flex
               justifyContent="space-between"
-              flexDirection={["column", "column", "column", "column"]}
+              flexDirection={['column', 'column', 'column', 'column']}
             >
               <Button
                 d="block"
-                w={["100%", "100%", "100%", "100%"]}
-                marginTop={["20px", "0px", "20px", "0px"]}
+                w={['100%', '100%', '100%', '100%']}
+                marginTop={['20px', '0px', '20px', '0px']}
                 h="50px"
                 my={4}
                 border="none"
@@ -80,17 +111,19 @@ const Index = () => {
                 color="#FFFFFF"
                 bg="#319EF6"
                 borderRadius="6px"
-                _hover={{ background: "rgba(64, 186, 213,0.35)" }}
-                _active={{ outline: "#29235E", background: "#29235E" }}
-                // onClick={() => props.addLiquidityPage("Add Liquidity", false)}
+                _hover={{ background: 'rgba(64, 186, 213,0.35)' }}
+                _active={{ outline: '#29235E', background: '#29235E' }}
+                onClick={() => {
+                  console.log('hey add');
+                }}
               >
                 Add Liquidity
               </Button>
               <Button
                 d="block"
-                w={["100%", "100%", "100%", "100%"]}
-                marginTop={["20px", "0px", "20px", "0px"]}
-                _hover={{ borderColor: "rgba(64, 186, 213,0.35)" }}
+                w={['100%', '100%', '100%', '100%']}
+                marginTop={['20px', '0px', '20px', '0px']}
+                _hover={{ borderColor: 'rgba(64, 186, 213,0.35)' }}
                 h="50px"
                 my={4}
                 color="#319EF6"
@@ -107,7 +140,10 @@ const Index = () => {
             </Flex>
 
             <Flex justifyContent="center" mx={5} my={4}>
-              <Text fontSize="sm" color={ mode === "dark" ? "#DCE5EF" : "#666666"}>
+              <Text
+                fontSize="sm"
+                color={mode === 'dark' ? '#DCE5EF' : '#666666'}
+              >
                 Dont see a pool you joined?
               </Text>
               <Text fontSize="sm" color="blue.300" ml={3} cursor="pointer">
@@ -116,8 +152,8 @@ const Index = () => {
             </Flex>
           </Box>
           <Box
-            backgroundColor={mode === "dark" ? "#15202B" : "#FFFFFF"}
-            border={mode === "dark" ? "1px solid #324D68": "1px solid #DEE6ED"}
+            backgroundColor={mode === 'dark' ? '#15202B' : '#FFFFFF'}
+            border={mode === 'dark' ? '1px solid #324D68' : '1px solid #DEE6ED'}
             borderRadius="6px"
             my={4}
           >
@@ -128,7 +164,10 @@ const Index = () => {
               rounded="lg"
               my={4}
             >
-              <Text color={mode === "dark" ? "#F1F5F8" : "#000000"} fontSize="md">
+              <Text
+                color={mode === 'dark' ? '#F1F5F8' : '#000000'}
+                fontSize="md"
+              >
                 My Liquidity Positions
               </Text>
             </Flex>
@@ -141,17 +180,20 @@ const Index = () => {
                 alignItems="center"
                 px={4}
                 mx={5}
-                backgroundColor={mode === "dark" ? "#213345" : "#F2F5F8"}
-                border={mode === "dark" ? "1px solid #324D68": "1px solid #DEE6ED"}
-
+                backgroundColor={mode === 'dark' ? '#213345' : '#F2F5F8'}
+                border={
+                  mode === 'dark' ? '1px solid #324D68' : '1px solid #DEE6ED'
+                }
                 borderRadius="6px"
               >
-                <Text fontSize="sm" color={ mode === "dark" ? "#DCE5EF" : "#666666"}>
+                <Text
+                  fontSize="sm"
+                  color={mode === 'dark' ? '#DCE5EF' : '#666666'}
+                >
                   Loading...
                 </Text>
               </Flex>
-            ) : allV2PairsWithLiquidity?.length <= 0 ||
-              stakingPairs?.length <= 0 ? (
+            ) : liquidityLength === 0 ? (
               <Flex
                 color="#fff"
                 h="100px"
@@ -160,34 +202,35 @@ const Index = () => {
                 alignItems="center"
                 px={3}
                 mx={5}
-                backgroundColor={mode === "dark" ? "#213345" : "#F2F5F8"}
-                border={mode === "dark" ? "1px solid #324D68": "1px solid #DEE6ED"}
-
+                backgroundColor={mode === 'dark' ? '#213345' : '#F2F5F8'}
+                border={
+                  mode === 'dark' ? '1px solid #324D68' : '1px solid #DEE6ED'
+                }
                 borderRadius="6px"
               >
-                <Text fontSize="sm" color={ mode === "dark" ? "#DCE5EF" : "#666666"}>
+                <Text
+                  fontSize="sm"
+                  color={mode === 'dark' ? '#DCE5EF' : '#666666'}
+                >
                   No Liquidity Found.
                 </Text>
               </Flex>
             ) : (
               <Box>
-                {v2PairsWithoutStakedAmount.map((v2Pair) => (
-                  <Liquidities
-                    key={v2Pair.liquidityToken.address}
-                    pair={v2Pair}
-                  />
+                {liquidities?.map((liquid, index) => (
+                  <Liquidities key={`${index}key`} pair={liquid} />
                 ))}
-                
-                {stakingPairs.map(
+
+                {/* {stakingPairs.map(
                   (stakingPair, i) =>
-                    stakingPair[1] && ( // skip pairs that arent loaded
+                    stakingPair[1] && ( 
                       <Liquidities
                         key={stakingInfosWithBalance[i].stakingRewardAddress}
                         pair={stakingPair[1]}
                         stakedBalance={stakingInfosWithBalance[i].stakedAmount}
                       />
                     )
-                )}
+                )} */}
               </Box>
             )}
           </Box>
