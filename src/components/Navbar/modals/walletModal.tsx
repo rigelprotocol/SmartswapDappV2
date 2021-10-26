@@ -10,12 +10,12 @@ import {
     Box,
     Flex,
     Text,
-    Button,
-    Image
+    Button
 } from "@chakra-ui/react"
 import { shortenAddress } from "../../../utils";
-import MetamaskLogo from "./../../../assets/metamaskLogo.png";
 import { CopyIcon } from "../../../theme/components/Icons";
+import StatusIcon from "../StatusIcon";
+import {useWeb3React} from "@web3-react/core";
 export type IModal= {
     displayWallet:boolean,
     accounts:string,
@@ -29,15 +29,17 @@ setDisplayWallet
     }) => {
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
-    const borderColor = useColorModeValue("#DEE6ED","#324D68")
-    const dashedColor = useColorModeValue("#DEE6ED","#4A739B")
-    const activeButtonColor = useColorModeValue("#319EF6","#4CAFFF")
-    const buttonColor = useColorModeValue("#666666","#7599BD")
+    const borderColor = useColorModeValue("#DEE6ED","#324D68");
+    const dashedColor = useColorModeValue("#DEE6ED","#4A739B");
+    const activeButtonColor = useColorModeValue("#319EF6","#4CAFFF");
+    const buttonColor = useColorModeValue("#666666","#7599BD");
     const {
         isOpen,
         onOpen,
         onClose,
       } = useDisclosure();
+    const { connector } = useWeb3React();
+
     return (
         <>
           <Modal isCentered isOpen={displayWallet} onClose={()=>setDisplayWallet(false)}>
@@ -79,7 +81,7 @@ setDisplayWallet
                   <Button
               variant={'ghost'}
             leftIcon={
-              <Image boxSize="30px" objectFit="contain" src={MetamaskLogo} mr="2"/>
+                <StatusIcon connector={connector}/>
             }
           >
             {shortenAddress(accounts)}
@@ -123,15 +125,14 @@ setDisplayWallet
           </Flex>
                 </Box>
                 <Box padding="15px"border={`1px dashed ${dashedColor}`} borderRadius="6px" fontSize="16px" mt="9">
-<Text color={lightTextColor} mb="6" textAlign="center">Your recent transactions will appear here</Text>
-                  </Box>
+                    <Text color={lightTextColor} mb="6" textAlign="center">Your recent transactions will appear here</Text>
                 </Box>
-                
+                </Box>
                
             </ModalContent>
             </Modal>
           </>
     )
-}
+};
 
 export default WalletModal
