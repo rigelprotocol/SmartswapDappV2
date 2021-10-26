@@ -80,7 +80,7 @@ const Liquidities = (props: Liquidity) => {
                 : props.pair.path[1].token}
             </Box>
           </Flex>
-          <Flex>
+          <Flex align="center">
             <Text mr={1} color={manageColor} fontSize="14px">
               Manage
             </Text>
