@@ -35,7 +35,7 @@ function useActiveWeb3React() {
 
   return (
     <>
-      <Button onClick={onOpen} mx={2}>
+      <Button onClick={onOpen} mr={2}>
         <Flex alignItems="center">
           <Box mr={2}>
           {info.label !== 'Binance' ? <EthereumIcon /> 

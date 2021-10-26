@@ -69,6 +69,7 @@ const Index = () => {
               <WalletConnection />
             </Flex>
             <Flex mr={4}>
+            <NetworkConnector />
               <ColorModeSwitcher />
               <SocialMedia />
             </Flex>
@@ -77,17 +78,17 @@ const Index = () => {
       ) : (
         <>
           <Flex h="10">
-            <Box mr={6}>
+            <Box mr={4}>
               <Img src={Logo} />
             </Box>
             <DappsDropdown />
 
-            <Flex w="350px" h="10" align="center" justify="space-between">
+            <Flex mr="4px" w="400px" h="10" align="center" justify="space-around">
               <SwapDropdown />
               <Nav label="Liquidity" to="/pool" />
               <Nav label="Farming" to="/farming" />
               <Link href="https://rigelprotocol.com" isExternal>
-                Analytics <ExternalLinkIcon mx="2px" />
+                Analytics 
               </Link>
             </Flex>
           </Flex>

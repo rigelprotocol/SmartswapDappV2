@@ -99,7 +99,7 @@ export default function WalletConnection() {
             bg={bgColor2}
             px={2}
           >
-            <Text ml={2} fontWeight={'bold'}>
+            <Text fontWeight={'bold'}>
               {Balance} {Symbol}
             </Text>
           </Flex>
