@@ -4,6 +4,7 @@ import { smartFactory, LiquidityPairInstance } from '../Contracts';
 import { SMARTSWAPFACTORYADDRESSES } from '../addresses';
 import { getERC20Token } from '../utilsFunctions';
 import { ethers } from 'ethers';
+import { Fraction } from '@uniswap/sdk-core';
 
 export const useGetUserLiquidities = async () => {
   const { account, chainId } = useWeb3React();
@@ -70,8 +71,24 @@ const getPoolData = async (address: string, account: string) => {
     erc20Token0.symbol(),
     erc20Token1.symbol(),
   ]);
-  const pooledToken0 = ((balance / totalSupply) * reserves[0]) / 1e18;
-  const pooledToken1 = ((balance / totalSupply) * reserves[1]) / 1e18;
+
+  const [decimals0, decimals1] = await Promise.all([
+    erc20Token0.decimals(),
+    erc20Token1.decimals(),
+  ]);
+
+  const pooledToken0 = getPooledToken({
+    balance,
+    totalSupply,
+    reserves: reserves[0],
+    decimals: decimals0,
+  });
+  const pooledToken1 = getPooledToken({
+    balance,
+    totalSupply,
+    reserves: reserves[1],
+    decimals: decimals1,
+  });
 
   const liquidityObject = {
     pairAddress: address,
@@ -86,4 +103,24 @@ const getPoolData = async (address: string, account: string) => {
     pooledToken1,
   };
   return liquidityObject;
+};
+
+interface PoolTokenParams {
+  balance: number;
+  totalSupply: number;
+  reserves: number;
+  decimals: number;
+}
+
+const getPooledToken = (params: PoolTokenParams) => {
+  //construct decimal
+  const Decimal = 10 ** params.decimals;
+  //init fraction class
+  const fraction = new Fraction(
+    params.balance.toString(),
+    params.totalSupply.toString()
+  );
+  const multiplyReserve = fraction.multiply(params.reserves.toString());
+  const final = multiplyReserve.divide(Decimal);
+  return final.toSignificant(params.decimals);
 };
