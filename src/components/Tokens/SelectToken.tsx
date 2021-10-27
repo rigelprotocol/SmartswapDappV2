@@ -17,29 +17,28 @@ import {
 } from "@chakra-ui/react"
 import ModalInput from "./input"
 import ManageToken from "./manageTokens"
+// import { Currency } from '@uniswap/sdk-core'
 import { useWeb3React } from "@web3-react/core"
 import AutoSizer from "react-virtualized-auto-sizer"
 import { FixedSizeList } from "react-window"
 import CurrencyList from "./CurrencyList"
 import useDebounce from "../../hooks/useDebounce";
-import { defaultTokenList } from "./tokens";
+import {UseTokens,ExtendedEther} from "../../hooks/useWallet"
+import { Token } from "../../hooks/useWallet"
+import { useNativeBalance } from "../../utils/hooks/useBalances";
 
  type IModal= {
 tokenModal:boolean,
 setTokenModal:React.Dispatch<React.SetStateAction<boolean>>
 }
-export type Currency = {
-  chainId: number,
-  address:string,
-  name: string,
-  symbol: string,
-  decimals: number,
-  logoURI: string
-}
-type currencyArray = Currency[]
+
+export type Currency = Token
 const SelectToken:React.FC<IModal> = ({tokenModal,setTokenModal}) => {
 const { chainId } = useWeb3React()
+const [ ,Symbol,Name,Logo] = useNativeBalance();
     const [displayManageToken,setDisplayManageToken] = useState(false)
+    const [tokenList] = UseTokens()
+    const ether = ExtendedEther(chainId,Symbol,Name,Logo)
     const [searchQuery,setSearchQuery] = useState<string>('')
     const debouncedQuery = useDebounce(searchQuery,300)
 
@@ -50,16 +49,14 @@ const { chainId } = useWeb3React()
     const textColor = useColorModeValue("#319EF6","#4CAFFF")
     const boxColor = useColorModeValue("#F2F5F8","#213345")
 
-    // const ether = useMemo(() => chainId && ExtendedEther.onChain(chainId),[chainId])
 
-
-    const filteredTokenListWithETH = useMemo(():currencyArray=>{
+    const filteredTokenListWithETH = useMemo(():Currency[]=>{
       const s = debouncedQuery.toLowerCase().trim()
       if(s==="" || s ==="e" || s==="et" || s==="eth"){
-       return defaultTokenList
+        return ether ? [ether, ...tokenList] : tokenList
       }
-      return defaultTokenList
-    },[defaultTokenList,defaultTokenList])
+      return tokenList
+    },[debouncedQuery, ether, tokenList])
     const {
         onClose,
       } = useDisclosure();
@@ -70,17 +67,11 @@ setDisplayManageToken(state => !state)
 const handleInput = useCallback(
   (event) => {
    const input = event.target.value
-  //  const checksummedInput = isAddress(input)
     setSearchQuery(input)
-    // setSearchQuery(checksummedInput || input)
   },
   [],
 )
 
-// const Balance = ({balance}) => {
-//   return  <Text title={balance.toExact()}>{balance.toSignificant(4)}</Text>
-// }
-const fixedList = useRef<FixedSizeList>()
 
     return (
         
@@ -137,41 +128,14 @@ const fixedList = useRef<FixedSizeList>()
   return(
   <CurrencyList
   height={height}
-  currencies = {defaultTokenList}
+  currencies = {tokenList}
   fixedListRef={fixedList}
   />
    )}} 
                      </AutoSizer> */}
-                {defaultTokenList.map((currency,index)=>
-                
-                {
-                  
-                  return (
-    //                   <Flex 
-    //                   justifyContent="space-between"
-    //                   py="2" 
-    //                   fontSize="16px"
-    //                    key={index}
-    //                    cursor="pointer">
-    //                       <Flex>
-    //                       <Image 
-    //  src={currency.logoURI}
-    //  width="24px"
-    //  height="24px"
-    //  borderRadius="24px"/>
-    //                        <Box>
-    //                        <Text color={heavyTextColor} fontWeight="700" mt="2">{currency.symbol}</Text>
-    //                        {/* <Text color={lightTextColor}>{currency.name} {currency.imported ? " • Added by user" : ""}</Text> */}
-    //                        </Box>
-                          
-    //                       </Flex> 
-    //                       <Box mt="3">
-    //                            {/* <Text color={heavyTextColor} fontWeight="700">{currency.balance}</Text> */}
-    //                        </Box>
-    //                 </Flex>
-    <CurrencyList currency={currency} />
-                  )  
-                })}
+                {filteredTokenListWithETH.map((currency,index)=>
+    <CurrencyList currency={currency} key={index}/>
+                 )}
                       </ModalBody>
               
                <ModalFooter py="4" bg={boxColor}

@@ -40,9 +40,10 @@ export function getNetworkLibrary(): Web3Provider {
 export const injected = new InjectedConnector({
     supportedChainIds: [1, 3, 56, 97],
 });
-
+ const supportedChainIds = [1, 3, 56, 97, 80001]
+ export const checkSupportedIds = (chainID:number)=>supportedChainIds.some(id => id ===chainID)
 export const bscConnector = new BscConnector({
-  supportedChainIds: [1, 3, 56, 97, 80001],
+  supportedChainIds
 });
 
 export const walletconnect = new WalletConnectConnector({

@@ -1,8 +1,8 @@
 
-import React,{useCallback,useMemo} from 'react'
+import React,{useCallback } from 'react'
 import { FixedSizeList } from 'react-window'
-import {  Token, CurrencyAmount } from '@uniswap/sdk'
 import { useWeb3React } from '@web3-react/core'
+import { Token } from '../../hooks/useWallet'
 import {GetAddressTokenBalance} from "../../hooks/useWallet"
 import {
     useColorModeValue,
@@ -13,17 +13,9 @@ import {
     Image
 } from "@chakra-ui/react"
 import USDTLOGO from '../../assets/roundedlogo.svg';
-type Currency = {
-    chainId: number,
-    address:string,
-    name: string,
-    symbol: string,
-    decimals: number,
-    logoURI: string,
-    imported?:boolean
-}
+
 type ICurrencyList = {
-    currency: Currency
+    currency: Token
 }
 const CurrencyList =({
    currency
@@ -32,7 +24,7 @@ const CurrencyList =({
 const {account} = useWeb3React() 
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
     const heavyTextColor = useColorModeValue("#333333", "#F1F5F8");
-    function Balance({ balance }: { balance:string[]}) {
+    function Balance({ balance }: { balance:(string | number | void)[]}) {
         return <Text>{balance}</Text>
       }
     const Row = useCallback(
@@ -59,7 +51,7 @@ if(currency) {
         
              <Box>
              <Text color={heavyTextColor} fontWeight="700" mt="2">{currency.symbol}</Text>
-             {/* <Text color={lightTextColor}>{currency.name} {currency.imported ? " • Added by user" : ""}</Text> */}
+             <Text color={lightTextColor}>{currency.name} {currency.imported ? " • Added by user" : ""}</Text>
              </Box>
             
             </Flex> 
@@ -74,7 +66,8 @@ if(currency) {
         },[currency]
     )
     
-    const balance = GetAddressTokenBalance(currency.address)
+    const balance = GetAddressTokenBalance(currency)
+    console.log({balance})
     return (
 //        <FixedSizeList
 //        height={height}
@@ -86,26 +79,27 @@ if(currency) {
 //        >
 // {Row}
 //        </FixedSizeList>
+
+
 <Flex 
 justifyContent="space-between"
 py="2" 
 fontSize="16px"
- cursor="pointer"
- bg="yellow" zIndex="999">
+ cursor="pointer">
     <Flex>
-<Image 
+    <Image 
 src={currency.logoURI}
 width="24px"
-height="24px"/>
-
+height="24px"
+borderRadius="24px" mr="3" mt="4"/>
      <Box>
      <Text color={heavyTextColor} fontWeight="700" mt="2">{currency.symbol}</Text>
-     <Text color={lightTextColor}>{currency.name} {currency?.imported ? " • Added by user" : ""}</Text>
+     <Text color={lightTextColor}>{currency.name} { currency?.isImported ? " • Added by user" : ""}</Text>
      </Box>
-    
+
     </Flex> 
     <Box mt="3">
-     {balance ? <Balance balance={balance} /> : account ? <Image src={USDTLOGO} /> : null}
+    {balance ? <Balance balance={balance} /> : account ? <Image src={USDTLOGO} /> : null}
      </Box>
 </Flex>
     )

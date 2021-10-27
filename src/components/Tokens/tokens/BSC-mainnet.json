@@ -1,4 +1,12 @@
 [
+  {
+    "name": "Rigel Protocol",
+    "symbol": "RGP",
+    "address": "0xfa262f303aa244f9cc66f312f0755d89c3793192",
+    "chainId": 56,
+    "decimals": 18,
+    "logoURI": "https://bscscan.com/token/images/rigelprotocol_32.png"
+  },
     {
       "name": "Bakery Token",
       "symbol": "BAKE",
@@ -686,13 +694,5 @@
       "chainId": 56,
       "decimals": 18,
       "logoURI": "https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/smartchain/assets/0xEe9801669C6138E84bD50dEB500827b776777d28/logo.png"
-    },
-    {
-      "name": "Rigel Protocol",
-      "symbol": "RGP",
-      "address": "0xfa262f303aa244f9cc66f312f0755d89c3793192",
-      "chainId": 56,
-      "decimals": 18,
-      "logoURI": "https://bscscan.com/token/images/rigelprotocol_32.png"
     }
   ]

@@ -1,4 +1,12 @@
 [
+  {
+    "name": "Rigel Protocol",
+    "symbol": "RGP",
+    "address": "0x9f0227A21987c1fFab1785BA3eBa60578eC1501B",
+    "chainId": 97,
+    "decimals": 18,
+    "logoURI": "https://bscscan.com/token/images/rigelprotocol_32.png"
+  },
     {
       "name": "WBNB Token",
       "symbol": "WBNB",
@@ -22,13 +30,5 @@
       "chainId": 97,
       "decimals": 18,
       "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/USDT-6D8/logo.png"
-    },
-    {
-      "name": "Rigel Protocol",
-      "symbol": "RGP",
-      "address": "0x9f0227A21987c1fFab1785BA3eBa60578eC1501B",
-      "chainId": 97,
-      "decimals": 18,
-      "logoURI": "https://bscscan.com/token/images/rigelprotocol_32.png"
     }
   ]

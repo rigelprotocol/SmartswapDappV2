@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { provider, getERC20Token } from '../utilsFunctions';
 import { ethers } from 'ethers';
-import { SupportedChainSymbols } from '../constants/chains';
+import { SupportedChainSymbols,SupportedChainName, SupportedChainLogo, } from '../constants/chains';
 import { RGPADDRESSES } from '../addresses';
 
 export const useNativeBalance = () => {
   const { account, chainId } = useWeb3React();
   const [Balance, setBalance] = useState<string>('');
   const [Symbol, setSymbol] = useState('');
+  const [Name, setName] = useState('');
+  const [Logo, setLogo] = useState('');
 
   useEffect(() => {
     const getBalance = async () => {
@@ -19,7 +21,9 @@ export const useNativeBalance = () => {
           setBalance(
             parseFloat(ethers.utils.formatEther(balance as any)).toFixed(4)
           );
-          setSymbol(SupportedChainSymbols[chainId as number]);
+          setSymbol(SupportedChainSymbols[chainId as number ?? 56]);
+          setName(SupportedChainName[chainId as number ?? 56]);
+          setLogo(SupportedChainLogo[chainId as number ?? 56]);
         } catch (err) {
           console.log(err);
         }
@@ -30,7 +34,7 @@ export const useNativeBalance = () => {
     getBalance();
   }, [account, chainId]);
 
-  return [Balance, Symbol];
+  return [Balance, Symbol,Name,Logo];
 };
 
 export const useRGPBalance = () => {

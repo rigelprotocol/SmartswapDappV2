@@ -1,4 +1,12 @@
 [
+  {
+    "chainId": 1,
+    "address": "0x4af5ff1a60a6ef6c7c8f9c4e304cd9051fca3ec0",
+    "name": "Rigel Protocol",
+    "symbol": "RGP",
+    "decimals": 18,
+    "logoURI": "https://bscscan.com/token/images/rigelprotocol_32.png"
+  },
     {
       "address": "0x111111111117dC0aa78b770fA6A738034120C302",
       "chainId": 1,
@@ -3062,13 +3070,5 @@
       "symbol": "DIVER",
       "decimals": 18,
       "logoURI": "https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/ethereum/assets/0xFb782396c9b20E564A64896181c7AC8d8979d5F4/logo.png"
-    },
-    {
-      "chainId": 1,
-      "address": "0x4af5ff1a60a6ef6c7c8f9c4e304cd9051fca3ec0",
-      "name": "Rigel Protocol",
-      "symbol": "RGP",
-      "decimals": 18,
-      "logoURI": "https://bscscan.com/token/images/rigelprotocol_32.png"
     }
   ]
