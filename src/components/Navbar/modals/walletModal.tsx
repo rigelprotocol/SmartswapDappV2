@@ -1,8 +1,8 @@
-import React from "react"
+import React, {useState, useCallback} from "react"
 import {
     ModalOverlay,
     ModalContent,
-    Modal, 
+    Modal,
     ModalCloseButton,
     ModalHeader,
     useDisclosure,
@@ -10,12 +10,14 @@ import {
     Box,
     Flex,
     Text,
-    Button
+    Button,
+    useClipboard,
 } from "@chakra-ui/react"
 import { shortenAddress } from "../../../utils";
 import { CopyIcon } from "../../../theme/components/Icons";
 import StatusIcon from "../StatusIcon";
 import {useWeb3React} from "@web3-react/core";
+import NetworkModal from "./networkModal";
 export type IModal= {
     displayWallet:boolean,
     accounts:string,
@@ -38,7 +40,17 @@ setDisplayWallet
         onOpen,
         onClose,
       } = useDisclosure();
-    const { connector } = useWeb3React();
+    const { connector, deactivate } = useWeb3React();
+    const [displayNetwork, setDisplayNetwork] = useState(false);
+    const { hasCopied, onCopy } = useClipboard(accounts);
+
+    const disconnectWallet = () =>{
+      try {
+        deactivate();
+      } catch (e) {
+        console.log(e);
+      }
+    }
 
     return (
         <>
@@ -81,8 +93,9 @@ setDisplayWallet
                   <Button
               variant={'ghost'}
             leftIcon={
-                <StatusIcon connector={connector}/>
+                <StatusIcon connector={connector} />
             }
+            onClick={onCopy}
           >
             {shortenAddress(accounts)}
           </Button>
@@ -98,19 +111,21 @@ setDisplayWallet
                 <Button
               background="transparent"
               border={`1px solid ${activeButtonColor}`}
-              box-sizing="border-box"              
+              box-sizing="border-box"
               box-shadow="0px 1px 7px rgba(41, 45, 50, 0.08)"
               border-radius="6px"
               padding="23px 0"
               color={activeButtonColor}
               isFullWidth
               _hover={{background:`${activeButtonColor}`,color:"#fff"}}
+              onClick={() =>setDisplayNetwork(state => !state)}
           >
             Switch Wallet
           </Button>
+          <NetworkModal displayNetwork={displayNetwork} setDisplayNetwork={setDisplayNetwork} />
                 <Button
               border={`1px solid ${buttonColor}`}
-              box-sizing="border-box"              
+              box-sizing="border-box"
               box-shadow="0px 1px 7px -2px rgba(24, 39, 75, 0.06), 0px 2px 2px rgba(24, 39, 75, 0.06)"
               border-radius="6px"
               padding="23px 0"
@@ -119,6 +134,7 @@ setDisplayWallet
               isFullWidth
               ml="4"
               background="transparent"
+              onClick={disconnectWallet}
           >
             Disconnect Wallet
           </Button>
@@ -128,7 +144,7 @@ setDisplayWallet
                     <Text color={lightTextColor} mb="6" textAlign="center">Your recent transactions will appear here</Text>
                 </Box>
                 </Box>
-               
+
             </ModalContent>
             </Modal>
           </>

@@ -17,6 +17,7 @@ import { shortenAddress } from "../../utils";
 import { injected, ConnectorNames, connectorsByName} from "../../connectors";
 import WalletOptions from "./WalletOptions";
 import WalletModal from "./modals/walletModal";
+import NetworkModal from "./modals/networkModal";
 import { useNativeBalance, useRGPBalance } from '../../utils/hooks/useBalances';
 import StatusIcon from "./StatusIcon";
 
@@ -37,6 +38,7 @@ export default function WalletConnection() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [Balance, Symbol] = useNativeBalance();
   const [displayWallet,setDisplayWallet] = useState(false);
+  const [displayNetwork, setDisplayNetwork] = useState(false);
   const [RGPBalance] = useRGPBalance();
 
   const connectWallet = useCallback(
@@ -110,38 +112,13 @@ export default function WalletConnection() {
     return (
       <>
         <Button
-          onClick={onOpen}
+          onClick={() =>setDisplayNetwork(state => !state)}
           rightIcon={<IoWalletOutline />}
           variant="brand"
         >
           Connect Wallet
         </Button>
-        <Modal isOpen={isOpen} onClose={onClose} isCentered>
-          <ModalOverlay />
-          <ModalContent
-            width="90vw"
-            borderRadius="6px"
-            border={'1px solid'}
-            borderColor={bgColor3}
-            minHeight="40vh"
-            boxShadow={shadow}
-            bg={bg}
-          >
-            <ModalCloseButton
-              bg="none"
-              size={'sm'}
-              mt={6}
-              mr={3}
-              cursor="pointer"
-              _focus={{ outline: 'none' }}
-              onClick={onClose}
-              p={'7px'}
-              border={'1px solid'}
-              borderColor={buttonBorder}
-            />
-            <WalletOptions connect={connectWallet} />
-          </ModalContent>
-        </Modal>
+        <NetworkModal displayNetwork={displayNetwork} setDisplayNetwork={setDisplayNetwork} />
       </>
     );
   }
