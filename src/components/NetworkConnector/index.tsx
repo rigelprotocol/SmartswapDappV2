@@ -38,7 +38,7 @@ function useActiveWeb3React() {
       <Button onClick={onOpen} mr={2}>
         <Flex alignItems="center">
           <Box mr={2}>
-          {info.label !== 'Binance' ? <EthereumIcon /> 
+          {info.label !== 'Binance' && info.label !== 'Binance Testnet' ? <EthereumIcon /> 
           :  <BinanceIcon /> 
           } 
           </Box>
@@ -72,7 +72,7 @@ function useActiveWeb3React() {
                 mb={3}
               >
                 You are currently on the{" "}
-                <span style={{ color: "#319EF6" }}>{info.label}</span> network.
+                <span style={{ color: "#319EF6" }}>{info.nativeCurrency.name}</span> network.
               </Text>
             </Flex>
             <Flex

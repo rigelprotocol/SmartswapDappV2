@@ -5,6 +5,7 @@ import { WalletLinkConnector } from '@web3-react/walletlink-connector';
 import { BscConnector } from '@binance-chain/bsc-connector';
 import { PortisConnector } from '@web3-react/portis-connector';
 import { NetworkConnector } from './NetworkConnector';
+import { ALL_SUPPORTED_CHAIN_IDS } from '../constants/chains';
 // import SMARTSWAP_LOGO from '../assets/images/rgpLogo.webp'
 // import Logo from '/logo192.png'
 
@@ -38,11 +39,11 @@ export function getNetworkLibrary(): Web3Provider {
 }
 
 export const injected = new InjectedConnector({
-    supportedChainIds: [1, 3, 56, 97],
+    supportedChainIds: ALL_SUPPORTED_CHAIN_IDS,
 });
 
 export const bscConnector = new BscConnector({
-  supportedChainIds: [1, 3, 56, 97, 80001],
+  supportedChainIds: ALL_SUPPORTED_CHAIN_IDS,
 });
 
 export const walletconnect = new WalletConnectConnector({
