@@ -28,7 +28,7 @@ export const GetAddressTokenBalance = (currency :Currency) => {
   useEffect(() => {
     const getBalance = async (currency:Currency) => {
       
-      if (account && checkSupportedIds(chainId || 56)) {
+      if (account) {
         try {
           if(currency.isNative){
             setBalance(Balance)
