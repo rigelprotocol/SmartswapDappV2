@@ -1,4 +1,3 @@
-import { ethers } from 'ethers';
 import { Web3Provider } from '@ethersproject/providers';
 import { Contract } from '@ethersproject/contracts';
 import detectEthereumProvider from '@metamask/detect-provider';
