@@ -23,6 +23,7 @@ import LightLogo from './../../assets/logo/logo-light.svg';
 import DarkLogo from './../../assets/logo/logo-dark.svg';
 import MetamaskLogo from './../../assets/metamaskLogo.png';
 import MobileNavDrawer from './MobileNavDrawer';
+import NetworkConnector from '../NetworkConnector';
 
 const Nav = ({ to, label }: { to: string; label: string }) => (
   <NavLink
@@ -68,6 +69,7 @@ const Index = () => {
               <WalletConnection />
             </Flex>
             <Flex mr={4}>
+            <NetworkConnector />
               <ColorModeSwitcher />
               <SocialMedia />
             </Flex>
@@ -76,23 +78,24 @@ const Index = () => {
       ) : (
         <>
           <Flex h="10">
-            <Box mr={6}>
+            <Box mr={4}>
               <Img src={Logo} />
             </Box>
             <DappsDropdown />
 
-            <Flex w="350px" h="10" align="center" justify="space-between">
+            <Flex mr="4px" w="400px" h="10" align="center" justify="space-around">
               <SwapDropdown />
               <Nav label="Liquidity" to="/pool" />
               <Nav label="Farming" to="/farming" />
               <Link href="https://rigelprotocol.com" isExternal>
-                Analytics <ExternalLinkIcon mx="2px" />
+                Analytics 
               </Link>
             </Flex>
           </Flex>
           <Spacer />
 
           <Flex h="8" justify="flex-end">
+            <NetworkConnector />
             <WalletConnection />
             <SocialMedia />
             <ColorModeSwitcher />
