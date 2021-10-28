@@ -26,7 +26,7 @@ export enum ExplorerDataType {
  * @param type the type of the data
  */
 export function getExplorerLink(chainId: number, data: string, type: ExplorerDataType): string {
-  if (chainId === SupportedChainId.POLYGONTEST || chainId === SupportedChainId.POLYGON) {
+  if (chainId === SupportedChainId.POLYGON) {
     switch (type) {
       case ExplorerDataType.TRANSACTION:
         return `https://polygonscan.com/tx/${data}`
@@ -37,6 +37,20 @@ export function getExplorerLink(chainId: number, data: string, type: ExplorerDat
         return `https://polygonscan.com/block/${data}`
       default:
         return `https://polygonscan.com`
+    }
+  }
+
+  if (chainId === SupportedChainId.POLYGONTEST) {
+    switch (type) {
+      case ExplorerDataType.TRANSACTION:
+        return `https://mumbai.polygonscan.com/tx/${data}`
+      case ExplorerDataType.ADDRESS:
+      case ExplorerDataType.TOKEN:
+        return `https://mumbai.polygonscan.com/address/${data}`
+      case ExplorerDataType.BLOCK:
+        return `https://mumbai.polygonscan.com/block/${data}`
+      default:
+        return `https://mumbai.polygonscan.com`
     }
   }
 

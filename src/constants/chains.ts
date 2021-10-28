@@ -98,7 +98,7 @@ export const CHAIN_INFO: ChainInfo = {
   },
   [SupportedChainId.POLYGONTEST]: {
     docs: '',
-    explorer: 'https://polygonscan.com/',
+    explorer: 'https://mumbai.polygonscan.com/',
     infoLink: '',
     label: 'Mumbai Testnet',
     nativeCurrency: { name: 'Polygon', symbol: 'POL', decimals: 18 },
