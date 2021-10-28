@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from "react";
+import React, { useCallback, useState } from 'react';
 import {
   Flex,
   Text,
@@ -11,16 +11,15 @@ import {
   useColorModeValue,
   useMediaQuery,
 } from '@chakra-ui/react';
-import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
-import { IoWalletOutline } from "react-icons/io5";
-import { shortenAddress } from "../../utils";
-import { injected, ConnectorNames, connectorsByName} from "../../connectors";
-import WalletOptions from "./WalletOptions";
-import WalletModal from "./modals/walletModal";
+import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core';
+import { IoWalletOutline } from 'react-icons/io5';
+import { shortenAddress } from '../../utils';
+import { injected, ConnectorNames, connectorsByName } from '../../connectors';
+import WalletOptions from './WalletOptions';
+import WalletModal from './modals/walletModal';
 import NetworkModal from "./modals/networkModal";
 import { useNativeBalance, useRGPBalance } from '../../utils/hooks/useBalances';
-import StatusIcon from "./StatusIcon";
-
+import StatusIcon from './StatusIcon';
 
 export default function WalletConnection() {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
@@ -37,7 +36,7 @@ export default function WalletConnection() {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [Balance, Symbol] = useNativeBalance();
-  const [displayWallet,setDisplayWallet] = useState(false);
+  const [displayWallet, setDisplayWallet] = useState(false);
   const [displayNetwork, setDisplayNetwork] = useState(false);
   const [RGPBalance] = useRGPBalance();
 
@@ -87,19 +86,23 @@ export default function WalletConnection() {
             bg={bgColor2}
             px={2}
           >
-            <Text ml={2} fontWeight={'bold'}>
+            <Text fontWeight={'bold'}>
               {Balance} {Symbol}
             </Text>
           </Flex>
           <Button
-          onClick={() =>setDisplayWallet(state => !state)}
+            onClick={() => setDisplayWallet((state) => !state)}
             variant={'ghost'}
             rightIcon={<StatusIcon connector={connector} />}
           >
             {shortenAddress(account)}
           </Button>
         </Flex>
-        <WalletModal displayWallet={displayWallet} accounts={account} setDisplayWallet={setDisplayWallet} />
+        <WalletModal
+          displayWallet={displayWallet}
+          accounts={account}
+          setDisplayWallet={setDisplayWallet}
+        />
       </>
     );
   } else if (error) {

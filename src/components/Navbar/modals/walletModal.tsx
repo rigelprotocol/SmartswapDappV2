@@ -12,8 +12,13 @@ import {
     Text,
     Button,
     useClipboard,
+    Tooltip,
+    IconButton,
+    Link,
 } from "@chakra-ui/react"
+import { ExternalLinkIcon } from '@chakra-ui/icons'
 import { shortenAddress } from "../../../utils";
+import { ExplorerDataType, getExplorerLink } from '../../../utils/getExplorerLink'
 import { CopyIcon } from "../../../theme/components/Icons";
 import StatusIcon from "../StatusIcon";
 import {useWeb3React} from "@web3-react/core";
@@ -40,7 +45,7 @@ setDisplayWallet
         onOpen,
         onClose,
       } = useDisclosure();
-    const { connector, deactivate } = useWeb3React();
+    const { chainId, connector, deactivate } = useWeb3React();
     const [displayNetwork, setDisplayNetwork] = useState(false);
     const { hasCopied, onCopy } = useClipboard(accounts);
 
@@ -95,14 +100,20 @@ setDisplayWallet
             leftIcon={
                 <StatusIcon connector={connector} />
             }
-            onClick={onCopy}
           >
             {shortenAddress(accounts)}
           </Button>
-          <CopyIcon />
+          <Tooltip hasArrow label={hasCopied ? "Copied!" : "Copy"} bg="gray.300" color="black">
+            <IconButton onClick={onCopy} aria-label="Copy address" icon={<CopyIcon />} colorScheme="ghost"/>
+          </Tooltip>
                       </Flex>
                <Box mt="4" fontSize="16px" color={lightTextColor}>
-                <CopyIcon /> View on Etherscan
+               <Tooltip hasArrow label={hasCopied ? "Copied!" : "Copy"} bg="gray.300" color="black">
+                 <IconButton onClick={onCopy} aria-label="Copy address" icon={<CopyIcon />} colorScheme="ghost"/>
+               </Tooltip>
+                <Link href={getExplorerLink(chainId, accounts, ExplorerDataType.ADDRESS)} isExternal>
+                  View on Etherscan <ExternalLinkIcon mx="2px" />
+                </Link>
                 </Box>
                 <Box>
                   <Flex
