@@ -29,42 +29,42 @@ export function getExplorerLink(chainId: number, data: string, type: ExplorerDat
   if (chainId === SupportedChainId.POLYGONTEST || chainId === SupportedChainId.POLYGON) {
     switch (type) {
       case ExplorerDataType.TRANSACTION:
-        return `https://polygon.technology/tx/${data}`
+        return `https://polygonscan.com/tx/${data}`
       case ExplorerDataType.ADDRESS:
       case ExplorerDataType.TOKEN:
-        return `https://polygon.technology/address/${data}`
+        return `https://polygonscan.com/address/${data}`
       case ExplorerDataType.BLOCK:
-        return `https://polygon.technology/block/${data}`
+        return `https://polygonscan.com/block/${data}`
       default:
-        return `https://polygon.technology/`
+        return `https://polygonscan.com`
     }
   }
 
   if (chainId === SupportedChainId.BINANCE) {
     switch (type) {
       case ExplorerDataType.TRANSACTION:
-        return `https://binance.org/tx/${data}`
+        return `https://www.bscscan.com/tx/${data}`
       case ExplorerDataType.ADDRESS:
       case ExplorerDataType.TOKEN:
-        return `https://binance.org/address/${data}`
+        return `https://www.bscscan.com/address/${data}`
       case ExplorerDataType.BLOCK:
-        return `https://binance.org/block/${data}`
+        return `https://www.bscscan.com/block/${data}`
       default:
-        return `https://binance.org/`
+        return `https://www.bscscan.com`
     }
   }
 
   if (chainId === SupportedChainId.BINANCETEST) {
     switch (type) {
       case ExplorerDataType.TRANSACTION:
-        return `https://testnet.binance.org/faucet-smart/tx/${data}`
+        return `https://testnet.bscscan.com/tx/${data}`
       case ExplorerDataType.ADDRESS:
       case ExplorerDataType.TOKEN:
-        return `https://testnet.binance.org/faucet-smart/address/${data}`
+        return `https://testnet.bscscan.com/address/${data}`
       case ExplorerDataType.BLOCK:
-        return `https://testnet.binance.org/faucet-smart/block/${data}`
+        return `https://testnet.bscscan.com/block/${data}`
       default:
-        return `https://testnet.binance.org/faucet-smart`
+        return `https://testnet.bscscan.com`
     }
   }
 
