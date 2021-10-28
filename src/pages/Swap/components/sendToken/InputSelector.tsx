@@ -43,18 +43,15 @@ const InputSelector = ({ max }: InputSelectorProps) => {
           value={inputValue}
           onChange={(e) => {
             let input = e.target.value;
-            // setInputValue(
-            //   input
-            //     .replace(/[^\d.]/g, '')
-            //     .replace(/(?!^)-/g, '')
-            //     .replace(/(\..*)\.$/, '$1')
-            //     .replace(/\.(?=.*\.)/g, '')
-            // );
-            setInputValue(input);
+            setInputValue(
+              input
+                .replace(/[^\d.]/g, '')
+                .replace(/(?!^)-/g, '')
+                .replace(/(\..*)\.$/, '$1')
+                .replace(/\.(?=.*\.)/g, '')
+            );
           }}
           focusBorderColor="none"
-          // pattern="^[0-9]*[.,]?[0-9]*$"
-          // inputMode="decimal"
         />
         <Flex>
           <Menu>
