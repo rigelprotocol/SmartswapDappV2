@@ -15,6 +15,7 @@ import {
     Tooltip,
     IconButton,
     Link,
+    Image,
 } from "@chakra-ui/react"
 import { ExternalLinkIcon } from '@chakra-ui/icons'
 import { shortenAddress } from "../../../utils";
@@ -23,6 +24,8 @@ import { CopyIcon } from "../../../theme/components/Icons";
 import StatusIcon from "../StatusIcon";
 import {useWeb3React} from "@web3-react/core";
 import NetworkModal from "./networkModal";
+import ROUTESQUARELIGHT from '../../../assets/routesquare-light.svg';
+import ROUTESQUAREDARK from '../../../assets/routesquare-dark.svg';
 export type IModal= {
     displayWallet:boolean,
     accounts:string,
@@ -40,6 +43,7 @@ setDisplayWallet
     const dashedColor = useColorModeValue("#DEE6ED","#4A739B");
     const activeButtonColor = useColorModeValue("#319EF6","#4CAFFF");
     const buttonColor = useColorModeValue("#666666","#7599BD");
+    const routeSquareIcon = useColorModeValue(ROUTESQUARELIGHT, ROUTESQUAREDARK)
     const {
         isOpen,
         onOpen,
@@ -56,7 +60,7 @@ setDisplayWallet
         console.log(e);
       }
     }
-
+    console.log(chainId)
     return (
         <>
           <Modal isCentered isOpen={displayWallet} onClose={()=>setDisplayWallet(false)}>
@@ -108,11 +112,22 @@ setDisplayWallet
           </Tooltip>
                       </Flex>
                <Box mt="4" fontSize="16px" color={lightTextColor}>
-               <Tooltip hasArrow label={hasCopied ? "Copied!" : "Copy"} bg="gray.300" color="black">
-                 <IconButton onClick={onCopy} aria-label="Copy address" icon={<CopyIcon />} colorScheme="ghost"/>
-               </Tooltip>
                 <Link href={getExplorerLink(chainId, accounts, ExplorerDataType.ADDRESS)} isExternal>
-                  View on Etherscan <ExternalLinkIcon mx="2px" />
+                  <Box display="flex">
+                    <Image mr={1} h="24px" w="24px" src={routeSquareIcon} />
+                    <Text>
+                      View on
+                      {
+                        chainId === 1 || chainId === 3 || chainId === 4 || chainId === 5 || chainId === 6
+                        ? (" Etherscan")
+                        : chainId === 56 || chainId === 97
+                        ? (" Bscscan")
+                        : chainId === 137 || chainId === 80001
+                        ? (" Polygonscan")
+                        : (" Explorer")
+                      }
+                      </Text>
+                  </Box>
                 </Link>
                 </Box>
                 <Box>
