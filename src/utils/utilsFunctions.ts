@@ -23,9 +23,9 @@ export const provider = async () => {
     let ethProvider = await detectEthereumProvider();
     if (ethProvider !== window.ethereum && window.ethereum !== 'undefined') {
       ethProvider = window.ethereum;
-      return new Web3Provider(ethProvider as any);
+      return new Web3Provider(ethProvider as any).getSigner();
     }
-    return new Web3Provider(ethProvider as any);
+    return new Web3Provider(ethProvider as any).getSigner();
   } catch (e) {
     console.log(e);
   }

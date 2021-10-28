@@ -21,9 +21,9 @@ export const useNativeBalance = () => {
           setBalance(
             parseFloat(ethers.utils.formatEther(balance as any)).toFixed(4)
           );
-          setSymbol(SupportedChainSymbols[chainId as number ?? 56]);
-          setName(SupportedChainName[chainId as number ?? 56]);
-          setLogo(SupportedChainLogo[chainId as number ?? 56]);
+          setSymbol(SupportedChainSymbols[chainId as number]);
+          setName(SupportedChainName[chainId as number]);
+          setLogo(SupportedChainLogo[chainId as number]);
         } catch (err) {
           console.log(err);
         }

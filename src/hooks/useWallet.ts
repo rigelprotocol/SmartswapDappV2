@@ -34,10 +34,11 @@ export const GetAddressTokenBalance = (currency :Currency) => {
             setBalance(Balance)
           }else{
             const token = await getERC20Token(currency.address ? currency.address : "");
+            console.log({token})
           const balance = await token.balanceOf(account);
               console.log(currency.name,parseFloat(ethers.utils.formatEther(balance)).toFixed(4))
           setBalance(
-            parseFloat(ethers.utils.formatEther(balance)).toFixed(4)
+            parseFloat(ethers.utils.formatEther(balance as any)).toFixed(4)
           );
           }
         } catch (err) {
@@ -57,7 +58,6 @@ export const GetAddressTokenBalance = (currency :Currency) => {
 export const UseTokens = () => {
   const { chainId, account } = useWeb3React();
   const [tokenList,setTokenList] = useState(defaultTokenList[chainId as number ?? 56])
-  console.log({tokenList,chainId})
    useEffect(()=>{
     if(checkSupportedIds(chainId || 56)){
       setTokenList(defaultTokenList[chainId as number ?? 56])
