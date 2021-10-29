@@ -108,13 +108,12 @@ const Index = () => {
                   fontSize="lg"
                   cursor="pointer"
                   boxShadow="0px 1px 7px rgba(41, 45, 50, 0.08)"
-                  fontFamily="Cera Pro"
                   lineHeight="24px"
                   color="#FFFFFF"
                   bg="#319EF6"
                   borderRadius="6px"
-                  _hover={{ background: 'rgba(64, 186, 213,0.35)' }}
-                  _active={{ outline: '#29235E', background: '#29235E' }}
+                  _hover={{ outline: 'none', background: '#319EF6' }}
+                  _active={{ outline: 'none', background: '#319EF6' }}
                 >
                   Add Liquidity
                 </Button>
@@ -124,13 +123,13 @@ const Index = () => {
                   d="block"
                   w={['100%', '100%', '100%', '100%']}
                   marginTop={['20px', '0px', '20px', '0px']}
-                  _hover={{ borderColor: 'rgba(64, 186, 213,0.35)' }}
+                  _hover={{ bgColor: 'transparent' }}
+                  _active={{ bgColor: 'transparent' }}
                   h="50px"
                   my={4}
                   color="#319EF6"
                   fontSize="lg"
                   cursor="pointer"
-                  fontFamily="Cera Pro"
                   lineHeight="24px"
                   borderRadius="6px"
                   bg="transparent"
