@@ -17,7 +17,7 @@ type InputSelectorProps = {
 };
 
 const InputSelector = ({ max }: InputSelectorProps) => {
-  const inputColor = useColorModeValue('#666666', '#4A739B');
+  const inputColor = useColorModeValue('#333333', '#F1F5F8');
   const balanceColor = useColorModeValue('#666666', '#DCE5EF');
   const maxColor = useColorModeValue('#319ef6', '#4CAFFF');
   const maxBgColor = useColorModeValue('#EBF6FE', '#EAF6FF');
