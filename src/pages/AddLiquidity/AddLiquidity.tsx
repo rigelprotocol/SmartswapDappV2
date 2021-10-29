@@ -1,5 +1,4 @@
 import React from "react";
-import RGPLOGO from '../../assets/rgp-logo.png';
 import InputSelector from '../Swap/components/sendToken/InputSelector';
 import { SettingsIcon } from '../../theme/components/Icons';
 import {
@@ -10,9 +9,6 @@ import {
   VStack,
   Button,
   Heading,
-  Input,
-  Menu,
-  Image,
   useColorModeValue,
   Divider,
   Center,
@@ -21,7 +17,6 @@ import {
   TimeIcon,
   ArrowBackIcon,
   AddIcon,
-  ChevronDownIcon
 } from "@chakra-ui/icons";
 
 const AddLiquidity = () => {

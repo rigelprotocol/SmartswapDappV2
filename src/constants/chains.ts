@@ -17,7 +17,7 @@ export const ALL_SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
   SupportedChainId.BINANCE,
   SupportedChainId.POLYGON,
 
-  
+
   SupportedChainId.POLYGONTEST,
   SupportedChainId.BINANCETEST,
   SupportedChainId.ROPSTEN,
@@ -77,28 +77,28 @@ export const CHAIN_INFO: ChainInfo = {
   },
   [SupportedChainId.BINANCE]: {
     docs: '',
-    explorer: 'https://binance.org/',
+    explorer: 'https://www.bscscan.com/',
     infoLink: '',
     label: 'Binance',
     nativeCurrency: { name: 'Binance', symbol: 'BNB', decimals: 18 },
   },
   [SupportedChainId.BINANCETEST]: {
     docs: '',
-    explorer: 'https://testnet.binance.org/faucet-smart',
+    explorer: 'https://testnet.bscscan.com/',
     infoLink: '',
     label: 'Binance Testnet',
     nativeCurrency: { name: 'Binance', symbol: 'tBNB', decimals: 18 },
   },
   [SupportedChainId.POLYGON]: {
     docs: '',
-    explorer: 'https://polygon.technology/',
+    explorer: 'https://polygonscan.com/',
     infoLink: '',
     label: 'Polygon',
     nativeCurrency: { name: 'Polygon', symbol: 'POL', decimals: 18 },
   },
   [SupportedChainId.POLYGONTEST]: {
     docs: '',
-    explorer: 'https://polygon.technology/',
+    explorer: 'https://mumbai.polygonscan.com/',
     infoLink: '',
     label: 'Mumbai Testnet',
     nativeCurrency: { name: 'Polygon', symbol: 'POL', decimals: 18 },
@@ -140,4 +140,3 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrency: { name: 'Ethereum', symbol: 'görETH', decimals: 18 },
   },
 }
-
