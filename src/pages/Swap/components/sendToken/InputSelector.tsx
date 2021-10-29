@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React, { useState } from 'react';
 import {
   Flex,
   Input,
@@ -10,35 +10,47 @@ import {
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import USDTLOGO from '../../../../assets/roundedlogo.svg';
-import SelectToken from "../../../../theme/components/Tokens/SelectToken"
+import SelectToken from '../../../../theme/components/Tokens/SelectToken';
 
 type InputSelectorProps = {
   max: Boolean;
 };
 
 const InputSelector = ({ max }: InputSelectorProps) => {
-  const inputColor = useColorModeValue('#666666', '#4A739B');
+  const inputColor = useColorModeValue('#333333', '#F1F5F8');
   const balanceColor = useColorModeValue('#666666', '#DCE5EF');
   const maxColor = useColorModeValue('#319ef6', '#4CAFFF');
   const maxBgColor = useColorModeValue('#EBF6FE', '#EAF6FF');
   const tokenListTriggerColor = useColorModeValue('', '#DCE5EF');
   const tokenListTrgiggerBgColor = useColorModeValue('', '#213345');
-  const [tokenModal,setTokenModal] = useState(false)
+  const [tokenModal, setTokenModal] = useState(false);
+  const [inputValue, setInputValue] = useState('');
 
-  const openTokenModal = () =>{
-    setTokenModal(state=>!state)
-  }
+  const openTokenModal = () => {
+    setTokenModal((state) => !state);
+  };
   return (
     <>
       <Flex alignItems="center" mt={3} justifyContent="space-between">
         <Input
           fontSize="2xl"
-          type="number"
+          type="text"
+          min="0"
           border="none"
           color={inputColor}
           isRequired
-          placeholder="0.00"
-          value="0.00"
+          placeholder="0.0"
+          value={inputValue}
+          onChange={(e) => {
+            let input = e.target.value;
+            setInputValue(
+              input
+                .replace(/[^\d.]/g, '')
+                .replace(/(?!^)-/g, '')
+                .replace(/(\..*)\.$/, '$1')
+                .replace(/\.(?=.*\.)/g, '')
+            );
+          }}
           focusBorderColor="none"
         />
         <Flex>
@@ -50,7 +62,7 @@ const InputSelector = ({ max }: InputSelectorProps) => {
               rightIcon={<ChevronDownIcon />}
               mr={3}
               bgColor={tokenListTrgiggerBgColor}
-              onClick={()=> openTokenModal()}
+              onClick={() => openTokenModal()}
             >
               <Image mr={3} h="24px" w="24px" src={USDTLOGO} />
               <Text color={tokenListTriggerColor}>USDT</Text>
@@ -80,7 +92,7 @@ const InputSelector = ({ max }: InputSelectorProps) => {
           <></>
         )}
       </Flex>
-      <SelectToken tokenModal={tokenModal} setTokenModal={setTokenModal}/>
+      <SelectToken tokenModal={tokenModal} setTokenModal={setTokenModal} />
     </>
   );
 };
