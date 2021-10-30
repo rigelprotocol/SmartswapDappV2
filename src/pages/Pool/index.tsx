@@ -13,6 +13,7 @@ import {
 } from './Icons';
 import { useColorModeValue } from '@chakra-ui/react';
 import { useGetUserLiquidities } from '../../utils/hooks/usePools';
+import { Link } from 'react-router-dom';
 
 const Index = () => {
   const mode = useColorModeValue('light', 'dark');
@@ -96,44 +97,47 @@ const Index = () => {
               justifyContent="space-between"
               flexDirection={['column', 'column', 'column', 'column']}
             >
-              <Button
-                d="block"
-                w={['100%', '100%', '100%', '100%']}
-                marginTop={['20px', '0px', '20px', '0px']}
-                h="50px"
-                my={4}
-                border="none"
-                fontSize="lg"
-                cursor="pointer"
-                boxShadow="0px 1px 7px rgba(41, 45, 50, 0.08)"
-                fontFamily="Cera Pro"
-                lineHeight="24px"
-                color="#FFFFFF"
-                bg="#319EF6"
-                borderRadius="6px"
-                _hover={{ background: 'rgba(64, 186, 213,0.35)' }}
-                _active={{ outline: '#29235E', background: '#29235E' }}
-              >
-                Add Liquidity
-              </Button>
-              <Button
-                d="block"
-                w={['100%', '100%', '100%', '100%']}
-                marginTop={['20px', '0px', '20px', '0px']}
-                _hover={{ borderColor: 'rgba(64, 186, 213,0.35)' }}
-                h="50px"
-                my={4}
-                color="#319EF6"
-                fontSize="lg"
-                cursor="pointer"
-                fontFamily="Cera Pro"
-                lineHeight="24px"
-                borderRadius="6px"
-                bg="transparent"
-                border=" 2px solid #319EF6"
-              >
-                Create a pair
-              </Button>
+              <Link to="/add">
+                <Button
+                  d="block"
+                  w={['100%', '100%', '100%', '100%']}
+                  marginTop={['20px', '0px', '20px', '0px']}
+                  h="50px"
+                  my={4}
+                  border="none"
+                  fontSize="lg"
+                  cursor="pointer"
+                  boxShadow="0px 1px 7px rgba(41, 45, 50, 0.08)"
+                  lineHeight="24px"
+                  color="#FFFFFF"
+                  bg="#319EF6"
+                  borderRadius="6px"
+                  _hover={{ outline: 'none', background: '#319EF6' }}
+                  _active={{ outline: 'none', background: '#319EF6' }}
+                >
+                  Add Liquidity
+                </Button>
+              </Link>
+              <Link to="/add">
+                <Button
+                  d="block"
+                  w={['100%', '100%', '100%', '100%']}
+                  marginTop={['20px', '0px', '20px', '0px']}
+                  _hover={{ bgColor: 'transparent' }}
+                  _active={{ bgColor: 'transparent' }}
+                  h="50px"
+                  my={4}
+                  color="#319EF6"
+                  fontSize="lg"
+                  cursor="pointer"
+                  lineHeight="24px"
+                  borderRadius="6px"
+                  bg="transparent"
+                  border=" 2px solid #319EF6"
+                >
+                  Create a pair
+                </Button>
+              </Link>
             </Flex>
 
             <Flex justifyContent="center" mx={5} my={4}>
