@@ -34,3 +34,31 @@ export const getERC20Token = async (address: string) => {
   const token = new Contract(address, ERC20Token, Provider);
   return token;
 };
+
+export const switchNetwork = async (
+  chainId: string,
+  account: string,
+  library: Web3Provider
+) => {
+  if (chainId === '0x1') {
+    library?.send('wallet_switchEthereumChain', [{ chainId }, account]);
+  } else if (chainId === '0x38') {
+    library?.send('wallet_addEthereumChain', [
+      {
+        chainId: '0x38',
+        rpcUrls: ['https://bsc-dataseed.binance.org'],
+        blockExplorerUrls: ['https://bscscan.com'],
+      },
+      account,
+    ]);
+  } else if (chainId === '0x89') {
+    library?.send('wallet_addEthereumChain', [
+      {
+        chainId: '0x89',
+        rpcUrls: ['https://polygon-rpc.com'],
+        blockExplorerUrls: ['https://polygonscan.com'],
+      },
+      account,
+    ]);
+  }
+};
