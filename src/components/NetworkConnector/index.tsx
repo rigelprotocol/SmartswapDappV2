@@ -20,6 +20,8 @@ function NetworkIndicator() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const mode = useColorModeValue('light', 'dark');
   const { chainId, library, account } = useActiveWeb3React();
+  const buttonBgColor = useColorModeValue('#EBF6FE', '#213345');
+  const textColor = useColorModeValue('#319EF6', '#4CAFFF');
 
   const info = chainId ? CHAIN_INFO[chainId] : undefined;
 
@@ -29,7 +31,13 @@ function NetworkIndicator() {
 
   return (
     <>
-      <Button onClick={onOpen} mr={2}>
+      <Button
+        _hover={{ bgColor: buttonBgColor }}
+        _active={{ bgColor: buttonBgColor }}
+        bgColor={buttonBgColor}
+        onClick={onOpen}
+        mr={2}
+      >
         <Flex alignItems="center">
           <Box mr={2}>
             {info.label !== 'Binance' && info.label !== 'Binance Testnet' ? (
@@ -38,7 +46,7 @@ function NetworkIndicator() {
               <BinanceIcon />
             )}
           </Box>
-          <Text color="#319EF6">{info.label}</Text>
+          <Text textColor={textColor}>{info.label}</Text>
         </Flex>
       </Button>
 
