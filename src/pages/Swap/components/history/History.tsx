@@ -19,6 +19,7 @@ const History = () => {
   const [showMarketHistory, setShowMarketHistory] = useState(false);
 
   const {historyData, loading} = useAccountHistory();
+  const recentData = historyData.length > 5 ? historyData.splice(0, 5) : historyData;
 
   useEffect(() => {
     const isActive = checkSideTab('history');
@@ -109,7 +110,7 @@ const History = () => {
       </Box> 
       <Box overflowY="auto" >
         {show && showMarketHistory && <MarketHistory/>  }
-        {show && !showMarketHistory && historyData && historyData.map((data: DataType) => (
+        {show && !showMarketHistory && historyData && recentData.map((data: DataType) => (
             <TransactionHistory key={data.time} data={data}/>
         ))}
       </Box>

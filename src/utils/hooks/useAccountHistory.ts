@@ -84,18 +84,16 @@ const useAccountHistory = () => {
 
                     const data = await fetch(uri);
                     const jsondata = await data.json();
-                    console.log(jsondata);
 
 
                     const dataFiltered = jsondata.result
                         .filter((items: any) => decodeInput(items.input) !== undefined)//&& decodeInput(items.input).params.length == 5)
                         .map((items: any) => ({
-                            value: formatAmount(items.value),
+                            value: items.value,
                             transactionObj: decodeInput(items.input).params,
                             timestamp: items.timeStamp,
                             transactionfee: items.gasPrice * items.gasUsed,
                         }));
-                    console.log(dataFiltered);
 
                     const userData = dataFiltered.map((data: any) => ({
                         inputAmount:
@@ -138,7 +136,7 @@ const useAccountHistory = () => {
                                 getTokenSymbol(data.tokenOut.symbol),
                             token1: data.tokenIn,
                             token2: data.tokenOut,
-                            amountIn: data.amountIn,
+                            amountIn: formatAmount(data.amountIn),
                             amountOut: formatAmount(data.amountOut),
                             time: data.time
                         };
