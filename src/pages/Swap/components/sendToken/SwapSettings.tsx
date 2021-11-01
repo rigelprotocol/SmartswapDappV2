@@ -9,8 +9,6 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverBody,
-  PopoverFooter,
-  PopoverArrow,
   PopoverCloseButton,
   Input,
   InputGroup,
@@ -21,14 +19,12 @@ import {
  from '@chakra-ui/react';
 import { TimeIcon } from '@chakra-ui/icons';
 import { SettingsIcon } from '../../../../theme/components/Icons';
-import SwapSetting from '../../modals/swapSetting';
 import { ExclamationIcon } from '../../../../theme/components/Icons';
 
 const SwapSettings = () => {
   const textColor = useColorModeValue('#333333', '#F1F5F8');
   const iconColor = useColorModeValue('#666666', '#DCE5EF');
   const bgColor = useColorModeValue('#ffffff', '#15202B');
-  const textColorOne = useColorModeValue('#333333', '#F1F5F8');
   const buttonBgcolor = useColorModeValue('#F2F5F8', '#213345');
   const buttonBgColorTwo = useColorModeValue('#F2F5F8', '#324D68');
   const textColorTwo = useColorModeValue('#666666', '#DCE6EF');
@@ -50,14 +46,14 @@ const SwapSettings = () => {
           <Popover>
             <PopoverTrigger>
               <IconButton
-              bg="ghost"
+              bg="transparent"
               icon={<SettingsIcon />}
-              _hover={{background: "none"}}
-              _focus={{background: "none"}}
+              _hover={{background: "transparent"}}
+              _focus={{background: "transparent !important"}}
               />
             </PopoverTrigger>
-            <PopoverContent borderRadius="6px" bg={bgColor}>
-              <PopoverHeader color={textColorOne} fontSize="14px" borderBottom="none">Settings</PopoverHeader>
+            <PopoverContent borderRadius="6px" bg={bgColor} borderColor={borderColor}>
+              <PopoverHeader color={textColor} fontSize="14px" borderBottom="none">Settings</PopoverHeader>
               <PopoverCloseButton
               bg="none"
               size={'sm'}
@@ -116,7 +112,7 @@ const SwapSettings = () => {
                   <Text fontSize="14px" mr={2} color={textColorTwo}>Transaction Deadline</Text>
                   <ExclamationIcon color={textColorTwo}/>
                 </Flex>
-                <InputGroup mb={3} w="50%">
+                <InputGroup mb={3} w="68%">
                   <Input
                   textAlign="right"
                   borderRight="none"
