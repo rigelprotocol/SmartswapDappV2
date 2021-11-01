@@ -23,6 +23,7 @@ import WalletModal from "./modals/walletModal";
 import WalletConnectLogo from '../../assets/walletconnect-logo.svg';
 import BinanceLogo from '../../assets/BNB.svg';
 import { useNativeBalance, useRGPBalance } from '../../utils/hooks/useBalances';
+import { useEagerConnect , useInactiveListener} from "../../utils/hooks/useWalletConnect";
 
 function StatusIcon({ connector }: { connector?: AbstractConnector }) {
   if (connector === injected) {
@@ -65,13 +66,29 @@ export default function WalletConnection() {
     [activate]
   );
 
+  /** 
   const connectAccount = () => {
     try {
       activate(injected);
     } catch (error) {
       console.log(error);
     }
-  };
+  };*/
+
+
+
+  const [activatingConnector, setActivatingConnector] = React.useState<any>()
+  React.useEffect(() => {
+    if (activatingConnector && activatingConnector === connector) {
+      setActivatingConnector(undefined)
+    }
+  }, [activatingConnector, connector])
+
+
+  const triedEager = useEagerConnect()
+
+  // handle logic to connect in reaction to certain events on the injected ethereum provider, if it exists
+  useInactiveListener(!triedEager || !!activatingConnector)
 
   if (account) {
     return (

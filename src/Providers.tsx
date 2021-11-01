@@ -6,7 +6,6 @@ import { ChakraProvider } from "@chakra-ui/react";
 import theme from "./theme";
 import store from "./state";
 import getLibrary from "./utils/getLibrary";
-import WalletProvider from "./connectors/WalletProvider";
 
 
 
@@ -16,11 +15,9 @@ const Providers: React.FC = ({ children }) => {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
       <Web3ProviderNetwork getLibrary={getLibrary}>
-        <WalletProvider>
         <Provider store={store}>
           <ChakraProvider theme={theme}>{children}</ChakraProvider>
         </Provider>
-        </WalletProvider>
       </Web3ProviderNetwork>
     </Web3ReactProvider>
   );

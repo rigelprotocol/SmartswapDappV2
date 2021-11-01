@@ -11,9 +11,9 @@ import { NetworkConnector } from './NetworkConnector';
 const NETWORK_URL = process.env.REACT_APP_NETWORK_URL;
 
 export enum ConnectorNames {
-    Injected = "injected",
-    WalletConnect = "walletconnect",
-    BSC = "bsc"
+  Injected = "injected",
+  WalletConnect = "walletconnect",
+  BSC = "bsc"
 }
 
 export const NETWORK_CHAIN_ID: number = parseInt(
@@ -38,7 +38,7 @@ export function getNetworkLibrary(): Web3Provider {
 }
 
 export const injected = new InjectedConnector({
-    supportedChainIds: [1, 3, 56, 97],
+  supportedChainIds: [1, 3, 56, 97],
 });
 
 export const bscConnector = new BscConnector({
@@ -58,6 +58,7 @@ export const walletconnect = new WalletConnectConnector({
 //     appLogoUrl: SMARTSWAP_LOGO
 
 // })
+
 
 export const connectorsByName = {
   [ConnectorNames.Injected]: injected,
