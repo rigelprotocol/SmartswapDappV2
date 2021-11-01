@@ -4,6 +4,8 @@ import { CloseIcon, AddIcon, RemoveIcon } from '../../../../theme/components/Ico
 import { removeSideTab, checkSideTab } from '../../../../utils/utilsFunctions';
 import TransactionHistory from './TransactionHistory';
 import MarketHistory from './MarketHistory';
+import useAccountHistory from "../../../../utils/hooks/useAccountHistory";
+import {DataType} from "./TransactionHistory";
 
 const History = () => {
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
@@ -15,6 +17,8 @@ const History = () => {
   
   const [show, setShow] = useState<Boolean>(false);
   const [showMarketHistory, setShowMarketHistory] = useState(false);
+
+  const {historyData, loading} = useAccountHistory();
 
   useEffect(() => {
     const isActive = checkSideTab('history');
@@ -78,7 +82,7 @@ const History = () => {
               onClick={() => {
                 setShow(true);}}
             >
-              <AddIcon />
+              <AddIcon onClick={() => setShow(true)} />
               
               
             </Flex>)}
@@ -105,7 +109,9 @@ const History = () => {
       </Box> 
       <Box overflowY="auto" >
         {show && showMarketHistory && <MarketHistory/>  }
-        {show && !showMarketHistory && <TransactionHistory/>}
+        {show && !showMarketHistory && historyData && historyData.map((data: DataType) => (
+            <TransactionHistory key={data.time} data={data}/>
+        ))}
       </Box>
     </Flex>
   );
