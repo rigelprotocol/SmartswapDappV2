@@ -107,6 +107,7 @@ export const ExclamationIcon = () => {
       w="16px"
       color={iconColor}
       h="16px"
+      mt={0.5}
     />
   );
 };

@@ -3,7 +3,6 @@ import { Box, Flex, useMediaQuery } from '@chakra-ui/react';
 import ShowDetails from './components/details/ShowDetails';
 import SendToken from './components/sendToken/index';
 import History from './components/history/History';
-import SwapSetting from './modals/swapSetting';
 
 
 const Swap = () => {
@@ -26,7 +25,6 @@ const Swap = () => {
 
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
               <ShowDetails />
-              <SwapSetting />
             </Box>
 
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
@@ -37,7 +35,6 @@ const Swap = () => {
           <>
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
               <ShowDetails />
-              <SwapSetting />
             </Box>
 
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
