@@ -54,7 +54,7 @@ const SetPrice = () => {
               </Flex>
               <To/>
               <Flex>
-                <Text fontSize="14px" color={setColor} mr={2}>
+                <Text fontSize="14px" color={iconColor} mr={2}>
                   Set Price
                 </Text>
                 <ExclamationIcon/>
@@ -116,7 +116,7 @@ const SetPrice = () => {
               </Flex>
               <To/>
               <Flex>
-                <Text fontSize="14px" color={setColor} mr={2}>
+                <Text fontSize="14px" color={iconColor} mr={2}>
                   Set Price
                 </Text>
                 <ExclamationIcon/>
