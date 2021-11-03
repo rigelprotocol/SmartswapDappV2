@@ -47,11 +47,12 @@ export type TokenAddressMap = Readonly<{
   }
 function combineMaps( map2: TokenAddressMap): TokenAddressMap {
   return {
-    [1]: {  ...map2[1] },
-    [4]: { ...map2[4] },
-    [3]: {  ...map2[3] },
-    [97]: { ...map2[97] },
-    [56]: {  ...map2[56] },
+    1: {  ...map2[1] }, // mainnet
+    4: {  ...map2[4] }, // mainnet
+    56: { ...map2[56] }, // bsc
+    97: {  ...map2[97] }, // bsc testnet
+    137: {  ...map2[137] }, // matic
+    80001: {  ...map2[80001] }, // matic testnet
   }
 }
 

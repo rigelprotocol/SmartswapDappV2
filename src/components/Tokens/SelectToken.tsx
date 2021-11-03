@@ -19,15 +19,10 @@ import {
 import ModalInput from "./input"
 import ManageToken from "./manageTokens"
 import { useWeb3React } from "@web3-react/core"
-import AutoSizer from "react-virtualized-auto-sizer"
-import { FixedSizeList } from "react-window"
 import CurrencyList from "./CurrencyList"
-import { Token } from "@uniswap/sdk"
-import { filterTokens, useSortedTokensByQuery } from './filtering'
+import { Token } from "@uniswap/sdk-core"
 import useDebounce from "../../hooks/useDebounce";
-// import { Token } from "../../hooks/useWallet"
 import { useNativeBalance } from "../../utils/hooks/useBalances";
-import { useTokenComparator } from "./sorting"
 import { useAllTokens,ExtendedEther } from "../../hooks/Tokens"
  type IModal= {
 tokenModal:boolean,
@@ -56,27 +51,17 @@ const { chainId } = useWeb3React()
     const [ ,Symbol,Name,Logo] = useNativeBalance();
     const ether = ExtendedEther(chainId,Symbol,Name,Logo)
 
-    const tokenComparator = useTokenComparator(invertSearchOrder)
 
-    const filteredTokens: Token[] = useMemo(() => {
-      return filterTokens(Object.values(allTokens), debouncedQuery)
-    }, [allTokens, debouncedQuery])
-
-    const sortedTokens: Token[] = useMemo(() => {
-      return filteredTokens.sort(tokenComparator)
-      return filteredTokens
-    }, [filteredTokens, tokenComparator])
-
-    const filteredSortedTokens = useSortedTokensByQuery(sortedTokens, debouncedQuery)
+    const filteredTokens: Token[] = Object.values(allTokens)
 
 
     const filteredTokenListWithETH = useMemo(():Token[]=>{
       const s = debouncedQuery.toLowerCase().trim()
       if(s==="" || s ==="e" || s==="et" || s==="eth"){
-        return ether ? [ ether,...filteredSortedTokens] : filteredSortedTokens
+        return ether ? [ ether,...filteredTokens] : filteredTokens
       }
-      return filteredSortedTokens
-    },[debouncedQuery, ether, filteredSortedTokens])
+      return filteredTokens
+    },[debouncedQuery, ether, filteredTokens])
     const {
         onClose,
       } = useDisclosure();
@@ -84,7 +69,6 @@ const openManageToken = ():void => {
 setDisplayManageToken(state => !state)
 }
 // refs for fixed size lists
-const fixedList = useRef<FixedSizeList>()
 const handleInput = useCallback(
   (event) => {
    const input = event.target.value
@@ -142,22 +126,9 @@ const handleInput = useCallback(
                 <ModalBody maxHeight="60vh"
                   overflowY="scroll">
 
-  {/* <AutoSizer disableWidth>
-{({height}) => {
-  return(
-  <CurrencyList
-  height={height}
-  currencies = {filteredTokenListWithETH}
-  fixedListRef={fixedList}
-  />
-   )}} 
-                     </AutoSizer> */}
+ 
                     
                 {
-    // <CurrencyList
-    // fixedListRef={fixedList}
-    // height={390}
-    // currencies={filteredTokenListWithETH} />
     filteredTokenListWithETH.map((currency,index)=>{
       return <CurrencyList
       key={index}

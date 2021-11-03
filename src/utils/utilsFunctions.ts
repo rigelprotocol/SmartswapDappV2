@@ -32,13 +32,12 @@ export const provider = async () => {
 
 export const getERC20Token = async (address: string) => {
   const Provider = await provider();
-  const token =await new Contract(address, ERC20Token, Provider);
+  const token = new Contract(address, ERC20Token, Provider);
   return token;
 };
 
 // returns the checksummed address if the address is valid, otherwise returns false
 export function isAddress(value: any): string | false {
-  console.log({value})
   try {
     return getAddress(value)
   } catch {
