@@ -1,16 +1,15 @@
 
 import React from 'react'
 import { useWeb3React } from '@web3-react/core'
-import { Currency,Token } from '@uniswap/sdk-core'
+import { Token } from '@uniswap/sdk-core'
 import {
     useColorModeValue,
     Box,
     Flex,
     Text,
-    Button,
+    Spinner,
     Image
 } from "@chakra-ui/react"
-import USDTLOGO from '../../assets/roundedlogo.svg';
 import { GetAddressTokenBalance } from "../../state/wallet/hooks"
 type ICurrencyList = {
     currency:Token,
@@ -20,7 +19,7 @@ const CurrencyList =({
    currency,
    key
 }:ICurrencyList) => {
-const {account,chainId} = useWeb3React()
+const {account } = useWeb3React()
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
     const heavyTextColor = useColorModeValue("#333333", "#F1F5F8");
     const [balance] = GetAddressTokenBalance(currency)
@@ -47,7 +46,7 @@ const {account,chainId} = useWeb3React()
         
             </Flex> 
             <Box mt="3">
-            {balance ? <Balance balance={balance} /> : account ? <Image src={USDTLOGO} /> : null}
+            {balance ? <Balance balance={balance} /> : account ? <Spinner size="xs" /> : null}
              </Box>
         </Flex> 
 

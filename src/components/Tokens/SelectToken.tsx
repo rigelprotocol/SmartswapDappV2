@@ -37,13 +37,9 @@ const { chainId } = useWeb3React()
     const debouncedQuery = useDebounce(searchQuery,300)
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const boxShadow= useColorModeValue('#DEE6ED', '#324D68');
-    const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
-    const heavyTextColor = useColorModeValue("#333333", "#F1F5F8");
     const textColor = useColorModeValue("#319EF6","#4CAFFF")
     const boxColor = useColorModeValue("#F2F5F8","#213345")
   
-
-    const [invertSearchOrder] = useState<boolean>(false)
     const [displayManageToken,setDisplayManageToken] = useState(false)
 
     const allTokens = useAllTokens()
@@ -106,7 +102,7 @@ const handleInput = useCallback(
                   
               />
                  
-<Box
+              <Box
               width="100%"
                 fontSize="14px"
                 boxShadow={`0px 1px 0px ${boxShadow}`}
@@ -115,26 +111,23 @@ const handleInput = useCallback(
                   width="90%"
                   margin="0 auto"
                   pb="5">
-<ModalInput 
- placeholder="Search name or paste address"
- searchQuery={searchQuery}
- changeInput ={handleInput}
- />
+                  <ModalInput 
+                  placeholder="Search name or paste address"
+                  searchQuery={searchQuery}
+                  changeInput ={handleInput}
+                  />
                     </Box>
              
                 </Box>
                 <ModalBody maxHeight="60vh"
-                  overflowY="scroll">
-
- 
-                    
+                  overflowY="scroll">     
                 {
-    filteredTokenListWithETH.map((currency,index)=>{
-      return <CurrencyList
-      key={index}
-      currency={currency}
-      />
-    })
+                filteredTokenListWithETH.map((currency,index)=>{
+                  return <CurrencyList
+                  key={index}
+                  currency={currency}
+                  />
+                })
                 }
                       </ModalBody>
               

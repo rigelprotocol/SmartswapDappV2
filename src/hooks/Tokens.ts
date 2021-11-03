@@ -38,10 +38,10 @@ function useTokensFromMap(tokenMap: TokenAddressMap, includeUserAdded: boolean):
     }, [chainId, tokenMap, includeUserAdded])
   }
 
-export function useAllTokens(): { [address: string]: Token } {
-    const allTokens = useCombinedActiveList()
-    return useTokensFromMap(allTokens, true)
-  }
+    export function useAllTokens(): { [address: string]: Token } {
+        const allTokens = useCombinedActiveList()
+        return useTokensFromMap(allTokens, true)
+      }
 
   export const ExtendedEther = (chainId:number  = 56,symbol:string,name:string,logo:string) =>{
     let native = {
