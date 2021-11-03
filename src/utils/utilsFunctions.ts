@@ -22,9 +22,9 @@ export const provider = async () => {
     let ethProvider = await detectEthereumProvider();
     if (ethProvider !== window.ethereum && window.ethereum !== 'undefined') {
       ethProvider = window.ethereum;
-      return new Web3Provider(ethProvider as any).getSigner();
+      return new Web3Provider(ethProvider as any);
     }
-    return new Web3Provider(ethProvider as any).getSigner();
+    return new Web3Provider(ethProvider as any);
   } catch (e) {
     console.log(e);
   }
@@ -32,12 +32,13 @@ export const provider = async () => {
 
 export const getERC20Token = async (address: string) => {
   const Provider = await provider();
-  const token = new Contract(address, ERC20Token, Provider);
+  const token =await new Contract(address, ERC20Token, Provider);
   return token;
 };
 
 // returns the checksummed address if the address is valid, otherwise returns false
 export function isAddress(value: any): string | false {
+  console.log({value})
   try {
     return getAddress(value)
   } catch {

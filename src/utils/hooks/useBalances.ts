@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { provider, getERC20Token } from '../utilsFunctions';
 import { ethers } from 'ethers';
-import { SupportedChainSymbols } from '../constants/chains';
+import { SupportedChainSymbols,SupportedChainLogo,SupportedChainName } from '../constants/chains';
 import { RGPADDRESSES } from '../addresses';
 
 export const useNativeBalance = () => {
@@ -22,6 +22,9 @@ export const useNativeBalance = () => {
             parseFloat(ethers.utils.formatEther(balance as any)).toFixed(4)
           );
           setSymbol(SupportedChainSymbols[chainId as number]);
+          setName(SupportedChainName[chainId as number]);
+          setLogo(SupportedChainLogo[chainId as number]);
+
         } catch (err) {
           console.log(err);
         }
@@ -32,7 +35,7 @@ export const useNativeBalance = () => {
     getBalance();
   }, [account, chainId]);
 
-  return [Balance, Symbol];
+  return [Balance, Symbol,Name,Logo];
 };
 
 export const useRGPBalance = () => {

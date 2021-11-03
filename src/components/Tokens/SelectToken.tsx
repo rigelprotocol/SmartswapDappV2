@@ -1,4 +1,5 @@
 import React,{ useState,useCallback,useMemo,useRef } from "react"
+// import { Token } from "@sushiswap/sdk"
 import {
     ModalOverlay,
     ModalContent,
@@ -17,16 +18,17 @@ import {
 } from "@chakra-ui/react"
 import ModalInput from "./input"
 import ManageToken from "./manageTokens"
-// import { Currency } from '@uniswap/sdk-core'
 import { useWeb3React } from "@web3-react/core"
 import AutoSizer from "react-virtualized-auto-sizer"
 import { FixedSizeList } from "react-window"
 import CurrencyList from "./CurrencyList"
+import { Token } from "@uniswap/sdk"
+import { filterTokens, useSortedTokensByQuery } from './filtering'
 import useDebounce from "../../hooks/useDebounce";
-import {UseTokens,ExtendedEther} from "../../hooks/useWallet"
-import { Token } from "../../hooks/useWallet"
+// import { Token } from "../../hooks/useWallet"
 import { useNativeBalance } from "../../utils/hooks/useBalances";
-
+import { useTokenComparator } from "./sorting"
+import { useAllTokens,ExtendedEther } from "../../hooks/Tokens"
  type IModal= {
 tokenModal:boolean,
 setTokenModal:React.Dispatch<React.SetStateAction<boolean>>
@@ -35,35 +37,54 @@ setTokenModal:React.Dispatch<React.SetStateAction<boolean>>
 export type Currency = Token
 const SelectToken:React.FC<IModal> = ({tokenModal,setTokenModal}) => {
 const { chainId } = useWeb3React()
-const [ ,Symbol,Name,Logo] = useNativeBalance();
-    const [displayManageToken,setDisplayManageToken] = useState(false)
-    const [tokenList] = UseTokens()
-    const ether = ExtendedEther(chainId,Symbol,Name,Logo)
+
     const [searchQuery,setSearchQuery] = useState<string>('')
     const debouncedQuery = useDebounce(searchQuery,300)
-
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const boxShadow= useColorModeValue('#DEE6ED', '#324D68');
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
     const heavyTextColor = useColorModeValue("#333333", "#F1F5F8");
     const textColor = useColorModeValue("#319EF6","#4CAFFF")
     const boxColor = useColorModeValue("#F2F5F8","#213345")
+  
+
+    const [invertSearchOrder] = useState<boolean>(false)
+    const [displayManageToken,setDisplayManageToken] = useState(false)
+
+    const allTokens = useAllTokens()
+    
+    const [ ,Symbol,Name,Logo] = useNativeBalance();
+    const ether = ExtendedEther(chainId,Symbol,Name,Logo)
+
+    const tokenComparator = useTokenComparator(invertSearchOrder)
+
+    const filteredTokens: Token[] = useMemo(() => {
+      return filterTokens(Object.values(allTokens), debouncedQuery)
+    }, [allTokens, debouncedQuery])
+
+    const sortedTokens: Token[] = useMemo(() => {
+      return filteredTokens.sort(tokenComparator)
+      return filteredTokens
+    }, [filteredTokens, tokenComparator])
+
+    const filteredSortedTokens = useSortedTokensByQuery(sortedTokens, debouncedQuery)
 
 
-    const filteredTokenListWithETH = useMemo(():Currency[]=>{
+    const filteredTokenListWithETH = useMemo(():Token[]=>{
       const s = debouncedQuery.toLowerCase().trim()
       if(s==="" || s ==="e" || s==="et" || s==="eth"){
-        return ether ? [ether, ...tokenList] : tokenList
+        return ether ? [ ether,...filteredSortedTokens] : filteredSortedTokens
       }
-      return tokenList
-    },[debouncedQuery, ether, tokenList])
+      return filteredSortedTokens
+    },[debouncedQuery, ether, filteredSortedTokens])
     const {
         onClose,
       } = useDisclosure();
 const openManageToken = ():void => {
 setDisplayManageToken(state => !state)
 }
-
+// refs for fixed size lists
+const fixedList = useRef<FixedSizeList>()
 const handleInput = useCallback(
   (event) => {
    const input = event.target.value
@@ -77,7 +98,7 @@ const handleInput = useCallback(
         
         <>
         <Modal isOpen={tokenModal} onClose={onClose} isCentered >
-            <ModalOverlay />
+        <ModalOverlay />
             <ModalContent
                 width="95vw"
                 borderRadius="6px"
@@ -121,21 +142,29 @@ const handleInput = useCallback(
                 <ModalBody maxHeight="60vh"
                   overflowY="scroll">
 
-  
   {/* <AutoSizer disableWidth>
 {({height}) => {
-  console.log({height})
   return(
   <CurrencyList
   height={height}
-  currencies = {tokenList}
+  currencies = {filteredTokenListWithETH}
   fixedListRef={fixedList}
   />
    )}} 
                      </AutoSizer> */}
-                {filteredTokenListWithETH.map((currency,index)=>
-    <CurrencyList currency={currency} key={index}/>
-                 )}
+                    
+                {
+    // <CurrencyList
+    // fixedListRef={fixedList}
+    // height={390}
+    // currencies={filteredTokenListWithETH} />
+    filteredTokenListWithETH.map((currency,index)=>{
+      return <CurrencyList
+      key={index}
+      currency={currency}
+      />
+    })
+                }
                       </ModalBody>
               
                <ModalFooter py="4" bg={boxColor}

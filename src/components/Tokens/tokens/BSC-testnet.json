@@ -18,7 +18,7 @@
   {
     "name": "BUSD Token",
     "symbol": "BUSD",
-    "address": "0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee",
+    "address": "0x10249e900b919fdee9e2ed38b4cd83c4df857254",
     "chainId": 97,
     "decimals": 18,
     "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/BUSD-BD1/logo.png"
