@@ -61,7 +61,7 @@ const Remove = () => {
           </Flex>
           <Box
             bgColor={positionBgColor}
-            mt="2"
+            mt="3"
             border="1px"
             borderRadius="6px"
             borderColor={borderColor}
@@ -87,7 +87,9 @@ const Remove = () => {
                   <Text mr={2} fontWeight="bold" color={pairTextColor}>
                     15750000
                   </Text>
-                  <Text color={titleColor}>Pool Tokens</Text>
+                  <Text fontSize="12px" color={titleColor}>
+                    Pool Tokens
+                  </Text>
                 </Flex>
               </Flex>
               <Box
@@ -227,6 +229,12 @@ const Remove = () => {
               h="45px"
               color={approveButtonColor}
               bgColor={approveButtonBgColor}
+              _active={{
+                bgColor: approveButtonBgColor,
+              }}
+              _hover={{
+                bgColor: approveButtonBgColor,
+              }}
               borderRadius="6px"
               w="46%"
             >
@@ -240,6 +248,8 @@ const Remove = () => {
               border="1px"
               borderColor={withdrawalButtonBorderColor}
               bgColor={withdrawaButtonBgColor}
+              _active={{ bgColor: withdrawaButtonBgColor }}
+              _hover={{ bgColor: withdrawaButtonBgColor }}
             >
               Confirm Withdrawal
             </Button>
