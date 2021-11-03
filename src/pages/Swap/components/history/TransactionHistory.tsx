@@ -26,6 +26,7 @@ const TransactionHistory = ({data}: {data: DataType}) => {
     const nonActiveTabColor = useColorModeValue('#666666', '#4A739B');
     const iconColor = useColorModeValue('#666666', '#DCE5EF');
     const borderColor = useColorModeValue('#DEE5ED', '#324D68');
+    const successColor = useColorModeValue('#22bb33', '#75f083');
 
     return (
         <Flex  >
@@ -51,14 +52,14 @@ const TransactionHistory = ({data}: {data: DataType}) => {
             </Text>
             <Flex py={2}>
             <Flex mr={4}>
-              <img src={data.token1Icon ? data.token1Icon : TokenIcon} width={25} height={25} alt="logo" />
+              <img src={data.token1Icon || TokenIcon} width={25} height={25} alt="logo" />
               <Text fontSize="sm" color={activeTabColor} ml={2}>
                 {data.amountIn} <span>{data.token1.symbol}</span>
               </Text>
             </Flex>
            <ArrowRightIcon/>
             <Flex ml={4}>
-              <img src={data.token2Icon ? data.token2Icon : TokenIcon} width={25} height={25} alt="logo" />
+              <img src={data.token2Icon || TokenIcon} width={25} height={25} alt="logo" />
               <Text fontSize="sm" color={activeTabColor} ml={2}>
                 {data.amountOut} <span>{data.token2.symbol}</span>
               </Text>
@@ -103,7 +104,7 @@ const TransactionHistory = ({data}: {data: DataType}) => {
                   Interval
                 </Text>
                 <Text    color={activeTabColor} fontSize="14px" fontWeight="regular">
-                  Weekly
+                  --
                 </Text>
               </Box>
             </Grid>
@@ -131,14 +132,14 @@ const TransactionHistory = ({data}: {data: DataType}) => {
                 >
                 Status
                 </Text>
-                <Text    color={activeTabColor} fontSize="14px" fontWeight="regular">
+                <Text    color={successColor} fontSize="14px" fontWeight="regular">
                 Completed
                 </Text>
               </Box>
               <Box maxW='min'>
-              <Button  size='md' colorScheme="red" variant="outline">
-                 Cancel
-              </Button>
+              {/*<Button  size='md' colorScheme="red" variant="outline">*/}
+              {/*   Cancel*/}
+              {/*</Button>*/}
               </Box>
             </Grid>
           </Box>

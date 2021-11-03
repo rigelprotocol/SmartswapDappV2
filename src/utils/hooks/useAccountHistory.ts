@@ -21,6 +21,14 @@ const convertTime = (trxTime: any) => {
     return formattedTime;
 };
 
+interface DataIncoming {
+    inputAmount: string,
+    outputAmount: string,
+    tokenIn: string,
+    tokenOut: string,
+    time: string
+}
+
 const formatAmount = (number: string) => {
     let res = ethers.utils.formatEther(number);
     res = (+res).toFixed(4);
@@ -32,22 +40,12 @@ const formatAmount = (number: string) => {
 const useAccountHistory = () => {
     const { account, chainId } = useWeb3React();
     const [loading, setLoading] = useState(false);
-    const [historyData, setHistoryData] = useState([]);
+    const [historyData, setHistoryData] = useState({});
 
 
-    const getTokenSymbol = (symbol: string) => {
-        const tokenList = mainToken;
-        let tokenIcon = tokenList.find(token => token.symbol === symbol);
-
-        if (!tokenIcon) {
-            return TokenLogo
-        }
-
-        return tokenIcon.logoURI
-    };
 
     abiDecoder.addABI(SmartSwapRouter02);
-    function decodeInput(input: any) {
+    function decodeInput(input: string) {
         return abiDecoder.decodeMethod(input);
     }
 
@@ -78,12 +76,24 @@ const useAccountHistory = () => {
                     const start = latestBlock && latestBlock - 4000;
                     const testNetwork = chainId === 97;
 
+                    const getTokenSymbol = (symbol: string) => {
+                        const tokenList = mainToken;
+                        let tokenIcon = tokenList.find(token => token.symbol === symbol);
+
+                        if (!tokenIcon) {
+                            return TokenLogo
+                        }
+
+                        return tokenIcon.logoURI
+                    };
+
                     const uri = `https://api${testNetwork ? '-testnet.bscscan.com' : '.bscscan.com'
                     }/api?module=account&action=txlist&address=${account}&startblock=0
                         &endblock=latest&sort=desc&apikey=AATZWFQ47VX3Y1DN7M97BJ5FEJR6MGRQSD`;
 
                     const data = await fetch(uri);
                     const jsondata = await data.json();
+                    console.log(jsondata);
 
 
                     const dataFiltered = jsondata.result
@@ -92,10 +102,12 @@ const useAccountHistory = () => {
                             value: items.value,
                             transactionObj: decodeInput(items.input).params,
                             timestamp: items.timeStamp,
-                            transactionfee: items.gasPrice * items.gasUsed,
+                            transactionFee: items.gasPrice * items.gasUsed,
                         }));
 
-                    const userData = dataFiltered.map((data: any) => ({
+                    const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(0, 5) : dataFiltered;
+
+                    const userData = dataToUse.map((data: any) => ({
                         inputAmount:
                             Number(data.value) > 0 ? data.value : data.transactionObj[0].value,
                         outputAmount:
@@ -110,41 +122,33 @@ const useAccountHistory = () => {
                             Number(data.value) > 0
                                 ? data.transactionObj[1].value[data.transactionObj[1].value.length - 1]
                                 : data.transactionObj[2].value[data.transactionObj[2].value.length - 1],
-                        time: convertTime(data.timestamp),
-
+                        time: convertTime(data.timestamp)
                     }));
 
                     const swapDataForWallet = await Promise.all(
-                        userData.map(async (data: any) => ({
+                        userData.map( async ( data: DataIncoming) => ({
                             tokenIn: await tokenList(data.tokenIn),
                             tokenOut: await tokenList(data.tokenOut),
                             amountIn: data.inputAmount,
                             amountOut: data.outputAmount,
                             time: data.time
-                        }))
+                        })),
                     );
 
-                    console.log(swapDataForWallet);
+                    const userSwapHistory = swapDataForWallet.map((data: any) => ({
+                        token1Icon:
+                            getTokenSymbol(data.tokenIn.symbol),
+                        token2Icon:
+                            getTokenSymbol(data.tokenOut.symbol),
+                        token1: data.tokenIn,
+                        token2: data.tokenOut,
+                        amountIn: formatAmount(data.amountIn),
+                        amountOut: formatAmount(data.amountOut),
+                        time: data.time,
+                    }));
 
-                    let dataResult = [] as any;
-
-                    swapDataForWallet.map((data: any) => {
-                        const item = {
-                            token1Icon:
-                                getTokenSymbol(data.tokenIn.symbol),
-                            token2Icon:
-                                getTokenSymbol(data.tokenOut.symbol),
-                            token1: data.tokenIn,
-                            token2: data.tokenOut,
-                            amountIn: formatAmount(data.amountIn),
-                            amountOut: formatAmount(data.amountOut),
-                            time: data.time
-                        };
-                        dataResult.push(item);
-                    });
-
-                    setHistoryData(dataResult);
-                    console.log(dataResult);
+                    setHistoryData(userSwapHistory);
+                    console.log(userSwapHistory);
                     setLoading(false);
 
 
@@ -153,7 +157,7 @@ const useAccountHistory = () => {
                     setLoading(false);
                 }
             } else {
-                console.log('Connect Wallet')
+                console.log('Wallet disconnected')
             }
         };
         loadAccountHistory();
