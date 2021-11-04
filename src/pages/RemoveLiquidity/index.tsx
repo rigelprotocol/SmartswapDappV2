@@ -1,7 +1,8 @@
-import React from "react";
+import React from 'react';
+import Remove from './Remove';
 
 function index() {
-  return <div></div>;
+  return <Remove />;
 }
 
 export default index;

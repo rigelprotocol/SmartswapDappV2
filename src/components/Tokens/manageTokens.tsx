@@ -18,9 +18,9 @@ import {
 } from "@chakra-ui/react"
 import ModalInput from "./input"
 import { useDispatch, useSelector } from "react-redux";
-import { setTokenGroup } from "../../../state/application/reducer";
-import { RootState } from "../../../state";
-import USDTLOGO from '../../../assets/roundedlogo.svg';
+import { setTokenGroup } from "../../state/application/reducer";
+import { RootState } from "../../state";
+import USDTLOGO from '../../assets/roundedlogo.svg';
 import { ArrowBackIcon } from "@chakra-ui/icons"
 import NewToken from "./newToken";
 

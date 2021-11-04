@@ -1,8 +1,8 @@
-import React from "react"
+import React, {useState, useCallback} from "react"
 import {
     ModalOverlay,
     ModalContent,
-    Modal, 
+    Modal,
     ModalCloseButton,
     ModalHeader,
     useDisclosure,
@@ -11,11 +11,21 @@ import {
     Flex,
     Text,
     Button,
-    Image
+    useClipboard,
+    Tooltip,
+    IconButton,
+    Link,
+    Image,
 } from "@chakra-ui/react"
+import { ExternalLinkIcon } from '@chakra-ui/icons'
 import { shortenAddress } from "../../../utils";
-import MetamaskLogo from "./../../../assets/metamaskLogo.png";
+import { ExplorerDataType, getExplorerLink } from '../../../utils/getExplorerLink'
 import { CopyIcon } from "../../../theme/components/Icons";
+import StatusIcon from "../StatusIcon";
+import {useWeb3React} from "@web3-react/core";
+import NetworkModal from "./networkModal";
+import ROUTESQUARELIGHT from '../../../assets/routesquare-light.svg';
+import ROUTESQUAREDARK from '../../../assets/routesquare-dark.svg';
 export type IModal= {
     displayWallet:boolean,
     accounts:string,
@@ -29,15 +39,27 @@ setDisplayWallet
     }) => {
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
-    const borderColor = useColorModeValue("#DEE6ED","#324D68")
-    const dashedColor = useColorModeValue("#DEE6ED","#4A739B")
-    const activeButtonColor = useColorModeValue("#319EF6","#4CAFFF")
-    const buttonColor = useColorModeValue("#666666","#7599BD")
+    const borderColor = useColorModeValue("#DEE6ED","#324D68");
+    const dashedColor = useColorModeValue("#DEE6ED","#4A739B");
+    const activeButtonColor = useColorModeValue("#319EF6","#4CAFFF");
+    const buttonColor = useColorModeValue("#666666","#7599BD");
+    const routeSquareIcon = useColorModeValue(ROUTESQUARELIGHT, ROUTESQUAREDARK)
     const {
         isOpen,
         onOpen,
         onClose,
       } = useDisclosure();
+    const { chainId, connector, deactivate } = useWeb3React();
+    const [displayNetwork, setDisplayNetwork] = useState(false);
+    const { hasCopied, onCopy } = useClipboard(accounts);
+
+    const disconnectWallet = () =>{
+      try {
+        deactivate();
+      } catch (e) {
+        console.log(e);
+      }
+    }
     return (
         <>
           <Modal isCentered isOpen={displayWallet} onClose={()=>setDisplayWallet(false)}>
@@ -79,15 +101,33 @@ setDisplayWallet
                   <Button
               variant={'ghost'}
             leftIcon={
-              <Image boxSize="30px" objectFit="contain" src={MetamaskLogo} mr="2"/>
+                <StatusIcon connector={connector} />
             }
           >
             {shortenAddress(accounts)}
           </Button>
-          <CopyIcon />
+          <Tooltip hasArrow label={hasCopied ? "Copied!" : "Copy"} bg="gray.300" color="black">
+            <IconButton onClick={onCopy} aria-label="Copy address" icon={<CopyIcon />} colorScheme="ghost"/>
+          </Tooltip>
                       </Flex>
                <Box mt="4" fontSize="16px" color={lightTextColor}>
-                <CopyIcon /> View on Etherscan
+                <Link href={getExplorerLink(chainId, accounts, ExplorerDataType.ADDRESS)} isExternal>
+                  <Box display="flex">
+                    <Image mr={1} h="24px" w="24px" src={routeSquareIcon} />
+                    <Text>
+                      View on
+                      {
+                        chainId === 1 || chainId === 3 || chainId === 4 || chainId === 5 || chainId === 6
+                        ? (" Etherscan")
+                        : chainId === 56 || chainId === 97
+                        ? (" Bscscan")
+                        : chainId === 137 || chainId === 80001
+                        ? (" Polygonscan")
+                        : (" Explorer")
+                      }
+                      </Text>
+                  </Box>
+                </Link>
                 </Box>
                 <Box>
                   <Flex
@@ -96,19 +136,21 @@ setDisplayWallet
                 <Button
               background="transparent"
               border={`1px solid ${activeButtonColor}`}
-              box-sizing="border-box"              
+              box-sizing="border-box"
               box-shadow="0px 1px 7px rgba(41, 45, 50, 0.08)"
               border-radius="6px"
               padding="23px 0"
               color={activeButtonColor}
               isFullWidth
               _hover={{background:`${activeButtonColor}`,color:"#fff"}}
+              onClick={() =>setDisplayNetwork(state => !state)}
           >
             Switch Wallet
           </Button>
+          <NetworkModal displayNetwork={displayNetwork} setDisplayNetwork={setDisplayNetwork} />
                 <Button
               border={`1px solid ${buttonColor}`}
-              box-sizing="border-box"              
+              box-sizing="border-box"
               box-shadow="0px 1px 7px -2px rgba(24, 39, 75, 0.06), 0px 2px 2px rgba(24, 39, 75, 0.06)"
               border-radius="6px"
               padding="23px 0"
@@ -117,21 +159,21 @@ setDisplayWallet
               isFullWidth
               ml="4"
               background="transparent"
+              onClick={disconnectWallet}
           >
             Disconnect Wallet
           </Button>
           </Flex>
                 </Box>
                 <Box padding="15px"border={`1px dashed ${dashedColor}`} borderRadius="6px" fontSize="16px" mt="9">
-<Text color={lightTextColor} mb="6" textAlign="center">Your recent transactions will appear here</Text>
-                  </Box>
+                    <Text color={lightTextColor} mb="6" textAlign="center">Your recent transactions will appear here</Text>
                 </Box>
-                
-               
+                </Box>
+
             </ModalContent>
             </Modal>
           </>
     )
-}
+};
 
 export default WalletModal

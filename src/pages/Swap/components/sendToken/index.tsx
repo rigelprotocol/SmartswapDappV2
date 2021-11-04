@@ -4,6 +4,7 @@ import SwapSettings from './SwapSettings';
 import From from './From';
 import To from './To';
 import { SwitchIcon } from '../../../../theme/components/Icons';
+import { useWeb3React } from '@web3-react/core';
 
 const SendToken = () => {
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
@@ -11,9 +12,17 @@ const SendToken = () => {
   const lightmode = useColorModeValue(true, false);
   const switchBgcolor = useColorModeValue('#F2F5F8', '#213345');
   const buttonBgcolor = useColorModeValue('#F2F5F8', '#213345');
+  const { account } = useWeb3React();
   return (
     <div>
-      <Box border="1px" borderColor={borderColor} borderRadius="6px" h="420px" pl={3} pr={3}>
+      <Box
+        border="1px"
+        borderColor={borderColor}
+        borderRadius="6px"
+        h="420px"
+        pl={3}
+        pr={3}
+      >
         <SwapSettings />
         <From />
         <Flex justifyContent="center">
@@ -35,7 +44,7 @@ const SendToken = () => {
             boxShadow={lightmode ? 'base' : 'lg'}
             _hover={{ bgColor: buttonBgcolor }}
           >
-            Connect Wallet
+            {account ? 'Enter an amount' : 'Connect Wallet'}
           </Button>
         </Flex>
       </Box>

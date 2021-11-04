@@ -20,7 +20,7 @@ function DappsDropdown() {
       <>
         <Menu>
           <MenuButton
-            mr={16}
+            mr={1}
             variant="ghost"
             as={Button}
             transition="all 0.2s"

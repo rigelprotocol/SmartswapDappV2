@@ -1,9 +1,8 @@
-import React, {useCallback, useState} from "react";
+import React, { useCallback, useState } from 'react';
 import {
   Flex,
   Text,
   Button,
-  Image,
   ModalOverlay,
   ModalContent,
   Modal,
@@ -12,29 +11,17 @@ import {
   useColorModeValue,
   useMediaQuery,
 } from '@chakra-ui/react';
-import { AbstractConnector } from '@web3-react/abstract-connector';
-import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
-import { IoWalletOutline } from "react-icons/io5";
-import { shortenAddress } from "../../utils";
-import MetamaskLogo from "./../../assets/metamaskLogo.png";
-import { injected, ConnectorNames, connectorsByName, walletconnect, bscConnector} from "../../connectors";
-import WalletOptions from "./WalletOptions";
-import WalletModal from "./modals/walletModal";
-import WalletConnectLogo from '../../assets/walletconnect-logo.svg';
-import BinanceLogo from '../../assets/BNB.svg';
+import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core';
+import { IoWalletOutline } from 'react-icons/io5';
+import { shortenAddress } from '../../utils';
+import { injected, ConnectorNames, connectorsByName } from '../../connectors';
+import WalletOptions from './WalletOptions';
+import WalletModal from './modals/walletModal';
+import NetworkModal from "./modals/networkModal";
 import { useNativeBalance, useRGPBalance } from '../../utils/hooks/useBalances';
 import { useEagerConnect } from "../../utils/hooks/useWalletConnect";
+import StatusIcon from './StatusIcon';
 
-function StatusIcon({ connector }: { connector?: AbstractConnector }) {
-  if (connector === injected) {
-    return <Image boxSize="20px" objectFit="contain" src={MetamaskLogo} />;
-  } else if (connector === walletconnect) {
-    return <Image boxSize="20px" objectFit="contain" src={WalletConnectLogo} />;
-  } else if (connector === bscConnector) {
-    return <Image boxSize="20px" objectFit="contain" src={BinanceLogo} />;
-  }
-  return null;
-}
 
 export default function WalletConnection() {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
@@ -51,7 +38,8 @@ export default function WalletConnection() {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [Balance, Symbol] = useNativeBalance();
-  const [displayWallet,setDisplayWallet] = useState(false)
+  const [displayWallet, setDisplayWallet] = useState(false);
+  const [displayNetwork, setDisplayNetwork] = useState(false);
   const [RGPBalance] = useRGPBalance();
 
  const connectWallet = useCallback(
@@ -96,7 +84,7 @@ export default function WalletConnection() {
         </Button>
         <Flex
           ml={2}
-          w={isMobileDevice ? '160px' : '280px'}
+          w={isMobileDevice ? '160px' : 'max-content'}
           borderRadius="md"
           border={'1px solid'}
           borderColor={bgColor2}
@@ -110,19 +98,23 @@ export default function WalletConnection() {
             bg={bgColor2}
             px={2}
           >
-            <Text ml={2} fontWeight={'bold'}>
+            <Text fontWeight={'bold'}>
               {Balance} {Symbol}
             </Text>
           </Flex>
           <Button
-          onClick={() =>setDisplayWallet(state => !state)}
+            onClick={() => setDisplayWallet((state) => !state)}
             variant={'ghost'}
             rightIcon={<StatusIcon connector={connector} />}
           >
             {shortenAddress(account)}
           </Button>
         </Flex>
-        <WalletModal displayWallet={displayWallet} accounts={account} setDisplayWallet={setDisplayWallet} />
+        <WalletModal
+          displayWallet={displayWallet}
+          accounts={account}
+          setDisplayWallet={setDisplayWallet}
+        />
       </>
     );
   } else if (error) {
@@ -135,38 +127,13 @@ export default function WalletConnection() {
     return (
       <>
         <Button
-          onClick={onOpen}
+          onClick={() =>setDisplayNetwork(state => !state)}
           rightIcon={<IoWalletOutline />}
           variant="brand"
         >
           Connect Wallet
         </Button>
-        <Modal isOpen={isOpen} onClose={onClose} isCentered>
-          <ModalOverlay />
-          <ModalContent
-            width="90vw"
-            borderRadius="6px"
-            border={'1px solid'}
-            borderColor={bgColor3}
-            minHeight="40vh"
-            boxShadow={shadow}
-            bg={bg}
-          >
-            <ModalCloseButton
-              bg="none"
-              size={'sm'}
-              mt={6}
-              mr={3}
-              cursor="pointer"
-              _focus={{ outline: 'none' }}
-              onClick={onClose}
-              p={'7px'}
-              border={'1px solid'}
-              borderColor={buttonBorder}
-            />
-            <WalletOptions connect={connectWallet} />
-          </ModalContent>
-        </Modal>
+        <NetworkModal displayNetwork={displayNetwork} setDisplayNetwork={setDisplayNetwork} />
       </>
     );
   }
