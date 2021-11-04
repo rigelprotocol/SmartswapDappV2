@@ -12,9 +12,9 @@ import { ALL_SUPPORTED_CHAIN_IDS } from '../constants/chains';
 const NETWORK_URL = process.env.REACT_APP_NETWORK_URL;
 
 export enum ConnectorNames {
-    Injected = "injected",
-    WalletConnect = "walletconnect",
-    BSC = "bsc"
+  Injected = "injected",
+  WalletConnect = "walletconnect",
+  BSC = "bsc"
 }
 
 export const NETWORK_CHAIN_ID: number = parseInt(
@@ -62,6 +62,7 @@ export const walletconnect = new WalletConnectConnector({
 //     appLogoUrl: SMARTSWAP_LOGO
 
 // })
+
 
 export const connectorsByName = {
   [ConnectorNames.Injected]: injected,
