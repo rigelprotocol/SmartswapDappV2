@@ -4,6 +4,7 @@ import NULL24LOGO from '../../assets/Null-24.svg';
 export const SupportedChainSymbols: { [key: string]: string } = {
   '1': 'ETH',
   '3': 'ETH',
+  '4': 'ETH',
   '56': 'BNB',
   '97': 'BNB',
   '137': 'MATIC',
@@ -13,6 +14,7 @@ export const SupportedChainSymbols: { [key: string]: string } = {
 export const SupportedChainName: { [key: string]: string } = {
   '1': 'Ether',
   '3': 'Ether',
+  '4': 'Ether',
   '56': 'Binance Coin',
   '97': 'Binance Coin',
   '137': 'Matic',
@@ -22,6 +24,7 @@ export const SupportedChainName: { [key: string]: string } = {
 export const SupportedChainLogo: { [key: string]: string } = {
   '1': ETHLOGO,
   '3': ETHLOGO,
+  '4': ETHLOGO,
   '56': BNBLOGO,
   '97': BNBLOGO,
   '137': NULL24LOGO,

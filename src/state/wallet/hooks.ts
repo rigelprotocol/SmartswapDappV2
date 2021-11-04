@@ -19,14 +19,18 @@ import { checkSupportedIds } from "../../connectors";
             
           try {
             if(currency.isNative){
-              setBalance(Balance)
+              Balance === "0.0000" ? setBalance("0") :  setBalance(Balance)
+             
             }else{
               if(isAddress(currency.address)){
-  const token = await getERC20Token(currency.address ? currency.address : "");
+              const token = await getERC20Token(currency.address ? currency.address : "");
             const balance = await token.balanceOf(account);
-            setBalance(
-              parseFloat(ethers.utils.formatEther(balance)).toFixed(4)
+            const amount =ethers.utils.formatEther(balance)
+            console.log({amount})
+            amount ===  "0.0" ? setBalance("0") :  setBalance(
+              parseFloat(amount).toFixed(4)
             );
+            
             }
               }
             

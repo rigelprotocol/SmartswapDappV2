@@ -4,18 +4,29 @@ import { useMemo } from 'react'
 import { WrappedTokenInfo } from '../state/lists/WrappedTokenInfo'
 import { useWeb3React } from "@web3-react/core"
 import {TokenAddressMap} from "../state/lists/hooks"
-
+import {useState, useEffect } from "react"
+import { checkSupportedIds } from "../connectors"
 // reduce token map into standard address <-> Token mapping, optionally include user added tokens
 function useTokensFromMap(tokenMap: TokenAddressMap, includeUserAdded: boolean): { [address: string]: Token } {
+  const [chainid,setchainid] = useState(56)
     const { chainId } = useWeb3React()
     // const userAddedTokens = useUserAddedTokens()
+    // 
+    useEffect(()=>{
+      if(!chainId || !checkSupportedIds(chainId)){
+        setchainid(56)
+      }else{
+        setchainid(chainId)
+      }
+
+    },[chainId])
     return useMemo(() => {
-      if (!chainId) {
-        return {}
-  }
+  //     if (!chainId) {
+  //       return {}
+  // }
       // reduce to just tokens
-      const mapWithoutUrls = Object.keys(tokenMap[chainId]).reduce<{ [address: string]: Token }>((newMap, address) => {
-        newMap[address] = tokenMap[chainId][address].token
+      const mapWithoutUrls = Object.keys(tokenMap[chainid]).reduce<{ [address: string]: Token }>((newMap, address) => {
+        newMap[address] = tokenMap[chainid][address].token
         return newMap
       }, {})
     //   if (includeUserAdded) {

@@ -8,9 +8,9 @@ import { RGPADDRESSES } from '../addresses';
 export const useNativeBalance = () => {
   const { account, chainId } = useWeb3React();
   const [Balance, setBalance] = useState<string>('');
-  const [Symbol, setSymbol] = useState('');
-  const [Name, setName] = useState('');
-  const [Logo, setLogo] = useState('');
+  const [Symbol, setSymbol] = useState(SupportedChainSymbols[56]);
+  const [Name, setName] = useState(SupportedChainName[56]);
+  const [Logo, setLogo] = useState(SupportedChainLogo[56]);
 
   useEffect(() => {
     const getBalance = async () => {
@@ -30,6 +30,9 @@ export const useNativeBalance = () => {
         }
       } else {
         console.log('Connect wallet');
+        setSymbol(SupportedChainSymbols[56]);
+          setName(SupportedChainName[56]);
+          setLogo(SupportedChainLogo[56]);
       }
     };
     getBalance();

@@ -11,10 +11,7 @@ import {
     useDisclosure,
     useColorModeValue,
     Box,
-    Flex,
     Text,
-    Button,
-    Image
 } from "@chakra-ui/react"
 import ModalInput from "./input"
 import ManageToken from "./manageTokens"

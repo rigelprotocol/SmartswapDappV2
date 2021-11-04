@@ -2,6 +2,7 @@
 import React from 'react'
 import { useWeb3React } from '@web3-react/core'
 import { Token } from '@uniswap/sdk-core'
+import CurrencyLogo from '../currencyLogo';
 import {
     useColorModeValue,
     Box,
@@ -12,12 +13,10 @@ import {
 } from "@chakra-ui/react"
 import { GetAddressTokenBalance } from "../../state/wallet/hooks"
 type ICurrencyList = {
-    currency:Token,
-    key:number
+    currency:Token
 }
 const CurrencyList =({
-   currency,
-   key
+   currency
 }:ICurrencyList) => {
 const {account } = useWeb3React()
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
@@ -33,11 +32,11 @@ const {account } = useWeb3React()
         fontSize="16px"
          cursor="pointer">
             <Flex>
-            <Image 
-        src={currency.logoURI}
-        width="24px"
-        height="24px"
-        borderRadius="24px" mr="3" mt="4"/>
+        
+        <Box mr={3}>
+        <CurrencyLogo currency={currency} size={24} squared={true} style={{marginTop:"20px"}}/>
+        </Box>
+         
              <Box>
              <Text color={heavyTextColor} fontWeight="700" mt="2">{currency.symbol}</Text>
              <Text color={lightTextColor}>{currency.name} </Text>
