@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import USDTLOGO from '../../../../assets/roundedlogo.svg';
-import SelectToken from '../../../../theme/components/Tokens/SelectToken';
+import SelectToken from "../../../../components/Tokens/SelectToken"
 
 type InputSelectorProps = {
   max: Boolean;
