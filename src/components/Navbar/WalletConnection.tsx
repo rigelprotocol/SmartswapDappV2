@@ -72,7 +72,7 @@ export default function WalletConnection() {
         </Button>
         <Flex
           ml={2}
-          w={isMobileDevice ? '160px' : '280px'}
+          w={isMobileDevice ? '160px' : 'max-content'}
           borderRadius="md"
           border={'1px solid'}
           borderColor={bgColor2}
