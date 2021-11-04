@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Flex,
   Box,
@@ -7,12 +7,16 @@ import {
   Image,
   Input,
   Button,
+  useMediaQuery,
 } from '@chakra-ui/react';
 import { ArrowBackIcon, TimeIcon } from '@chakra-ui/icons';
 import { SettingsIcon } from '../../theme/components/Icons';
 import BNBLOGO from '../../assets/BNB.svg';
 
 const Remove = () => {
+  const [isTabDevice] = useMediaQuery('(min-width: 990px)');
+  const [isTabDevice2] = useMediaQuery('(max-width: 1200px)');
+
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   const topIcons = useColorModeValue('#666666', '#DCE6EF');
   const titleColor = useColorModeValue('#666666', '#DCE5EF');
@@ -27,10 +31,14 @@ const Remove = () => {
   const approveButtonBgColor = useColorModeValue('#319EF6', '#4CAFFF');
   const withdrawalButtonBorderColor = useColorModeValue('#666666', '#324D68');
   const withdrawaButtonBgColor = useColorModeValue('#FFFFFF', '#15202B');
+
+  useEffect(() => {
+    console.log(isTabDevice && isTabDevice2);
+  }, [isTabDevice, isTabDevice2]);
   return (
     <Flex minH="100vh" mt={10} justifyContent="center">
       <Box
-        h="600px"
+        h={isTabDevice && isTabDevice2 ? '620px' : '600px'}
         mx={4}
         w={['100%', '100%', '45%', '29.5%']}
         border="1px"
@@ -75,16 +83,28 @@ const Remove = () => {
               </Flex>
               <Flex mt={2} justifyContent="space-between">
                 <Flex alignItems="center">
-                  <Flex mr={2} alignItems="center">
+                  <Flex
+                    mr={isTabDevice && isTabDevice2 ? '' : 2}
+                    alignItems="center"
+                  >
                     <Image src={BNBLOGO} />
                     <Image src={BNBLOGO} />
                   </Flex>
-                  <Text fontWeight="bold" color={pairTextColor}>
+                  <Text
+                    fontWeight="bold"
+                    mr={isTabDevice && isTabDevice2 ? 4 : ''}
+                    ml={isTabDevice && isTabDevice2 ? 4 : ''}
+                    color={pairTextColor}
+                  >
                     RGP/BNB
                   </Text>
                 </Flex>
                 <Flex alignItems="center">
-                  <Text mr={2} fontWeight="bold" color={pairTextColor}>
+                  <Text
+                    mr={isTabDevice && isTabDevice2 ? 4 : 2}
+                    fontWeight="bold"
+                    color={pairTextColor}
+                  >
                     15750000
                   </Text>
                   <Text fontSize="12px" color={titleColor}>
@@ -237,6 +257,7 @@ const Remove = () => {
               }}
               borderRadius="6px"
               w="46%"
+              fontSize={isTabDevice && isTabDevice2 ? '12px' : ''}
             >
               Approve
             </Button>
@@ -250,8 +271,10 @@ const Remove = () => {
               bgColor={withdrawaButtonBgColor}
               _active={{ bgColor: withdrawaButtonBgColor }}
               _hover={{ bgColor: withdrawaButtonBgColor }}
+              px={14}
+              fontSize={isTabDevice && isTabDevice2 ? '12px' : ''}
             >
-              Confirm Withdrawal
+              <Text>Confirm Withdrawal</Text>
             </Button>
           </Flex>
         </Flex>
