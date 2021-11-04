@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   Flex,
   Box,
@@ -32,9 +32,6 @@ const Remove = () => {
   const withdrawalButtonBorderColor = useColorModeValue('#666666', '#324D68');
   const withdrawaButtonBgColor = useColorModeValue('#FFFFFF', '#15202B');
 
-  useEffect(() => {
-    console.log(isTabDevice && isTabDevice2);
-  }, [isTabDevice, isTabDevice2]);
   return (
     <Flex minH="100vh" mt={10} justifyContent="center">
       <Box
