@@ -30,7 +30,8 @@ interface DataIncoming {
 }
 
 const formatAmount = (number: string) => {
-    let res = ethers.utils.formatEther(number);
+    const num = ethers.BigNumber.from(number);
+    let res = ethers.utils.formatEther(num);
     res = (+res).toFixed(4);
     return res;
 
