@@ -43,6 +43,7 @@
     "react-scripts": "4.0.3",
     "react-spring": "^9.3.0",
     "react-window": "^1.8.6",
+    "react-switch": "^6.0.0",
     "save-dev": "^0.0.1-security",
     "typescript": "^3.9.5",
     "web-vitals": "^0.2.2"
