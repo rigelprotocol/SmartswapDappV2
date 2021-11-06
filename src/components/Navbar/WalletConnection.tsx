@@ -17,8 +17,11 @@ import { shortenAddress } from '../../utils';
 import { injected, ConnectorNames, connectorsByName } from '../../connectors';
 import WalletOptions from './WalletOptions';
 import WalletModal from './modals/walletModal';
+import NetworkModal from "./modals/networkModal";
 import { useNativeBalance, useRGPBalance } from '../../utils/hooks/useBalances';
+import { useEagerConnect } from "../../utils/hooks/useWalletConnect";
 import StatusIcon from './StatusIcon';
+
 
 export default function WalletConnection() {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
@@ -36,27 +39,38 @@ export default function WalletConnection() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [Balance, Symbol] = useNativeBalance();
   const [displayWallet, setDisplayWallet] = useState(false);
+  const [displayNetwork, setDisplayNetwork] = useState(false);
   const [RGPBalance] = useRGPBalance();
 
-  const connectWallet = useCallback(
+ const connectWallet = useCallback(
     (connectorID: ConnectorNames) => {
       const connector = connectorsByName[connectorID];
-      try {
-        activate(connector);
-      } catch (e) {
-        console.log(e);
+      if(connector){
+        activate(connector, async(error : Error)=>{
+          if(!error){
+            activate(connector)
+          }
+        })
       }
+      
     },
     [activate]
   );
 
+  /** 
   const connectAccount = () => {
     try {
       activate(injected);
     } catch (error) {
       console.log(error);
     }
-  };
+  };*/
+
+
+
+
+  const triedEager = useEagerConnect()
+
 
   if (account) {
     return (
@@ -70,7 +84,7 @@ export default function WalletConnection() {
         </Button>
         <Flex
           ml={2}
-          w={isMobileDevice ? '160px' : '280px'}
+          w={isMobileDevice ? '160px' : 'max-content'}
           borderRadius="md"
           border={'1px solid'}
           borderColor={bgColor2}
@@ -113,38 +127,13 @@ export default function WalletConnection() {
     return (
       <>
         <Button
-          onClick={onOpen}
+          onClick={() =>setDisplayNetwork(state => !state)}
           rightIcon={<IoWalletOutline />}
           variant="brand"
         >
           Connect Wallet
         </Button>
-        <Modal isOpen={isOpen} onClose={onClose} isCentered>
-          <ModalOverlay />
-          <ModalContent
-            width="90vw"
-            borderRadius="6px"
-            border={'1px solid'}
-            borderColor={bgColor3}
-            minHeight="40vh"
-            boxShadow={shadow}
-            bg={bg}
-          >
-            <ModalCloseButton
-              bg="none"
-              size={'sm'}
-              mt={6}
-              mr={3}
-              cursor="pointer"
-              _focus={{ outline: 'none' }}
-              onClick={onClose}
-              p={'7px'}
-              border={'1px solid'}
-              borderColor={buttonBorder}
-            />
-            <WalletOptions connect={connectWallet} />
-          </ModalContent>
-        </Modal>
+        <NetworkModal displayNetwork={displayNetwork} setDisplayNetwork={setDisplayNetwork} />
       </>
     );
   }

@@ -19,7 +19,6 @@ import {
 
 const SetPrice = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
-  const setColor = useColorModeValue('#666666', '#DCE5EF');
   const borderColor = useColorModeValue('#DEE6ED', '#324D68')
   const iconColor = useColorModeValue('#666666', '#DCE6EF');
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
@@ -55,7 +54,7 @@ const SetPrice = () => {
               </Flex>
               <To/>
               <Flex>
-                <Text fontSize="14px" color={setColor} mr={2}>
+                <Text fontSize="14px" color={iconColor} mr={2}>
                   Set Price
                 </Text>
                 <ExclamationIcon/>
@@ -64,7 +63,7 @@ const SetPrice = () => {
               <Input placeholder="0.00" size="lg" borderRadius={4} borderColor={borderColor}/>
 
               <Flex  mt={5}>
-                <Center borderColor={setColor} borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px">
+                <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px">
                   <VectorIcon/>
                 </Center>
                 <Spacer/>
@@ -117,7 +116,7 @@ const SetPrice = () => {
               </Flex>
               <To/>
               <Flex>
-                <Text fontSize="14px" color={setColor} mr={2}>
+                <Text fontSize="14px" color={iconColor} mr={2}>
                   Set Price
                 </Text>
                 <ExclamationIcon/>
@@ -126,7 +125,7 @@ const SetPrice = () => {
               <Input placeholder="0.00" size="lg" borderRadius={4} borderColor={borderColor}/>
 
               <Flex  mt={5}>
-                <Center borderColor={setColor} borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px">
+                <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px">
                   <VectorIcon/>
                 </Center>
                 <Spacer/>
