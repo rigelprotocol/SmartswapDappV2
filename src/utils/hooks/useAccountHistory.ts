@@ -1,11 +1,10 @@
 import {useEffect, useState} from 'react';
-import { useWeb3React } from '@web3-react/core';
+import {useWeb3React} from '@web3-react/core';
 import mainToken from '../../utils/main-token.json';
 import TokenLogo from '../../assets/Null-24.svg';
-import {provider} from "../utilsFunctions";
+import {getERC20Token} from "../utilsFunctions";
 import {ethers} from 'ethers';
 import SmartSwapRouter02 from '../abis/swapAbiForDecoder.json';
-import {getERC20Token} from "../utilsFunctions";
 
 const abiDecoder = require('abi-decoder');
 
@@ -15,10 +14,9 @@ const convertTime = (trxTime: any) => {
     const minutes = `0${date.getMinutes()}`;
     const seconds = `0${date.getSeconds()}`;
     // Displays time in 10:30:23 format
-    const formattedTime = `${hours}:${minutes.substr(-2)}:${seconds.substr(
+    return `${hours}:${minutes.substr(-2)}:${seconds.substr(
         -2,
     )}`;
-    return formattedTime;
 };
 
 interface DataIncoming {
@@ -66,16 +64,15 @@ const useAccountHistory = () => {
         return address !== '0x' ? resolveToken : null;
     };
 
+    const testNetwork = chainId === 97;
+    const contractAddress = chainId === 97 ? "0x00749e00af4359df5e8c156af6dfbdf30dd53f44" : '0xf78234e21f1f34c4d8f65faf1bc82bfc0fa24920';
+
 
     useEffect(() => {
         setLoading(true);
         const loadAccountHistory = async () => {
             if (account) {
                 try {
-                    const Provider = await provider();
-                    const latestBlock = await Provider?.getBlockNumber();
-                    const start = latestBlock && latestBlock - 4000;
-                    const testNetwork = chainId === 97;
 
                     const getTokenSymbol = (symbol: string) => {
                         const tokenList = mainToken;
@@ -94,10 +91,11 @@ const useAccountHistory = () => {
 
                     const data = await fetch(uri);
                     const jsondata = await data.json();
-                    console.log(jsondata);
+
+                    const SwapTrx = jsondata.result.filter((item: any) => item.to === contractAddress);
 
 
-                    const dataFiltered = jsondata.result
+                    const dataFiltered = SwapTrx
                         .filter((items: any) => decodeInput(items.input) !== undefined)//&& decodeInput(items.input).params.length == 5)
                         .map((items: any) => ({
                             value: items.value,
@@ -149,7 +147,6 @@ const useAccountHistory = () => {
                     }));
 
                     setHistoryData(userSwapHistory);
-                    console.log(userSwapHistory);
                     setLoading(false);
 
 
