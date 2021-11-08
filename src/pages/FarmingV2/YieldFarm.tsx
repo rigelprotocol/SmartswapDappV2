@@ -5,11 +5,15 @@ import { useColorModeValue } from "@chakra-ui/react";
 import { RGPIcon } from './Icon';
 import {
 LIGHT_THEME,
-DARK_THEME
+DARK_THEME, useActiveWeb3React
 } from './index';
 
 const YieldFarm = ({content}:{content: { id: number; totalLiquidity: string; earn: string; img: string; ARYValue: string; deposit:string }}) => {
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
+
+  const { chainId, library } = useActiveWeb3React();
+
+  const active = chainId && library;
 
   // const wallet: any = 1;
   // const onOpenModal = false;
@@ -114,16 +118,22 @@ const YieldFarm = ({content}:{content: { id: number; totalLiquidity: string; ear
               h="40px"
               border="2px solid #319EF6"
               background={
-                mode === LIGHT_THEME ? "#FFFFFF !important" :
-                mode === DARK_THEME  ? "#319EF6 !important" :
-                "#FFFFFF !important"}
+                mode === LIGHT_THEME && active ? "#FFFFFF !important" :
+                mode === DARK_THEME && active ? "#319EF6 !important" :
+                mode === LIGHT_THEME && !active ? "#FFFFFF !important" :
+                mode === DARK_THEME && !active  ? "#15202B !important" :                "
+                #FFFFFF !important"}
                 color={
-                  mode === LIGHT_THEME ? "#319EF6" :
-                  mode === DARK_THEME  ? "#FFFFFF" :
+                  mode === LIGHT_THEME && active ? "#319EF6" :
+                  mode === DARK_THEME && active ? "#FFFFFF" :
+                  mode === LIGHT_THEME && !active ? "#319EF6" :
+                  mode === DARK_THEME && !active ? "#4CAFFF" :
                   "#333333"}
                 borderColor={
-                mode === LIGHT_THEME ? "#319EF6 !important" :
-                mode === DARK_THEME ? "#319EF6 !important" :
+                mode === LIGHT_THEME && active ? "#4CAFFF !important" :
+                mode === DARK_THEME && active ? "#319EF6 !important" :
+                mode === LIGHT_THEME && !active ? "#4CAFFF !important" :
+                mode === DARK_THEME && !active ? "#4CAFFF !important" :
                 "#319EF6 !important"}
               borderRadius="6px"
               mb="4"
@@ -140,16 +150,22 @@ const YieldFarm = ({content}:{content: { id: number; totalLiquidity: string; ear
             h="40px"
             border="2px solid #319EF6"
             background={
-              mode === LIGHT_THEME ? "#FFFFFF !important" :
-              mode === DARK_THEME  ? "#319EF6 !important" :
+              mode === LIGHT_THEME && active ? "#FFFFFF !important" :
+              mode === DARK_THEME && active ? "#319EF6 !important" :
+              mode === LIGHT_THEME && !active ? "#FFFFFF !important" :
+              mode === DARK_THEME && !active  ? "#15202B !important" :                
               "#FFFFFF !important"}
               color={
-                mode === LIGHT_THEME ? "#319EF6" :
-                mode === DARK_THEME  ? "#FFFFFF" :
+                mode === LIGHT_THEME && active ? "#319EF6" :
+                mode === DARK_THEME && active ? "#FFFFFF" :
+                mode === LIGHT_THEME && !active ? "#319EF6" :
+                mode === DARK_THEME && !active ? "#4CAFFF" :
                 "#333333"}
               borderColor={
-              mode === LIGHT_THEME ? "#319EF6 !important" :
-              mode === DARK_THEME ? "#319EF6 !important" :
+              mode === LIGHT_THEME && active ? "#4CAFFF !important" :
+              mode === DARK_THEME && active ? "#319EF6 !important" :
+              mode === LIGHT_THEME && !active ? "#4CAFFF !important" :
+              mode === DARK_THEME && !active ? "#4CAFFF !important" :
               "#319EF6 !important"}
             borderRadius="6px"
             mb="4"

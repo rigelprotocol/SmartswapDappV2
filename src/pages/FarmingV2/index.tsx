@@ -16,11 +16,18 @@ export const V2 = 'v2';
 export const LIGHT_THEME = 'light';
 export const DARK_THEME = 'dark';
 
+export function useActiveWeb3React() {
+  const context = useWeb3React<Web3Provider>();
+  const contextNetwork = useWeb3React<Web3Provider>("NETWORK");
+  return context.active ? context : contextNetwork;
+}
+
 export function Index() {
   const history = useHistory();
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
   const [selected, setSelected] = useState(LIQUIDITY);
   const [isActive, setIsActive] = useState(V2);
+  const [ showAlert, setShowAlert] = useState(true);
 
 
   const changeVersion = (version: string) => {
@@ -43,16 +50,18 @@ export function Index() {
       changeVersion('/farming-v2')
     }
   }
-  function useActiveWeb3React() {
-    const context = useWeb3React<Web3Provider>();
-    const contextNetwork = useWeb3React<Web3Provider>("NETWORK");
-    return context.active ? context : contextNetwork;
-  }
+
+  const handleAlert = () => {
+    
+    setShowAlert(false);
+  } 
+  
+
   const { chainId, library } = useActiveWeb3React();
 
   return (
     <Box>
-      {chainId && library ? null : (
+      {(chainId && library) || (!showAlert) ? null : (
         <Box mx={[5, 10, 15, 20]} my={4}>
           <Alert 
           color="#FFFFFF" 
@@ -80,6 +89,7 @@ export function Index() {
               color="#fff"
               right="20px"
               textAign="center"
+              onClick={handleAlert}
             />
           </Alert>
         </Box>
