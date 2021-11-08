@@ -2,13 +2,14 @@ import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useSelector } from 'react-redux'
 import toastReducers from '../components/Toast/toastSlice';
 import application from './application/reducer'
+import user from './user/reducer'
 import blockReducer from "./block"
 const store = configureStore({
     reducer: {
         toast: toastReducers,
         block: blockReducer,
         application,
-
+        user
     },
 });
 
