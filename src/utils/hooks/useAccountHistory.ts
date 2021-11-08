@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import  {useEffect, useState} from 'react';
 import {useWeb3React} from '@web3-react/core';
 import mainToken from '../../utils/main-token.json';
 import TokenLogo from '../../assets/Null-24.svg';
@@ -39,7 +39,7 @@ const formatAmount = (number: string) => {
 const useAccountHistory = () => {
     const { account, chainId } = useWeb3React();
     const [loading, setLoading] = useState(false);
-    const [historyData, setHistoryData] = useState({});
+    const [historyData, setHistoryData] = useState({} as any);
 
 
 
@@ -153,6 +153,7 @@ const useAccountHistory = () => {
                 } catch (e) {
                     console.log(e);
                     setLoading(false);
+                    setHistoryData({})
                 }
             } else {
                 console.log('Wallet disconnected')

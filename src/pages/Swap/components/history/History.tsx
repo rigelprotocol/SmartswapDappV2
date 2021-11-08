@@ -20,6 +20,9 @@ const History = () => {
 
   const {historyData, loading} = useAccountHistory();
 
+  const userData = Object.keys(historyData).map((i ) => historyData[i]);
+
+
   useEffect(() => {
     const isActive = checkSideTab('history');
     setSideBarRemoved(isActive);
@@ -112,7 +115,7 @@ const History = () => {
            maxHeight={'80vh'}
       >
         {show && showMarketHistory && <MarketHistory/>  }
-        {show && !showMarketHistory && historyData && historyData.map((data: DataType) => (
+        {show && !showMarketHistory && historyData && userData.map((data: DataType) => (
             <TransactionHistory key={data.time} data={data}/>
         ))}
       </Box>
