@@ -18,3 +18,7 @@ export function shortenAddress(address: string, chars = 4): string {
     }
     return `${parsed.substring(0, chars + 2)}...${parsed.substring(42 - chars)}`
 }
+
+export function escapeRegExp(string: string): string {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}

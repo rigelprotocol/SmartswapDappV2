@@ -21,6 +21,7 @@ import { TimeIcon } from '@chakra-ui/icons';
 import { SettingsIcon } from '../../theme/components/Icons';
 import { ExclamationIcon } from '../../theme/components/Icons';
 import { useUserSlippageTolerance } from '../../state/user/hooks'
+import { escapeRegExp } from '../../utils'
 
 enum SlippageError {
   InvalidInput = 'InvalidInput',
@@ -169,6 +170,8 @@ const TransactionSettings = () => {
                   parseCustomSlippage(event.target.value.replace(/,/g, '.'))
                 }
               }}
+              isWarning={!slippageInputIsValid}
+              isSuccess={![10, 50, 100].includes(userSlippageTolerance)}
               textAlign="right"
               p={1}
               borderRight="none"
