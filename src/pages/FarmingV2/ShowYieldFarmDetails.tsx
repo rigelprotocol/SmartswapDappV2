@@ -33,7 +33,7 @@ const ShowYieldFarmDetails = () => {
         background={mode === DARK_THEME ? "#213345" : "#F2F5F8"}
         padding="0 20px"
         paddingBottom="4px"
-        border="1px solid #4D4693"
+        border= {mode === DARK_THEME ? "2px solid #324D68" : "2px solid #DEE6ED"} 
         width="100%"
       >
         <Box
