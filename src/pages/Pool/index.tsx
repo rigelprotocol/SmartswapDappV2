@@ -6,14 +6,13 @@ import { Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import Liquidities from './liquidities';
 import {
-  GearIcon,
   RefreshIcon,
-  LightGearIcon,
   LightRefreshIcon,
 } from './Icons';
 import { useColorModeValue } from '@chakra-ui/react';
 import { useGetUserLiquidities } from '../../utils/hooks/usePools';
 import { Link } from 'react-router-dom';
+import TransactionSettings from '../../components/TransactionSettings';
 
 const Index = () => {
   const mode = useColorModeValue('light', 'dark');
@@ -74,10 +73,8 @@ const Index = () => {
                   Liquidity
                 </Text>
                 <Flex>
-                  <Box px={2}>
-                    {mode === 'dark' ? <LightGearIcon /> : <GearIcon />}
-                  </Box>
-                  <Box px={2}>
+                  <TransactionSettings />
+                  <Box>
                     {mode === 'dark' ? <LightRefreshIcon /> : <RefreshIcon />}
                   </Box>
                 </Flex>
@@ -148,7 +145,7 @@ const Index = () => {
                 Dont see a pool you joined?
               </Text>
               <Text fontSize="sm" color="blue.300" ml={3} cursor="pointer">
-              <Link to="/find"> Import it  </Link>  
+              <Link to="/find"> Import it  </Link>
               </Text>
             </Flex>
           </Box>
