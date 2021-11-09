@@ -88,7 +88,7 @@ const FindPool = () => {
         >
           <Flex my={2}>
             <Image ml={3} h="25px" w="25px" src={USDTLOGO} />
-            <Text ml={3} color={tokenListTriggerColor}>Sellect A Token</Text>
+            <Text ml={3} color={tokenListTriggerColor}>Select a token</Text>
             <Box ml={isMobileDevice ? "220px" : "250px"}><ChevronDownIcon w={8} h={8} /> </Box>
           </Flex>
         </Box>
@@ -122,7 +122,7 @@ const FindPool = () => {
         >
           <Flex my={2}>
             <Image ml={3} h="25px" w="25px" src={USDTLOGO} />
-            <Text ml={3} color={tokenListTriggerColor}>Sellect A Token</Text>
+            <Text ml={3} color={tokenListTriggerColor}>Select a token</Text>
             <Box ml={isMobileDevice ? "220px" : "250px"}><ChevronDownIcon w={8} h={8} /> </Box>
           </Flex>
         </Box>
