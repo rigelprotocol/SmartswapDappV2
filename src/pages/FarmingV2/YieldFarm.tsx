@@ -121,8 +121,8 @@ const YieldFarm = ({content}:{content: { id: number; totalLiquidity: string; ear
                 mode === LIGHT_THEME && active ? "#FFFFFF !important" :
                 mode === DARK_THEME && active ? "#319EF6 !important" :
                 mode === LIGHT_THEME && !active ? "#FFFFFF !important" :
-                mode === DARK_THEME && !active  ? "#15202B !important" :                "
-                #FFFFFF !important"}
+                mode === DARK_THEME && !active  ? "#15202B !important" :                
+                "#FFFFFF !important"}
                 color={
                   mode === LIGHT_THEME && active ? "#319EF6" :
                   mode === DARK_THEME && active ? "#FFFFFF" :
