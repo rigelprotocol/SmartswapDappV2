@@ -29,10 +29,8 @@ const FindPool = () => {
   const bgColor = useColorModeValue('#F2F5F8', '#213345');
   const topIcons = useColorModeValue('#666666', '#DCE6EF');
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
-  const btnTextColor = useColorModeValue('#999999', '#7599BD');
   const [tokenModal, setTokenModal] = useState(false);
-  const tokenListTrgiggerBgColor = useColorModeValue('', '#213345');
-  const tokenListTriggerColor = useColorModeValue('', '#DCE5EF');
+  const tokenListTriggerColor = useColorModeValue('#333333', '#F1F5F8');
   const activeButtonColor = useColorModeValue("#319EF6", "#4CAFFF");
 
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
@@ -71,7 +69,7 @@ const FindPool = () => {
           <SettingsIcon color={topIcons} />
           <TimeIcon w={6} h={7} pt={1} color={topIcons} />
         </Flex>
-        <Box bg={infoBg} borderRadius="md" p={4} mt={4} mb={5}>
+        <Box bg={mode === 'dark' ? '#213345' : '#F2F5F8'} borderRadius="md" p={4} mt={4} mb={5}>
           <Text color="#319EF6" fontWeight="400" fontSize="14px">
             Tip: Use this tool to find pairs that don’t automatically appear on the platform.   </Text>
         </Box>
@@ -88,8 +86,10 @@ const FindPool = () => {
         >
           <Flex my={2}>
             <Image ml={3} h="25px" w="25px" src={USDTLOGO} />
-            <Text ml={3} color={tokenListTriggerColor}>Select a token</Text>
-            <Box ml={isMobileDevice ? "220px" : "250px"}><ChevronDownIcon w={8} h={8} /> </Box>
+            <Heading ml={3} as="h4" size="md" color={tokenListTriggerColor} >Select a token</Heading>
+
+            <Spacer />
+            <ChevronDownIcon w={8} h={8} mr={3} />
           </Flex>
         </Box>
         <SelectToken tokenModal={tokenModal} setTokenModal={setTokenModal} />
@@ -122,8 +122,9 @@ const FindPool = () => {
         >
           <Flex my={2}>
             <Image ml={3} h="25px" w="25px" src={USDTLOGO} />
-            <Text ml={3} color={tokenListTriggerColor}>Select a token</Text>
-            <Box ml={isMobileDevice ? "220px" : "250px"}><ChevronDownIcon w={8} h={8} /> </Box>
+            <Heading ml={3} as="h4" size="md" color={tokenListTriggerColor}>Select a token</Heading>
+            <Spacer />
+            <ChevronDownIcon w={8} h={8} mr={3} />
           </Flex>
         </Box>
         <SelectToken tokenModal={tokenModal} setTokenModal={setTokenModal} />
