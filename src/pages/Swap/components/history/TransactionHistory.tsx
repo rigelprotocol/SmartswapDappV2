@@ -1,9 +1,9 @@
-import { Flex,Grid, Text, Button, Box, useColorModeValue } from '@chakra-ui/react';
+import { Flex,Grid, Text, Box, useColorModeValue } from '@chakra-ui/react';
 import React from 'react';
 import { ArrowRightIcon } from '../../../../theme/components/Icons';
 import TokenIcon from '../../../../assets/Null-24.svg';
 
-interface TokenDetails {
+export interface TokenDetails {
     name: string,
     symbol: string,
     address: string,
@@ -24,7 +24,6 @@ const TransactionHistory = ({data}: {data: DataType}) => {
 
     const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
     const nonActiveTabColor = useColorModeValue('#666666', '#4A739B');
-    const iconColor = useColorModeValue('#666666', '#DCE5EF');
     const borderColor = useColorModeValue('#DEE5ED', '#324D68');
     const successColor = useColorModeValue('#22bb33', '#75f083');
 
@@ -136,11 +135,7 @@ const TransactionHistory = ({data}: {data: DataType}) => {
                 Completed
                 </Text>
               </Box>
-              <Box maxW='min'>
-              {/*<Button  size='md' colorScheme="red" variant="outline">*/}
-              {/*   Cancel*/}
-              {/*</Button>*/}
-              </Box>
+
             </Grid>
           </Box>
         </Flex>

@@ -5,10 +5,11 @@ import TokenLogo from '../../assets/Null-24.svg';
 import {getERC20Token} from "../utilsFunctions";
 import {ethers} from 'ethers';
 import SmartSwapRouter02 from '../abis/swapAbiForDecoder.json';
+import {SMARTSWAPROUTER} from "../addresses";
 
 const abiDecoder = require('abi-decoder');
 
-const convertTime = (trxTime: any) => {
+export const convertTime = (trxTime: any) => {
     const date = new Date(trxTime * 1000);
     const hours = date.getHours();
     const minutes = `0${date.getMinutes()}`;
@@ -27,12 +28,39 @@ interface DataIncoming {
     time: string
 }
 
-const formatAmount = (number: string) => {
+export const formatAmount = (number: string) => {
     const num = ethers.BigNumber.from(number);
     let res = ethers.utils.formatEther(num);
     res = (+res).toFixed(4);
     return res;
 
+};
+
+export const getTokenSymbol = (symbol: string) => {
+    const tokenList = mainToken;
+    let tokenIcon = tokenList.find(token => token.symbol === symbol);
+
+    if (!tokenIcon) {
+        return TokenLogo
+    }
+
+    return tokenIcon.logoURI
+};
+
+export const tokenList = async (addressName: string) => {
+    const token = await getERC20Token(addressName);
+    const name = token.name();
+    const symbol = token.symbol();
+    const { address } = token;
+    const decimals = token.decimals();
+    const standardToken = await Promise.all([name, symbol, address, decimals]);
+    const resolveToken = {
+        name: standardToken[0],
+        symbol: standardToken[1],
+        address: standardToken[2],
+        decimals: standardToken[3]
+    };
+    return address !== '0x' ? resolveToken : null;
 };
 
 
@@ -48,24 +76,8 @@ const useAccountHistory = () => {
         return abiDecoder.decodeMethod(input);
     }
 
-    const tokenList = async (addressName: string) => {
-        const token = await getERC20Token(addressName);
-        const name = token.name();
-        const symbol = token.symbol();
-        const { address } = token;
-        const decimals = token.decimals();
-        const standardToken = await Promise.all([name, symbol, address, decimals]);
-        const resolveToken = {
-            name: standardToken[0],
-            symbol: standardToken[1],
-            address: standardToken[2],
-            decimals: standardToken[3]
-        };
-        return address !== '0x' ? resolveToken : null;
-    };
-
     const testNetwork = chainId === 97;
-    const contractAddress = chainId === 97 ? "0x00749e00af4359df5e8c156af6dfbdf30dd53f44" : '0xf78234e21f1f34c4d8f65faf1bc82bfc0fa24920';
+    const contractAddress = SMARTSWAPROUTER[chainId as number];
 
 
     useEffect(() => {
@@ -73,17 +85,6 @@ const useAccountHistory = () => {
         const loadAccountHistory = async () => {
             if (account) {
                 try {
-
-                    const getTokenSymbol = (symbol: string) => {
-                        const tokenList = mainToken;
-                        let tokenIcon = tokenList.find(token => token.symbol === symbol);
-
-                        if (!tokenIcon) {
-                            return TokenLogo
-                        }
-
-                        return tokenIcon.logoURI
-                    };
 
                     const uri = `https://api${testNetwork ? '-testnet.bscscan.com' : '.bscscan.com'
                     }/api?module=account&action=txlist&address=${account}&startblock=0
