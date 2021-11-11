@@ -97,7 +97,7 @@ const useAccountHistory = () => {
 
 
                     const dataFiltered = SwapTrx
-                        .filter((items: any) => decodeInput(items.input) !== undefined)//&& decodeInput(items.input).params.length == 5)
+                        .filter((items: any) => decodeInput(items.input) !== undefined && items.isError !== "1")
                         .map((items: any) => ({
                             value: items.value,
                             transactionObj: decodeInput(items.input).params,

@@ -35,7 +35,7 @@ const useMarketHistory = () => {
                     const jsonData = await data.json();
 
                     const filteredData = jsonData.result
-                        .filter((items: any) => decodeInput(items.input) !== undefined)
+                        .filter((items: any) => decodeInput(items.input) !== undefined && items.isError !== "1")
                         .map((items: any) => ({
                             transactionObj: decodeInput(items.input).params,
                             timestamp: items.timeStamp,

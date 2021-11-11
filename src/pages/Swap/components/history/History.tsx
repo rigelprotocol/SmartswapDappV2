@@ -118,16 +118,12 @@ const History = () => {
            maxHeight={'80vh'}
       >
         <Flex justifyContent={'center'}>
-          {show && loadMarketData && <Spinner my={3} size={'md'}/>}
+          {show && loadMarketData || show && loading && <Spinner my={3} size={'md'}/>}
         </Flex>
 
         {show && showMarketHistory && marketHistoryData && historyArray.map((data: DataType) => (
             <MarketHistory key={data.time} data={data} />
         ))}
-
-        <Flex justifyContent={'center'}>
-          {show && loading && <Spinner my={3} size={'md'}/>}
-        </Flex>
 
         {show && !showMarketHistory && historyData && userData.map((data: DataType) => (
             <TransactionHistory key={data.time} data={data}/>
