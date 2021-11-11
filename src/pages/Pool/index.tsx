@@ -42,7 +42,6 @@ const Index = () => {
     };
   }, [factory]);
 
-  console.log(liquidities);
   return (
     <>
       <Flex
