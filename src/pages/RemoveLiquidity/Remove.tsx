@@ -118,9 +118,9 @@ const Remove = () => {
             from: account,
           }
         );
-        const { confirmations } = await approveTransaction.wait();
+        const { confirmations } = await approveTransaction.wait(1);
         const { hash } = approveTransaction;
-        if (confirmations >= 3) {
+        if (confirmations >= 1) {
           setHasBeenApproved(true);
           const explorerLink = getExplorerLink(
             chainId as number,
@@ -225,9 +225,9 @@ const Remove = () => {
             from: account,
           }
         );
-        const { confirmations } = await approveTransaction.wait();
+        const { confirmations } = await approveTransaction.wait(1);
         const { hash } = approveTransaction;
-        if (confirmations >= 3) {
+        if (confirmations >= 1) {
           setHasBeenApproved(false);
           const explorerLink = getExplorerLink(
             chainId as number,
