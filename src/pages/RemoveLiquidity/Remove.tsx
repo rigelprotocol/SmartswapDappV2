@@ -75,7 +75,6 @@ const Remove = () => {
           setHasBeenApproved(details.approved);
           setPool(details.LiquidityPairData);
           setLoading(details.loading);
-          console.log(details.approved);
         } catch (err) {
           console.log(err);
           setPool([]);
@@ -106,9 +105,9 @@ const Remove = () => {
             from: account,
           }
         );
-        const { confirmations, hash } = await approveTransaction.wait();
+        const { confirmations } = await approveTransaction.wait();
+        const { hash } = approveTransaction;
         if (confirmations >= 3) {
-          console.log('reached');
           setHasBeenApproved(true);
           const explorerLink = getExplorerLink(
             chainId as number,
@@ -157,7 +156,8 @@ const Remove = () => {
             from: account,
           }
         );
-        const { confirmations, hash } = await approveTransaction.wait();
+        const { confirmations } = await approveTransaction.wait();
+        const { hash } = approveTransaction;
         if (confirmations >= 3) {
           setHasBeenApproved(false);
           const explorerLink = getExplorerLink(
@@ -406,7 +406,6 @@ const Remove = () => {
                   placeholder="0"
                   onChange={(e) => {
                     let input = e.target.value;
-                    console.log(e.target.value);
                     let regex = /(^100([.]0{1,2})?)$|(^\d{1,2}([.]\d{1,2})?)$/;
                     if (e.target.value === '' || regex.test(input)) {
                       setInputValue(input);
