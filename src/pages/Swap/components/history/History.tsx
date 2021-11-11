@@ -4,6 +4,8 @@ import { CloseIcon, AddIcon, RemoveIcon } from '../../../../theme/components/Ico
 import { removeSideTab, checkSideTab } from '../../../../utils/utilsFunctions';
 import TransactionHistory from './TransactionHistory';
 import MarketHistory from './MarketHistory';
+import useAccountHistory from "../../../../utils/hooks/useAccountHistory";
+import {DataType} from "./TransactionHistory";
 
 const History = () => {
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
@@ -15,6 +17,11 @@ const History = () => {
   
   const [show, setShow] = useState<Boolean>(false);
   const [showMarketHistory, setShowMarketHistory] = useState(false);
+
+  const {historyData, loading} = useAccountHistory();
+
+  const userData = Object.keys(historyData).map((i ) => historyData[i]);
+
 
   useEffect(() => {
     const isActive = checkSideTab('history');
@@ -78,7 +85,7 @@ const History = () => {
               onClick={() => {
                 setShow(true);}}
             >
-              <AddIcon />
+              <AddIcon onClick={() => setShow(true)} />
               
               
             </Flex>)}
@@ -103,9 +110,14 @@ const History = () => {
         </Flex>
        
       </Box> 
-      <Box overflowY="auto" >
+      <Box
+           overflowY={'scroll'}
+           maxHeight={'80vh'}
+      >
         {show && showMarketHistory && <MarketHistory/>  }
-        {show && !showMarketHistory && <TransactionHistory/>}
+        {show && !showMarketHistory && historyData && userData.map((data: DataType) => (
+            <TransactionHistory key={data.time} data={data}/>
+        ))}
       </Box>
     </Flex>
   );

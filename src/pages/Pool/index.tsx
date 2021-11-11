@@ -148,7 +148,7 @@ const Index = () => {
                 Dont see a pool you joined?
               </Text>
               <Text fontSize="sm" color="blue.300" ml={3} cursor="pointer">
-                Import it
+              <Link to="/find"> Import it  </Link>  
               </Text>
             </Flex>
           </Box>
