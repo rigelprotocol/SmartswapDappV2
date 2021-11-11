@@ -1,7 +1,7 @@
 
 import React from 'react'
-import { useWeb3React } from '@web3-react/core'
-import { Token } from '@uniswap/sdk-core'
+import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React'
+import { Token,Currency } from "@uniswap/sdk-core"
 import CurrencyLogo from '../currencyLogo';
 import {
     useColorModeValue,
@@ -9,32 +9,57 @@ import {
     Flex,
     Text,
     Spinner,
-    Image
 } from "@chakra-ui/react"
 import { GetAddressTokenBalance } from "../../state/wallet/hooks"
 type ICurrencyList = {
-    currency:Token
+    currency:Currency,
+    onCurrencySelect: (currency: Currency) => void,
+    selectedCurrency?: Currency | null,
+ otherSelectedCurrency?: Currency | null,
 }
 const CurrencyList =({
-   currency
+   currency,
+   onCurrencySelect,
+   selectedCurrency,
+   otherSelectedCurrency
 }:ICurrencyList) => {
-const {account } = useWeb3React()
+
+    const {account } = useActiveWeb3React()
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
-    const heavyTextColor = useColorModeValue("#333333", "#F1F5F8");
+    const heavyTextColor = useColorModeValue("#333333", "#F1F5F8"); 
+       const hover = useColorModeValue('rgba(228, 225, 222, 0.74)', "#14181b6c");
     const [balance] = GetAddressTokenBalance(currency)
+
+    const selected = (selectedCurrency:Currency | null | undefined,currency:Currency)=>{
+        if(selectedCurrency && currency && currency.isNative){
+          return (selectedCurrency.symbol === currency.symbol) && (selectedCurrency.chainId === currency.chainId) ? true : false
+        }else if(selectedCurrency && currency && !currency.isNative){
+            return (selectedCurrency.address === currency.address) && (selectedCurrency.chainId === currency.chainId) ? true : false 
+        }
+    }
+    const isSelected = selected(selectedCurrency,currency)
+    const otherSelected = selected(otherSelectedCurrency,currency)
+    const handleSelect = () => onCurrencySelect(currency)
+
     function Balance({ balance }: { balance:string | number}) {
         return <Text>{balance}</Text>
       }
     return (
         <Flex 
         justifyContent="space-between"
-        py="2" 
+        py="2"
         fontSize="16px"
-         cursor="pointer">
+         cursor={isSelected ? "" : "pointer"}
+         onClick={() => (isSelected ? null : handleSelect())}
+         opacity={isSelected || otherSelected ? '0.6' : '1'}
+         _hover={{ background:`${isSelected ? "" : hover}`}}
+         px="4"
+         borderRadius="10px"
+         >
             <Flex>
         
-        <Box mr={3}>
-        <CurrencyLogo currency={currency} size={24} squared={true} style={{marginTop:"20px"}}/>
+        <Box mr={3} mt={3}>
+        <CurrencyLogo currency={currency} size={24} squared={true}/>
         </Box>
          
              <Box>

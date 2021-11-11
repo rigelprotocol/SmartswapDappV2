@@ -20,7 +20,6 @@ function getCurrencySymbol(currency) {
     const urls = []
   
     urls.push(`https://raw.githubusercontent.com/sushiswap/icons/master/token/${getCurrencySymbol(currency)}.jpg`)
-    console.log({currency})
     if (currency.chainId in SupportedChainSymbols) {
       urls.push(
         `https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/${SupportedChainSymbols[currency.chainId]}/assets/${
@@ -41,7 +40,6 @@ const LOGO = SupportedChainLogo
   interface CurrencyLogoProps {
     currency?: Currency
     size?: string | number
-    style: React.CSSProperties
     className?: string
     squared?: boolean,
   }
@@ -51,7 +49,6 @@ const LOGO = SupportedChainLogo
   const CurrencyLogo: FunctionComponent<CurrencyLogoProps> = ({
     currency,
     size = '24px',
-    style,
     className = '',
     squared,
     ...rest
@@ -60,9 +57,9 @@ const LOGO = SupportedChainLogo
       currency instanceof WrappedTokenInfo ? currency.logoURI || currency.tokenInfo.logoURI : undefined
     )
   
-    const srcs = useMemo(() => {
+    const srcs: string[] = useMemo(() => {
       if (!currency) {
-        return [unknown]
+        return []
       }
       try{
       if (currency.isNative || (currency.symbol==="WETH" && currency.equals(WETH9[currency.chainId]))) {
@@ -80,9 +77,10 @@ const LOGO = SupportedChainLogo
         }
         return defaultUrls
       }
+      return []
     }, [currency, uriLocations])
   
-    return <Logo srcs={srcs} width={size} height={size} alt={currency?.symbol} squared={squared} {...rest} style={style} />
+    return <Logo srcs={srcs} width={size} height={size} alt={currency?.symbol} squared={squared} {...rest}  />
   }
   
   export default CurrencyLogo

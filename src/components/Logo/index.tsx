@@ -14,16 +14,14 @@ export type LogoProps = {
   height: string | number
   alt?: string
   squared?:boolean
-  style:React.CSSProperties
 } 
 
 /**
  * Renders an image by sequentially trying a list of URIs, and then eventually a fallback triangle alert
  */
-const Logo: FC<LogoProps> = ({ srcs, width, height,alt='',squared,style, ...rest }) => {
+const Logo: FC<LogoProps> = ({ srcs, width, height,alt='',squared, ...rest }) => {
   const [, refresh] = useState<number>(0)
   const src = srcs.find((src) => !BAD_SRCS[src])
-  console.log([src])
   return (
     <div className="rounded" style={{ width, height }}>
       <Image 
@@ -31,7 +29,7 @@ const Logo: FC<LogoProps> = ({ srcs, width, height,alt='',squared,style, ...rest
         if (src) BAD_SRCS[src] = true
         refresh((i) => i + 1)
       }}
-      borderRadius={squared ? width : 0}   src={src || 'https://raw.githubusercontent.com/sushiswap/icons/master/token/unknown.png'} style={style}/>
+      borderRadius={squared ? width : 0}   src={src || 'https://raw.githubusercontent.com/sushiswap/icons/master/token/unknown.png'} />
     </div>
   )
 }

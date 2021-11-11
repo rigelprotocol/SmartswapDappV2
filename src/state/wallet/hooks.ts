@@ -1,7 +1,7 @@
 import {useMemo,useState,useEffect} from "react"
 import { isAddress,getERC20Token } from "../../utils/utilsFunctions";
-import { useWeb3React } from "@web3-react/core"
-import { Currency, Token} from '@uniswap/sdk-core'
+import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React'
+import { Currency, Token,NativeCurrency} from '@uniswap/sdk-core'
 import { ethers } from "ethers";
 import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { checkSupportedIds } from "../../connectors";
@@ -9,8 +9,8 @@ import { checkSupportedIds } from "../../connectors";
 
 
 
-  export const GetAddressTokenBalance = (currency :Currency) => {
-    const { chainId, account } = useWeb3React();
+  export const GetAddressTokenBalance = (currency :Currency | undefined) => {
+    const { chainId, account } = useActiveWeb3React();
     const [balance, setBalance] = useState<string | number | void>('');
     const [Balance] = useNativeBalance();
     useEffect(() => {
@@ -21,19 +21,14 @@ import { checkSupportedIds } from "../../connectors";
             if(currency.isNative){
               Balance === "0.0000" ? setBalance("0") :  setBalance(Balance)
              
-            }else{
-              if(isAddress(currency.address)){
+            }else if(isAddress(currency.address)){
               const token = await getERC20Token(currency.address ? currency.address : "");
             const balance = await token.balanceOf(account);
             const amount =ethers.utils.formatEther(balance)
-            console.log({amount})
             amount ===  "0.0" ? setBalance("0") :  setBalance(
               parseFloat(amount).toFixed(4)
             );
-            
-            }
               }
-            
           } catch (err) {
             setBalance('');
             console.log(err);
@@ -44,7 +39,7 @@ import { checkSupportedIds } from "../../connectors";
       };
   
       getBalance(currency)
-    }, [account, chainId,currency,Balance]);
+    }, [account, chainId,currency, Balance]);
   
     return [balance];
   };
