@@ -11,7 +11,7 @@ import {
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { GetAddressTokenBalance } from '../../../../state/wallet/hooks';
 import SelectToken from "../../../../components/Tokens/SelectToken"
-import {Currency} from "@uniswap/sdk"
+import {Currency} from "@uniswap/sdk-core"
 import CurrencyLogo from "../../../../components/currencyLogo"
 type InputSelectorProps = {
   max: Boolean,
@@ -20,7 +20,7 @@ type InputSelectorProps = {
   otherCurrency?: Currency | null,
   tokenModal:boolean,
   setToken: React.Dispatch<React.SetStateAction<boolean>>,
-  onMax?: (currency : Currency) => void,
+  onMax?: () => void,
   onUserInput: (value: string) => void,
   value:string
 };
@@ -68,11 +68,6 @@ const InputSelector = ({
             // );
             let value = 
               input
-                .replace(/[^\d.]/g, '')
-                .replace(/(?!^)-/g, '')
-                .replace(/(\..*)\.$/, '$1')
-                .replace(/\.(?=.*\.)/g, '')
-            ;
             onUserInput(value)
           }}
           focusBorderColor="none"
@@ -103,7 +98,7 @@ const InputSelector = ({
       </Flex>
       <Flex mt={3} alignItems="center">
         <Text ml={4} color={balanceColor} fontSize="14px">
-          Balance: {balance ?? "-"} {currency?.symbol}
+          Balance: {balance.currency?.isToken ? balance.toSignificant(6): balance} {currency?.symbol}
         </Text>
         {max ? (
           <Text
@@ -115,7 +110,7 @@ const InputSelector = ({
             borderRadius="4px"
             bgColor={maxBgColor}
             fontSize="14px"
-            onClick={()=>onMax(currency)}
+            onClick={onMax}
             cursor="pointer"
           >
             Max

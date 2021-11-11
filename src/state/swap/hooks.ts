@@ -1,4 +1,5 @@
 import { AppDispatch, RootState } from '../index'
+import { provider } from '../../utils/utilsFunctions'
 import { useCallback,useEffect,useState } from "react"
 import { Field,selectCurrency,typeInput,replaceSwapState } from "./actions"
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React'
@@ -8,7 +9,8 @@ import { Currency } from '@uniswap/sdk-core'
 import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { isAddress,getERC20Token } from "../../utils/utilsFunctions";
 import { ethers } from 'ethers'
-
+import JSBI from 'jsbi'
+import { SupportedChainSymbols } from '../../utils/constants/chains'
 export function useSwapState(): RootState['swap'] {
     return useSelector<RootState,RootState['swap']>((state) => state.swap)
 }
@@ -74,8 +76,11 @@ export function useDerivedSwapInfo(): {
 
      const getMaxValue = async (currency:Currency)  => {
         if(currency.isNative){
-            return Balance === "0.0000" ? "0" :  Balance
-           
+            // return Balance === "0.0000" ? "0" :  Balance
+            const Provider = await provider();
+          const balance = await Provider?.getBalance(account as string);
+         return balance ? JSBI.BigInt(balance.toString()) : undefined
+
           }else if(isAddress(currency.address)){
             const token = await getERC20Token(currency.address ? currency.address : "");
           const balance = await token.balanceOf(account);
@@ -95,9 +100,9 @@ function parseCurrencyFromURLParameter(parse :any) {
   return parse 
 }
 
-function queryParametersToSwapState(parsedQs:any,chainId:number |undefined) {
-  let inputCurrency = parseCurrencyFromURLParameter(parsedQs)
-  const eth = chainId ? Symbol : "BNB"
+function queryParametersToSwapState(chainId:number |undefined) {
+  let symbol= SupportedChainSymbols[chainId ?? 56]
+  let inputCurrency = parseCurrencyFromURLParameter(symbol) ?? 'BNB'
   // let outputCurrency = parseCurrencyFromURLParameter()
   // let inputCurrency = parseCurrencyFromURLParameter(parsedQs.inputCurrency)
   // let outputCurrency = parseCurrencyFromURLParameter(parsedQs.outputCurrency)
@@ -113,7 +118,7 @@ function queryParametersToSwapState(parsedQs:any,chainId:number |undefined) {
 
   return {
     [Field.INPUT]: {
-      currencyId: inputCurrency,
+      currencyId: inputCurrency ,
     },
     // [Field.OUTPUT]: {
     //   currencyId: outputCurrency,
@@ -127,7 +132,7 @@ function queryParametersToSwapState(parsedQs:any,chainId:number |undefined) {
 
 // updates the swap state to use the defaults for a given network
 export function useDefaultsFromURLSearch() {
-const { chainId } = useActiveWeb3React()
+const { chainId,account } = useActiveWeb3React()
 const [,Symbol] = useNativeBalance();
 const dispatch = useDispatch<AppDispatch>()
 // const parsedQs = useParsedQueryString()
@@ -139,15 +144,14 @@ const [result, setResult] = useState<
 if(!chainId) return
 
 // if URL is empty, use default token
-const parsed = queryParametersToSwapState(Symbol,chainId)
-console.log({parsed})
+const parsed = queryParametersToSwapState(chainId)
     dispatch(
       replaceSwapState({
         inputCurrencyId:parsed[Field.INPUT].currencyId
       })
     )
-    setResult({ inputCurrencyId: parsed[Field.INPUT].currencyId })
-  },[dispatch,chainId])
+    // setResult({ inputCurrencyId: parsed[Field.INPUT].currencyId })
+  },[dispatch,chainId,account])
   return result
   }
 

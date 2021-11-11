@@ -3,7 +3,7 @@ import { Box, useColorModeValue } from '@chakra-ui/react';
 import InputSelector from './InputSelector';
 import { useSwapActionHandlers,useDerivedSwapInfo,useSwapState } from '../../../../state/swap/hooks';
 import { Field } from '../../../../state/swap/actions';
-import { Currency } from '@uniswap/sdk-core';
+import { maxAmountSpend } from '../../../../utils/maxAmountSpend';
 const From = () => {
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   const [tokenModal, setTokenModal] = useState(false);
@@ -18,17 +18,22 @@ const From = () => {
     },
     [onCurrencySelection],
   )
-  const handleMaxInput = async (currency:Currency) =>
+ 
+  const handleMaxInput = async () =>
      { 
- let value = await getMaxValue(currency)
- onUserInput(Field.INPUT, value)
-    }
+ const value = await getMaxValue(currencies[Field.INPUT])
+ const maxAmountInput= maxAmountSpend(value,currencies[Field.INPUT])
+if(maxAmountInput){
+  onUserInput(Field.INPUT, maxAmountInput)
+}
+  }
     const handleTypeInput = useCallback(
       (value: string) => {
         onUserInput(Field.INPUT, value)
       },
       [onUserInput],
     )
+    
     const formattedAmounts = {
       [independentField]: typedValue,
       // [dependentField]: showWrap

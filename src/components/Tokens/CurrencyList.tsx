@@ -1,7 +1,7 @@
 
 import React from 'react'
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React'
-import { Token,Currency } from "@uniswap/sdk-core"
+import { Token,Currency,CurrencyAmount } from "@uniswap/sdk-core"
 import CurrencyLogo from '../currencyLogo';
 import {
     useColorModeValue,
@@ -41,9 +41,10 @@ const CurrencyList =({
     const otherSelected = selected(otherSelectedCurrency,currency)
     const handleSelect = () => onCurrencySelect(currency)
 
-    function Balance({ balance }: { balance:string | number}) {
-        return <Text>{balance}</Text>
+    function Balance({ balance }: { balance: CurrencyAmount<Currency> }) {
+        return <Text title={balance?.currency?.isToken? balance.toSignificant(4): balance}>{balance.currency?.isToken? balance.toSignificant(6): balance}</Text>
       }
+      
     return (
         <Flex 
         justifyContent="space-between"

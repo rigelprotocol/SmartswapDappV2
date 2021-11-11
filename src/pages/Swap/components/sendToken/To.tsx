@@ -52,7 +52,7 @@ const To = () => {
         setToken={()=>setTokenModal((state) =>!state)}
         onUserInput={handleTypeInput}
         value={formattedAmounts[Field.OUTPUT]}
-        max={false} />
+        max={false}/>
       </Box>
     </>
   );
