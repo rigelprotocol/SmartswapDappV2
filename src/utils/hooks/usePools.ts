@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { smartFactory, LiquidityPairInstance } from '../Contracts';
-import { SMARTSWAPFACTORYADDRESSES } from '../addresses';
+import { SMARTSWAPFACTORYADDRESSES, SMARTSWAPROUTER } from '../addresses';
 import { getERC20Token } from '../utilsFunctions';
 import { ethers } from 'ethers';
 import { Fraction } from '@uniswap/sdk-core';
@@ -24,7 +24,9 @@ export const useGetUserLiquidities = async () => {
             getAllPairs(allLiquidityPairs.toNumber(), SmartFactory.allPairs)
           );
           const pairsData = await Promise.all(
-            allExchange.map((address) => getPoolData(address, account))
+            allExchange.map((address) =>
+              getPoolData(address, account, chainId as number)
+            )
           );
           const userPairs = pairsData.filter(
             (pair) => parseFloat(pair.poolToken) !== 0
@@ -34,7 +36,7 @@ export const useGetUserLiquidities = async () => {
           setLoading(false);
         } catch (err) {
           console.log(err);
-          setLiquidities([]);
+          setLiquidities(undefined);
           setLiquidityLength(0);
           setLoading(false);
         }
@@ -54,15 +56,21 @@ const getAllPairs = (length: number, allPairs: any): any[] => {
   return pairs;
 };
 
-const getPoolData = async (address: string, account: string) => {
+const getPoolData = async (
+  address: string,
+  account: string,
+  chainId: number
+) => {
   const liquidity = await LiquidityPairInstance(address);
-  const [balance, totalSupply, reserves, token0, token1] = await Promise.all([
-    liquidity.balanceOf(account),
-    liquidity.totalSupply(),
-    liquidity.getReserves(),
-    liquidity.token0(),
-    liquidity.token1(),
-  ]);
+  const [balance, totalSupply, reserves, token0, token1, allowance] =
+    await Promise.all([
+      liquidity.balanceOf(account),
+      liquidity.totalSupply(),
+      liquidity.getReserves(),
+      liquidity.token0(),
+      liquidity.token1(),
+      liquidity.allowance(account, SMARTSWAPROUTER[chainId]),
+    ]);
   const [erc20Token0, erc20Token1] = await Promise.all([
     getERC20Token(token0),
     getERC20Token(token1),
@@ -90,6 +98,8 @@ const getPoolData = async (address: string, account: string) => {
     decimals: decimals1,
   });
 
+  const approved = allowance > balance;
+
   const liquidityObject = {
     pairAddress: address,
     poolToken: ethers.utils.formatEther(balance),
@@ -101,6 +111,7 @@ const getPoolData = async (address: string, account: string) => {
     ],
     pooledToken0,
     pooledToken1,
+    approved: approved,
   };
   return liquidityObject;
 };
@@ -123,4 +134,40 @@ const getPooledToken = (params: PoolTokenParams) => {
   const multiplyReserve = fraction.multiply(params.reserves.toString());
   const final = multiplyReserve.divide(Decimal);
   return final.toSignificant(params.decimals);
+};
+
+export const useGetLiquidityById = async (
+  address1: string,
+  address2: string,
+  hasBeenApproved: boolean
+) => {
+  const { account, chainId } = useWeb3React();
+  const [loading, setLoading] = useState(true);
+  const [LiquidityPairData, setLiquidityPairData] = useState<any>();
+  const [approved, setApproved] = useState(false);
+
+  useMemo(() => {
+    const loadPair = async () => {
+      if (account) {
+        setLoading(true);
+        try {
+          const SmartFactory = await smartFactory(
+            SMARTSWAPFACTORYADDRESSES[chainId as number]
+          );
+
+          const Pair = await SmartFactory.getPair(address1, address2);
+          const PairData = await getPoolData(Pair, account, chainId as number);
+          setLoading(false);
+          setLiquidityPairData(PairData);
+          setApproved(PairData.approved);
+        } catch (err) {
+          console.log(err);
+          setLiquidityPairData([]);
+          setLoading(false);
+        }
+      }
+    };
+    loadPair();
+  }, [account, chainId, address1, address2, hasBeenApproved]);
+  return { LiquidityPairData, loading, approved };
 };
