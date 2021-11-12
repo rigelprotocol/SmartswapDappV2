@@ -43,7 +43,11 @@
     "react-scripts": "4.0.3",
     "react-spring": "^9.3.0",
     "react-switch": "^6.0.0",
+<<<<<<< HEAD
     "react-window": "^1.8.6",
+=======
+    "redux-localstorage-simple": "^2.4.1",
+>>>>>>> e203c5b84e870d7a5ff458bf6ae35c0309834a38
     "save-dev": "^0.0.1-security",
     "typescript": "^3.9.5",
     "web-vitals": "^0.2.2"

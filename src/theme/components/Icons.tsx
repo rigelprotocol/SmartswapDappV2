@@ -34,11 +34,12 @@ export const SettingsIcon = () => {
   return (
     <Icon
       as={IoSettingsOutline}
-      w="32px"
+      w="34px"
       color={iconColor}
       padding="4px"
-      h="32px"
+      h="34px"
       mr={2}
+      mb={3.5}
     />
   );
 };
