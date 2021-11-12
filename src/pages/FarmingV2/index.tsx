@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Flex, Text } from "@chakra-ui/layout";
 import { Alert, AlertDescription, CloseButton, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import { useHistory } from "react-router-dom";
@@ -8,6 +8,7 @@ import { contents } from "./mock";
 import { AlertSvg } from "./Icon";
 import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
+import { useRouteMatch } from "react-router-dom";
 
 export const LIQUIDITY = "liquidity";
 export const STAKING = "staking";
@@ -15,6 +16,8 @@ export const V1 = "v1";
 export const V2 = "v2";
 export const LIGHT_THEME = "light";
 export const DARK_THEME = "dark";
+export const LIQUIDITY_INDEX = 0;
+export const STAKING_INDEX = 1;
 
 export function useActiveWeb3React() {
   const context = useWeb3React<Web3Provider>();
@@ -28,15 +31,26 @@ export function Index() {
   const [selected, setSelected] = useState(LIQUIDITY);
   const [isActive, setIsActive] = useState(V2);
   const [showAlert, setShowAlert] = useState(true);
+  let match = useRouteMatch("/farming-V2/staking-RGP");
+
+  useEffect(
+    () => {
+      if (match) setSelected(STAKING);
+    },
+    [match]
+  );
 
   const changeVersion = (version: string) => {
     history.push(version);
   };
 
   const handleSelect = (value: string) => {
-    if (value === LIQUIDITY) setSelected(LIQUIDITY);
-    else if (value === STAKING) {
+    if (value === LIQUIDITY) {
+      setSelected(LIQUIDITY);
+      changeVersion("/farming-v2");
+    } else if (value === STAKING) {
       setSelected(STAKING);
+      changeVersion("/farming-v2/staking-RGP");
     }
   };
 
@@ -177,7 +191,13 @@ export function Index() {
           </TabList>
         </Tabs>
       </Flex>
-      <Tabs isManual variant="enclosed" mx={[5, 10, 15, 20]} my={4}>
+      <Tabs
+        defaultIndex={match ? STAKING_INDEX : LIQUIDITY_INDEX}
+        // isManual
+        variant="enclosed"
+        mx={[5, 10, 15, 20]}
+        my={4}
+      >
         <TabList>
           <Tab
             border="1px solid #DEE5ED !important"
