@@ -17,6 +17,7 @@ export const SMARTSWAPFACTORYADDRESSES: { [key: string]: string } = {
   '80001': '0x',
 };
 
+//SMARTSWAP ROUTER
 export const SMARTSWAPROUTER: { [key: string]: string } = {
   '1': '0x',
   '3': '0x3175bfbc3e620FaF654309186f66908073cF9CBB',

@@ -1,0 +1,456 @@
+[
+  {
+    "name": "Select a token",
+    "symbol": "SELECT A TOKEN",
+    "logoURI": "",
+    "available": true
+  },
+  {
+    "symbol": "RGP",
+    "available": true,
+    "imported": false,
+    "name": "Rigel Protocol",
+    "logoURI": "https://bscscan.com/token/images/rigelprotocol_32.png",
+    "address": "0xFA262F303Aa244f9CC66f312F0755d89C3793192"
+  },
+  {
+    "symbol": "BNB",
+    "available": true,
+    "imported": false,
+    "name": "BNB",
+    "logoURI": "https://bscscan.com/token/images/binance_32.png",
+    "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+  },
+  {
+    "name": "Axie Infinity Shard",
+    "symbol": "AXS",
+    "available": true,
+    "imported": false,
+    "logoURI": "https://www.bscscan.com/token/images/axieinfinity_32.png",
+    "address": "0x715D400F88C167884bbCc41C5FeA407ed4D2f8A0"
+  },
+  {
+    "name": "AdEx Network",
+    "symbol": "ADX",
+    "address": "0x6bfF4Fb161347ad7de4A625AE5aa3A1CA7077819",
+    "chainId": 56,
+    "decimals": 18,
+    "logoURI": "https://bscscan.com/token/images/adex_32.png"
+  },
+  {
+    "name": "My Neigbor Alice",
+    "symbol": "ALICE",
+    "address": "0xAC51066d7bEC65Dc4589368da368b212745d63E8",
+    "chainId": 56,
+    "decimals": 6,
+    "logoURI": "https://bscscan.com/token/images/alicetoken_32.png"
+  },
+  {
+    "name": "AlpacaToken",
+    "symbol": "ALPACA",
+    "address": "0x8f0528ce5ef7b51152a59745befdd91d97091d2f",
+    "chainId": 56,
+    "decimals": 18,
+    "logoURI": "https://bscscan.com/token/images/alpacafinance_32.png"
+  },
+  {
+    "name": "Binance-Peg BUSD Token",
+    "symbol": "BUSD",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+    "logoURI": "https://bscscan.com/token/images/busd_32.png"
+  },
+  {
+    "name": "Binance-Peg BSC-USD",
+    "symbol": "BSC-USD",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x55d398326f99059ff775485246999027b3197955",
+    "logoURI": "https://bscscan.com/token/images/busdt_32.png"
+  },
+  {
+    "name": "Venus BUSD",
+    "symbol": "vBUSD",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x95c78222b3d6e262426483d42cfa53685a67ab9d",
+    "logoURI": "https://bscscan.com/token/images/venus-vbusd_32.png"
+  },
+  {
+    "name": "Venus USDT",
+    "symbol": "vUSDT",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0xfd5840cd36d94d7229439859c0112a4185bc0255",
+    "logoURI": "https://bscscan.com/token/images/venus-vusdt_32.png"
+  },
+  {
+    "name": "Binance-Peg BTCB Token",
+    "symbol": "BTCB",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
+    "logoURI": "https://bscscan.com/token/images/btcb_32.png"
+  },
+  {
+    "name": "Binance-Peg Ethereum Token",
+    "symbol": "ETH",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
+    "logoURI": "https://bscscan.com/token/images/ethereum_32.png"
+  },
+  {
+    "name": "Binance-Peg USD Coin",
+    "symbol": "USDC",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+    "logoURI": "https://bscscan.com/token/images/centre-usdc_28.png"
+  },
+  {
+    "name": "Venus BTC",
+    "symbol": "vBTC",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x882c173bc7ff3b7786ca16dfed3dfffb9ee7847b",
+    "logoURI": "https://bscscan.com/token/images/venus-vbtc_32.png"
+  },
+  {
+    "name": "Venus ETH",
+    "symbol": "vETH",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0xf508fcd89b8bd15579dc79a6827cb4686a3592c8",
+    "logoURI": "https://bscscan.com/token/images/venus-veth_32.png"
+  },
+  {
+    "name": "Venus USDC",
+    "symbol": "vUSDC",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0xeca88125a5adbe82614ffc12d0db554e2e2867c8",
+    "logoURI": "https://bscscan.com/token/images/venus-vusdc_32.png"
+  },
+  {
+    "name": "Wrapped BNB",
+    "symbol": "WBNB",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+    "logoURI": "https://bscscan.com/token/images/binance_32.png"
+  },
+  {
+    "name": "Binance Beacon ETH",
+    "symbol": "BETH",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x250632378e573c6be1ac2f97fcdf00515d0aa91b",
+    "logoURI": "https://bscscan.com/token/images/binance-beth_32.png"
+  },
+  {
+    "name": "PancakeSwap Token",
+    "symbol": "Cake",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+    "logoURI": "https://bscscan.com/token/images/pancake_32.png?=v1"
+  },
+  {
+    "name": "Binance-Peg Dai Token",
+    "symbol": "DAI",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
+    "logoURI": "https://bscscan.com/token/images/dai_32.png"
+  },
+  {
+    "name": "Venus DAI",
+    "symbol": "vDAI",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x334b3ecb4dca3593bccc3c7ebd1a1c1d1780fbf1",
+    "logoURI": "https://bscscan.com/token/images/venus-vdai_32.png"
+  },
+  {
+    "name": "Binance-Peg Cardano Token",
+    "symbol": "ADA",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47",
+    "logoURI": "https://bscscan.com/token/images/cardano_32.png"
+  },
+  {
+    "name": "Binance-Peg Polkadot Token",
+    "symbol": "DOT",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x7083609fce4d1d8dc0c979aab8c869ea2c873402",
+    "logoURI": "https://bscscan.com/token/images/polkadot_32.png"
+  },
+  {
+    "name": "SafeMoon",
+    "symbol": "SAFEMOON",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x8076c74c5e3f5852037f31ff0093eeb8c8add8d3",
+    "logoURI": "https://bscscan.com/token/images/safemoon2_32.png"
+  },
+  {
+    "name": "Venus ADA",
+    "symbol": "vADA",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x9a0af7fdb2065ce470d72664de73cae409da28ec",
+    "logoURI": "https://bscscan.com/token/images/venus-ada_32.png?=v1"
+  },
+  {
+    "name": "Binance-Peg ChainLink Token",
+    "symbol": "LINK",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd",
+    "logoURI": "https://bscscan.com/token/images/chainlink_32.png?v=2"
+  },
+  {
+    "name": "BakeryToken",
+    "symbol": "BAKE",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0xe02df9e3e622debdd69fb838bb799e3f168902c5",
+    "logoURI": "https://bscscan.com/token/images/bakeryswap_32.png"
+  },
+  {
+    "name": "Swipe",
+    "symbol": "SXP",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x47bead2563dcbf3bf2c9407fea4dc236faba485a",
+    "logoURI": "https://bscscan.com/token/images/swipe_32.png"
+  },
+  {
+    "name": "Venus BETH",
+    "symbol": "vBETH",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x972207a639cc1b374b893cc33fa251b55ceb7c07",
+    "logoURI": "https://bscscan.com/token/images/venus-vbeth_32.png"
+  },
+  {
+    "name": "Venus DOT",
+    "symbol": "vDOT",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x1610bc33319e9398de5f57b33a5b184c806ad217",
+    "logoURI": "https://bscscan.com/token/images/venus-vdot_32.png"
+  },
+  {
+    "name": "VAI Stablecoin",
+    "symbol": "VAI",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x4bd17003473389a42daf6a0a729f6fdb328bbbd7",
+    "logoURI": "https://bscscan.com/token/images/venus-vai_32.png"
+  },
+  {
+    "name": "Binance-Peg XRP Token",
+    "symbol": "XRP",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe",
+    "logoURI": "https://bscscan.com/token/images/xrp_32.png"
+  },
+  {
+    "name": "Venus LINK",
+    "symbol": "vLINK",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x650b940a1033b8a1b1873f78730fcfc73ec11f1f",
+    "logoURI": "https://bscscan.com/token/images/venus-vlink_32.png"
+  },
+  {
+    "name": "Venus",
+    "symbol": "XVS",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63",
+    "logoURI": "https://bscscan.com/token/images/venus_32.png"
+  },
+  {
+    "name": "Venus SXP",
+    "symbol": "vSXP",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x2ff3d0f6990a40261c66e1ff2017acbc282eb6d0",
+    "logoURI": "https://bscscan.com/token/images/venus-vsxp_32.png"
+  },
+  {
+    "name": "Binance-Peg Litecoin Token",
+    "symbol": "LTC",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x4338665cbb7b2485a8855a139b75d5e34ab0db94",
+    "logoURI": "https://bscscan.com/token/images/litecoin_32.png"
+  },
+  {
+    "name": "Binance-Peg Dogecoin",
+    "symbol": "DOGE",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0xba2ae424d960c26247dd6c32edc70b295c744c43",
+    "logoURI": "https://bscscan.com/token/images/dogecoin_32.png"
+  },
+  {
+    "name": "AlpacaToken",
+    "symbol": "ALPACA",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x8f0528ce5ef7b51152a59745befdd91d97091d2f",
+    "logoURI": "https://bscscan.com/token/images/alpacafinance_32.png"
+  },
+  {
+    "name": "Venus XRP",
+    "symbol": "vXRP",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0xb248a295732e0225acd3337607cc01068e3b9c10",
+    "logoURI": "https://bscscan.com/token/images/venus-vxrp_32.png"
+  },
+  {
+    "name": "Bunny Token",
+    "symbol": "BUNNY",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0xc9849e6fdb743d08faee3e34dd2d1bc69ea11a51",
+    "logoURI": "https://bscscan.com/token/images/pancakebunny_32.png"
+  },
+  {
+    "name": "Wrapped UST Token",
+    "symbol": "UST",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x23396cf899ca06c4472205fc903bdb4de249d6fc",
+    "logoURI": "https://bscscan.com/token/images/terra-ust_32.png"
+  },
+  {
+    "name": "Binance-Peg Uniswap",
+    "symbol": "UNI",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0xbf5140a22578168fd562dccf235e5d43a02ce9b1",
+    "logoURI": "https://bscscan.com/token/images/uniswap_32.png"
+  },
+  {
+    "name": "beefy.finance",
+    "symbol": "BIFI",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0xca3f508b8e4dd382ee878a314789373d80a5190a",
+    "logoURI": "https://bscscan.com/token/images/beefy_32.png?=v1"
+  },
+  {
+    "name": "FEGtoken",
+    "symbol": "FEG",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0xacfc95585d80ab62f67a14c566c1b7a49fe91167",
+    "logoURI": "https://bscscan.com/token/images/fegtoken_32.png"
+  },
+  {
+    "name": "AlphaToken",
+    "symbol": "ALPHA",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0xa1faa113cbe53436df28ff0aee54275c13b40975",
+    "logoURI": "https://bscscan.com/token/images/alpha_32.png?=v5"
+  },
+  {
+    "name": "Venus XVS",
+    "symbol": "vXVS",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x151b1e2635a717bcdc836ecd6fbb62b674fe3e1d",
+    "logoURI": "https://bscscan.com/token/images/venus-vxvs_32.png"
+  },
+  {
+    "name": "Tokocrypto Token",
+    "symbol": "TKO",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x9f589e3eabe42ebc94a44727b3f3531c0c877809",
+    "logoURI": "https://bscscan.com/token/images/tokocrypto_32.png"
+  },
+  {
+    "name": "StandardBTCHashrateToken",
+    "symbol": "BTCST",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x78650b139471520656b9e7aa7a5e9276814a38e9",
+    "logoURI": "https://bscscan.com/token/images/btcst_32.png"
+  },
+  {
+    "name": "TRON",
+    "symbol": "TRX",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x85eac5ac2f758618dfa09bdbe0cf174e7d574d5b",
+    "logoURI": "https://bscscan.com/token/images/tron_32.png"
+  },
+  {
+    "name": "Binance-Peg Bitcoin Cash Token",
+    "symbol": "BCH",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x8ff795a6f4d97e7887c79bea79aba5cc76444adf",
+    "logoURI": "https://bscscan.com/token/images/bitcoincash_32.png"
+  },
+  {
+    "name": "Burger Swap",
+    "symbol": "BURGER",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0xae9269f27437f0fcbc232d39ec814844a51d6b8f",
+    "logoURI": "https://bscscan.com/token/images/burgerswap_32.png"
+  },
+  {
+    "name": "Binance-Peg EOS Token",
+    "symbol": "EOS",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x56b6fb708fc5732dec1afc8d8556423a2edccbd6",
+    "logoURI": "https://bscscan.com/token/images/eos_32.png"
+  },
+  {
+    "name": "ALICE",
+    "symbol": "ALICE",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0xac51066d7bec65dc4589368da368b212745d63e8",
+    "logoURI": "https://bscscan.com/token/images/alicetoken_32.png"
+  },
+  {
+    "name": "Venus LTC",
+    "symbol": "vLTC",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x57a5297f2cb2c0aac9d554660acd6d385ab50c6b",
+    "logoURI": "https://bscscan.com/token/images/venus-vltc_32.png"
+  },
+  {
+    "name": "Trust Wallet",
+    "symbol": "TWT",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x4b0f1812e5df2a09796481ff14017e6005508003",
+    "logoURI": "https://bscscan.com/token/images/trust_32.png?v=1"
+  },
+  {
+    "name": "Alien Worlds Trilium",
+    "symbol": "TLM",
+    "decimals": 18,
+    "chainId": 56,
+    "address": "0x2222227e22102fe3322098e4cbfe18cfebd57c95",
+    "logoURI": "https://bscscan.com/token/images/alienworlds_32.png"
+  }
+]

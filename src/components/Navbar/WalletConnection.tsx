@@ -19,7 +19,9 @@ import WalletOptions from './WalletOptions';
 import WalletModal from './modals/walletModal';
 import NetworkModal from "./modals/networkModal";
 import { useNativeBalance, useRGPBalance } from '../../utils/hooks/useBalances';
+import { useEagerConnect } from "../../utils/hooks/useWalletConnect";
 import StatusIcon from './StatusIcon';
+
 
 export default function WalletConnection() {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
@@ -40,25 +42,35 @@ export default function WalletConnection() {
   const [displayNetwork, setDisplayNetwork] = useState(false);
   const [RGPBalance] = useRGPBalance();
 
-  const connectWallet = useCallback(
+ const connectWallet = useCallback(
     (connectorID: ConnectorNames) => {
       const connector = connectorsByName[connectorID];
-      try {
-        activate(connector);
-      } catch (e) {
-        console.log(e);
+      if(connector){
+        activate(connector, async(error : Error)=>{
+          if(!error){
+            activate(connector)
+          }
+        })
       }
+      
     },
     [activate]
   );
 
+  /** 
   const connectAccount = () => {
     try {
       activate(injected);
     } catch (error) {
       console.log(error);
     }
-  };
+  };*/
+
+
+
+
+  const triedEager = useEagerConnect()
+
 
   if (account) {
     return (
@@ -72,7 +84,7 @@ export default function WalletConnection() {
         </Button>
         <Flex
           ml={2}
-          w={isMobileDevice ? '160px' : '280px'}
+          w={isMobileDevice ? '160px' : 'max-content'}
           borderRadius="md"
           border={'1px solid'}
           borderColor={bgColor2}

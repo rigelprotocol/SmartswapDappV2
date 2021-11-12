@@ -60,7 +60,6 @@ setDisplayWallet
         console.log(e);
       }
     }
-    console.log(chainId)
     return (
         <>
           <Modal isCentered isOpen={displayWallet} onClose={()=>setDisplayWallet(false)}>

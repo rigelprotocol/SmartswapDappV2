@@ -14,11 +14,11 @@ import {
     Button,
     Image
 } from "@chakra-ui/react"
-import USDTLOGO from '../../../assets/roundedlogo.svg';
+import USDTLOGO from '../../assets/roundedlogo.svg';
 import { ArrowBackIcon } from "@chakra-ui/icons"
-import Warning from '../../../assets/warning.svg'; 
-import LightWarning from '../../../assets/lightWarning.svg'; 
-import { WarningIcon } from "../Icons";
+import Warning from '../../assets/warning.svg'; 
+import LightWarning from '../../assets/lightWarning.svg'; 
+import { WarningIcon } from "../../theme/components/Icons";
 
 export type IModal= {
 token:{symbol?:string, name?:string},

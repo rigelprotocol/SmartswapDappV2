@@ -1,6 +1,7 @@
 import React from 'react';
 import InputSelector from '../Swap/components/sendToken/InputSelector';
 import { SettingsIcon } from '../../theme/components/Icons';
+import TransactionSettings from '../../components/TransactionSettings';
 import {
   Box,
   Flex,
@@ -50,8 +51,8 @@ const AddLiquidity = () => {
             Add Liquidity
           </Heading>
           <Spacer />
-          <SettingsIcon color={topIcons} />
-          <TimeIcon w={6} h={7} pt={1} color={topIcons} />
+          <TransactionSettings />
+          <TimeIcon w={6} h={7} color={topIcons} />
         </Flex>
         <Box bg={infoBg} borderRadius="md" p={4} mt={4} mb={5}>
           <Text color="#319EF6" fontWeight="400" fontSize="14px">

@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Text, Flex, useColorModeValue } from '@chakra-ui/react';
+import { Box, Text, Flex, useColorModeValue, Spinner } from '@chakra-ui/react';
 import { CloseIcon, AddIcon, RemoveIcon } from '../../../../theme/components/Icons';
 import { removeSideTab, checkSideTab } from '../../../../utils/utilsFunctions';
 import TransactionHistory from './TransactionHistory';
-import MarketHistory from './MarketHistory';
+import useAccountHistory from "../../../../utils/hooks/useAccountHistory";
+import useMarketHistory from "../../../../utils/hooks/useMarketHistory";
+import {DataType} from "./TransactionHistory";
+import MarketHistory from "./MarketHistory";
 
 const History = () => {
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
@@ -15,6 +18,13 @@ const History = () => {
   
   const [show, setShow] = useState<Boolean>(false);
   const [showMarketHistory, setShowMarketHistory] = useState(false);
+
+  const {historyData, loading} = useAccountHistory();
+  const {marketHistoryData, loadMarketData } = useMarketHistory();
+
+  const userData = Object.keys(historyData).map((i ) => historyData[i]);
+  const historyArray = Object.keys(marketHistoryData).map((i ) => marketHistoryData[i]);
+
 
   useEffect(() => {
     const isActive = checkSideTab('history');
@@ -78,7 +88,7 @@ const History = () => {
               onClick={() => {
                 setShow(true);}}
             >
-              <AddIcon />
+              <AddIcon onClick={() => setShow(true)} />
               
               
             </Flex>)}
@@ -103,9 +113,21 @@ const History = () => {
         </Flex>
        
       </Box> 
-      <Box overflowY="auto" >
-        {show && showMarketHistory && <MarketHistory/>  }
-        {show && !showMarketHistory && <TransactionHistory/>}
+      <Box
+           overflowY={'scroll'}
+           maxHeight={'80vh'}
+      >
+        <Flex justifyContent={'center'}>
+          {show && loadMarketData || show && loading && <Spinner my={3} size={'md'}/>}
+        </Flex>
+
+        {show && showMarketHistory && marketHistoryData && historyArray.map((data: DataType) => (
+            <MarketHistory key={data.time} data={data} />
+        ))}
+
+        {show && !showMarketHistory && historyData && userData.map((data: DataType) => (
+            <TransactionHistory key={data.time} data={data}/>
+        ))}
       </Box>
     </Flex>
   );
