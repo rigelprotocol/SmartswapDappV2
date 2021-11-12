@@ -1,18 +1,30 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import { Box, Button, Image, Flex, useColorModeValue } from '@chakra-ui/react';
 import SwapSettings from './SwapSettings';
 import From from './From';
 import To from './To';
 import { SwitchIcon } from '../../../../theme/components/Icons';
 import { useWeb3React } from '@web3-react/core';
-
+import { useDefaultsFromURLSearch } from '../../../../state/swap/hooks';
+import { useCurrency } from '../../../../hooks/Tokens';
 const SendToken = () => {
+  const { account,chainId } = useWeb3React();
+
+
+  const loadedUrlParams = useDefaultsFromURLSearch()
+  
+ // token warning stuff
+ const [loadedInputCurrency] = [
+  useCurrency(loadedUrlParams?.inputCurrencyId),
+  // useCurrency(loadedUrlParams?.outputCurrencyId),
+]
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   const color = useColorModeValue('#999999', '#7599BD');
   const lightmode = useColorModeValue(true, false);
   const switchBgcolor = useColorModeValue('#F2F5F8', '#213345');
   const buttonBgcolor = useColorModeValue('#F2F5F8', '#213345');
-  const { account } = useWeb3React();
+
+  
   return (
     <div>
       <Box

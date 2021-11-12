@@ -1,15 +1,17 @@
 import { useCombinedActiveList } from "../state/lists/hooks"
-import { Currency, Token } from '@uniswap/sdk-core'
+import { Currency, Token,NativeCurrency,Ether } from '@uniswap/sdk-core'
 import { useMemo } from 'react'
 import { WrappedTokenInfo } from '../state/lists/WrappedTokenInfo'
-import { useWeb3React } from "@web3-react/core"
+import { useActiveWeb3React } from '../utils/hooks/useActiveWeb3React'
 import {TokenAddressMap} from "../state/lists/hooks"
 import {useState, useEffect } from "react"
 import { checkSupportedIds } from "../connectors"
+import { isAddress } from "../utils/utilsFunctions"
+import { useNativeBalance } from "../utils/hooks/useBalances"
 // reduce token map into standard address <-> Token mapping, optionally include user added tokens
 function useTokensFromMap(tokenMap: TokenAddressMap, includeUserAdded: boolean): { [address: string]: Token } {
   const [chainid,setchainid] = useState(56)
-    const { chainId } = useWeb3React()
+    const { chainId } = useActiveWeb3React()
     // const userAddedTokens = useUserAddedTokens()
     // 
     useEffect(()=>{
@@ -64,5 +66,33 @@ function useTokensFromMap(tokenMap: TokenAddressMap, includeUserAdded: boolean):
       symbol,
     logoURI:logo}
       return native
+  
+}
+
+export function useToken(tokenAddress?: string): Token | undefined | null {
+  const { chainId } = useActiveWeb3React()
+  const tokens = useAllTokens()
+
+  const address = isAddress(tokenAddress)
+  const token: Token | undefined = address ? tokens[address] : undefined
+
+  return useMemo(() => {
+    if (token) return token
+    if (!chainId || !address) return undefined
+    return undefined
+  }, [
+    address,
+    chainId,
+    token,
+  ])
+
+}
+
+export function useCurrency(currencyId: string | undefined): Currency | null | undefined {
+  const [,Symbol,Name,Logo] = useNativeBalance();
+  const { chainId } = useActiveWeb3React()
+  const isNative = currencyId?.toUpperCase() === Symbol
+  const token = useToken(isNative ? undefined : currencyId)
+  return isNative ? chainId && ExtendedEther(chainId,Symbol,Name,Logo) : token
   
 }

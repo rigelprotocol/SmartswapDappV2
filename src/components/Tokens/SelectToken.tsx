@@ -1,5 +1,5 @@
 import React,{ useState,useCallback,useMemo,useRef } from "react"
-// import { Token } from "@sushiswap/sdk"
+// import { Token } from "@uniswap/sdk"
 import {
     ModalOverlay,
     ModalContent,
@@ -15,20 +15,28 @@ import {
 } from "@chakra-ui/react"
 import ModalInput from "./input"
 import ManageToken from "./manageTokens"
-import { useWeb3React } from "@web3-react/core"
+import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React'
 import CurrencyList from "./CurrencyList"
-import { Token } from "@uniswap/sdk-core"
+import { Token,Currency,NativeCurrency } from "@uniswap/sdk-core"
 import useDebounce from "../../hooks/useDebounce";
 import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { useAllTokens,ExtendedEther } from "../../hooks/Tokens"
  type IModal= {
 tokenModal:boolean,
 setTokenModal:React.Dispatch<React.SetStateAction<boolean>>
+onCurrencySelect: (currency: Currency) => void,
+selectedCurrency?: Currency | null,
+ otherSelectedCurrency?: Currency | null,
 }
 
-export type Currency = Token
-const SelectToken:React.FC<IModal> = ({tokenModal,setTokenModal}) => {
-const { chainId } = useWeb3React()
+const SelectToken:React.FC<IModal> = ({
+  tokenModal,
+  setTokenModal,
+  onCurrencySelect,
+  selectedCurrency,
+  otherSelectedCurrency
+}) => {
+const { chainId } = useActiveWeb3React()
 
     const [searchQuery,setSearchQuery] = useState<string>('')
     const debouncedQuery = useDebounce(searchQuery,300)
@@ -38,17 +46,20 @@ const { chainId } = useWeb3React()
     const boxColor = useColorModeValue("#F2F5F8","#213345")
   
     const [displayManageToken,setDisplayManageToken] = useState(false)
-
+    const handleCurrencySelect = useCallback(
+      (currency: Currency) => {
+        onCurrencySelect(currency)
+      },
+      [ onCurrencySelect],
+    )
     const allTokens = useAllTokens()
     
     const [ ,Symbol,Name,Logo] = useNativeBalance();
-    const ether = ExtendedEther(chainId,Symbol,Name,Logo)
+    const ether =  chainId && ExtendedEther(chainId,Symbol,Name,Logo)
 
+    const filteredTokens: Currency[] = Object.values(allTokens)
 
-    const filteredTokens: Token[] = Object.values(allTokens)
-
-
-    const filteredTokenListWithETH = useMemo(():Token[]=>{
+    const filteredTokenListWithETH = useMemo(():Currency[]=>{
       const s = debouncedQuery.toLowerCase().trim()
       if(s==="" || s ==="e" || s==="et" || s==="eth"){
         return ether ? [ ether,...filteredTokens] : filteredTokens
@@ -70,11 +81,10 @@ const handleInput = useCallback(
   [],
 )
 
-
     return (
         
         <>
-        <Modal isOpen={tokenModal} onClose={onClose} isCentered >
+        <Modal isOpen={tokenModal} onClose={onClose} isCentered>
         <ModalOverlay />
             <ModalContent
                 width="95vw"
@@ -117,12 +127,15 @@ const handleInput = useCallback(
              
                 </Box>
                 <ModalBody maxHeight="60vh"
-                  overflowY="scroll">     
+                  overflowY="scroll" p={0}>     
                 {
                 filteredTokenListWithETH.map((currency,index)=>{
                   return <CurrencyList
+                  onCurrencySelect={handleCurrencySelect}
                   key={index}
                   currency={currency}
+                  selectedCurrency ={selectedCurrency}
+                  otherSelectedCurrency ={otherSelectedCurrency}
                   />
                 })
                 }
