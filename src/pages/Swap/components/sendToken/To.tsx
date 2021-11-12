@@ -32,7 +32,7 @@ const To = () => {
     // [dependentField]: showWrap
     //   ? parsedAmounts[independentField]?.toExact() ?? ''
     //   : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
-    [dependentField]: typedValue+3
+    [dependentField]: ''
   }
   return (
     <>
