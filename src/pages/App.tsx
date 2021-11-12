@@ -40,9 +40,14 @@ export default function App() {
                 path="/remove/:currencyIdA/:currencyIdB"
                 component={RemoveLiquidity}
               />
+              <Route 
+              exact 
+              strict
+              path="/farming-V2/staking-RGP" 
+              component={FarmingV2} 
+              />
               <Route exact path="/farming" component={FarmingV1} />
               <Route exact path="/farming-V2" component={FarmingV2} />
-
               <Route path="/">
                 <Redirect to="/swap" />
               </Route>
