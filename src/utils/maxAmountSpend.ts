@@ -16,8 +16,7 @@ export function maxAmountSpend(value:any,currency:Currency|undefined ) {
      const toNumber = JSBI.toNumber(subtract)
       return  parseFloat(ethers.utils.formatEther(toNumber.toString())).toFixed(4)
     }else{
-       alert("yes")
-       return 0
+       return "0"
     }
   }
   return value
