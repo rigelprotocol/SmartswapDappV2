@@ -10,13 +10,15 @@ import { ethers } from 'ethers'
 export function maxAmountSpend(value:any,currency:Currency|undefined ) {
   if (!currency) return undefined
   if (currency.isNative) {
-    
+   
     if (JSBI.greaterThan(value, MIN_BNB)) {
       const subtract = JSBI.subtract(value, MIN_BNB)
      const toNumber = JSBI.toNumber(subtract)
       return  parseFloat(ethers.utils.formatEther(toNumber.toString())).toFixed(4)
+    }else{
+       alert("yes")
+       return 0
     }
-
   }
   return value
 }
