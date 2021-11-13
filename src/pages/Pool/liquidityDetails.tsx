@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Flex, Text, useColorModeValue } from '@chakra-ui/react';
+import { Link, useHistory } from 'react-router-dom';
 
 const LiquidityDetails = (props: LiquidityDetail) => {
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
@@ -10,6 +11,7 @@ const LiquidityDetails = (props: LiquidityDetail) => {
   const removeButtonColor = useColorModeValue('#319EF6', '#4CAFFF');
   const bgColor = useColorModeValue('#FFFFFF', '#15202B');
   const textColor = useColorModeValue('#333333', '#F1F5F8');
+  const history = useHistory();
   return (
     <Flex
       w="100%"
@@ -87,6 +89,12 @@ const LiquidityDetails = (props: LiquidityDetail) => {
           w="48%"
           mb={2}
           py={3}
+          onClick={() =>
+            history.push(
+              `/remove/${props.pair.path[0].fromPath}/${props.pair.path[1].toPath}`
+            )
+          }
+          // as={<Link to="/remove" />}
         >
           Remove
         </Button>

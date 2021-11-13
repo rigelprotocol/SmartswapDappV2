@@ -3,6 +3,7 @@ import { save, load } from 'redux-localstorage-simple'
 import { TypedUseSelectorHook, useSelector } from 'react-redux'
 import toastReducers from '../components/Toast/toastSlice';
 import application from './application/reducer'
+import swap from "./swap/reducer"
 import user from './user/reducer'
 import blockReducer from "./block"
 
@@ -13,6 +14,9 @@ const store = configureStore({
         toast: toastReducers,
         block: blockReducer,
         application,
+
+        // Exchange
+        swap,
         user
     },
   middleware: [...getDefaultMiddleware({ thunk: true }), save({ states: PERSISTED_KEYS })],

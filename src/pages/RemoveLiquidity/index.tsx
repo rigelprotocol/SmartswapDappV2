@@ -1,8 +1,8 @@
 import React from 'react';
 import Remove from './Remove';
 
-function index() {
+const Index = () => {
   return <Remove />;
-}
+};
 
-export default index;
+export default Index;

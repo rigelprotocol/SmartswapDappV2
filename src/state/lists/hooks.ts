@@ -56,5 +56,6 @@ const TRANSFORMED_DEFAULT_TOKEN_LIST = listToTokenMap(DEFAULT_TOKEN_LIST)
 export const useCombinedActiveList= () => {
   const activeListUrls = [] // empty array for now..fill it up with active url
   const activeTokens: string[] | undefined = [] //convert empty array list into token map useCombinedTokenMapFromUrls(activeListUrls)
-  return combineMaps(TRANSFORMED_DEFAULT_TOKEN_LIST)
+  let map = combineMaps(TRANSFORMED_DEFAULT_TOKEN_LIST)
+  return map
 }

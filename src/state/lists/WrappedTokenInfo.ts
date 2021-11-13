@@ -1,6 +1,5 @@
-import { Currency, Token } from '@uniswap/sdk-core'
+import { Currency, Token,Ether } from '@uniswap/sdk-core'
 import { Tags, TokenInfo } from '@uniswap/token-lists'
-import { TokenList } from '@uniswap/token-lists/dist/types'
 import {isAddress} from "../../utils/utilsFunctions"
 
 type TagDetails = Tags[keyof Tags]
@@ -9,8 +8,7 @@ export interface TagInfo extends TagDetails {
 }
 /**
  * Token instances created from token info on a token list.
- */
-export class WrappedTokenInfo implements Token {
+ */export class WrappedTokenInfo implements Token {
   public readonly isNative: false = false
   public readonly isToken: true = true
   public readonly tags: TagInfo[]

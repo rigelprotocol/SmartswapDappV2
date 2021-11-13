@@ -1,5 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit'
 import { INITIAL_ALLOWED_SLIPPAGE, DEFAULT_DEADLINE_FROM_NOW } from '../../utils/constants'
+
 import {
   updateUserSlippageTolerance,
   updateUserDeadline,
