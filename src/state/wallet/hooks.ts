@@ -28,8 +28,8 @@ import JSBI from "jsbi";
             
             const amount = value ? JSBI.BigInt(value.toString()) : undefined
            if(amount && chainId){
-              setBalance(CurrencyAmount.fromRawAmount(currency, amount))
-            //  return setBalance(amount)
+             const amountValue = parseFloat(ethers.utils.formatEther(amount.toString()))
+             amountValue ===  0 ? setBalance('0') : setBalance(amountValue.toFixed(4))
            }
               }
           } catch (err) {
