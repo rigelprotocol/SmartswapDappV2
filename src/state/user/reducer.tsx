@@ -1,6 +1,5 @@
-import { createReducer } from '@reduxjs/toolkit'
-import { INITIAL_ALLOWED_SLIPPAGE, DEFAULT_DEADLINE_FROM_NOW } from '../../utils/constants'
-
+import { createReducer } from '@reduxjs/toolkit';
+import {INITIAL_ALLOWED_SLIPPAGE} from '../../utils/constants';
 import {
   updateUserSlippageTolerance,
   updateUserDeadline,
@@ -8,6 +7,8 @@ import {
 import { updateVersion } from '../global/actions'
 
 const currentTimestamp = () => new Date().getTime()
+
+const DEFAULT_DEADLINE_FROM_NOW = 60 * 20
 
 export interface UserState {
   // the timestamp of the last updateVersion action
