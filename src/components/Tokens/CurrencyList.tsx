@@ -29,7 +29,6 @@ const CurrencyList =({
     const heavyTextColor = useColorModeValue("#333333", "#F1F5F8"); 
        const hover = useColorModeValue('rgba(228, 225, 222, 0.74)', "#14181b6c");
     const [balance] = GetAddressTokenBalance(currency)
-console.log({balance})
     const selected = (selectedCurrency:Currency | null | undefined,currency:Currency)=>{
         if(selectedCurrency && currency && currency.isNative){
           return (selectedCurrency.symbol === currency.symbol) && (selectedCurrency.chainId === currency.chainId) ? true : false
@@ -42,7 +41,6 @@ console.log({balance})
     const handleSelect = () => onCurrencySelect(currency)
 
     function Balance({ balance }: { balance: CurrencyAmount<Currency> }) {
-        console.log({balance})
         return <Text>{balance.currency?.isToken? balance: balance}</Text>
       }
       

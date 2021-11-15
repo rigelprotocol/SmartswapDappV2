@@ -21,6 +21,7 @@ import { Token,Currency,NativeCurrency } from "@uniswap/sdk-core"
 import useDebounce from "../../hooks/useDebounce";
 import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { useAllTokens,ExtendedEther } from "../../hooks/Tokens"
+import { isAddress } from "../../utils/constants/index"
  type IModal= {
 tokenModal:boolean,
 setTokenModal:React.Dispatch<React.SetStateAction<boolean>>
@@ -75,7 +76,9 @@ setDisplayManageToken(state => !state)
 // refs for fixed size lists
 const handleInput = useCallback(
   (event) => {
-   const input = event.target.value
+    const input = event.target.value
+    const checksummedInput = isAddress(input)
+    console.log({checksummedInput})
     setSearchQuery(input)
   },
   [],
