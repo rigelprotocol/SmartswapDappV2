@@ -1,11 +1,10 @@
-import React, {useState, useCallback} from "react"
+import React, {useState} from "react"
 import {
     ModalOverlay,
     ModalContent,
     Modal,
     ModalCloseButton,
     ModalHeader,
-    useDisclosure,
     useColorModeValue,
     Box,
     Flex,
@@ -17,7 +16,6 @@ import {
     Link,
     Image,
 } from "@chakra-ui/react"
-import { ExternalLinkIcon } from '@chakra-ui/icons'
 import { shortenAddress } from "../../../utils";
 import { ExplorerDataType, getExplorerLink } from '../../../utils/getExplorerLink'
 import { CopyIcon } from "../../../theme/components/Icons";
@@ -26,6 +24,10 @@ import {useWeb3React} from "@web3-react/core";
 import NetworkModal from "./networkModal";
 import ROUTESQUARELIGHT from '../../../assets/routesquare-light.svg';
 import ROUTESQUAREDARK from '../../../assets/routesquare-dark.svg';
+import useAuth from "../../../utils/hooks/useAuth";
+
+
+
 export type IModal= {
     displayWallet:boolean,
     accounts:string,
@@ -43,23 +45,15 @@ setDisplayWallet
     const dashedColor = useColorModeValue("#DEE6ED","#4A739B");
     const activeButtonColor = useColorModeValue("#319EF6","#4CAFFF");
     const buttonColor = useColorModeValue("#666666","#7599BD");
-    const routeSquareIcon = useColorModeValue(ROUTESQUARELIGHT, ROUTESQUAREDARK)
-    const {
-        isOpen,
-        onOpen,
-        onClose,
-      } = useDisclosure();
-    const { chainId, connector, deactivate } = useWeb3React();
+    const routeSquareIcon = useColorModeValue(ROUTESQUARELIGHT, ROUTESQUAREDARK);
+    const { chainId, connector } = useWeb3React();
     const [displayNetwork, setDisplayNetwork] = useState(false);
     const { hasCopied, onCopy } = useClipboard(accounts);
+    const {logout} = useAuth();
 
-    const disconnectWallet = () =>{
-      try {
-        deactivate();
-      } catch (e) {
-        console.log(e);
-      }
-    }
+    const disconnectWallet = () => {
+      logout();
+    };
     return (
         <>
           <Modal isCentered isOpen={displayWallet} onClose={()=>setDisplayWallet(false)}>
@@ -111,7 +105,7 @@ setDisplayWallet
           </Tooltip>
                       </Flex>
                <Box mt="4" fontSize="16px" color={lightTextColor}>
-                <Link href={getExplorerLink(chainId, accounts, ExplorerDataType.ADDRESS)} isExternal>
+                <Link href={getExplorerLink(chainId as number, accounts, ExplorerDataType.ADDRESS)} isExternal>
                   <Box display="flex">
                     <Image mr={1} h="24px" w="24px" src={routeSquareIcon} />
                     <Text>
@@ -165,7 +159,7 @@ setDisplayWallet
           </Button>
           </Flex>
                 </Box>
-                <Box padding="15px"border={`1px dashed ${dashedColor}`} borderRadius="6px" fontSize="16px" mt="9">
+                <Box padding="15px" border={`1px dashed ${dashedColor}`} borderRadius="6px" fontSize="16px" mt="9">
                     <Text color={lightTextColor} mb="6" textAlign="center">Your recent transactions will appear here</Text>
                 </Box>
                 </Box>

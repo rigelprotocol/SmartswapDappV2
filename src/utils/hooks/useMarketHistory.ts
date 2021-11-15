@@ -107,7 +107,7 @@ const useMarketHistory = () => {
 
         };
         getMarketData();
-    }, [chainId, account]);
+    }, [chainId, account, contractAddress]);
     return {marketHistoryData, loadMarketData};
 
 };
