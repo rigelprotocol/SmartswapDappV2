@@ -238,7 +238,7 @@ const TransactionSettings = () => {
             <Text fontSize="14px" mr={2} color={textColorTwo}>Transaction Deadline</Text>
             <Tooltip
                 hasArrow
-                label="Your transaction will revert if it will be pending if it is pending for more than this perios of time."
+                label="Your transaction will revert if it is pending for more than this period of time."
                 aria-label="A tooltip"
                 placement="right-end"
               >
