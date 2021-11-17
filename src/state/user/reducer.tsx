@@ -3,6 +3,8 @@ import { INITIAL_ALLOWED_SLIPPAGE } from '../../utils/constants'
 
 import {
   updateUserSlippageTolerance,
+  SerializedToken,
+  addSerializedToken
 } from './actions'
 import { updateVersion } from '../global/actions'
 
@@ -18,12 +20,18 @@ export interface UserState {
   // deadline set by user in minutes, used in all txns
   userDeadline: number
 
-  timestamp: number
+  timestamp: number,
+  tokens: {
+    [chainId: number]: {
+      [address: string]: SerializedToken
+    }
+  }
 }
 
 export const initialState: UserState = {
   userSlippageTolerance: INITIAL_ALLOWED_SLIPPAGE,
   timestamp: currentTimestamp(),
+  tokens: {},
 }
 
 export default createReducer(initialState, (builder) =>
@@ -38,6 +46,14 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateUserSlippageTolerance, (state, action) => {
       state.userSlippageTolerance = action.payload.userSlippageTolerance
+      state.timestamp = currentTimestamp()
+    })
+    .addCase(addSerializedToken, (state, { payload: { serializedToken } }) => {
+      if (!state.tokens) {
+        state.tokens = {}
+      }
+      state.tokens[serializedToken.chainId] = state.tokens[serializedToken.chainId] || {}
+      state.tokens[serializedToken.chainId][serializedToken.address] = serializedToken
       state.timestamp = currentTimestamp()
     })
 )

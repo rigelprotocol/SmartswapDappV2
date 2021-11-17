@@ -3,6 +3,7 @@ import { SupportedChainSymbols,SupportedChainLogo } from '../../utils/constants/
 import { Currency,WETH9 } from '@uniswap/sdk-core'
 import { WrappedTokenInfo } from '../../state/lists/WrappedTokenInfo'
 import Logo from '../Logo'
+import NULL24LOGO from '../../assets/Null-24.svg';
 import useHttpLocations from '../../utils/hooks/useHttpLocations'
 
 
@@ -13,7 +14,13 @@ function getCurrencySymbol(currency) {
     if (currency.symbol === 'WETH') {
       return 'eth'
     }
-    return currency.symbol.toLowerCase()
+    try{
+      console.log({currency})
+     return currency.symbol.toLowerCase() 
+    }catch(e){
+      return ""
+    }
+    
   }
 
   export function getCurrencyLogoUrls(currency) {
@@ -44,6 +51,7 @@ const LOGO = SupportedChainLogo
     squared?: boolean,
   }
   const unknown = 'https://raw.githubusercontent.com/sushiswap/icons/master/token/unknown.png'
+  // const unknown = NULL24LOGO
 
 
   const CurrencyLogo: FunctionComponent<CurrencyLogoProps> = ({

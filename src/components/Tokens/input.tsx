@@ -18,7 +18,7 @@ const ModalInput = ({placeholder,changeInput,searchQuery}: IProps) => {
     <>
       <Flex alignItems="center" mt={3} justifyContent="space-between">
         <Input
-          type="number"
+          type="string"
           border={`1px solid ${borderColor}`}
           color={inputColor}
           onChange={(e)=>changeInput(e)}

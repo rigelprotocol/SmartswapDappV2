@@ -1,6 +1,6 @@
 import { Currency, Token,Ether } from '@uniswap/sdk-core'
 import { Tags, TokenInfo } from '@uniswap/token-lists'
-import {isAddress} from "../../utils/utilsFunctions"
+import {isAddress} from "../../utils"
 
 type TagDetails = Tags[keyof Tags]
 export interface TagInfo extends TagDetails {
