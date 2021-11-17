@@ -81,11 +81,12 @@ const useAccountHistory = () => {
 
 
     useEffect(() => {
-        setLoading(true);
+
         const loadAccountHistory = async () => {
             if (account) {
-                try {
+                setLoading(true);
 
+                try {
                     const uri = `https://api${testNetwork ? '-testnet.bscscan.com' : '.bscscan.com'
                     }/api?module=account&action=txlist&address=${account}&startblock=0
                         &endblock=latest&sort=desc&apikey=AATZWFQ47VX3Y1DN7M97BJ5FEJR6MGRQSD`;

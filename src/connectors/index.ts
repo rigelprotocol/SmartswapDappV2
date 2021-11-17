@@ -1,9 +1,7 @@
 import { Web3Provider } from '@ethersproject/providers';
 import { InjectedConnector } from '@web3-react/injected-connector';
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
-import { WalletLinkConnector } from '@web3-react/walletlink-connector';
 import { BscConnector } from '@binance-chain/bsc-connector';
-import { PortisConnector } from '@web3-react/portis-connector';
 import { NetworkConnector } from './NetworkConnector';
 import { ALL_SUPPORTED_CHAIN_IDS } from '../constants/chains';
 // import SMARTSWAP_LOGO from '../assets/images/rgpLogo.webp'
@@ -41,8 +39,8 @@ export function getNetworkLibrary(): Web3Provider {
 export const injected = new InjectedConnector({
     supportedChainIds: ALL_SUPPORTED_CHAIN_IDS,
 });
- const supportedChainIds = [1,3, 4, 56, 97, 80001, 137]
- export const checkSupportedIds = (chainID:number)=>supportedChainIds.some(id => id ===chainID)
+ const supportedChainIds = [1,3, 4, 56, 97, 80001, 137];
+ export const checkSupportedIds = (chainID:number)=>supportedChainIds.some(id => id ===chainID);
 export const bscConnector = new BscConnector({
   supportedChainIds: ALL_SUPPORTED_CHAIN_IDS,
 });
@@ -62,6 +60,8 @@ export const walletconnect = new WalletConnectConnector({
 //     appLogoUrl: SMARTSWAP_LOGO
 
 // })
+
+export const connectorKey = 'connectv2';
 
 
 export const connectorsByName = {
