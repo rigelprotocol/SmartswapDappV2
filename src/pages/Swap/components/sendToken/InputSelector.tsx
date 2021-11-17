@@ -42,7 +42,6 @@ const InputSelector = ({
   const maxBgColor = useColorModeValue('#EBF6FE', '#EAF6FF');
   const tokenListTriggerColor = useColorModeValue('', '#DCE5EF');
   const tokenListTrgiggerBgColor = useColorModeValue('', '#213345');
-  const [inputValue, setInputValue] = useState('');
   
   const [balance] =GetAddressTokenBalance(currency ?? undefined)
   return (
@@ -59,13 +58,6 @@ const InputSelector = ({
           value={value}
           onChange={(e) => {
             let input = e.target.value;
-            // setInputValue(
-            //   input
-            //     .replace(/[^\d.]/g, '')
-            //     .replace(/(?!^)-/g, '')
-            //     .replace(/(\..*)\.$/, '$1')
-            //     .replace(/\.(?=.*\.)/g, '')
-            // );
             let value = 
               input
             onUserInput(value)

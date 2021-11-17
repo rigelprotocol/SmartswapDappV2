@@ -1,6 +1,6 @@
 import { getAddress } from '@ethersproject/address'
-
-
+import { Token } from '@uniswap/sdk-core'
+import { TokenAddressMap } from '../state/lists/hooks'
 // returns the checksummed address if the address for valid address or returns false
 export function isAddress(value: any): string | false {
     try {
@@ -22,3 +22,8 @@ export function shortenAddress(address: string, chars = 4): string {
 export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
+
+
+export function isTokenOnList(tokenAddressMap: TokenAddressMap, token?: Token): boolean {
+    return Boolean(token?.isToken && tokenAddressMap[token.chainId]?.[token.address])
+  }

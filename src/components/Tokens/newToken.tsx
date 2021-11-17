@@ -1,4 +1,4 @@
-import React,{useState} from "react"
+import React from "react"
 import {
     ModalOverlay,
     ModalContent,
@@ -8,25 +8,33 @@ import {
     ModalHeader,
     useDisclosure,
     useColorModeValue,
-    Box,
     Flex,
     Text,
     Button,
     Image
 } from "@chakra-ui/react"
-import USDTLOGO from '../../assets/roundedlogo.svg';
+import { useAddUserToken } from "../../state/user/hooks";
 import { ArrowBackIcon } from "@chakra-ui/icons"
 import Warning from '../../assets/warning.svg'; 
 import LightWarning from '../../assets/lightWarning.svg'; 
 import { WarningIcon } from "../../theme/components/Icons";
+import { Token } from "@uniswap/sdk-core";
+import CurrencyLogo from "../currencyLogo";
 
 export type IModal= {
-token:{symbol?:string, name?:string},
+token?:Token,
 open:boolean,
-setDisplayImportedToken:React.Dispatch<React.SetStateAction<boolean>>
+setDisplayImportedToken:React.Dispatch<React.SetStateAction<boolean>>,
+handleCurrencySelect?: (currency: Token) => void
 }
 
-const NewToken:React.FC<IModal> = ({token,open, setDisplayImportedToken}) => {
+const NewToken:React.FC<IModal> = ({
+  token,
+  open,
+  setDisplayImportedToken,
+  handleCurrencySelect}) => {
+
+  const addToken = useAddUserToken()
 
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const boxShadow= useColorModeValue('#DEE6ED', '#324D68');
@@ -38,8 +46,6 @@ const NewToken:React.FC<IModal> = ({token,open, setDisplayImportedToken}) => {
     const dangerBackground = useColorModeValue("#FFE5EA","#FFFFFF")
     const WarningLogo = useColorModeValue(LightWarning,Warning)
     const {
-        isOpen,
-        onOpen,
         onClose,
       } = useDisclosure();
 
@@ -98,13 +104,22 @@ const NewToken:React.FC<IModal> = ({token,open, setDisplayImportedToken}) => {
                 flexDirection="column"
                 bgColor={boxColor} borderRadius="6px"
                 py="30px">
-                <Image src={USDTLOGO} />
-                    <Text my="4" color={heavyTextColor}>{token.symbol}</Text>
-                    <Text color={lightTextColor}>{token.name}</Text>
-                    <Text my="4" color={textColor}>0x03B8ba77046851F062a2905ed9B8f7c903191c57</Text>
+                 <CurrencyLogo currency={token} />
+                    <Text my="4" color={heavyTextColor}>{token?.symbol}</Text>
+                    <Text color={lightTextColor}>{token?.name}</Text>
+                    <Text my="4" color={textColor}>{token?.address}</Text>
                     <Button color={dangerColor} _hover={{bgColor:"#FFE6EE"}} bgColor={dangerBackground}><WarningIcon color={dangerColor} /> Unknown Source</Button>
                 </Flex>
-                <Button color="white" bgColor={textColor} isFullWidth mt="3" height="48px"> Import</Button>
+                <Button color="white" bgColor={textColor} isFullWidth mt="3" height="48px"
+                onClick={() => {
+                  if(token){
+                   addToken(token)
+                setDisplayImportedToken(false)
+                  handleCurrencySelect && handleCurrencySelect(token) 
+                  }
+                
+                }}
+                > Import</Button>
                       </ModalBody>
             </ModalContent>
           </Modal>
