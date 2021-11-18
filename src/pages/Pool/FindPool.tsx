@@ -1,46 +1,121 @@
-import React, { useState } from 'react';
-import InputSelector from '../Swap/components/sendToken/InputSelector';
+import React, { useState, useEffect, useMemo } from 'react';
 import { SettingsIcon } from '../../theme/components/Icons';
-
-import { ChevronDownIcon } from '@chakra-ui/icons';
 import {
   Box,
   Flex,
   Spacer,
   Text,
-  Button,
   Heading,
   useColorModeValue,
-  Image,
   Center,
-  useMediaQuery
+  useMediaQuery,
 } from '@chakra-ui/react';
 import { TimeIcon, ArrowBackIcon, AddIcon } from '@chakra-ui/icons';
 import { useHistory } from 'react-router';
-import SelectToken from '../../components/Tokens/SelectToken';
-import USDTLOGO from '../../assets/roundedlogo.svg';
+import { useDerivedSwapInfo } from '../../state/swap/hooks';
+import { Field } from '../../state/swap/actions';
+import From from './FindPoolInputs/From';
+import To from './FindPoolInputs/To';
+import CurrencyLogo from '../../components/currencyLogo';
+import { Currency } from '@uniswap/sdk-core';
+import { useDefaultsFromURLSearch } from '../../state/swap/hooks';
+import { useCurrency } from '../../hooks/Tokens';
+import { selectCurrency } from '../../state/swap/actions';
+import { useDispatch } from 'react-redux';
+import { useGetUserLiquidities } from '../../utils/hooks/usePools';
+import { useWeb3React } from '@web3-react/core';
+import { filterPools } from '../../utils/hooks/usePools';
+import { getPrice } from '../../utils/hooks/usePools';
+import { Link } from 'react-router-dom';
 
+export type Currencies = {
+  TokenA: Currency | undefined;
+  TokenB: Currency | undefined;
+};
 
 const FindPool = () => {
-
   const mode = useColorModeValue('light', 'dark');
   const infoBg = ('#EBF6FE', '#EAF6FF');
   const genBorder = useColorModeValue('#DEE6ED', '#324D68');
   const bgColor = useColorModeValue('#F2F5F8', '#213345');
   const topIcons = useColorModeValue('#666666', '#DCE6EF');
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
-  const [tokenModal, setTokenModal] = useState(false);
-  const tokenListTriggerColor = useColorModeValue('#333333', '#F1F5F8');
-  const activeButtonColor = useColorModeValue("#319EF6", "#4CAFFF");
+  const manageColor = useColorModeValue('#319EF6', '#4CAFFF');
+  const hrBorderColor = useColorModeValue('#DEE5ED', '#324D68');
+  const { currencies } = useDerivedSwapInfo();
+  const [TokenA, setTokenA] = useState<Currency>();
+  const [TokenB, setTokenB] = useState<Currency>();
+  const [liquidities, setLiquidities] = useState<any[] | undefined>([]);
+  const [loading, setLoading] = useState(false);
+  const [pool, setPool] = useState<any[] | undefined>([]);
+  const [price, setPrice] = useState<number[]>([]);
+  const { account, chainId } = useWeb3React();
+
+  const factory = useGetUserLiquidities();
+
+  const loadedUrlParams = useDefaultsFromURLSearch();
+
+  const [inputcurrency] = [useCurrency(loadedUrlParams?.inputCurrencyId)];
 
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
 
-
   const history = useHistory();
 
-  const openTokenModal = () => {
-    setTokenModal((state) => !state);
-  };
+  useEffect(() => {
+    let cancel = false;
+    const load = async () => {
+      const details = await factory;
+      if (details && !cancel) {
+        try {
+          setLiquidities(details.liquidities);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    };
+    load();
+    return () => {
+      cancel = true;
+    };
+  }, [factory]);
+
+  const dispatch = useDispatch();
+
+  useMemo(async () => {
+    if (account && TokenA && TokenB) {
+      setLoading(true);
+      try {
+        const data = filterPools({ TokenA, TokenB, liquidities });
+        const price = await getPrice({ chainId, TokenA, TokenB });
+        setPool(data);
+        setPrice(price);
+        setLoading(false);
+      } catch (err) {
+        setPool([]);
+        setPrice([]);
+        setLoading(false);
+      }
+    } else {
+      setPool([]);
+      setPrice([]);
+      setLoading(false);
+    }
+  }, [TokenA, TokenB, liquidities, account, chainId]);
+
+  useEffect(() => {
+    dispatch(
+      selectCurrency({
+        field: Field.OUTPUT,
+        currencyId: '',
+      })
+    );
+  }, []);
+
+  useEffect(() => {
+    if (TokenA === undefined) {
+      setTokenA(currencies[Field.INPUT]);
+    }
+  }, [currencies, TokenA]);
 
   return (
     <Center m={8}>
@@ -69,31 +144,19 @@ const FindPool = () => {
           <SettingsIcon color={topIcons} />
           <TimeIcon w={6} h={7} pt={1} color={topIcons} />
         </Flex>
-        <Box bg={mode === 'dark' ? '#213345' : '#F2F5F8'} borderRadius="md" p={4} mt={4} mb={5}>
-          <Text color="#319EF6" fontWeight="400" fontSize="14px">
-            Tip: Use this tool to find pairs that don’t automatically appear on the platform.   </Text>
-        </Box>
-
         <Box
+          bg={mode === 'dark' ? '#213345' : '#F2F5F8'}
           borderRadius="md"
-          border="1px solid #DEE6ED"
-          pt={2}
-          pb={2}
-          borderColor={genBorder}
-
-          onClick={() => openTokenModal()}
-          _hover={{ border: `1px solid ${activeButtonColor}`, color: `${activeButtonColor}`, background: `$buttonBgColorTwo` }}
+          p={4}
+          mt={4}
+          mb={5}
         >
-          <Flex my={2}>
-            <Image ml={3} h="25px" w="25px" src={USDTLOGO} />
-            <Heading ml={3} as="h4" size="md" color={tokenListTriggerColor} >Select a token</Heading>
-
-            <Spacer />
-            <ChevronDownIcon w={8} h={8} mr={3} />
-          </Flex>
+          <Text color={manageColor} fontWeight="400" fontSize="14px">
+            Tip: Use this tool to find pairs that don’t automatically appear on
+            the platform.{' '}
+          </Text>
         </Box>
-        <SelectToken tokenModal={tokenModal} setTokenModal={setTokenModal} />
-
+        <From setTokenA={setTokenA} />
         <Flex justifyContent="center">
           <Center
             w="40px"
@@ -109,55 +172,140 @@ const FindPool = () => {
             <AddIcon color={textColorOne} />
           </Center>
         </Flex>
-
-        <Box
-          borderRadius="md"
-          border="1px solid #DEE6ED"
-          pt={2}
-          pb={2}
-          borderColor={genBorder}
-
-          onClick={() => openTokenModal()}
-          _hover={{ border: `1px solid ${activeButtonColor}`, color: `${activeButtonColor}`, background: `$buttonBgColorTwo` }}
-        >
-          <Flex my={2}>
-            <Image ml={3} h="25px" w="25px" src={USDTLOGO} />
-            <Heading ml={3} as="h4" size="md" color={tokenListTriggerColor}>Select a token</Heading>
-            <Spacer />
-            <ChevronDownIcon w={8} h={8} mr={3} />
-          </Flex>
-        </Box>
-        <SelectToken tokenModal={tokenModal} setTokenModal={setTokenModal} />
-        <Flex
-
-          mt={5}
-          size="lg"
-          height="48px"
-
-          color="#fff"
-          h="100px"
-          mb="10px"
-          justifyContent="center"
-          alignItems="center"
-          px={4}
-
-          backgroundColor={mode === 'dark' ? '#213345' : '#F2F5F8'}
-          border={
-            mode === 'dark' ? '1px solid #324D68' : '1px solid #DEE6ED'
-          }
-          borderRadius="6px"
-        >
-          <Text
-            fontSize="sm"
-            color={mode === 'dark' ? '#DCE5EF' : '#666666'}
+        <To setTokenB={setTokenB} />
+        {loading ? (
+          <Flex
+            color="#fff"
+            h="100px"
+            mb="2px"
+            mt="14px"
+            justifyContent="center"
+            alignItems="center"
+            backgroundColor={mode === 'dark' ? '#213345' : '#F2F5F8'}
+            border={mode === 'dark' ? '1px solid #324D68' : '1px solid #DEE6ED'}
+            borderRadius="6px"
           >
-            Select a token to find your liquidity.
-          </Text>
-        </Flex>
-
-
+            <Text fontSize="sm" color={mode === 'dark' ? '#DCE5EF' : '#666666'}>
+              Loading...
+            </Text>
+          </Flex>
+        ) : !TokenA || !TokenB ? (
+          <Flex
+            color="#fff"
+            h="100px"
+            mb="2px"
+            mt="14px"
+            justifyContent="center"
+            alignItems="center"
+            backgroundColor={mode === 'dark' ? '#213345' : '#F2F5F8'}
+            border={mode === 'dark' ? '1px solid #324D68' : '1px solid #DEE6ED'}
+            borderRadius="6px"
+          >
+            <Text fontSize="sm" color={mode === 'dark' ? '#DCE5EF' : '#666666'}>
+              Select tokens to find your liquidity
+            </Text>
+          </Flex>
+        ) : pool?.length === 0 ? (
+          <Flex
+            color="#fff"
+            h="100px"
+            mb="2px"
+            mt="14px"
+            justifyContent="center"
+            alignItems="center"
+            flexDirection="column"
+            backgroundColor={mode === 'dark' ? '#213345' : '#F2F5F8'}
+            border={mode === 'dark' ? '1px solid #324D68' : '1px solid #DEE6ED'}
+            borderRadius="6px"
+          >
+            <Text fontSize="sm" color={mode === 'dark' ? '#DCE5EF' : '#666666'}>
+              You don’t have liquidity in this pool yet
+            </Text>
+            <Text color={manageColor} fontSize="14px" textAlign="center">
+              <Link to="/add">Add liquidity</Link>
+            </Text>
+          </Flex>
+        ) : (
+          <Flex flexDirection="column">
+            <Flex flexDirection="column">
+              <Text color={textColorOne} textAlign="center" mt={6} mb={1}>
+                Pool Found!
+              </Text>
+              <Text color={manageColor} textAlign="center" mb={6}>
+                Manage this pool.
+              </Text>
+            </Flex>
+            <Flex
+              h="180px"
+              border="1px"
+              borderRadius="6px"
+              borderColor={genBorder}
+              flexDirection="column"
+            >
+              <Flex p={3} flexDirection="column">
+                <Flex justifyContent="flex-start" mb={3}>
+                  <Text>Your position</Text>
+                </Flex>
+                <Flex justifyContent="space-between" alignItems="center">
+                  <Flex>
+                    <Flex mr={1}>
+                      <CurrencyLogo
+                        currency={currencies[Field.INPUT] ?? undefined}
+                        size={24}
+                        squared={true}
+                      />
+                    </Flex>
+                    <Flex mr={2}>
+                      <CurrencyLogo
+                        currency={currencies[Field.OUTPUT] ?? undefined}
+                        size={24}
+                        squared={true}
+                      />
+                    </Flex>
+                    <Text fontWeight="bold" fontSize="16px">
+                      {TokenA?.symbol} / {TokenB?.symbol}
+                    </Text>
+                  </Flex>
+                  <Flex>
+                    <Text fontWeight="bold" fontSize="14px" mr={3}>
+                      {pool && parseFloat(pool[0].poolToken).toFixed(6)}
+                    </Text>
+                    <Text fontSize="14px">Pool Tokens</Text>
+                  </Flex>
+                </Flex>
+              </Flex>
+              <hr style={{ borderTopColor: hrBorderColor }} />
+              <Flex
+                justifyContent="space-between"
+                alignItems="center"
+                px={10}
+                p={3}
+                mt={3}
+              >
+                <Flex flexDirection="column">
+                  <Text textAlign="center" fontWeight="bold" fontSize="16px">
+                    {price.length > 0 && price[0].toFixed(6)}
+                  </Text>
+                  <Text fontSize="14px">RGP per BNB</Text>
+                </Flex>
+                <Flex flexDirection="column">
+                  <Text textAlign="center" fontWeight="bold" fontSize="16px">
+                    {price.length > 0 && price[1].toFixed(6)}
+                  </Text>
+                  <Text fontSize="14px">BNB per RGP</Text>
+                </Flex>
+                <Flex fontSize="16px" flexDirection="column">
+                  <Text fontWeight="bold" textAlign="center" fontSize="16px">
+                    {pool && parseFloat(pool[0].poolShare).toFixed(6)}%
+                  </Text>
+                  <Text fontSize="14px">Share of Pool</Text>
+                </Flex>
+              </Flex>
+            </Flex>
+          </Flex>
+        )}
       </Box>
     </Center>
   );
 };
-export default FindPool
+export default FindPool;
