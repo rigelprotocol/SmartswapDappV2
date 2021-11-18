@@ -1,17 +1,16 @@
-import React, {useCallback} from "react";
+import React from "react";
 import {
     ModalOverlay,
     ModalContent,
     Modal,
     ModalCloseButton,
-    useDisclosure,
     useColorModeValue,
 } from "@chakra-ui/react";
-import { useWeb3React } from "@web3-react/core";
 import WalletOptions from "../WalletOptions";
-import { ConnectorNames, connectorsByName} from "../../../connectors";
+import { ConnectorNames, connectorKey} from "../../../connectors";
+import useAuth from "../../../utils/hooks/useAuth";
 
-const NetworkModal = ({displayNetwork, setDisplayNetwork}) => {
+const NetworkModal = ({displayNetwork, setDisplayNetwork} : {displayNetwork: boolean, setDisplayNetwork: Function}) => {
   const bgColor3 = useColorModeValue('#DEE6ED', '#4A739B');
   const shadow = useColorModeValue(
     '0px 1px 7px -2px rgba(24, 39, 75, 0.06), 0px 2px 2px rgba(24, 39, 75, 0.06)',
@@ -19,19 +18,12 @@ const NetworkModal = ({displayNetwork, setDisplayNetwork}) => {
   );
   const bg = useColorModeValue('#FFFFFF', '#15202B');
   const buttonBorder = useColorModeValue('gray.200', 'gray.100');
-  const { activate} = useWeb3React();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const connectWallet = useCallback(
-    (connectorID: ConnectorNames) => {
-      const connector = connectorsByName[connectorID];
-      try {
-        activate(connector);
-      } catch (e) {
-        console.log(e);
-      }
-    },
-    [activate]
-  );
+  const {login} = useAuth();
+
+    const connectWallet = (connectorID: ConnectorNames) => {
+        login(connectorID);
+        window.localStorage.setItem(connectorKey, connectorID)
+    };
 
   return (
     <>

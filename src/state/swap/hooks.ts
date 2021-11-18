@@ -7,7 +7,8 @@ import { useCurrency } from '../../hooks/Tokens'
 import { useDispatch, useSelector } from 'react-redux'
 import { Currency } from '@uniswap/sdk-core'
 import { useNativeBalance } from "../../utils/hooks/useBalances";
-import { isAddress,getERC20Token } from "../../utils/utilsFunctions";
+import { getERC20Token } from "../../utils/utilsFunctions";
+import { isAddress } from '../../utils'
 import { ethers } from 'ethers'
 import JSBI from 'jsbi'
 import { SupportedChainSymbols } from '../../utils/constants/chains'

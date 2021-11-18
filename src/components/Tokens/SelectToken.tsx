@@ -1,4 +1,4 @@
-import React,{ useState,useCallback,useMemo,useRef } from "react"
+import React,{ useState,useCallback,useMemo,useEffect } from "react"
 // import { Token } from "@uniswap/sdk"
 import {
     ModalOverlay,
@@ -20,7 +20,11 @@ import CurrencyList from "./CurrencyList"
 import { Token,Currency,NativeCurrency } from "@uniswap/sdk-core"
 import useDebounce from "../../hooks/useDebounce";
 import { useNativeBalance } from "../../utils/hooks/useBalances";
-import { useAllTokens,ExtendedEther } from "../../hooks/Tokens"
+import { useAllTokens,ExtendedEther,useToken,useIsUserAddedToken } from "../../hooks/Tokens"
+import { isAddress } from "../../utils"
+import { filterTokens } from "./filtering"
+import ImportRow from "./ImportRow"
+import NewToken from "./newToken"
  type IModal= {
 tokenModal:boolean,
 setTokenModal:React.Dispatch<React.SetStateAction<boolean>>
@@ -36,8 +40,8 @@ const SelectToken:React.FC<IModal> = ({
   selectedCurrency,
   otherSelectedCurrency
 }) => {
-const { chainId } = useActiveWeb3React()
-
+    const { chainId } = useActiveWeb3React()
+     const [openNewTokenModal,setOpenNewTokenModal] = useState<boolean>(false)
     const [searchQuery,setSearchQuery] = useState<string>('')
     const debouncedQuery = useDebounce(searchQuery,300)
     const bgColor = useColorModeValue("#FFF", "#15202B");
@@ -45,6 +49,10 @@ const { chainId } = useActiveWeb3React()
     const textColor = useColorModeValue("#319EF6","#4CAFFF")
     const boxColor = useColorModeValue("#F2F5F8","#213345")
   
+    useEffect(()=>{
+      setSearchQuery('')
+      },[tokenModal])
+
     const [displayManageToken,setDisplayManageToken] = useState(false)
     const handleCurrencySelect = useCallback(
       (currency: Currency) => {
@@ -54,10 +62,17 @@ const { chainId } = useActiveWeb3React()
     )
     const allTokens = useAllTokens()
     
+        // if they input an address, use it
+  const searchToken = useToken(debouncedQuery)
+  const searchTokenIsAdded = useIsUserAddedToken(searchToken)
+  console.log({searchTokenIsAdded})
     const [ ,Symbol,Name,Logo] = useNativeBalance();
     const ether =  chainId && ExtendedEther(chainId,Symbol,Name,Logo)
 
-    const filteredTokens: Currency[] = Object.values(allTokens)
+
+    const filteredTokens: Token[] = useMemo(() => {
+      return filterTokens(Object.values(allTokens), debouncedQuery)
+    }, [allTokens, debouncedQuery])
 
     const filteredTokenListWithETH = useMemo(():Currency[]=>{
       const s = debouncedQuery.toLowerCase().trim()
@@ -75,11 +90,13 @@ setDisplayManageToken(state => !state)
 // refs for fixed size lists
 const handleInput = useCallback(
   (event) => {
-   const input = event.target.value
-    setSearchQuery(input)
+    const input = event.target.value
+    const checksummedInput = isAddress(input)
+    setSearchQuery(checksummedInput || input)
   },
   [],
 )
+
 
     return (
         
@@ -128,7 +145,11 @@ const handleInput = useCallback(
                 </Box>
                 <ModalBody maxHeight="60vh"
                   overflowY="scroll" p={0}>     
-                {
+                  {searchToken && !searchTokenIsAdded ?
+                  <ImportRow 
+                  token = {searchToken} 
+                  openNewTokenModal = {setOpenNewTokenModal}
+                  /> : filteredTokenListWithETH?.length > 0 ?
                 filteredTokenListWithETH.map((currency,index)=>{
                   return <CurrencyList
                   onCurrencySelect={handleCurrencySelect}
@@ -137,8 +158,9 @@ const handleInput = useCallback(
                   selectedCurrency ={selectedCurrency}
                   otherSelectedCurrency ={otherSelectedCurrency}
                   />
-                })
-                }
+                }) : 
+                <Text textAlign="center" py="7">No Result found...</Text>
+                  }
                       </ModalBody>
               
                <ModalFooter py="4" bg={boxColor}
@@ -157,6 +179,15 @@ const handleInput = useCallback(
             </ModalContent>
           </Modal>
           <ManageToken open={displayManageToken} setDisplayManageToken={setDisplayManageToken}/>
+          {searchToken && openNewTokenModal ?
+          <NewToken 
+          open={openNewTokenModal}
+          handleCurrencySelect={handleCurrencySelect}
+          setDisplayImportedToken={setOpenNewTokenModal}
+          token={searchToken}
+           />: null
+          }
+          
           </>
     )
 }

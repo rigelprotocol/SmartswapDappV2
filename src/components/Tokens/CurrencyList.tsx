@@ -10,7 +10,10 @@ import {
     Text,
     Spinner,
 } from "@chakra-ui/react"
+import { useCombinedActiveList } from '../../state/lists/hooks';
 import { GetAddressTokenBalance } from "../../state/wallet/hooks"
+import { isTokenOnList } from "../../utils/index"
+import { useIsUserAddedToken } from "../../hooks/Tokens"
 type ICurrencyList = {
     currency:Currency,
     onCurrencySelect: (currency: Currency) => void,
@@ -28,8 +31,12 @@ const CurrencyList =({
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
     const heavyTextColor = useColorModeValue("#333333", "#F1F5F8"); 
        const hover = useColorModeValue('rgba(228, 225, 222, 0.74)', "#14181b6c");
+
+       const selectedTokenList = useCombinedActiveList()
+       const isOnSelectedList = isTokenOnList(selectedTokenList, currency.isToken ? currency : undefined)
+       const customAdded = useIsUserAddedToken(currency)
+
     const [balance] = GetAddressTokenBalance(currency)
-console.log({balance})
     const selected = (selectedCurrency:Currency | null | undefined,currency:Currency)=>{
         if(selectedCurrency && currency && currency.isNative){
           return (selectedCurrency.symbol === currency.symbol) && (selectedCurrency.chainId === currency.chainId) ? true : false
@@ -42,7 +49,6 @@ console.log({balance})
     const handleSelect = () => onCurrencySelect(currency)
 
     function Balance({ balance }: { balance: CurrencyAmount<Currency> }) {
-        console.log({balance})
         return <Text>{balance.currency?.isToken? balance: balance}</Text>
       }
       
@@ -66,7 +72,12 @@ console.log({balance})
          
              <Box>
              <Text color={heavyTextColor} fontWeight="700" mt="2">{currency.symbol}</Text>
-             <Text color={lightTextColor}>{currency.name} </Text>
+            
+             {!currency.isNative && !isOnSelectedList && customAdded ? (
+            <Text>{currency.name} • Added by user</Text>
+          ) : (
+            <Text color={lightTextColor}>{currency.name} </Text>
+          )}
              {/* { currency?.isImported ? " • Added by user" : ""} */}
              </Box>
         

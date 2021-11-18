@@ -36,15 +36,6 @@ export const getERC20Token = async (address: string) => {
   return token;
 };
 
-// returns the checksummed address if the address is valid, otherwise returns false
-export function isAddress(value: any): string | false {
-  try {
-    return getAddress(value);
-  } catch {
-    return false;
-  }
-}
-
 export const switchNetwork = async (
   chainId: string,
   account: string,
