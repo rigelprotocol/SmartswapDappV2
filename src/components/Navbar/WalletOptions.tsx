@@ -68,9 +68,7 @@ const WalletOptions = ({connect}: {connect: Function}) => {
             </ModalHeader>
             <ModalBody mt={4}>
                 {walletItems.map((item, i) => (
-                    <>
-                        <WalletItem key={i} name={item.name} image={item.image} connect={() => item.connect(item.id)}/>
-                    </>
+                    <WalletItem key={i} name={item.name} image={item.image} connect={() => item.connect(item.id)}/>
                 ))}
             </ModalBody>
         </>

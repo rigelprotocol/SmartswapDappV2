@@ -2,6 +2,8 @@ import { createReducer } from '@reduxjs/toolkit';
 import {INITIAL_ALLOWED_SLIPPAGE} from '../../utils/constants';
 import {
   updateUserSlippageTolerance,
+  SerializedToken,
+  addSerializedToken,
   updateUserDeadline,
 } from './actions'
 import { updateVersion } from '../global/actions'
@@ -20,13 +22,19 @@ export interface UserState {
   // deadline set by user in minutes, used in all txns
   userDeadline: number
 
-  timestamp: number
+  timestamp: number,
+  tokens: {
+    [chainId: number]: {
+      [address: string]: SerializedToken
+    }
+  }
 }
 
 export const initialState: UserState = {
   userSlippageTolerance: INITIAL_ALLOWED_SLIPPAGE,
   userDeadline: DEFAULT_DEADLINE_FROM_NOW,
   timestamp: currentTimestamp(),
+  tokens: {},
 }
 
 export default createReducer(initialState, (builder) =>
@@ -50,8 +58,17 @@ export default createReducer(initialState, (builder) =>
       state.userSlippageTolerance = action.payload.userSlippageTolerance
       state.timestamp = currentTimestamp()
     })
+<<<<<<< HEAD
     .addCase(updateUserDeadline, (state, action) => {
       state.userDeadline = action.payload.userDeadline
+=======
+    .addCase(addSerializedToken, (state, { payload: { serializedToken } }) => {
+      if (!state.tokens) {
+        state.tokens = {}
+      }
+      state.tokens[serializedToken.chainId] = state.tokens[serializedToken.chainId] || {}
+      state.tokens[serializedToken.chainId][serializedToken.address] = serializedToken
+>>>>>>> e20857977f67b872c0b95a4d70d27ff6539f153f
       state.timestamp = currentTimestamp()
     })
 )

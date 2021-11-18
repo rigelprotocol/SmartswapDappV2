@@ -15,8 +15,11 @@ import TransactionStateModal from "../components/Modals/TransactionsModal/Transa
 import SetPrice from "./Swap/SetPrice";
 import AutoTime from "./Swap/AutoTime";
 import FindPool from "./Pool/FindPool";
+import useConnectWallet from "../utils/hooks/useConnectWallet";
 
 export default function App() {
+  useConnectWallet();
+
   return (
     <Suspense fallback={null}>
       <Fonts />
