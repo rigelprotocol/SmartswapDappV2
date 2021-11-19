@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState, useAppSelector } from '../../index'
 import {
   updateUserSlippageTolerance,
+  updateUserDeadline,
 } from '../actions'
 import { Token } from '@uniswap/sdk-core'
 import { useActiveWeb3React } from '../../../utils/hooks/useActiveWeb3React'
@@ -64,4 +65,20 @@ export function useUserAddedTokens(): Token[] {
     if (!chainId) return []
     return Object.values(serializedTokensMap?.[chainId] ?? {}).map(deserializeToken)
   }, [serializedTokensMap, chainId])
+}
+
+export function useUserTransactionTTL(): [number, (slippage: number) => void] {
+  const dispatch = useDispatch<AppDispatch>()
+  const userDeadline = useSelector<RootState, RootState['user']['userDeadline']>((state) => {
+    return state.user.userDeadline
+  })
+
+  const setUserDeadline = useCallback(
+    (deadline: number) => {
+      dispatch(updateUserDeadline({ userDeadline: deadline }))
+    },
+    [dispatch],
+  )
+
+  return [userDeadline, setUserDeadline]
 }
