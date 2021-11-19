@@ -60,6 +60,8 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateUserDeadline, (state, action) => {
       state.userDeadline = action.payload.userDeadline
+      state.timestamp = currentTimestamp()
+    })
     .addCase(addSerializedToken, (state, { payload: { serializedToken } }) => {
       if (!state.tokens) {
         state.tokens = {}
