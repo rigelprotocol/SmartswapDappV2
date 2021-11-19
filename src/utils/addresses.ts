@@ -26,3 +26,5 @@ export const SMARTSWAPROUTER: { [key: string]: string } = {
   '137': '0x',
   '80001': '0x',
 };
+
+// https://api.borgswap.exchange/tokens.json

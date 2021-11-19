@@ -14,7 +14,7 @@ import {
     Text,
 } from "@chakra-ui/react"
 import ModalInput from "./input"
-import ManageToken from "./manageTokens"
+import Manage from "./Manage"
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React'
 import CurrencyList from "./CurrencyList"
 import { Token,Currency,NativeCurrency } from "@uniswap/sdk-core"
@@ -178,7 +178,7 @@ const handleInput = useCallback(
                </ModalFooter>
             </ModalContent>
           </Modal>
-          <ManageToken open={displayManageToken} setDisplayManageToken={setDisplayManageToken}/>
+          <Manage open={displayManageToken} setDisplayManageToken={setDisplayManageToken}/>
           {searchToken && openNewTokenModal ?
           <NewToken 
           open={openNewTokenModal}

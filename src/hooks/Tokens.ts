@@ -113,7 +113,6 @@ export function useToken(tokenAddress?: string): Token | undefined | null {
       const name =await tokenContract.name()
       const tokenDecimal =await tokenContract.decimals()
       const tokenSymbol=await tokenContract.symbol()
-      console.log({tokenDecimal})
       let newToken = new Token(
         chainId,
         address,
