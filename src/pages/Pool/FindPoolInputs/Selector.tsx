@@ -46,6 +46,7 @@ const Selector = ({
           color: `${activeButtonColor}`,
           background: `$buttonBgColorTwo`,
         }}
+        cursor="pointer"
       >
         <Flex my={2} alignItems="center">
           <Flex ml={2}>

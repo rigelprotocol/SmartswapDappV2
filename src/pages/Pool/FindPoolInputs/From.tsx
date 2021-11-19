@@ -16,14 +16,13 @@ const From = ({ setTokenA }: FromInputProps) => {
   const [tokenModal, setTokenModal] = useState(false);
   const { onCurrencySelection } = useSwapActionHandlers();
   const { currencies } = useDerivedSwapInfo();
-  const { independentField } = useSwapState();
-  const dependentField: Field =
-    independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
+  // const { independentField } = useSwapState();
+  // const dependentField: Field =
+  //   independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
   const handleInputSelect = useCallback(
     (inputCurrency) => {
       onCurrencySelection(Field.INPUT, inputCurrency);
       setTokenA(inputCurrency);
-      console.log(inputCurrency);
       setTokenModal((state) => !state);
     },
     [onCurrencySelection]

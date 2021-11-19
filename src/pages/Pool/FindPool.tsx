@@ -25,8 +25,8 @@ import { useDispatch } from 'react-redux';
 import { useGetUserLiquidities } from '../../utils/hooks/usePools';
 import { useWeb3React } from '@web3-react/core';
 import { filterPools } from '../../utils/hooks/usePools';
-import { getPrice } from '../../utils/hooks/usePools';
 import { Link } from 'react-router-dom';
+import { GetAddressTokenBalance } from '../../state/wallet/hooks';
 
 export type Currencies = {
   TokenA: Currency | undefined;
@@ -50,6 +50,9 @@ const FindPool = () => {
   const [pool, setPool] = useState<any[] | undefined>([]);
   const [price, setPrice] = useState<number[]>([]);
   const { account, chainId } = useWeb3React();
+
+  const [balance] = GetAddressTokenBalance(TokenA);
+  const [balance2] = GetAddressTokenBalance(TokenB);
 
   const factory = useGetUserLiquidities();
 
@@ -86,13 +89,10 @@ const FindPool = () => {
       setLoading(true);
       try {
         const data = filterPools({ TokenA, TokenB, liquidities });
-        const price = await getPrice({ chainId, TokenA, TokenB });
         setPool(data);
-        setPrice(price);
         setLoading(false);
       } catch (err) {
         setPool([]);
-        setPrice([]);
         setLoading(false);
       }
     } else {
@@ -172,7 +172,7 @@ const FindPool = () => {
             <AddIcon color={textColorOne} />
           </Center>
         </Flex>
-        <To setTokenB={setTokenB} />
+        <To setTokenB={setTokenB} TokenB={TokenB} />
         {loading ? (
           <Flex
             color="#fff"
@@ -221,27 +221,7 @@ const FindPool = () => {
               Select tokens to find your liquidity
             </Text>
           </Flex>
-        ) : pool?.length === 0 ? (
-          <Flex
-            color="#fff"
-            h="100px"
-            mb="2px"
-            mt="14px"
-            justifyContent="center"
-            alignItems="center"
-            flexDirection="column"
-            backgroundColor={mode === 'dark' ? '#213345' : '#F2F5F8'}
-            border={mode === 'dark' ? '1px solid #324D68' : '1px solid #DEE6ED'}
-            borderRadius="6px"
-          >
-            <Text fontSize="sm" color={mode === 'dark' ? '#DCE5EF' : '#666666'}>
-              You don’t have liquidity in this pool yet
-            </Text>
-            <Text color={manageColor} fontSize="14px" textAlign="center">
-              <Link to="/add">Add liquidity</Link>
-            </Text>
-          </Flex>
-        ) : (
+        ) : pool && pool?.length > 0 ? (
           <Flex flexDirection="column">
             <Flex flexDirection="column">
               <Text color={textColorOne} textAlign="center" mt={6} mb={1}>
@@ -300,15 +280,23 @@ const FindPool = () => {
               >
                 <Flex flexDirection="column">
                   <Text textAlign="center" fontWeight="bold" fontSize="16px">
-                    {price.length > 0 && price[0].toFixed(6)}
+                    {balance.currency?.isToken
+                      ? balance.toSignificant(6)
+                      : balance}
                   </Text>
-                  <Text fontSize="14px">RGP per BNB</Text>
+                  <Text textAlign="center" fontSize="14px">
+                    {currencies[Field.INPUT]?.symbol}
+                  </Text>
                 </Flex>
                 <Flex flexDirection="column">
                   <Text textAlign="center" fontWeight="bold" fontSize="16px">
-                    {price.length > 0 && price[1].toFixed(6)}
+                    {balance2.currency?.isToken
+                      ? balance2.toSignificant(6)
+                      : balance2}
                   </Text>
-                  <Text fontSize="14px">BNB per RGP</Text>
+                  <Text textAlign="center" fontSize="14px">
+                    {currencies[Field.OUTPUT]?.symbol}
+                  </Text>
                 </Flex>
                 <Flex fontSize="16px" flexDirection="column">
                   <Text fontWeight="bold" textAlign="center" fontSize="16px">
@@ -318,6 +306,26 @@ const FindPool = () => {
                 </Flex>
               </Flex>
             </Flex>
+          </Flex>
+        ) : (
+          <Flex
+            color="#fff"
+            h="100px"
+            mb="2px"
+            mt="14px"
+            justifyContent="center"
+            alignItems="center"
+            flexDirection="column"
+            backgroundColor={mode === 'dark' ? '#213345' : '#F2F5F8'}
+            border={mode === 'dark' ? '1px solid #324D68' : '1px solid #DEE6ED'}
+            borderRadius="6px"
+          >
+            <Text fontSize="sm" color={mode === 'dark' ? '#DCE5EF' : '#666666'}>
+              You don’t have liquidity in this pool yet
+            </Text>
+            <Text color={manageColor} fontSize="14px" textAlign="center">
+              <Link to="/add">Add liquidity</Link>
+            </Text>
           </Flex>
         )}
       </Box>
