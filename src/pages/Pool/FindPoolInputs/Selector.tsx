@@ -55,12 +55,7 @@ const Selector = ({
               squared={true}
             />
           </Flex>
-          <Heading
-            ml={3}
-            size="md"
-            fontWeight="500"
-            color={tokenListTriggerColor}
-          >
+          <Box ml={3} size="md" fontWeight="bold" color={tokenListTriggerColor}>
             {(currency && currency.symbol && currency.symbol.length > 20
               ? currency.symbol.slice(0, 4) +
                 '...' +
@@ -69,7 +64,7 @@ const Selector = ({
                   currency.symbol.length
                 )
               : currency?.symbol) || <Text>Select a token</Text>}
-          </Heading>
+          </Box>
 
           <Spacer />
           <ChevronDownIcon w={8} h={8} mr={3} />
