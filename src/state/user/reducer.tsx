@@ -58,17 +58,14 @@ export default createReducer(initialState, (builder) =>
       state.userSlippageTolerance = action.payload.userSlippageTolerance
       state.timestamp = currentTimestamp()
     })
-<<<<<<< HEAD
     .addCase(updateUserDeadline, (state, action) => {
       state.userDeadline = action.payload.userDeadline
-=======
     .addCase(addSerializedToken, (state, { payload: { serializedToken } }) => {
       if (!state.tokens) {
         state.tokens = {}
       }
       state.tokens[serializedToken.chainId] = state.tokens[serializedToken.chainId] || {}
       state.tokens[serializedToken.chainId][serializedToken.address] = serializedToken
->>>>>>> e20857977f67b872c0b95a4d70d27ff6539f153f
       state.timestamp = currentTimestamp()
     })
 )
