@@ -55,7 +55,12 @@ const Selector = ({
               squared={true}
             />
           </Flex>
-          <Heading ml={3} as="h4" size="md" color={tokenListTriggerColor}>
+          <Heading
+            ml={3}
+            size="md"
+            fontWeight="500"
+            color={tokenListTriggerColor}
+          >
             {(currency && currency.symbol && currency.symbol.length > 20
               ? currency.symbol.slice(0, 4) +
                 '...' +

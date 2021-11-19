@@ -189,6 +189,22 @@ const FindPool = () => {
               Loading...
             </Text>
           </Flex>
+        ) : !account ? (
+          <Flex
+            color="#fff"
+            h="100px"
+            mb="2px"
+            mt="14px"
+            justifyContent="center"
+            alignItems="center"
+            backgroundColor={mode === 'dark' ? '#213345' : '#F2F5F8'}
+            border={mode === 'dark' ? '1px solid #324D68' : '1px solid #DEE6ED'}
+            borderRadius="6px"
+          >
+            <Text fontSize="sm" color={mode === 'dark' ? '#DCE5EF' : '#666666'}>
+              Connect wallet
+            </Text>
+          </Flex>
         ) : !TokenA || !TokenB ? (
           <Flex
             color="#fff"
@@ -262,7 +278,7 @@ const FindPool = () => {
                         squared={true}
                       />
                     </Flex>
-                    <Text fontWeight="bold" fontSize="16px">
+                    <Text fontWeight="400" fontSize="16px">
                       {TokenA?.symbol} / {TokenB?.symbol}
                     </Text>
                   </Flex>
