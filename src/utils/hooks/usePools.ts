@@ -1,10 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import { smartFactory, LiquidityPairInstance } from '../Contracts';
+import {
+  smartFactory,
+  LiquidityPairInstance,
+  SmartSwapRouter,
+} from '../Contracts';
 import { SMARTSWAPFACTORYADDRESSES, SMARTSWAPROUTER } from '../addresses';
 import { getERC20Token } from '../utilsFunctions';
 import { ethers } from 'ethers';
-import { Fraction } from '@uniswap/sdk-core';
+import { Currency, Fraction } from '@uniswap/sdk-core';
+import { WNATIVEADDRESSES } from '../addresses';
+import JSBI from 'jsbi';
 
 export const useGetUserLiquidities = async () => {
   const { account, chainId } = useWeb3React();
@@ -170,4 +176,35 @@ export const useGetLiquidityById = async (
     loadPair();
   }, [account, chainId, address1, address2, hasBeenApproved]);
   return { LiquidityPairData, loading, approved };
+};
+
+const getAddress = (currency: Currency | undefined) => {
+  const address = currency?.isNative
+    ? WNATIVEADDRESSES[currency?.chainId as number]
+    : currency?.wrapped.address;
+  return address;
+};
+
+type FilterPoolsParams = {
+  TokenA: Currency | undefined;
+  TokenB: Currency | undefined;
+  liquidities: any[] | undefined;
+};
+
+export const filterPools = ({
+  TokenA,
+  TokenB,
+  liquidities,
+}: FilterPoolsParams) => {
+  let tokenA = getAddress(TokenA);
+  let tokenB = getAddress(TokenB);
+
+  const data = liquidities?.filter(
+    (liquidity) =>
+      (liquidity.path[0].fromPath === tokenA &&
+        liquidity.path[1].toPath === tokenB) ||
+      (liquidity.path[0].fromPath === tokenB &&
+        liquidity.path[1].toPath === tokenA)
+  );
+  return data;
 };
