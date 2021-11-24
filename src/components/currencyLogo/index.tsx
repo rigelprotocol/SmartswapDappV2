@@ -15,7 +15,6 @@ function getCurrencySymbol(currency) {
       return 'eth'
     }
     try{
-      console.log({currency})
      return currency.symbol.toLowerCase() 
     }catch(e){
       return ""

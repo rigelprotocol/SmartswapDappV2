@@ -61,11 +61,10 @@ const SelectToken:React.FC<IModal> = ({
       [ onCurrencySelect],
     )
     const allTokens = useAllTokens()
-    
+    // useUpdateTokenList()
         // if they input an address, use it
   const searchToken = useToken(debouncedQuery)
   const searchTokenIsAdded = useIsUserAddedToken(searchToken)
-  console.log({searchTokenIsAdded})
     const [ ,Symbol,Name,Logo] = useNativeBalance();
     const ether =  chainId && ExtendedEther(chainId,Symbol,Name,Logo)
 
@@ -101,7 +100,7 @@ const handleInput = useCallback(
     return (
         
         <>
-        <Modal isOpen={tokenModal} onClose={onClose} isCentered>
+        <Modal isOpen={tokenModal} onClose={()=>setTokenModal(false)} isCentered>
         <ModalOverlay />
             <ModalContent
                 width="95vw"

@@ -13,11 +13,11 @@ import {
     Flex,
     Text
 } from "@chakra-ui/react"
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../state";
+import { TokenList } from "@uniswap/token-lists";
 import { ArrowBackIcon } from "@chakra-ui/icons"
 import ManageToken from "./manageTokens";
 import ManageList from "./manageLists";
+import ImportList from "./ImportList";
 export type IModal= {
     open:boolean,
     setDisplayManageToken:Dispatch<React.SetStateAction<boolean>>
@@ -38,20 +38,14 @@ type : "TOKENS"
     const heavyTextColor = useColorModeValue("#333333", "#F1F5F8");
     const boxColor = useColorModeValue("#F2F5F8","#213345")
     const [selectedText,setSelectedText] = useState(0)
-    
-    const {
-        isOpen,
-        onOpen,
-        onClose,
-      } = useDisclosure();
- const dispatch = useDispatch()
- const tokenDetails = useSelector((state:RootState) =>state.application.tokenGroup)      
-
+    const [openImportToken,setOpenImportToken] = useState(false)
+    const [listURL,setListURL] = useState("")
+    const [tokenList,setTokenList] = useState<TokenList | undefined>()
 
     return (
         
         <>
-        <Modal isOpen={open} onClose={onClose} isCentered >
+        <Modal isOpen={open} onClose={()=>setDisplayManageToken(false)} isCentered >
             <ModalOverlay />
             <ModalContent
                 width="95vw"
@@ -87,8 +81,7 @@ type : "TOKENS"
                 Manage
               </Text>
             </Flex>
-          </ModalHeader>
-                 
+          </ModalHeader>              
 <Box
               width="100%"
                 fontSize="14px"
@@ -118,14 +111,32 @@ type : "TOKENS"
                   )
                 })}
                     </Flex>
-                   {selectedText === 0 ? <ManageToken/>:<ManageList/>}
                   
+              {tokenList && listURL &&
+
+                <ImportList 
+                  open={openImportToken}
+                  listURL={listURL}
+                  list ={tokenList}
+                  closeModal={()=>setOpenImportToken(false)}
+                />
              
+              }
+                  
                 </Box>
                 </Box>
-               
-              
-             
+                <Box
+              width="90%"
+                fontSize="14px"
+                margin="0 auto"
+              >
+                {selectedText === 0 ?
+                   <ManageList
+                   setListURL={setListURL}
+                   setTokenList = {setTokenList}
+                   setOpenImportToken={setOpenImportToken}
+                   /> : <ManageToken/>}
+             </Box>
             </ModalContent>
           </Modal>
           </>

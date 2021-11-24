@@ -5,13 +5,11 @@ import { useDispatch } from 'react-redux'
 import { useActiveWeb3React } from './useActiveWeb3React'
 import { AppDispatch } from '../../state/index'
 import { fetchTokenList } from '../../state/lists/actions'
-import getTokenList from '../utils/getTokenList'
+import getTokenList from "../../utils/getTokenList"
 import resolveENSContentHash from '../ENS/resolveENSContentHash'
-import {useWeb3Provider} from './useActiveWeb3React'
 
 function useFetchListCallback(): (listUrl: string, sendDispatch?: boolean) => Promise<TokenList> {
-  const { library } = useWeb3Provider()
-  const { chainId } = useActiveWeb3React()
+  const { chainId,library } = useActiveWeb3React()
   const dispatch = useDispatch<AppDispatch>()
 
   const ensResolver = useCallback(
