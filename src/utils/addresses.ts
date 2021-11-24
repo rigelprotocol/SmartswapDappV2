@@ -27,9 +27,6 @@ export const SMARTSWAPROUTER: { [key: string]: string } = {
   '80001': '0x',
 };
 
-<<<<<<< HEAD
-// https://api.borgswap.exchange/tokens.json
-=======
 //Native Wrapped
 export const WNATIVEADDRESSES: { [key: string]: string } = {
   '1': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
@@ -39,4 +36,3 @@ export const WNATIVEADDRESSES: { [key: string]: string } = {
   '137': '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
   '80001': '0x',
 };
->>>>>>> develop
