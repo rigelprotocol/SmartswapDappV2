@@ -20,7 +20,8 @@ import {
 } from '@chakra-ui/react';
 import { TimeIcon, ArrowBackIcon, AddIcon } from '@chakra-ui/icons';
 import { useHistory } from 'react-router';
-import { useDerivedSwapInfo } from '../../state/swap/hooks';
+
+import { useMintActionHandlers, useDerivedMintInfo, useMintState } from '../../state/mint/hooks';
 import { maxAmountSpend } from '../../utils/maxAmountSpend';
 
 export default function AddLiquidity({
@@ -39,17 +40,26 @@ export default function AddLiquidity({
 
 
   const [tokenModal, setTokenModal] = useState(false);
-  const { currencies, getMaxValue } = useDerivedSwapInfo()
+  const { currencies, getMaxValue } = useDerivedMintInfo()
+  const { onCurrencySelection, onUserInput } = useMintActionHandlers()
+  const { independentField, typedValue } = useMintState()
+
+  const dependentField = independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A
 
   const handleMaxInput = async () => {
     const value = await getMaxValue(currencies[Field.CURRENCY_A])
-    const maxAmountInput = maxAmountSpend(value, currencies[Field.CURRENCY_A])
+    const maxAmountInput = maxAmountSpend(value, currencies[Field.CURRENCY_B])
     if (maxAmountInput) {
       onUserInput(Field.CURRENCY_A, maxAmountInput)
     }
   }
 
-  maxAmountSpend
+  // get formatted amounts
+  const formattedAmounts = {
+    [independentField]: typedValue,
+    [dependentField]: parsedAmounts[dependentField]?.toSignificant(6) ?? '',
+  }
+
 
   return (
     <Center m={8}>

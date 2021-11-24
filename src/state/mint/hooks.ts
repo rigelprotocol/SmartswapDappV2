@@ -6,7 +6,7 @@ import { ReactNode, useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../index'
 
-import { Field, typeInput } from './actions'
+import { Field, selectCurrency, typeInput } from './actions'
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React'
 import { AppDispatch } from '../index'
 import { useNativeBalance } from '../../utils/hooks/useBalances'
@@ -22,34 +22,45 @@ export function useMintState(): RootState['mint'] {
 }
 
 
-
-export function useMintActionHandlers(noLiquidity: boolean | undefined): {
-    onFieldAInput: (typedValue: string) => void
-    onFieldBInput: (typedValue: string) => void
+export function useMintActionHandlers(): {
+    onCurrencySelection : (field:Field,currency:Currency) => void,
+    onUserInput: (field: Field, typedValue: string) => void
 } {
+  const {chainId,account} = useActiveWeb3React()
+  const {
+    independentField,
+    typedValue,
+    [Field.CURRENCY_A]: { currencyId: inputCurrencyId },
+    [Field.CURRENCY_B]: { currencyId: outputCurrencyId },
+    recipient,
+  } = useMintState()
+  
+  const [Balance,Symbol] = useNativeBalance();
     const dispatch = useDispatch<AppDispatch>()
+    const onCurrencySelection = useCallback((field:Field,currency: Currency) => {
+      
+        dispatch(
+            selectCurrency({
+                field,
+                currencyId: currency.isToken ? currency.address : currency.isNative ? currency.symbol : ""
+            })
+        )
+    },[dispatch])
 
-    const onFieldAInput = useCallback(
-        (typedValue: string) => {
-            dispatch(typeInput({ field: Field.CURRENCY_A, typedValue, noLiquidity: noLiquidity === true }))
+    const onUserInput = useCallback(
+        (field: Field, typedValue: string) => {
+          dispatch(typeInput({ field, typedValue }))
         },
-        [dispatch, noLiquidity]
-    )
-
-    const onFieldBInput = useCallback(
-        (typedValue: string) => {
-            dispatch(typeInput({ field: Field.CURRENCY_B, typedValue, noLiquidity: noLiquidity === true }))
-        },
-        [dispatch, noLiquidity]
-    )
-
+        [dispatch],
+      )
     return {
-        onFieldAInput,
-        onFieldBInput,
+        onCurrencySelection,
+        onUserInput
     }
 }
 
-export function useDerivedSwapInfo(): {
+
+export function useDerivedMintInfo(): {
     currencies: { [field in Field]?: Currency },
     getMaxValue: any
 
@@ -63,9 +74,14 @@ export function useDerivedSwapInfo(): {
         [Field.CURRENCY_B]: { currencyId: outputCurrencyId },
         recipient,
     } = useMintState()
+
+    
+  const dependentField = independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A
+
     const inputCurrency = useCurrency(inputCurrencyId)
     const outputCurrency = useCurrency(outputCurrencyId)
 
+    
     const currencies: { [field in Field]?: Currency } = {
         [Field.CURRENCY_A]: inputCurrency ?? undefined,
         [Field.CURRENCY_B]: outputCurrency ?? undefined,
@@ -89,7 +105,8 @@ export function useDerivedSwapInfo(): {
 
     return {
         currencies,
-        getMaxValue
+        getMaxValue,
+        
     }
 }
 
