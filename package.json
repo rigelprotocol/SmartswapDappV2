@@ -35,13 +35,9 @@
     "cids": "^1.1.9",
     "ethers": "^5.5.1",
     "framer-motion": "^4.0.0",
-<<<<<<< HEAD
     "jsbi": "^4.0.0",
     "multicodec": "^3.2.1",
     "multihashes": "^4.0.3",
-=======
-    "jsbi": "^4.1.0",
->>>>>>> develop
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-icons": "^4.2.0",
