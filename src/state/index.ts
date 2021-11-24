@@ -6,6 +6,7 @@ import application from './application/reducer'
 import swap from "./swap/reducer"
 import user from './user/reducer'
 import blockReducer from "./block"
+import mint from './mint/reducer'
 
 const PERSISTED_KEYS: string[] = ['user']
 
@@ -17,7 +18,8 @@ const store = configureStore({
 
         // Exchange
         swap,
-        user
+        user,
+        mint
     },
   middleware: [...getDefaultMiddleware({ thunk: true }), save({ states: PERSISTED_KEYS })],
   preloadedState: load({ states: PERSISTED_KEYS }),

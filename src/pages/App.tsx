@@ -16,6 +16,11 @@ import SetPrice from "./Swap/SetPrice";
 import AutoTime from "./Swap/AutoTime";
 import FindPool from "./Pool/FindPool";
 import useConnectWallet from "../utils/hooks/useConnectWallet";
+import {
+  RedirectDuplicateTokenIds,
+  RedirectOldAddLiquidityPathStructure,
+  RedirectToAddLiquidity,
+} from './AddLiquidity/Redirects'
 
 export default function App() {
   useConnectWallet();
@@ -35,6 +40,9 @@ export default function App() {
 
               <Route exact strict path="/find" component={FindPool} />
               <Route exact path="/add" component={AddLiquidity} />
+              <Route exact path="/add/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
+              <Route exact path="/add/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
+
               <Route exact strict path="/set-price" component={SetPrice} />
               <Route exact path="/auto-time" component={AutoTime} />
               <Route
@@ -43,11 +51,11 @@ export default function App() {
                 path="/remove/:currencyIdA/:currencyIdB"
                 component={RemoveLiquidity}
               />
-              <Route 
-              exact 
-              strict
-              path="/farming-V2/staking-RGP" 
-              component={FarmingV2} 
+              <Route
+                exact
+                strict
+                path="/farming-V2/staking-RGP"
+                component={FarmingV2}
               />
               <Route exact path="/farming" component={FarmingV1} />
               <Route exact path="/farming-V2" component={FarmingV2} />
