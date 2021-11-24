@@ -23,6 +23,8 @@ import { useHistory } from 'react-router';
 
 import { useMintActionHandlers, useDerivedMintInfo, useMintState } from '../../state/mint/hooks';
 import { maxAmountSpend } from '../../utils/maxAmountSpend';
+import { useWeb3React } from '@web3-react/core';
+import { currencyId } from '../../utils/currencyId';
 
 export default function AddLiquidity({
   match: {
@@ -38,13 +40,24 @@ export default function AddLiquidity({
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
   const btnTextColor = useColorModeValue('#999999', '#7599BD');
 
-
+  const { chainId, library, account } = useWeb3React();
   const [tokenModal, setTokenModal] = useState(false);
   const { currencies, getMaxValue } = useDerivedMintInfo()
   const { onCurrencySelection, onUserInput } = useMintActionHandlers()
   const { independentField, typedValue } = useMintState()
 
   const dependentField = independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A
+
+
+  const handleInputSelect = useCallback(
+    (inputCurrency) => {
+      onCurrencySelection(Field.CURRENCY_A, inputCurrency)
+      setTokenModal((state) => !state)
+    },
+    [onCurrencySelection],
+  )
+
+
 
   const handleMaxInput = async () => {
     const value = await getMaxValue(currencies[Field.CURRENCY_A])
@@ -54,12 +67,58 @@ export default function AddLiquidity({
     }
   }
 
+  const handleTypeInput = useCallback(
+    (value: string) => {
+      onUserInput(Field.CURRENCY_A, value)
+    },
+    [onUserInput],
+  )
+
   // get formatted amounts
   const formattedAmounts = {
     [independentField]: typedValue,
-    [dependentField]: parsedAmounts[dependentField]?.toSignificant(6) ?? '',
+    // [dependentField]: showWrap
+    //   ? parsedAmounts[independentField]?.toExact() ?? ''
+    //   : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
+    [dependentField]: '67'
   }
 
+  const handleCurrencySelect = useCallback(
+    (currencyNew: Currency, currencyIdOther?: string): (string | undefined)[] => {
+      const currencyIdNew = currencyId(currencyNew)
+
+      if (currencyIdNew === currencyIdOther) {
+        // not ideal, but for now clobber the other if the currency ids are equal
+        return [currencyIdNew, undefined]
+      } else {
+        // prevent weth + eth
+        const isETHOrWETHNew =
+          currencyIdNew === 'ETH' || (chainId !== undefined && currencyIdNew === WETH9_EXTENDED[chainId]?.address)
+        const isETHOrWETHOther =
+          currencyIdOther !== undefined &&
+          (currencyIdOther === 'ETH' || (chainId !== undefined && currencyIdOther === WETH9_EXTENDED[chainId]?.address))
+
+        if (isETHOrWETHNew && isETHOrWETHOther) {
+          return [currencyIdNew, undefined]
+        } else {
+          return [currencyIdNew, currencyIdOther]
+        }
+      }
+    },
+    [chainId]
+  )
+
+  const handleCurrencyASelect = useCallback(
+    (currencyANew: Currency) => {
+      const [idA, idB] = handleCurrencySelect(currencyANew, currencyIdB)
+      if (idB === undefined) {
+        history.push(`/add/${idA}`)
+      } else {
+        history.push(`/add/${idA}/${idB}`)
+      }
+    },
+    [handleCurrencySelect, currencyIdB, history]
+  )
 
   return (
     <Center m={8}>
@@ -111,7 +170,9 @@ export default function AddLiquidity({
             tokenModal={tokenModal}
             onMax={handleMaxInput}
             setToken={() => setTokenModal((state) => !state)}
-            value={formattedAmounts[Field.CURRENCY_A]} />
+            value={formattedAmounts[Field.CURRENCY_A]}
+            max
+          />
         </Box>
         <Flex justifyContent="center">
           <Center
