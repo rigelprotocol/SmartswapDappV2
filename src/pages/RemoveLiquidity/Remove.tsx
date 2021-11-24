@@ -337,7 +337,7 @@ const Remove = () => {
   return (
     <Flex minH="100vh" mt={10} justifyContent="center">
       <Box
-        h={isTabDevice && isTabDevice2 ? '620px' : '600px'}
+        h={isTabDevice && isTabDevice2 ? '620px' : '620px'}
         mx={4}
         w={['100%', '100%', '45%', '29.5%']}
         border="1px"
