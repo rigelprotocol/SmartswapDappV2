@@ -15,18 +15,23 @@ import {
   InputRightAddon,
   Button,
   IconButton,
+  Tooltip,
  }
  from '@chakra-ui/react';
 import { TimeIcon } from '@chakra-ui/icons';
 import { SettingsIcon } from '../../theme/components/Icons';
 import { ExclamationIcon } from '../../theme/components/Icons';
-import { useUserSlippageTolerance } from '../../state/user/hooks'
+import { useUserSlippageTolerance, useUserTransactionTTL } from '../../state/user/hooks'
 import { escapeRegExp } from '../../utils'
 
 enum SlippageError {
   InvalidInput = 'InvalidInput',
   RiskyLow = 'RiskyLow',
   RiskyHigh = 'RiskyHigh',
+}
+
+enum DeadlineError {
+  InvalidInput = 'InvalidInput',
 }
 
 const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`);
@@ -47,6 +52,9 @@ const TransactionSettings = () => {
   }
   const [userSlippageTolerance, setUserSlippageTolerance] = useUserSlippageTolerance();
   const [slippageInput, setSlippageInput] = useState('');
+  const [ttl, setTtl] = useUserTransactionTTL();
+  const [deadlineInput, setDeadlineInput] = useState('');
+
   const slippageInputIsValid =
     slippageInput === '' || (userSlippageTolerance / 100).toFixed(2) === Number.parseFloat(slippageInput).toFixed(2);
 
@@ -73,6 +81,27 @@ const TransactionSettings = () => {
       } catch (error) {
         console.error(error)
       }
+    }
+  }
+
+  const deadlineInputIsValid = deadlineInput === '' || (ttl / 60).toString() === deadlineInput
+  let deadlineError: DeadlineError | undefined
+  if (deadlineInput !== '' && !deadlineInputIsValid) {
+    deadlineError = DeadlineError.InvalidInput
+  } else {
+    deadlineError = undefined
+  }
+
+  const parseCustomDeadline = (value: string) => {
+    setDeadlineInput(value)
+
+    try {
+      const valueAsInt: number = Number.parseInt(value) * 60
+      if (!Number.isNaN(valueAsInt) && valueAsInt > 0) {
+        setTtl(valueAsInt)
+      }
+    } catch (error) {
+      console.error(error)
     }
   }
 
@@ -103,7 +132,14 @@ const TransactionSettings = () => {
         <PopoverBody>
           <Flex mb={3}>
             <Text fontSize="14px" mr={2} color={textColorTwo}>Slippage Tolerance</Text>
-            <ExclamationIcon color={textColorTwo}/>
+            <Tooltip
+                hasArrow
+                label="Your transactions will revert if the price changes unfavorably by more than this percentage."
+                aria-label="A tooltip"
+                placement="right-end"
+              >
+              <IconButton aria-label="Icon button" icon={<ExclamationIcon color={textColorTwo}/>} colorScheme="ghost" h="auto" minWidth="10px"/>
+            </Tooltip>
           </Flex>
           <Flex mb={8}>
             <Button
@@ -173,8 +209,6 @@ const TransactionSettings = () => {
                   parseCustomSlippage(event.target.value.replace(/,/g, '.'))
                 }
               }}
-              isWarning={!slippageInputIsValid}
-              isSuccess={![10, 50, 100].includes(userSlippageTolerance)}
               textAlign="right"
               p={1}
               borderRight="none"
@@ -202,7 +236,14 @@ const TransactionSettings = () => {
           )}
           <Flex mb={3}>
             <Text fontSize="14px" mr={2} color={textColorTwo}>Transaction Deadline</Text>
-            <ExclamationIcon color={textColorTwo}/>
+            <Tooltip
+                hasArrow
+                label="Your transaction will revert if it is pending for more than this period of time."
+                aria-label="A tooltip"
+                placement="right-end"
+              >
+              <IconButton aria-label="Icon button" icon={<ExclamationIcon color={textColorTwo}/>} colorScheme="ghost" h="auto" minWidth="10px"/>
+              </Tooltip>
           </Flex>
           <InputGroup mb={3} w="68%">
             <Input
@@ -212,6 +253,19 @@ const TransactionSettings = () => {
             p={1}
             borderColor={borderColor}
             borderWidth="1px"
+            inputMode="numeric"
+            pattern="^[0-9]+$"
+            color={deadlineError ? 'red' : undefined}
+            onBlur={() => {
+              parseCustomDeadline((ttl / 60).toString())
+            }}
+            placeholder={(ttl / 60).toString()}
+            value={deadlineInput}
+            onChange={(event) => {
+              if (event.currentTarget.validity.valid) {
+                parseCustomDeadline(event.target.value)
+              }
+            }}
             />
             <InputRightAddon
             children="Min"

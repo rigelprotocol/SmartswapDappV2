@@ -36,8 +36,6 @@ export const getERC20Token = async (address: string) => {
   return token;
 };
 
-
-
 export const switchNetwork = async (
   chainId: string,
   account: string,

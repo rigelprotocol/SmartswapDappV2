@@ -1,5 +1,5 @@
-import { Box, Flex, Text } from "@chakra-ui/layout";
-import React, { useState } from "react";
+import { Box, Flex, Text } from '@chakra-ui/layout';
+import React, { useState } from 'react';
 import {
   Menu,
   MenuButton,
@@ -10,14 +10,8 @@ import {
   IconButton,
   Link,
   Icon,
-} from "@chakra-ui/react";
-import { IoEllipsisHorizontalOutline } from "react-icons/io5";
-import Telegram from "../../assets/social/telegram.svg";
-import Twitter from "../../assets/social/twitter.svg";
-import Facebook from "../../assets/social/facebook.svg";
-import LinkedIn from "../../assets/social/linkedin.svg";
-import Github from "../../assets/social/github.svg";
-import Medium from "../../assets/social/medium.svg";
+} from '@chakra-ui/react';
+import { IoEllipsisHorizontalOutline } from 'react-icons/io5';
 
 const SocialMediaLinks = () => {
   const [show, setShow] = useState(false);
@@ -32,16 +26,35 @@ const SocialMediaLinks = () => {
         transition="all 0.2s"
         borderRadius="md"
         borderWidth="1px"
-        _hover={{ bg: "gray.100" }}
-        _focus={{ boxShadow: "outline" }}
+        _hover={{ bg: 'gray.100' }}
+        _focus={{ boxShadow: 'outline' }}
         icon={<IoEllipsisHorizontalOutline />}
       />
       <MenuList>
-        <MenuItem>Facebook</MenuItem>
-        <MenuItem>Medium</MenuItem>
+        <a
+          target="_blank"
+          href="https://www.linkedin.com/company/rigelprotocol"
+        >
+          <MenuItem>Linkedin</MenuItem>
+        </a>
+
+        <a target="_blank" href="https://medium.com/rigelprotocol">
+          <MenuItem>Medium</MenuItem>
+        </a>
         <MenuDivider />
-        <MenuItem>Telegram</MenuItem>
-        <MenuItem>Twitter</MenuItem>
+        <a target="_blank" href="https://www.t.me/rigelprotocol">
+          <MenuItem>Telegram</MenuItem>
+        </a>
+        <a target="_blank" href="https://twitter.com/rigelprotocol">
+          <MenuItem>Twitter</MenuItem>
+        </a>
+        <MenuDivider />
+        <a target="_blank" href="https://github.com/rigelprotocol">
+          <MenuItem>Github</MenuItem>
+        </a>
+        <a target="_blank" href="https://discord.gg/j86NH95GDD">
+          <MenuItem>Discord</MenuItem>
+        </a>
       </MenuList>
     </Menu>
   );
