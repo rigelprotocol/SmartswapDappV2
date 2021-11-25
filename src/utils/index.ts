@@ -26,4 +26,5 @@ export function escapeRegExp(string: string): string {
 
 export function isTokenOnList(tokenAddressMap: TokenAddressMap, token?: Token): boolean {
     return Boolean(token?.isToken && tokenAddressMap[token.chainId]?.[token.address])
-  }
+}
+

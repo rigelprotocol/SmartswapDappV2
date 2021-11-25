@@ -6,6 +6,7 @@ import application from './application/reducer'
 import swap from "./swap/reducer"
 import user from './user/reducer'
 import blockReducer from "./block"
+import transactions from './transaction/reducer';
 
 const PERSISTED_KEYS: string[] = ['user']
 
@@ -14,6 +15,7 @@ const store = configureStore({
         toast: toastReducers,
         block: blockReducer,
         application,
+        transactions,
 
         // Exchange
         swap,

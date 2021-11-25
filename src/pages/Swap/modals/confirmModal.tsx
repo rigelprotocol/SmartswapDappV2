@@ -16,21 +16,24 @@ import {
 import { InfoOutlineIcon,ArrowDownIcon } from "@chakra-ui/icons"
 import RGPImage from "./../../../assets/tokens/RGP.svg"
 import USDTImage from "./../../../assets/tokens/USDT.svg"
+import {Currency} from "@uniswap/sdk-core";
 
 
 
 export type IModal= {
-title:string;
-from:string;
-fromPrice:string;
-to:string;
-fromDeposited:string;
-toDeposited:string;
-minRecieved:string;
-route: string[],
-fee: string,
-impact: string,
-slippage:string
+    title:string;
+    from?: string | undefined;
+    fromPrice?:string;
+    to: string | undefined;
+    fromDeposited?:string;
+    toDeposited?:string;
+    minRecieved?:string;
+    route?: string[],
+    fee?: string,
+    impact?: string,
+    slippage?:string,
+    showModal: boolean,
+    setShowModal: Function
 }
 
 const ConfirmModal:React.FC<IModal> = ({
@@ -44,13 +47,15 @@ const ConfirmModal:React.FC<IModal> = ({
     route,
     slippage,
     impact,
-    fee
+    fee,
+    showModal,
+    setShowModal
     }) => {
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
     const heavyTextColor = useColorModeValue("#333333", "#F1F5F8");
-    const borderColor = useColorModeValue("#DEE6ED","#324D68")
-    const boxColor = useColorModeValue("#F2F5F8","#213345")
+    const borderColor = useColorModeValue("#DEE6ED","#324D68");
+    const boxColor = useColorModeValue("#F2F5F8","#213345");
     const {
         isOpen,
         onOpen,
@@ -58,10 +63,7 @@ const ConfirmModal:React.FC<IModal> = ({
       } = useDisclosure();
     return (
         <>
-        <button onClick={onOpen}>
-            click me
-        </button>
-        <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <Modal isOpen={showModal} onClose={() => setShowModal(false)} isCentered>
             <ModalOverlay />
             <ModalContent
                 width="95vw"
@@ -108,20 +110,20 @@ const ConfirmModal:React.FC<IModal> = ({
                 </Box> 
                 <Box display= "flex"
                 justifyContent= "center" my="-4">
-                <Box
-                display= "flex"
-                flexDirection= "row"
-                justifyContent= "center"
-                alignItems= "center"
-                width="40px"
-                height="40px"
-                bgColor={boxColor}
-                border={`3px solid ${borderColor}`}
-                boxSizing= "border-box"
-                borderRadius= "12px">
-                <ArrowDownIcon w={5} h={10}/>
-                </Box>
+                    <Box
+                    display= "flex"
+                    flexDirection= "row"
+                    justifyContent= "center"
+                    alignItems= "center"
+                    width="40px"
+                    height="40px"
+                    bgColor={boxColor}
+                    border={`3px solid ${borderColor}`}
+                    boxSizing= "border-box"
+                    borderRadius= "12px">
+                    <ArrowDownIcon w={5} h={10}/>
                     </Box>
+                </Box>
                 
                 <Box
                 bgColor={boxColor}
@@ -158,10 +160,10 @@ const ConfirmModal:React.FC<IModal> = ({
                         <Box color={lightTextColor}>Minimum received <InfoOutlineIcon /></Box>
                         <Text color={heavyTextColor}>{minRecieved}</Text>
                         </Flex>
-                        <Flex justifyContent="space-between" my="4">
-                        <Box color={lightTextColor}>Route <InfoOutlineIcon /></Box>
-                        <Text color={heavyTextColor} fontWeight="500">{route.join(" > ")}</Text>
-                        </Flex>
+                        {/*<Flex justifyContent="space-between" my="4">*/}
+                        {/*<Box color={lightTextColor}>Route <InfoOutlineIcon /></Box>*/}
+                        {/*<Text color={heavyTextColor} fontWeight="500">{route.join(" > ")}</Text>*/}
+                        {/*</Flex>*/}
                         <Flex justifyContent="space-between">
                         <Box color={lightTextColor}>Allowed Slippage <InfoOutlineIcon /></Box>
                         <Text color={heavyTextColor}>{slippage}%</Text>
@@ -187,6 +189,6 @@ const ConfirmModal:React.FC<IModal> = ({
           </Modal>
           </>
     )
-}
+};
 
 export default ConfirmModal

@@ -22,7 +22,7 @@ export const SMARTSWAPROUTER: { [key: string]: string } = {
   '1': '0x',
   '3': '0x3175bfbc3e620FaF654309186f66908073cF9CBB',
   '56': '0xf78234E21f1F34c4D8f65faF1BC82bfc0fa24920',
-  '97': '0x00749e00Af4359Df5e8C156aF6dfbDf30dD53F44',
+  '97': '0x00749e00af4359df5e8c156af6dfbdf30dd53f44',
   '137': '0x',
   '80001': '0x',
 };

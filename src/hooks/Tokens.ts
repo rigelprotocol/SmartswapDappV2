@@ -11,9 +11,9 @@ import { getERC20Token } from "../utils/utilsFunctions"
 import { useNativeBalance } from "../utils/hooks/useBalances"
 // reduce token map into standard address <-> Token mapping, optionally include user added tokens
 function useTokensFromMap(tokenMap: TokenAddressMap, includeUserAdded: boolean): { [address: string]: Token } {
-  const [chainid,setchainid] = useState(56)
-    const { chainId } = useActiveWeb3React()
-    const userAddedTokens = useUserAddedTokens()
+  const [chainid,setchainid] = useState(56);
+    const { chainId } = useActiveWeb3React();
+    const userAddedTokens = useUserAddedTokens();
     // 
     useEffect(()=>{
       if(!chainId || !checkSupportedIds(chainId)){
@@ -22,23 +22,23 @@ function useTokensFromMap(tokenMap: TokenAddressMap, includeUserAdded: boolean):
         setchainid(chainId)
       }
 
-    },[chainId])
+    },[chainId]);
     return useMemo(() => {
   //     if (!chainId) {
   //       return {}
   // }
       // reduce to just tokens
       const mapWithoutUrls = Object.keys(tokenMap[chainid]).reduce<{ [address: string]: Token }>((newMap, address) => {
-        newMap[address] = tokenMap[chainid][address].token
+        newMap[address] = tokenMap[chainid][address].token;
         return newMap
-      }, {})
+      }, {});
       if (includeUserAdded) {
         return (
           userAddedTokens
             // reduce into all ALL_TOKENS filtered by the current chain
             .reduce<{ [address: string]: Token }>(
               (tokenMap, token) => {
-                tokenMap[token.address] = token
+                tokenMap[token.address] = token;
                 return tokenMap
               },
               // must make a copy because reduce modifies the map, and we do not
@@ -53,7 +53,7 @@ function useTokensFromMap(tokenMap: TokenAddressMap, includeUserAdded: boolean):
   }
 
     export function useAllTokens(): { [address: string]: Token } {
-        const allTokens = useCombinedActiveList()
+        const allTokens = useCombinedActiveList();
         return useTokensFromMap(allTokens, true)
       }
 
@@ -65,13 +65,13 @@ function useTokensFromMap(tokenMap: TokenAddressMap, includeUserAdded: boolean):
       isToken: false,
       name,
       symbol,
-    logoURI:logo}
+    logoURI:logo};
       return native
   
-}
+};
 
 export function useIsTokenActive(token: Token | undefined | null): boolean {
-  const activeTokens = useAllTokens()
+  const activeTokens = useAllTokens();
 
   if (!activeTokens || !token) {
     return false
@@ -83,7 +83,7 @@ export function useIsTokenActive(token: Token | undefined | null): boolean {
 
 // Check if currency is included in custom list from user storage
 export function useIsUserAddedToken(currency: Currency | undefined | null): boolean | undefined{
-  const userAddedTokens = useUserAddedTokens()
+  const userAddedTokens = useUserAddedTokens();
 
   if (!currency) {
     return false
@@ -97,30 +97,30 @@ export function useIsUserAddedToken(currency: Currency | undefined | null): bool
 }
 
 export function useToken(tokenAddress?: string): Token | undefined | null {
-  const { chainId } = useActiveWeb3React()
-  const tokens = useAllTokens()
-  const [token,setToken] = useState<undefined | Token>()
+  const { chainId } = useActiveWeb3React();
+  const tokens = useAllTokens();
+  const [token,setToken] = useState<undefined | Token>();
   useEffect(() => {
     const getToken = async (tokenAddress:string | undefined,chainId:number) => {
-      const address = isAddress(tokenAddress)
-  const token: Token | undefined = address ? tokens[address] : undefined
+      const address = isAddress(tokenAddress);
+  const token: Token | undefined = address ? tokens[address] : undefined;
 
 
-    if (token) setToken(token) 
-    if (!chainId || !address) setToken(undefined) 
+    if (token) setToken(token);
+    if (!chainId || !address) setToken(undefined);
     if( address && !tokens[address]){
-      const tokenContract =await getERC20Token(address)
-      const name =await tokenContract.name()
-      const tokenDecimal =await tokenContract.decimals()
-      const tokenSymbol=await tokenContract.symbol()
-      console.log({tokenDecimal})
+      const tokenContract =await getERC20Token(address);
+      const name =await tokenContract.name();
+      const tokenDecimal =await tokenContract.decimals();
+      const tokenSymbol=await tokenContract.symbol();
+      console.log({tokenDecimal});
       let newToken = new Token(
         chainId,
         address,
         tokenDecimal,
         tokenSymbol,
         name,
-      )
+      );
       setToken(newToken)
     }
     // setToken(undefined) 
@@ -138,9 +138,9 @@ export function useToken(tokenAddress?: string): Token | undefined | null {
 
 export function useCurrency(currencyId: string | undefined): Currency | null | undefined {
   const [,Symbol,Name,Logo] = useNativeBalance();
-  const { chainId } = useActiveWeb3React()
-  const isNative = currencyId?.toUpperCase() === Symbol
-  const token = useToken(isNative ? undefined : currencyId)
+  const { chainId } = useActiveWeb3React();
+  const isNative = currencyId?.toUpperCase() === Symbol;
+  const token = useToken(isNative ? undefined : currencyId);
   return isNative ? chainId && ExtendedEther(chainId,Symbol,Name,Logo) : token
   
 }

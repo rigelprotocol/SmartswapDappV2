@@ -1,4 +1,5 @@
 
 
-export const NetworkContextName = 'NETWORK'
+export const NetworkContextName = 'NETWORK';
 
+export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';

@@ -1,46 +1,40 @@
-import React,{useCallback, useState } from 'react';
+import React, {useCallback, useState} from 'react';
 import { Box, useColorModeValue } from '@chakra-ui/react';
 import InputSelector from './InputSelector';
-import { useSwapActionHandlers,useDerivedSwapInfo,useSwapState } from '../../../../state/swap/hooks';
-import { Field } from '../../../../state/swap/actions';
-import { maxAmountSpend } from '../../../../utils/maxAmountSpend';
-const From = () => {
+import {Field} from '../../../../state/swap/actions';
+import {Currency} from "@uniswap/sdk-core";
+
+interface FromProps {
+    onUserInput: (value: string) => void,
+    onCurrencySelection: Function,
+    currency: Currency | undefined,
+    otherCurrency: Currency | undefined,
+    onMax: () => void,
+    value: string
+}
+
+const From : React.FC<FromProps> = ({
+    onUserInput,
+    onCurrencySelection,
+    currency,
+    otherCurrency,
+    onMax,
+    value
+
+  }) => {
+
+
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   const [tokenModal, setTokenModal] = useState(false);
-  const {onCurrencySelection, onUserInput } = useSwapActionHandlers()
-  const { currencies,getMaxValue } = useDerivedSwapInfo()
-  const { independentField, typedValue } = useSwapState()
-  const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
-  const handleInputSelect = useCallback(
-    (inputCurrency) => {
-    onCurrencySelection(Field.INPUT, inputCurrency) 
-      setTokenModal((state) =>!state)
-    },
-    [onCurrencySelection],
-  )
- 
-  const handleMaxInput = async () =>
-     { 
- const value = await getMaxValue(currencies[Field.INPUT])
- const maxAmountInput= maxAmountSpend(value,currencies[Field.INPUT])
-if(maxAmountInput){
-  onUserInput(Field.INPUT, maxAmountInput)
-}
-  }
-    const handleTypeInput = useCallback(
-      (value: string) => {
-        onUserInput(Field.INPUT, value)
-      },
-      [onUserInput],
-    )
-    
-    const formattedAmounts = {
-      [independentField]: typedValue,
-      // [dependentField]: showWrap
-      //   ? parsedAmounts[independentField]?.toExact() ?? ''
-      //   : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
-      [dependentField]:'67'
-    }
+    const handleInputSelect = useCallback(
+        (inputCurrency) => {
+            onCurrencySelection(Field.INPUT, inputCurrency);
+            setTokenModal((state) =>!state)
+        },
+        [onCurrencySelection],
+    );
+
+
   return (
     <>
       <Box
@@ -52,14 +46,14 @@ if(maxAmountInput){
         borderColor={borderColor}
       >
         <InputSelector 
-        onUserInput={handleTypeInput}
+        onUserInput={onUserInput}
         onCurrencySelect={handleInputSelect}
-        currency={currencies[Field.INPUT]}
-        otherCurrency={currencies[Field.OUTPUT]}
+        currency={currency}
+        otherCurrency={otherCurrency}
         tokenModal={tokenModal}
-        onMax={handleMaxInput}
+        onMax={onMax}
         setToken={()=>setTokenModal((state) =>!state)}
-        value={formattedAmounts[Field.INPUT]}
+        value={value}
         max />
       </Box>
     </>

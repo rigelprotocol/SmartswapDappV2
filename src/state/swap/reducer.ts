@@ -1,5 +1,5 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { Field,selectCurrency,typeInput,replaceSwapState } from "./actions";
+import {Field, selectCurrency, typeInput, replaceSwapState} from "./actions";
 export interface SwapState {
     readonly independentField: Field
   readonly typedValue: string
@@ -23,7 +23,7 @@ const initialState: SwapState = {
       currencyId: '',
     },
     recipient: null,
-  }
+  };
 
   export default createReducer<SwapState>(initialState,(builder) => 
     builder
@@ -38,7 +38,7 @@ const initialState: SwapState = {
         }
       })
     .addCase(selectCurrency,(state,{payload:{currencyId, field}}) => {
-        const otherField = field === Field.INPUT ? Field.OUTPUT : Field.INPUT
+        const otherField = field === Field.INPUT ? Field.OUTPUT : Field.INPUT;
         if (currencyId === state[otherField].currencyId) {
             // the case where we have to swap the order
             return {
@@ -61,4 +61,4 @@ const initialState: SwapState = {
         typedValue,
       }
     })
-    ) 
+  )
