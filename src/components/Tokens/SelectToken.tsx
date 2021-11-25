@@ -119,7 +119,7 @@ const handleInput = useCallback(
                   mr={3}
                   cursor="pointer"
                   _focus={{ outline: 'none' }}
-                  onClick={()=>setTokenModal(false)}
+                  // onClick={()=>alert(1)}
                   p={'7px'}
                   border='1px solid'
                   
