@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Box, Flex, Text } from "@chakra-ui/layout";
 import { Alert, AlertDescription, CloseButton, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import { useHistory } from "react-router-dom";
@@ -10,6 +10,17 @@ import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
 import { useRouteMatch } from "react-router-dom";
 
+import BigNumber from 'bignumber.js'
+import { getFarmApr } from "../../utils/helpers/apr";
+import { DeserializedFarm, FarmWithStakedValue } from "../../state/farm/types";
+// import farms from "../../utils/constants/farms";
+import { useFarms } from "../../state/farm/hooks";
+import useIntersectionObserver from "../../hooks/useIntersectionObserver";
+import useGetTopFarmsByApr from "../../hooks/useGetTopFarmsByApr";
+
+export const BIG_TEN = new BigNumber(10)
+
+
 export const LIQUIDITY = "liquidity";
 export const STAKING = "staking";
 export const V1 = "v1";
@@ -18,6 +29,9 @@ export const LIGHT_THEME = "light";
 export const DARK_THEME = "dark";
 export const LIQUIDITY_INDEX = 0;
 export const STAKING_INDEX = 1;
+
+
+const RGPPrice = 100000;
 
 export function useActiveWeb3React() {
   const context = useWeb3React<Web3Provider>();
@@ -31,6 +45,12 @@ export function Index() {
   const [selected, setSelected] = useState(LIQUIDITY);
   const [isActive, setIsActive] = useState(V2);
   const [showAlert, setShowAlert] = useState(true);
+  const { data: farmsLP, userDataLoaded } = useFarms()
+  const { observerRef, isIntersecting } = useIntersectionObserver()
+  const { topFarms } = useGetTopFarmsByApr(isIntersecting)
+
+
+
   let match = useRouteMatch("/farming-V2/staking-RGP");
 
   useEffect(
@@ -39,7 +59,16 @@ export function Index() {
     },
     [match]
   );
-
+  useEffect(() => {
+    if (isIntersecting) {
+      // setNumberOfFarmsVisible((farmsCurrentlyVisible) => {
+      //   if (farmsCurrentlyVisible <= chosenFarmsLength.current) {
+      //     return farmsCurrentlyVisible + NUMBER_OF_FARMS_VISIBLE
+      //   }
+      //   return farmsCurrentlyVisible
+      // })
+    }
+  }, [isIntersecting])
   const changeVersion = (version: string) => {
     history.push(version);
   };
@@ -70,8 +99,87 @@ export function Index() {
 
   const { chainId, library } = useActiveWeb3React();
 
+  const getBalanceAmount = (amount: BigNumber, decimals = 18) => {
+    return new BigNumber(amount).dividedBy(BIG_TEN.pow(decimals))
+  }
+ const getBalanceNumber = (balance: BigNumber, decimals = 18) => {
+    return getBalanceAmount(balance, decimals).toNumber()
+  }
+  const getDisplayApr = (cakeRewardsApr?: number, lpRewardsApr?: number) => {
+    if (cakeRewardsApr && lpRewardsApr) {
+      return (cakeRewardsApr + lpRewardsApr).toLocaleString('en-US', { maximumFractionDigits: 2 })
+    }
+    if (cakeRewardsApr) {
+      return cakeRewardsApr.toLocaleString('en-US', { maximumFractionDigits: 2 })
+    }
+    return null
+  }
+
+
+
+  const farmsList = useCallback(
+    (farmsToDisplay: DeserializedFarm[]): FarmWithStakedValue[] => {
+      let farmsToDisplayWithAPR: FarmWithStakedValue[] = farmsToDisplay.map((farm) => {
+        if (!farm.lpTotalInQuoteToken || !farm.quoteTokenPriceBusd) {
+          return farm
+        }
+        const totalLiquidity = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteTokenPriceBusd)
+          // @ts-ignore
+        const { cakeRewardsApr, lpRewardsApr } = getFarmApr(new BigNumber(farm.poolWeight), new BigNumber(RGPPrice), totalLiquidity, farm.lpAddresses[56])
+        return { ...farm, apr: cakeRewardsApr, lpRewardsApr, liquidity: totalLiquidity }
+      })
+      return farmsToDisplayWithAPR
+    },
+    [],
+  )
+
+  const chosenFarmsMemoized = useMemo(() => {
+    let chosenFarms = farmsList(farmsLP)
+    if (isIntersecting) chosenFarms = topFarms
+    return chosenFarms
+  }, [farmsLP, farmsList])
+
+ 
+
+
+  const rowData = chosenFarmsMemoized.map((farm) => {
+    const { token, quoteToken } = farm
+    const tokenAddress = token.address
+    const quoteTokenAddress = quoteToken.address
+    const lpLabel = farm.lpSymbol && farm.lpSymbol.split(' ')[0].toUpperCase().replace('PANCAKE', '')
+
+    const row = {
+      apr: {
+        value: getDisplayApr(farm.apr, farm.lpRewardsApr),
+        pid: farm.pid,
+        lpLabel,
+        lpSymbol: farm.lpSymbol,
+        tokenAddress,
+        quoteTokenAddress,
+        originalValue: farm.apr,
+      },
+      farm: {
+        label: lpLabel,
+        pid: farm.pid,
+        token: farm.token,
+        quoteToken: farm.quoteToken,
+      },
+      earned: {
+        earnings: getBalanceNumber(new BigNumber(farm.userData.earnings)),
+        pid: farm.pid,
+      },
+      liquidity: {
+        liquidity: farm.liquidity,
+      },
+      details: farm,
+    }
+
+    return row
+  })
+console.log(rowData[0])
   return (
-    <Box>
+  
+    <Box ref={observerRef}>
       {(chainId && library) || !showAlert ? null : (
         <Box mx={[5, 10, 15, 20]} my={4}>
           <Alert color="#FFFFFF" background={mode === DARK_THEME ? "#319EF6" : "#319EF6"} borderRadius="8px">
