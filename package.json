@@ -32,6 +32,7 @@
     "@web3-react/walletconnect-connector": "^6.2.4",
     "@web3-react/walletlink-connector": "^6.2.5",
     "abi-decoder": "^2.4.0",
+    "connected-react-router": "^6.9.1",
     "ethers": "^5.5.1",
     "framer-motion": "^4.0.0",
     "jsbi": "^4.1.0",
@@ -44,6 +45,7 @@
     "react-spring": "^9.3.0",
     "react-switch": "^6.0.0",
     "redux-localstorage-simple": "^2.4.1",
+    "redux-persist": "^6.0.0",
     "save-dev": "^0.0.1-security",
     "typescript": "^3.9.5",
     "web-vitals": "^0.2.2"

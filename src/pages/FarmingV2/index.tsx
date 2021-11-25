@@ -9,6 +9,8 @@ import { AlertSvg } from "./Icon";
 import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
 import { useRouteMatch } from "react-router-dom";
+import { ethers } from 'ethers';
+import Web3 from 'web3';
 
 export const LIQUIDITY = "liquidity";
 export const STAKING = "staking";
@@ -25,7 +27,9 @@ export function useActiveWeb3React() {
   return context.active ? context : contextNetwork;
 }
 
-export function Index() {
+export function FarmingPageV2(props || {}) {
+
+  const { wallet } = props.wallet
   const history = useHistory();
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
   const [selected, setSelected] = useState(LIQUIDITY);
@@ -357,7 +361,7 @@ export function Index() {
                     <Text />
                   </Flex>
                   {contents.map((content: any) => (
-                    <YieldFarm content={content} key={content.id} />
+                    <YieldFarm content={content} key={content.id} wallet={wallet}/>
                   ))}
                 </Box>
               </Box>
@@ -404,7 +408,7 @@ export function Index() {
                     <Text />
                   </Flex>
                   {contents.map((content: any, index: number) =>
-                    index === 1 ? <YieldFarm content={content} key={content.id} /> : null
+                    index === 1 ? <YieldFarm content={content} key={content.id} wallet={wallet}/> : null
                   )}
                 </Box>
               </Box>
@@ -416,4 +420,4 @@ export function Index() {
   );
 }
 
-export default Index;
+export default FarmingPageV2;
