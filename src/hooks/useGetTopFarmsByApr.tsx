@@ -14,7 +14,7 @@ enum FetchStatus {
   FAILED = 'failed',
 }
 
-const useGetTopFarmsByApr = (isIntersecting: boolean) => {
+const useGetTopFarmsByApr = () => {
   const dispatch = useDispatch()
   const { data: farms } = useFarms()
   const [fetchStatus, setFetchStatus] = useState(FetchStatus.NOT_FETCHED)
@@ -35,10 +35,10 @@ const useGetTopFarmsByApr = (isIntersecting: boolean) => {
       }
     }
 
-    if (isIntersecting && fetchStatus === FetchStatus.NOT_FETCHED) {
+    if (fetchStatus === FetchStatus.NOT_FETCHED) {
       fetchFarmData()
     }
-  }, [dispatch, setFetchStatus, fetchStatus, topFarms, isIntersecting])
+  }, [dispatch, setFetchStatus, fetchStatus, topFarms])
 
   useEffect(() => {
     const getTopFarmsByApr = (farmsState: DeserializedFarm[]) => {

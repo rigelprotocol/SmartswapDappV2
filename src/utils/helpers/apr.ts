@@ -3,7 +3,7 @@ import lpAprs from '../constants/lpAprs.json'
 
 
 // const BLOCKS_PER_YEAR = 10000
-const CAKE_PER_YEAR = 100000
+const CAKE_PER_YEAR = "100000000"
 
 /**
  * Get the APR value in %
@@ -39,9 +39,10 @@ export const getFarmApr = (
   poolLiquidityUsd: BigNumber,
   farmAddress: string,
 ): { cakeRewardsApr: number; lpRewardsApr: number } => {
-  const yearlyCakeRewardAllocation = poolWeight ? poolWeight.times(CAKE_PER_YEAR) : new BigNumber(NaN)
+  const yearlyCakeRewardAllocation = poolWeight ? poolWeight.times(new BigNumber(CAKE_PER_YEAR)) : new BigNumber(NaN)
   const cakeRewardsApr = yearlyCakeRewardAllocation.times(cakePriceUsd).div(poolLiquidityUsd).times(100)
-  let cakeRewardsAprAsNumber = 0
+  let cakeRewardsAprAsNumber = cakeRewardsApr.toNumber()
+  console.log(cakePriceUsd, yearlyCakeRewardAllocation, poolLiquidityUsd, "get farm apr apr.ts")
   if (!cakeRewardsApr.isNaN() && cakeRewardsApr.isFinite()) {
     cakeRewardsAprAsNumber = cakeRewardsApr.toNumber()
   }

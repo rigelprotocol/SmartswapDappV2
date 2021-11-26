@@ -9,14 +9,17 @@ import { AlertSvg } from "./Icon";
 import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
 import { useRouteMatch } from "react-router-dom";
+import { useDispatch } from 'react-redux'
+
 
 import BigNumber from 'bignumber.js'
 import { getFarmApr } from "../../utils/helpers/apr";
 import { DeserializedFarm, FarmWithStakedValue } from "../../state/farm/types";
 // import farms from "../../utils/constants/farms";
-import { useFarms } from "../../state/farm/hooks";
-import useIntersectionObserver from "../../hooks/useIntersectionObserver";
+import { useFarms, usePriceCakeBusd } from "../../state/farm/hooks";
 import useGetTopFarmsByApr from "../../hooks/useGetTopFarmsByApr";
+import fetchFarmsPrices from "../../state/farm/fetchFarmsPrices";
+import { fetchFarmsPublicDataAsync } from "../../state/farm";
 
 export const BIG_TEN = new BigNumber(10)
 
@@ -46,8 +49,9 @@ export function Index() {
   const [isActive, setIsActive] = useState(V2);
   const [showAlert, setShowAlert] = useState(true);
   const { data: farmsLP, userDataLoaded } = useFarms()
-  const { observerRef, isIntersecting } = useIntersectionObserver()
-  const { topFarms } = useGetTopFarmsByApr(isIntersecting)
+  const { topFarms } = useGetTopFarmsByApr()
+  const cakePrice = usePriceCakeBusd()
+  const dispatch = useDispatch()
 
 
 
@@ -56,19 +60,20 @@ export function Index() {
   useEffect(
     () => {
       if (match) setSelected(STAKING);
+      // dispatch(fetchFarmsPublicDataAsync(farmsLP.map((farm) => farm.pid)))
     },
-    [match]
+    [] //[dispatch, farmsLP, match]
   );
-  useEffect(() => {
-    if (isIntersecting) {
-      // setNumberOfFarmsVisible((farmsCurrentlyVisible) => {
-      //   if (farmsCurrentlyVisible <= chosenFarmsLength.current) {
-      //     return farmsCurrentlyVisible + NUMBER_OF_FARMS_VISIBLE
-      //   }
-      //   return farmsCurrentlyVisible
-      // })
-    }
-  }, [isIntersecting])
+  // useEffect(() => {
+  //   if (isIntersecting) {
+  //     // setNumberOfFarmsVisible((farmsCurrentlyVisible) => {
+  //     //   if (farmsCurrentlyVisible <= chosenFarmsLength.current) {
+  //     //     return farmsCurrentlyVisible + NUMBER_OF_FARMS_VISIBLE
+  //     //   }
+  //     //   return farmsCurrentlyVisible
+  //     // })
+  //   }
+  // }, [isIntersecting])
   const changeVersion = (version: string) => {
     history.push(version);
   };
@@ -120,12 +125,14 @@ export function Index() {
   const farmsList = useCallback(
     (farmsToDisplay: DeserializedFarm[]): FarmWithStakedValue[] => {
       let farmsToDisplayWithAPR: FarmWithStakedValue[] = farmsToDisplay.map((farm) => {
-        if (!farm.lpTotalInQuoteToken || !farm.quoteTokenPriceBusd) {
+        if (!farm.lpTotalInQuoteToken || !farm.tokenPriceVsQuote) {
           return farm
         }
-        const totalLiquidity = new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteTokenPriceBusd)
+         // @ts-ignore
+        const totalLiquidity = new BigNumber(farm.lpTotalInQuoteToken).times(farm.tokenPriceVsQuote)
           // @ts-ignore
-        const { cakeRewardsApr, lpRewardsApr } = getFarmApr(new BigNumber(farm.poolWeight), new BigNumber(RGPPrice), totalLiquidity, farm.lpAddresses[56])
+        const { cakeRewardsApr, lpRewardsApr } = getFarmApr(new BigNumber(farm.poolWeight), new BigNumber(cakePrice), totalLiquidity, farm.lpAddresses[56])
+        console.log(cakeRewardsApr, lpRewardsApr)
         return { ...farm, apr: cakeRewardsApr, lpRewardsApr, liquidity: totalLiquidity }
       })
       return farmsToDisplayWithAPR
@@ -135,7 +142,9 @@ export function Index() {
 
   const chosenFarmsMemoized = useMemo(() => {
     let chosenFarms = farmsList(farmsLP)
-    if (isIntersecting) chosenFarms = topFarms
+    // const farmWithPrices = await fetchFarmsPrices(farmsLP)
+    // console.log(isIntersecting)
+    // if (true) chosenFarms = topFarms
     return chosenFarms
   }, [farmsLP, farmsList])
 
@@ -176,10 +185,10 @@ export function Index() {
 
     return row
   })
-console.log(rowData[0])
+console.log(rowData[10])
   return (
   
-    <Box ref={observerRef}>
+    <Box>
       {(chainId && library) || !showAlert ? null : (
         <Box mx={[5, 10, 15, 20]} my={4}>
           <Alert color="#FFFFFF" background={mode === DARK_THEME ? "#319EF6" : "#319EF6"} borderRadius="8px">

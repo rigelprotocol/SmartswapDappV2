@@ -103,14 +103,15 @@ export const useFarmFromPid = (pid: number): DeserializedFarm => {
 export const usePriceCakeBusd = (): BigNumber => {
   const cakeBnbFarm = useFarmFromPid(251)
 
-  const cakePriceBusdAsString = cakeBnbFarm.tokenPriceBusd
+  const cakePriceBusdAsString = cakeBnbFarm.tokenPriceBusd || '20.00'
+  return new BigNumber(cakePriceBusdAsString)
+// console.log(cakePriceBusdAsString, "use cake hooks")
+//   const cakePriceBusd = useMemo(() => {
+//     //@ts-ignore
+//     return new BigNumber(cakePriceBusdAsString)
+//   }, [cakePriceBusdAsString])
 
-  const cakePriceBusd = useMemo(() => {
-    //@ts-ignore
-    return new BigNumber(cakePriceBusdAsString)
-  }, [cakePriceBusdAsString])
-
-  return cakePriceBusd
+//   return cakePriceBusd
 }
 
 export const useFarms = (): DeserializedFarmsState => {
