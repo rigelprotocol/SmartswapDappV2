@@ -7,7 +7,6 @@ import { DARK_THEME } from "./index";
 import {
   rigelToken,
   masterChefV2Contract,
-  wallet,
 } from '../../utils/SwapConnect';
 import { ethers } from 'ethers';
 import Web3 from 'web3';
@@ -146,6 +145,7 @@ const setApprove = val => {
 };
 
 const checkUser = async val => {
+  const checkAllow = await rgp.allowance(wallet.address, SMART_SWAP.masterChefV2);
   if (wallet.signer !== 'signer') {
     if (val === 'RGP-BNB') {
       const poolTwo = await smartSwapLPTokenPoolTwo();

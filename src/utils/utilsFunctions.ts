@@ -63,3 +63,70 @@ export const switchNetwork = async (
     ]);
   }
 };
+
+export const getSelectedTokenDetails = symbol =>
+  tokenDetails.length > 0 &&
+  symbol !== null &&
+  tokenDetails.filter(
+    fields => fields.symbol.toUpperCase() === symbol.toUpperCase(),
+  )[0];
+
+  export const formatBalance = balance => {
+    if (balance.toString().includes('.')) {
+      return `${balance.toString().split('.')[0]}.${balance
+        .toString()
+        .split('.')[1]
+        .substr(0, 4)}`;
+    }
+    return parseFloat(balance)
+      .toFixed(4)
+      .toString();
+  };
+
+  export const convertFromWei = (balance, decimals) => {
+    const decimalValue = decimals || 18;
+    const { unitMap } = Web3.utils;
+    const unit = Object.keys(unitMap).find(
+      unit => unitMap[unit] === Math.pow(10, decimalValue).toString(),
+    );
+    return Web3.utils.fromWei(balance.toString(), unit);
+  };
+
+  export const convertToWei = (balance, decimals) => {
+    const decimalValue = decimals || 18;
+    const { unitMap } = Web3.utils;
+    const unit = Object.keys(unitMap).find(
+      unit => unitMap[unit] === Math.pow(10, decimalValue).toString(),
+    );
+    return Web3.utils.toWei(balance.toString(), unit);
+  };
+
+  export function mergeArrays(arrays) {
+    let jointArray = [];
+    arrays.forEach(array => {
+      jointArray = [...jointArray, ...array];
+    });
+    let updatedArray = jointArray.filter(
+      (thing, index, self) =>
+        index === self.findIndex(t => t.symbol === thing.symbol),
+    );
+    updatedArray = updatedArray.map((token, id) => {
+      const balance = null;
+      const available = true;
+      const imported = !!token.imported;
+      return { ...token, id, balance, available, imported };
+    });
+    return updatedArray.filter(token => token.symbol !== 'SELECT A TOKEN');
+  };
+
+  export const isNotEmpty = objectToCheck =>
+    objectToCheck &&
+    Object.keys(objectToCheck).length === 0 &&
+    objectToCheck.constructor === Object;
+
+  export const changeTransactionDeadline = val => {
+    if (val === '' || val < 0) {
+      const time = Math.floor(new Date().getTime() / 1000.0 + 1200);
+      return time;
+    }
+  };

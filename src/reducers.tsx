@@ -5,6 +5,7 @@
 import { combineReducers } from 'redux';
 import { connectRouter } from 'connected-react-router';
 import FarmingV2ProviderReducer from './pages/FarmingV2/reducer'
+import WalletProviderReducer from './pages/WalletProvider/reducer';
 
 /**
  * Merges the main reducer with the router state and dynamically injected reducers
@@ -12,6 +13,7 @@ import FarmingV2ProviderReducer from './pages/FarmingV2/reducer'
 export default function createReducer() {
   const rootReducer = combineReducers({
     farmingv2: FarmingV2ProviderReducer,
+    wallet: WalletProviderReducer,
   });
 
   return rootReducer;

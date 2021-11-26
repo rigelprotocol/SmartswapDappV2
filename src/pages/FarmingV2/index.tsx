@@ -11,6 +11,9 @@ import { useWeb3React } from "@web3-react/core";
 import { useRouteMatch } from "react-router-dom";
 import { ethers } from 'ethers';
 import Web3 from 'web3';
+import configureStore from '../../configureStore';
+
+const { store } = configureStore()
 
 export const LIQUIDITY = "liquidity";
 export const STAKING = "staking";
@@ -27,9 +30,8 @@ export function useActiveWeb3React() {
   return context.active ? context : contextNetwork;
 }
 
-export function FarmingPageV2(props || {}) {
-
-  const { wallet } = props.wallet
+export function Index() {
+  const { wallet } = store.getState().wallet
   const history = useHistory();
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
   const [selected, setSelected] = useState(LIQUIDITY);
@@ -420,4 +422,4 @@ export function FarmingPageV2(props || {}) {
   );
 }
 
-export default FarmingPageV2;
+export default Index;
