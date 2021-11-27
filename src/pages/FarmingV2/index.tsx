@@ -12,6 +12,13 @@ import { useRouteMatch } from "react-router-dom";
 import { ethers } from 'ethers';
 import Web3 from 'web3';
 import configureStore from '../../configureStore';
+import {
+  masterChefV2Contract,
+  rigelToken,
+  smartSwapLPTokenPoolOne,
+  smartSwapLPTokenPoolTwo,
+  smartSwapLPTokenPoolThree,
+} from '../utils/SwapConnect';
 
 const { store } = configureStore()
 

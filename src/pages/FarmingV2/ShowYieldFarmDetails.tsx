@@ -4,16 +4,21 @@ import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import Switch from "react-switch";
 import { useColorModeValue } from "@chakra-ui/react";
 import { DARK_THEME } from "./index";
+import { ethers } from 'ethers';
+import Web3 from 'web3';
 import {
   rigelToken,
   masterChefV2Contract,
+  smartSwapLPTokenPoolOne,
+  smartSwapLPTokenPoolTwo,
+  smartSwapLPTokenPoolThree,
+  smartSwapLPTokenV2PoolFour,
+  smartSwapLPTokenV2PoolFive,
 } from '../../utils/SwapConnect';
-import { ethers } from 'ethers';
-import Web3 from 'web3';
 import configureStore from 'configureStore';
 
 const ShowYieldFarmDetails = ({content, wallet, updateFarmAllowances}) => {
-
+  console.log(wallet)
   const mode = useColorModeValue("light", DARK_THEME);
 
   const [checked, setChecked] = useState(false);
@@ -44,15 +49,7 @@ const ShowYieldFarmDetails = ({content, wallet, updateFarmAllowances}) => {
           allowance(pool2),
           allowance(pool3),
         ]);
-        let rigelAllowance;
-        if (SMART_SWAP.specialPool) {
-          rigelAllowance = await rigel.allowance(
-            wallet.address,
-            SMART_SWAP.specialPool,
-          );
-        } else {
-          rigelAllowance = pool1Allowance;
-        }
+        let rigelAllowance = pool1Allowance;
 
         updateFarmAllowances([
           rigelAllowance,
@@ -82,13 +79,9 @@ const ShowYieldFarmDetails = ({content, wallet, updateFarmAllowances}) => {
       }
     };
   useEffect(() => {
-    console.log(wallet)
     const checkForApproval = async () => {
       if (content.deposit === 'RGP') {
         setIsPoolRGP(true);
-        console.log(content)
-        const specialPoolApproval = await specailPoolAllowance();
-        changeApprovalButton(true, specialPoolApproval);
       } else {
         const rgp = await rigelToken();
         const rgpApproval = await poolAllowance(rgp);
@@ -145,7 +138,7 @@ const setApprove = val => {
 };
 
 const checkUser = async val => {
-  const checkAllow = await rgp.allowance(wallet.address, SMART_SWAP.masterChefV2);
+
   if (wallet.signer !== 'signer') {
     if (val === 'RGP-BNB') {
       const poolTwo = await smartSwapLPTokenPoolTwo();
@@ -208,15 +201,10 @@ const checkUser = async val => {
       setApproveValueForOtherToken(true);
       setApproveValueForRGP(true);
     } else if (val === 'RGP') {
-      await RGPSpecialPoolApproval();
       setApproveValueForOtherToken(true);
       setApproveValueForRGP(true);
     }
-  } else if (ethers.utils.formatEther(checkAllow).toString() == 0.0) {
-    await RGPSpecialPoolApproval();
-
   }
-
 };
 
   return (
