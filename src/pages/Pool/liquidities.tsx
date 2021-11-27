@@ -15,6 +15,7 @@ import ETHImage from '../../assets/eth.svg';
 import NullImage from '../../assets/Null-24.svg';
 import BUSDImage from '../../assets/busd.svg';
 import LiquidityDetails from './liquidityDetails';
+import MATICIMAGE from '../../assets/Matic.svg';
 
 const Liquidities = (props: Liquidity) => {
   const [showDetails, setShowDetails] = useState(false);
@@ -49,6 +50,8 @@ const Liquidities = (props: Liquidity) => {
                 <Img src={ETHImage} />
               ) : props.pair.path[0].token === 'WBNB' ? (
                 <Img src={BNBImage} />
+              ) : props.pair.path[0].token === 'WMATIC' ? (
+                <Img w="24px" h="24px" src={MATICIMAGE} />
               ) : (
                 <Img src={NullImage} />
               )}{' '}
@@ -58,10 +61,12 @@ const Liquidities = (props: Liquidity) => {
                 <Img src={RGPImage} />
               ) : props.pair.path[1].token === 'BUSD' ? (
                 <Img src={BUSDImage} />
-              ) : props.pair.path[1].token === 'WETH' ? (
-                <Img src={BUSDImage} />
-              ) : props.pair.path[1].token === 'WETH' ? (
+              ) : props.pair.path[1].token === 'WBNB' ? (
                 <Img src={BNBImage} />
+              ) : props.pair.path[1].token === 'WETH' ? (
+                <Img src={ETHImage} />
+              ) : props.pair.path[1].token === 'WMATIC' ? (
+                <Img w="24px" h="24px" src={MATICIMAGE} />
               ) : (
                 <Img src={NullImage} />
               )}{' '}
@@ -71,12 +76,16 @@ const Liquidities = (props: Liquidity) => {
                 ? 'BNB'
                 : props.pair.path[0].token == 'WETH'
                 ? 'ETH'
+                : props.pair.path[0].token == 'WMATIC'
+                ? 'MATIC'
                 : props.pair.path[0].token}{' '}
               /{' '}
               {props.pair.path[1].token == 'WBNB'
                 ? 'BNB'
                 : props.pair.path[1].token == 'WETH'
                 ? 'ETH'
+                : props.pair.path[1].token == 'WMATIC'
+                ? 'MATIC'
                 : props.pair.path[1].token}
             </Box>
           </Flex>
