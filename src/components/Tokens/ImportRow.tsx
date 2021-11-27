@@ -30,8 +30,7 @@ const ImportRow =({
         justifyContent="space-between"
         py="2"
         fontSize="16px"
-         cursor= "pointer"
-         onClick={() => openNewTokenModal(true)}
+        
          opacity='1'
         //  _hover={{ background: hover}}
          px="4"
@@ -53,7 +52,9 @@ const ImportRow =({
             <Box mt="3">
             {!isActive && !isAdded ? 
 
-                <Button>
+                <Button
+                cursor= "pointer"
+                onClick={() => openNewTokenModal(true)}>
                     import
                 </Button> :
 <Text>active</Text>
