@@ -11,20 +11,32 @@ import {
 } from '@chakra-ui/react';
 import { ArrowBackIcon, TimeIcon } from '@chakra-ui/icons';
 import { SettingsIcon } from '../../theme/components/Icons';
-import { useGetLiquidityById } from '../../utils/hooks/usePools';
-import { useHistory, useParams } from 'react-router';
+import {
+  useGetLiquidityById,
+  useTokenValueToBeRemoved,
+} from '../../utils/hooks/usePools';
+import { Router, useHistory, useParams } from 'react-router';
 import BNBImage from '../../assets/BNB.svg';
 import RGPImage from '../../assets/rgp.svg';
 import ETHImage from '../../assets/eth.svg';
 import NullImage from '../../assets/Null-24.svg';
 import BUSDImage from '../../assets/busd.svg';
 import { useWeb3React } from '@web3-react/core';
-import { LiquidityPairInstance } from '../../utils/Contracts';
+import { LiquidityPairInstance, SmartSwapRouter } from '../../utils/Contracts';
 import { SMARTSWAPROUTER } from '../../utils/addresses';
 import { setOpenModal, TrxState } from '../../state/application/reducer';
 import { addToast } from '../../components/Toast/toastSlice';
 import { getExplorerLink, ExplorerDataType } from '../../utils/getExplorerLink';
 import { useDispatch } from 'react-redux';
+import {
+  useUserSlippageTolerance,
+  useUserTransactionTTL,
+} from '../../state/user/hooks/index';
+import { calculateSlippageAmount } from '../../utils/calculateSlippageAmount';
+import { getDeadline } from '../../utils/utilsFunctions';
+import JSBI from 'jsbi';
+import { Percent } from '@uniswap/sdk-core';
+import { ethers } from 'ethers';
 
 const Remove = () => {
   const [isTabDevice] = useMediaQuery('(min-width: 990px)');
@@ -54,6 +66,8 @@ const Remove = () => {
   const [loading, setLoading] = useState(true);
   const [hasBeenApproved, setHasBeenApproved] = useState(false);
   const { account, chainId } = useWeb3React();
+  const [userSlippageTolerance] = useUserSlippageTolerance();
+  const [userDeadline] = useUserTransactionTTL();
 
   const params = useParams();
   const dispatch = useDispatch();
@@ -64,6 +78,10 @@ const Remove = () => {
     params.currencyIdB,
     hasBeenApproved
   );
+
+  console.log(userDeadline);
+
+  const valuesToBeRemoved = useTokenValueToBeRemoved({ pool, inputValue });
 
   useEffect(() => {
     let cancel = false;
@@ -85,6 +103,91 @@ const Remove = () => {
       cancel = true;
     };
   }, [data, hasBeenApproved]);
+
+  const removeLiquidityForToken = async (
+    Liquidity: number,
+    tokenA: string,
+    tokenB: string,
+    amountAMin: number,
+    amountBMin: number
+  ) => {
+    if (account && valuesToBeRemoved) {
+      const smartswaprouter = await SmartSwapRouter(
+        SMARTSWAPROUTER[chainId as number]
+      );
+      const liquidity = ethers.utils
+        .parseEther(Liquidity.toString())
+        .toString();
+
+      const AmountAMin = ethers.utils
+        .parseEther(amountAMin.toString())
+        .toString();
+
+      const AmountBMin = ethers.utils
+        .parseEther(amountBMin.toString())
+        .toString();
+
+      const deadLine = getDeadline(userDeadline);
+      try {
+        const remove = await smartswaprouter.removeLiquidity(
+          tokenA,
+          tokenB,
+          liquidity,
+          calculateSlippageAmount(AmountAMin, userSlippageTolerance),
+          calculateSlippageAmount(AmountBMin, userSlippageTolerance),
+          account,
+          deadLine,
+          {
+            from: account,
+            gasLimit: 390000,
+            gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+          }
+        );
+      } catch (err) {}
+    }
+  };
+
+  const removeLiquidityForETH = async (
+    Liquidity: number,
+    pairAddress: string,
+    amountAMin: number,
+    amountBMin: number
+  ) => {
+    if (account && valuesToBeRemoved) {
+      const smartswaprouter = await SmartSwapRouter(
+        SMARTSWAPROUTER[chainId as number]
+      );
+      const liquidity = ethers.utils
+        .parseEther(Liquidity.toString())
+        .toString();
+
+      const AmountAMin = ethers.utils
+        .parseEther(amountAMin.toString())
+        .toString();
+
+      const AmountBMin = ethers.utils
+        .parseEther(amountBMin.toString())
+        .toString();
+
+      const deadLine = getDeadline(userDeadline);
+
+      try {
+        const remove = await smartswaprouter.removeLiquidityETH(
+          pairAddress,
+          liquidity,
+          0,
+          0,
+          account,
+          deadLine,
+          {
+            from: account,
+            gasLimit: 390000,
+            gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+          }
+        );
+      } catch (err) {}
+    }
+  };
 
   const approveLPTokens = async () => {
     if (account) {
@@ -571,7 +674,9 @@ const Remove = () => {
                   )}
                   <Flex flexDirection="column">
                     <Text fontWeight="bold" color={pairTextColor}>
-                      -
+                      {valuesToBeRemoved
+                        ? valuesToBeRemoved[0].toFixed(6)
+                        : '-'}
                     </Text>
                     <Text color={titleColor} fontSize="12px">
                       {loading || pool.length === 0
@@ -609,7 +714,9 @@ const Remove = () => {
                   )}
                   <Flex flexDirection="column">
                     <Text fontWeight="bold" color={pairTextColor}>
-                      -
+                      {valuesToBeRemoved
+                        ? valuesToBeRemoved[1].toFixed(6)
+                        : '-'}
                     </Text>
                     <Text color={titleColor} fontSize="12px">
                       {loading || pool.length === 0
@@ -690,6 +797,7 @@ const Remove = () => {
               _hover={{ bgColor: withdrawaButtonBgColor }}
               px={14}
               fontSize={isTabDevice && isTabDevice2 ? '12px' : ''}
+              onClick={() => removeLiquidity()}
             >
               <Text>Confirm Withdrawal</Text>
             </Button>

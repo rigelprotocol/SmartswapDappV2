@@ -63,3 +63,8 @@ export const switchNetwork = async (
     ]);
   }
 };
+
+export const getDeadline = (userDeadline: number) => {
+  const time = Math.floor(new Date().getTime() / 1000 + userDeadline);
+  return time;
+};

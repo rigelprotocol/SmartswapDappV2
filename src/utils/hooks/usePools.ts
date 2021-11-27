@@ -8,7 +8,7 @@ import {
 import { SMARTSWAPFACTORYADDRESSES, SMARTSWAPROUTER } from '../addresses';
 import { getERC20Token } from '../utilsFunctions';
 import { ethers } from 'ethers';
-import { Currency, Fraction } from '@uniswap/sdk-core';
+import { Currency, Fraction, Percent } from '@uniswap/sdk-core';
 import { WNATIVEADDRESSES } from '../addresses';
 import JSBI from 'jsbi';
 
@@ -207,4 +207,29 @@ export const filterPools = ({
         liquidity.path[1].toPath === tokenA)
   );
   return data;
+};
+
+interface ValueToBeRemovedArgs {
+  pool: any;
+  inputValue?: string;
+}
+
+export const useTokenValueToBeRemoved = ({
+  pool,
+  inputValue,
+}: ValueToBeRemovedArgs) => {
+  return useMemo(() => {
+    // const percent = new Percent
+    if (pool && inputValue) {
+      const poolToken0Fraction =
+        (pool.pooledToken0 / 100) * parseInt(inputValue);
+      const poolToken1Fraction =
+        (pool.pooledToken1 / 100) * parseInt(inputValue);
+
+      const poolTokenFraction = (pool.poolToken / 100) * parseInt(inputValue);
+      console.log(poolToken0Fraction, poolToken1Fraction, poolTokenFraction);
+      return [poolToken0Fraction, poolToken1Fraction, poolTokenFraction];
+    }
+  }, [pool, inputValue]);
+  // return [poolToken0Fraction, poolToken1Fraction, poolTokenFraction];
 };
