@@ -33,7 +33,12 @@ import {
   useUserTransactionTTL,
 } from '../../state/user/hooks/index';
 import { calculateSlippageAmount } from '../../utils/calculateSlippageAmount';
-import { getDeadline } from '../../utils/utilsFunctions';
+import {
+  getDeadline,
+  isNative,
+  formatAmountIn,
+  getOutPutDataFromEvent,
+} from '../../utils/utilsFunctions';
 import JSBI from 'jsbi';
 import { Percent } from '@uniswap/sdk-core';
 import { ethers } from 'ethers';
@@ -65,6 +70,7 @@ const Remove = () => {
   const [pool, setPool] = useState<any>();
   const [loading, setLoading] = useState(true);
   const [hasBeenApproved, setHasBeenApproved] = useState(false);
+  const [loadData, setLoadData] = useState(false);
   const { account, chainId } = useWeb3React();
   const [userSlippageTolerance] = useUserSlippageTolerance();
   const [userDeadline] = useUserTransactionTTL();
@@ -76,12 +82,12 @@ const Remove = () => {
   const data = useGetLiquidityById(
     params.currencyIdA,
     params.currencyIdB,
-    hasBeenApproved
+    hasBeenApproved,
+    loadData
   );
 
-  console.log(userDeadline);
-
   const valuesToBeRemoved = useTokenValueToBeRemoved({ pool, inputValue });
+  console.log(pool);
 
   useEffect(() => {
     let cancel = false;
@@ -104,31 +110,66 @@ const Remove = () => {
     };
   }, [data, hasBeenApproved]);
 
+  const RemoveLiquidity = () => {
+    if (
+      isNative(pool?.path[0].token, chainId as number) ||
+      isNative(pool?.path[1].token, chainId as number)
+    ) {
+      if (valuesToBeRemoved) {
+        const tokenAddress = isNative(pool?.path[0].token, chainId as number)
+          ? pool?.path[1].toPath
+          : pool?.path[0].fromPath;
+        removeLiquidityForETH(
+          valuesToBeRemoved[2],
+          tokenAddress,
+          valuesToBeRemoved[0],
+          valuesToBeRemoved[1],
+          pool?.path[0].decimals,
+          pool?.path[1].decimals
+        );
+      }
+    } else {
+      if (valuesToBeRemoved) {
+        removeLiquidityForToken(
+          valuesToBeRemoved[2],
+          pool?.path[0].fromPath,
+          pool?.path[1].toPath,
+          valuesToBeRemoved[0],
+          valuesToBeRemoved[1],
+          pool?.path[0].decimals,
+          pool?.path[1].decimals
+        );
+      }
+    }
+  };
+
   const removeLiquidityForToken = async (
     Liquidity: number,
     tokenA: string,
     tokenB: string,
     amountAMin: number,
-    amountBMin: number
+    amountBMin: number,
+    tokenADecimals: number,
+    tokenBDecimals: number
   ) => {
     if (account && valuesToBeRemoved) {
       const smartswaprouter = await SmartSwapRouter(
         SMARTSWAPROUTER[chainId as number]
       );
-      const liquidity = ethers.utils
-        .parseEther(Liquidity.toString())
-        .toString();
-
-      const AmountAMin = ethers.utils
-        .parseEther(amountAMin.toString())
-        .toString();
-
-      const AmountBMin = ethers.utils
-        .parseEther(amountBMin.toString())
-        .toString();
+      const liquidity = formatAmountIn(Liquidity, 18);
+      const AmountAMin = formatAmountIn(amountAMin, tokenADecimals);
+      const AmountBMin = formatAmountIn(amountBMin, tokenBDecimals);
 
       const deadLine = getDeadline(userDeadline);
       try {
+        dispatch(
+          setOpenModal({
+            message: `Removing ${amountAMin.toFixed(6)} ${
+              pool?.path[0].token
+            } and ${amountBMin.toFixed(6)} ${pool?.path[1].token} `,
+            trxState: TrxState.WaitingForConfirmation,
+          })
+        );
         const remove = await smartswaprouter.removeLiquidity(
           tokenA,
           tokenB,
@@ -143,40 +184,134 @@ const Remove = () => {
             gasPrice: ethers.utils.parseUnits('10', 'gwei'),
           }
         );
-      } catch (err) {}
+        const { confirmations, events } = await remove.wait(1);
+        const outPutValueForTokenA = await getOutPutDataFromEvent(
+          pool.path[0].fromPath,
+          events,
+          pool.path[0].decimals
+        );
+
+        const outPutValueForTokenB = await getOutPutDataFromEvent(
+          pool.path[1].toPath,
+          events,
+          pool.path[1].decimals
+        );
+
+        const { hash } = remove;
+        if (confirmations >= 1) {
+          setLoadData(true);
+          setInputValue('');
+          const explorerLink = getExplorerLink(
+            chainId as number,
+            hash,
+            ExplorerDataType.TRANSACTION
+          );
+          dispatch(
+            setOpenModal({
+              message: `${
+                pool?.path[0].token === 'WBNB'
+                  ? 'BNB'
+                  : pool?.path[0].token === 'WETH'
+                  ? 'ETH'
+                  : pool?.path[0].token
+              }
+            /
+            ${
+              pool?.path[1].token === 'WBNB'
+                ? 'BNB'
+                : pool?.path[1].token === 'WETH'
+                ? 'ETH'
+                : pool?.path[1].token
+            } LP token Removal`,
+              trxState: TrxState.TransactionSuccessful,
+            })
+          );
+          dispatch(
+            addToast({
+              message: `Remove ${outPutValueForTokenA} ${pool?.path[0].token} 
+                and ${outPutValueForTokenB} `,
+              URL: explorerLink,
+            })
+          );
+        }
+      } catch (err) {
+        console.log(err);
+        dispatch(
+          setOpenModal({
+            message: `${
+              pool?.path[0].token === 'WBNB'
+                ? 'BNB'
+                : pool?.path[0].token === 'WETH'
+                ? 'ETH'
+                : pool?.path[0].token
+            }
+          /
+          ${
+            pool?.path[1].token === 'WBNB'
+              ? 'BNB'
+              : pool?.path[1].token === 'WETH'
+              ? 'ETH'
+              : pool?.path[1].token
+          } LP token Removal`,
+            trxState: TrxState.TransactionFailed,
+          })
+        );
+      }
     }
   };
 
   const removeLiquidityForETH = async (
     Liquidity: number,
-    pairAddress: string,
+    tokenAddress: any,
     amountAMin: number,
-    amountBMin: number
+    amountBMin: number,
+    tokenADecimals: number,
+    tokenBDecimals: number
   ) => {
     if (account && valuesToBeRemoved) {
       const smartswaprouter = await SmartSwapRouter(
         SMARTSWAPROUTER[chainId as number]
       );
-      const liquidity = ethers.utils
-        .parseEther(Liquidity.toString())
-        .toString();
+      const liquidity = formatAmountIn(Liquidity, 18);
 
-      const AmountAMin = ethers.utils
-        .parseEther(amountAMin.toString())
-        .toString();
+      const AmountAMin = formatAmountIn(amountAMin, tokenADecimals);
 
-      const AmountBMin = ethers.utils
-        .parseEther(amountBMin.toString())
-        .toString();
+      const AmountBMin = formatAmountIn(amountBMin, tokenBDecimals);
 
       const deadLine = getDeadline(userDeadline);
 
       try {
+        dispatch(
+          setOpenModal({
+            message: ` Removing ${amountAMin.toFixed(6)} ${
+              pool?.path[0].token === 'WBNB'
+                ? 'BNB'
+                : pool?.path[0].token === 'WETH'
+                ? 'ETH'
+                : pool?.path[0].token
+            }
+           and ${amountBMin.toFixed(6)}
+          ${
+            pool?.path[1].token === 'WBNB'
+              ? 'BNB'
+              : pool?.path[1].token === 'WETH'
+              ? 'ETH'
+              : pool?.path[1].token
+          } `,
+            trxState: TrxState.WaitingForConfirmation,
+          })
+        );
         const remove = await smartswaprouter.removeLiquidityETH(
-          pairAddress,
+          tokenAddress,
           liquidity,
-          0,
-          0,
+          isNative(pool?.path[0].token, chainId as number)
+            ? calculateSlippageAmount(AmountBMin, userSlippageTolerance)
+            : calculateSlippageAmount(AmountAMin, userSlippageTolerance),
+
+          isNative(pool?.path[0].token, chainId as number)
+            ? calculateSlippageAmount(AmountAMin, userSlippageTolerance)
+            : calculateSlippageAmount(AmountBMin, userSlippageTolerance),
+
           account,
           deadLine,
           {
@@ -185,7 +320,77 @@ const Remove = () => {
             gasPrice: ethers.utils.parseUnits('10', 'gwei'),
           }
         );
-      } catch (err) {}
+        const { confirmations, events } = await remove.wait(1);
+        const outPutValueForTokenA = await getOutPutDataFromEvent(
+          pool.path[0].fromPath,
+          events,
+          pool.path[0].decimals
+        );
+
+        const outPutValueForTokenB = await getOutPutDataFromEvent(
+          pool.path[1].toPath,
+          events,
+          pool.path[1].decimals
+        );
+        const { hash } = remove;
+        if (confirmations >= 1) {
+          setLoadData(true);
+          setInputValue('');
+          const explorerLink = getExplorerLink(
+            chainId as number,
+            hash,
+            ExplorerDataType.TRANSACTION
+          );
+          dispatch(
+            setOpenModal({
+              message: `Transaction Successful`,
+              trxState: TrxState.TransactionSuccessful,
+            })
+          );
+          dispatch(
+            addToast({
+              message: `Remove ${outPutValueForTokenA} ${
+                pool?.path[0].token === 'WBNB'
+                  ? 'BNB'
+                  : pool?.path[0].token === 'WETH'
+                  ? 'ETH'
+                  : pool?.path[0].token
+              }
+            and ${outPutValueForTokenB}
+            ${
+              pool?.path[1].token === 'WBNB'
+                ? 'BNB'
+                : pool?.path[1].token === 'WETH'
+                ? 'ETH'
+                : pool?.path[1].token
+            } `,
+              URL: explorerLink,
+            })
+          );
+        }
+      } catch (err) {
+        console.log(err);
+        dispatch(
+          setOpenModal({
+            message: `${
+              pool?.path[0].token === 'WBNB'
+                ? 'BNB'
+                : pool?.path[0].token === 'WETH'
+                ? 'ETH'
+                : pool?.path[0].token
+            }
+          /
+          ${
+            pool?.path[1].token === 'WBNB'
+              ? 'BNB'
+              : pool?.path[1].token === 'WETH'
+              ? 'ETH'
+              : pool?.path[1].token
+          } LP token Removal`,
+            trxState: TrxState.TransactionFailed,
+          })
+        );
+      }
     }
   };
 
@@ -797,7 +1002,7 @@ const Remove = () => {
               _hover={{ bgColor: withdrawaButtonBgColor }}
               px={14}
               fontSize={isTabDevice && isTabDevice2 ? '12px' : ''}
-              onClick={() => removeLiquidity()}
+              onClick={() => RemoveLiquidity()}
             >
               <Text>Confirm Withdrawal</Text>
             </Button>
