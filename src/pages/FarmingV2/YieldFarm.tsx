@@ -8,7 +8,7 @@ import { LIGHT_THEME, DARK_THEME, useActiveWeb3React } from "./index";
 const YieldFarm = ({
   content
 }: {
-  content: { id: number; totalLiquidity: string; earn: string; img: string; ARYValue: string; deposit: string, tokensStaked: string[], availableToken: string };
+  content: { pid: number; totalLiquidity: string; earn: string; img: string; ARYValue: string; lpSymbol: string };
 }) => {
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
 
@@ -51,7 +51,7 @@ const YieldFarm = ({
             Deposit
           </Box>
           <Box marginTop="15px" align="left">
-            {content.deposit}
+            {content.lpSymbol}
           </Box>
         </Flex>
         <Flex justifyContent="space-between" width="100%">
@@ -79,7 +79,7 @@ const YieldFarm = ({
           </Box>
         </Flex>
         <Box align="right" mt={["4", "0"]} ml="2">
-          {content.id === 1 ? (
+          {Number(content.pid) === 1 ? (
             <Button
               w={["100%", "100%", "146px"]}
               h="40px"

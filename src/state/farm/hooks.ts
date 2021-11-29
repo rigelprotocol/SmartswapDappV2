@@ -115,6 +115,7 @@ export const usePriceCakeBusd = (): BigNumber => {
 }
 
 export const useFarms = (): DeserializedFarmsState => {
+
   const farms = useSelector((state: State) => state.farms)
   const deserializedFarmsData = farms.data.map(deserializeFarm)
   const { loadArchivedFarmsData, userDataLoaded } = farms

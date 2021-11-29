@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Flex, Text } from "@chakra-ui/layout";
 import { Alert, AlertDescription, CloseButton, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import { useHistory } from "react-router-dom";
@@ -9,19 +9,12 @@ import { AlertSvg } from "./Icon";
 import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
 import { useRouteMatch } from "react-router-dom";
-import { useDispatch } from 'react-redux'
+import bigNumber from 'bignumber.js'
+import { useFarms } from "../../state/farm/hooks";
+import { BigNumber } from "ethers";
+import { getTokenAmount } from "../../utils/hooks/useBalances";
 
-
-import BigNumber from 'bignumber.js'
-import { getFarmApr } from "../../utils/helpers/apr";
-import { DeserializedFarm, FarmWithStakedValue } from "../../state/farm/types";
-// import farms from "../../utils/constants/farms";
-import { useFarms, usePriceCakeBusd } from "../../state/farm/hooks";
-import useGetTopFarmsByApr from "../../hooks/useGetTopFarmsByApr";
-import fetchFarmsPrices from "../../state/farm/fetchFarmsPrices";
-import { fetchFarmsPublicDataAsync } from "../../state/farm";
-
-export const BIG_TEN = new BigNumber(10)
+export const BIG_TEN = new bigNumber(10)
 
 
 export const LIQUIDITY = "liquidity";
@@ -49,9 +42,9 @@ export function Index() {
   const [isActive, setIsActive] = useState(V2);
   const [showAlert, setShowAlert] = useState(true);
   const { data: farmsLP, userDataLoaded } = useFarms()
-  const { topFarms } = useGetTopFarmsByApr()
-  const cakePrice = usePriceCakeBusd()
-  const dispatch = useDispatch()
+  const [ RgbPrice, setRgpPrice] = useState("20")
+  const [ farms, setFarms] = useState(contents)
+  const MINIMUM_LIQUIDITY = 10**3;
 
 
 
@@ -60,20 +53,10 @@ export function Index() {
   useEffect(
     () => {
       if (match) setSelected(STAKING);
-      // dispatch(fetchFarmsPublicDataAsync(farmsLP.map((farm) => farm.pid)))
     },
-    [] //[dispatch, farmsLP, match]
+    [match] 
   );
-  // useEffect(() => {
-  //   if (isIntersecting) {
-  //     // setNumberOfFarmsVisible((farmsCurrentlyVisible) => {
-  //     //   if (farmsCurrentlyVisible <= chosenFarmsLength.current) {
-  //     //     return farmsCurrentlyVisible + NUMBER_OF_FARMS_VISIBLE
-  //     //   }
-  //     //   return farmsCurrentlyVisible
-  //     // })
-  //   }
-  // }, [isIntersecting])
+
   const changeVersion = (version: string) => {
     history.push(version);
   };
@@ -104,88 +87,40 @@ export function Index() {
 
   const { chainId, library } = useActiveWeb3React();
 
-  const getBalanceAmount = (amount: BigNumber, decimals = 18) => {
-    return new BigNumber(amount).dividedBy(BIG_TEN.pow(decimals))
-  }
- const getBalanceNumber = (balance: BigNumber, decimals = 18) => {
-    return getBalanceAmount(balance, decimals).toNumber()
-  }
-  const getDisplayApr = (cakeRewardsApr?: number, lpRewardsApr?: number) => {
-    if (cakeRewardsApr && lpRewardsApr) {
-      return (cakeRewardsApr + lpRewardsApr).toLocaleString('en-US', { maximumFractionDigits: 2 })
-    }
-    if (cakeRewardsApr) {
-      return cakeRewardsApr.toLocaleString('en-US', { maximumFractionDigits: 2 })
-    }
-    return null
-  }
 
+  useEffect(() => {
+    const chosenFarmsMemoized = async() => {
+      console.log("checking")
+      let chosenFarms = await farmsList(farmsLP) as any[]
+      console.log(chosenFarms)
+      const activeFarms = chosenFarms.filter((farm) => farm.pid !== 0 && !isNaN(farm.ARYValue) )
 
+      setFarms(activeFarms)
+      return chosenFarms
+    };
+    chosenFarmsMemoized()
+  }, []);
 
-  const farmsList = useCallback(
-    (farmsToDisplay: DeserializedFarm[]): FarmWithStakedValue[] => {
-      let farmsToDisplayWithAPR: FarmWithStakedValue[] = farmsToDisplay.map((farm) => {
-        if (!farm.lpTotalInQuoteToken || !farm.tokenPriceVsQuote) {
-          return farm
-        }
-         // @ts-ignore
-        const totalLiquidity = new BigNumber(farm.lpTotalInQuoteToken).times(farm.tokenPriceVsQuote)
-          // @ts-ignore
-        const { cakeRewardsApr, lpRewardsApr } = getFarmApr(new BigNumber(farm.poolWeight), new BigNumber(cakePrice), totalLiquidity, farm.lpAddresses[56])
-        console.log(cakeRewardsApr, lpRewardsApr)
-        return { ...farm, apr: cakeRewardsApr, lpRewardsApr, liquidity: totalLiquidity }
+  const farmsList = async (farmsToDisplay) => {
+      let farmsToDisplayWithAPR = farmsToDisplay.map(async(farm: any) => {
+        // if (!farm.lpTotalInQuoteToken || !farm.tokenPriceVsQuote) {
+        //   return farm
+        // }
+        const num = await getTokenAmount(farm.token.address);
+        const num2 = await getTokenAmount(farm.quoteToken.address);
+        const amount0 = BigNumber.from(Number(num).toFixed());
+        const amount1 = BigNumber.from(Number(num2).toFixed());
+        const liquidity = Math.sqrt(((amount0.mul(amount1)).sub(MINIMUM_LIQUIDITY)).toNumber());
+        console.log(num, num2, amount0, amount1, liquidity)
+        const inflation = 250;
+        const totalLiquidity = (liquidity * 365).toFixed()
+          const calculateApy = 
+          (Number(RgbPrice) * (inflation) * 365 * 100) / Number(totalLiquidity);
+        return await { ...farm, earn: "RGP", ARYValue: calculateApy, totalLiquidity: totalLiquidity }
       })
-      return farmsToDisplayWithAPR
-    },
-    [],
-  )
-
-  const chosenFarmsMemoized = useMemo(() => {
-    let chosenFarms = farmsList(farmsLP)
-    // const farmWithPrices = await fetchFarmsPrices(farmsLP)
-    // console.log(isIntersecting)
-    // if (true) chosenFarms = topFarms
-    return chosenFarms
-  }, [farmsLP, farmsList])
-
- 
-
-
-  const rowData = chosenFarmsMemoized.map((farm) => {
-    const { token, quoteToken } = farm
-    const tokenAddress = token.address
-    const quoteTokenAddress = quoteToken.address
-    const lpLabel = farm.lpSymbol && farm.lpSymbol.split(' ')[0].toUpperCase().replace('PANCAKE', '')
-
-    const row = {
-      apr: {
-        value: getDisplayApr(farm.apr, farm.lpRewardsApr),
-        pid: farm.pid,
-        lpLabel,
-        lpSymbol: farm.lpSymbol,
-        tokenAddress,
-        quoteTokenAddress,
-        originalValue: farm.apr,
-      },
-      farm: {
-        label: lpLabel,
-        pid: farm.pid,
-        token: farm.token,
-        quoteToken: farm.quoteToken,
-      },
-      earned: {
-        earnings: getBalanceNumber(new BigNumber(farm.userData.earnings)),
-        pid: farm.pid,
-      },
-      liquidity: {
-        liquidity: farm.liquidity,
-      },
-      details: farm,
+      return await Promise.all(farmsToDisplayWithAPR)
     }
 
-    return row
-  })
-console.log(rowData[10])
   return (
   
     <Box>
@@ -473,8 +408,8 @@ console.log(rowData[10])
                     <Text>Total Liquidity</Text>
                     <Text />
                   </Flex>
-                  {contents.map((content: any) => (
-                    <YieldFarm content={content} key={content.id} />
+                  {farms.map((content: any) => (
+                    <YieldFarm content={content} key={content.pid} />
                   ))}
                 </Box>
               </Box>
@@ -520,8 +455,8 @@ console.log(rowData[10])
                     <Text>Total Liquidity</Text>
                     <Text />
                   </Flex>
-                  {contents.map((content: any, index: number) =>
-                    index === 1 ? <YieldFarm content={content} key={content.id} /> : null
+                  {farms.map((content: any, index: number) =>
+                    index === 1 ? <YieldFarm content={content} key={content.pid} /> : null
                   )}
                 </Box>
               </Box>
