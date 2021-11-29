@@ -238,7 +238,6 @@ export const useTokenValueToBeRemoved = ({
         (pool.pooledToken1 / 100) * parseInt(inputValue);
 
       const poolTokenFraction = (pool.poolToken / 100) * parseInt(inputValue);
-      console.log(poolToken0Fraction, poolToken1Fraction, poolTokenFraction);
       return [poolToken0Fraction, poolToken1Fraction, poolTokenFraction];
     }
   }, [pool, inputValue]);

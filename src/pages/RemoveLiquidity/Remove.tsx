@@ -88,7 +88,6 @@ const Remove = () => {
   );
 
   const valuesToBeRemoved = useTokenValueToBeRemoved({ pool, inputValue });
-  console.log(pool);
 
   useEffect(() => {
     let cancel = false;
@@ -645,7 +644,7 @@ const Remove = () => {
   return (
     <Flex minH="100vh" mt={10} justifyContent="center">
       <Box
-        h={isTabDevice && isTabDevice2 ? '620px' : '620px'}
+        h={isTabDevice && isTabDevice2 ? '620px' : '630px'}
         mx={4}
         w={['100%', '100%', '45%', '29.5%']}
         border="1px"
@@ -671,7 +670,9 @@ const Remove = () => {
               </Text>
             </Flex>
             <Flex alignItems="center">
-              <SettingsIcon />
+              <Flex mt={3}>
+                <SettingsIcon />
+              </Flex>
               <TimeIcon ml={1} w="22px" h="22px" color={topIcons} />
             </Flex>
           </Flex>
@@ -1056,6 +1057,7 @@ const Remove = () => {
               px={14}
               fontSize={isTabDevice && isTabDevice2 ? '12px' : ''}
               onClick={() => RemoveLiquidity()}
+              disabled={!hasBeenApproved || inputValue === ''}
             >
               <Text>Confirm Withdrawal</Text>
             </Button>
