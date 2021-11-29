@@ -44,6 +44,8 @@ const LiquidityDetails = (props: LiquidityDetail) => {
               ? 'BNB'
               : props.pair.path[0].token == 'WETH'
               ? 'ETH'
+              : props.pair.path[0].token == 'WMATIC'
+              ? 'MATIC'
               : props.pair.path[0].token}
             :
           </Text>
@@ -56,6 +58,8 @@ const LiquidityDetails = (props: LiquidityDetail) => {
               ? 'BNB'
               : props.pair.path[1].token == 'WETH'
               ? 'ETH'
+              : props.pair.path[1].token === 'WMATIC'
+              ? 'MATIC'
               : props.pair.path[1].token}
           </Text>
           <Text>{props.pair.pooledToken1}</Text>

@@ -42,6 +42,7 @@ import {
 import JSBI from 'jsbi';
 import { Percent } from '@uniswap/sdk-core';
 import { ethers } from 'ethers';
+import MATICImage from '../../assets/Matic.svg';
 
 const Remove = () => {
   const [isTabDevice] = useMediaQuery('(min-width: 990px)');
@@ -404,6 +405,8 @@ const Remove = () => {
                 ? 'BNB'
                 : pool?.path[0].token === 'WETH'
                 ? 'ETH'
+                : pool?.path[0].token === 'WMATIC'
+                ? 'MATIC'
                 : pool?.path[0].token
             }
           /
@@ -412,6 +415,8 @@ const Remove = () => {
               ? 'BNB'
               : pool?.path[1].token === 'WETH'
               ? 'ETH'
+              : pool?.path[1].token === 'WMATIC'
+              ? 'MATIC'
               : pool?.path[1].token
           } LP token Approval`,
             trxState: TrxState.WaitingForConfirmation,
@@ -442,6 +447,8 @@ const Remove = () => {
                   ? 'BNB'
                   : pool?.path[0].token === 'WETH'
                   ? 'ETH'
+                  : pool?.path[0].token === 'WMATIC'
+                  ? 'MATIC'
                   : pool?.path[0].token
               }
             /
@@ -450,6 +457,8 @@ const Remove = () => {
                 ? 'BNB'
                 : pool?.path[1].token === 'WETH'
                 ? 'ETH'
+                : pool?.path[1].token === 'WMATIC'
+                ? 'MATIC'
                 : pool?.path[1].token
             } LP token Approval`,
               trxState: TrxState.TransactionSuccessful,
@@ -462,6 +471,8 @@ const Remove = () => {
                   ? 'BNB'
                   : pool?.path[0].token === 'WETH'
                   ? 'ETH'
+                  : pool?.path[0].token === 'WMATIC'
+                  ? 'MATIC'
                   : pool?.path[0].token
               }
             /
@@ -470,6 +481,8 @@ const Remove = () => {
                 ? 'BNB'
                 : pool?.path[1].token === 'WETH'
                 ? 'ETH'
+                : pool?.path[1].token === 'WMATIC'
+                ? 'MATIC'
                 : pool?.path[1].token
             } LP token`,
               URL: explorerLink,
@@ -485,6 +498,8 @@ const Remove = () => {
                 ? 'BNB'
                 : pool?.path[0].token === 'WETH'
                 ? 'ETH'
+                : pool?.path[0].token === 'WMATIC'
+                ? 'MATIC'
                 : pool?.path[0].token
             }
           /
@@ -493,6 +508,8 @@ const Remove = () => {
               ? 'BNB'
               : pool?.path[1].token === 'WETH'
               ? 'ETH'
+              : pool?.path[1].token === 'WMATIC'
+              ? 'MATIC'
               : pool?.path[1].token
           } LP token Approval`,
             trxState: TrxState.TransactionFailed,
@@ -512,6 +529,8 @@ const Remove = () => {
                 ? 'BNB'
                 : pool?.path[0].token === 'WETH'
                 ? 'ETH'
+                : pool?.path[0].token === 'WMATIC'
+                ? 'MATIC'
                 : pool?.path[0].token
             }
           /
@@ -520,6 +539,8 @@ const Remove = () => {
               ? 'BNB'
               : pool?.path[1].token === 'WETH'
               ? 'ETH'
+              : pool?.path[1].token === 'WMATIC'
+              ? 'MATIC'
               : pool?.path[1].token
           } LP token`,
             trxState: TrxState.WaitingForConfirmation,
@@ -549,6 +570,8 @@ const Remove = () => {
                   ? 'BNB'
                   : pool?.path[0].token === 'WETH'
                   ? 'ETH'
+                  : pool?.path[0].token === 'WMATIC'
+                  ? 'MATIC'
                   : pool?.path[0].token
               }
             /
@@ -557,6 +580,8 @@ const Remove = () => {
                 ? 'BNB'
                 : pool?.path[1].token === 'WETH'
                 ? 'ETH'
+                : pool?.path[1].token === 'WMATIC'
+                ? 'MATIC'
                 : pool?.path[1].token
             } LP token`,
               trxState: TrxState.TransactionSuccessful,
@@ -569,6 +594,8 @@ const Remove = () => {
                   ? 'BNB'
                   : pool?.path[0].token === 'WETH'
                   ? 'ETH'
+                  : pool?.path[0].token === 'WMATIC'
+                  ? 'MATIC'
                   : pool?.path[0].token
               }
             /
@@ -577,6 +604,8 @@ const Remove = () => {
                 ? 'BNB'
                 : pool?.path[1].token === 'WETH'
                 ? 'ETH'
+                : pool?.path[1].token === 'WMATIC'
+                ? 'MATIC'
                 : pool?.path[1].token
             } LP token`,
               URL: explorerLink,
@@ -592,6 +621,8 @@ const Remove = () => {
                 ? 'BNB'
                 : pool?.path[0].token === 'WETH'
                 ? 'ETH'
+                : pool?.path[0].token === 'WMATIC'
+                ? 'MATIC'
                 : pool?.path[0].token
             }
           /
@@ -600,6 +631,8 @@ const Remove = () => {
               ? 'BNB'
               : pool?.path[1].token === 'WETH'
               ? 'ETH'
+              : pool?.path[1].token === 'WMATIC'
+              ? 'MATIC'
               : pool?.path[1].token
           } LP token`,
             trxState: TrxState.TransactionFailed,
@@ -612,7 +645,7 @@ const Remove = () => {
   return (
     <Flex minH="100vh" mt={10} justifyContent="center">
       <Box
-        h={isTabDevice && isTabDevice2 ? '620px' : '600px'}
+        h={isTabDevice && isTabDevice2 ? '620px' : '620px'}
         mx={4}
         w={['100%', '100%', '45%', '29.5%']}
         border="1px"
@@ -693,6 +726,8 @@ const Remove = () => {
                         <Img src={ETHImage} />
                       ) : pool?.path[0].token === 'WBNB' ? (
                         <Img src={BNBImage} />
+                      ) : pool?.path[0].token === 'WMATIC' ? (
+                        <Img w="24px" h="24px" src={MATICImage} />
                       ) : (
                         <Img src={NullImage} />
                       )}
@@ -704,6 +739,8 @@ const Remove = () => {
                         <Img src={ETHImage} />
                       ) : pool?.path[1].token === 'WBNB' ? (
                         <Img src={BNBImage} />
+                      ) : pool?.path[1].token === 'WMATIC' ? (
+                        <Img w="24px" h="24px" src={MATICImage} />
                       ) : (
                         <Img src={NullImage} />
                       )}
@@ -718,12 +755,16 @@ const Remove = () => {
                         ? 'BNB'
                         : pool?.path[0].token === 'WETH'
                         ? 'ETH'
+                        : pool?.path[0].token === 'WMATIC'
+                        ? 'MATIC'
                         : pool?.path[0].token}{' '}
                       /{' '}
                       {pool?.path[1].token === 'WBNB'
                         ? 'BNB'
                         : pool?.path[1].token === 'WETH'
                         ? 'ETH'
+                        : pool?.path[1].token === 'WMATIC'
+                        ? 'MATIC'
                         : pool?.path[1].token}
                     </Text>
                   </Flex>
@@ -765,6 +806,8 @@ const Remove = () => {
                           ? 'BNB'
                           : pool?.path[0].token === 'WETH'
                           ? 'ETH'
+                          : pool?.path[0].token === 'WMATIC'
+                          ? 'MATIC'
                           : pool?.path[0].token}
                         :
                       </Text>
@@ -781,6 +824,8 @@ const Remove = () => {
                           ? 'BNB'
                           : pool?.path[1].token === 'WETH'
                           ? 'ETH'
+                          : pool?.path[1].token === 'WMATIC'
+                          ? 'MATIC'
                           : pool?.path[1].token}
                         :
                       </Text>
@@ -874,6 +919,8 @@ const Remove = () => {
                     <Img w="24px" h="24px" mr={2} mb={3} src={ETHImage} />
                   ) : pool?.path[0].token === 'WBNB' ? (
                     <Img w="24px" h="24px" mr={2} mb={3} src={BNBImage} />
+                  ) : pool?.path[0].token === 'WMATIC' ? (
+                    <Img w="24px" h="24px" mr={2} mb={3} src={MATICImage} />
                   ) : (
                     <Img w="24px" h="24px" mr={2} mb={3} src={NullImage} />
                   )}
@@ -890,6 +937,8 @@ const Remove = () => {
                         ? 'BNB'
                         : pool?.path[0].token === 'WETH'
                         ? 'ETH'
+                        : pool?.path[0].token === 'WMATIC'
+                        ? 'MATIC'
                         : pool?.path[0].token}
                     </Text>
                   </Flex>
@@ -914,6 +963,8 @@ const Remove = () => {
                     <Img w="24px" h="24px" mr={2} mb={3} src={ETHImage} />
                   ) : pool?.path[1].token === 'WBNB' ? (
                     <Img w="24px" h="24px" mr={2} mb={3} src={BNBImage} />
+                  ) : pool?.path[1].token === 'WMATIC' ? (
+                    <Img w="24px" h="24px" mr={2} mb={3} src={MATICImage} />
                   ) : (
                     <Img w="24px" h="24px" mr={2} mb={3} src={NullImage} />
                   )}
@@ -930,6 +981,8 @@ const Remove = () => {
                         ? 'BNB'
                         : pool?.path[1].token === 'WETH'
                         ? 'ETH'
+                        : pool?.path[1].token === 'WMATIC'
+                        ? 'MATIC'
                         : pool?.path[1].token}
                     </Text>
                   </Flex>
