@@ -8,7 +8,7 @@ import { IoMdClose, IoMdAdd , IoMdArrowForward, IoMdRemove} from 'react-icons/io
 import { RiErrorWarningLine } from 'react-icons/ri';
 import { BsExclamationCircle } from "react-icons/bs";
 import {BiPen} from 'react-icons/bi';
-
+import {HiOutlineExternalLink} from "react-icons/hi"
 export const SwitchIcon = () => {
   const arrowColor = useColorModeValue('#333333', '#F1F5F8');
   const switchBgcolor = useColorModeValue('#F2F5F8', '#213345');
@@ -109,6 +109,17 @@ export const ExclamationIcon = () => {
       color={iconColor}
       h="16px"
       mt={0.5}
+    />
+  );
+};
+export const ExternalLinkIcon = ({size}:{size:string}) => {
+  const iconColor = useColorModeValue('#666666', '#DCE5EF');
+  return (
+    <Icon
+      as={HiOutlineExternalLink}
+      w={size}
+      color={iconColor}
+      h={size}
     />
   );
 };
