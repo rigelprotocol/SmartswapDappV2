@@ -5,9 +5,16 @@ import {
     Flex,
     Text,
     Switch,
-    Button
+    Button,
+    Popover,
+    PopoverArrow,
+    PopoverContent,
+    PopoverBody,
+    PopoverTrigger,
+    PopoverCloseButton,
+    Link
 } from "@chakra-ui/react"
-import { CheckIcon } from "@chakra-ui/icons";
+import { CheckIcon,SettingsIcon,LinkIcon } from "@chakra-ui/icons";
 import ModalInput from "./input"
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../state";
@@ -17,7 +24,7 @@ import { removeList,disableList,enableList,acceptListUpdate } from "../../state/
 import { useAllLists } from "../../state/lists/hooks";
 import { UNSUPPORTED_LIST_URLS } from "../../utils/constants/lists";
 import parseENSAddress from "../../utils/ENS/parseENSaddress";
-import { TokenList } from "@uniswap/token-lists";
+import { TokenList,Version } from "@uniswap/token-lists";
 import useFetchListCallback from "../../utils/hooks/useFetchListCallback";
 import ListLogo from "../Logo/ListLogo";
 import { useActiveListUrls,useIsListActive } from "../../state/lists/hooks";
@@ -65,6 +72,10 @@ const [addError, setAddError] = useState<string | undefined>()
   const validUrl: boolean = useMemo(() => {
     return uriToHttp(tokenInput).length > 0 || Boolean(parseENSAddress(tokenInput))
   }, [tokenInput])
+
+   function listVersionLabel(version: Version): string {
+    return `v${version.major}.${version.minor}.${version.patch}`
+  }
 
    // sort by active but only if not visible
    const activeListUrls = useActiveListUrls()
@@ -140,6 +151,19 @@ const [addError, setAddError] = useState<string | undefined>()
   const dispatch = useDispatch<AppDispatch>()
   const { current: list, pendingUpdate: pending } = listsByUrl[listUrl]
 
+  const handleAcceptListUpdate = useCallback(() => {
+    if (!pending) return
+    dispatch(acceptListUpdate(listUrl))
+  }, [dispatch, listUrl, pending])
+
+  const handleRemoveList = useCallback(() => {
+    // eslint-disable-next-line no-alert
+    if (window.confirm('Please confirm you would like to remove this list')) {
+      dispatch(removeList(listUrl))
+    }
+  }, [dispatch, listUrl])
+
+
   const isActive = useIsListActive(listUrl)
   const handleEnableList = useCallback(() => {
     dispatch(enableList(listUrl))
@@ -173,7 +197,38 @@ const [addError, setAddError] = useState<string | undefined>()
                 fontSize="15px">{list.name}
               </Text>
                   <Text color={lightTextColor} 
-             fontSize="12px">{list.tokens.length} Tokens</Text>
+             fontSize="12px">{list.tokens.length} Tokens
+             <Popover
+             placement="right"
+             trigger="hover"
+             
+             >
+  <PopoverTrigger>
+    <SettingsIcon ml="2" />
+  </PopoverTrigger>
+  <PopoverContent>
+    <PopoverArrow />
+    <PopoverBody>
+      <Box fontSize="16px">
+      <Text mb="2">{list && listVersionLabel(list.version)}</Text>
+      <Link external href={`https://tokenlists.org/token-list?url=${listUrl}`} >
+        See <LinkIcon />
+      </Link>
+      <Box>
+<Button mt="3" p="2" onClick={handleRemoveList}>
+  Delete
+</Button>
+{pending && (
+        <Button variant="text" onClick={handleAcceptListUpdate} style={{ fontSize: '12px' }}>
+          Update list
+        </Button>
+      )}
+</Box>
+      </Box>
+    </PopoverBody>
+  </PopoverContent>
+</Popover>
+              </Text>
           </Box>
                  
         </Flex> 
