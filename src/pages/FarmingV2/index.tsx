@@ -9,6 +9,9 @@ import { AlertSvg } from "./Icon";
 import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
 import { useRouteMatch } from "react-router-dom";
+import { ethers } from 'ethers';
+import Web3 from 'web3';
+import { useNativeBalance, useRGPBalance } from '../../utils/hooks/useBalances';
 
 export const LIQUIDITY = "liquidity";
 export const STAKING = "staking";
@@ -32,6 +35,18 @@ export function Index() {
   const [isActive, setIsActive] = useState(V2);
   const [showAlert, setShowAlert] = useState(true);
   let match = useRouteMatch("/farming-V2/staking-RGP");
+  const { Contract, providers } = ethers
+  const { account, chainId, library } = useActiveWeb3React();
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const [Balance, Symbol] = useNativeBalance();
+  const wallet = {
+      balance: Balance,
+      address: account,
+      provider: provider,
+      signer: signer,
+      chainId: chainId,
+  }
 
   useEffect(
     () => {
@@ -67,8 +82,6 @@ export function Index() {
   const handleAlert = () => {
     setShowAlert(false);
   };
-
-  const { chainId, library } = useActiveWeb3React();
 
   return (
     <Box>
@@ -357,7 +370,7 @@ export function Index() {
                     <Text />
                   </Flex>
                   {contents.map((content: any) => (
-                    <YieldFarm content={content} key={content.id} />
+                    <YieldFarm content={content} key={content.id} wallet={wallet}/>
                   ))}
                 </Box>
               </Box>
@@ -404,7 +417,7 @@ export function Index() {
                     <Text />
                   </Flex>
                   {contents.map((content: any, index: number) =>
-                    index === 1 ? <YieldFarm content={content} key={content.id} /> : null
+                    index === 1 ? <YieldFarm content={content} key={content.id} wallet={wallet}/> : null
                   )}
                 </Box>
               </Box>

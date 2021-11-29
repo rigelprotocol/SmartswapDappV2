@@ -6,7 +6,8 @@ import { RGPIcon } from "./Icon";
 import { LIGHT_THEME, DARK_THEME, useActiveWeb3React } from "./index";
 
 const YieldFarm = ({
-  content
+  content,
+  wallet,
 }: {
   content: { id: number; totalLiquidity: string; earn: string; img: string; ARYValue: string; deposit: string };
 }) => {
@@ -27,7 +28,7 @@ const YieldFarm = ({
       return `$ ${formatAmount(content.totalLiquidity)}`;
     }
   };
-
+  
   return (
     <>
       <Flex
@@ -170,7 +171,11 @@ const YieldFarm = ({
           )}
         </Box>
       </Flex>
-      {showYieldfarm && <ShowYieldFarmDetails />}
+      {showYieldfarm &&
+        <ShowYieldFarmDetails
+          content={content}
+          wallet={wallet}
+        />}
     </>
   );
 };
