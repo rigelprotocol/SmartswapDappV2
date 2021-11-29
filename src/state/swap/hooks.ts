@@ -5,7 +5,7 @@ import { Field,selectCurrency,typeInput,replaceSwapState } from "./actions"
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React'
 import { useCurrency } from '../../hooks/Tokens'
 import { useDispatch, useSelector } from 'react-redux'
-import { Currency , CurrencyAmount} from '@uniswap/sdk-core'
+import { Currency } from '@uniswap/sdk-core'
 import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { getERC20Token } from "../../utils/utilsFunctions";
 import { isAddress } from '../../utils'
@@ -81,9 +81,10 @@ export function useSwapActionHandlers(): {
 export function useDerivedSwapInfo (): {
     currencies: { [field in Field]?: Currency },
     getMaxValue: any,
-    bestTrade: string | undefined;
+    bestTrade: string | undefined,
     inputError?: string,
-    parsedAmount: string | undefined
+    parsedAmount: string | undefined,
+    showWrap: boolean
 
 } {
     const { account } = useActiveWeb3React();
@@ -109,13 +110,13 @@ export function useDerivedSwapInfo (): {
     };
 
     const parsedAmount = tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined);
-    console.log(parsedAmount);
 
-    const [address, amount, loadTrade] = useSwap(isExactIn ? inputCurrency : outputCurrency, isExactIn ? outputCurrency : inputCurrency, parsedAmount);
+    const [address, wrap, amount] = useSwap(isExactIn ? inputCurrency : outputCurrency, isExactIn ? outputCurrency : inputCurrency, parsedAmount);
+    console.log(address);
 
     console.log(inputCurrency, outputCurrency, typedValue);
 
-    console.log(address);
+    const showWrap = wrap;
 
     const bestTrade = amount;
 
@@ -150,28 +151,27 @@ export function useDerivedSwapInfo (): {
         inputError = inputError ?? 'Select a Token'
     }
 
-    if (loadTrade) {
-        inputError = 'Loading...'
-    }
+    // if (loading) {
+    //     inputError = 'Loading...'
+    // }
 
 
-    if (address === ZERO_ADDRESS) {
+    if (address === ZERO_ADDRESS && !wrap) {
         inputError = 'Insufficient Liquidity for this Trade.'
     }
 
-    // if(balance < typedValue){
-    //     inputError = `Insufficient ${inputCurrency?.symbol} Balance`
-    // }
-    // else {
-    //     inputError = ''
-    // }
+
+    if(balance < (parseFloat(typedValue))) {
+        inputError = `Insufficient ${inputCurrency?.symbol} Balance`
+    }
 
 return {
     currencies,
     getMaxValue,
     bestTrade,
+    parsedAmount,
     inputError,
-    parsedAmount
+    showWrap
 }
 }
 

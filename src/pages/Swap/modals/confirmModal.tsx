@@ -20,11 +20,12 @@ import {Currency} from "@uniswap/sdk-core";
 
 
 
+
 export type IModal= {
     title:string;
     from?: string | undefined;
     fromPrice?:string;
-    to: string | undefined;
+    to?: string | undefined;
     fromDeposited?:string;
     toDeposited?:string;
     minRecieved?:string;
@@ -33,7 +34,9 @@ export type IModal= {
     impact?: string,
     slippage?:string,
     showModal: boolean,
-    setShowModal: Function
+    setShowModal: Function,
+    inputLogo: string,
+    outputLogo: string
 }
 
 const ConfirmModal:React.FC<IModal> = ({
@@ -49,7 +52,9 @@ const ConfirmModal:React.FC<IModal> = ({
     impact,
     fee,
     showModal,
-    setShowModal
+    setShowModal,
+    inputLogo,
+    outputLogo
     }) => {
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
@@ -103,7 +108,7 @@ const ConfirmModal:React.FC<IModal> = ({
                 >
                         <Text fontSize="16px" color={lightTextColor}>From</Text>
                         <Flex justifyContent="space-between" mt="2">
-                        <Flex><Image src={RGPImage} mr="2"/> <Text>{from}</Text></Flex>
+                        <Flex><Image src={inputLogo || RGPImage} boxSize={'24px'} mr="2"/> <Text>{from}</Text></Flex>
                         <Text color={heavyTextColor}>{fromDeposited}</Text>
                         </Flex>
                     
@@ -135,7 +140,7 @@ const ConfirmModal:React.FC<IModal> = ({
                 >
                         <Text fontSize="16px" color={lightTextColor}>To</Text>
                         <Flex justifyContent="space-between" mt="2">
-                        <Flex><Image src={USDTImage} mr="2"/> <Text>{to}</Text></Flex>
+                        <Flex><Image boxSize={'24px'} src={outputLogo || USDTImage} mr="2"/> <Text>{to}</Text></Flex>
                         <Text color={heavyTextColor}>{toDeposited}</Text>
                         </Flex>
                     
@@ -160,10 +165,10 @@ const ConfirmModal:React.FC<IModal> = ({
                         <Box color={lightTextColor}>Minimum received <InfoOutlineIcon /></Box>
                         <Text color={heavyTextColor}>{minRecieved}</Text>
                         </Flex>
-                        {/*<Flex justifyContent="space-between" my="4">*/}
-                        {/*<Box color={lightTextColor}>Route <InfoOutlineIcon /></Box>*/}
-                        {/*<Text color={heavyTextColor} fontWeight="500">{route.join(" > ")}</Text>*/}
-                        {/*</Flex>*/}
+                        <Flex justifyContent="space-between" my="4">
+                        <Box color={lightTextColor}>Route <InfoOutlineIcon /></Box>
+                        <Text color={heavyTextColor} fontWeight="500">{from} {'>'} {to}</Text>
+                        </Flex>
                         <Flex justifyContent="space-between">
                         <Box color={lightTextColor}>Allowed Slippage <InfoOutlineIcon /></Box>
                         <Text color={heavyTextColor}>{slippage}%</Text>

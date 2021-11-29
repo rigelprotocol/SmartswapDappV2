@@ -12,8 +12,6 @@ export interface SerializableTransactionReceipt {
     status?: number
 }
 
-
-
 export const addTransaction = createAction<{
     chainId: ChainId
     hash: string

@@ -30,12 +30,12 @@ export default function useWrapCallback(
         if ( !chainId || !inputCurrency || !outputCurrency) return NOT_APPLICABLE;
 
 
-        if (inputCurrency.isNative) {
+        if (inputCurrency.isNative ) {
             return {
                 wrapType: WrapType.WRAP,
 
             }
-        } else if ( outputCurrency.isNative) {
+        } else if (outputCurrency.isNative) {
             return {
                 wrapType: WrapType.UNWRAP,
             }
