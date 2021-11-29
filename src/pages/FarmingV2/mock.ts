@@ -5,7 +5,7 @@ export const contents = [
     img: "BNB.svg",
     ARYValue: "30,000",
     earn: "RGP",
-    deposit: "RGB - BNB"
+    deposit: "RGB-BNB"
   },
   {
     id: 2,
@@ -13,7 +13,7 @@ export const contents = [
     img: "bnb.svg",
     ARYValue: "30,000",
     earn: "RGP",
-    deposit: "RGB - BNB"
+    deposit: "RGB-BNB"
   },
   {
     id: 3,
@@ -21,7 +21,7 @@ export const contents = [
     img: "BNB.svg",
     ARYValue: "30,000",
     earn: "RGP",
-    deposit: "RBG - BUSD"
+    deposit: "RBG-BUSD"
   },
   {
     id: 4,
@@ -29,7 +29,7 @@ export const contents = [
     img: "BNB.svg",
     ARYValue: "30,000",
     earn: "RGP",
-    deposit: "RGP - ETH"
+    deposit: "RGP-ETH"
   },
   {
     id: 4,
@@ -37,7 +37,7 @@ export const contents = [
     img: "BNB.svg",
     ARYValue: "30,000",
     earn: "RGP",
-    deposit: "RGP - AXD"
+    deposit: "RGP-AXD"
   },
   {
     id: 5,
@@ -45,6 +45,6 @@ export const contents = [
     img: "BNB.svg",
     ARYValue: "30,000",
     earn: "RGP",
-    deposit: "RGP - POL"
+    deposit: "RGP-POL"
   }
 ];
