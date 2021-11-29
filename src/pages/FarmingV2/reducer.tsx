@@ -140,19 +140,6 @@ export const initialState = {
   loading: false,
   error: null,
 };
-// const user_Individual_Reward = (individualLiquidity / totalLiquidity) * reward
-// Reward = (Multiplier x block diff x reward per block x allocation point ) / Total Allocation Point
-// ARY of pool = (Current Price x Inflation Per Day x 365 x 100%) / Total Volume per Pool
-// const blockPerDay = 4 * 60 * 24;
-// const daysPerYear = 365;
-/* eslint-disable default-case, no-param-reassign */
-
-// let data = {
-//   getTotalAlloc: getTotalAlloc.toString(),
-//   multipler: getMultiplier.toString(),
-//   getrigelPerBlock: getrigelPerBlock.toString(),
-//   getStartBlock: getStartBlock.toString()
-// }
 
 const farmingV2PageReducer = (state = initialState, action) =>
   produce(state, draft => {
