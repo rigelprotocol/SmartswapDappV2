@@ -6,15 +6,10 @@ import {
     Text,
     Switch,
     Button,
-    Popover,
-    PopoverArrow,
-    PopoverContent,
-    PopoverBody,
-    PopoverTrigger,
-    PopoverCloseButton,
     Link
 } from "@chakra-ui/react"
-import { CheckIcon,SettingsIcon,LinkIcon } from "@chakra-ui/icons";
+import "./tooltip.css"
+import { CheckIcon,SettingsIcon } from "@chakra-ui/icons";
 import ModalInput from "./input"
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../state";
@@ -26,6 +21,7 @@ import { UNSUPPORTED_LIST_URLS } from "../../utils/constants/lists";
 import parseENSAddress from "../../utils/ENS/parseENSaddress";
 import { TokenList,Version } from "@uniswap/token-lists";
 import useFetchListCallback from "../../utils/hooks/useFetchListCallback";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import ListLogo from "../Logo/ListLogo";
 import { useActiveListUrls,useIsListActive } from "../../state/lists/hooks";
 type IModal= {
@@ -196,39 +192,30 @@ const [addError, setAddError] = useState<string | undefined>()
               <Text color={heavyTextColor} fontWeight="700" 
                 fontSize="15px">{list.name}
               </Text>
+              <Flex>
                   <Text color={lightTextColor} 
-             fontSize="12px">{list.tokens.length} Tokens
-             <Popover
-             placement="right"
-             trigger="hover"
-             
-             >
-  <PopoverTrigger>
-    <SettingsIcon ml="2" />
-  </PopoverTrigger>
-  <PopoverContent>
-    <PopoverArrow />
-    <PopoverBody>
-      <Box fontSize="16px">
-      <Text mb="2">{list && listVersionLabel(list.version)}</Text>
-      <Link external href={`https://tokenlists.org/token-list?url=${listUrl}`} >
-        See <LinkIcon />
-      </Link>
-      <Box>
-<Button mt="3" p="2" onClick={handleRemoveList}>
-  Delete
-</Button>
-{pending && (
-        <Button variant="text" onClick={handleAcceptListUpdate} style={{ fontSize: '12px' }}>
-          Update list
-        </Button>
-      )}
-</Box>
+             fontSize="12px">{list.tokens.length} Tokens  </Text>
+           <Box className="tooltip">
+             <SettingsIcon ml="2" mt="-2"/>
+           <Box fontSize="16px" className="tooltiptext" bg={borderColor2}>
+           <Text mb="2">{list && listVersionLabel(list.version)}</Text>
+           <Link isExternal href={`https://tokenlists.org/token-list?url=${listUrl}`} >
+           See <ExternalLinkIcon />
+           </Link>
+           <Box>
+            <Button mt="3" p="2" onClick={handleRemoveList}>
+              Delete
+            </Button>
+            {pending && (
+                    <Button variant="text" onClick={handleAcceptListUpdate} style={{ fontSize: '12px' }}>
+                      Update list
+                    </Button>
+                  )}
+            </Box>
       </Box>
-    </PopoverBody>
-  </PopoverContent>
-</Popover>
-              </Text>
+</Box>
+             
+           </Flex> 
           </Box>
                  
         </Flex> 
