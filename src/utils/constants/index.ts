@@ -1,10 +1,7 @@
+// @ts-nocheck
+import defaultTokenList from '../default-token.json';
+import testNetTokenList from '../test-net-tokens.json';
 import JSBI from "jsbi"
-
-// used to ensure the user doesn't send so much BNB so they end up with <.01
-export const MIN_BNB: JSBI = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)) // .01 BNB
-export const INITIAL_ALLOWED_SLIPPAGE = 50
-
-const BSC_MAIN_NET_ID = window.ethereum !== undefined && window.ethereum.isTrust ? '56' : '0x38';
 
 export const checkNetVersion = () => {
   if (window.ethereum && window.ethereum.chainId !== null) {
@@ -12,6 +9,33 @@ export const checkNetVersion = () => {
   }
   return null;
 };
+
+// used to ensure the user doesn't send so much BNB so they end up with <.01
+export const MIN_BNB: JSBI = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)) // .01 BNB
+export const INITIAL_ALLOWED_SLIPPAGE = 50
+
+const BSCTestnetTokens = {
+  BNB: '0x23967E68bB6FeA03fcc3676F8E55272106F44A4A',
+  BUSD: '0x10249e900b919fdee9e2ed38b4cd83c4df857254', // This can be use
+  ETH: '0x23967E68bB6FeA03fcc3676F8E55272106F44A4A',
+  RGP: '0x9f0227a21987c1ffab1785ba3eba60578ec1501b',
+  AXS: '0x6b9a9df1e6a29f17bfc79040a8f505aaa8866b6e',
+};
+
+const BSCmainnetTokens = {
+  BNB: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+  BUSD: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56', // This can be use
+  ETH: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+  RGP: '0xFA262F303Aa244f9CC66f312F0755d89C3793192',
+  AXS: '0x715d400f88c167884bbcc41c5fea407ed4d2f8a0',
+};
+const BSC_MAIN_NET_ID =
+  window.ethereum !== undefined && window.ethereum.isTrust ? '56' : '0x38';
+
+export const TOKENS_CONTRACT =
+  checkNetVersion() === BSC_MAIN_NET_ID.toString()
+    ? BSCmainnetTokens
+    : BSCTestnetTokens;
 
 const BSCMainnet = {
   SmartFactory: '0x655333A1cD74232C404049AF9d2d6cF1244E71F6',
@@ -54,4 +78,100 @@ const BSCTestnet = {
   AXS: '0x6b9a9df1e6a29f17bfc79040a8f505aaa8866b6e',
 };
 
-export const SMART_SWAP = checkNetVersion() === BSC_MAIN_NET_ID.toString() ? BSCMainnet : BSCTestnet;
+export const networkURLS =
+  checkNetVersion() === BSC_MAIN_NET_ID.toString()
+    ? 'bscscan.com'
+    : 'testnet.bscscan.com';
+
+export const SMART_SWAP =
+  checkNetVersion() === BSC_MAIN_NET_ID.toString() ? BSCMainnet : BSCTestnet;
+
+export const tokenList = () => {
+  let allToken = [];
+  const persistedRoot = window.localStorage.getItem('persist:root');
+
+  if (persistedRoot) {
+    const storedReducer = JSON.parse(persistedRoot);
+    const extendedList = JSON.parse(storedReducer.ExtendedTokenList);
+    allToken =
+      extendedList !== undefined &&
+        extendedList.defaultTokenList[1].token.length > 0
+        ? extendedList.defaultTokenList[1].token
+        : [];
+  }
+  if (allToken.length > 0) {
+    return allToken;
+  }
+  return checkNetVersion() === BSC_MAIN_NET_ID.toString()
+    ? defaultTokenList
+    : testNetTokenList;
+};
+
+export const tokenWhere = field =>
+  tokenList().length > 0 &&
+  field !== null &&
+  tokenList().filter(fields => fields.symbol === field.toUpperCase())[0];
+
+export const tokenAddressWhere = symbol => tokenWhere(symbol).address;
+
+export const checkIfTokenIsListed = symbol =>
+  tokenList().find(token => token.symbol === symbol);
+
+export const balanceAbi = [
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'account',
+        type: 'address',
+      },
+    ],
+    name: 'balanceOf',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+];
+export const decimalAbi = [
+  {
+    constant: true,
+    inputs: [],
+    name: 'decimals',
+    outputs: [{ name: '', type: 'uint8' }],
+    payable: false,
+    stateMutability: 'view',
+    type: 'function',
+  },
+];
+
+export const allowanceAbi = [
+  {
+    inputs: [
+      { internalType: 'address', name: 'owner', type: 'address' },
+      { internalType: 'address', name: 'spender', type: 'address' },
+    ],
+    name: 'allowance',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+];
+
+export const approveAbi = [
+  {
+    inputs: [
+      { internalType: 'address', name: 'spender', type: 'address' },
+      { internalType: 'uint256', name: 'amount', type: 'uint256' },
+    ],
+    name: 'approve',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+];

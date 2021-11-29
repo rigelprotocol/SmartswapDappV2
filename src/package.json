@@ -33,7 +33,7 @@
     "@web3-react/walletlink-connector": "^6.2.5",
     "abi-decoder": "^2.4.0",
     "cids": "^1.1.9",
-    "connected-react-router": "^6.9.1",
+    "connected-react-router": "^6.9.2",
     "ethers": "^5.5.1",
     "framer-motion": "^4.0.0",
     "jsbi": "^4.0.0",

@@ -9,18 +9,8 @@ import { AlertSvg } from "./Icon";
 import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
 import { useRouteMatch } from "react-router-dom";
-import { ethers } from 'ethers';
-import Web3 from 'web3';
 import configureStore from '../../configureStore';
-import {
-  masterChefV2Contract,
-  rigelToken,
-  smartSwapLPTokenPoolOne,
-  smartSwapLPTokenPoolTwo,
-  smartSwapLPTokenPoolThree,
-} from '../utils/SwapConnect';
-
-const { store } = configureStore()
+const { store } = configureStore();
 
 export const LIQUIDITY = "liquidity";
 export const STAKING = "staking";
@@ -38,13 +28,13 @@ export function useActiveWeb3React() {
 }
 
 export function Index() {
-  const { wallet } = store.getState().wallet
   const history = useHistory();
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
   const [selected, setSelected] = useState(LIQUIDITY);
   const [isActive, setIsActive] = useState(V2);
   const [showAlert, setShowAlert] = useState(true);
   let match = useRouteMatch("/farming-V2/staking-RGP");
+  const { wallet } = store.getState().wallet;
 
   useEffect(
     () => {
@@ -417,7 +407,7 @@ export function Index() {
                     <Text />
                   </Flex>
                   {contents.map((content: any, index: number) =>
-                    index === 1 ? <YieldFarm content={content} key={content.id} wallet={wallet}/> : null
+                    index === 1 ? <YieldFarm content={content} key={content.id} /> : null
                   )}
                 </Box>
               </Box>
