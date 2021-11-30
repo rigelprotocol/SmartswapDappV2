@@ -3,7 +3,6 @@ import { SupportedChainSymbols,SupportedChainLogo } from '../../utils/constants/
 import { Currency,WETH9 } from '@uniswap/sdk-core'
 import { WrappedTokenInfo } from '../../state/lists/WrappedTokenInfo'
 import Logo from '../Logo'
-import NULL24LOGO from '../../assets/Null-24.svg';
 import useHttpLocations from '../../utils/hooks/useHttpLocations'
 
 
@@ -63,7 +62,6 @@ const LOGO = SupportedChainLogo
     const uriLocations = useHttpLocations(
       currency instanceof WrappedTokenInfo ? currency.logoURI || currency.tokenInfo.logoURI : undefined
     )
-  
     const srcs: string[] = useMemo(() => {
       if (!currency) {
         return []
