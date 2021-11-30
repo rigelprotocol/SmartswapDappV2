@@ -8,7 +8,7 @@ import {
 import { SMARTSWAPFACTORYADDRESSES, SMARTSWAPROUTER } from '../addresses';
 import { getERC20Token } from '../utilsFunctions';
 import { ethers } from 'ethers';
-import { Currency, Fraction } from '@uniswap/sdk-core';
+import { Currency, Fraction, Percent } from '@uniswap/sdk-core';
 import { WNATIVEADDRESSES } from '../addresses';
 import JSBI from 'jsbi';
 
@@ -112,8 +112,18 @@ const getPoolData = async (
     totalSupply: totalSupply.toString(),
     poolShare: (balance.toString() / totalSupply) * 100,
     path: [
-      { fromPath: token0, token: symbol0, amount: pooledToken0 },
-      { toPath: token1, token: symbol1, amount: pooledToken1 },
+      {
+        fromPath: token0,
+        token: symbol0,
+        amount: pooledToken0,
+        decimals: decimals0,
+      },
+      {
+        toPath: token1,
+        token: symbol1,
+        amount: pooledToken1,
+        decimals: decimals1,
+      },
     ],
     pooledToken0,
     pooledToken1,
@@ -145,7 +155,8 @@ const getPooledToken = (params: PoolTokenParams) => {
 export const useGetLiquidityById = async (
   address1: string,
   address2: string,
-  hasBeenApproved: boolean
+  hasBeenApproved: boolean,
+  loadData: boolean
 ) => {
   const { account, chainId } = useWeb3React();
   const [loading, setLoading] = useState(true);
@@ -174,7 +185,7 @@ export const useGetLiquidityById = async (
       }
     };
     loadPair();
-  }, [account, chainId, address1, address2, hasBeenApproved]);
+  }, [account, chainId, address1, address2, hasBeenApproved, loadData]);
   return { LiquidityPairData, loading, approved };
 };
 
@@ -207,4 +218,28 @@ export const filterPools = ({
         liquidity.path[1].toPath === tokenA)
   );
   return data;
+};
+
+interface ValueToBeRemovedArgs {
+  pool: any;
+  inputValue?: string;
+}
+
+export const useTokenValueToBeRemoved = ({
+  pool,
+  inputValue,
+}: ValueToBeRemovedArgs) => {
+  return useMemo(() => {
+    // const percent = new Percent
+    if (pool && inputValue) {
+      const poolToken0Fraction =
+        (pool.pooledToken0 / 100) * parseInt(inputValue);
+      const poolToken1Fraction =
+        (pool.pooledToken1 / 100) * parseInt(inputValue);
+
+      const poolTokenFraction = (pool.poolToken / 100) * parseInt(inputValue);
+      return [poolToken0Fraction, poolToken1Fraction, poolTokenFraction];
+    }
+  }, [pool, inputValue]);
+  // return [poolToken0Fraction, poolToken1Fraction, poolTokenFraction];
 };

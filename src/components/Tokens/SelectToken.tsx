@@ -14,7 +14,7 @@ import {
     Text,
 } from "@chakra-ui/react"
 import ModalInput from "./input"
-import ManageToken from "./manageTokens"
+import Manage from "./Manage"
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React'
 import CurrencyList from "./CurrencyList"
 import { Token,Currency,NativeCurrency } from "@uniswap/sdk-core"
@@ -61,11 +61,10 @@ const SelectToken:React.FC<IModal> = ({
       [ onCurrencySelect],
     )
     const allTokens = useAllTokens()
-    
+    // useUpdateTokenList()
         // if they input an address, use it
   const searchToken = useToken(debouncedQuery)
   const searchTokenIsAdded = useIsUserAddedToken(searchToken)
-  console.log({searchTokenIsAdded})
     const [ ,Symbol,Name,Logo] = useNativeBalance();
     const ether =  chainId && ExtendedEther(chainId,Symbol,Name,Logo)
 
@@ -101,7 +100,7 @@ const handleInput = useCallback(
     return (
         
         <>
-        <Modal isOpen={tokenModal} onClose={onClose} isCentered>
+        <Modal isOpen={tokenModal} onClose={()=>setTokenModal(false)} isCentered>
         <ModalOverlay />
             <ModalContent
                 width="95vw"
@@ -120,7 +119,7 @@ const handleInput = useCallback(
                   mr={3}
                   cursor="pointer"
                   _focus={{ outline: 'none' }}
-                  onClick={()=>setTokenModal(false)}
+                  // onClick={()=>alert(1)}
                   p={'7px'}
                   border='1px solid'
                   
@@ -178,7 +177,13 @@ const handleInput = useCallback(
                </ModalFooter>
             </ModalContent>
           </Modal>
-          <ManageToken open={displayManageToken} setDisplayManageToken={setDisplayManageToken}/>
+          <Manage 
+          open={displayManageToken} 
+          setDisplayManageToken={setDisplayManageToken}
+          setOpenNewTokenModal={setOpenNewTokenModal}
+          openNewTokenModal={openNewTokenModal}
+          handleCurrencySelect={handleCurrencySelect}
+          />
           {searchToken && openNewTokenModal ?
           <NewToken 
           open={openNewTokenModal}

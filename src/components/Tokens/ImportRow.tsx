@@ -21,39 +21,39 @@ const ImportRow =({
 }:IImportRow) => {
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
     const heavyTextColor = useColorModeValue("#333333", "#F1F5F8"); 
-       const hover = useColorModeValue('rgba(228, 225, 222, 0.74)', "#14181b6c");
+  const boxColor = useColorModeValue("#F2F5F8","#213345")
      // check if already active on list or local storage tokens
   const isAdded = useIsUserAddedToken(token)
   const isActive = useIsTokenActive(token)
     return (
+        <>
         <Flex 
         justifyContent="space-between"
         py="2"
         fontSize="16px"
-         cursor= "pointer"
-         onClick={() => openNewTokenModal(true)}
+        bg={boxColor}
          opacity='1'
-        //  _hover={{ background: hover}}
          px="4"
          borderRadius="10px"
          >
             <Flex>
         
-        <Box mr={3} mt={3}>
-        <CurrencyLogo currency={token} size={24} squared={true}/>
+        <Box mr={3} mt={2}>
+        <CurrencyLogo currency={token} size={28} squared={true}/>
         </Box>
          
              <Box>
-             <Text color={heavyTextColor} fontWeight="700" mt="2">{token.symbol}</Text>
+             <Text color={heavyTextColor} fontWeight="700" mt="1">{token.symbol}</Text>
              <Text color={lightTextColor}>{token.name}</Text>
-             {/* { currency?.isImported ? " • Added by user" : ""} */}
              </Box>
         
             </Flex> 
-            <Box mt="3">
+            <Box mt={2}>
             {!isActive && !isAdded ? 
 
-                <Button>
+                <Button
+                cursor= "pointer"
+                onClick={() => openNewTokenModal(true)}>
                     import
                 </Button> :
 <Text>active</Text>
@@ -62,7 +62,7 @@ const ImportRow =({
         </Flex> 
 
 
-
+</>
     )
 }
 
