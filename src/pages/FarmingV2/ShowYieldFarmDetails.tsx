@@ -31,6 +31,7 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
   const [approveValueForOtherToken, setApproveValueForOtherToken] = useState(false)
   const [farmingFee, setFarmingFee] = useState(10)
   const [allowanceApproval, setAllowanceApproval] = useState(false);
+  const [approvalLoading, setApprovalLoading] = useState(false);
   const dispatch = useDispatch();
   const updateFarmAllowances = value => dispatch => {
     dispatch('app/V2FarmingPage/UPDATE_FARM_ALLOWANCE', value);
@@ -95,8 +96,7 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
   }, []);
 
   useEffect(() => {
-
-    const specailPoolAllowance = async () => {
+    const specialPoolAllowance = async () => {
       if (wallet.signer !== 'signer') {
         if (wallet.signer !== 'signer') {
           const rgp = await rigelToken();
@@ -120,7 +120,7 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
     const checkForApproval = async () => {
       if (content.deposit === 'RGP') {
         setIsPoolRGP(true);
-        const specialPoolApproval = await specailPoolAllowance();
+        const specialPoolApproval = await specialPoolAllowance();
         changeApprovalButton(true, specialPoolApproval);
       } else {
         const rgp = await rigelToken();
@@ -276,7 +276,13 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
     }
   };
 
-  // checking for approval.
+  const fetchTransactionData = async sendTransaction => {
+    const { confirmations, status, logs } = await sendTransaction.wait(1);
+
+    return { confirmations, status, logs };
+  };
+
+  // checking for approval
   const setApprove = val => {
     if (!approveValueForOtherToken && !approveValueForRGP) {
       checkUser(val);
