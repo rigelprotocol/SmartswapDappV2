@@ -23,7 +23,7 @@ import {SMARTSWAPROUTER, WNATIVEADDRESSES} from "../../../../utils/addresses";
 import {ExplorerDataType, getExplorerLink} from "../../../../utils/getExplorerLink";
 import {addToast} from '../../../../components/Toast/toastSlice';
 import {RootState} from "../../../../state";
-import {getDeadline, getInPutDataFromEvent, getOutPutDataFromEvent} from "../../../../constants";
+import {getDeadline, getInPutDataFromEvent, getOutPutDataFromEvent, tokenPrice} from "../../../../constants";
 import {ethers} from "ethers";
 import {GetAddressTokenBalance} from "../../../../state/wallet/hooks";
 
@@ -105,6 +105,12 @@ const SendToken = () => {
         () => ((100 - Number(allowedSlippage / 100)) / 100) * Number(formattedAmounts[Field.OUTPUT]),
         [allowedSlippage, bestTrade],
     );
+
+    const minimum = minimumAmountToReceive().toString();
+
+    const LPFee = (0.003 * Number(formattedAmounts[Field.INPUT])).toFixed(4);
+
+    const receivedAmount = Number(formattedAmounts[Field.OUTPUT]).toFixed(4);
 
     const parsedOutput = ethers.utils.parseEther(minimumAmountToReceive().toString()).toString();
     console.log(parsedOutput);
@@ -250,8 +256,6 @@ const SendToken = () => {
       }
   };
 
-  console.log(parsedAmount);
-
     const swapDefaultForOtherTokens = async () => {
         const route = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number]);
         const dl = getDeadline(deadline);
@@ -261,7 +265,7 @@ const SendToken = () => {
         try {
             setSendingTrx(true);
             dispatch(setOpenModal({
-                message: `Swap BNB for ${currencies[Field.OUTPUT]?.symbol}`,
+                message: `Swapping ${formattedAmounts[Field.INPUT]} BNB for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol}`,
                 trxState: TrxState.WaitingForConfirmation
             }));
             const sendTransaction = await route.swapETHForExactTokens(
@@ -294,7 +298,8 @@ const SendToken = () => {
                     addToast({
                         message: `Swap ${inputAmountForDisplay} ${currencies[Field.INPUT]?.symbol} for ${outputAmountForDisplay} ${currencies[Field.OUTPUT]?.symbol}`,
                         URL: explorerLink
-                    }))
+                    }));
+                onUserInput(Field.INPUT, '')
             }
 
         } catch (e) {
@@ -303,7 +308,8 @@ const SendToken = () => {
             dispatch(setOpenModal({
                 message: `Swap Approval Confirmation`,
                 trxState: TrxState.TransactionFailed
-            }))
+            }));
+            onUserInput(Field.INPUT, '')
         }
     };
 
@@ -317,7 +323,7 @@ const SendToken = () => {
         try {
             setSendingTrx(true);
             dispatch(setOpenModal({
-                message: `Swap ${currencies[Field.INPUT]?.symbol} for BNB`,
+                message: `Swapping ${formattedAmounts[Field.INPUT]} ${currencies[Field.INPUT]?.symbol} for ${formattedAmounts[Field.OUTPUT]} BNB`,
                 trxState: TrxState.WaitingForConfirmation
             }));
             const sendTransaction = await route.swapExactTokensForETH(
@@ -366,7 +372,7 @@ const SendToken = () => {
       const weth = await WETH(WNATIVEADDRESSES[chainId as number]);
       setSendingTrx(true);
       dispatch(setOpenModal({
-          message: `Confirm Tokens for Swap`,
+          message: `Swapping ${typedValue} BNB for ${typedValue} WBNB`,
           trxState: TrxState.WaitingForConfirmation
       }));
       try {
@@ -412,7 +418,7 @@ const SendToken = () => {
       const weth = await WETH(WNATIVEADDRESSES[chainId as number]);
       setSendingTrx(true);
       dispatch(setOpenModal({
-          message: `Confirm Tokens for Swap`,
+          message: `Swapping ${typedValue} WBNB for ${typedValue} BNB`,
           trxState: TrxState.WaitingForConfirmation
       }));
       try {
@@ -438,7 +444,7 @@ const SendToken = () => {
               );
               dispatch(
                   addToast({
-                      message: `Swap ${parsedAmount} WBNB for ${parsedAmount} BNB`,
+                      message: `Swap ${typedValue} WBNB for ${typedValue} BNB`,
                       URL: explorerLink
                   }));
               onUserInput(Field.INPUT, '')
@@ -538,6 +544,7 @@ const SendToken = () => {
                     onClick={
                         () => {
                             approveSwap()
+                           // setShowModal(!showModal)
                         }
                     }
                 >
@@ -559,9 +566,7 @@ const SendToken = () => {
                     boxShadow={lightmode ? 'base' : 'lg'}
                     _hover={{ bgColor: buttonBgcolor }}
                     onClick={
-                        () => {
-                            swapTokens()
-                        }
+                            () => setShowModal(!showModal)
                     }
                 >
                     Swap Tokens
@@ -576,6 +581,12 @@ const SendToken = () => {
             title={'Confirm Swap'}
             inputLogo={currencies[Field.INPUT]?.logoURI}
             outputLogo={currencies[Field.OUTPUT]?.logoURI}
+            minRecieved={minimum}
+            slippage={Number(allowedSlippage/100)}
+            fromDeposited={formattedAmounts[Field.INPUT]}
+            toDeposited={receivedAmount}
+            handleSwap={swapTokens}
+            fee={LPFee}
         />
       </Box>
     </div>

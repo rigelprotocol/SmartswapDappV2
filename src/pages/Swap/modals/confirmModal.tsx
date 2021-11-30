@@ -16,7 +16,6 @@ import {
 import { InfoOutlineIcon,ArrowDownIcon } from "@chakra-ui/icons"
 import RGPImage from "./../../../assets/tokens/RGP.svg"
 import USDTImage from "./../../../assets/tokens/USDT.svg"
-import {Currency} from "@uniswap/sdk-core";
 
 
 
@@ -28,15 +27,15 @@ export type IModal= {
     to?: string | undefined;
     fromDeposited?:string;
     toDeposited?:string;
-    minRecieved?:string;
-    route?: string[],
+    minRecieved?: string;
     fee?: string,
     impact?: string,
-    slippage?:string,
+    slippage?: number,
     showModal: boolean,
     setShowModal: Function,
     inputLogo: string,
-    outputLogo: string
+    outputLogo: string,
+    handleSwap: () => void
 }
 
 const ConfirmModal:React.FC<IModal> = ({
@@ -47,25 +46,26 @@ const ConfirmModal:React.FC<IModal> = ({
     fromDeposited,
     toDeposited,
     minRecieved,
-    route,
     slippage,
     impact,
     fee,
     showModal,
     setShowModal,
     inputLogo,
-    outputLogo
+    outputLogo,
+    handleSwap
     }) => {
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
     const heavyTextColor = useColorModeValue("#333333", "#F1F5F8");
     const borderColor = useColorModeValue("#DEE6ED","#324D68");
     const boxColor = useColorModeValue("#F2F5F8","#213345");
-    const {
-        isOpen,
-        onOpen,
-        onClose,
-      } = useDisclosure();
+    const {onClose} = useDisclosure();
+
+    const amountIn = Number(minRecieved).toFixed(4);
+
+    const tokenPrice = (Number(toDeposited)/Number(fromDeposited)).toFixed(4);
+
     return (
         <>
         <Modal isOpen={showModal} onClose={() => setShowModal(false)} isCentered>
@@ -149,7 +149,7 @@ const ConfirmModal:React.FC<IModal> = ({
                 <Flex
                 justifyContent="space-between" fontSize="14px">
                     <Text color={lightTextColor}>Price</Text>
-                    <Text color={heavyTextColor} fontWeight="bold">1 {to} = {fromPrice} {from}</Text>
+                    <Text color={heavyTextColor} fontWeight="bold">1 {from} = {tokenPrice} {to}</Text>
                 </Flex>
                 </Box>
                 <Box
@@ -179,17 +179,27 @@ const ConfirmModal:React.FC<IModal> = ({
                         </Flex>
                         <Flex justifyContent="space-between">
                         <Box color={lightTextColor}>Liquidity Provider Fee <InfoOutlineIcon /></Box>
-                        <Text color={heavyTextColor}>{fee} RGP</Text>
+                        <Text color={heavyTextColor}>{fee} {from}</Text>
                         </Flex>
                     
                 </Box>
-                <Text mb="2" color={lightTextColor}>Output is estimated. You will receive at least <Text as="span" color={heavyTextColor}>{toDeposited} {to}</Text> or the transaction will revert.
+                <Text mb="2" color={lightTextColor}>Output is estimated. You will receive at least <Text as="span" color={heavyTextColor}>{amountIn} {to}</Text> or the transaction will revert.
                 </Text>
-                <Button variant="brand" isFullWidth padding="24px 0" boxShadow="none"> Confirm Swap </Button>
-                
-                </Box>
-                
-               
+                <Button
+                    variant="brand"
+                    isFullWidth
+                    padding="24px 0"
+                    boxShadow="none"
+                    onClick={
+                        () => {
+                        handleSwap();
+                        setShowModal(!showModal);
+                    }}
+                >
+                    Confirm Swap
+                </Button>
+              </Box>
+
             </ModalContent>
           </Modal>
           </>

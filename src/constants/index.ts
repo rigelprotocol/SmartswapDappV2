@@ -1,4 +1,9 @@
-
+import {SmartSwapRouter} from "../utils/Contracts";
+import {WNATIVEADDRESSES, SMARTSWAPROUTER} from "../utils/addresses";
+import {Currency} from "@uniswap/sdk-core";
+import {useActiveWeb3React} from "../utils/hooks/useActiveWeb3React";
+import {ethers} from "ethers";
+import {useEffect} from "react";
 
 export const NetworkContextName = 'NETWORK';
 
