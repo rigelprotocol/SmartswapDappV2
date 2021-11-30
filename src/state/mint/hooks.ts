@@ -76,7 +76,6 @@ export function useDerivedMintInfo(): {
     } = useMintState()
 
     
- 
     const inputCurrency = useCurrency(inputCurrencyId)
     const outputCurrency = useCurrency(outputCurrencyId)
 
@@ -86,6 +85,7 @@ export function useDerivedMintInfo(): {
         [Field.CURRENCY_B]: outputCurrency ?? undefined,
     }
 
+    
     const getMaxValue = async (currency: Currency) => {
         if (currency.isNative) {
             // return Balance === "0.0000" ? "0" :  Balance

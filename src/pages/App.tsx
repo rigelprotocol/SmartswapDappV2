@@ -16,11 +16,6 @@ import SetPrice from "./Swap/SetPrice";
 import AutoTime from "./Swap/AutoTime";
 import FindPool from "./Pool/FindPool";
 import useConnectWallet from "../utils/hooks/useConnectWallet";
-import {
-  RedirectDuplicateTokenIds,
-  RedirectOldAddLiquidityPathStructure,
-  RedirectToAddLiquidity,
-} from './AddLiquidity/Redirects'
 
 export default function App() {
   useConnectWallet();
@@ -40,8 +35,7 @@ export default function App() {
 
               <Route exact strict path="/find" component={FindPool} />
               <Route exact path="/add" component={AddLiquidity} />
-              <Route exact path="/add/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
-              <Route exact path="/add/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
+              <Route exact path="/add/:currencyIdA/:currencyIdB" component={AddLiquidity} />
 
               <Route exact strict path="/set-price" component={SetPrice} />
               <Route exact path="/auto-time" component={AutoTime} />

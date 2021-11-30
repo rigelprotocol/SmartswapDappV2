@@ -1,11 +1,7 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Field } from '../../state/mint/actions'
-
 import { RouteComponentProps } from 'react-router-dom'
-import InputSelector from '../Swap/components/sendToken/InputSelector';
-import { SettingsIcon } from '../../theme/components/Icons';
 import TransactionSettings from '../../components/TransactionSettings';
-import { Currency, CurrencyAmount, } from '@uniswap/sdk-core'
 import {
   Box,
   Flex,
@@ -19,12 +15,10 @@ import {
   Center,
 } from '@chakra-ui/react';
 import { TimeIcon, ArrowBackIcon, AddIcon } from '@chakra-ui/icons';
-import { useHistory } from 'react-router';
-
-import { useMintActionHandlers, useDerivedMintInfo, useMintState } from '../../state/mint/hooks';
-import { maxAmountSpend } from '../../utils/maxAmountSpend';
+import { useDerivedMintInfo, useMintState } from '../../state/mint/hooks';
 import { useWeb3React } from '@web3-react/core';
-import { currencyId } from '../../utils/currencyId';
+import OutputCurrecy from './AddLquidityInputs/OutputCurrecy';
+import InputCurrency from './AddLquidityInputs/InputCurrency';
 
 export default function AddLiquidity({
   match: {
@@ -39,86 +33,24 @@ export default function AddLiquidity({
   const topIcons = useColorModeValue('#666666', '#DCE6EF');
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
   const btnTextColor = useColorModeValue('#999999', '#7599BD');
+  const { CURRENCY_A, CURRENCY_B, } = useMintState()
+  const { currencies } = useDerivedMintInfo()
 
-  const { chainId, library, account } = useWeb3React();
-  const [tokenModal, setTokenModal] = useState(false);
-  const { currencies, getMaxValue } = useDerivedMintInfo()
-  const { onCurrencySelection, onUserInput } = useMintActionHandlers()
-  const { independentField, typedValue } = useMintState()
+  useEffect(() => {
+    setUpUrl();
 
-  const dependentField = independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A
-
-
-  const handleInputSelect = useCallback(
-    (inputCurrency) => {
-      onCurrencySelection(Field.CURRENCY_A, inputCurrency)
-      setTokenModal((state) => !state)
-    },
-    [onCurrencySelection],
-  )
+  }, [CURRENCY_A, CURRENCY_B,]);
 
 
 
-  const handleMaxInput = async () => {
-    const value = await getMaxValue(currencies[Field.CURRENCY_A])
-    const maxAmountInput = maxAmountSpend(value, currencies[Field.CURRENCY_B])
-    if (maxAmountInput) {
-      onUserInput(Field.CURRENCY_A, maxAmountInput)
+  const setUpUrl = () => {
+    if (
+
+      CURRENCY_A && CURRENCY_B) { history.push(`/add/${currencies.CURRENCY_A?.symbol}/${currencies.CURRENCY_B?.symbol}`); }
+    else {
+      history.push('/add');
     }
-  }
-
-  const handleTypeInput = useCallback(
-    (value: string) => {
-      onUserInput(Field.CURRENCY_A, value)
-    },
-    [onUserInput],
-  )
-
-  // get formatted amounts
-  const formattedAmounts = {
-    [independentField]: typedValue,
-    // [dependentField]: showWrap
-    //   ? parsedAmounts[independentField]?.toExact() ?? ''
-    //   : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
-    [dependentField]: '67'
-  }
-
-  const handleCurrencySelect = useCallback(
-    (currencyNew: Currency, currencyIdOther?: string): (string | undefined)[] => {
-      const currencyIdNew = currencyId(currencyNew)
-
-      if (currencyIdNew === currencyIdOther) {
-        // not ideal, but for now clobber the other if the currency ids are equal
-        return [currencyIdNew, undefined]
-      } else {
-        // prevent weth + eth
-        const isETHOrWETHNew =
-          currencyIdNew === 'ETH' || (chainId !== undefined && currencyIdNew === WETH9_EXTENDED[chainId]?.address)
-        const isETHOrWETHOther =
-          currencyIdOther !== undefined &&
-          (currencyIdOther === 'ETH' || (chainId !== undefined && currencyIdOther === WETH9_EXTENDED[chainId]?.address))
-
-        if (isETHOrWETHNew && isETHOrWETHOther) {
-          return [currencyIdNew, undefined]
-        } else {
-          return [currencyIdNew, currencyIdOther]
-        }
-      }
-    },
-    [chainId]
-  )
-
-  const handleCurrencyASelect = useCallback(
-    (currencyANew: Currency) => {
-      const [idA, idB] = handleCurrencySelect(currencyANew, currencyIdB)
-      if (idB === undefined) {
-        history.push(`/add/${idA}`)
-      } else {
-        history.push(`/add/${idA}/${idB}`)
-      }
-    },
-    [handleCurrencySelect, currencyIdB, history]
-  )
+  };
 
   return (
     <Center m={8}>
@@ -162,17 +94,7 @@ export default function AddLiquidity({
           pb={2}
           borderColor={genBorder}
         >
-          <InputSelector
-            onUserInput={handleTypeInput}
-            onCurrencySelect={handleInputSelect}
-            currency={currencies[Field.CURRENCY_A]}
-            otherCurrency={currencies[Field.CURRENCY_B]}
-            tokenModal={tokenModal}
-            onMax={handleMaxInput}
-            setToken={() => setTokenModal((state) => !state)}
-            value={formattedAmounts[Field.CURRENCY_A]}
-            max
-          />
+          <InputCurrency />
         </Box>
         <Flex justifyContent="center">
           <Center
@@ -196,7 +118,7 @@ export default function AddLiquidity({
           pb={2}
           borderColor={genBorder}
         >
-          <InputSelector max={false} />
+          <OutputCurrecy />
         </Box>
         <Box
           borderRadius="md"
