@@ -72,6 +72,7 @@ export function useRemoveUserAddedToken(): (chainId: number, address: string) =>
   return useCallback(
     (chainId: number, address: string) => {
       dispatch(removeSerializedToken({ chainId, address }))
+      
     },
     [dispatch],
   )

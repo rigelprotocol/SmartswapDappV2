@@ -1,4 +1,4 @@
-import React, { useState, Dispatch,useMemo,useCallback } from 'react';
+import React, { useState, Dispatch,useMemo,useEffect } from 'react';
 import {
   useColorModeValue,
   Box,
@@ -17,6 +17,7 @@ import NewToken from './newToken';
 import CurrencyLogo from '../currencyLogo';
 import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink'
 import {ExternalLinkIcon, CloseIcon } from "../../theme/components/Icons"
+import { useDefaultsFromURLSearch } from '../../state/swap/hooks';
 type IModal = {
   setOpenNewTokenModal:Dispatch<React.SetStateAction<boolean>>
   openNewTokenModal:boolean
@@ -29,6 +30,7 @@ const ManageToken: React.FC<IModal> = ({
   handleCurrencySelect
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  
   const handleInput = (e: any) => {
     const input = e.target.value;
     setSearchQuery(input);
@@ -54,7 +56,10 @@ const tokenList = useMemo(()=>{
             </Link>
         </Flex>
       <Flex>
-<Box ml={1} cursor="pointer" onClick={() => removeToken(chainId, token.address)}>
+<Box ml={1} cursor="pointer" onClick={() => {
+  setSearchQuery("")
+  removeToken(chainId, token.address)
+  }}>
 <CloseIcon />
   </Box>
              
