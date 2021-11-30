@@ -21,7 +21,7 @@ const store = configureStore({
         swap,
         user,
 
-        mint
+        mint,
 
         lists
 
