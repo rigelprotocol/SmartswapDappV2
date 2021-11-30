@@ -30,3 +30,13 @@ export const SupportedChainLogo: { [key: string]: string } = {
   '137': NULL24LOGO,
   '80001': NULL24LOGO,
 };
+
+export const WrappedSymbols: { [key: string]: string } = {
+  '1': 'WETH',
+  '3': 'WETH',
+  '4': 'WETH',
+  '56': 'WBNB',
+  '97': 'WBNB',
+  '80001': 'WMATIC',
+  '137': 'WMATIC',
+};
