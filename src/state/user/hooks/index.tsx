@@ -7,7 +7,7 @@ import {
 } from '../actions'
 import { Token } from '@uniswap/sdk-core'
 import { useActiveWeb3React } from '../../../utils/hooks/useActiveWeb3React'
-import { SerializedToken, addSerializedToken } from '../actions'
+import { SerializedToken, addSerializedToken,removeSerializedToken } from '../actions'
 
 export function useUserSlippageTolerance(): [number, (slippage: number) => void] {
   const dispatch = useDispatch<AppDispatch>()
@@ -65,6 +65,16 @@ export function useUserAddedTokens(): Token[] {
     if (!chainId) return []
     return Object.values(serializedTokensMap?.[chainId] ?? {}).map(deserializeToken)
   }, [serializedTokensMap, chainId])
+}
+
+export function useRemoveUserAddedToken(): (chainId: number, address: string) => void {
+  const dispatch = useDispatch<AppDispatch>()
+  return useCallback(
+    (chainId: number, address: string) => {
+      dispatch(removeSerializedToken({ chainId, address }))
+    },
+    [dispatch],
+  )
 }
 
 export function useUserTransactionTTL(): [number, (slippage: number) => void] {

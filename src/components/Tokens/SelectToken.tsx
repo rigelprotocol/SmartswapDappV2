@@ -177,7 +177,13 @@ const handleInput = useCallback(
                </ModalFooter>
             </ModalContent>
           </Modal>
-          <Manage open={displayManageToken} setDisplayManageToken={setDisplayManageToken}/>
+          <Manage 
+          open={displayManageToken} 
+          setDisplayManageToken={setDisplayManageToken}
+          setOpenNewTokenModal={setOpenNewTokenModal}
+          openNewTokenModal={openNewTokenModal}
+          handleCurrencySelect={handleCurrencySelect}
+          />
           {searchToken && openNewTokenModal ?
           <NewToken 
           open={openNewTokenModal}

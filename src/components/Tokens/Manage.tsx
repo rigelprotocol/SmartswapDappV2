@@ -13,6 +13,7 @@ import {
     Flex,
     Text
 } from "@chakra-ui/react"
+import { Token } from "@uniswap/sdk-core";
 import { TokenList } from "@uniswap/token-lists";
 import { ArrowBackIcon } from "@chakra-ui/icons"
 import ManageToken from "./manageTokens";
@@ -20,10 +21,18 @@ import ManageList from "./manageLists";
 import ImportList from "./ImportList";
 export type IModal= {
     open:boolean,
-    setDisplayManageToken:Dispatch<React.SetStateAction<boolean>>
+    openNewTokenModal:boolean,
+    setDisplayManageToken:Dispatch<React.SetStateAction<boolean>>,
+    setOpenNewTokenModal:Dispatch<React.SetStateAction<boolean>>,
+    handleCurrencySelect?: (currency: Token) => void
 }
 
-const Manage:React.FC<IModal> = ({open,setDisplayManageToken}) => {
+const Manage:React.FC<IModal> = ({
+  open,
+  openNewTokenModal,
+  setDisplayManageToken,
+  setOpenNewTokenModal,
+handleCurrencySelect}) => {
 const selected:Array<{type:string}> = [
 {
 type : "LISTS",
@@ -135,7 +144,11 @@ type : "TOKENS"
                    setListURL={setListURL}
                    setTokenList = {setTokenList}
                    setOpenImportToken={setOpenImportToken}
-                   /> : <ManageToken/>}
+                   /> : <ManageToken
+                   setOpenNewTokenModal={setOpenNewTokenModal}
+                   openNewTokenModal={openNewTokenModal}
+                   handleCurrencySelect={handleCurrencySelect}
+                   />}
              </Box>
             </ModalContent>
           </Modal>
