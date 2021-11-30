@@ -46,6 +46,7 @@ const [addError, setAddError] = useState<string | undefined>()
     const heavyTextColor = useColorModeValue("#333333", "#F1F5F8");
     const borderColor2 = useColorModeValue("#DEE6ED","#324D68")
     const boxColor = useColorModeValue("#F2F5F8","#213345")
+    const boxColor2 = useColorModeValue("#319EF6","#213345")
     const selectedList = useColorModeValue("#EBF6FE","#4CAFFF")
     const switchColor = useColorModeValue("#ffffff","#15202B")
     const [activeCopy, setActiveCopy] = useState<string[] | undefined>()
@@ -197,7 +198,7 @@ const [addError, setAddError] = useState<string | undefined>()
              fontSize="12px">{list.tokens.length} Tokens  </Text>
            <Box className="tooltip">
              <SettingsIcon ml="2" mt="-2"/>
-           <Box fontSize="16px" className="tooltiptext" bg={borderColor2}>
+           <Box fontSize="16px" className="tooltiptext" background={boxColor2}>
            <Text mb="2">{list && listVersionLabel(list.version)}</Text>
            <Link isExternal href={`https://tokenlists.org/token-list?url=${listUrl}`} >
            See <ExternalLinkIcon />
