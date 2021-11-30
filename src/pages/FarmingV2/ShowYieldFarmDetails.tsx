@@ -10,6 +10,9 @@ import {
   smartSwapLPTokenPoolOne,
   smartSwapLPTokenPoolTwo,
   smartSwapLPTokenPoolThree,
+  smartSwapLPTokenV2PoolFour,
+  smartSwapLPTokenV2PoolFive,
+  smartSwapLPTokenV2PoolSix,
 } from '../../utils/SwapConnect';
 import { SMART_SWAP } from '../../utils/constants';
 import { ethers } from 'ethers';
@@ -67,15 +70,7 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
           allowance(pool2),
           allowance(pool3),
         ]);
-        let rigelAllowance;
-        if (SMART_SWAP.specialPool) {
-          rigelAllowance = await rigel.allowance(
-            wallet.address,
-            SMART_SWAP.specialPool,
-          );
-        } else {
-          rigelAllowance = pool1Allowance;
-        }
+        let rigelAllowance = pool1Allowance;
 
         updateFarmAllowances([
           rigelAllowance,
@@ -96,18 +91,6 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
   }, []);
 
   useEffect(() => {
-    const specialPoolAllowance = async () => {
-      if (wallet.signer !== 'signer') {
-        if (wallet.signer !== 'signer') {
-          const rgp = await rigelToken();
-          const rgpApproval = await rgp.allowance(
-            wallet.address,
-            SMART_SWAP.specialPool,
-          );
-          return !(rgpApproval.toString() <= 0);
-        }
-      }
-    };
     const poolAllowance = async contract => {
       if (wallet.signer !== 'signer') {
         const rgpApproval = await contract.allowance(
@@ -118,11 +101,6 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
       }
     };
     const checkForApproval = async () => {
-      if (content.deposit === 'RGP') {
-        setIsPoolRGP(true);
-        const specialPoolApproval = await specialPoolAllowance();
-        changeApprovalButton(true, specialPoolApproval);
-      } else {
         const rgp = await rigelToken();
         const rgpApproval = await poolAllowance(rgp);
         if (content.deposit === 'RGP-BNB') {
@@ -137,17 +115,20 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
           const poolThree = await smartSwapLPTokenPoolThree();
           const approvalForBNBBUSD = await poolAllowance(poolThree);
           changeApprovalButton(approvalForBNBBUSD, rgpApproval);
-        } else if (content.deposit === 'AXS-RGP') {
+        } else if (content.deposit === 'RGP-ETH') {
           const poolFour = await smartSwapLPTokenV2PoolFour();
-          const approveForAXSRGP = await poolAllowance(poolFour);
-          changeApprovalButton(approveForAXSRGP, rgpApproval);
-        } else if (content.deposit === 'AXS-BUSD') {
+          const approveForRGPETH = await poolAllowance(poolFour);
+          changeApprovalButton(approveForRGPETH, rgpApproval);
+        } else if (content.deposit === 'RGP-AXD') {
           const poolFive = await smartSwapLPTokenV2PoolFive();
-          const approveForAXSBUSD = await poolAllowance(poolFive);
-          changeApprovalButton(approveForAXSBUSD, rgpApproval);
+          const approveForRGPAXD = await poolAllowance(poolFive);
+          changeApprovalButton(approveForRGPAXD, rgpApproval);
+        } else if (content.deposit === 'RGP-POL') {
+          const poolSix = await smartSwapLPTokenV2PoolSix();
+          const approveForRGPPOL = await poolAllowance(poolSix);
+          changeApprovalButton(approveForRGPPOL, rgpApproval);
         }
-      }
-    };
+      };
 
     function changeApprovalButton(otherTokenApproval, rgpApproval) {
       if (otherTokenApproval && rgpApproval) {
@@ -198,28 +179,6 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
   }
 };
 
-  // Approve specialPool......
-  const RGPSpecialPoolApproval = async () => {
-    if (wallet.signer !== 'signer') {
-      try {
-        const rgp = await rigelToken();
-        const walletBal = (await rgp.balanceOf(wallet.address)) + 400e18;
-        const data = await rgp.approve(SMART_SWAP.specialPool, walletBal, {
-          from: wallet.address,
-          gasLimit: 150000,
-          gasPrice: ethers.utils.parseUnits('20', 'gwei'),
-        });
-        setApprovalLoading(true);
-        const { confirmations, status } = await fetchTransactionData(data);
-        getAllowances();
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setApprovalLoading(false);
-      }
-    }
-  };
-
   const LPApproval = async contract => {
     if (wallet.signer !== 'signer') {
       try {
@@ -241,7 +200,7 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
         }
         getAllowances();
       } catch (e) {
-        props.showErrorMessage(e);
+        console.log(e);
       } finally {
         setApprovalLoading(false);
       }
@@ -250,25 +209,29 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
 
   const approveLPToken = async LPToken => {
     switch (LPToken) {
-      case 'RGP-BUSD':
-        const poolOne = await smartSwapLPTokenPoolOne();
-        LPApproval(poolOne);
-        break;
       case 'RGP-BNB':
         const poolTwo = await smartSwapLPTokenPoolTwo();
         LPApproval(poolTwo);
+        break;
+      case 'RGP-BUSD':
+        const poolOne = await smartSwapLPTokenPoolOne();
+        LPApproval(poolOne);
         break;
       case 'BNB-BUSD':
         const poolThree = await smartSwapLPTokenPoolThree();
         LPApproval(poolThree);
         break;
-      case 'AXS-RGP':
+      case 'RGP-ETH':
         const poolFour = await smartSwapLPTokenV2PoolFour();
         LPApproval(poolFour);
         break;
-      case 'AXS-BUSD':
+      case 'RGP-AXD':
         const poolFive = await smartSwapLPTokenV2PoolFive();
         LPApproval(poolFive);
+        break;
+      case 'RGP-POL':
+        const poolSix = await smartSwapLPTokenV2PoolSix();
+        LPApproval(poolSix);
         break;
       default:
         RGPApproval();
@@ -305,18 +268,6 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
         }
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
-      } else if (val === 'BNB-BUSD') {
-        const poolThree = await smartSwapLPTokenPoolThree();
-        if (!approveValueForOtherToken && !approveValueForRGP) {
-          await RGPApproval();
-          await LPApproval(poolThree);
-        } else if (!approveValueForRGP) {
-          await RGPApproval();
-        } else {
-          await LPApproval(poolThree);
-        }
-        setApproveValueForOtherToken(true);
-        setApproveValueForRGP(true);
       } else if (val === 'RGP-BUSD') {
         const poolOne = await smartSwapLPTokenPoolOne();
         if (!approveValueForOtherToken && !approveValueForRGP) {
@@ -329,7 +280,19 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
         }
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
-      } else if (val === 'AXS-RGP') {
+      } else if (val === 'BNB-BUSD') {
+        const poolThree = await smartSwapLPTokenPoolThree();
+        if (!approveValueForOtherToken && !approveValueForRGP) {
+          await RGPApproval();
+          await LPApproval(poolThree);
+        } else if (!approveValueForRGP) {
+          await RGPApproval();
+        } else {
+          await LPApproval(poolThree);
+        }
+        setApproveValueForOtherToken(true);
+        setApproveValueForRGP(true);
+      } else if (val === 'RGP-ETH') {
         const poolFour = await smartSwapLPTokenV2PoolFour();
         if (!approveValueForOtherToken && !approveValueForRGP) {
           await RGPApproval();
@@ -341,7 +304,7 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
         }
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
-      } else if (val === 'AXS-BUSD') {
+      } else if (val === 'RGP-AXD') {
         const poolFive = await smartSwapLPTokenV2PoolFive();
         if (!approveValueForOtherToken && !approveValueForRGP) {
           await RGPApproval();
@@ -353,13 +316,22 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
         }
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
-      } else if (val === 'RGP') {
-        await RGPSpecialPoolApproval();
+      } else if (val === 'RGP-POL') {
+        const poolSix = await smartSwapLPTokenV2PoolSix();
+        if (!approveValueForOtherToken && !approveValueForRGP) {
+          await RGPApproval();
+          await LPApproval(poolSix);
+        } else if (!approveValueForRGP) {
+          await RGPApproval();
+        } else {
+          await LPApproval(poolSix);
+        }
+          setApproveValueForOtherToken(true);
+          setApproveValueForRGP(true);
+        } else if (val === 'RGP') {
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
       }
-    } else if (ethers.utils.formatEther(checkAllow).toString() == 0.0) {
-      await RGPSpecialPoolApproval();
     }
   };
 
