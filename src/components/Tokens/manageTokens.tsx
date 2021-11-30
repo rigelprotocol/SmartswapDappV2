@@ -17,7 +17,6 @@ import NewToken from './newToken';
 import CurrencyLogo from '../currencyLogo';
 import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink'
 import {ExternalLinkIcon, CloseIcon } from "../../theme/components/Icons"
-import { useDefaultsFromURLSearch } from '../../state/swap/hooks';
 type IModal = {
   setOpenNewTokenModal:Dispatch<React.SetStateAction<boolean>>
   openNewTokenModal:boolean
