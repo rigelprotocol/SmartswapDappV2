@@ -544,7 +544,6 @@ const SendToken = () => {
                     onClick={
                         () => {
                             approveSwap()
-                           // setShowModal(!showModal)
                         }
                     }
                 >
