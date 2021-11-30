@@ -47,6 +47,8 @@ const [addError, setAddError] = useState<string | undefined>()
     const borderColor2 = useColorModeValue("#DEE6ED","#324D68")
     const boxColor = useColorModeValue("#F2F5F8","#213345")
     const boxColor2 = useColorModeValue("#319EF6","#213345")
+    const backgroundColor = useColorModeValue("#ffffff","#319EF6")
+    const color = useColorModeValue("#319EF6","#ffffff")
     const selectedList = useColorModeValue("#EBF6FE","#4CAFFF")
     const switchColor = useColorModeValue("#ffffff","#15202B")
     const [activeCopy, setActiveCopy] = useState<string[] | undefined>()
@@ -204,7 +206,8 @@ const [addError, setAddError] = useState<string | undefined>()
            See <ExternalLinkIcon />
            </Link>
            <Box>
-            <Button mt="3" p="2" onClick={handleRemoveList}>
+            <Button mt="3" p="2" onClick={handleRemoveList} backgroundColor={backgroundColor}
+            color={color}>
               Delete
             </Button>
             {pending && (
@@ -289,11 +292,7 @@ const [addError, setAddError] = useState<string | undefined>()
       
                 
                 </Box>
-                
-                
-              
-             
-        
+            
           </>
     )
 }
