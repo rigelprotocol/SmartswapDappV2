@@ -5,8 +5,7 @@ import LiquidityPairAbi from './abis/smartSwapLPToken.json';
 import SmartSwapRouterV2Abi from './abis/SmartSwapRouterV2.json';
 import {approveAbi, allowanceAbi} from "../constants";
 import WETHABI from './abis/WETH9.json';
-import {useActiveWeb3React} from "./hooks/useActiveWeb3React";
-import {WNATIVEADDRESSES} from "./addresses";
+
 
 export const smartFactory = async (address: string) => {
   const Provider = await provider();
