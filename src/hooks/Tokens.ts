@@ -9,29 +9,27 @@ import { checkSupportedIds } from "../connectors"
 import { isAddress } from "../utils"
 import { getERC20Token } from "../utils/utilsFunctions"
 import { useNativeBalance } from "../utils/hooks/useBalances"
+import { useCombinedInactiveList } from "../state/lists/hooks"
 // reduce token map into standard address <-> Token mapping, optionally include user added tokens
 function useTokensFromMap(tokenMap: TokenAddressMap, includeUserAdded: boolean): { [address: string]: Token } {
-  const [chainid,setchainid] = useState(56);
-    const { chainId } = useActiveWeb3React();
-    const userAddedTokens = useUserAddedTokens();
-    // 
-    useEffect(()=>{
-      if(!chainId || !checkSupportedIds(chainId)){
-        setchainid(56)
-      }else{
-        setchainid(chainId)
-      }
 
-    },[chainId]);
+    const { chainId } = useActiveWeb3React()
+    const userAddedTokens = useUserAddedTokens()
+    // 
+   
     return useMemo(() => {
-  //     if (!chainId) {
-  //       return {}
-  // }
-      // reduce to just tokens
-      const mapWithoutUrls = Object.keys(tokenMap[chainid]).reduce<{ [address: string]: Token }>((newMap, address) => {
-        newMap[address] = tokenMap[chainid][address].token;
+      if (!chainId) {
+        return {}
+  }
+     
+    // reduce to just tokens
+    const mapWithoutUrls = Object.keys(tokenMap[chainId] ?? {}).reduce<{ [address: string]: Token }>(
+      (newMap, address) => {
+        newMap[address] = tokenMap[chainId][address].token
         return newMap
-      }, {});
+      },
+      {}
+    )
       if (includeUserAdded) {
         return (
           userAddedTokens
@@ -80,6 +78,25 @@ export function useIsTokenActive(token: Token | undefined | null): boolean {
   return !!activeTokens[token.address]
 }
 
+export function useAllInactiveTokens(): { [address: string]: Token } {
+  // get inactive tokens
+  const inactiveTokensMap = useCombinedInactiveList()
+  const inactiveTokens = useTokensFromMap(inactiveTokensMap, false)
+
+  // filter out any token that are on active list
+  const activeTokensAddresses = Object.keys(useAllTokens())
+  const filteredInactive = activeTokensAddresses
+    ? Object.keys(inactiveTokens).reduce<{ [address: string]: Token }>((newMap, address) => {
+        if (!activeTokensAddresses.includes(address)) {
+          newMap[address] = inactiveTokens[address]
+        }
+        return newMap
+      }, {})
+    : inactiveTokens
+
+  return filteredInactive
+}
+
 
 // Check if currency is included in custom list from user storage
 export function useIsUserAddedToken(currency: Currency | undefined | null): boolean | undefined{
@@ -109,11 +126,12 @@ export function useToken(tokenAddress?: string): Token | undefined | null {
     if (token) setToken(token);
     if (!chainId || !address) setToken(undefined);
     if( address && !tokens[address]){
-      const tokenContract =await getERC20Token(address);
-      const name =await tokenContract.name();
-      const tokenDecimal =await tokenContract.decimals();
-      const tokenSymbol=await tokenContract.symbol();
-      console.log({tokenDecimal});
+
+      const tokenContract =await getERC20Token(address)
+      const name =await tokenContract.name()
+      const tokenDecimal =await tokenContract.decimals()
+      const tokenSymbol=await tokenContract.symbol()
+
       let newToken = new Token(
         chainId,
         address,

@@ -13,4 +13,6 @@ export const updateUserSlippageTolerance = createAction<{ userSlippageTolerance:
 );
 export const addSerializedToken = createAction<{ serializedToken: SerializedToken }>('user/addSerializedToken');
 
+export const removeSerializedToken = createAction<{ chainId: number; address: string }>('user/removeSerializedToken')
+
 export const updateUserDeadline = createAction<{ userDeadline: number }>('user/updateUserDeadline');

@@ -4,6 +4,7 @@ import {
   updateUserSlippageTolerance,
   SerializedToken,
   addSerializedToken,
+  removeSerializedToken,
   updateUserDeadline,
 } from './actions'
 import { updateVersion } from '../global/actions'
@@ -68,6 +69,14 @@ export default createReducer(initialState, (builder) =>
       }
       state.tokens[serializedToken.chainId] = state.tokens[serializedToken.chainId] || {};
       state.tokens[serializedToken.chainId][serializedToken.address] = serializedToken;
+      state.timestamp = currentTimestamp()
+    })
+    .addCase(removeSerializedToken, (state, { payload: { address, chainId } }) => {
+      if (!state.tokens) {
+        state.tokens = {}
+      }
+      state.tokens[chainId] = state.tokens[chainId] || {}
+      delete state.tokens[chainId][address]
       state.timestamp = currentTimestamp()
     })
 )

@@ -3,6 +3,9 @@ import { Contract } from '@ethersproject/contracts';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { getAddress } from '@ethersproject/address';
 import ERC20Token from './abis/erc20.json';
+import { WrappedSymbols } from './constants/chains';
+import { Fraction } from '@uniswap/sdk-core';
+import { ethers } from 'ethers';
 
 export const removeSideTab = (sideBarName: string): void => {
   localStorage.setItem(sideBarName, 'removed');
@@ -61,5 +64,45 @@ export const switchNetwork = async (
       },
       account,
     ]);
+  }
+};
+
+export const getDeadline = (userDeadline: number) => {
+  const time = Math.floor(new Date().getTime() / 1000 + userDeadline);
+  return time;
+};
+
+export const isNative = (symbol: string, chainId: number): boolean => {
+  if (symbol === WrappedSymbols[chainId as number]) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+export const formatAmountIn = (amount: any, decimals: number) => {
+  const Decimal = 10 ** decimals;
+  const amountMin = amount * Decimal;
+  return amountMin.toFixed();
+};
+
+export const getOutPutDataFromEvent = async (
+  tokenAddress,
+  eventsArray,
+  decimal
+) => {
+  const duplicateArray = [];
+  eventsArray.map((event) => {
+    if (event.address.toLowerCase() === tokenAddress.toLowerCase()) {
+      duplicateArray.push(event);
+    }
+  });
+
+  if (duplicateArray.length !== 0) {
+    const convertedInput = (
+      parseInt(duplicateArray[0].data, 16) /
+      10 ** decimal
+    ).toFixed(7);
+    return convertedInput;
   }
 };
