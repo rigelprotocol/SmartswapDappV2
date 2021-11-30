@@ -2844,10 +2844,10 @@
     redux-thunk "^2.3.0"
     reselect "^4.0.0"
 
-"@rigelprotocol_01/default-token-list@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@rigelprotocol_01/default-token-list/-/default-token-list-1.0.0.tgz#e5eedbe29a3d0608da59de745bcc49e6a0427ee7"
-  integrity sha512-Tk1owFEqEz27ABZknLmaWxnB8s4t9ecD2v8gf2BXRldwtamX7Ba1LtcP8ix7WgxpfTPjC4vEeHoBkcAmNd/sNQ==
+"@rigelprotocol_01/default-token-list@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@rigelprotocol_01/default-token-list/-/default-token-list-2.0.0.tgz#b140d0626aa86627f1463c21fa2d7011f775ffb5"
+  integrity sha512-ZEh+kfvpNn7nePKLWmV2tuBqVMkKbwGKecpjv0OA7zuG0vgCvWdjalaUWA/2QHstcR9CNRbMmQ0Y8NfSSctHXA==
 
 "@rollup/plugin-node-resolve@^7.1.1":
   version "7.1.3"
