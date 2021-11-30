@@ -101,9 +101,6 @@ export function useDerivedSwapInfo (): {
 
     const isExactIn: boolean = independentField === Field.INPUT;
 
-    const [balance] = GetAddressTokenBalance(inputCurrency ?? undefined);
-    console.log(balance);
-
     const currencies: { [field in Field]?: Currency } = {
         [Field.INPUT]: inputCurrency ?? undefined,
         [Field.OUTPUT]: outputCurrency ?? undefined,
@@ -160,10 +157,6 @@ export function useDerivedSwapInfo (): {
         inputError = 'Insufficient Liquidity for this Trade.'
     }
 
-
-    if(balance < (parseFloat(typedValue))) {
-        inputError = `Insufficient ${inputCurrency?.symbol} Balance`
-    }
 
 return {
     currencies,

@@ -25,6 +25,7 @@ import {addToast} from '../../../../components/Toast/toastSlice';
 import {RootState} from "../../../../state";
 import {getDeadline, getInPutDataFromEvent, getOutPutDataFromEvent} from "../../../../constants";
 import {ethers} from "ethers";
+import {GetAddressTokenBalance} from "../../../../state/wallet/hooks";
 
 
 const SendToken = () => {
@@ -109,6 +110,19 @@ const SendToken = () => {
     console.log(parsedOutput);
 
     const [hasBeenApproved, setHasBeenApproved] = useState(false);
+    const [insufficientBalance, setInsufficientBalance] = useState(false);
+
+    const [balance] = GetAddressTokenBalance(currencies[Field.INPUT] ?? undefined);
+
+    useEffect(() => {
+        if ((balance) < parseFloat(formattedAmounts[Field.INPUT])) {
+            setInsufficientBalance(true)
+        } else {
+            setInsufficientBalance(false)
+        }
+    }, [balance, formattedAmounts[Field.INPUT]]);
+
+
 
     const checkApproval = async () => {
         if (currencies[Field.INPUT]?.symbol === 'BNB') {
@@ -134,7 +148,7 @@ const SendToken = () => {
 
   const approveSwap = async () => {
       if (currencies[Field.INPUT]?.symbol === 'BNB') {
-          return ;
+          return setHasBeenApproved(true);
       }
       try {
           dispatch(setOpenModal({
@@ -488,7 +502,25 @@ const SendToken = () => {
         />
 
         <Flex alignItems="center">
-            {!hasBeenApproved || inputError ?
+            {insufficientBalance || inputError ? (
+                    <Button
+                        w="100%"
+                        borderRadius="6px"
+                        border={lightmode ? '2px' : 'none'}
+                        borderColor={borderColor}
+                        h="48px"
+                        p="5px"
+                        mt={1}
+                        disabled={inputError !== undefined || insufficientBalance}
+                        color={inputError ? color : '#FFFFFF'}
+                        bgColor={inputError ? switchBgcolor : buttonBgcolor}
+                        fontSize="18px"
+                        boxShadow={lightmode ? 'base' : 'lg'}
+                        _hover={{ bgColor: buttonBgcolor }}
+                    >
+                        {inputError ? inputError : `Insufficient ${currencies[Field.INPUT]?.symbol} Balance`}
+                    </Button>
+                ) : !hasBeenApproved ? (
                 <Button
                     w="100%"
                     borderRadius="6px"
@@ -497,7 +529,7 @@ const SendToken = () => {
                     h="48px"
                     p="5px"
                     mt={1}
-                    disabled={inputError !== undefined}
+                    disabled={inputError !== undefined || insufficientBalance}
                     color={inputError ? color : '#FFFFFF'}
                     bgColor={inputError ? switchBgcolor : buttonBgcolor}
                     fontSize="18px"
@@ -509,8 +541,9 @@ const SendToken = () => {
                         }
                     }
                 >
-                    {inputError ? inputError : 'Approve Transaction'}
-                </Button> :
+                    Approve Transaction
+                </Button>
+                ) : (
                 <Button
                     w="100%"
                     borderRadius="6px"
@@ -519,22 +552,21 @@ const SendToken = () => {
                     h="48px"
                     p="5px"
                     mt={1}
-                    disabled={inputError !== undefined}
+                    disabled={inputError !== undefined || insufficientBalance}
                     color={inputError ? color : '#FFFFFF'}
                     bgColor={inputError ? switchBgcolor : buttonBgcolor}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
                     _hover={{ bgColor: buttonBgcolor }}
                     onClick={
-                        // () => setShowModal(state => !state)
                         () => {
-                         swapTokens()
+                            swapTokens()
                         }
                     }
                 >
                     Swap Tokens
                 </Button>
-            }
+            )}
         </Flex>
         <ConfirmModal
             showModal={showModal}

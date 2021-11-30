@@ -8,10 +8,12 @@ import {ZERO_ADDRESS} from "../constants";
 import {ethers} from "ethers";
 
 const formatAmount = (number: string) => {
-    const num = ethers.BigNumber.from(number).toString();
-    let res = ethers.utils.formatEther(num);
-    res = (+res).toFixed(6);
-    return res;
+    // const num = ethers.BigNumber.from(number).toString();
+    // let res = ethers.utils.formatEther(num);
+    // res = (+res).toString();
+    // return res;
+    const num = ethers.utils.formatEther(number);
+    return num;
 };
 
 
