@@ -5,7 +5,7 @@ export const contents = [
     img: "BNB.svg",
     ARYValue: "30,000",
     earn: "RGP",
-    deposit: "RGB-BNB"
+    deposit: "RGP-BNB"
   },
   {
     id: 2,
@@ -13,7 +13,7 @@ export const contents = [
     img: "bnb.svg",
     ARYValue: "30,000",
     earn: "RGP",
-    deposit: "RGB-BUSD"
+    deposit: "RGP-BUSD"
   },
   {
     id: 3,
