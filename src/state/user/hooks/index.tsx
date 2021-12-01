@@ -7,20 +7,20 @@ import {
 } from '../actions'
 import { Token } from '@uniswap/sdk-core'
 import { useActiveWeb3React } from '../../../utils/hooks/useActiveWeb3React'
-import { SerializedToken, addSerializedToken } from '../actions'
+import { SerializedToken, addSerializedToken,removeSerializedToken } from '../actions'
 
 export function useUserSlippageTolerance(): [number, (slippage: number) => void] {
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useDispatch<AppDispatch>();
   const userSlippageTolerance = useSelector<RootState, RootState['user']['userSlippageTolerance']>((state) => {
     return state.user.userSlippageTolerance
-  })
+  });
 
   const setUserSlippageTolerance = useCallback(
     (slippage: number) => {
       dispatch(updateUserSlippageTolerance({ userSlippageTolerance: slippage }))
     },
     [dispatch],
-  )
+  );
 
   return [userSlippageTolerance, setUserSlippageTolerance]
 }
@@ -47,7 +47,7 @@ function deserializeToken(serializedToken: SerializedToken): Token {
 
 
 export function useAddUserToken(): (token: Token) => void {
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useDispatch<AppDispatch>();
   return useCallback(
     (token: Token) => {
       dispatch(addSerializedToken({ serializedToken: serializeToken(token) }))
@@ -58,27 +58,37 @@ export function useAddUserToken(): (token: Token) => void {
 
 
 export function useUserAddedTokens(): Token[] {
-  const { chainId } = useActiveWeb3React()
-  const serializedTokensMap = useAppSelector(({ user: { tokens } }) => tokens)
+  const { chainId } = useActiveWeb3React();
+  const serializedTokensMap = useAppSelector(({ user: { tokens } }) => tokens);
 
   return useMemo(() => {
-    if (!chainId) return []
+    if (!chainId) return [];
     return Object.values(serializedTokensMap?.[chainId] ?? {}).map(deserializeToken)
   }, [serializedTokensMap, chainId])
 }
 
-export function useUserTransactionTTL(): [number, (slippage: number) => void] {
+export function useRemoveUserAddedToken(): (chainId: number, address: string) => void {
   const dispatch = useDispatch<AppDispatch>()
+  return useCallback(
+    (chainId: number, address: string) => {
+      dispatch(removeSerializedToken({ chainId, address }))
+    },
+    [dispatch],
+  )
+}
+
+export function useUserTransactionTTL(): [number, (slippage: number) => void] {
+  const dispatch = useDispatch<AppDispatch>();
   const userDeadline = useSelector<RootState, RootState['user']['userDeadline']>((state) => {
     return state.user.userDeadline
-  })
+  });
 
   const setUserDeadline = useCallback(
     (deadline: number) => {
       dispatch(updateUserDeadline({ userDeadline: deadline }))
     },
     [dispatch],
-  )
+  );
 
   return [userDeadline, setUserDeadline]
 }
