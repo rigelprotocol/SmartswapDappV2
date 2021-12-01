@@ -29,7 +29,7 @@ interface DataIncoming {
 }
 
 export const formatAmount = (number: string) => {
-    const num = ethers.BigNumber.from(number);
+    const num = ethers.BigNumber.from(number).toString();
     let res = ethers.utils.formatEther(num);
     res = (+res).toFixed(4);
     return res;
@@ -135,6 +135,7 @@ const useAccountHistory = () => {
                             time: data.time
                         })),
                     );
+                    console.log(swapDataForWallet);
 
                     const userSwapHistory = swapDataForWallet.map((data: any) => ({
                         token1Icon:
