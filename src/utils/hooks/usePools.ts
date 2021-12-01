@@ -189,7 +189,7 @@ export const useGetLiquidityById = async (
   return { LiquidityPairData, loading, approved };
 };
 
-const getAddress = (currency: Currency | undefined) => {
+export const getAddress = (currency: Currency | undefined) => {
   const address = currency?.isNative
     ? WNATIVEADDRESSES[currency?.chainId as number]
     : currency?.wrapped.address;
@@ -242,4 +242,156 @@ export const useTokenValueToBeRemoved = ({
     }
   }, [pool, inputValue]);
   // return [poolToken0Fraction, poolToken1Fraction, poolTokenFraction];
+};
+
+export const useIsPoolsAvailable = (
+  CurrencyA: Currency | undefined,
+  CurrencyB: Currency | undefined
+) => {
+  const { chainId, account } = useWeb3React();
+  const [pairAvailable, setPairAvailable] = useState(false);
+  useMemo(async () => {
+    if (CurrencyA && CurrencyB && account) {
+      const factory = await smartFactory(
+        SMARTSWAPFACTORYADDRESSES[chainId as number]
+      );
+      const currencyAAddress = getAddress(CurrencyA);
+      const currencyBAddress = getAddress(CurrencyB);
+
+      const pair = await factory.getPair(currencyAAddress, currencyBAddress);
+      if (pair !== '0x0000000000000000000000000000000000000000') {
+        setPairAvailable(true);
+      } else {
+        setPairAvailable(false);
+      }
+    }
+  }, [CurrencyA, CurrencyB, chainId, account]);
+  return { pairAvailable };
+};
+
+export const usePoolShare = (
+  CurrencyA: Currency | undefined,
+  CurrencyB: Currency | undefined
+) => {
+  const { chainId, account } = useWeb3React();
+  const [poolShare, setPoolShare] = useState(0);
+  useMemo(async () => {
+    if (account && CurrencyA && CurrencyB) {
+      const factory = await smartFactory(
+        SMARTSWAPFACTORYADDRESSES[chainId as number]
+      );
+
+      const currencyAAddress = getAddress(CurrencyA);
+      const currencyBAddress = getAddress(CurrencyB);
+      const pair = await factory.getPair(currencyAAddress, currencyBAddress);
+      if (pair !== '0x0000000000000000000000000000000000000000') {
+        try {
+          const LPInstance = await LiquidityPairInstance(pair);
+          const [balance, totalSupply] = await Promise.all([
+            LPInstance.balanceOf(account),
+            LPInstance.totalSupply(),
+          ]);
+          setPoolShare((balance.toString() / totalSupply) * 100);
+          console.log((balance.toString() / totalSupply) * 100);
+        } catch (err) {
+          console.log(err);
+          setPoolShare(0);
+        }
+        // setPairAvailable(true);
+      } else {
+        // setPairAvailable(false);
+        setPoolShare(0);
+      }
+    }
+  }, [chainId, account, CurrencyA, CurrencyB]);
+  return { poolShare };
+};
+
+export const usePricePerToken = (
+  CurrencyA: Currency | undefined,
+  CurrencyB: Currency | undefined
+) => {
+  const { chainId, account } = useWeb3React();
+  const [priceAToB, setPriceAToB] = useState<string | undefined>(undefined);
+  const [priceBToA, setPriceBToA] = useState<string | undefined>(undefined);
+
+  useMemo(async () => {
+    if (account && CurrencyA && CurrencyB) {
+      const router = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number]);
+      const factory = await smartFactory(
+        SMARTSWAPFACTORYADDRESSES[chainId as number]
+      );
+      const currencyAAddress = getAddress(CurrencyA);
+      const currencyBAddress = getAddress(CurrencyB);
+      const pair = await factory.getPair(currencyAAddress, currencyBAddress);
+
+      if (pair !== '0x0000000000000000000000000000000000000000') {
+        try {
+          const [PriceAToB, PriceBToA] = await Promise.all([
+            router.getAmountsOut(ethers.utils.parseEther('1'), [
+              currencyAAddress,
+              currencyBAddress,
+            ]),
+            router.getAmountsOut(ethers.utils.parseEther('1'), [
+              currencyBAddress,
+              currencyAAddress,
+            ]),
+          ]);
+
+          setPriceAToB(
+            ethers.utils.formatEther(PriceAToB.toString().split(',')[1])
+          );
+          setPriceBToA(
+            ethers.utils.formatEther(PriceBToA.toString().split(',')[1])
+          );
+        } catch (err) {
+          setPriceAToB(undefined);
+          setPriceBToA(undefined);
+        }
+      } else {
+        setPriceAToB(undefined);
+        setPriceBToA(undefined);
+      }
+    }
+  }, [account, CurrencyA, CurrencyB, chainId]);
+  return { priceAToB, priceBToA };
+};
+
+export const useAllowance = (
+  CurrencyA: Currency | undefined,
+  CurrencyB: Currency | undefined
+) => {
+  const { account, chainId } = useWeb3React();
+  const [hasTokenABeenApproved, setHasTokenABeenApproved] = useState(false);
+  const [hasTokenBBeenApproved, setHasTokenBBeenApproved] = useState(false);
+  useMemo(async () => {
+    if (CurrencyA && CurrencyB && account) {
+      console.log('allowance works');
+      const currencyAAddress = getAddress(CurrencyA);
+      const currencyBAddress = getAddress(CurrencyB);
+      const [tokenA, tokenB] = await Promise.all([
+        getERC20Token(currencyAAddress as string),
+        getERC20Token(currencyBAddress as string),
+      ]);
+
+      const [allowanceA, allowanceB] = await Promise.all([
+        tokenA.allowance(account, SMARTSWAPROUTER[chainId as number]),
+        tokenB.allowance(account, SMARTSWAPROUTER[chainId as number]),
+      ]);
+
+      const isTokenAApproved = CurrencyA.isNative
+        ? true
+        : allowanceA.toString() > 0;
+
+      const isTokenBApproved = CurrencyB.isNative
+        ? true
+        : allowanceB.toString() > 0;
+
+      // console.log(isTokenAApproved, isTokenBApproved);
+      setHasTokenABeenApproved(isTokenAApproved);
+      setHasTokenBBeenApproved(isTokenBApproved);
+    }
+  }, [CurrencyB, CurrencyA, account, chainId]);
+
+  return { hasTokenABeenApproved, hasTokenBBeenApproved };
 };

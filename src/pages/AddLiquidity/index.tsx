@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Field } from '../../state/mint/actions'
-import { RouteComponentProps } from 'react-router-dom'
+import { Field } from '../../state/mint/actions';
+import { RouteComponentProps } from 'react-router-dom';
 import TransactionSettings from '../../components/TransactionSettings';
 import {
   Box,
@@ -19,6 +19,13 @@ import { useDerivedMintInfo, useMintState } from '../../state/mint/hooks';
 import { useWeb3React } from '@web3-react/core';
 import OutputCurrecy from './AddLquidityInputs/OutputCurrecy';
 import InputCurrency from './AddLquidityInputs/InputCurrency';
+import { useMintActionHandlers } from '../../state/mint/hooks';
+import {
+  useIsPoolsAvailable,
+  usePoolShare,
+  usePricePerToken,
+  useAllowance,
+} from '../../utils/hooks/usePools';
 
 export default function AddLiquidity({
   match: {
@@ -26,32 +33,82 @@ export default function AddLiquidity({
   },
   history,
 }: RouteComponentProps<{ currencyIdA?: string; currencyIdB?: string }>) {
-
   const infoBg = ('#EBF6FE', '#EAF6FF');
   const genBorder = useColorModeValue('#DEE6ED', '#324D68');
   const bgColor = useColorModeValue('#F2F5F8', '#213345');
   const topIcons = useColorModeValue('#666666', '#DCE6EF');
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
   const btnTextColor = useColorModeValue('#999999', '#7599BD');
-  const { CURRENCY_A, CURRENCY_B, } = useMintState()
-  const { currencies } = useDerivedMintInfo()
+  const approveButtonBgColor = useColorModeValue('#319EF6', '#4CAFFF');
+  const approveButtonColor = useColorModeValue('#FFFFFF', '#F1F5F8');
+
+  const { CURRENCY_A, CURRENCY_B } = useMintState();
+  const { onCurrencySelection, onUserInput } = useMintActionHandlers();
+  const { currencies } = useDerivedMintInfo();
+  const [inputValue, setInputValue] = useState('');
+  const [outputValue, setOutputValue] = useState('');
+
+  const { pairAvailable } = useIsPoolsAvailable(
+    currencies.CURRENCY_A,
+    currencies.CURRENCY_B
+  );
+
+  // const { hasTokenABeenApproved, hasTokenBBeenApproved } = useAllowance(
+  //   currencies.CURRENCY_A,
+  //   currencies.CURRENCY_B
+  // );
+
+  const { hasTokenABeenApproved, hasTokenBBeenApproved } = useAllowance(
+    currencies.CURRENCY_A,
+    currencies.CURRENCY_B
+  );
+
+  console.log(pairAvailable);
+
+  const { poolShare } = usePoolShare(
+    currencies.CURRENCY_A,
+    currencies.CURRENCY_B
+  );
+
+  const { priceAToB, priceBToA } = usePricePerToken(
+    currencies.CURRENCY_A,
+    currencies.CURRENCY_B
+  );
+
+  console.log(poolShare);
+  console.log(inputValue, outputValue);
+
+  // const  = (useAllowance(currencies.CURRENCY_A),useAllowance(currencies.CURRENCY_B))
+
+  // const [allowanceA, allowanceB] = [
+  //   useAllowance(currencies.CURRENCY_A) ?? undefined,
+  //   useAllowance(currencies.CURRENCY_B) ?? undefined,
+  // ];
+
+  // console.log(allowanceA, allowanceB);
+
+  // console.log(hasTokenABeenApproved, hasTokenBBeenApproved);
 
   useEffect(() => {
+    const setUpUrl = () => {
+      if (CURRENCY_A && CURRENCY_B) {
+        history.push(
+          `/add/${currencies.CURRENCY_A?.symbol}/${currencies.CURRENCY_B?.symbol}`
+        );
+        console.log(currencies.CURRENCY_B, CURRENCY_A);
+      } else {
+        history.push('/add');
+      }
+    };
+
     setUpUrl();
-
-  }, [CURRENCY_A, CURRENCY_B,]);
-
-
-
-  const setUpUrl = () => {
-    if (
-
-      CURRENCY_A && CURRENCY_B) { history.push(`/add/${currencies.CURRENCY_A?.symbol}/${currencies.CURRENCY_B?.symbol}`); }
-    else {
-      history.push('/add');
-    }
-  };
-
+  }, [
+    currencies.CURRENCY_A?.symbol,
+    currencies.CURRENCY_B?.symbol,
+    CURRENCY_A,
+    CURRENCY_B,
+    history,
+  ]);
   return (
     <Center m={8}>
       <Box
@@ -94,7 +151,12 @@ export default function AddLiquidity({
           pb={2}
           borderColor={genBorder}
         >
-          <InputCurrency />
+          <InputCurrency
+            setInputValue={setInputValue}
+            setOutputValue={setOutputValue}
+            pairAvailable={pairAvailable}
+            inputValue={inputValue}
+          />
         </Box>
         <Flex justifyContent="center">
           <Center
@@ -118,7 +180,12 @@ export default function AddLiquidity({
           pb={2}
           borderColor={genBorder}
         >
-          <OutputCurrecy />
+          <OutputCurrecy
+            setInputValue={setInputValue}
+            setOutputValue={setOutputValue}
+            pairAvailable={pairAvailable}
+            outputValue={outputValue}
+          />
         </Box>
         <Box
           borderRadius="md"
@@ -133,13 +200,23 @@ export default function AddLiquidity({
           <Divider orientation="horizontal" borderColor={genBorder} />
           <Flex p="4">
             <VStack>
-              <Text color={textColorOne}>11.5068</Text>
-              <Text color={topIcons}>BNB per RGP</Text>
+              <Text color={textColorOne}>
+                {priceBToA ? parseFloat(priceBToA).toFixed(6) : '-'}
+              </Text>
+              <Text color={topIcons}>
+                {currencies.CURRENCY_A?.symbol} per{' '}
+                {currencies.CURRENCY_B?.symbol}{' '}
+              </Text>
             </VStack>
             <Spacer />
             <VStack>
-              <Text color={textColorOne}>0.08445554</Text>
-              <Text color={topIcons}>RGP per BNB</Text>
+              <Text color={textColorOne}>
+                {priceAToB ? parseFloat(priceAToB).toFixed(6) : '-'}
+              </Text>
+              <Text color={topIcons}>
+                {currencies.CURRENCY_B?.symbol} per{' '}
+                {currencies.CURRENCY_A?.symbol}
+              </Text>
             </VStack>
             <Spacer />
             <VStack>
@@ -152,14 +229,90 @@ export default function AddLiquidity({
           size="lg"
           height="48px"
           width="200px"
+          bgColor={approveButtonBgColor}
+          color={approveButtonColor}
+          w="100%"
+          mb={3}
+          _hover={{ bgColor: 'none' }}
+          _active={{ bgColor: 'none' }}
+          display={inputValue && !hasTokenABeenApproved ? undefined : 'none'}
+        >
+          {`Approve ${currencies.CURRENCY_A?.symbol}`}
+        </Button>
+        <Button
+          size="lg"
+          height="48px"
+          width="200px"
+          mb={3}
+          bgColor={approveButtonBgColor}
+          color={approveButtonColor}
+          w="100%"
+          _hover={{ bgColor: 'none' }}
+          _active={{ bgColor: 'none' }}
+          display={outputValue && !hasTokenBBeenApproved ? undefined : 'none'}
+        >
+          {`Approve ${currencies.CURRENCY_B?.symbol}`}
+        </Button>
+        <Button
+          size="lg"
+          height="48px"
+          width="200px"
           border="2px"
           borderColor={genBorder}
           color={btnTextColor}
           w="100%"
+          _hover={{ bgColor: 'none' }}
+          _active={{ bgColor: 'none' }}
+          display={inputValue && outputValue ? 'none' : undefined}
         >
           Enter An Amount
+        </Button>
+        <Button
+          size="lg"
+          height="48px"
+          width="200px"
+          display={inputValue && outputValue ? undefined : 'none'}
+          disabled={!hasTokenBBeenApproved || !hasTokenABeenApproved}
+          border={
+            inputValue &&
+            outputValue &&
+            hasTokenABeenApproved &&
+            hasTokenBBeenApproved
+              ? ''
+              : '2px'
+          }
+          borderColor={
+            inputValue &&
+            outputValue &&
+            hasTokenABeenApproved &&
+            hasTokenBBeenApproved
+              ? ''
+              : genBorder
+          }
+          bgColor={
+            inputValue &&
+            outputValue &&
+            hasTokenABeenApproved &&
+            hasTokenBBeenApproved
+              ? approveButtonBgColor
+              : ''
+          }
+          color={
+            inputValue &&
+            outputValue &&
+            hasTokenABeenApproved &&
+            hasTokenBBeenApproved
+              ? approveButtonColor
+              : btnTextColor
+          }
+          // color={btnTextColor}
+          w="100%"
+          _hover={{ bgColor: 'none' }}
+          _active={{ bgColor: 'none' }}
+        >
+          Confirm Liquidity Add
         </Button>
       </Box>
     </Center>
   );
-};
+}
