@@ -29,14 +29,20 @@ const initialState: SwapState = {
     builder
     .addCase(
       replaceSwapState,
-      (state, { payload: { inputCurrencyId } }) => {
+      (state, { payload: { typedValue, recipient, field, inputCurrencyId, outputCurrencyId } }) => {
         return {
-          ...state,
           [Field.INPUT]: {
             currencyId: inputCurrencyId,
-          }
+          },
+          [Field.OUTPUT]: {
+            currencyId: outputCurrencyId,
+          },
+          independentField: field,
+          typedValue,
+          recipient,
         }
-      })
+      },
+    )
     .addCase(selectCurrency,(state,{payload:{currencyId, field}}) => {
         const otherField = field === Field.INPUT ? Field.OUTPUT : Field.INPUT
         if (currencyId === state[otherField].currencyId) {
