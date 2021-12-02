@@ -125,15 +125,17 @@ function parseCurrencyFromURLParameter(urlParam: any): string {
    console.log({urlParam,valid})
   if (valid) return valid
     if (urlParam.toUpperCase() === 'BNB') return 'BNB'
-    if (valid === false) return 'BNB'
+    if (valid === false) return urlParam
   }
-  return 'BNB' ?? ''
+  return urlParam ?? ''
 }
 function queryParametersToSwapState(parsedQs:ParsedQs) {
   let symbol
   let inputCurrency
+  console.log({parsedQs})
   if(typeof parsedQs === "string"){
     symbol= SupportedChainSymbols[parsedQs ?? 56]
+    console.log({symbol})
   inputCurrency = parseCurrencyFromURLParameter(symbol) ?? 'BNB'
   }else{
  inputCurrency = parseCurrencyFromURLParameter(parsedQs.inputCurrency)
