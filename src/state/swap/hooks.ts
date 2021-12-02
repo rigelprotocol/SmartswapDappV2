@@ -14,6 +14,7 @@ import { ethers } from 'ethers'
 import JSBI from 'jsbi'
 import useParsedQueryString from '../../hooks/useParsedQueryString'
 import { SupportedChainSymbols } from '../../utils/constants/chains'
+import { url } from 'inspector'
 export function useSwapState(): RootState['swap'] {
     return useSelector<RootState,RootState['swap']>((state) => state.swap)
 }
@@ -121,21 +122,20 @@ function validatedRecipient(recipient: any): string | null {
 
 function parseCurrencyFromURLParameter(urlParam: any): string {
    if (typeof urlParam === 'string') {
-   const valid = isAddress(urlParam)
-   console.log({urlParam,valid})
-  if (valid) return valid
-    if (urlParam.toUpperCase() === 'BNB') return 'BNB'
-    if (valid === false) return urlParam
+     console.log({urlParam})
+  //  const valid = isAddress(urlParam)
+  //  console.log({urlParam,valid})
+  // if (valid) return valid
+  //   if (valid === false) return urlParam
   }
   return urlParam ?? ''
 }
-function queryParametersToSwapState(parsedQs:ParsedQs) {
+function queryParametersToSwapState(parsedQs:any ) {
   let symbol
   let inputCurrency
   console.log({parsedQs})
-  if(typeof parsedQs === "string"){
+  if(typeof parsedQs === "number"){
     symbol= SupportedChainSymbols[parsedQs ?? 56]
-    console.log({symbol})
   inputCurrency = parseCurrencyFromURLParameter(symbol) ?? 'BNB'
   }else{
  inputCurrency = parseCurrencyFromURLParameter(parsedQs.inputCurrency)
@@ -182,7 +182,10 @@ const [result, setResult] = useState<
 if(!chainId) return
 console.log({parsedQs})
 // if URL is empty, use default token
-const parsed = queryParametersToSwapState(parsedQs ?? chainId)
+// let urlValue = parsedQs
+const urlValue = parsedQs.inputCurrency ? parsedQs : chainId
+console.log({urlValue})
+const parsed = queryParametersToSwapState(urlValue)
     dispatch(
       replaceSwapState({
         typedValue: parsed.typedValue,
