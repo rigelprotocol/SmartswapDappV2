@@ -16,7 +16,7 @@ export const contents = [
     ARYValue: "30,000",
     earn: "RGP",
     deposit: "RGB-BNB",
-    tokensStaked: ['RGP-BNB', '0'],
+    tokensStaked: ['RGP-BNB', '3'],
     availableToken: '3.747948393',
   },
   {

@@ -37,7 +37,7 @@ const ShowYieldFarmDetails = ({
   const dashedColor = useColorModeValue("#DEE6ED", "#4A739B");
   const activeButtonColor = useColorModeValue("#319EF6", "#4CAFFF");
   const buttonColor = useColorModeValue("#666666", "#7599BD");
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(true);
   const modal2Disclosure = useDisclosure();
   const [unstakeButtonValue, setUnstakeButtonValue] = useState('Confirm');
   const [depositValue, setDepositValue] = useState('Confirm');
@@ -100,6 +100,39 @@ const ShowYieldFarmDetails = ({
       );
     }
   };
+
+
+  async function confirmUnstakeDeposit(val: string) {
+
+    try {
+      setUnstakeButtonValue('Pending Confirmation');
+      dispatch(setOpenModal({
+        message: `Unstaking ${unstakeToken} ${val}`, trxState: TrxState.WaitingForConfirmation
+      }))
+
+      if (account) {
+        if (val === 'RGP') {
+          await RGPUnstake()
+        } else if (val === 'RGB-BNB') {
+          await tokensWithdrawal(2);
+        } else if (val === 'RBG-BUSD') {
+          await tokensWithdrawal(1)
+        }
+      }
+    } catch (err) {
+
+      console.log(err)
+      dispatch(setOpenModal({
+        message: `Failed transaction`,
+        trxState: TrxState.TransactionFailed,
+      }))
+
+    }
+
+
+    setTimeout(() => closeModal(), 400);
+    clearInputInfo(setUnstakeToken, setUnstakeButtonValue, 'Confirm');
+  }
 
   const fetchTransactionData = async (sendTransaction: any) => {
     const { confirmations, status, logs } = await sendTransaction.wait(1);
@@ -164,45 +197,6 @@ const ShowYieldFarmDetails = ({
     }
   };
 
-  const confirmUnstakeDeposit = async (val: string) => {
-    setUnstakeButtonValue('Pending Confirmation');
-    dispatch(setOpenModal({
-      message: `Unstaking ${unstakeToken} ${val}`, trxState: TrxState.WaitingForConfirmation
-    }))
-    try {
-      if (account) {
-        if (val === 'RGP') {
-          await RGPUnstake();
-        } else if (val === 'RGP-BNB') {
-          console.log("I am RGB_ BNB", val)
-          await tokensWithdrawal(2);
-        } else if (val === 'BNB-BUSD') {
-          await tokensWithdrawal(3);
-        } else if (val === 'RGP-BUSD') {
-          await tokensWithdrawal(1);
-        } else if (val === 'AXS-RGP') {
-          await tokensWithdrawal(4);
-        } else if (val === 'AXS-BUSD') {
-          await tokensWithdrawal(5);
-        }
-      }
-    } catch (e) {
-      console.log(
-        'sorry there is a few error, you are most likely not logged in. Please login to ypur metamask extensition and try again.',
-      );
-    }
-
-    /** 
-    finally {
-      dispatch(setOpenModal({
-        message: `submitted transaction`,
-        TrxState: TrxState.TransactionSubmitted
-      }))
-      setTimeout(() => closeModal(), 400);
-      clearInputInfo(setUnstakeToken, setUnstakeButtonValue, 'Confirm');
-    }
-*/
-  };
 
 
 
@@ -242,7 +236,7 @@ const ShowYieldFarmDetails = ({
                 cursor="pointer"
                 onClick={() => setApprove()}
               >
-                {false ? "Unstake" : "Approve"}
+                {true ? "Unstake" : "Approve"}
               </Button>
               <Button
                 w="45%"

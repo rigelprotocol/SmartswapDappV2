@@ -1,6 +1,7 @@
 import { getAddress } from '@ethersproject/address'
 import { Token } from '@uniswap/sdk-core'
 import { TokenAddressMap } from '../state/lists/hooks'
+import  Web3 from 'web3';
 
 // returns the checksummed address if the address for valid address or returns false
 export function isAddress(value: any): string | false {
