@@ -3,7 +3,6 @@ import BigNumber from 'bignumber.js'
 import { State } from '../types'
 import { SerializedFarm, DeserializedFarmUserData, DeserializedFarm, DeserializedFarmsState } from './types'
 import { deserializeToken } from '../../utils/helpers/token'
-import { useMemo } from 'react'
 
 
 export const BIG_ZERO = new BigNumber(0)

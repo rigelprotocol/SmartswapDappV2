@@ -1,6 +1,17 @@
+/** @format */
+
 import React, { useState, useEffect } from "react";
 import { Box, Flex, Text } from "@chakra-ui/layout";
-import { Alert, AlertDescription, CloseButton, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertDescription,
+  CloseButton,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+} from "@chakra-ui/react";
 import { useHistory } from "react-router-dom";
 import { useColorModeValue } from "@chakra-ui/react";
 import YieldFarm from "./YieldFarm";
@@ -9,19 +20,17 @@ import { AlertSvg } from "./Icon";
 import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
 import { useRouteMatch } from "react-router-dom";
-import bigNumber from 'bignumber.js'
+import bigNumber from "bignumber.js";
 import { useFarms } from "../../state/farm/hooks";
 import { BigNumber, ethers } from "ethers";
-import { getTokenAmount } from "../../utils/hooks/useBalances";
-import SmartSwapLPToken3 from '../../utils/abis/LPToken3.json'
-import SmartSwapLPToken2 from '../../utils/abis/LPToken2.json'
-import SmartSwapLPToken from '../../utils/abis/LPToken.json'
+import SmartSwapLPToken2 from "../../utils/abis/LPToken2.json";
+import SmartSwapLPToken from "../../utils/abis/LPToken.json";
+import SmartSwapLPTokenTestnet from "../../utils/abis/testnet/LPToken1.json";
+import SmartSwapLPTokenTestnetRGP from "../../utils/abis/testnet/LPToken.json";
 
-import {  signer } from '../../utils/utilsFunctions';
+import { signer } from "../../utils/utilsFunctions";
 
-
-export const BIG_TEN = new bigNumber(10)
-
+export const BIG_TEN = new bigNumber(10);
 
 export const LIQUIDITY = "liquidity";
 export const STAKING = "staking";
@@ -31,9 +40,10 @@ export const LIGHT_THEME = "light";
 export const DARK_THEME = "dark";
 export const LIQUIDITY_INDEX = 0;
 export const STAKING_INDEX = 1;
-
-
-const RGPPrice = 100000;
+export const MAINNET = 56;
+export const TESTNET = 97;
+export const RGP_TESTNET_ADDRESS = "0x9f0227A21987c1fFab1785BA3eBa60578eC1501B";
+export const RGP_MAINNET_ADDRESS = "0xFA262F303Aa244f9CC66f312F0755d89C3793192";
 
 export function useActiveWeb3React() {
   const context = useWeb3React<Web3Provider>();
@@ -47,23 +57,14 @@ export function Index() {
   const [selected, setSelected] = useState(LIQUIDITY);
   const [isActive, setIsActive] = useState(V2);
   const [showAlert, setShowAlert] = useState(true);
-  const { data: farmsLP } = useFarms()
-  const [ RgbPrice, setRgpPrice] = useState("20")
-  const [ farms, setFarms] = useState(contents)
-  const MINIMUM_LIQUIDITY = 10**3;
-
-
+  const { data: farmsLP } = useFarms();
+  const [farms, setFarms] = useState(contents);
 
   let match = useRouteMatch("/farming-V2/staking-RGP");
 
-
-  
-  useEffect(
-    () => {
-      if (match) setSelected(STAKING);
-    },
-    [match] 
-  );
+  useEffect(() => {
+    if (match) setSelected(STAKING);
+  }, [match]);
 
   const changeVersion = (version: string) => {
     history.push(version);
@@ -95,75 +96,98 @@ export function Index() {
 
   const { chainId, library } = useActiveWeb3React();
 
-
   useEffect(() => {
-    const chosenFarmsMemoized = async() => {
-      let chosenFarms = await farmsList(farmsLP) as any[]
-      console.log(chosenFarms)
-      const activeFarms = chosenFarms.filter((farm) => farm?.pid !== 0 && !isNaN(farm?.ARYValue) )
-
-      setFarms(activeFarms)
-      // return chosenFarms
+    const chosenFarmsMemoized = async () => {
+      let chosenFarms = (await farmsList(farmsLP)) as any[];
+      console.log(chosenFarms);
+      const activeFarms = chosenFarms.filter(
+        (farm) => farm?.pid !== 0 && !isNaN(farm?.ARYValue)
+      );
+      setFarms(activeFarms);
     };
-    chosenFarmsMemoized()
-  }, []);
+    chosenFarmsMemoized();
+  }, [farmsLP]);
 
   const farmsList = async (farmsToDisplay: any) => {
-      let farmsToDisplayWithAPR = farmsToDisplay.map(async(farm: any, index:number) => {
+    let farmsToDisplayWithAPR = farmsToDisplay.map(
+      async (farm: any, index: number) => {
         let contract;
         const inflation = 100;
-        if(farm.lpSymbol === "RGP") {
-          contract = async () => new ethers.Contract(
-            farm.lpAddresses[56],
-            SmartSwapLPToken,
-            await signer()
-            )
-            const pool = await contract()
+        if (farm.lpSymbol === "RGP") {
+          contract = async () =>
+            new ethers.Contract(
+              farm.lpAddresses[chainId !== MAINNET ? TESTNET : MAINNET],
+              chainId !== MAINNET
+                ? SmartSwapLPTokenTestnetRGP
+                : SmartSwapLPToken,
+              await signer()
+            );
+          const pool = await contract();
 
-            const RgpSupply = await pool.totalSupply()
-            const RGPBalance = await pool.balanceOf('0xFA262F303Aa244f9CC66f312F0755d89C3793192')
-
-
-            const RGPLiquidity = ethers.utils
-        .formatUnits(RgpSupply.mul(2), 21)
-        .toString();
-        const calculateApy = 
-            (Number(RgpSupply/RGPBalance) * (inflation) * 365  ) / Number(RGPLiquidity);
-        
-            return await { ...farm, earn: "RGP", ARYValue: calculateApy, totalLiquidity: RGPLiquidity }
-
-        } else {
-          contract = async () => new ethers.Contract(
-            farm.lpAddresses[56],
-            SmartSwapLPToken2,
-            await signer()
-            )
-
-            const pool = await contract()
-            const poolReserve = await pool.getReserves()
-            const totalSupply = await pool.totalSupply()
-          const liquidity = Math.min((poolReserve[0].mul(2)/totalSupply), poolReserve[1].mul(2)/totalSupply);
-          const RGPprice = ethers.utils.formatUnits(
-            (poolReserve[1].mul(1000)).div(poolReserve[0]),
-            3,
+          const RgpSupply = await pool.totalSupply();
+          const RGPBalance = await pool.balanceOf(
+            chainId !== MAINNET ? RGP_TESTNET_ADDRESS : RGP_MAINNET_ADDRESS
           );
-         
-          const totalLiquidity = (liquidity * 365 * 100 ).toFixed()
-            const calculateApy = 
-            (Number(RGPprice) * (inflation) * 365  ) / Number(totalLiquidity);
-          return await { ...farm, earn: "RGP", ARYValue: calculateApy, totalLiquidity: totalLiquidity }
+
+          const RGPLiquidity = ethers.utils
+            .formatUnits(RgpSupply.mul(2), 21)
+            .toString();
+          const calculateApy =
+            (Number(RgpSupply / RGPBalance) * inflation * 365) /
+            Number(RGPLiquidity);
+
+          return await {
+            ...farm,
+            earn: "RGP",
+            ARYValue: calculateApy,
+            totalLiquidity: RGPLiquidity,
+          };
+        } else {
+          contract = async () =>
+            new ethers.Contract(
+              farm.lpAddresses[chainId !== MAINNET ? TESTNET : MAINNET],
+
+              chainId !== MAINNET ? SmartSwapLPTokenTestnet : SmartSwapLPToken2,
+              await signer()
+            );
+
+          const pool = await contract();
+          const poolReserve = await pool.getReserves();
+
+          const RGPprice = ethers.utils.formatUnits(
+            poolReserve[1].mul(1000).div(poolReserve[0]),
+            3
+          );
+          const totalLiquidity = ethers.utils
+            .formatUnits(
+              poolReserve[0].mul(Math.floor(RGPprice * 1000 * 2)),
+              21
+            )
+            .toString();
+
+          const calculateApy =
+            (Number(RGPprice) * inflation * 365) / Number(totalLiquidity);
+          return await {
+            ...farm,
+            earn: "RGP",
+            ARYValue: calculateApy,
+            totalLiquidity: totalLiquidity,
+          };
         }
-               
-      })
-      return await Promise.all(farmsToDisplayWithAPR)
-    }
+      }
+    );
+    return await Promise.all(farmsToDisplayWithAPR);
+  };
 
   return (
-  
     <Box>
       {(chainId && library) || !showAlert ? null : (
         <Box mx={[5, 10, 15, 20]} my={4}>
-          <Alert color="#FFFFFF" background={mode === DARK_THEME ? "#319EF6" : "#319EF6"} borderRadius="8px">
+          <Alert
+            color="#FFFFFF"
+            background={mode === DARK_THEME ? "#319EF6" : "#319EF6"}
+            borderRadius="8px"
+          >
             <AlertSvg />
             <AlertDescription
               fontFamily="Inter"
@@ -174,7 +198,8 @@ export function Index() {
               textAlign="left"
               padding="10px"
             >
-              This is the V2 Farm. You should migrate your stakings from V1 Farm.
+              This is the V2 Farm. You should migrate your stakings from V1
+              Farm.
             </AlertDescription>
 
             <CloseButton
@@ -382,7 +407,12 @@ export function Index() {
         </TabList>
         <TabPanels padding="0px">
           <TabPanel padding="0px">
-            <Flex justifyContent="center" alignItems="center" rounded="lg" mb={4}>
+            <Flex
+              justifyContent="center"
+              alignItems="center"
+              rounded="lg"
+              mb={4}
+            >
               <Box
                 bg="#120136"
                 minHeight="89vh"
@@ -445,16 +475,23 @@ export function Index() {
                     <Text>Total Liquidity</Text>
                     <Text />
                   </Flex>
-                
-                  {farms.map((content: any, index:number) => (
-                    index !== 0 ? <YieldFarm content={content} key={content.pid} /> : null
-                  ))}
+
+                  {farms.map((content: any, index: number) =>
+                    index !== 0 ? (
+                      <YieldFarm content={content} key={content.pid} />
+                    ) : null
+                  )}
                 </Box>
               </Box>
             </Flex>
           </TabPanel>
           <TabPanel padding="0px">
-            <Flex justifyContent="center" alignItems="center" rounded="lg" mb={4}>
+            <Flex
+              justifyContent="center"
+              alignItems="center"
+              rounded="lg"
+              mb={4}
+            >
               <Box
                 bg="#120136"
                 minHeight="89vh"
@@ -474,8 +511,20 @@ export function Index() {
                     justifyContent="space-between"
                     px={4}
                     py={4}
-                    background={mode === DARK_THEME ? "#213345" : mode === LIGHT_THEME ? "#F2F5F8" : "#F2F5F8 !important"}
-                    color={mode === LIGHT_THEME ? "#333333" : mode === DARK_THEME ? "#F1F5F8" : "#333333"}
+                    background={
+                      mode === DARK_THEME
+                        ? "#213345"
+                        : mode === LIGHT_THEME
+                        ? "#F2F5F8"
+                        : "#F2F5F8 !important"
+                    }
+                    color={
+                      mode === LIGHT_THEME
+                        ? "#333333"
+                        : mode === DARK_THEME
+                        ? "#F1F5F8"
+                        : "#333333"
+                    }
                     w={["100%", "100%", "100%"]}
                     align="left"
                     border={
@@ -494,7 +543,9 @@ export function Index() {
                     <Text />
                   </Flex>
                   {farms.map((content: any, index: number) =>
-                    index === 0 ? <YieldFarm content={content} key={content.pid} /> : null
+                    index === 0 ? (
+                      <YieldFarm content={content} key={content.pid} />
+                    ) : null
                   )}
                 </Box>
               </Box>
