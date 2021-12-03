@@ -10,8 +10,10 @@ export const selectCurrency = createAction<{
   currencyId: string | undefined;
 }>('mint/selectCurrency');
 export const typeInput =
-  createAction<{ field: Field; typedValue: string }>('mint/typeInputMint');
+  createAction<{ field: Field; typedValue: string; no: boolean }>(
+    'mint/typeInputMint'
+  );
 export const resetMintState = createAction<void>('mint/resetMintState');
 export const replaceMintState = createAction<{ inputCurrencyId?: string }>(
-  'swap/replaceMintState'
+  'mint/replaceMintState'
 );

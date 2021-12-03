@@ -359,13 +359,15 @@ export const usePricePerToken = (
 
 export const useAllowance = (
   CurrencyA: Currency | undefined,
-  CurrencyB: Currency | undefined
+  CurrencyB: Currency | undefined,
+  input: string,
+  output: string
 ) => {
   const { account, chainId } = useWeb3React();
   const [hasTokenABeenApproved, setHasTokenABeenApproved] = useState(false);
   const [hasTokenBBeenApproved, setHasTokenBBeenApproved] = useState(false);
   useMemo(async () => {
-    if (CurrencyA && CurrencyB && account) {
+    if (CurrencyA && CurrencyB && account && input && output) {
       console.log('allowance works');
       const currencyAAddress = getAddress(CurrencyA);
       const currencyBAddress = getAddress(CurrencyB);
@@ -391,7 +393,31 @@ export const useAllowance = (
       setHasTokenABeenApproved(isTokenAApproved);
       setHasTokenBBeenApproved(isTokenBApproved);
     }
-  }, [CurrencyB, CurrencyA, account, chainId]);
+  }, [CurrencyB, CurrencyA, account, chainId, input, output]);
 
   return { hasTokenABeenApproved, hasTokenBBeenApproved };
+};
+
+export const usePriceForNewPool = (
+  inputA: string,
+  inputB: string,
+  pairExist: boolean
+) => {
+  const [priceAperB, setPriceAperB] = useState('');
+  const [priceBperA, setPriceBperA] = useState('');
+  useMemo(() => {
+    console.log('start');
+    if (!pairExist && inputA && inputB) {
+      const priceA = parseFloat(inputB) / parseFloat(inputA);
+      const priceB = parseFloat(inputA) / parseFloat(inputB);
+      setPriceAperB(priceA.toString());
+      setPriceBperA(priceB.toString());
+      console.log(priceA, priceB);
+    } else {
+      setPriceBperA('');
+      setPriceAperB('');
+    }
+  }, [pairExist, inputA, inputB]);
+
+  return { priceAperB, priceBperA };
 };

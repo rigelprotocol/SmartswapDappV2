@@ -12,15 +12,11 @@ import { ZERO_ADDRESS } from '../constants';
 import { ethers } from 'ethers';
 
 const formatAmount = (number: string) => {
-  // const num = ethers.BigNumber.from(number).toString();
-  // let res = ethers.utils.formatEther(num);
-  // res = (+res).toString();
-  // return res;
   const num = ethers.utils.formatEther(number);
   return num;
 };
 
-export const useSwap = (
+export const useMint = (
   currencyA: Currency,
   currencyB: Currency,
   amountIn?: string
@@ -79,16 +75,11 @@ export const useSwap = (
             ]);
 
             const output = formatAmount(amountOut[1]);
-            console.log(output);
+
             setAmount(output);
           } else {
             setAmount('');
-            console.log('undefined');
           }
-          // setLoading(false)
-        } else {
-          console.log('0 address');
-          //   setAmount(amountIn);
         }
       } catch (e) {
         console.log(e);
@@ -110,5 +101,3 @@ export const useSwap = (
 
   return [address, wrap, amount];
 };
-
-//const formattedInput = ethers.utils.parseEther(amountIn);

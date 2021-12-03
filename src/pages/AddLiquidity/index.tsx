@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { Field } from '../../state/mint/actions';
 import { RouteComponentProps } from 'react-router-dom';
 import TransactionSettings from '../../components/TransactionSettings';
@@ -25,7 +25,10 @@ import {
   usePoolShare,
   usePricePerToken,
   useAllowance,
+  usePriceForNewPool,
 } from '../../utils/hooks/usePools';
+import { maxAmountSpend } from '../../utils/maxAmountSpend';
+import { GetAddressTokenBalance } from '../../state/wallet/hooks';
 
 export default function AddLiquidity({
   match: {
@@ -41,74 +44,107 @@ export default function AddLiquidity({
   const btnTextColor = useColorModeValue('#999999', '#7599BD');
   const approveButtonBgColor = useColorModeValue('#319EF6', '#4CAFFF');
   const approveButtonColor = useColorModeValue('#FFFFFF', '#F1F5F8');
+  const { independentField, typedValue, otherTypedValue } = useMintState();
 
-  const { CURRENCY_A, CURRENCY_B } = useMintState();
   const { onCurrencySelection, onUserInput } = useMintActionHandlers();
-  const { currencies } = useDerivedMintInfo();
-  const [inputValue, setInputValue] = useState('');
-  const [outputValue, setOutputValue] = useState('');
+  const {
+    currencies,
+    getMaxValue,
+    bestTrade,
+    parsedAmount,
+    inputError,
+    showWrap,
+  } = useDerivedMintInfo();
+  const dependentField: Field =
+    independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
 
   const { pairAvailable } = useIsPoolsAvailable(
-    currencies.CURRENCY_A,
-    currencies.CURRENCY_B
+    currencies[Field.INPUT],
+    currencies[Field.OUTPUT]
+  );
+
+  const [balanceA, setBalanceA] = useState('');
+  const [balanceB, setBalanceB] = useState('');
+
+  // const [balanceA] = GetAddressTokenBalance(
+  //   currencies[Field.INPUT] ?? undefined
+  // );
+
+  // const [balanceB] = GetAddressTokenBalance(
+  //   currencies[Field.OUTPUT] ?? undefined
+  // );
+
+  const { priceAToB, priceBToA } = usePricePerToken(
+    currencies[Field.INPUT],
+    currencies[Field.OUTPUT]
+  );
+
+  const parsedAmounts = useMemo(
+    () =>
+      showWrap
+        ? {
+            [Field.INPUT]: typedValue,
+            [Field.OUTPUT]: typedValue,
+          }
+        : {
+            [Field.INPUT]:
+              independentField === Field.INPUT ? parsedAmount : bestTrade,
+            [Field.OUTPUT]:
+              independentField === Field.OUTPUT ? parsedAmount : bestTrade,
+          },
+    [independentField, parsedAmount, showWrap, bestTrade, typedValue]
+  );
+
+  const formattedAmounts = {
+    [independentField]: typedValue,
+    [dependentField]: !pairAvailable
+      ? otherTypedValue
+      : showWrap
+      ? parsedAmounts[independentField] ?? ''
+      : parsedAmounts[dependentField] ?? '',
+  };
+  const { priceAperB, priceBperA } = usePriceForNewPool(
+    formattedAmounts[Field.INPUT],
+    formattedAmounts[Field.OUTPUT],
+    pairAvailable
+  );
+
+  const { poolShare } = usePoolShare(
+    currencies[Field.INPUT],
+    currencies[Field.OUTPUT]
   );
 
   // const { hasTokenABeenApproved, hasTokenBBeenApproved } = useAllowance(
-  //   currencies.CURRENCY_A,
-  //   currencies.CURRENCY_B
+  //   currencies[Field.INPUT],
+  //   currencies[Field.OUTPUT],
+  //   formattedAmounts[Field.INPUT],
+  //   formattedAmounts[Field.OUTPUT]
   // );
 
-  const { hasTokenABeenApproved, hasTokenBBeenApproved } = useAllowance(
-    currencies.CURRENCY_A,
-    currencies.CURRENCY_B
+  const [hasTokenABeenApproved, setHashasTokenABeenApproved] = useState(false);
+  const [hasTokenBBeenApproved, setHasTokenBBeenApproved] = useState(false);
+
+  const handleMaxInput = async () => {
+    const value = await getMaxValue(currencies[Field.INPUT]);
+    const maxAmountInput = maxAmountSpend(value, currencies[Field.INPUT]);
+    if (maxAmountInput) {
+      onUserInput(Field.INPUT, maxAmountInput, pairAvailable);
+    }
+  };
+  const handleTypeInput = useCallback(
+    (value: string) => {
+      onUserInput(Field.INPUT, value, pairAvailable);
+    },
+    [onUserInput, pairAvailable]
   );
 
-  console.log(pairAvailable);
-
-  const { poolShare } = usePoolShare(
-    currencies.CURRENCY_A,
-    currencies.CURRENCY_B
+  const handleTypeOutput = useCallback(
+    (value: string) => {
+      onUserInput(Field.OUTPUT, value, pairAvailable);
+    },
+    [onUserInput, pairAvailable]
   );
 
-  const { priceAToB, priceBToA } = usePricePerToken(
-    currencies.CURRENCY_A,
-    currencies.CURRENCY_B
-  );
-
-  console.log(poolShare);
-  console.log(inputValue, outputValue);
-
-  // const  = (useAllowance(currencies.CURRENCY_A),useAllowance(currencies.CURRENCY_B))
-
-  // const [allowanceA, allowanceB] = [
-  //   useAllowance(currencies.CURRENCY_A) ?? undefined,
-  //   useAllowance(currencies.CURRENCY_B) ?? undefined,
-  // ];
-
-  // console.log(allowanceA, allowanceB);
-
-  // console.log(hasTokenABeenApproved, hasTokenBBeenApproved);
-
-  useEffect(() => {
-    const setUpUrl = () => {
-      if (CURRENCY_A && CURRENCY_B) {
-        history.push(
-          `/add/${currencies.CURRENCY_A?.symbol}/${currencies.CURRENCY_B?.symbol}`
-        );
-        console.log(currencies.CURRENCY_B, CURRENCY_A);
-      } else {
-        history.push('/add');
-      }
-    };
-
-    setUpUrl();
-  }, [
-    currencies.CURRENCY_A?.symbol,
-    currencies.CURRENCY_B?.symbol,
-    CURRENCY_A,
-    CURRENCY_B,
-    history,
-  ]);
   return (
     <Center m={8}>
       <Box
@@ -152,10 +188,13 @@ export default function AddLiquidity({
           borderColor={genBorder}
         >
           <InputCurrency
-            setInputValue={setInputValue}
-            setOutputValue={setOutputValue}
-            pairAvailable={pairAvailable}
-            inputValue={inputValue}
+            onUserInput={handleTypeInput}
+            onCurrencySelection={onCurrencySelection}
+            currency={currencies[Field.INPUT]}
+            otherCurrency={currencies[Field.OUTPUT]}
+            onMax={handleMaxInput}
+            value={formattedAmounts[Field.INPUT]}
+            setBalanceA={setBalanceA}
           />
         </Box>
         <Flex justifyContent="center">
@@ -181,10 +220,12 @@ export default function AddLiquidity({
           borderColor={genBorder}
         >
           <OutputCurrecy
-            setInputValue={setInputValue}
-            setOutputValue={setOutputValue}
-            pairAvailable={pairAvailable}
-            outputValue={outputValue}
+            onCurrencySelection={onCurrencySelection}
+            currency={currencies[Field.OUTPUT]}
+            otherCurrency={currencies[Field.INPUT]}
+            value={formattedAmounts[Field.OUTPUT]}
+            onUserOutput={handleTypeOutput}
+            setBalanceB={setBalanceB}
           />
         </Box>
         <Box
@@ -201,26 +242,40 @@ export default function AddLiquidity({
           <Flex p="4">
             <VStack>
               <Text color={textColorOne}>
-                {priceBToA ? parseFloat(priceBToA).toFixed(6) : '-'}
+                {priceBToA && pairAvailable
+                  ? parseFloat(priceBToA).toFixed(6)
+                  : !pairAvailable && priceBperA
+                  ? priceBperA
+                  : '-'}
               </Text>
               <Text color={topIcons}>
-                {currencies.CURRENCY_A?.symbol} per{' '}
-                {currencies.CURRENCY_B?.symbol}{' '}
+                {currencies[Field.INPUT]?.symbol} per{' '}
+                {currencies[Field.OUTPUT]?.symbol}
               </Text>
             </VStack>
             <Spacer />
             <VStack>
               <Text color={textColorOne}>
-                {priceAToB ? parseFloat(priceAToB).toFixed(6) : '-'}
+                {priceAToB && pairAvailable
+                  ? parseFloat(priceAToB).toFixed(6)
+                  : priceAperB && !pairAvailable
+                  ? priceAperB
+                  : '-'}
               </Text>
               <Text color={topIcons}>
-                {currencies.CURRENCY_B?.symbol} per{' '}
-                {currencies.CURRENCY_A?.symbol}
+                {currencies[Field.OUTPUT]?.symbol} per{' '}
+                {currencies[Field.INPUT]?.symbol}
               </Text>
             </VStack>
             <Spacer />
             <VStack>
-              <Text color={textColorOne}>0%</Text>
+              <Text color={textColorOne}>
+                {priceAperB && priceBperA
+                  ? '100%'
+                  : poolShare
+                  ? `${poolShare.toFixed(6)}% `
+                  : '-'}
+              </Text>
               <Text color={topIcons}>Share of Pool</Text>
             </VStack>
           </Flex>
@@ -235,9 +290,15 @@ export default function AddLiquidity({
           mb={3}
           _hover={{ bgColor: 'none' }}
           _active={{ bgColor: 'none' }}
-          display={inputValue && !hasTokenABeenApproved ? undefined : 'none'}
+          display={
+            formattedAmounts[Field.INPUT] &&
+            formattedAmounts[Field.OUTPUT] &&
+            !hasTokenABeenApproved
+              ? undefined
+              : 'none'
+          }
         >
-          {`Approve ${currencies.CURRENCY_A?.symbol}`}
+          {`Approve ${currencies[Field.INPUT]?.symbol}`}
         </Button>
         <Button
           size="lg"
@@ -249,9 +310,15 @@ export default function AddLiquidity({
           w="100%"
           _hover={{ bgColor: 'none' }}
           _active={{ bgColor: 'none' }}
-          display={outputValue && !hasTokenBBeenApproved ? undefined : 'none'}
+          display={
+            formattedAmounts[Field.INPUT] &&
+            formattedAmounts[Field.OUTPUT] &&
+            !hasTokenBBeenApproved
+              ? undefined
+              : 'none'
+          }
         >
-          {`Approve ${currencies.CURRENCY_B?.symbol}`}
+          {`Approve ${currencies[Field.OUTPUT]?.symbol}`}
         </Button>
         <Button
           size="lg"
@@ -263,7 +330,11 @@ export default function AddLiquidity({
           w="100%"
           _hover={{ bgColor: 'none' }}
           _active={{ bgColor: 'none' }}
-          display={inputValue && outputValue ? 'none' : undefined}
+          display={
+            formattedAmounts[Field.INPUT] && formattedAmounts[Field.OUTPUT]
+              ? 'none'
+              : undefined
+          }
         >
           Enter An Amount
         </Button>
@@ -271,35 +342,44 @@ export default function AddLiquidity({
           size="lg"
           height="48px"
           width="200px"
-          display={inputValue && outputValue ? undefined : 'none'}
-          disabled={!hasTokenBBeenApproved || !hasTokenABeenApproved}
+          display={
+            formattedAmounts[Field.INPUT] && formattedAmounts[Field.OUTPUT]
+              ? undefined
+              : 'none'
+          }
+          disabled={
+            !hasTokenBBeenApproved ||
+            !hasTokenABeenApproved ||
+            parseFloat(formattedAmounts[Field.INPUT]) > parseFloat(balanceA) ||
+            parseFloat(formattedAmounts[Field.OUTPUT]) > parseFloat(balanceB)
+          }
           border={
-            inputValue &&
-            outputValue &&
+            formattedAmounts[Field.INPUT] &&
+            formattedAmounts[Field.OUTPUT] &&
             hasTokenABeenApproved &&
             hasTokenBBeenApproved
               ? ''
               : '2px'
           }
           borderColor={
-            inputValue &&
-            outputValue &&
+            formattedAmounts[Field.INPUT] &&
+            formattedAmounts[Field.OUTPUT] &&
             hasTokenABeenApproved &&
             hasTokenBBeenApproved
               ? ''
               : genBorder
           }
           bgColor={
-            inputValue &&
-            outputValue &&
+            formattedAmounts[Field.INPUT] &&
+            formattedAmounts[Field.OUTPUT] &&
             hasTokenABeenApproved &&
             hasTokenBBeenApproved
               ? approveButtonBgColor
               : ''
           }
           color={
-            inputValue &&
-            outputValue &&
+            formattedAmounts[Field.OUTPUT] &&
+            formattedAmounts[Field.INPUT] &&
             hasTokenABeenApproved &&
             hasTokenBBeenApproved
               ? approveButtonColor

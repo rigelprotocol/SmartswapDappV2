@@ -1,8 +1,9 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Field } from '../../../state/mint/actions';
 import { RouteComponentProps } from 'react-router-dom';
 import InputSelector from '../../Swap/components/sendToken/InputSelector';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
+import { GetAddressTokenBalance } from '../../../state/wallet/hooks';
 import { useWeb3React } from '@web3-react/core';
 import {
   useMintActionHandlers,
@@ -23,6 +24,7 @@ interface InputCurrencyProps {
   otherCurrency: Currency | undefined;
   onMax: () => void;
   value: string;
+  setBalanceA: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const InputCurrency = ({
@@ -32,8 +34,10 @@ const InputCurrency = ({
   otherCurrency,
   onMax,
   value,
+  setBalanceA,
 }: InputCurrencyProps) => {
   const [tokenModal, setTokenModal] = useState(false);
+  const [balance] = GetAddressTokenBalance(currency ?? undefined);
   const handleInputSelect = useCallback(
     (inputCurrency) => {
       onCurrencySelection(Field.INPUT, inputCurrency);
@@ -42,6 +46,9 @@ const InputCurrency = ({
     [onCurrencySelection]
   );
 
+  useEffect(() => {
+    setBalanceA(balance as string);
+  }, [currency, balance, setBalanceA]);
   return (
     <InputSelector
       onUserInput={onUserInput}
