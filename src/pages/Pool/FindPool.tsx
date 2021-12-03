@@ -228,7 +228,9 @@ const FindPool = () => {
                 Pool Found!
               </Text>
               <Text color={manageColor} textAlign="center" mb={6}>
+              <Link to="/pool">
                 Manage this pool.
+              </Link>
               </Text>
             </Flex>
             <Flex
