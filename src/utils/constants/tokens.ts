@@ -17,21 +17,21 @@ interface SerializedTokenList {
 export const mainnetTokens = {
   wbnb: new Token(
     MAINNET,
-    '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+    '0xe9e7cea3dedca5984780bafc599bd69add087d56',
     18,
     'WBNB',
     'Wrapped BNB',
     'https://www.binance.com/',
   ),
     // bnb here points to the wbnb contract. Wherever the currency BNB is required, conditional checks for the symbol 'BNB' can be used
-  bnb: new Token(MAINNET, '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', 18, 'BNB', 'BNB', 'https://www.binance.com/'),
+  bnb: new Token(MAINNET, '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c', 18, 'BNB', 'BNB', 'https://www.binance.com/'),
   rgp: new Token(
     MAINNET,
-    '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82',
+    '0xfa262f303aa244f9cc66f312f0755d89c3793192',
     18,
-    'CAKE',
-    'PancakeSwap Token',
-    'https://pancakeswap.finance/',
+    'RGP',
+    'RigelToken (RGP)',
+    'http://www.rigelprotocol.com/',
   ),
   tlos: new Token(MAINNET, '0xb6C53431608E626AC81a9776ac3e999c5556717c', 18, 'TLOS', 'Telos', 'https://www.telos.net/'),
   beta: new Token(
@@ -71,7 +71,7 @@ export const mainnetTokens = {
   ),
   busd: new Token(
     MAINNET,
-    '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
+    '0xe9e7cea3dedca5984780bafc599bd69add087d56',
     18,
     'BUSD',
     'Binance USD',
@@ -1592,7 +1592,7 @@ export const mainnetTokens = {
   ),
   axs: new Token(
     MAINNET,
-    '0x715D400F88C167884bbCc41C5FeA407ed4D2f8A0',
+    '0x715d400f88c167884bbcc41c5fea407ed4d2f8a0',
     18,
     'AXS',
     'Binance-Pegged Axie Infinity Shard',
@@ -1705,14 +1705,6 @@ export const testnetTokens = {
     'WBNB',
     'Wrapped BNB',
     'https://www.binance.com/',
-  ),
-  rgp: new Token(
-    TESTNET,
-    '0xa35062141Fa33BCA92Ce69FeD37D0E8908868AAe',
-    18,
-    'CAKE',
-    'PancakeSwap Token',
-    'https://pancakeswap.finance/',
   ),
   busd: new Token(
     TESTNET,

@@ -11,8 +11,14 @@ import { useWeb3React } from "@web3-react/core";
 import { useRouteMatch } from "react-router-dom";
 import bigNumber from 'bignumber.js'
 import { useFarms } from "../../state/farm/hooks";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { getTokenAmount } from "../../utils/hooks/useBalances";
+import SmartSwapLPToken3 from '../../utils/abis/LPToken3.json'
+import SmartSwapLPToken2 from '../../utils/abis/LPToken2.json'
+import SmartSwapLPToken from '../../utils/abis/LPToken.json'
+
+import {  signer } from '../../utils/utilsFunctions';
+
 
 export const BIG_TEN = new bigNumber(10)
 
@@ -41,7 +47,7 @@ export function Index() {
   const [selected, setSelected] = useState(LIQUIDITY);
   const [isActive, setIsActive] = useState(V2);
   const [showAlert, setShowAlert] = useState(true);
-  const { data: farmsLP, userDataLoaded } = useFarms()
+  const { data: farmsLP } = useFarms()
   const [ RgbPrice, setRgpPrice] = useState("20")
   const [ farms, setFarms] = useState(contents)
   const MINIMUM_LIQUIDITY = 10**3;
@@ -50,6 +56,8 @@ export function Index() {
 
   let match = useRouteMatch("/farming-V2/staking-RGP");
 
+
+  
   useEffect(
     () => {
       if (match) setSelected(STAKING);
@@ -90,33 +98,62 @@ export function Index() {
 
   useEffect(() => {
     const chosenFarmsMemoized = async() => {
-      console.log("checking")
       let chosenFarms = await farmsList(farmsLP) as any[]
       console.log(chosenFarms)
-      const activeFarms = chosenFarms.filter((farm) => farm.pid !== 0 && !isNaN(farm.ARYValue) )
+      const activeFarms = chosenFarms.filter((farm) => farm?.pid !== 0 && !isNaN(farm?.ARYValue) )
 
       setFarms(activeFarms)
-      return chosenFarms
+      // return chosenFarms
     };
     chosenFarmsMemoized()
   }, []);
 
-  const farmsList = async (farmsToDisplay) => {
-      let farmsToDisplayWithAPR = farmsToDisplay.map(async(farm: any) => {
-        // if (!farm.lpTotalInQuoteToken || !farm.tokenPriceVsQuote) {
-        //   return farm
-        // }
-        const num = await getTokenAmount(farm.token.address);
-        const num2 = await getTokenAmount(farm.quoteToken.address);
-        const amount0 = BigNumber.from(Number(num).toFixed());
-        const amount1 = BigNumber.from(Number(num2).toFixed());
-        const liquidity = Math.sqrt(((amount0.mul(amount1)).sub(MINIMUM_LIQUIDITY)).toNumber());
-        console.log(num, num2, amount0, amount1, liquidity)
-        const inflation = 250;
-        const totalLiquidity = (liquidity * 365).toFixed()
-          const calculateApy = 
-          (Number(RgbPrice) * (inflation) * 365 * 100) / Number(totalLiquidity);
-        return await { ...farm, earn: "RGP", ARYValue: calculateApy, totalLiquidity: totalLiquidity }
+  const farmsList = async (farmsToDisplay: any) => {
+      let farmsToDisplayWithAPR = farmsToDisplay.map(async(farm: any, index:number) => {
+        let contract;
+        const inflation = 100;
+        if(farm.lpSymbol === "RGP") {
+          contract = async () => new ethers.Contract(
+            farm.lpAddresses[56],
+            SmartSwapLPToken,
+            await signer()
+            )
+            const pool = await contract()
+
+            const RgpSupply = await pool.totalSupply()
+            const RGPBalance = await pool.balanceOf('0xFA262F303Aa244f9CC66f312F0755d89C3793192')
+
+
+            const RGPLiquidity = ethers.utils
+        .formatUnits(RgpSupply.mul(2), 21)
+        .toString();
+        const calculateApy = 
+            (Number(RgpSupply/RGPBalance) * (inflation) * 365  ) / Number(RGPLiquidity);
+        
+            return await { ...farm, earn: "RGP", ARYValue: calculateApy, totalLiquidity: RGPLiquidity }
+
+        } else {
+          contract = async () => new ethers.Contract(
+            farm.lpAddresses[56],
+            SmartSwapLPToken2,
+            await signer()
+            )
+
+            const pool = await contract()
+            const poolReserve = await pool.getReserves()
+            const totalSupply = await pool.totalSupply()
+          const liquidity = Math.min((poolReserve[0].mul(2)/totalSupply), poolReserve[1].mul(2)/totalSupply);
+          const RGPprice = ethers.utils.formatUnits(
+            (poolReserve[1].mul(1000)).div(poolReserve[0]),
+            3,
+          );
+         
+          const totalLiquidity = (liquidity * 365 * 100 ).toFixed()
+            const calculateApy = 
+            (Number(RGPprice) * (inflation) * 365  ) / Number(totalLiquidity);
+          return await { ...farm, earn: "RGP", ARYValue: calculateApy, totalLiquidity: totalLiquidity }
+        }
+               
       })
       return await Promise.all(farmsToDisplayWithAPR)
     }
@@ -408,8 +445,9 @@ export function Index() {
                     <Text>Total Liquidity</Text>
                     <Text />
                   </Flex>
-                  {farms.map((content: any) => (
-                    <YieldFarm content={content} key={content.pid} />
+                
+                  {farms.map((content: any, index:number) => (
+                    index !== 0 ? <YieldFarm content={content} key={content.pid} /> : null
                   ))}
                 </Box>
               </Box>
@@ -456,7 +494,7 @@ export function Index() {
                     <Text />
                   </Flex>
                   {farms.map((content: any, index: number) =>
-                    index === 1 ? <YieldFarm content={content} key={content.pid} /> : null
+                    index === 0 ? <YieldFarm content={content} key={content.pid} /> : null
                   )}
                 </Box>
               </Box>
