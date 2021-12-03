@@ -8,7 +8,7 @@ import {ZERO_ADDRESS} from "../constants";
 import {ethers} from "ethers";
 
 const formatAmount = (number: string) => {
-    // const num = ethers.BigNumber.from(number).toString();
+    // const numb = ethers.BigNumber.from(number).toString();
     // let res = ethers.utils.formatEther(num);
     // res = (+res).toString();
     // return res;
@@ -39,6 +39,7 @@ export const useSwap = (currencyA: Currency, currencyB: Currency, amountIn?: str
     const tokenOneAddress = tokenA?.address || nativeAddress?.address;
     const tokenTwoAddress = tokenB?.address || nativeAddress?.address;
     const wrappable: boolean = tokenOneAddress == tokenTwoAddress;
+    console.log(wrappable);
     let validSmartAddress: string;
     if (SMARTSWAPFACTORYADDRESSES[chainId as number] !== '0x') {
         validSmartAddress = SMARTSWAPFACTORYADDRESSES[chainId as number]
@@ -77,7 +78,7 @@ export const useSwap = (currencyA: Currency, currencyB: Currency, amountIn?: str
                 }
 
             } catch (e) {
-                console.log(e);
+                console.log(`Error occurs here: ${e}`);
                 setAmount('');
             }
 

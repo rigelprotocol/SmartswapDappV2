@@ -15,7 +15,6 @@ import {useSwap} from "../../hooks/useSwap";
 import {ZERO_ADDRESS} from "../../constants";
 import { parseUnits } from '@ethersproject/units'
 import JSBI from 'jsbi';
-import {GetAddressTokenBalance} from "../wallet/hooks";
 
 
 export function tryParseAmount<T extends Currency>(value?: string, currency?: T): string | undefined {
