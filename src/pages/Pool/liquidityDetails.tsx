@@ -79,6 +79,11 @@ const LiquidityDetails = (props: LiquidityDetail) => {
           mb={2}
           _hover={{ bgColor: addButtonBgColor, color: addButtonColor }}
           _active={{ bgColor: addButtonBgColor, color: addButtonColor }}
+           onClick={() =>
+            history.push(
+              `/add`
+            )
+          }
         >
           Add
         </Button>
