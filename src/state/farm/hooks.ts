@@ -50,12 +50,7 @@ export const useFarmFromPid = (pid: number): DeserializedFarm => {
   return deserializeFarm(farm)
 }
 
-export const usePriceCakeBusd = (): BigNumber => {
-  const cakeBnbFarm = useFarmFromPid(251)
 
-  const cakePriceBusdAsString = cakeBnbFarm.tokenPriceBusd || '20.00'
-  return new BigNumber(cakePriceBusdAsString)
-}
 
 export const useFarms = (): DeserializedFarmsState => {
 
