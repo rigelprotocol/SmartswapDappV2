@@ -359,15 +359,13 @@ export const usePricePerToken = (
 
 export const useAllowance = (
   CurrencyA: Currency | undefined,
-  CurrencyB: Currency | undefined,
-  input: string,
-  output: string
+  CurrencyB: Currency | undefined
 ) => {
   const { account, chainId } = useWeb3React();
   const [hasTokenABeenApproved, setHasTokenABeenApproved] = useState(false);
   const [hasTokenBBeenApproved, setHasTokenBBeenApproved] = useState(false);
   useMemo(async () => {
-    if (CurrencyA && CurrencyB && account && input && output) {
+    if (CurrencyA && CurrencyB && account) {
       console.log('allowance works');
       const currencyAAddress = getAddress(CurrencyA);
       const currencyBAddress = getAddress(CurrencyB);
@@ -393,7 +391,7 @@ export const useAllowance = (
       setHasTokenABeenApproved(isTokenAApproved);
       setHasTokenBBeenApproved(isTokenBApproved);
     }
-  }, [CurrencyB, CurrencyA, account, chainId, input, output]);
+  }, [CurrencyB, CurrencyA, account, chainId]);
 
   return { hasTokenABeenApproved, hasTokenBBeenApproved };
 };

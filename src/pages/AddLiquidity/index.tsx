@@ -114,15 +114,14 @@ export default function AddLiquidity({
     currencies[Field.OUTPUT]
   );
 
-  // const { hasTokenABeenApproved, hasTokenBBeenApproved } = useAllowance(
-  //   currencies[Field.INPUT],
-  //   currencies[Field.OUTPUT],
-  //   formattedAmounts[Field.INPUT],
-  //   formattedAmounts[Field.OUTPUT]
-  // );
+  const { hasTokenABeenApproved, hasTokenBBeenApproved } = useAllowance(
+    currencies[Field.INPUT],
+    currencies[Field.OUTPUT],
+    
+  );
 
-  const [hasTokenABeenApproved, setHashasTokenABeenApproved] = useState(false);
-  const [hasTokenBBeenApproved, setHasTokenBBeenApproved] = useState(false);
+  // const [hasTokenABeenApproved, setHashasTokenABeenApproved] = useState(false);
+  // const [hasTokenBBeenApproved, setHasTokenBBeenApproved] = useState(false);
 
   const handleMaxInput = async () => {
     const value = await getMaxValue(currencies[Field.INPUT]);
