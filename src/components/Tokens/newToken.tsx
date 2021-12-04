@@ -97,7 +97,7 @@ const NewToken:React.FC<IModal> = ({
                           </Text>
                     </Flex>
                 
-                    {tokens?.map(token=>{
+                    {tokens?.map((token,id)=>{
                       return (
                           <Flex 
                 justifyContent="center"
@@ -105,7 +105,7 @@ const NewToken:React.FC<IModal> = ({
                 flexDirection="column"
                 bgColor={boxColor} borderRadius="6px"
                 my="3"
-                py="25px">
+                py="25px" key={id}>
                  <CurrencyLogo currency={token} />
                     <Text my="3" color={heavyTextColor}>{token?.symbol}</Text>
                     <Text color={lightTextColor}>{token?.name}</Text>
