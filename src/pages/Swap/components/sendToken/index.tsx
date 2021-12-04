@@ -23,9 +23,10 @@ import {SMARTSWAPROUTER, WNATIVEADDRESSES} from "../../../../utils/addresses";
 import {ExplorerDataType, getExplorerLink} from "../../../../utils/getExplorerLink";
 import {addToast} from '../../../../components/Toast/toastSlice';
 import {RootState} from "../../../../state";
-import {getDeadline, getInPutDataFromEvent, getOutPutDataFromEvent, tokenPrice} from "../../../../constants";
+import {getDeadline, getInPutDataFromEvent, getOutPutDataFromEvent} from "../../../../constants";
 import {ethers} from "ethers";
 import {GetAddressTokenBalance} from "../../../../state/wallet/hooks";
+import {SupportedChainId} from "../../../../constants/chains";
 
 
 const SendToken = () => {
@@ -106,14 +107,17 @@ const SendToken = () => {
         [allowedSlippage, bestTrade],
     );
 
-    const minimum = minimumAmountToReceive().toString();
+    const minimum = minimumAmountToReceive().toFixed(16);
+    console.log(minimum);
 
     const LPFee = (0.003 * Number(formattedAmounts[Field.INPUT])).toFixed(4);
 
     const receivedAmount = Number(formattedAmounts[Field.OUTPUT]).toFixed(4);
 
-    const parsedOutput = ethers.utils.parseEther(minimumAmountToReceive().toString()).toString();
+    const parsedOutput = ethers.utils.parseEther(minimum.toString()).toString();
     console.log(parsedOutput);
+
+    console.log(parsedAmount);
 
     const [hasBeenApproved, setHasBeenApproved] = useState(false);
     const [insufficientBalance, setInsufficientBalance] = useState(false);
@@ -131,16 +135,17 @@ const SendToken = () => {
 
 
     const checkApproval = async () => {
-        if (currencies[Field.INPUT]?.symbol === 'BNB') {
+        if (currencies[Field.INPUT]?.isNative) {
             return setHasBeenApproved(true)
         }
-        const status = await ApproveCheck(currencies[Field.INPUT]?.wrapped.address);
+        // @ts-ignore
+        const status = await ApproveCheck(currencies[Field.INPUT].wrapped.address);
         const check = await status.allowance(account, SMARTSWAPROUTER[chainId as number], {
             from: account
         });
         const approveBalance = ethers.utils.formatEther(check).toString();
         console.log(approveBalance);
-        if (parseFloat(approveBalance) > 0) {
+        if (parseFloat(approveBalance) > Number(formattedAmounts[Field.INPUT])) {
             return setHasBeenApproved(true)
         }
         return setHasBeenApproved(false)
@@ -153,7 +158,7 @@ const SendToken = () => {
     }, [inputError]);
 
   const approveSwap = async () => {
-      if (currencies[Field.INPUT]?.symbol === 'BNB') {
+      if (currencies[Field.INPUT]?.isNative) {
           return setHasBeenApproved(true);
       }
       try {
@@ -161,7 +166,8 @@ const SendToken = () => {
               message: `Approve Tokens for Swap`,
               trxState: TrxState.WaitingForConfirmation
           }));
-          const address = currencies[Field.INPUT]?.wrapped.address;
+          // @ts-ignore
+          const address = currencies[Field.INPUT].wrapped.address;
           const swapApproval = await ApprovalRouter(address);
           const approveTransaction = await swapApproval.approve(SMARTSWAPROUTER[chainId as number], parsedAmount, {
               from: account
@@ -206,7 +212,7 @@ const SendToken = () => {
       try {
           setSendingTrx(true);
           dispatch(setOpenModal({
-              message: `Swapping ${formattedAmounts[Field.INPUT]} ${currencies[Field.INPUT]?.symbol} for ${bestTrade} ${currencies[Field.OUTPUT]?.symbol}`,
+              message: `Swapping ${formattedAmounts[Field.INPUT]} ${currencies[Field.INPUT]?.symbol} for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol}`,
               trxState: TrxState.WaitingForConfirmation
           }));
           const sendTransaction = await route.swapExactTokensForTokens(
@@ -249,7 +255,7 @@ const SendToken = () => {
           console.log(e);
           setSendingTrx(false);
           dispatch(setOpenModal({
-              message: `Swap Approval Confirmation`,
+              message: `Swap Failed`,
               trxState: TrxState.TransactionFailed
           }));
           onUserInput(Field.INPUT, '')
@@ -306,7 +312,7 @@ const SendToken = () => {
             console.log(e);
             setSendingTrx(false);
             dispatch(setOpenModal({
-                message: `Swap Approval Confirmation`,
+                message: `Swap Failed`,
                 trxState: TrxState.TransactionFailed
             }));
             onUserInput(Field.INPUT, '')
@@ -347,7 +353,7 @@ const SendToken = () => {
                     ExplorerDataType.TRANSACTION
                 );
                 dispatch(setOpenModal({
-                    message : `Swap tokens for BNB Successful.`,
+                    message : `Swap tokens for ${currencies[Field.OUTPUT]?.symbol} Successful.`,
                     trxState: TrxState.TransactionSuccessful
                 }));
                 dispatch(
@@ -361,7 +367,7 @@ const SendToken = () => {
             console.log(e);
             setSendingTrx(false);
             dispatch(setOpenModal({
-                message: `Swap Approval Confirmation`,
+                message: `Swap Failed`,
                 trxState: TrxState.TransactionFailed
             }));
             onUserInput(Field.INPUT, '')
@@ -398,7 +404,7 @@ const SendToken = () => {
               );
               dispatch(
                   addToast({
-                      message: `Swap ${typedValue} BNB for ${typedValue} WBNB`,
+                      message: `Swap ${typedValue} ${currencies[Field.INPUT]?.symbol} for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
                       URL: explorerLink
                   }));
               onUserInput(Field.INPUT, '')
@@ -407,7 +413,7 @@ const SendToken = () => {
           console.log(e);
           setSendingTrx(false);
           dispatch(setOpenModal({
-              message: `Swap Approval Confirmation`,
+              message: `Swap Failed`,
               trxState: TrxState.TransactionFailed
           }));
           onUserInput(Field.INPUT, '')
@@ -444,7 +450,7 @@ const SendToken = () => {
               );
               dispatch(
                   addToast({
-                      message: `Swap ${typedValue} WBNB for ${typedValue} BNB`,
+                      message: `Swap ${typedValue} ${currencies[Field.INPUT]?.symbol} for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
                       URL: explorerLink
                   }));
               onUserInput(Field.INPUT, '')
@@ -454,7 +460,7 @@ const SendToken = () => {
           console.log(e);
           setSendingTrx(false);
           dispatch(setOpenModal({
-              message: `Swap Approval Confirmation`,
+              message: `Swap Failed`,
               trxState: TrxState.TransactionFailed
           }));
           onUserInput(Field.INPUT, '')
@@ -463,17 +469,34 @@ const SendToken = () => {
 
 
   const swapTokens = async () => {
-      if (currencies[Field.INPUT]?.symbol === 'BNB' && currencies[Field.OUTPUT]?.symbol === 'WBNB') {
-          await deposit();
-      } else if (currencies[Field.INPUT]?.symbol === 'WBNB' && currencies[Field.OUTPUT]?.symbol === 'BNB') {
-          await withdraw();
-      } else if (currencies[Field.INPUT]?.symbol === 'BNB') {
-          await swapDefaultForOtherTokens()
-      } else if (currencies[Field.OUTPUT]?.symbol === 'BNB') {
-          await swapOtherTokensForDefault()
-      } else {
-          await swapDifferentTokens()
-      }
+
+       if (chainId === SupportedChainId.POLYGONTEST) {
+           if (currencies[Field.INPUT]?.symbol === 'MATIC' && currencies[Field.OUTPUT]?.symbol === 'WMATIC') {
+               await deposit();
+           } else if (currencies[Field.INPUT]?.symbol === 'WMATIC' && currencies[Field.OUTPUT]?.symbol === 'MATIC') {
+               await withdraw();
+           } else if (currencies[Field.INPUT]?.isNative) {
+               await swapDefaultForOtherTokens()
+           } else if (currencies[Field.OUTPUT]?.isNative) {
+               await swapOtherTokensForDefault()
+           } else {
+               await swapDifferentTokens()
+           }
+       }
+
+       else if (chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE) {
+           if (currencies[Field.INPUT]?.symbol === 'BNB' && currencies[Field.OUTPUT]?.symbol === 'WBNB') {
+               await deposit();
+           } else if (currencies[Field.INPUT]?.symbol === 'WBNB' && currencies[Field.OUTPUT]?.symbol === 'BNB') {
+               await withdraw();
+           } else if (currencies[Field.INPUT]?.symbol === 'BNB') {
+               await swapDefaultForOtherTokens()
+           } else if (currencies[Field.OUTPUT]?.symbol === 'BNB') {
+               await swapOtherTokensForDefault()
+           } else {
+               await swapDifferentTokens()
+           }
+       }
   };
 
   
