@@ -10,8 +10,8 @@ export interface SerializedToken {
 
 export const updateUserSlippageTolerance = createAction<{ userSlippageTolerance: number }>(
   'user/updateUserSlippageTolerance',
-)
-export const addSerializedToken = createAction<{ serializedToken: SerializedToken }>('user/addSerializedToken')
+);
+export const addSerializedToken = createAction<{ serializedToken: SerializedToken }>('user/addSerializedToken');
 
 export const removeSerializedToken = createAction<{ chainId: number; address: string }>('user/removeSerializedToken')
 

@@ -9,9 +9,9 @@ import {
 } from './actions'
 import { updateVersion } from '../global/actions'
 
-const currentTimestamp = () => new Date().getTime()
+const currentTimestamp = () => new Date().getTime();
 
-const DEFAULT_DEADLINE_FROM_NOW = 60 * 20
+const DEFAULT_DEADLINE_FROM_NOW = 60 * 20;
 
 export interface UserState {
   // the timestamp of the last updateVersion action
@@ -36,7 +36,7 @@ export const initialState: UserState = {
   userDeadline: DEFAULT_DEADLINE_FROM_NOW,
   timestamp: currentTimestamp(),
   tokens: {},
-}
+};
 
 export default createReducer(initialState, (builder) =>
   builder
@@ -56,19 +56,19 @@ export default createReducer(initialState, (builder) =>
       state.lastUpdateVersionTimestamp = currentTimestamp()
     })
     .addCase(updateUserSlippageTolerance, (state, action) => {
-      state.userSlippageTolerance = action.payload.userSlippageTolerance
+      state.userSlippageTolerance = action.payload.userSlippageTolerance;
       state.timestamp = currentTimestamp()
     })
     .addCase(updateUserDeadline, (state, action) => {
-      state.userDeadline = action.payload.userDeadline
+      state.userDeadline = action.payload.userDeadline;
       state.timestamp = currentTimestamp()
     })
     .addCase(addSerializedToken, (state, { payload: { serializedToken } }) => {
       if (!state.tokens) {
         state.tokens = {}
       }
-      state.tokens[serializedToken.chainId] = state.tokens[serializedToken.chainId] || {}
-      state.tokens[serializedToken.chainId][serializedToken.address] = serializedToken
+      state.tokens[serializedToken.chainId] = state.tokens[serializedToken.chainId] || {};
+      state.tokens[serializedToken.chainId][serializedToken.address] = serializedToken;
       state.timestamp = currentTimestamp()
     })
     .addCase(removeSerializedToken, (state, { payload: { address, chainId } }) => {

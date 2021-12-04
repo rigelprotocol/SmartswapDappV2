@@ -71,7 +71,7 @@ function Toast({ message, URL, remove }: ToastProps) {
                 variant={'link'}
                 color={'brand.200'}
               >
-                View on Etherscan
+                View on Explorer
               </Link>
             </VStack>
           </HStack>

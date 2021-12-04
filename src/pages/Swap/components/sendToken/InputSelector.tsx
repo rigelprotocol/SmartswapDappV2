@@ -13,6 +13,9 @@ import { GetAddressTokenBalance } from '../../../../state/wallet/hooks';
 import SelectToken from "../../../../components/Tokens/SelectToken"
 import {Currency} from "@uniswap/sdk-core"
 import CurrencyLogo from "../../../../components/currencyLogo"
+import {escapeRegExp} from "../../../../utils";
+
+
 type InputSelectorProps = {
   max: Boolean,
   onCurrencySelect: (currency: Currency | null | undefined) => void,
@@ -22,7 +25,7 @@ type InputSelectorProps = {
   setToken: React.Dispatch<React.SetStateAction<boolean>>,
   onMax?: () => void,
   onUserInput: (value: string) => void,
-  value:string
+  value: string | undefined
 };
 
 const InputSelector = ({
@@ -42,8 +45,16 @@ const InputSelector = ({
   const maxBgColor = useColorModeValue('#EBF6FE', '#EAF6FF');
   const tokenListTriggerColor = useColorModeValue('', '#DCE5EF');
   const tokenListTrgiggerBgColor = useColorModeValue('', '#213345');
+
+    const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`);
+
+    const enforcer = (nextUserInput: string) => {
+        if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
+            onUserInput(nextUserInput)
+        }
+    };
   
-  const [balance] =GetAddressTokenBalance(currency ?? undefined)
+  const [balance] = GetAddressTokenBalance(currency ?? undefined);
   return (
     <>
       <Flex alignItems="center" mt={3} justifyContent="space-between">
@@ -56,11 +67,8 @@ const InputSelector = ({
           isRequired
           placeholder="0.0"
           value={value}
-          onChange={(e) => {
-            let input = e.target.value;
-            let value = 
-              input
-            onUserInput(value)
+          onChange={(event) => {
+              enforcer(event.target.value.replace(/,/g, '.'))
           }}
           focusBorderColor="none"
         />
@@ -75,8 +83,8 @@ const InputSelector = ({
               onClick={()=>setToken(tokenModal)}
             >
               <Box mr="3">
- <CurrencyLogo currency={currency ?? undefined} size={24} squared={true}/>
-                </Box>
+                 <CurrencyLogo currency={currency ?? undefined} size={24} squared={true}/>
+              </Box>
              
             {(currency && currency.symbol && currency.symbol.length > 20
                       ? currency.symbol.slice(0, 4) +

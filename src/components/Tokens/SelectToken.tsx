@@ -25,7 +25,10 @@ import { isAddress } from "../../utils"
 import { filterTokens } from "./filtering"
 import ImportRow from "./ImportRow"
 import NewToken from "./newToken"
- type IModal= {
+import {NATIVE} from "@sushiswap/sdk";
+
+
+type IModal= {
 tokenModal:boolean,
 setTokenModal:React.Dispatch<React.SetStateAction<boolean>>
 onCurrencySelect: (currency: Currency) => void,
@@ -40,25 +43,26 @@ const SelectToken:React.FC<IModal> = ({
   selectedCurrency,
   otherSelectedCurrency
 }) => {
-    const { chainId } = useActiveWeb3React()
-     const [openNewTokenModal,setOpenNewTokenModal] = useState<boolean>(false)
-    const [searchQuery,setSearchQuery] = useState<string>('')
-    const debouncedQuery = useDebounce(searchQuery,300)
+    const { chainId } = useActiveWeb3React();
+     const [openNewTokenModal,setOpenNewTokenModal] = useState<boolean>(false);
+    const [searchQuery,setSearchQuery] = useState<string>('');
+    const debouncedQuery = useDebounce(searchQuery,300);
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const boxShadow= useColorModeValue('#DEE6ED', '#324D68');
-    const textColor = useColorModeValue("#319EF6","#4CAFFF")
-    const boxColor = useColorModeValue("#F2F5F8","#213345")
+    const textColor = useColorModeValue("#319EF6","#4CAFFF");
+    const boxColor = useColorModeValue("#F2F5F8","#213345");
   
     useEffect(()=>{
       setSearchQuery('')
-      },[tokenModal])
+      },[tokenModal]);
 
-    const [displayManageToken,setDisplayManageToken] = useState(false)
+    const [displayManageToken,setDisplayManageToken] = useState(false);
     const handleCurrencySelect = useCallback(
       (currency: Currency) => {
         onCurrencySelect(currency)
       },
       [ onCurrencySelect],
+
     )
     const allTokens = useAllTokens()
     // useUpdateTokenList()
@@ -66,35 +70,35 @@ const SelectToken:React.FC<IModal> = ({
   const searchToken = useToken(debouncedQuery)
   const searchTokenIsAdded = useIsUserAddedToken(searchToken)
     const [ ,Symbol,Name,Logo] = useNativeBalance();
-    const ether =  chainId && ExtendedEther(chainId,Symbol,Name,Logo)
+    const ether =  chainId && ExtendedEther(chainId,Symbol,Name,Logo);
 
 
     const filteredTokens: Token[] = useMemo(() => {
       return filterTokens(Object.values(allTokens), debouncedQuery)
-    }, [allTokens, debouncedQuery])
+    }, [allTokens, debouncedQuery]);
 
     const filteredTokenListWithETH = useMemo(():Currency[]=>{
-      const s = debouncedQuery.toLowerCase().trim()
+      const s = debouncedQuery.toLowerCase().trim();
       if(s==="" || s ==="e" || s==="et" || s==="eth"){
         return ether ? [ ether,...filteredTokens] : filteredTokens
       }
       return filteredTokens
-    },[debouncedQuery, ether, filteredTokens])
+    },[debouncedQuery, ether, filteredTokens]);
     const {
         onClose,
       } = useDisclosure();
 const openManageToken = ():void => {
 setDisplayManageToken(state => !state)
-}
+};
 // refs for fixed size lists
 const handleInput = useCallback(
   (event) => {
-    const input = event.target.value
-    const checksummedInput = isAddress(input)
+    const input = event.target.value;
+    const checksummedInput = isAddress(input);
     setSearchQuery(checksummedInput || input)
   },
   [],
-)
+);
 
 
     return (
@@ -195,6 +199,6 @@ const handleInput = useCallback(
           
           </>
     )
-}
+};
 
 export default SelectToken

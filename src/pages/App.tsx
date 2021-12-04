@@ -10,7 +10,7 @@ import Fonts from "./../theme/fonts";
 import AppWrapper from "./../components/AppWrapper";
 import Navbar from "./../components/Navbar";
 import Notify from "../components/Toast";
-import ErrorBoundary from "../components/ErrorBondary";
+import ErrorBoundary from "../components/ErrorBoundary";
 import TransactionStateModal from "../components/Modals/TransactionsModal/TransactionStateModal";
 import SetPrice from "./Swap/SetPrice";
 import AutoTime from "./Swap/AutoTime";
