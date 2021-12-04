@@ -26,14 +26,13 @@ import {RootState} from "../../../../state";
 import {getDeadline, getInPutDataFromEvent, getOutPutDataFromEvent} from "../../../../constants";
 import {ethers} from "ethers";
 import {GetAddressTokenBalance} from "../../../../state/wallet/hooks";
-import {SupportedChainId} from "../../../../constants/chains";
-
+import {SupportedChainId} from "../../../../constants/chains"
 
 const SendToken = () => {
 
   const loadedUrlParams = useDefaultsFromURLSearch();
     const dispatch = useDispatch();
-  
+
  // token warning stuff
  const [loadedInputCurrency] = [
   useCurrency(loadedUrlParams?.inputCurrencyId),
@@ -72,6 +71,7 @@ const SendToken = () => {
   );
 
   const {chainId, account} = useActiveWeb3React();
+  const [priceImpact, setPriceImpact] = useState(0);
 
   const handleMaxInput = async () => {
     const value = await getMaxValue(currencies[Field.INPUT]);
@@ -499,7 +499,89 @@ const SendToken = () => {
        }
   };
 
-  
+
+  const fromAmount = Number(formattedAmounts[Field.INPUT]);
+  const [routeAddress, setRouteAddress] = useState([]);
+
+  const calculatePriceImpact = async () => {
+    const route = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number]);
+    const from = currencies[Field.INPUT]?.isNative ? (WNATIVEADDRESSES[chainId as number]) : (currencies[Field.INPUT]?.wrapped.address);
+    const to = currencies[Field.OUTPUT]?.isNative ? (WNATIVEADDRESSES[chainId as number]) : (currencies[Field.OUPUT]?.wrapped.address);
+    console.log(`check here- ${from} --- ${to}`)
+
+    if (routeAddress.length === 2) {
+      try {
+        const price = await route.getAmountsOut(
+          '1000000000000000000',
+          routeAddress,
+        );
+        const marketPrice = ethers.utils.formatEther(price[1].toString());
+        const swapPrice = receivedAmount / fromAmount;
+        const priceDifference = swapPrice - marketPrice;
+        const priceImpact = (priceDifference / marketPrice) * 100;
+        setPriceImpact(parseFloat(priceImpact).toFixed(2));
+      } catch (e) {
+        setPriceImpact(0);
+      }
+    } else if (routeAddress.length === 3) {
+      try {
+        const price1 = await route.getAmountsOut('1000000000000000000', [
+          routeAddress[0],
+          routeAddress[1],
+        ]);
+
+        const price1String = price1.toString().split(',');
+
+        const price2 = await route.getAmountsOut(price1String[1], [
+          routeAddress[1],
+          routeAddress[2],
+        ]);
+
+        const marketPrice = ethers.utils.formatEther(price2[1].toString());
+        const swapPrice = receivedAmount / fromAmount;
+        const priceDifference = swapPrice - marketPrice;
+        const priceImpact = (priceDifference / marketPrice) * 100;
+        setPriceImpact(parseFloat(priceImpact).toFixed(2));
+      } catch (e) {
+        setPriceImpact(0);
+      }
+    } else if (routeAddress.length === 4) {
+      try {
+        const price1 = await route.getAmountsOut('1000000000000000000', [
+          routeAddress[0],
+          routeAddress[1],
+        ]);
+
+        const price1String = price1.toString().split(',');
+
+        const price2 = await route.getAmountsOut(price1String[1], [
+          routeAddress[1],
+          routeAddress[2],
+        ]);
+
+        const price2String = price2.toString().split(',');
+
+        const price3 = await route.getAmountsOut(price2String[1], [
+          routeAddress[2],
+          routeAddress[3],
+        ]);
+
+        const marketPrice = ethers.utils.formatEther(price3[1].toString());
+        const swapPrice = receivedAmount / fromAmount;
+        const priceDifference = swapPrice - marketPrice;
+        const priceImpact = (priceDifference / marketPrice) * 100;
+        setPriceImpact(parseFloat(priceImpact).toFixed(2));
+      } catch (e) {
+        setPriceImpact(0);
+      }
+    } else {
+      setPriceImpact(0);
+    }
+  };
+  useEffect(async () => {
+    calculatePriceImpact();
+  }, [fromAmount, receivedAmount]);
+
   return (
     <div>
       <Box
@@ -609,6 +691,7 @@ const SendToken = () => {
             toDeposited={receivedAmount}
             handleSwap={swapTokens}
             fee={LPFee}
+            priceImpact={priceImpact}
         />
       </Box>
     </div>
