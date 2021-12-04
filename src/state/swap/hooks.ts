@@ -120,38 +120,27 @@ function validatedRecipient(recipient: any): string | null {
   return null
 }
 
-function parseCurrencyFromURLParameter(urlParam: any): string {
+function parseCurrencyFromURLParameter(urlParam: any,symbol = ""): string {
    if (typeof urlParam === 'string') {
      console.log({urlParam})
-  //  const valid = isAddress(urlParam)
-  //  console.log({urlParam,valid})
-  // if (valid) return valid
-  //   if (valid === false) return urlParam
+   const valid = isAddress(urlParam)
+  if (valid) return valid
+    if (valid === false) return symbol
   }
   return urlParam ?? ''
 }
-function queryParametersToSwapState(parsedQs:any ) {
-  let symbol
-  let inputCurrency
-  console.log({parsedQs})
-  if(typeof parsedQs === "number"){
-    symbol= SupportedChainSymbols[parsedQs ?? 56]
-  inputCurrency = parseCurrencyFromURLParameter(symbol) ?? 'BNB'
-  }else{
- inputCurrency = parseCurrencyFromURLParameter(parsedQs.inputCurrency)
-  }
-  
-  console.log(parsedQs.recipient)
- 
-  console.log({inputCurrency})
-  let outputCurrency = parseCurrencyFromURLParameter(parsedQs.outputCurrency)
-  if (inputCurrency === outputCurrency) {
-    if (typeof parsedQs.outputCurrency === 'string') {
-      inputCurrency = ''
-    } else {
-      outputCurrency = ''
-    }
-  }
+function queryParametersToSwapState(parsedQs:any,chainId:number ) {
+let inputCurrency = parseCurrencyFromURLParameter(parsedQs.inputCurrency)
+let outputCurrency = parseCurrencyFromURLParameter(parsedQs.outputCurrency)
+const symbol = SupportedChainSymbols[chainId ?? 56]
+if (inputCurrency === '' && outputCurrency === '') {
+  inputCurrency = symbol
+  outputCurrency = ""
+} else if (inputCurrency === '') {
+  inputCurrency = outputCurrency === symbol ? "" : symbol
+} else if (outputCurrency === '' || inputCurrency === outputCurrency) {
+  outputCurrency = inputCurrency === symbol ? "" : symbol
+}
   const recipient = validatedRecipient(parsedQs.recipient)
 
   return {
@@ -180,12 +169,7 @@ const [result, setResult] = useState<
 
   useEffect(()=>{
 if(!chainId) return
-console.log({parsedQs})
-// if URL is empty, use default token
-// let urlValue = parsedQs
-const urlValue = parsedQs.inputCurrency ? parsedQs : chainId
-console.log({urlValue})
-const parsed = queryParametersToSwapState(urlValue)
+const parsed = queryParametersToSwapState(parsedQs,chainId)
     dispatch(
       replaceSwapState({
         typedValue: parsed.typedValue,
@@ -195,7 +179,7 @@ const parsed = queryParametersToSwapState(urlValue)
         recipient: null,
       })
     )
-    // setResult({ inputCurrencyId: parsed[Field.INPUT].currencyId })
+    setResult({ inputCurrencyId: parsed[Field.INPUT].currencyId,outputCurrencyId: parsed[Field.OUTPUT].currencyId })
   },[dispatch,chainId,account])
   return result
   }

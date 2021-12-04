@@ -97,7 +97,7 @@ const tokenList = useMemo(()=>{
           open={openNewTokenModal}
           handleCurrencySelect={handleCurrencySelect}
           setDisplayImportedToken={setOpenNewTokenModal}
-          token={searchToken}
+          tokens={[searchToken]}
            />: null
           }
     </>
