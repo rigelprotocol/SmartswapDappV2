@@ -14,6 +14,7 @@ import { ethers } from 'ethers'
 import JSBI from 'jsbi'
 import useParsedQueryString from '../../hooks/useParsedQueryString'
 import { SupportedChainSymbols } from '../../utils/constants/chains'
+import { url } from 'inspector'
 export function useSwapState(): RootState['swap'] {
     return useSelector<RootState,RootState['swap']>((state) => state.swap)
 }
@@ -111,31 +112,22 @@ function parseIndependentFieldURLParameter(urlParam: any): Field {
 const ENS_NAME_REGEX = /^[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)?$/
 const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
 function validatedRecipient(recipient: any): string | null {
-
-    if (typeof recipient !== 'string') return null
+  if (typeof recipient !== 'string') return null
   const address = isAddress(recipient)
   if (address) return address
   if (ENS_NAME_REGEX.test(recipient)) return recipient
   if (ADDRESS_REGEX.test(recipient)) return recipient
   return null
-  
 }
 
 function parseCurrencyFromURLParameter(urlParam: any,symbol = ""): string {
-  try{
-     if (typeof urlParam === 'string') {
+   if (typeof urlParam === 'string') {
      console.log({urlParam})
    const valid = isAddress(urlParam)
   if (valid) return valid
     if (valid === false) return symbol
   }
   return urlParam ?? ''
-  }catch(e){
-    console.log(e)
-  }finally{
-    return symbol
-  }
-  
 }
 function queryParametersToSwapState(parsedQs:any,chainId:number ) {
 let inputCurrency = parseCurrencyFromURLParameter(parsedQs.inputCurrency)
@@ -162,7 +154,6 @@ if (inputCurrency === '' && outputCurrency === '') {
     independentField: parseIndependentFieldURLParameter(parsedQs.exactField),
     recipient,
   }
-
 }
 
 
