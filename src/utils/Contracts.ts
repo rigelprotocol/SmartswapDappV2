@@ -3,6 +3,8 @@ import { Contract } from '@ethersproject/contracts';
 import SmartFactory from './abis/SmartSwapFactoryForSwap.json';
 import LiquidityPairAbi from './abis/smartSwapLPToken.json';
 import SmartSwapRouterV2Abi from './abis/SmartSwapRouterV2.json';
+import masterChefV2 from './abis/masterChefV2.json'
+import specialPool from './abis/specialPool.json'
 import {approveAbi, allowanceAbi} from "../constants";
 import WETHABI from './abis/WETH9.json';
 
@@ -71,3 +73,27 @@ export const WETH = async (address: string) => {
 
 };
 
+export const MasterChefV2Contract = async (address: string) => {
+  const Provider = await provider();
+  const MasterChefV2Instance = new Contract(
+      address,
+      masterChefV2,
+      Provider?.getSigner()
+  );
+
+  return MasterChefV2Instance;
+};
+
+
+
+// contract for special pool
+export const RGPSpecialPool = async (address: string) => {
+  const Provider = await provider();
+  const RGPSpecialPoolInstance = new Contract(
+      address,
+      specialPool,
+      Provider?.getSigner()
+  );
+
+  return RGPSpecialPoolInstance;
+};

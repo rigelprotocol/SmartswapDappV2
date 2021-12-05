@@ -1,6 +1,8 @@
 import { getAddress } from '@ethersproject/address'
 import { Token } from '@uniswap/sdk-core'
 import { TokenAddressMap } from '../state/lists/hooks'
+import  Web3 from 'web3';
+
 // returns the checksummed address if the address for valid address or returns false
 export function isAddress(value: any): string | false {
     try {
@@ -28,3 +30,28 @@ export function isTokenOnList(tokenAddressMap: TokenAddressMap, token?: Token): 
     return Boolean(token?.isToken && tokenAddressMap[token.chainId]?.[token.address])
 }
 
+export function convertToNumber(hex : string, decimals?: number) {
+    const balance =  Web3.utils.toBN(hex);
+
+    let balanceDecimal = balance;
+    if (decimals && (balance.toLocaleString() === '0' && decimals < 20)) {
+      balanceDecimal = balance.div(Web3.utils.toBN(10 ** decimals));
+    }
+    return balanceDecimal.toLocaleString();
+  };
+
+  export function convertFromWei (balance:string , decimals?:number) {
+    const decimalValue = decimals || 18;
+    const { unitMap } = Web3.utils;
+    const unit = Object.keys(unitMap).find(
+      unit => unitMap[unit] === Math.pow(10, decimalValue).toString(),
+    );
+    return Web3.utils.fromWei(balance.toString(), unit);
+  };
+
+  export const clearInputInfo = (setInput : any, setButton: any = false, value: any) => {
+    setInput('');
+    if (setButton) {
+      setButton(value);
+    }
+  };
