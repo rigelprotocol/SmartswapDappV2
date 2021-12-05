@@ -20,8 +20,6 @@ import Web3 from 'web3';
 import { useDispatch } from 'react-redux';
 
 const ShowYieldFarmDetails = ({content, wallet}) => {
-  console.log(content)
-  console.log(wallet)
   const mode = useColorModeValue("light", DARK_THEME);
 
   const [checked, setChecked] = useState(false);
@@ -54,22 +52,32 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
 
   const getAllowances = async () => {
     try {
-      const [rigel, pool1, pool2, pool3] = await Promise.all([
+      const [rigel, pool1, pool2, pool3, pool4, pool5, pool6] = await Promise.all([
         rigelToken(),
         smartSwapLPTokenPoolOne(),
         smartSwapLPTokenPoolTwo(),
         smartSwapLPTokenPoolThree(),
+        smartSwapLPTokenV2PoolFour(),
+        smartSwapLPTokenV2PoolFive(),
+        smartSwapLPTokenV2PoolSix(),
       ]);
       if (wallet.address != '0x') {
         const [
           pool1Allowance,
           pool2Allowance,
           pool3Allowance,
+          pool4Allowance,
+          pool5Allowance,
+          pool6Allowance,
         ] = await Promise.all([
           allowance(pool1),
           allowance(pool2),
           allowance(pool3),
+          allowance(pool4),
+          allowance(pool5),
+          allowance(pool6),
         ]);
+
         let rigelAllowance = pool1Allowance;
 
         updateFarmAllowances([
@@ -77,6 +85,9 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
           pool2Allowance,
           pool1Allowance,
           pool3Allowance,
+          pool4Allowance,
+          pool5Allowance,
+          pool6Allowance,
         ]);
       }
     } catch (error) {
