@@ -109,10 +109,34 @@ export function Index() {
   }, [farmsLP]);
 
   const farmsList = async (farmsToDisplay: any) => {
-    let farmsToDisplayWithAPR = farmsToDisplay.map(
+    const getPrice = async(index: number) => {
+      const contract = async () =>
+      new ethers.Contract(
+        farmsToDisplay[index].lpAddresses[chainId !== MAINNET ? TESTNET : MAINNET],
+
+        chainId !== MAINNET ? SmartSwapLPTokenTestnet : SmartSwapLPToken2,
+        await signer()
+      );
+    
+
+    const pool = await contract();
+    const poolReserve = await pool.getReserves();
+
+    const price = ethers.utils.formatUnits(
+      poolReserve[0].mul(1000).div(poolReserve[1]),
+      3
+    );
+      return price;
+    }
+
+    const RGPprice = await getPrice(5)
+    const BNBPrice = await getPrice(3)
+    
+      let farmsToDisplayWithAPR = farmsToDisplay.map(
       async (farm: any, index: number) => {
+        
         let contract;
-        const inflation = 100;
+        
         if (farm.lpSymbol === "RGP") {
           contract = async () =>
             new ethers.Contract(
@@ -130,10 +154,10 @@ export function Index() {
           );
 
           const RGPLiquidity = ethers.utils
-            .formatUnits(RgpSupply.mul(2), 21)
+            .formatUnits(RgpSupply.mul(Math.floor(1000 * Number(RGPprice))), 21)
             .toString();
           const calculateApy =
-            (Number(RgpSupply / RGPBalance) * inflation * 365) /
+            (Number(RgpSupply / RGPBalance) * farm.inflation * 365) /
             Number(RGPLiquidity);
 
           return await {
@@ -150,23 +174,20 @@ export function Index() {
               chainId !== MAINNET ? SmartSwapLPTokenTestnet : SmartSwapLPToken2,
               await signer()
             );
+          
 
           const pool = await contract();
           const poolReserve = await pool.getReserves();
 
-          const RGPprice = ethers.utils.formatUnits(
-            poolReserve[1].mul(1000).div(poolReserve[0]),
-            3
-          );
+          // const RGPprice = ethers.utils.formatUnits(
+          //   poolReserve[0].mul(1000).div(poolReserve[1]),
+          //   3
+          // );
           const totalLiquidity = ethers.utils
-            .formatUnits(
-              poolReserve[0].mul(Math.floor(RGPprice * 1000 * 2)),
-              21
-            )
-            .toString();
+            .formatUnits(poolReserve[0].mul(index !== 2 ? 2 : Math.floor(Number(BNBPrice) * 1000 * 2))).toString();
 
           const calculateApy =
-            (Number(RGPprice) * inflation * 365) / Number(totalLiquidity);
+            (Number(RGPprice) * farm.inflation * 365 * 100) / Number(totalLiquidity);
           return await {
             ...farm,
             earn: "RGP",

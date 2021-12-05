@@ -52,6 +52,7 @@ interface FarmConfigBaseProps {
     lpAddresses: Address
     multiplier?: string
     isCommunity?: boolean
+    inflation: number
     dual?: {
       rewardPerBlock: number
       earnLabel: string
@@ -65,10 +66,12 @@ interface FarmConfigBaseProps {
   }
   
   export interface DeserializedFarmConfig extends FarmConfigBaseProps {
+
     token: Token
     quoteToken: Token
   }
 export interface SerializedFarm extends SerializedFarmConfig {
+  inflation: number
   tokenPriceBusd?: string
   quoteTokenPriceBusd?: string
   tokenAmountTotal?: SerializedBigNumber

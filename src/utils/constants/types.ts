@@ -9,6 +9,7 @@ export interface SerializedFarmConfig extends FarmConfigBaseProps {
     lpAddresses: Address
     multiplier?: string
     isCommunity?: boolean
+    inflation: number
     dual?: {
       rewardPerBlock: number
       earnLabel: string
