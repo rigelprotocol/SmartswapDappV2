@@ -178,10 +178,7 @@ export function Index() {
           const pool = await contract();
           const poolReserve = await pool.getReserves();
 
-          // const RGPprice = ethers.utils.formatUnits(
-          //   poolReserve[0].mul(1000).div(poolReserve[1]),
-          //   3
-          // );
+          
           const totalLiquidity = ethers.utils
             .formatUnits(
               poolReserve[0].mul(
