@@ -24,20 +24,12 @@ import {SMARTSWAPROUTER, WNATIVEADDRESSES} from "../../../../utils/addresses";
 import {ExplorerDataType, getExplorerLink} from "../../../../utils/getExplorerLink";
 import {addToast} from '../../../../components/Toast/toastSlice';
 import {RootState} from "../../../../state";
-<<<<<<< HEAD
 import {getDeadline, getInPutDataFromEvent, getOutPutDataFromEvent, tokenPrice} from "../../../../constants";
 import { Token } from '@uniswap/sdk-core';
 import { useAllTokens } from '../../../../hooks/Tokens';
 import {ethers} from "ethers";
 import {GetAddressTokenBalance} from "../../../../state/wallet/hooks";
 import NewToken from '../../../../components/Tokens/newToken';
-=======
-import {getDeadline, getInPutDataFromEvent, getOutPutDataFromEvent} from "../../../../constants";
-import {ethers} from "ethers";
-import {GetAddressTokenBalance} from "../../../../state/wallet/hooks";
-import {SupportedChainId} from "../../../../constants/chains";
-
->>>>>>> develop
 
 const SendToken = () => {
 const history = useHistory()
