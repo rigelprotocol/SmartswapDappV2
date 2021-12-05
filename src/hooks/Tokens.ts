@@ -155,24 +155,12 @@ export function useToken(tokenAddress?: string): Token | undefined | null {
 }
 
 export function useCurrency(currencyId: string | undefined): Currency | null | undefined {
-<<<<<<< HEAD
-  
-   const [,Symbol,Name,Logo] = useNativeBalance();
-  const { chainId } = useActiveWeb3React()
-  const isNative = currencyId?.toUpperCase() === Symbol
-  const token = useToken(isNative ? undefined : currencyId)
-  console.log({token})
-  return isNative ? chainId && ExtendedEther(chainId,Symbol,Name,Logo) : token 
-    
-
-=======
   const [,Symbol,Name,Logo] = useNativeBalance();
   const { chainId } = useActiveWeb3React();
   const isNative = currencyId?.toUpperCase() === Symbol;
   const token = useToken(isNative ? undefined : currencyId);
   return isNative ? chainId && ExtendedEther(chainId,Symbol,Name,Logo) : token
   
->>>>>>> develop
 }
 
 

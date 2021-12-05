@@ -1,26 +1,9 @@
-<<<<<<< HEAD
-import React,{ useMemo,useEffect,useState,useCallback } from 'react';
-import { Box, Button, Image, Flex, useColorModeValue } from '@chakra-ui/react';
-=======
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Box, Button, Flex, useColorModeValue} from '@chakra-ui/react';
->>>>>>> develop
 import SwapSettings from './SwapSettings';
 import { useHistory } from 'react-router';
 import From from './From';
 import To from './To';
-<<<<<<< HEAD
-import { SwitchIcon } from '../../../../theme/components/Icons';
-import { useWeb3React } from '@web3-react/core';
-import { useDefaultsFromURLSearch } from '../../../../state/swap/hooks';
-import { useCurrency } from '../../../../hooks/Tokens';
-import { Token } from '@uniswap/sdk-core';
-import { useAllTokens } from '../../../../hooks/Tokens';
-import NewToken from '../../../../components/Tokens/newToken';
-const SendToken = () => {
-  const { account,chainId } = useWeb3React();
-  const history = useHistory()
-=======
 import {SwitchIcon} from '../../../../theme/components/Icons';
 import {
     useDefaultsFromURLSearch,
@@ -42,20 +25,20 @@ import {ExplorerDataType, getExplorerLink} from "../../../../utils/getExplorerLi
 import {addToast} from '../../../../components/Toast/toastSlice';
 import {RootState} from "../../../../state";
 import {getDeadline, getInPutDataFromEvent, getOutPutDataFromEvent, tokenPrice} from "../../../../constants";
+import { Token } from '@uniswap/sdk-core';
+import { useAllTokens } from '../../../../hooks/Tokens';
 import {ethers} from "ethers";
 import {GetAddressTokenBalance} from "../../../../state/wallet/hooks";
-
+import NewToken from '../../../../components/Tokens/newToken';
 
 const SendToken = () => {
->>>>>>> develop
-
+const history = useHistory()
   const loadedUrlParams = useDefaultsFromURLSearch();
     const dispatch = useDispatch();
   
  // token warning stuff
  const [loadedInputCurrency,loadedOutputCurrency] = [
   useCurrency(loadedUrlParams?.inputCurrencyId),
-<<<<<<< HEAD
   useCurrency(loadedUrlParams?.outputCurrencyId),
 ]
 const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(false)
@@ -84,10 +67,6 @@ const handleConfirmTokenWarning = useCallback(() => {
   }, [history])
 
 
-=======
-  // useCurrency(loadedUrlParams?.outputCurrencyId),
-];
->>>>>>> develop
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   const color = useColorModeValue('#999999', '#7599BD');
   const lightmode = useColorModeValue(true, false);
