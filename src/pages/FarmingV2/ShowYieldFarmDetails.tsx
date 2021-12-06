@@ -119,6 +119,12 @@ const ShowYieldFarmDetails = ({
           await tokensWithdrawal(2);
         } else if (val === 'RBG-BUSD') {
           await tokensWithdrawal(1)
+        } else if (val === 'BNB-BUSD') {
+          await tokensWithdrawal(3)
+        } else if (val === 'AXS-RGP') {
+          await tokensWithdrawal(4)
+        } else if (val === 'AXS-BUSD') {
+          await tokensWithdrawal(5)
         }
       }
     } catch (err) {
@@ -166,7 +172,8 @@ const ShowYieldFarmDetails = ({
       );
 
       dispatch(setOpenModal({
-        trxState: TrxState.TransactionSuccessful
+        trxState: TrxState.TransactionSuccessful,
+        message: `Successfully unstaked ${convertFromWei(amountUnstaked)} RGP `
       }))
 
       dispatch(addToast({
