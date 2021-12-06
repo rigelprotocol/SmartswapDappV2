@@ -27,7 +27,7 @@ export type IModal= {
     to?: string | undefined;
     fromDeposited?:string;
     toDeposited?:string;
-    minRecieved?: string;
+    minRecieved?: string | number;
     fee?: string,
     impact?: string,
     slippage?: number,
