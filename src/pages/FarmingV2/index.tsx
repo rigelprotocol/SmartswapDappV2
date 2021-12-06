@@ -109,14 +109,14 @@ export function Index() {
   }, [farmsLP]);
 
   const farmsList = async (farmsToDisplay: any) => {
-    const getPrice = async (index: number) => {
+    const getPrice = async (index: number, type: string) => {
       const contract = async () =>
         new ethers.Contract(
           farmsToDisplay[index].lpAddresses[
-            chainId !== MAINNET ? TESTNET : MAINNET
+            Number(chainId) !== MAINNET ? TESTNET : MAINNET
           ],
 
-          chainId !== MAINNET ? SmartSwapLPTokenTestnet : SmartSwapLPToken2,
+          Number(chainId) !== MAINNET ? SmartSwapLPTokenTestnet : SmartSwapLPToken2,
           await signer()
         );
 
@@ -130,8 +130,8 @@ export function Index() {
       return price;
     };
 
-    const RGPprice = await getPrice(5);
-    const BNBPrice = await getPrice(3);
+    const RGPprice = await getPrice(4, "RGP");
+    const BNBPrice = await getPrice(3, "BNB");
 
     let farmsToDisplayWithAPR = farmsToDisplay.map(
       async (farm: any, index: number) => {
@@ -140,8 +140,8 @@ export function Index() {
         if (farm.lpSymbol === "RGP") {
           contract = async () =>
             new ethers.Contract(
-              farm.lpAddresses[chainId !== MAINNET ? TESTNET : MAINNET],
-              chainId !== MAINNET
+              farm.lpAddresses[Number(chainId) !== MAINNET ? TESTNET : MAINNET],
+              Number(chainId) !== MAINNET
                 ? SmartSwapLPTokenTestnetRGP
                 : SmartSwapLPToken,
               await signer()
@@ -150,7 +150,7 @@ export function Index() {
 
           const RgpSupply = await pool.totalSupply();
           const RGPBalance = await pool.balanceOf(
-            chainId !== MAINNET ? RGP_TESTNET_ADDRESS : RGP_MAINNET_ADDRESS
+            Number(chainId) !== MAINNET ? RGP_TESTNET_ADDRESS : RGP_MAINNET_ADDRESS
           );
 
           const RGPLiquidity = ethers.utils
@@ -169,9 +169,9 @@ export function Index() {
         } else {
           contract = async () =>
             new ethers.Contract(
-              farm.lpAddresses[chainId !== MAINNET ? TESTNET : MAINNET],
+              farm.lpAddresses[Number(chainId) !== MAINNET ? TESTNET : MAINNET],
 
-              chainId !== MAINNET ? SmartSwapLPTokenTestnet : SmartSwapLPToken2,
+              Number(chainId) !== MAINNET ? SmartSwapLPTokenTestnet : SmartSwapLPToken2,
               await signer()
             );
 
@@ -181,8 +181,8 @@ export function Index() {
           
           const totalLiquidity = ethers.utils
             .formatUnits(
-              poolReserve[0].mul(
-                index !== 2 ? 2 : Math.floor(Number(BNBPrice) * 1000 * 2)
+              poolReserve[farm.pid === 5 ? 0 : 1].mul(
+                farm.pid !== 2 ? 2 : Math.floor(Number(BNBPrice) * 1000 * 2), 21
               )
             )
             .toString();
