@@ -75,6 +75,7 @@ export default createReducer(initialState, (builder) =>
       if (!state.tokens) {
         state.tokens = {}
       }
+      console.log(state.tokens,address,chainId)
       state.tokens[chainId] = state.tokens[chainId] || {}
       delete state.tokens[chainId][address]
       state.timestamp = currentTimestamp()

@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Box, Button, Flex, useColorModeValue} from '@chakra-ui/react';
 import SwapSettings from './SwapSettings';
+import { useHistory } from 'react-router';
 import From from './From';
 import To from './To';
 import {SwitchIcon} from '../../../../theme/components/Icons';
@@ -23,22 +24,49 @@ import {SMARTSWAPROUTER, WNATIVEADDRESSES} from "../../../../utils/addresses";
 import {ExplorerDataType, getExplorerLink} from "../../../../utils/getExplorerLink";
 import {addToast} from '../../../../components/Toast/toastSlice';
 import {RootState} from "../../../../state";
-import {getDeadline, getInPutDataFromEvent, getOutPutDataFromEvent} from "../../../../constants";
+import {getDeadline, getInPutDataFromEvent, getOutPutDataFromEvent, tokenPrice} from "../../../../constants";
+import { Token } from '@uniswap/sdk-core';
+import { useAllTokens } from '../../../../hooks/Tokens';
 import {ethers} from "ethers";
 import {GetAddressTokenBalance} from "../../../../state/wallet/hooks";
-import {SupportedChainId} from "../../../../constants/chains";
-
+import NewToken from '../../../../components/Tokens/newToken';
 
 const SendToken = () => {
-
+const history = useHistory()
   const loadedUrlParams = useDefaultsFromURLSearch();
     const dispatch = useDispatch();
   
  // token warning stuff
- const [loadedInputCurrency] = [
+ const [loadedInputCurrency,loadedOutputCurrency] = [
   useCurrency(loadedUrlParams?.inputCurrencyId),
-  // useCurrency(loadedUrlParams?.outputCurrencyId),
-];
+  useCurrency(loadedUrlParams?.outputCurrencyId),
+]
+const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(false)
+
+const urlLoadedTokens: Token[] = useMemo(
+  () => [loadedInputCurrency, loadedOutputCurrency]?.filter((c): c is Token => c?.isToken ?? false) ?? [],
+  [loadedInputCurrency, loadedOutputCurrency]
+)
+
+const handleConfirmTokenWarning = useCallback(() => {
+  setDismissTokenWarning(true)
+}, [])
+
+
+ // dismiss warning if all imported tokens are in active lists
+ const defaultTokens = useAllTokens()
+ const importTokensNotInDefault =
+   urlLoadedTokens &&
+   urlLoadedTokens.filter((token: Token) => {
+     return !Boolean(token.address in defaultTokens)
+   })
+
+   const handleDismissTokenWarning = useCallback(() => {
+    setDismissTokenWarning(true)
+    history.push('/swap')
+  }, [history])
+
+
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   const color = useColorModeValue('#999999', '#7599BD');
   const lightmode = useColorModeValue(true, false);
@@ -502,6 +530,12 @@ const SendToken = () => {
   
   return (
     <div>
+      <NewToken 
+      open = {importTokensNotInDefault.length > 0 && !dismissTokenWarning}
+      tokens= {importTokensNotInDefault}
+      setDisplayImportedToken={handleDismissTokenWarning}
+
+      />
       <Box
         border="1px"
         borderColor={borderColor}
