@@ -12,15 +12,11 @@ import { ZERO_ADDRESS } from '../constants';
 import { ethers } from 'ethers';
 
 const formatAmount = (number: string) => {
-  // const numb = ethers.BigNumber.from(number).toString();
-  // let res = ethers.utils.formatEther(num);
-  // res = (+res).toString();
-  // return res;
   const num = ethers.utils.formatEther(number);
   return num;
 };
 
-export const useSwap = (
+export const useMint = (
   currencyA: Currency,
   currencyB: Currency,
   amountIn?: string
@@ -47,7 +43,6 @@ export const useSwap = (
   const tokenOneAddress = tokenA?.address || nativeAddress?.address;
   const tokenTwoAddress = tokenB?.address || nativeAddress?.address;
   const wrappable: boolean = tokenOneAddress == tokenTwoAddress;
-  console.log(wrappable);
   let validSmartAddress: string;
   if (SMARTSWAPFACTORYADDRESSES[chainId as number] !== '0x') {
     validSmartAddress = SMARTSWAPFACTORYADDRESSES[chainId as number];
@@ -80,15 +75,14 @@ export const useSwap = (
             ]);
 
             const output = formatAmount(amountOut[1]);
-            console.log(output);
+
             setAmount(output);
           } else {
             setAmount('');
           }
-          // setLoading(false)
         }
       } catch (e) {
-        console.log(`Error occurs here: ${e}`);
+        console.log(e);
         setAmount('');
       }
     };
@@ -107,5 +101,3 @@ export const useSwap = (
 
   return [address, wrap, amount];
 };
-
-//const formattedInput = ethers.utils.parseEther(amountIn);
