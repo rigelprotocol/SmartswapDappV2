@@ -640,6 +640,11 @@ export default function AddLiquidity({
             formattedAmounts[Field.OUTPUT] &&
             !hasTokenABeenApproved
               ? undefined
+              : parseFloat(formattedAmounts[Field.INPUT]) >
+                  parseFloat(balanceA) ||
+                parseFloat(formattedAmounts[Field.OUTPUT]) >
+                  parseFloat(balanceB)
+              ? 'none'
               : 'none'
           }
           onClick={() =>
@@ -666,6 +671,11 @@ export default function AddLiquidity({
             formattedAmounts[Field.OUTPUT] &&
             !hasTokenBBeenApproved
               ? undefined
+              : parseFloat(formattedAmounts[Field.INPUT]) >
+                  parseFloat(balanceA) ||
+                parseFloat(formattedAmounts[Field.OUTPUT]) >
+                  parseFloat(balanceB)
+              ? 'none'
               : 'none'
           }
           onClick={() =>
