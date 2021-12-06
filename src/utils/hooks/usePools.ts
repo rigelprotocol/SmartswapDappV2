@@ -189,7 +189,7 @@ export const useGetLiquidityById = async (
   return { LiquidityPairData, loading, approved };
 };
 
-const getAddress = (currency: Currency | undefined) => {
+export const getAddress = (currency: Currency | undefined) => {
   const address = currency?.isNative
     ? WNATIVEADDRESSES[currency?.chainId as number]
     : currency?.wrapped.address;
