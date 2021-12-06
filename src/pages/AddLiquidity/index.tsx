@@ -750,7 +750,14 @@ export default function AddLiquidity({
             setShowModal(true);
           }}
         >
-          Confirm Liquidity Add
+          {parseFloat(formattedAmounts[Field.INPUT]) > parseFloat(balanceA) ||
+          parseFloat(formattedAmounts[Field.OUTPUT]) > parseFloat(balanceB)
+            ? ` Insufficient ${
+                parseFloat(formattedAmounts[Field.INPUT]) > parseFloat(balanceA)
+                  ? currencies[Field.INPUT]?.symbol
+                  : currencies[Field.OUTPUT]?.symbol
+              } balance`
+            : 'Confirm Liquidity Add'}
         </Button>
         <ConfirmModal
           title={pairAvailable ? 'Confirm' : 'You are creating a new pool'}
