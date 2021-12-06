@@ -66,14 +66,8 @@ export default function AddLiquidity({
   const { independentField, typedValue, otherTypedValue } = useMintState();
 
   const { onCurrencySelection, onUserInput } = useMintActionHandlers();
-  const {
-    currencies,
-    getMaxValue,
-    bestTrade,
-    parsedAmount,
-    inputError,
-    showWrap,
-  } = useDerivedMintInfo();
+  const { currencies, getMaxValue, bestTrade, parsedAmount, showWrap } =
+    useDerivedMintInfo();
   const dependentField: Field =
     independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
 
