@@ -292,7 +292,6 @@ export const usePoolShare = (
             LPInstance.totalSupply(),
           ]);
           setPoolShare((balance.toString() / totalSupply) * 100);
-          console.log((balance.toString() / totalSupply) * 100);
         } catch (err) {
           console.log(err);
           setPoolShare(0);
@@ -359,7 +358,8 @@ export const usePricePerToken = (
 
 export const useAllowance = (
   CurrencyA: Currency | undefined,
-  CurrencyB: Currency | undefined
+  CurrencyB: Currency | undefined,
+  checkTokenApproval: boolean
 ) => {
   const { account, chainId } = useWeb3React();
   const [hasTokenABeenApproved, setHasTokenABeenApproved] = useState(false);
@@ -391,7 +391,7 @@ export const useAllowance = (
       setHasTokenABeenApproved(isTokenAApproved);
       setHasTokenBBeenApproved(isTokenBApproved);
     }
-  }, [CurrencyB, CurrencyA, account, chainId]);
+  }, [CurrencyB, CurrencyA, account, chainId, checkTokenApproval]);
 
   return { hasTokenABeenApproved, hasTokenBBeenApproved };
 };
@@ -418,4 +418,68 @@ export const usePriceForNewPool = (
   }, [pairExist, inputA, inputB]);
 
   return { priceAperB, priceBperA };
+};
+
+const calculateTokenToBeMinted = (
+  reservesa: string,
+  reservesb: string,
+  totalsupply: string,
+  amounta: string,
+  amountb: string
+) => {
+  const minted = Math.min(
+    (parseFloat(amounta) * parseFloat(totalsupply)) / parseFloat(reservesa),
+    (parseFloat(amountb) * parseFloat(totalsupply)) / parseFloat(reservesb)
+  );
+  return minted;
+};
+
+const calculatePoolShare = (minted: number, totalSupply: string) => {
+  const supply = ethers.utils.formatEther(totalSupply);
+  const value = parseFloat(supply) + minted;
+  const poolshare = (minted / value) * 100;
+  return poolshare;
+};
+
+export const useMintedLiquidity = (
+  CurrencyA: Currency | undefined,
+  CurrencyB: Currency | undefined,
+  AmountA: string,
+  AmountB: string
+) => {
+  const { chainId, account } = useWeb3React();
+  const [poolShare, setPoolShare] = useState('');
+  const [minted, setMinted] = useState('');
+
+  useMemo(async () => {
+    if (account && CurrencyA && CurrencyB && AmountA && AmountB) {
+      try {
+        const addressA = getAddress(CurrencyA);
+        const addressB = getAddress(CurrencyB);
+        const factory = await smartFactory(
+          SMARTSWAPFACTORYADDRESSES[chainId as number]
+        );
+
+        const pair = await factory.getPair(addressA, addressB);
+        const LPInstance = await LiquidityPairInstance(pair);
+        const reserves = await LPInstance.getReserves();
+        const totalSupply = await LPInstance.totalSupply();
+        const minted = calculateTokenToBeMinted(
+          reserves[0].toString(),
+          reserves[1].toString(),
+          totalSupply,
+          AmountA,
+          AmountB
+        );
+
+        const poolshare = calculatePoolShare(minted, totalSupply.toString());
+
+        setMinted(minted.toString());
+        setPoolShare(poolshare.toString());
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }, [account, CurrencyA, CurrencyB, AmountA, AmountB, chainId]);
+  return { minted, poolShare };
 };

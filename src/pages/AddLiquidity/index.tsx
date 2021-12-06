@@ -26,9 +26,28 @@ import {
   usePricePerToken,
   useAllowance,
   usePriceForNewPool,
+  useMintedLiquidity,
+  getAddress,
 } from '../../utils/hooks/usePools';
 import { maxAmountSpend } from '../../utils/maxAmountSpend';
-import { GetAddressTokenBalance } from '../../state/wallet/hooks';
+import {
+  getERC20Token,
+  getDeadline,
+  formatAmountIn,
+  getOutPutDataFromEvent,
+} from '../../utils/utilsFunctions';
+import { SMARTSWAPROUTER } from '../../utils/addresses';
+import { setOpenModal, TrxState } from '../../state/application/reducer';
+import { useDispatch } from 'react-redux';
+import { getExplorerLink, ExplorerDataType } from '../../utils/getExplorerLink';
+import { addToast } from '../../components/Toast/toastSlice';
+import { calculateSlippageAmount } from '../../utils/calculateSlippageAmount';
+import ConfirmModal from './modals/ConfirmModal';
+import { useUserSlippageTolerance } from '../../state/user/hooks';
+import { useUserTransactionTTL } from '../../state/user/hooks';
+import { Currency } from '@uniswap/sdk';
+import { SmartSwapRouter } from '../../utils/Contracts';
+import { ethers } from 'ethers';
 
 export default function AddLiquidity({
   match: {
@@ -58,6 +77,9 @@ export default function AddLiquidity({
   const dependentField: Field =
     independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
 
+  const { chainId, account } = useWeb3React();
+  const dispatch = useDispatch();
+
   const { pairAvailable } = useIsPoolsAvailable(
     currencies[Field.INPUT],
     currencies[Field.OUTPUT]
@@ -65,14 +87,11 @@ export default function AddLiquidity({
 
   const [balanceA, setBalanceA] = useState('');
   const [balanceB, setBalanceB] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [checkTokenApproval, setCheckTokenApproval] = useState(false);
 
-  // const [balanceA] = GetAddressTokenBalance(
-  //   currencies[Field.INPUT] ?? undefined
-  // );
-
-  // const [balanceB] = GetAddressTokenBalance(
-  //   currencies[Field.OUTPUT] ?? undefined
-  // );
+  const [userSlippageTolerance] = useUserSlippageTolerance();
+  const [userDeadline] = useUserTransactionTTL();
 
   const { priceAToB, priceBToA } = usePricePerToken(
     currencies[Field.INPUT],
@@ -109,19 +128,23 @@ export default function AddLiquidity({
     pairAvailable
   );
 
-  const { poolShare } = usePoolShare(
-    currencies[Field.INPUT],
-    currencies[Field.OUTPUT]
-  );
+  // const { poolShare } = usePoolShare(
+  //   currencies[Field.INPUT],
+  //   currencies[Field.OUTPUT]
+  // );
 
   const { hasTokenABeenApproved, hasTokenBBeenApproved } = useAllowance(
     currencies[Field.INPUT],
     currencies[Field.OUTPUT],
-    
+    checkTokenApproval
   );
 
-  // const [hasTokenABeenApproved, setHashasTokenABeenApproved] = useState(false);
-  // const [hasTokenBBeenApproved, setHasTokenBBeenApproved] = useState(false);
+  const { minted, poolShare } = useMintedLiquidity(
+    currencies[Field.INPUT],
+    currencies[Field.OUTPUT],
+    formattedAmounts[Field.INPUT],
+    formattedAmounts[Field.OUTPUT]
+  );
 
   const handleMaxInput = async () => {
     const value = await getMaxValue(currencies[Field.INPUT]);
@@ -143,6 +166,331 @@ export default function AddLiquidity({
     },
     [onUserInput, pairAvailable]
   );
+
+  const approveTokens = async (address: string, symbol: string) => {
+    if (account) {
+      const token = await getERC20Token(address);
+      try {
+        dispatch(
+          setOpenModal({
+            message: `${symbol} Approval`,
+            trxState: TrxState.WaitingForConfirmation,
+          })
+        );
+        const walletBal = (await token.balanceOf(account)) + 4e18;
+        const approval = await token.approve(
+          SMARTSWAPROUTER[chainId as number],
+          walletBal,
+          {
+            from: account,
+          }
+        );
+        const { confirmations } = await approval.wait(1);
+        const { hash } = approval;
+        if (confirmations >= 1) {
+          const explorerLink = getExplorerLink(
+            chainId as number,
+            hash,
+            ExplorerDataType.TRANSACTION
+          );
+          setCheckTokenApproval(true);
+          dispatch(
+            setOpenModal({
+              message: `${symbol} Approval Successful`,
+              trxState: TrxState.TransactionSuccessful,
+            })
+          );
+          dispatch(
+            addToast({
+              message: `Approve ${symbol}`,
+              URL: explorerLink,
+            })
+          );
+        }
+      } catch (err) {
+        console.log(err);
+        dispatch(
+          setOpenModal({
+            message: `${symbol} Approval`,
+            trxState: TrxState.TransactionFailed,
+          })
+        );
+      }
+    }
+  };
+
+  const addLiquidityETH = async (
+    amountA: string,
+    amountB: string,
+    currencyA: Currency,
+    currencyB: Currency
+  ) => {
+    if (account) {
+      const smartswaprouter = await SmartSwapRouter(
+        SMARTSWAPROUTER[chainId as number]
+      );
+      const deadLine = getDeadline(userDeadline);
+      const AmountAMin = formatAmountIn(amountA, currencyA.decimals);
+      const AmountBMin = formatAmountIn(amountB, currencyB.decimals);
+
+      try {
+        dispatch(
+          setOpenModal({
+            message: `Supplying ${parseFloat(amountA).toFixed(6)} ${
+              currencyA.symbol
+            } and ${parseFloat(amountB).toFixed(6)} ${currencyB.symbol}`,
+            trxState: TrxState.WaitingForConfirmation,
+          })
+        );
+        const gasCost = await smartswaprouter.estimateGas.addLiquidityETH(
+          currencyA.isNative ? currencyB.address : currencyA.address,
+          currencyA.isNative ? AmountBMin : AmountAMin,
+          currencyA.isNative
+            ? calculateSlippageAmount(
+                AmountBMin,
+                pairAvailable ? userSlippageTolerance : 0
+              )
+            : calculateSlippageAmount(
+                AmountAMin,
+                pairAvailable ? userSlippageTolerance : 0
+              ),
+          currencyA.isNative
+            ? calculateSlippageAmount(
+                AmountAMin,
+                pairAvailable ? userSlippageTolerance : 0
+              )
+            : calculateSlippageAmount(
+                AmountBMin,
+                pairAvailable ? userSlippageTolerance : 0
+              ),
+          account,
+          deadLine,
+          {
+            value: currencyA.isNative ? AmountAMin : AmountBMin,
+            gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+          }
+        );
+
+        const data = await smartswaprouter.addLiquidityETH(
+          currencyA.isNative ? currencyB.address : currencyA.address,
+          currencyA.isNative ? AmountBMin : AmountAMin,
+          currencyA.isNative
+            ? calculateSlippageAmount(
+                AmountBMin,
+                pairAvailable ? userSlippageTolerance : 0
+              )
+            : calculateSlippageAmount(
+                AmountAMin,
+                pairAvailable ? userSlippageTolerance : 0
+              ),
+          currencyA.isNative
+            ? calculateSlippageAmount(
+                AmountAMin,
+                pairAvailable ? userSlippageTolerance : 0
+              )
+            : calculateSlippageAmount(
+                AmountBMin,
+                pairAvailable ? userSlippageTolerance : 0
+              ),
+          account,
+          deadLine,
+          {
+            value: currencyA.isNative ? AmountAMin : AmountBMin,
+            gasLimit: parseFloat(gasCost.toString()) * 2,
+            gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+          }
+        );
+        const { confirmations, events } = await data.wait(3);
+        const { hash } = data;
+        const addressA = getAddress(currencyA);
+        const addressB = getAddress(currencyB);
+        if (confirmations >= 3) {
+          const inputValueForTokenA = await getOutPutDataFromEvent(
+            addressA,
+            events,
+            currencyA.decimals
+          );
+          const inputValueForTokenB = await getOutPutDataFromEvent(
+            addressB,
+            events,
+            currencyB.decimals
+          );
+
+          const explorerLink = getExplorerLink(
+            chainId as number,
+            hash,
+            ExplorerDataType.TRANSACTION
+          );
+
+          onUserInput(Field.OUTPUT, '', pairAvailable);
+          onUserInput(Field.INPUT, '', pairAvailable);
+
+          dispatch(
+            setOpenModal({
+              message: 'Transaction Successful',
+              trxState: TrxState.TransactionSuccessful,
+            })
+          );
+          dispatch(
+            addToast({
+              message: `Add ${parseFloat(inputValueForTokenA as string).toFixed(
+                6
+              )} ${currencyA.symbol} and ${parseFloat(
+                inputValueForTokenB as string
+              ).toFixed(6)} ${currencyB.symbol} to Smartswap V2`,
+              URL: explorerLink,
+            })
+          );
+        }
+      } catch (err) {
+        console.log(err);
+        dispatch(
+          setOpenModal({
+            message: `Transaction Failed`,
+            trxState: TrxState.TransactionFailed,
+          })
+        );
+      }
+    }
+  };
+
+  const addLiquidity = async (
+    amountA: string,
+    amountB: string,
+    currencyA: Currency,
+    currencyB: Currency
+  ) => {
+    if (account) {
+      const smartswaprouter = await SmartSwapRouter(
+        SMARTSWAPROUTER[chainId as number]
+      );
+      const deadLine = getDeadline(userDeadline);
+      const AmountAMin = formatAmountIn(amountA, currencyA.decimals);
+      const AmountBMin = formatAmountIn(amountB, currencyB.decimals);
+
+      try {
+        dispatch(
+          setOpenModal({
+            message: `Supplying ${parseFloat(amountA).toFixed(6)} ${
+              currencyA.symbol
+            } and ${parseFloat(amountB).toFixed(6)} ${currencyB.symbol}`,
+            trxState: TrxState.WaitingForConfirmation,
+          })
+        );
+        const gasCost = await smartswaprouter.estimateGas.addLiquidity(
+          currencyA.address,
+          currencyB.address,
+          AmountAMin,
+          AmountBMin,
+          calculateSlippageAmount(
+            AmountAMin,
+            pairAvailable ? userSlippageTolerance : 0
+          ),
+          calculateSlippageAmount(
+            AmountBMin,
+            pairAvailable ? userSlippageTolerance : 0
+          ),
+          account,
+          deadLine,
+          {
+            gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+          }
+        );
+
+        const data = await smartswaprouter.addLiquidity(
+          currencyA.address,
+          currencyB.address,
+          AmountAMin,
+          AmountBMin,
+          calculateSlippageAmount(
+            AmountAMin,
+            pairAvailable ? userSlippageTolerance : 0
+          ),
+          calculateSlippageAmount(
+            AmountBMin,
+            pairAvailable ? userSlippageTolerance : 0
+          ),
+          account,
+          deadLine,
+          {
+            gasLimit: parseFloat(gasCost.toString()) * 2,
+            gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+          }
+        );
+        const { confirmations, events } = await data.wait(3);
+        const { hash } = data;
+        const addressA = getAddress(currencyA);
+        const addressB = getAddress(currencyB);
+        if (confirmations >= 3) {
+          const inputValueForTokenA = await getOutPutDataFromEvent(
+            addressA,
+            events,
+            currencyA.decimals
+          );
+          const inputValueForTokenB = await getOutPutDataFromEvent(
+            addressB,
+            events,
+            currencyB.decimals
+          );
+
+          const explorerLink = getExplorerLink(
+            chainId as number,
+            hash,
+            ExplorerDataType.TRANSACTION
+          );
+
+          onUserInput(Field.OUTPUT, '', pairAvailable);
+          onUserInput(Field.INPUT, '', pairAvailable);
+
+          dispatch(
+            setOpenModal({
+              message: 'Transaction Successful',
+              trxState: TrxState.TransactionSuccessful,
+            })
+          );
+          dispatch(
+            addToast({
+              message: `Add ${parseFloat(inputValueForTokenA as string).toFixed(
+                6
+              )} ${currencyA.symbol} and ${parseFloat(
+                inputValueForTokenB as string
+              ).toFixed(6)} ${currencyB.symbol} to Smartswap V2`,
+              URL: explorerLink,
+            })
+          );
+        }
+      } catch (err) {
+        console.log(err);
+        dispatch(
+          setOpenModal({
+            message: `Transaction Failed`,
+            trxState: TrxState.TransactionFailed,
+          })
+        );
+      }
+    }
+  };
+
+  const handleAddLiquidity = () => {
+    if (
+      currencies[Field.INPUT]?.isNative ||
+      currencies[Field.OUTPUT]?.isNative
+    ) {
+      addLiquidityETH(
+        formattedAmounts[Field.INPUT],
+        formattedAmounts[Field.OUTPUT],
+        currencies[Field.INPUT] as Currency,
+        currencies[Field.OUTPUT] as Currency
+      );
+    } else {
+      addLiquidity(
+        formattedAmounts[Field.INPUT],
+        formattedAmounts[Field.OUTPUT],
+        currencies[Field.INPUT] as Currency,
+        currencies[Field.OUTPUT] as Currency
+      );
+    }
+  };
 
   return (
     <Center m={8}>
@@ -269,10 +617,14 @@ export default function AddLiquidity({
             <Spacer />
             <VStack>
               <Text color={textColorOne}>
-                {priceAperB && priceBperA
+                {!pairAvailable &&
+                formattedAmounts[Field.INPUT] &&
+                formattedAmounts[Field.OUTPUT]
                   ? '100%'
-                  : poolShare
-                  ? `${poolShare.toFixed(6)}% `
+                  : poolShare &&
+                    formattedAmounts[Field.INPUT] &&
+                    formattedAmounts[Field.OUTPUT]
+                  ? `${parseFloat(poolShare).toFixed(6)}% `
                   : '-'}
               </Text>
               <Text color={topIcons}>Share of Pool</Text>
@@ -296,6 +648,12 @@ export default function AddLiquidity({
               ? undefined
               : 'none'
           }
+          onClick={() =>
+            approveTokens(
+              currencies[Field.INPUT]?.address,
+              currencies[Field.INPUT]?.symbol as string
+            )
+          }
         >
           {`Approve ${currencies[Field.INPUT]?.symbol}`}
         </Button>
@@ -315,6 +673,12 @@ export default function AddLiquidity({
             !hasTokenBBeenApproved
               ? undefined
               : 'none'
+          }
+          onClick={() =>
+            approveTokens(
+              currencies[Field.OUTPUT]?.address,
+              currencies[Field.OUTPUT]?.symbol as string
+            )
           }
         >
           {`Approve ${currencies[Field.OUTPUT]?.symbol}`}
@@ -388,9 +752,27 @@ export default function AddLiquidity({
           w="100%"
           _hover={{ bgColor: 'none' }}
           _active={{ bgColor: 'none' }}
+          onClick={() => {
+            setShowModal(true);
+          }}
         >
           Confirm Liquidity Add
         </Button>
+        <ConfirmModal
+          title={pairAvailable ? 'Confirm' : 'You are creating a new pool'}
+          amount={minted}
+          from={currencies[Field.INPUT]?.symbol as string}
+          fromPrice={priceBToA as string}
+          to={currencies[Field.OUTPUT]?.symbol as string}
+          toPrice={priceAToB as string}
+          fromDeposited={formattedAmounts[Field.INPUT]}
+          toDeposited={formattedAmounts[Field.OUTPUT]}
+          poolShare={poolShare}
+          showModal={showModal}
+          setShowModal={setShowModal}
+          handleAddLiquidity={handleAddLiquidity}
+          pairAvailable={pairAvailable}
+        />
       </Box>
     </Center>
   );
