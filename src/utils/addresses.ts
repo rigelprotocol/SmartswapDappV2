@@ -36,3 +36,22 @@ export const WNATIVEADDRESSES: { [key: string]: string } = {
   '137': '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
   '80001': '0x9d91d1f8Ac4CF6C698a1a15c738323E2ad6F23E4',
 };
+
+export const MASTERCHEFV2ADDRESSES: { [key: string]: string } = {
+  '1': '0x',
+  '3': '0x',
+  '56': '0xe1eccccb46755a38d218bf7fdcd6f26c2cd7671f',
+  '97': '0x1f5dabb92aba96928d12e405d66275e20c53d846',
+  '137': '0x',
+  '80001': '0x',
+};
+
+export const RGPSPECIALPOOLADDRESSES: { [key: string]: string } = {
+  '1': '0x',
+  '3': '0x',
+  '56': '0x100514759dcd6e2ccbb9eb87481b96de28c4b77f',
+  '97': '0x7fe2ec631716fef3657bcb8d80cffbb2a34f7617',
+  '137': '0x',
+  '80001': '0x',
+};
+

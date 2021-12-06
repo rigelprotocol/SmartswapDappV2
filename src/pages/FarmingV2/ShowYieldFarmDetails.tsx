@@ -23,7 +23,7 @@ import { useDispatch } from 'react-redux';
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { getExplorerLink, ExplorerDataType } from "../../utils/getExplorerLink";
 import { MasterChefV2Contract, RGPSpecialPool } from "../../utils/Contracts";
-import { SMARTSWAPROUTER } from "../../utils/addresses";
+import { MASTERCHEFV2ADDRESSES, RGPADDRESSES } from "../../utils/addresses";
 import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
 const ShowYieldFarmDetails = ({
   content
@@ -58,6 +58,8 @@ const ShowYieldFarmDetails = ({
     //   checkUser(val);
     // }
   };
+
+  console.log("Current chain ID is ", chainId)
 
   const handleChecked = () => {
     setChecked(true);
@@ -143,7 +145,7 @@ const ShowYieldFarmDetails = ({
   const tokensWithdrawal = async (pid: number) => {
     if (account) {
 
-      const lpTokens = await MasterChefV2Contract(SMARTSWAPROUTER[chainId as number]);
+      const lpTokens = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number]);
       const data = await lpTokens.withdraw(
         pid,
         ethers.utils.parseEther(unstakeToken.toString()),
@@ -163,6 +165,9 @@ const ShowYieldFarmDetails = ({
         ExplorerDataType.TRANSACTION
       );
 
+      dispatch(setOpenModal({
+        trxState: TrxState.TransactionSuccessful
+      }))
 
       dispatch(addToast({
         message: `Successfully unstaked ${convertFromWei(amountUnstaked)} RGP `
@@ -182,7 +187,7 @@ const ShowYieldFarmDetails = ({
   const RGPUnstake = async () => {
     if (account) {
 
-      const specialPool = await RGPSpecialPool(SMARTSWAPROUTER[chainId as number]);
+      const specialPool = await RGPSpecialPool(RGPADDRESSES[chainId as number]);
       const data = await specialPool.unStake(
         ethers.utils.parseUnits(unstakeToken, 'ether'), // user input from onclick shoild be here...
         {
