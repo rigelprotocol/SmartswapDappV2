@@ -59,7 +59,6 @@ const ShowYieldFarmDetails = ({
     // }
   };
 
-  console.log("Current chain ID is ", chainId)
 
   const handleChecked = () => {
     setChecked(true);
@@ -136,8 +135,6 @@ const ShowYieldFarmDetails = ({
       }))
 
     }
-
-
     setTimeout(() => closeModal(), 400);
     clearInputInfo(setUnstakeToken, setUnstakeButtonValue, 'Confirm');
   }
@@ -147,48 +144,63 @@ const ShowYieldFarmDetails = ({
 
     return { confirmations, status, logs };
   };
+
   // withdrawal for the Liquidity Provider tokens for all pools
   const tokensWithdrawal = async (pid: number) => {
+
     if (account) {
 
-      const lpTokens = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number]);
-      const data = await lpTokens.withdraw(
-        pid,
-        ethers.utils.parseEther(unstakeToken.toString()),
-        {
-          from: account,
-          gasLimit: 250000,
-          gasPrice: ethers.utils.parseUnits('20', 'gwei'),
-        },
-      );
-      const { confirmations, status, logs } = await fetchTransactionData(data);
-      const { hash } = data;
-      const amountUnstaked = convertToNumber(logs[1].data)
+      try {
 
-      const explorerLink = getExplorerLink(
-        chainId as number,
-        hash,
-        ExplorerDataType.TRANSACTION
-      );
+        const lpTokens = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number]);
+        const data = await lpTokens.withdraw(
+          pid,
+          ethers.utils.parseEther(unstakeToken.toString()),
+          {
+            from: account,
+            gasLimit: 250000,
+            gasPrice: ethers.utils.parseUnits('20', 'gwei'),
+          },
+        );
+        const { confirmations, status, logs } = await fetchTransactionData(data);
+        const { hash } = data;
+        const amountUnstaked = convertToNumber(logs[1].data)
 
-      dispatch(setOpenModal({
-        trxState: TrxState.TransactionSuccessful,
-        message: `Successfully unstaked ${convertFromWei(amountUnstaked)} RGP `
-      }))
+        const explorerLink = getExplorerLink(
+          chainId as number,
+          hash,
+          ExplorerDataType.TRANSACTION
+        );
 
-      dispatch(addToast({
-        message: `Successfully unstaked ${convertFromWei(amountUnstaked)} RGP `
-        ,
+        dispatch(setOpenModal({
+          trxState: TrxState.TransactionSuccessful,
+          message: `Successfully unstaked ${convertFromWei(amountUnstaked)} RGP `
+        }))
 
-        URL: explorerLink
-      })
+        dispatch(addToast({
+          message: `Successfully unstaked ${convertFromWei(amountUnstaked)} RGP `
+          ,
 
-      )
-      // dispatch the getTokenStaked action from here when data changes
-      //callRefreshFarm(confirmations, status);
-    }
-  };
+          URL: explorerLink
+        })
 
+        )
+        // dispatch the getTokenStaked action from here when data changes
+        //callRefreshFarm(confirmations, status);
+
+
+      } catch (e) {
+        console.log(e);
+        dispatch(
+          setOpenModal({
+            trxState: TrxState.TransactionFailed,
+          })
+        );
+
+      }
+
+    };
+  }
 
   // withdrawal of funds
   const RGPUnstake = async () => {
