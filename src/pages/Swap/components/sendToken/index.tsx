@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Box, Button, Flex, useColorModeValue} from '@chakra-ui/react';
 import SwapSettings from './SwapSettings';
+import { useHistory } from 'react-router';
 import From from './From';
 import To from './To';
 import {SwitchIcon} from '../../../../theme/components/Icons';
@@ -17,27 +18,57 @@ import {maxAmountSpend} from "../../../../utils/maxAmountSpend";
 import {useUserSlippageTolerance} from "../../../../state/user/hooks";
 import {useDispatch, useSelector} from "react-redux";
 import {setOpenModal, TrxState} from "../../../../state/application/reducer";
-import {ApprovalRouter, ApproveCheck, SmartSwapRouter, WETH} from "../../../../utils/Contracts";
+import {ApprovalRouter, ApproveCheck, SmartSwapRouter, WETH, smartFactory} from "../../../../utils/Contracts";
 import {useActiveWeb3React} from "../../../../utils/hooks/useActiveWeb3React";
 import {SMARTSWAPROUTER, WNATIVEADDRESSES} from "../../../../utils/addresses";
 import {ExplorerDataType, getExplorerLink} from "../../../../utils/getExplorerLink";
 import {addToast} from '../../../../components/Toast/toastSlice';
 import {RootState} from "../../../../state";
-import {getDeadline, getInPutDataFromEvent, getOutPutDataFromEvent} from "../../../../constants";
+import {getDeadline, getInPutDataFromEvent, getOutPutDataFromEvent, tokenPrice, ZERO_ADDRESS} from "../../../../constants";
+import { Token } from '@uniswap/sdk-core';
+import { useAllTokens } from '../../../../hooks/Tokens';
 import {ethers} from "ethers";
 import {GetAddressTokenBalance} from "../../../../state/wallet/hooks";
+import NewToken from '../../../../components/Tokens/newToken';
 import {SupportedChainId} from "../../../../constants/chains"
+import { SMARTSWAPFACTORYADDRESSES } from '../../../../utils/addresses';
 
 const SendToken = () => {
-
+const history = useHistory()
   const loadedUrlParams = useDefaultsFromURLSearch();
     const dispatch = useDispatch();
 
  // token warning stuff
- const [loadedInputCurrency] = [
+ const [loadedInputCurrency,loadedOutputCurrency] = [
   useCurrency(loadedUrlParams?.inputCurrencyId),
-  // useCurrency(loadedUrlParams?.outputCurrencyId),
-];
+  useCurrency(loadedUrlParams?.outputCurrencyId),
+]
+const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(false)
+
+const urlLoadedTokens: Token[] = useMemo(
+  () => [loadedInputCurrency, loadedOutputCurrency]?.filter((c): c is Token => c?.isToken ?? false) ?? [],
+  [loadedInputCurrency, loadedOutputCurrency]
+)
+
+const handleConfirmTokenWarning = useCallback(() => {
+  setDismissTokenWarning(true)
+}, [])
+
+
+ // dismiss warning if all imported tokens are in active lists
+ const defaultTokens = useAllTokens()
+ const importTokensNotInDefault =
+   urlLoadedTokens &&
+   urlLoadedTokens.filter((token: Token) => {
+     return !Boolean(token.address in defaultTokens)
+   })
+
+   const handleDismissTokenWarning = useCallback(() => {
+    setDismissTokenWarning(true)
+    history.push('/swap')
+  }, [history])
+
+
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   const color = useColorModeValue('#999999', '#7599BD');
   const lightmode = useColorModeValue(true, false);
@@ -113,6 +144,7 @@ const SendToken = () => {
     const LPFee = (0.003 * Number(formattedAmounts[Field.INPUT])).toFixed(4);
 
     const receivedAmount = Number(formattedAmounts[Field.OUTPUT]).toFixed(4);
+    const fromAmount = Number(formattedAmounts[Field.INPUT]);
 
     const parsedOutput = ethers.utils.parseEther(minimum.toString()).toString();
     console.log(parsedOutput);
@@ -499,19 +531,31 @@ const SendToken = () => {
        }
   };
 
-
-  const fromAmount = Number(formattedAmounts[Field.INPUT]);
   const [routeAddress, setRouteAddress] = useState([]);
+  const fromAddress = currencies[Field.INPUT]?.isNative ? (WNATIVEADDRESSES[chainId as number]) : (currencies[Field.INPUT]?.wrapped.address);
+  const toAddress = currencies[Field.OUTPUT]?.isNative ? (WNATIVEADDRESSES[chainId as number]) : (currencies[Field.OUTPUT]?.wrapped.address);
+  const path = [fromAddress, toAddress]
+
+  const checkLiquidityPair = async () => {
+    const factory = await smartFactory(
+      SMARTSWAPFACTORYADDRESSES[chainId as number]
+    );
+    const LPAddress = await factory.getPair(fromAddress, toAddress);
+    if(LPAddress !== ZERO_ADDRESS){
+      setRouteAddress([fromAddress, toAddress])
+    }
+  }
+  useEffect(async () => {
+    await checkLiquidityPair();
+  }, [fromAddress, toAddress, path]);
 
   const calculatePriceImpact = async () => {
-    const route = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number]);
-    const from = currencies[Field.INPUT]?.isNative ? (WNATIVEADDRESSES[chainId as number]) : (currencies[Field.INPUT]?.wrapped.address);
-    const to = currencies[Field.OUTPUT]?.isNative ? (WNATIVEADDRESSES[chainId as number]) : (currencies[Field.OUPUT]?.wrapped.address);
-    console.log(`check here- ${from} --- ${to}`)
-
+    const SwapRouter = await SmartSwapRouter(
+      SMARTSWAPROUTER[chainId as number]
+    );
     if (routeAddress.length === 2) {
       try {
-        const price = await route.getAmountsOut(
+        const price = await SwapRouter.getAmountsOut(
           '1000000000000000000',
           routeAddress,
         );
@@ -523,59 +567,6 @@ const SendToken = () => {
       } catch (e) {
         setPriceImpact(0);
       }
-    } else if (routeAddress.length === 3) {
-      try {
-        const price1 = await route.getAmountsOut('1000000000000000000', [
-          routeAddress[0],
-          routeAddress[1],
-        ]);
-
-        const price1String = price1.toString().split(',');
-
-        const price2 = await route.getAmountsOut(price1String[1], [
-          routeAddress[1],
-          routeAddress[2],
-        ]);
-
-        const marketPrice = ethers.utils.formatEther(price2[1].toString());
-        const swapPrice = receivedAmount / fromAmount;
-        const priceDifference = swapPrice - marketPrice;
-        const priceImpact = (priceDifference / marketPrice) * 100;
-        setPriceImpact(parseFloat(priceImpact).toFixed(2));
-      } catch (e) {
-        setPriceImpact(0);
-      }
-    } else if (routeAddress.length === 4) {
-      try {
-        const price1 = await route.getAmountsOut('1000000000000000000', [
-          routeAddress[0],
-          routeAddress[1],
-        ]);
-
-        const price1String = price1.toString().split(',');
-
-        const price2 = await route.getAmountsOut(price1String[1], [
-          routeAddress[1],
-          routeAddress[2],
-        ]);
-
-        const price2String = price2.toString().split(',');
-
-        const price3 = await route.getAmountsOut(price2String[1], [
-          routeAddress[2],
-          routeAddress[3],
-        ]);
-
-        const marketPrice = ethers.utils.formatEther(price3[1].toString());
-        const swapPrice = receivedAmount / fromAmount;
-        const priceDifference = swapPrice - marketPrice;
-        const priceImpact = (priceDifference / marketPrice) * 100;
-        setPriceImpact(parseFloat(priceImpact).toFixed(2));
-      } catch (e) {
-        setPriceImpact(0);
-      }
-    } else {
-      setPriceImpact(0);
     }
   };
   useEffect(async () => {
@@ -584,6 +575,12 @@ const SendToken = () => {
 
   return (
     <div>
+      <NewToken
+      open = {importTokensNotInDefault.length > 0 && !dismissTokenWarning}
+      tokens= {importTokensNotInDefault}
+      setDisplayImportedToken={handleDismissTokenWarning}
+
+      />
       <Box
         border="1px"
         borderColor={borderColor}

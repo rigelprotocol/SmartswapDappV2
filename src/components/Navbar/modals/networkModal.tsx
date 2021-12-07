@@ -1,16 +1,22 @@
-import React from "react";
+import React from 'react';
 import {
-    ModalOverlay,
-    ModalContent,
-    Modal,
-    ModalCloseButton,
-    useColorModeValue,
-} from "@chakra-ui/react";
-import WalletOptions from "../WalletOptions";
-import { ConnectorNames, connectorKey} from "../../../connectors";
-import useAuth from "../../../utils/hooks/useAuth";
+  ModalOverlay,
+  ModalContent,
+  Modal,
+  ModalCloseButton,
+  useColorModeValue,
+} from '@chakra-ui/react';
+import WalletOptions from '../WalletOptions';
+import { ConnectorNames, connectorKey } from '../../../connectors';
+import useAuth from '../../../utils/hooks/useAuth';
 
-const NetworkModal = ({displayNetwork, setDisplayNetwork} : {displayNetwork: boolean, setDisplayNetwork: Function}) => {
+const NetworkModal = ({
+  displayNetwork,
+  setDisplayNetwork,
+}: {
+  displayNetwork: boolean;
+  setDisplayNetwork: Function;
+}) => {
   const bgColor3 = useColorModeValue('#DEE6ED', '#4A739B');
   const shadow = useColorModeValue(
     '0px 1px 7px -2px rgba(24, 39, 75, 0.06), 0px 2px 2px rgba(24, 39, 75, 0.06)',
@@ -18,41 +24,45 @@ const NetworkModal = ({displayNetwork, setDisplayNetwork} : {displayNetwork: boo
   );
   const bg = useColorModeValue('#FFFFFF', '#15202B');
   const buttonBorder = useColorModeValue('gray.200', 'gray.100');
-  const {login} = useAuth();
+  const { login } = useAuth();
 
-    const connectWallet = (connectorID: ConnectorNames) => {
-        login(connectorID);
-        window.localStorage.setItem(connectorKey, connectorID)
-    };
+  const connectWallet = (connectorID: ConnectorNames) => {
+    login(connectorID);
+    window.localStorage.setItem(connectorKey, connectorID);
+  };
 
   return (
     <>
-    <Modal isOpen={displayNetwork} onClose={()=>setDisplayNetwork(false)} isCentered>
-      <ModalOverlay />
-      <ModalContent
-        width="90vw"
-        borderRadius="6px"
-        border={'1px solid'}
-        borderColor={bgColor3}
-        minHeight="40vh"
-        boxShadow={shadow}
-        bg={bg}
+      <Modal
+        isOpen={displayNetwork}
+        onClose={() => setDisplayNetwork(false)}
+        isCentered
       >
-        <ModalCloseButton
-          bg="none"
-          size={'sm'}
-          mt={6}
-          mr={3}
-          cursor="pointer"
-          _focus={{ outline: 'none' }}
-          onClick={()=>setDisplayNetwork(false)}
-          p={'7px'}
+        <ModalOverlay />
+        <ModalContent
+          width="90vw"
+          borderRadius="6px"
           border={'1px solid'}
-          borderColor={buttonBorder}
-        />
-        <WalletOptions connect={connectWallet} />
-      </ModalContent>
-    </Modal>
+          borderColor={bgColor3}
+          minHeight="40vh"
+          boxShadow={shadow}
+          bg={bg}
+        >
+          <ModalCloseButton
+            bg="none"
+            size={'sm'}
+            mt={6}
+            mr={3}
+            cursor="pointer"
+            _focus={{ outline: 'none' }}
+            onClick={() => setDisplayNetwork(false)}
+            p={'7px'}
+            border={'1px solid'}
+            borderColor={buttonBorder}
+          />
+          <WalletOptions connect={connectWallet} />
+        </ModalContent>
+      </Modal>
     </>
   );
 };

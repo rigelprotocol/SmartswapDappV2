@@ -22,14 +22,14 @@ import { Token } from "@uniswap/sdk-core";
 import CurrencyLogo from "../currencyLogo";
 
 export type IModal= {
-token?:Token,
+tokens?:Token[],
 open:boolean,
 setDisplayImportedToken:React.Dispatch<React.SetStateAction<boolean>>,
 handleCurrencySelect?: (currency: Token) => void
 }
 
 const NewToken:React.FC<IModal> = ({
-  token,
+  tokens,
   open,
   setDisplayImportedToken,
   handleCurrencySelect}) => {
@@ -97,26 +97,34 @@ const NewToken:React.FC<IModal> = ({
                           </Text>
                     </Flex>
                 
-                     
-                <Flex 
+                    {tokens?.map((token,id)=>{
+                      return (
+                          <Flex 
                 justifyContent="center"
                 alignItems="center"
                 flexDirection="column"
                 bgColor={boxColor} borderRadius="6px"
-                py="30px">
+                my="3"
+                py="25px" key={id}>
                  <CurrencyLogo currency={token} />
-                    <Text my="4" color={heavyTextColor}>{token?.symbol}</Text>
+                    <Text my="3" color={heavyTextColor}>{token?.symbol}</Text>
                     <Text color={lightTextColor}>{token?.name}</Text>
-                    <Text my="4" color={textColor}>{token?.address}</Text>
+                    <Text my="3" color={textColor}>{token?.address}</Text>
                     <Button color={dangerColor} _hover={{bgColor:"#FFE6EE"}} bgColor={dangerBackground}><WarningIcon color={dangerColor} /> Unknown Source</Button>
                 </Flex>
+                      )
+                    })
+
+                    } 
+              
                 <Button color="white" bgColor={textColor} isFullWidth mt="3" height="48px"
                 onClick={() => {
-                  if(token){
-                   addToken(token)
-                setDisplayImportedToken(false)
-                  handleCurrencySelect && handleCurrencySelect(token) 
-                  }
+                  tokens?.map(token=> {
+                    addToken(token)
+                    setDisplayImportedToken(false)
+                    handleCurrencySelect && handleCurrencySelect(token) 
+                    
+                  })
                 
                 }}
                 > Import</Button>
