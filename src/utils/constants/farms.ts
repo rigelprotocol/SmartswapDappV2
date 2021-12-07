@@ -8,8 +8,8 @@ const farms = [
     pid: 1,
     lpSymbol: 'RGP',
     lpAddresses: {
-      97: '0x9f0227A21987c1fFab1785BA3eBa60578eC1501B',
-      56: '0xFA262F303Aa244f9CC66f312F0755d89C3793192',
+      97: '0x7fE2Ec631716FeF3657BcB8d80CffBB2A34F7617',
+      56: '0x100514759DCD6e2Ccbb9EB87481b96de28C4b77F',
     },
     inflation: 250,
     token: serializedTokens.rgp,

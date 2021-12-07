@@ -28,6 +28,8 @@ import SmartSwapLPToken from "../../utils/abis/LPToken.json";
 import SmartSwapLPTokenTestnet from "../../utils/abis/testnet/LPToken1.json";
 import SmartSwapLPTokenTestnetRGP from "../../utils/abis/testnet/LPToken.json";
 
+import SpecialPool from "../../utils/abis/specialPool.json";
+
 import { signer } from "../../utils/utilsFunctions";
 
 export const BIG_TEN = new bigNumber(10);
@@ -42,8 +44,6 @@ export const LIQUIDITY_INDEX = 0;
 export const STAKING_INDEX = 1;
 export const MAINNET = 56;
 export const TESTNET = 97;
-export const RGP_TESTNET_ADDRESS = "0x9f0227A21987c1fFab1785BA3eBa60578eC1501B";
-export const RGP_MAINNET_ADDRESS = "0xFA262F303Aa244f9CC66f312F0755d89C3793192";
 
 export function useActiveWeb3React() {
   const context = useWeb3React<Web3Provider>();
@@ -116,7 +116,9 @@ export function Index() {
             Number(chainId) !== MAINNET ? TESTNET : MAINNET
           ],
 
-          Number(chainId) !== MAINNET ? SmartSwapLPTokenTestnet : SmartSwapLPToken2,
+          Number(chainId) !== MAINNET
+            ? SmartSwapLPTokenTestnet
+            : SmartSwapLPToken2,
           await signer()
         );
 
@@ -124,16 +126,18 @@ export function Index() {
       const poolReserve = await pool.getReserves();
 
       const price = ethers.utils.formatUnits(
-        poolReserve[0].mul(1000).div(poolReserve[1]),
+        poolReserve[type === "BNB" ? 1 : 0]
+          .mul(1000)
+          .div(poolReserve[type === "BNB" ? 0 : 1]),
         3
       );
       return price;
     };
 
     const RGPprice = await getPrice(4, "RGP");
-    const BNBPrice = await getPrice(3, "BNB");
+    const BNBPrice = await getPrice(2, "BNB");
 
-    let farmsToDisplayWithAPR = farmsToDisplay.map(
+    let farmsToDisplayWithAPR = await farmsToDisplay.map(
       async (farm: any, index: number) => {
         let contract;
 
@@ -141,24 +145,24 @@ export function Index() {
           contract = async () =>
             new ethers.Contract(
               farm.lpAddresses[Number(chainId) !== MAINNET ? TESTNET : MAINNET],
-              Number(chainId) !== MAINNET
-                ? SmartSwapLPTokenTestnetRGP
-                : SmartSwapLPToken,
+              SpecialPool,
+              // Number(chainId) !== MAINNET
+              //   ? SmartSwapLPTokenTestnetRGP
+              //   : SmartSwapLPToken,
               await signer()
             );
           const pool = await contract();
 
-          const RgpSupply = await pool.totalSupply();
-          const RGPBalance = await pool.balanceOf(
-            Number(chainId) !== MAINNET ? RGP_TESTNET_ADDRESS : RGP_MAINNET_ADDRESS
-          );
+          const RgpTotalStake = await pool.totalStaking();
 
           const RGPLiquidity = ethers.utils
-            .formatUnits(RgpSupply.mul(Math.floor(1000 * Number(RGPprice))), 21)
+            .formatUnits(
+              RgpTotalStake.mul(Math.floor(1000 * Number(RGPprice))),
+              21
+            )
             .toString();
           const calculateApy =
-            (Number(RgpSupply / RGPBalance) * farm.inflation * 365) /
-            Number(RGPLiquidity);
+            (Number(RGPprice) * farm.inflation * 365) / Number(RGPLiquidity);
 
           return await {
             ...farm,
@@ -171,21 +175,26 @@ export function Index() {
             new ethers.Contract(
               farm.lpAddresses[Number(chainId) !== MAINNET ? TESTNET : MAINNET],
 
-              Number(chainId) !== MAINNET ? SmartSwapLPTokenTestnet : SmartSwapLPToken2,
+              Number(chainId) !== MAINNET
+                ? SmartSwapLPTokenTestnet
+                : SmartSwapLPToken2,
               await signer()
             );
 
           const pool = await contract();
           const poolReserve = await pool.getReserves();
 
-          
-          const totalLiquidity = ethers.utils
-            .formatUnits(
-              poolReserve[farm.pid === 5 ? 0 : 1].mul(
-                farm.pid !== 2 ? 2 : Math.floor(Number(BNBPrice) * 1000 * 2), 21
-              )
-            )
-            .toString();
+          const totalLiquidity =
+            farm.pid !== 2
+              ? ethers.utils
+                  .formatEther(poolReserve[farm.pid === 5 ? 0 : 1].mul(2))
+                  .toString()
+              : ethers.utils
+                  .formatUnits(
+                    poolReserve[0].mul(Math.floor(Number(BNBPrice) * 1000 * 2)),
+                    21
+                  )
+                  .toString();
 
           const calculateApy =
             (Number(RGPprice) * farm.inflation * 365 * 100) /
