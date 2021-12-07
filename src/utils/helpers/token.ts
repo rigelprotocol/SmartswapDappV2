@@ -5,7 +5,7 @@ import { SerializedToken } from '../constants/types'
 
 function validateAndParseAddress(address: string): string {
   try {
-    var checksummedAddress = getAddress(address)
+    let checksummedAddress = getAddress(address)
     process.env.NODE_ENV !== 'production'
       ? warning(
           address === checksummedAddress,

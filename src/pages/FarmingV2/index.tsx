@@ -22,11 +22,9 @@ import { useWeb3React } from "@web3-react/core";
 import { useRouteMatch } from "react-router-dom";
 import bigNumber from "bignumber.js";
 import { useFarms } from "../../state/farm/hooks";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import SmartSwapLPToken2 from "../../utils/abis/LPToken2.json";
-import SmartSwapLPToken from "../../utils/abis/LPToken.json";
 import SmartSwapLPTokenTestnet from "../../utils/abis/testnet/LPToken1.json";
-import SmartSwapLPTokenTestnetRGP from "../../utils/abis/testnet/LPToken.json";
 
 import SpecialPool from "../../utils/abis/specialPool.json";
 
@@ -99,7 +97,7 @@ export function Index() {
   useEffect(() => {
     const chosenFarmsMemoized = async () => {
       let chosenFarms = (await farmsList(farmsLP)) as any[];
-      console.log(chosenFarms);
+
       const activeFarms = chosenFarms.filter(
         (farm) => farm?.pid !== 0 && !isNaN(farm?.ARYValue)
       );

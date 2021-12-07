@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
 import { Token } from '../../utils/helpers/token'
 import { State } from '../types'
+import { SerializedToken } from '../../utils/constants/types'
 
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, State, unknown, AnyAction>
 
@@ -37,14 +38,7 @@ export interface Address {
     56: string
   }
   
-  export interface SerializedToken {
-    chainId: number
-    address: string
-    decimals: number
-    symbol?: string
-    name?: string
-    projectLink?: string
-  }
+
 
 interface FarmConfigBaseProps {
     pid: number
@@ -66,7 +60,6 @@ interface FarmConfigBaseProps {
   }
   
   export interface DeserializedFarmConfig extends FarmConfigBaseProps {
-
     token: Token
     quoteToken: Token
   }

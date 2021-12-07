@@ -31,9 +31,7 @@ const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
     inflation,
     quoteTokenPriceBusd,
     tokenPriceBusd,
-    // @ts-ignore
     token: deserializeToken(farm.token),
-    // @ts-ignore
     quoteToken: deserializeToken(farm.quoteToken),
     userData: deserializeFarmUserData(farm),
     tokenAmountTotal: farm.tokenAmountTotal ? new BigNumber(farm.tokenAmountTotal) : BIG_ZERO,
@@ -43,14 +41,6 @@ const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
     poolWeight: farm.poolWeight ? new BigNumber(farm.poolWeight) : BIG_ZERO,
   }
 }
-
-export const useFarmFromPid = (pid: number): DeserializedFarm => {
-  const farm = useSelector((state: State) => state.farms.data.find((f) => f.pid === pid))
-  // @ts-ignore
-  return deserializeFarm(farm)
-}
-
-
 
 export const useFarms = (): DeserializedFarmsState => {
 
