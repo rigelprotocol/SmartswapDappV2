@@ -18,24 +18,26 @@ import {maxAmountSpend} from "../../../../utils/maxAmountSpend";
 import {useUserSlippageTolerance} from "../../../../state/user/hooks";
 import {useDispatch, useSelector} from "react-redux";
 import {setOpenModal, TrxState} from "../../../../state/application/reducer";
-import {ApprovalRouter, ApproveCheck, SmartSwapRouter, WETH} from "../../../../utils/Contracts";
+import {ApprovalRouter, ApproveCheck, SmartSwapRouter, WETH, smartFactory} from "../../../../utils/Contracts";
 import {useActiveWeb3React} from "../../../../utils/hooks/useActiveWeb3React";
 import {SMARTSWAPROUTER, WNATIVEADDRESSES} from "../../../../utils/addresses";
 import {ExplorerDataType, getExplorerLink} from "../../../../utils/getExplorerLink";
 import {addToast} from '../../../../components/Toast/toastSlice';
 import {RootState} from "../../../../state";
-import {getDeadline, getInPutDataFromEvent, getOutPutDataFromEvent, tokenPrice} from "../../../../constants";
+import {getDeadline, getInPutDataFromEvent, getOutPutDataFromEvent, tokenPrice, ZERO_ADDRESS} from "../../../../constants";
 import { Token } from '@uniswap/sdk-core';
 import { useAllTokens } from '../../../../hooks/Tokens';
 import {ethers} from "ethers";
 import {GetAddressTokenBalance} from "../../../../state/wallet/hooks";
 import NewToken from '../../../../components/Tokens/newToken';
+import {SupportedChainId} from "../../../../constants/chains"
+import { SMARTSWAPFACTORYADDRESSES } from '../../../../utils/addresses';
 
 const SendToken = () => {
 const history = useHistory()
   const loadedUrlParams = useDefaultsFromURLSearch();
     const dispatch = useDispatch();
-  
+
  // token warning stuff
  const [loadedInputCurrency,loadedOutputCurrency] = [
   useCurrency(loadedUrlParams?.inputCurrencyId),
@@ -100,6 +102,7 @@ const handleConfirmTokenWarning = useCallback(() => {
   );
 
   const {chainId, account} = useActiveWeb3React();
+  const [priceImpact, setPriceImpact] = useState(0);
 
   const handleMaxInput = async () => {
     const value = await getMaxValue(currencies[Field.INPUT]);
@@ -141,6 +144,7 @@ const handleConfirmTokenWarning = useCallback(() => {
     const LPFee = (0.003 * Number(formattedAmounts[Field.INPUT])).toFixed(4);
 
     const receivedAmount = Number(formattedAmounts[Field.OUTPUT]).toFixed(4);
+    const fromAmount = Number(formattedAmounts[Field.INPUT]);
 
     const parsedOutput = ethers.utils.parseEther(minimum.toString()).toString();
     console.log(parsedOutput);
@@ -527,10 +531,51 @@ const handleConfirmTokenWarning = useCallback(() => {
        }
   };
 
-  
+  const [routeAddress, setRouteAddress] = useState([]);
+  const fromAddress = currencies[Field.INPUT]?.isNative ? (WNATIVEADDRESSES[chainId as number]) : (currencies[Field.INPUT]?.wrapped.address);
+  const toAddress = currencies[Field.OUTPUT]?.isNative ? (WNATIVEADDRESSES[chainId as number]) : (currencies[Field.OUTPUT]?.wrapped.address);
+  const path = [fromAddress, toAddress]
+
+  const checkLiquidityPair = async () => {
+    const factory = await smartFactory(
+      SMARTSWAPFACTORYADDRESSES[chainId as number]
+    );
+    const LPAddress = await factory.getPair(fromAddress, toAddress);
+    if(LPAddress !== ZERO_ADDRESS){
+      setRouteAddress([fromAddress, toAddress])
+    }
+  }
+  useEffect(async () => {
+    await checkLiquidityPair();
+  }, [fromAddress, toAddress, path]);
+
+  const calculatePriceImpact = async () => {
+    const SwapRouter = await SmartSwapRouter(
+      SMARTSWAPROUTER[chainId as number]
+    );
+    if (routeAddress.length === 2) {
+      try {
+        const price = await SwapRouter.getAmountsOut(
+          '1000000000000000000',
+          routeAddress,
+        );
+        const marketPrice = ethers.utils.formatEther(price[1].toString());
+        const swapPrice = receivedAmount / fromAmount;
+        const priceDifference = swapPrice - marketPrice;
+        const priceImpact = (priceDifference / marketPrice) * 100;
+        setPriceImpact(parseFloat(priceImpact).toFixed(2));
+      } catch (e) {
+        setPriceImpact(0);
+      }
+    }
+  };
+  useEffect(async () => {
+    calculatePriceImpact();
+  }, [fromAmount, receivedAmount]);
+
   return (
     <div>
-      <NewToken 
+      <NewToken
       open = {importTokensNotInDefault.length > 0 && !dismissTokenWarning}
       tokens= {importTokensNotInDefault}
       setDisplayImportedToken={handleDismissTokenWarning}
@@ -643,6 +688,7 @@ const handleConfirmTokenWarning = useCallback(() => {
             toDeposited={receivedAmount}
             handleSwap={swapTokens}
             fee={LPFee}
+            priceImpact={priceImpact}
         />
       </Box>
     </div>
