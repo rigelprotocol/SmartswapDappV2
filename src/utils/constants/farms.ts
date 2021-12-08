@@ -17,7 +17,7 @@ const farms = [
   },
   {
     pid: 2,
-    lpSymbol: 'RGP-WBNB',
+    lpSymbol: 'RGP-BNB',
     lpAddresses: {
       97: '0xca01606438556b299005b36B86B38Fe506eadF9F',
       56: '0x9218BFB996A9385C3b9633f87e9D68304Ef5a1e5',
