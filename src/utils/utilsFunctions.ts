@@ -29,7 +29,19 @@ export const provider = async () => {
     }
     return new Web3Provider(ethProvider as any);
   } catch (e) {
-    console.log(e);
+
+    console.log("provider error",e);
+  }
+};
+
+export const signer = async () => {
+  try {
+    const getProvider = await provider();
+    const providerSigner = await getProvider?.getSigner()
+    return providerSigner;
+  } catch (e) {
+
+    console.log("provider error",e);
   }
 };
 
