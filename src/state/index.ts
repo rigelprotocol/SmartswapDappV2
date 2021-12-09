@@ -9,6 +9,7 @@ import user from './user/reducer'
 import blockReducer from "./block"
 import transactions from './transaction/reducer';
 import mint from './mint/reducer'
+import farms from "./farm"
 
 
 const PERSISTED_KEYS: string[] = ['user','lists']
@@ -26,8 +27,9 @@ const store = configureStore({
 
         mint,
 
-        lists
+        lists,
 
+        farms
     },
   middleware: [...getDefaultMiddleware({ thunk: true }), save({ states: PERSISTED_KEYS })],
   preloadedState: load({ states: PERSISTED_KEYS }),
