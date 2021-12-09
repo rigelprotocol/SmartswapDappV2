@@ -36,3 +36,33 @@ export const WNATIVEADDRESSES: { [key: string]: string } = {
   '137': '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
   '80001': '0x9d91d1f8Ac4CF6C698a1a15c738323E2ad6F23E4',
 };
+
+//RGP addresses
+export const RGP: { [key: string]: string } = {
+  '1': '0x',
+  '3': '0x80278a0Cf536e568A76425B67Fb3931Dca21535c',
+  '56': '0xfa262f303aa244f9cc66f312f0755d89c3793192',
+  '97': '0x9f0227A21987c1fFab1785BA3eBa60578eC1501B',
+  '137': '0x',
+  '80001': '0x8E62F88FD28F95cE0dD0557c8419215b5599CE64',
+};
+
+//BUSD addresses
+export const BUSD: { [key: string]: string } = {
+  '1': '0x4Fabb145d64652a948d72533023f6E7A623C7C53',
+  '3': '0xD848eD7f625165D7fFa9e3B3b0661d6074902FD4',
+  '56': '0xe9e7cea3dedca5984780bafc599bd69add087d56',
+  '97': '0x10249e900b919fdee9e2ed38b4cd83c4df857254',
+  '137': '0xdab529f40e671a1d4bf91361c21bf9f0c9712ab7',
+  '8001': '',
+};
+
+//USDT addresses
+export const USDT: { [key: string]: string } = {
+  '1': '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+  '3': '0x66F56B882364b2E36E837A1Acf964104cA19124F',
+  '56': '0x55d398326f99059fF775485246999027B3197955',
+  '97': '0x337610d27c682E347C9cD60BD4b3b107C9d34dDd',
+  '137': '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+  '80001': '0x7E1cF971de65eB065A72595B3Ac9e1b9Cc630564',
+};
