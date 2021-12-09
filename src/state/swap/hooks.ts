@@ -110,9 +110,6 @@ export function useDerivedSwapInfo (): {
     const parsedAmount = tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined);
 
     const [address, wrap, amount] = useSwap(isExactIn ? inputCurrency : outputCurrency, isExactIn ? outputCurrency : inputCurrency, parsedAmount);
-    console.log(address);
-
-    console.log(inputCurrency, outputCurrency, typedValue);
 
     const showWrap = wrap;
 

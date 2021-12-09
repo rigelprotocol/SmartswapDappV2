@@ -24,15 +24,17 @@ import {SMARTSWAPROUTER, WNATIVEADDRESSES} from "../../../../utils/addresses";
 import {ExplorerDataType, getExplorerLink} from "../../../../utils/getExplorerLink";
 import {addToast} from '../../../../components/Toast/toastSlice';
 import {RootState} from "../../../../state";
-import {getDeadline, getInPutDataFromEvent, getOutPutDataFromEvent, tokenPrice} from "../../../../constants";
+import {getDeadline, getInPutDataFromEvent, getOutPutDataFromEvent} from "../../../../constants";
 import { Token } from '@uniswap/sdk-core';
 import { useAllTokens } from '../../../../hooks/Tokens';
 import {ethers} from "ethers";
 import {GetAddressTokenBalance} from "../../../../state/wallet/hooks";
 import NewToken from '../../../../components/Tokens/newToken';
+import {SupportedChainId} from "../../../../constants/chains";
+import {useNativeBalance, useRGPBalance} from "../../../../utils/hooks/useBalances";
 
 const SendToken = () => {
-const history = useHistory()
+const history = useHistory();
   const loadedUrlParams = useDefaultsFromURLSearch();
     const dispatch = useDispatch();
   
@@ -40,31 +42,31 @@ const history = useHistory()
  const [loadedInputCurrency,loadedOutputCurrency] = [
   useCurrency(loadedUrlParams?.inputCurrencyId),
   useCurrency(loadedUrlParams?.outputCurrencyId),
-]
-const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(false)
+];
+const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(false);
 
 const urlLoadedTokens: Token[] = useMemo(
   () => [loadedInputCurrency, loadedOutputCurrency]?.filter((c): c is Token => c?.isToken ?? false) ?? [],
   [loadedInputCurrency, loadedOutputCurrency]
-)
+);
 
 const handleConfirmTokenWarning = useCallback(() => {
   setDismissTokenWarning(true)
-}, [])
+}, []);
 
 
  // dismiss warning if all imported tokens are in active lists
- const defaultTokens = useAllTokens()
+ const defaultTokens = useAllTokens();
  const importTokensNotInDefault =
    urlLoadedTokens &&
    urlLoadedTokens.filter((token: Token) => {
      return !Boolean(token.address in defaultTokens)
-   })
+   });
 
    const handleDismissTokenWarning = useCallback(() => {
-    setDismissTokenWarning(true)
+    setDismissTokenWarning(true);
     history.push('/swap')
-  }, [history])
+  }, [history]);
 
 
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
@@ -136,16 +138,13 @@ const handleConfirmTokenWarning = useCallback(() => {
     );
 
     const minimum = minimumAmountToReceive().toFixed(16);
-    console.log(minimum);
 
     const LPFee = (0.003 * Number(formattedAmounts[Field.INPUT])).toFixed(4);
 
     const receivedAmount = Number(formattedAmounts[Field.OUTPUT]).toFixed(4);
 
     const parsedOutput = ethers.utils.parseEther(minimum.toString()).toString();
-    console.log(parsedOutput);
 
-    console.log(parsedAmount);
 
     const [hasBeenApproved, setHasBeenApproved] = useState(false);
     const [insufficientBalance, setInsufficientBalance] = useState(false);
@@ -166,7 +165,7 @@ const handleConfirmTokenWarning = useCallback(() => {
         if (currencies[Field.INPUT]?.isNative) {
             return setHasBeenApproved(true)
         }
-        // @ts-ignore
+
         const status = await ApproveCheck(currencies[Field.INPUT].wrapped.address);
         const check = await status.allowance(account, SMARTSWAPROUTER[chainId as number], {
             from: account
@@ -194,8 +193,8 @@ const handleConfirmTokenWarning = useCallback(() => {
               message: `Approve Tokens for Swap`,
               trxState: TrxState.WaitingForConfirmation
           }));
-          // @ts-ignore
-          const address = currencies[Field.INPUT].wrapped.address;
+
+          const address = currencies[Field.INPUT]?.wrapped.address;
           const swapApproval = await ApprovalRouter(address);
           const approveTransaction = await swapApproval.approve(SMARTSWAPROUTER[chainId as number], parsedAmount, {
               from: account

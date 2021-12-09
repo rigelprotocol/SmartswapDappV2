@@ -47,7 +47,6 @@ export const useSwap = (
   const tokenOneAddress = tokenA?.address || nativeAddress?.address;
   const tokenTwoAddress = tokenB?.address || nativeAddress?.address;
   const wrappable: boolean = tokenOneAddress == tokenTwoAddress;
-  console.log(wrappable);
   let validSmartAddress: string;
   if (SMARTSWAPFACTORYADDRESSES[chainId as number] !== '0x') {
     validSmartAddress = SMARTSWAPFACTORYADDRESSES[chainId as number];
@@ -80,7 +79,6 @@ export const useSwap = (
             ]);
 
             const output = formatAmount(amountOut[1]);
-            console.log(output);
             setAmount(output);
           } else {
             setAmount('');
