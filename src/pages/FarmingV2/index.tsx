@@ -95,6 +95,132 @@ export function Index() {
   const { chainId, library } = useActiveWeb3React()
 
   useEffect(() => {
+    const farmsList = async (farmsToDisplay: any) => {
+      const getPrice = async (index: number, type: string) => {
+        const contract = async () =>
+          new ethers.Contract(
+            farmsToDisplay[index].lpAddresses[
+              Number(chainId) !== MAINNET ? TESTNET : MAINNET
+            ],
+
+            Number(chainId) !== MAINNET
+              ? SmartSwapLPTokenTestnet
+              : SmartSwapLPToken2,
+            await signer(),
+          )
+
+        const pool = await contract()
+        const poolReserve = await pool.getReserves()
+
+        const price = ethers.utils.formatUnits(
+          poolReserve[
+            type === 'BNB' ? (Number(chainId) === MAINNET ? 1 : 0) : 0
+          ]
+            .mul(1000)
+            .div(
+              poolReserve[
+                type === 'BNB' ? (Number(chainId) === MAINNET ? 0 : 1) : 1
+              ],
+            ),
+          3,
+        )
+        return price
+      }
+
+      const RGPPrice = await getPrice(4, 'RGP')
+      const BNBPrice = await getPrice(2, 'BNB')
+
+      let farmsToDisplayWithAPR = await farmsToDisplay.map(
+        async (farm: any, index: number) => {
+          let contract
+
+          if (farm.lpSymbol === 'RGP') {
+            contract = async () =>
+              new ethers.Contract(
+                farm.lpAddresses[
+                  Number(chainId) !== MAINNET ? TESTNET : MAINNET
+                ],
+                SpecialPool,
+                await signer(),
+              )
+            const pool = await contract()
+
+            const RgpTotalStake = await pool.totalStaking()
+
+            const RGPLiquidity = ethers.utils
+              .formatUnits(
+                RgpTotalStake.mul(Math.floor(1000 * Number(RGPPrice))),
+                21,
+              )
+              .toString()
+            const calculateApy =
+              (Number(RGPPrice) * farm.inflation * 365) / Number(RGPLiquidity)
+
+            return await {
+              ...farm,
+              earn: 'RGP',
+              ARYValue: calculateApy,
+              totalLiquidity: RGPLiquidity,
+            }
+          } else {
+            contract = async () =>
+              new ethers.Contract(
+                farm.lpAddresses[
+                  Number(chainId) !== MAINNET ? TESTNET : MAINNET
+                ],
+
+                Number(chainId) !== MAINNET
+                  ? SmartSwapLPTokenTestnet
+                  : SmartSwapLPToken2,
+                await signer(),
+              )
+
+            const pool = await contract()
+            const poolReserve = await pool.getReserves()
+
+            const totalLiquidity =
+              farm.pid === 2
+                ? ethers.utils
+                    .formatUnits(
+                      poolReserve[0].mul(
+                        Math.floor(Number(BNBPrice) * 1000 * 2),
+                      ),
+                      21,
+                    )
+                    .toString()
+                : farm.pid === 3 || farm.pid === 6
+                ? ethers.utils
+                    .formatEther(
+                      poolReserve[Number(chainId) === MAINNET ? 1 : 0].mul(2),
+                    )
+                    .toString()
+                : farm.pid === 4
+                ? ethers.utils
+                    .formatUnits(
+                      poolReserve[1].mul(
+                        Math.floor(Number(RGPPrice) * 1000 * 2),
+                      ),
+                      21,
+                    )
+                    .toString()
+                : farm.pid === 5
+                ? ethers.utils.formatEther(poolReserve[0].mul(2)).toString()
+                : ethers.utils.formatEther(poolReserve[1].mul(2)).toString()
+
+            const calculateApy =
+              (Number(RGPPrice) * farm.inflation * 365 * 100) /
+              Number(totalLiquidity)
+            return await {
+              ...farm,
+              earn: 'RGP',
+              ARYValue: calculateApy,
+              totalLiquidity: totalLiquidity,
+            }
+          }
+        },
+      )
+      return await Promise.all(farmsToDisplayWithAPR)
+    }
     const chosenFarmsMemoized = async () => {
       let chosenFarms = (await farmsList(farmsLP)) as any[]
 
@@ -104,124 +230,7 @@ export function Index() {
       setFarms(activeFarms)
     }
     chosenFarmsMemoized()
-  }, [farmsLP])
-
-  const farmsList = async (farmsToDisplay: any) => {
-    const getPrice = async (index: number, type: string) => {
-      const contract = async () =>
-        new ethers.Contract(
-          farmsToDisplay[index].lpAddresses[
-            Number(chainId) !== MAINNET ? TESTNET : MAINNET
-          ],
-
-          Number(chainId) !== MAINNET
-            ? SmartSwapLPTokenTestnet
-            : SmartSwapLPToken2,
-          await signer(),
-        )
-
-      const pool = await contract()
-      const poolReserve = await pool.getReserves()
-
-      const price = ethers.utils.formatUnits(
-        poolReserve[type === 'BNB' ? (Number(chainId) === MAINNET ? 1 : 0) : 0]
-          .mul(1000)
-          .div(
-            poolReserve[
-              type === 'BNB' ? (Number(chainId) === MAINNET ? 0 : 1) : 1
-            ],
-          ),
-        3,
-      )
-      return price
-    }
-
-    const RGPPrice = await getPrice(4, 'RGP')
-    const BNBPrice = await getPrice(2, 'BNB')
-
-    let farmsToDisplayWithAPR = await farmsToDisplay.map(
-      async (farm: any, index: number) => {
-        let contract
-
-        if (farm.lpSymbol === 'RGP') {
-          contract = async () =>
-            new ethers.Contract(
-              farm.lpAddresses[Number(chainId) !== MAINNET ? TESTNET : MAINNET],
-              SpecialPool,
-              await signer(),
-            )
-          const pool = await contract()
-
-          const RgpTotalStake = await pool.totalStaking()
-
-          const RGPLiquidity = ethers.utils
-            .formatUnits(
-              RgpTotalStake.mul(Math.floor(1000 * Number(RGPPrice))),
-              21,
-            )
-            .toString()
-          const calculateApy =
-            (Number(RGPPrice) * farm.inflation * 365) / Number(RGPLiquidity)
-
-          return await {
-            ...farm,
-            earn: 'RGP',
-            ARYValue: calculateApy,
-            totalLiquidity: RGPLiquidity,
-          }
-        } else {
-          contract = async () =>
-            new ethers.Contract(
-              farm.lpAddresses[Number(chainId) !== MAINNET ? TESTNET : MAINNET],
-
-              Number(chainId) !== MAINNET
-                ? SmartSwapLPTokenTestnet
-                : SmartSwapLPToken2,
-              await signer(),
-            )
-
-          const pool = await contract()
-          const poolReserve = await pool.getReserves()
-
-          const totalLiquidity =
-            farm.pid === 2
-              ? ethers.utils
-                  .formatUnits(
-                    poolReserve[0].mul(Math.floor(Number(BNBPrice) * 1000 * 2)),
-                    21,
-                  )
-                  .toString()
-              : farm.pid === 3 || farm.pid === 6
-              ? ethers.utils
-                  .formatEther(
-                    poolReserve[Number(chainId) === MAINNET ? 1 : 0].mul(2),
-                  )
-                  .toString()
-              : farm.pid === 4
-              ? ethers.utils
-                  .formatUnits(
-                    poolReserve[1].mul(Math.floor(Number(RGPPrice) * 1000 * 2)),
-                    21,
-                  )
-                  .toString()
-              : farm.pid === 5
-              ? ethers.utils.formatEther(poolReserve[0].mul(2)).toString()
-              : ethers.utils.formatEther(poolReserve[1].mul(2)).toString()
-
-          const calculateApy =
-            (Number(RGPPrice) * farm.inflation * 365 * 100) /
-            Number(totalLiquidity)
-          return await {
-            ...farm,
-            earn: 'RGP',
-            ARYValue: calculateApy,
-            totalLiquidity: totalLiquidity,
-          }
-        }
-      },
-    )
-    return await Promise.all(farmsToDisplayWithAPR)
-  }
+  }, [chainId, farmsLP])
 
   return (
     <Box>

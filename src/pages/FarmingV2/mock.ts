@@ -5,7 +5,9 @@ export const contents = [
     img: "BNB.svg",
     ARYValue: "30,000",
     earn: "RGP",
-    lpSymbol: "RGB"
+    lpSymbol: "RGB",
+    tokensStaked: ["RGP", "2"],
+    availableToken: "3.747948393",
   },
   {
     pid: 2,
@@ -13,7 +15,9 @@ export const contents = [
     img: "bnb.svg",
     ARYValue: "30,000",
     earn: "RGP",
-    lpSymbol: "RGB - BNB"
+    lpSymbol: "RGB - BNB",
+    tokensStaked: ["RGP-BNB", "3"],
+    availableToken: "3.747948393",
   },
   {
     pid: 3,
@@ -21,7 +25,9 @@ export const contents = [
     img: "BNB.svg",
     ARYValue: "30,000",
     earn: "RGP",
-    lpSymbol: "RBG - BUSD"
+    lpSymbol: "RBG - BUSD",
+    tokensStaked: ["RGP-BUSD", "0"],
+    availableToken: "3.747948393",
   },
   {
     pid: 4,
@@ -29,7 +35,9 @@ export const contents = [
     img: "BNB.svg",
     ARYValue: "30,000",
     earn: "RGP",
-    lpSymbol: "RGP - ETH"
+    lpSymbol: "RGP - ETH",
+    tokensStaked: ["RGP-ETH", "0"],
+    availableToken: "3.747948393",
   },
   {
     pid: 6,
@@ -37,7 +45,9 @@ export const contents = [
     img: "BNB.svg",
     ARYValue: "30,000",
     earn: "RGP",
-    lpSymbol: "RGP - AXD"
+    lpSymbol: "RGP - AXD",
+    tokensStaked: ["RGP-AXD", "0"],
+    availableToken: "3.747948393",
   },
   {
     pid: 5,
@@ -45,6 +55,8 @@ export const contents = [
     img: "BNB.svg",
     ARYValue: "30,000",
     earn: "RGP",
-    lpSymbol: "RGP - POL"
-  }
+    lpSymbol: "RGP - POL",
+    tokensStaked: ["RGP-POL", "0"],
+    availableToken: "3.747948393",
+  },
 ];
