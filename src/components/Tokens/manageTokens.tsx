@@ -54,7 +54,9 @@ const tokenList = useMemo(()=>{
             </Link>
         </Flex>
       <Flex>
-<Box ml={1} cursor="pointer" onClick={() => removeToken(chainId, token.address)}>
+<Box ml={1} cursor="pointer" onClick={() => {
+  setSearchQuery("")
+  removeToken(chainId, token.address)}}>
 <CloseIcon />
   </Box>
              
@@ -97,7 +99,7 @@ const tokenList = useMemo(()=>{
           open={openNewTokenModal}
           handleCurrencySelect={handleCurrencySelect}
           setDisplayImportedToken={setOpenNewTokenModal}
-          token={searchToken}
+          tokens={[searchToken]}
            />: null
           }
     </>

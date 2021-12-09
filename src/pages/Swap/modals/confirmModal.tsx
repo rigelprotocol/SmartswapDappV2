@@ -2,7 +2,7 @@ import React from "react"
 import {
     ModalOverlay,
     ModalContent,
-    Modal, 
+    Modal,
     ModalCloseButton,
     ModalHeader,
     useDisclosure,
@@ -27,9 +27,9 @@ export type IModal= {
     to?: string | undefined;
     fromDeposited?:string;
     toDeposited?:string;
-    minRecieved?: string;
+    minRecieved?: string | number;
     fee?: string,
-    impact?: string,
+    priceImpact?: number,
     slippage?: number,
     showModal: boolean,
     setShowModal: Function,
@@ -47,7 +47,7 @@ const ConfirmModal:React.FC<IModal> = ({
     toDeposited,
     minRecieved,
     slippage,
-    impact,
+    priceImpact,
     fee,
     showModal,
     setShowModal,
@@ -111,8 +111,8 @@ const ConfirmModal:React.FC<IModal> = ({
                         <Flex><Image src={inputLogo || RGPImage} boxSize={'24px'} mr="2"/> <Text>{from}</Text></Flex>
                         <Text color={heavyTextColor}>{fromDeposited}</Text>
                         </Flex>
-                    
-                </Box> 
+
+                </Box>
                 <Box display= "flex"
                 justifyContent= "center" my="-4">
                     <Box
@@ -129,7 +129,7 @@ const ConfirmModal:React.FC<IModal> = ({
                     <ArrowDownIcon w={5} h={10}/>
                     </Box>
                 </Box>
-                
+
                 <Box
                 bgColor={boxColor}
                 border={`1px solid ${borderColor}`}
@@ -143,7 +143,7 @@ const ConfirmModal:React.FC<IModal> = ({
                         <Flex><Image boxSize={'24px'} src={outputLogo || USDTImage} mr="2"/> <Text>{to}</Text></Flex>
                         <Text color={heavyTextColor}>{toDeposited}</Text>
                         </Flex>
-                    
+
                 </Box>
                 <Box my="5">
                 <Flex
@@ -175,13 +175,13 @@ const ConfirmModal:React.FC<IModal> = ({
                         </Flex>
                         <Flex justifyContent="space-between" my="4">
                         <Box color={lightTextColor}>Price Impact <InfoOutlineIcon /></Box>
-                        <Text color={heavyTextColor}>{impact}%</Text>
+                        <Text color={heavyTextColor}>{priceImpact}%</Text>
                         </Flex>
                         <Flex justifyContent="space-between">
                         <Box color={lightTextColor}>Liquidity Provider Fee <InfoOutlineIcon /></Box>
                         <Text color={heavyTextColor}>{fee} {from}</Text>
                         </Flex>
-                    
+
                 </Box>
                 <Text mb="2" color={lightTextColor}>Output is estimated. You will receive at least <Text as="span" color={heavyTextColor}>{amountIn} {to}</Text> or the transaction will revert.
                 </Text>

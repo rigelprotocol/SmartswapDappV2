@@ -6,6 +6,11 @@ import styles from "./styles"
 import borders from "./foundations/borders"
 // Component style overrides
 import Button from "./components/button"
+const baseStylePopper = {
+  w: "70px",
+  maxW: "60px",
+  zIndex: 10,
+};
 const overrides = {
     styles,
     borders,
@@ -13,6 +18,16 @@ const overrides = {
     components: {
         Button,
         // Other components go here
+        Popover: {
+          parts: ['popper'],
+          baseStyle: {
+            popper: {
+              width: 'fit-content',
+              maxWidth: 'fit-content',
+            },
+          },
+        },
+          
     },
     fonts: {
         heading: "CeraProBold",

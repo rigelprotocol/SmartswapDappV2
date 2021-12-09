@@ -1,9 +1,29 @@
 import React, { useState, useEffect } from "react";
-import { Box, Flex, Button, Text, Circle, Divider, Tooltip } from "@chakra-ui/react";
+import { ethers } from 'ethers';
+import { useWeb3React } from '@web3-react/core';
+import {
+  ModalOverlay,
+  ModalContent,
+  useDisclosure,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalHeader,
+  InputRightElement,
+  InputGroup,
+  Input,
+  useColorModeValue, Box, Flex, Button, Text, Circle, Divider, Tooltip
+} from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import Switch from "react-switch";
-import { useColorModeValue } from "@chakra-ui/react";
 import { DARK_THEME } from "./index";
+import { addToast } from "../../components/Toast/toastSlice";
+import { useDispatch } from 'react-redux';
+import { setOpenModal, TrxState } from "../../state/application/reducer";
+import { getExplorerLink, ExplorerDataType } from "../../utils/getExplorerLink";
+import { MasterChefV2Contract, RGPSpecialPool } from "../../utils/Contracts";
+import { SMARTSWAPROUTER } from "../../utils/addresses";
+import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
 import {
   masterChefV2Contract,
   rigelToken,
@@ -15,14 +35,34 @@ import {
   smartSwapLPTokenV2PoolSix,
 } from '../../utils/SwapConnect';
 import { SMART_SWAP } from '../../utils/constants';
-import { ethers } from 'ethers';
 import Web3 from 'web3';
-import { useDispatch } from 'react-redux';
 
-const ShowYieldFarmDetails = ({content, wallet}) => {
+const ShowYieldFarmDetails = ({
+  content,
+  wallet,
+}: {
+  content: { id: number; totalLiquidity: string; earn: string; img: string; ARYValue: string; deposit: string, tokensStaked: string[], availableToken: string };
+}) => {
   const mode = useColorModeValue("light", DARK_THEME);
+  const bgColor = useColorModeValue("#FFF", "#15202B");
+  const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
+  const borderColor = useColorModeValue("#DEE6ED", "#324D68");
+  const dashedColor = useColorModeValue("#DEE6ED", "#4A739B");
+  const activeButtonColor = useColorModeValue("#319EF6", "#4CAFFF");
+  const buttonColor = useColorModeValue("#666666", "#7599BD");
+  const [checked, setChecked] = useState(true);
+  const modal2Disclosure = useDisclosure();
+  const [unstakeButtonValue, setUnstakeButtonValue] = useState('Confirm');
+  const [depositValue, setDepositValue] = useState('Confirm');
+  const [unstakeToken, setUnstakeToken] = useState('');
+  const [inputHasError, setInputHasError] = useState(false);
+  const [errorButtonText, setErrorButtonText] = useState('');
+  const { account, chainId } = useWeb3React();
+  const dispatch = useDispatch();
 
-  const [checked, setChecked] = useState(false);
+  const closeModal = () => {
+    modal2Disclosure.onClose();
+  };
 
   const handleChecked = () => {
     setChecked(true);
@@ -33,7 +73,6 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
   const [farmingFee, setFarmingFee] = useState(10)
   const [allowanceApproval, setAllowanceApproval] = useState(false);
   const [approvalLoading, setApprovalLoading] = useState(false);
-  const dispatch = useDispatch();
   const updateFarmAllowances = value => dispatch => {
     dispatch('app/V2FarmingPage/UPDATE_FARM_ALLOWANCE', value);
   };
@@ -346,6 +385,138 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
     }
   };
 
+  //unstateButtton
+
+  useEffect(() => {
+    setInputHasError(false);
+    setErrorButtonText('');
+    if (unstakeToken !== '') {
+      if (
+        isNaN(parseFloat(unstakeToken)) ||
+        !Math.sign(parseFloat(unstakeToken)) ||
+        Math.sign(parseFloat(unstakeToken)) == -1
+      ) {
+        setInputHasError(true);
+        setErrorButtonText('Invalid Input');
+        return;
+      }
+      if (parseFloat(unstakeToken) > parseFloat(content.tokensStaked[1])) {
+        setInputHasError(true);
+        setErrorButtonText('Insufficient Balance');
+      }
+    }
+  }, [unstakeToken]);
+
+  // show max value
+  const showMaxValue = async (deposit: any, input: any) => {
+    try {
+
+      //  if (input === 'deposit') {
+      //  setDepositTokenValue(content.availableToken);
+      //  } else if (input === 'unstake') {
+      setUnstakeToken(content.tokensStaked[1]);
+      //  }
+    } catch (e) {
+      console.log(
+        'sorry there is a few error, you are most likely not logged in. Please login to ypur metamask extensition and try again.',
+      );
+    }
+  };
+
+
+  async function confirmUnstakeDeposit(val: string) {
+
+    try {
+      setUnstakeButtonValue('Pending Confirmation');
+      dispatch(setOpenModal({
+        message: `Unstaking ${unstakeToken} ${val}`, trxState: TrxState.WaitingForConfirmation
+      }))
+
+      if (account) {
+        if (val === 'RGP') {
+          await RGPUnstake()
+        } else if (val === 'RGB-BNB') {
+          await tokensWithdrawal(2);
+        } else if (val === 'RBG-BUSD') {
+          await tokensWithdrawal(1)
+        }
+      }
+    } catch (err) {
+
+      console.log(err)
+      dispatch(setOpenModal({
+        message: `Failed transaction`,
+        trxState: TrxState.TransactionFailed,
+      }))
+
+    }
+
+
+    setTimeout(() => closeModal(), 400);
+    clearInputInfo(setUnstakeToken, setUnstakeButtonValue, 'Confirm');
+  }
+  
+  // withdrawal for the Liquidity Provider tokens for all pools
+  const tokensWithdrawal = async (pid: number) => {
+    if (account) {
+
+      const lpTokens = await MasterChefV2Contract(SMARTSWAPROUTER[chainId as number]);
+      const data = await lpTokens.withdraw(
+        pid,
+        ethers.utils.parseEther(unstakeToken.toString()),
+        {
+          from: account,
+          gasLimit: 250000,
+          gasPrice: ethers.utils.parseUnits('20', 'gwei'),
+        },
+      );
+      const { confirmations, status, logs } = await fetchTransactionData(data);
+      const { hash } = data;
+      const amountUnstaked = convertToNumber(logs[1].data)
+
+      const explorerLink = getExplorerLink(
+        chainId as number,
+        hash,
+        ExplorerDataType.TRANSACTION
+      );
+
+
+      dispatch(addToast({
+        message: `Successfully unstaked ${convertFromWei(amountUnstaked)} RGP `
+        ,
+
+        URL: explorerLink
+      })
+
+      )
+      // dispatch the getTokenStaked action from here when data changes
+      //callRefreshFarm(confirmations, status);
+    }
+  };
+
+
+  // withdrawal of funds
+  const RGPUnstake = async () => {
+    if (account) {
+
+      const specialPool = await RGPSpecialPool(SMARTSWAPROUTER[chainId as number]);
+      const data = await specialPool.unStake(
+        ethers.utils.parseUnits(unstakeToken, 'ether'), // user input from onclick shoild be here...
+        {
+          from: account,
+          gasLimit: 150000,
+          gasPrice: ethers.utils.parseUnits('20', 'gwei'),
+        },
+      );
+      const { confirmations, status } = await fetchTransactionData(data);
+      // dispatch the getTokenStaked action from here when data changes
+      //  callRefreshFarm(confirmations, status);
+    }
+  };
+
+
+
+
   return (
     <>
       <Flex
@@ -382,11 +553,11 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
                 cursor="pointer"
                 onClick={() => setApprove(content.deposit)}
               >
-              {
-                approveValueForRGP && approveValueForOtherToken
-                ? 'Unstake'
-                : 'Approve'
-              }
+                {
+                  approveValueForRGP && approveValueForOtherToken
+                  ? 'Unstake'
+                  : 'Approve'
+                }
               </Button>
               <Button
                 w="45%"
@@ -483,6 +654,159 @@ const ShowYieldFarmDetails = ({content, wallet}) => {
           </Flex>
         </Box>
       </Flex>
+
+      <Modal isCentered isOpen={modal2Disclosure.isOpen} onClose={closeModal}>
+        <ModalOverlay />
+        <ModalContent
+          width="95vw"
+          borderRadius="6px"
+          paddingBottom="20px"
+          bgColor={bgColor}
+          minHeight="40vh"
+        >
+
+
+          <ModalHeader
+            fontSize="18px"
+            fontWeight="regular"
+            align="center"
+          >
+            Unstake {content.deposit} Tokens
+          </ModalHeader>
+
+
+          <ModalCloseButton
+            bg="none"
+            size={'sm'}
+            mt={3}
+            mr={3}
+            cursor="pointer"
+            _focus={{ outline: 'none' }}
+            p={'7px'}
+            border={'1px solid'}
+
+          />
+
+          <ModalBody py={2} >
+            <Text color="gray.400" align="right" mb={3}>
+              {content.tokensStaked[1]} {content.deposit} Staked
+
+              {/* Work here */}
+            </Text>
+
+            <InputGroup size="md">
+              <Input
+                placeholder="0"
+                opacity="0.5"
+                h="50px"
+                borderRadius="0px"
+                name="availableToken"
+                border="2px" value={unstakeToken}
+                onChange={e => setUnstakeToken(e.target.value)}
+              />
+              <InputRightElement marginRight="15px">
+                <Button
+                  color="rgba(64, 186, 213, 1)"
+                  border="none"
+                  borderRadius="0px"
+                  fontSize="13px"
+                  p="1"
+                  mt="10px"
+                  height="20px"
+                  cursor="pointer"
+                  _hover={{ background: 'rgba(64, 186, 213, 0.15)' }}
+                  onClick={() => showMaxValue(content.deposit, 'deposit')}
+                >
+                  MAX
+                </Button>
+              </InputRightElement>
+            </InputGroup>
+            <Box mt={4}>
+              {inputHasError ? (
+                <>
+                  {/* Show Error Button */}
+                  <Button
+                    my="2"
+                    mx="auto"
+                    color={
+                      unstakeButtonValue === 'Confirm' ||
+                        unstakeButtonValue === 'Confirmed'
+                        ? 'rgba(190, 190, 190, 1)'
+                        : '#40BAD5'
+                    }
+                    width="100%"
+                    background={
+                      unstakeButtonValue === 'Confirm' ||
+                        unstakeButtonValue === 'Confirmed'
+                        ? 'rgba(64, 186, 213, 0.15)'
+                        : '#444159'
+                    }
+                    disabled={unstakeButtonValue !== 'Confirm'}
+                    cursor="pointer"
+                    border="none"
+                    borderRadius="0px"
+                    padding="10px"
+                    height="50px"
+                    fontSize="16px"
+                    _hover={
+                      unstakeButtonValue === 'Confirm' ||
+                        unstakeButtonValue === 'Confirmed'
+                        ? { background: 'rgba(64, 186, 213, 0.15)' }
+                        : { background: '#444159' }
+                    }
+                    onClick={() => { }}
+                  >
+                    {errorButtonText}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    my="2"
+                    variant="brand"
+                    mx="auto"
+
+                    width="100%"
+
+                    disabled={unstakeButtonValue !== 'Confirm' || !unstakeToken}
+                    cursor="pointer"
+                    border="none"
+                    borderRadius="0px"
+                    padding="10px"
+                    height="50px"
+                    fontSize="16px"
+                    _hover={
+                      unstakeButtonValue === 'Confirm' ||
+                        unstakeButtonValue === 'Confirmed'
+                        ? { background: 'rgba(64, 186, 213, 0.15)' }
+                        : { background: '#444159' }
+                    }
+                    onClick={() => confirmUnstakeDeposit(content.deposit)}
+                  >
+                    {unstakeButtonValue}
+                  </Button>
+                  <Button
+                    my="2"
+                    mx="auto"
+                    variant="brand"
+                    width="100%"
+                    cursor="pointer"
+                    border="none"
+                    borderRadius="0px"
+                    padding="10px"
+                    height="50px"
+                    fontSize="16px"
+                    onClick={closeModal}
+                  >
+                    Cancel
+                  </Button>
+                </>
+              )}
+            </Box>
+          </ModalBody>
+
+        </ModalContent>
+      </Modal>
     </>
   );
 };
