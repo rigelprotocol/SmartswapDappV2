@@ -68,3 +68,38 @@ export const useRGPBalance = () => {
 
   return [RGPBalance];
 };
+
+export const useTokenBalance = (address: string) => {
+  const [balance, setBalance] = useState('');
+ 
+  useEffect(() => {
+    const getTokenAmount = async(tokenAddress: string) => {
+      try {
+        const Provider = await provider();
+        const balance = await Provider?.getBalance(tokenAddress as string);
+       
+          setBalance(parseFloat(ethers.utils.formatEther(balance as any)).toFixed(4))
+     
+      } catch (err) {
+        console.log(err);
+        return 0
+      }
+    };
+    getTokenAmount(address)
+  }, [address])
+
+  return [balance]
+
+}
+
+export const getTokenAmount = async(tokenAddress: string) => {
+  try {
+    const Provider = await provider();
+    const balance = await Provider?.getBalance(tokenAddress as string);
+      return parseFloat(ethers.utils.formatEther(balance as any)).toFixed(4)
+ 
+  } catch (err) {
+    console.log(err);
+    return 0
+  }
+};

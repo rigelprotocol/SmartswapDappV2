@@ -29,13 +29,25 @@ export const provider = async () => {
     }
     return new Web3Provider(ethProvider as any);
   } catch (e) {
-    console.log(e);
+
+    console.log("provider error",e);
+  }
+};
+
+export const signer = async () => {
+  try {
+    const getProvider = await provider();
+    const providerSigner = await getProvider?.getSigner()
+    return providerSigner;
+  } catch (e) {
+
+    console.log("provider error",e);
   }
 };
 
 export const getERC20Token = async (address: string) => {
   const Provider = await provider();
-  const token = new Contract(address, ERC20Token, Provider);
+  const token = new Contract(address, ERC20Token, Provider?.getSigner());
   return token;
 };
 

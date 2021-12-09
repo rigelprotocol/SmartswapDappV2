@@ -3,6 +3,7 @@ import { provider } from '../../utils/utilsFunctions'
 import { useCallback,useEffect,useState } from "react"
 import { Field,selectCurrency,typeInput,replaceSwapState } from "./actions"
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React'
+import { ParsedQs } from 'qs'
 import { useCurrency } from '../../hooks/Tokens'
 import { useDispatch, useSelector } from 'react-redux'
 import { Currency } from '@uniswap/sdk-core'
@@ -14,6 +15,7 @@ import { SupportedChainSymbols } from '../../utils/constants/chains'
 import {useSwap} from "../../hooks/useSwap";
 import {ZERO_ADDRESS} from "../../constants";
 import { parseUnits } from '@ethersproject/units'
+import useParsedQueryString from '../../hooks/useParsedQueryString'
 import JSBI from 'jsbi';
 
 
@@ -167,36 +169,59 @@ return {
 }
 }
 
-function parseCurrencyFromURLParameter(parse :any) {
-  return parse 
+function parseTokenAmountURLParameter(urlParam: any): string {
+  // eslint-disable-next-line no-restricted-globals
+  return typeof urlParam === 'string' && !isNaN(parseFloat(urlParam)) ? urlParam : ''
 }
 
-function queryParametersToSwapState(chainId:number |undefined) {
-  let symbol= SupportedChainSymbols[chainId ?? 56];
-  let inputCurrency = parseCurrencyFromURLParameter(symbol) ?? 'BNB';
-  // let outputCurrency = parseCurrencyFromURLParameter()
-  // let inputCurrency = parseCurrencyFromURLParameter(parsedQs.inputCurrency)
-  // let outputCurrency = parseCurrencyFromURLParameter(parsedQs.outputCurrency)
-  // if (inputCurrency === outputCurrency) {
-  //   if (typeof parsedQs.outputCurrency === 'string') {
-  //     inputCurrency = ''
-  //   } else {
-  //     outputCurrency = ''
-  //   }
-  // }
+function parseIndependentFieldURLParameter(urlParam: any): Field {
+  return typeof urlParam === 'string' && urlParam.toLowerCase() === 'output' ? Field.OUTPUT : Field.INPUT
+}
 
-  // const recipient = validatedRecipient(parsedQs.recipient)
+const ENS_NAME_REGEX = /^[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)?$/
+const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
+function validatedRecipient(recipient: any): string | null {
+  if (typeof recipient !== 'string') return null
+  const address = isAddress(recipient)
+  if (address) return address
+  if (ENS_NAME_REGEX.test(recipient)) return recipient
+  if (ADDRESS_REGEX.test(recipient)) return recipient
+  return null
+}
+
+function parseCurrencyFromURLParameter(urlParam: any,symbol = ""): string {
+   if (typeof urlParam === 'string') {
+     console.log({urlParam})
+   const valid = isAddress(urlParam)
+  if (valid) return valid
+    if (valid === false) return symbol
+  }
+  return urlParam ?? ''
+}
+function queryParametersToSwapState(parsedQs:any,chainId:number ) {
+let inputCurrency = parseCurrencyFromURLParameter(parsedQs.inputCurrency)
+let outputCurrency = parseCurrencyFromURLParameter(parsedQs.outputCurrency)
+const symbol = SupportedChainSymbols[chainId ?? 56]
+if (inputCurrency === '' && outputCurrency === '') {
+  inputCurrency = symbol
+  outputCurrency = ""
+} else if (inputCurrency === '') {
+  inputCurrency = outputCurrency === symbol ? "" : symbol
+} else if (outputCurrency === '' || inputCurrency === outputCurrency) {
+  outputCurrency = inputCurrency === symbol ? "" : symbol
+}
+  const recipient = validatedRecipient(parsedQs.recipient)
 
   return {
     [Field.INPUT]: {
-      currencyId: inputCurrency ,
+      currencyId: inputCurrency,
     },
-    // [Field.OUTPUT]: {
-    //   currencyId: outputCurrency,
-    // },
-    // typedValue: parseTokenAmountURLParameter(parsedQs.exactAmount),
-    // independentField: parseIndependentFieldURLParameter(parsedQs.exactField),
-    // recipient,
+    [Field.OUTPUT]: {
+      currencyId: outputCurrency,
+    },
+    typedValue: parseTokenAmountURLParameter(parsedQs.exactAmount),
+    independentField: parseIndependentFieldURLParameter(parsedQs.exactField),
+    recipient,
   }
 }
 
@@ -205,24 +230,26 @@ function queryParametersToSwapState(chainId:number |undefined) {
 export function useDefaultsFromURLSearch() {
 const { chainId,account } = useActiveWeb3React();
 const [,Symbol] = useNativeBalance();
-const dispatch = useDispatch<AppDispatch>();
-// const parsedQs = useParsedQueryString()
+const dispatch = useDispatch<AppDispatch>()
+const parsedQs = useParsedQueryString()
 const [result, setResult] = useState<
-    { inputCurrencyId: string | undefined;  } | undefined
-  >();
+    { inputCurrencyId: string | undefined; outputCurrencyId: string | undefined;  } | undefined
+  >()
 
   useEffect(()=>{
-if(!chainId) return;
-
-// if URL is empty, use default token
-const parsed = queryParametersToSwapState(chainId);
+if(!chainId) return
+const parsed = queryParametersToSwapState(parsedQs,chainId)
     dispatch(
       replaceSwapState({
-        inputCurrencyId:parsed[Field.INPUT].currencyId
+        typedValue: parsed.typedValue,
+        field: parsed.independentField,
+        inputCurrencyId: parsed[Field.INPUT].currencyId,
+        outputCurrencyId: parsed[Field.OUTPUT].currencyId,
+        recipient: null,
       })
     )
-    // setResult({ inputCurrencyId: parsed[Field.INPUT].currencyId })
-  },[dispatch,chainId,account]);
+    setResult({ inputCurrencyId: parsed[Field.INPUT].currencyId,outputCurrencyId: parsed[Field.OUTPUT].currencyId })
+  },[dispatch,chainId,account])
   return result
   }
 
