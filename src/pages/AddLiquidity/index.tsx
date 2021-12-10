@@ -783,6 +783,8 @@ export default function AddLiquidity({
           setShowModal={setShowModal}
           handleAddLiquidity={handleAddLiquidity}
           pairAvailable={pairAvailable}
+          priceAperB={priceAperB}
+          priceBperA={priceBperA}
         />
       </Box>
     </Center>
