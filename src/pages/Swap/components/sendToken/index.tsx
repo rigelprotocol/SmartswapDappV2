@@ -37,7 +37,6 @@ import {
   getDeadline,
   getInPutDataFromEvent,
   getOutPutDataFromEvent,
-  tokenPrice,
   ZERO_ADDRESS,
 } from '../../../../constants';
 import { Token } from '@uniswap/sdk-core';
@@ -196,7 +195,7 @@ const SendToken = () => {
     if (currencies[Field.INPUT]?.isNative) {
       return setHasBeenApproved(true);
     }
-    // @ts-ignore
+
     const status = await ApproveCheck(currencies[Field.INPUT].wrapped.address);
     const check = await status.allowance(
       account,
@@ -229,7 +228,7 @@ const SendToken = () => {
           trxState: TrxState.WaitingForConfirmation,
         })
       );
-      // @ts-ignore
+
       const address = currencies[Field.INPUT].wrapped.address;
       const swapApproval = await ApprovalRouter(address);
       const approveTransaction = await swapApproval.approve(
