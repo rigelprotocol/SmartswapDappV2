@@ -125,9 +125,6 @@ export function useDerivedSwapInfo(): {
     isExactIn ? outputCurrency : inputCurrency,
     parsedAmount
   );
-  console.log(address);
-
-  console.log(inputCurrency, outputCurrency, typedValue);
 
   const showWrap = wrap;
 
@@ -205,7 +202,6 @@ function validatedRecipient(recipient: any): string | null {
 
 function parseCurrencyFromURLParameter(urlParam: any, symbol = ''): string {
   if (typeof urlParam === 'string') {
-    console.log({ urlParam });
     const valid = isAddress(urlParam);
     if (valid) return valid;
     if (valid === false) return symbol;

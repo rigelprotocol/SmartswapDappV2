@@ -135,7 +135,6 @@ const useAccountHistory = () => {
                             time: data.time
                         })),
                     );
-                    console.log(swapDataForWallet);
 
                     const userSwapHistory = swapDataForWallet.map((data: any) => ({
                         token1Icon:

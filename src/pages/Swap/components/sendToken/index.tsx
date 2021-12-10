@@ -170,7 +170,6 @@ const SendToken = () => {
   );
 
   const minimum = minimumAmountToReceive().toFixed(16);
-  console.log(minimum);
 
   const LPFee = (0.003 * Number(formattedAmounts[Field.INPUT])).toFixed(4);
 
@@ -178,10 +177,6 @@ const SendToken = () => {
   const fromAmount = Number(formattedAmounts[Field.INPUT]);
 
   const parsedOutput = ethers.utils.parseEther(minimum.toString()).toString();
-  console.log(parsedOutput);
-
-  console.log(parsedAmount);
-
   const [hasBeenApproved, setHasBeenApproved] = useState(false);
   const [insufficientBalance, setInsufficientBalance] = useState(false);
 
@@ -211,7 +206,6 @@ const SendToken = () => {
       }
     );
     const approveBalance = ethers.utils.formatEther(check).toString();
-    console.log(approveBalance);
     if (parseFloat(approveBalance) > Number(formattedAmounts[Field.INPUT])) {
       return setHasBeenApproved(true);
     }
@@ -685,13 +679,16 @@ const SendToken = () => {
       setRouteAddress([fromAddress, toAddress]);
     }
   };
-  useEffect(async () => {
-    await checkLiquidityPair();
-  }, [fromAddress, toAddress, path]);
+  // useEffect(async () => {
+  //   await checkLiquidityPair();
+  // }, [fromAddress, toAddress, path]);
 
   const calculatePriceImpact = async () => {
-    const SwapRouter = await SmartSwapRouter(
-      SMARTSWAPROUTER[chainId as number]
+    try{
+      console.log({SMARTSWAPROUTER,chainId})
+      if(chainId){
+         const SwapRouter = await SmartSwapRouter(
+      SMARTSWAPROUTER[chainId as number ?? 56]
     );
     if (routeAddress.length === 2) {
       try {
@@ -706,12 +703,18 @@ const SendToken = () => {
         setPriceImpact(parseFloat(priceImpact).toFixed(2));
       } catch (e) {
         setPriceImpact(0);
+      
       }
+         }
     }
+    }catch(e){
+     console.log(e)
+    }
+
   };
   useEffect(async () => {
     calculatePriceImpact();
-  }, [fromAmount, receivedAmount]);
+  }, [fromAmount, receivedAmount,chainId]);
 
   return (
     <div>
