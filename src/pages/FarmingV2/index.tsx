@@ -223,7 +223,7 @@ export function Index() {
     }
     const chosenFarmsMemoized = async () => {
       let chosenFarms = (await farmsList(farmsLP)) as any[]
-
+      console.log({chosenFarms})
       const activeFarms = chosenFarms.filter(
         (farm) => farm?.pid !== 0 && !isNaN(farm?.ARYValue),
       )
