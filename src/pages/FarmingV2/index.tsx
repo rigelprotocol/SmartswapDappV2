@@ -103,8 +103,6 @@ export function Index() {
     setShowAlert(false)
   }
 
-  const { chainId, library } = useActiveWeb3React()
-
   useEffect(() => {
     const farmsList = async (farmsToDisplay: any) => {
       const getPrice = async (index: number, type: string) => {

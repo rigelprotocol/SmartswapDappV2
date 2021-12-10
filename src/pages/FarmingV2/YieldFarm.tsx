@@ -7,10 +7,7 @@ import { LIGHT_THEME, DARK_THEME, useActiveWeb3React } from "./index";
 
 const YieldFarm = ({
   content,
-<<<<<<< HEAD
   wallet,
-=======
->>>>>>> beb8bb2a409fca419c9ab0f2870710202fdbcaf9
 }: {
   content: {
     pid: number;
