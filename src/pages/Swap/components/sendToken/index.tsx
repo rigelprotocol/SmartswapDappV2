@@ -684,14 +684,14 @@ const SendToken = () => {
   // }, [fromAddress, toAddress, path]);
 
   const calculatePriceImpact = async () => {
-    try{
-      console.log({SMARTSWAPROUTER,chainId})
-      if(chainId){
-         const SwapRouter = await SmartSwapRouter(
-      SMARTSWAPROUTER[chainId as number ?? 56]
-    );
+    
+     
+       
     if (routeAddress.length === 2) {
       try {
+          const SwapRouter = await SmartSwapRouter(
+          SMARTSWAPROUTER[chainId as number ?? 56]
+        );
         const price = await SwapRouter.getAmountsOut(
           '1000000000000000000',
           routeAddress
@@ -706,10 +706,7 @@ const SendToken = () => {
       
       }
          }
-    }
-    }catch(e){
-     console.log(e)
-    }
+   
 
   };
   useEffect(async () => {
