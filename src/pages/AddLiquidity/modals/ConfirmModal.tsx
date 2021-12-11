@@ -30,6 +30,8 @@ export type IModal = {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
   handleAddLiquidity: () => void;
   pairAvailable: boolean;
+  priceBperA: string;
+  priceAperB: string;
 };
 
 const ConfirmModal: React.FC<IModal> = ({
@@ -46,6 +48,8 @@ const ConfirmModal: React.FC<IModal> = ({
   setShowModal,
   handleAddLiquidity,
   pairAvailable,
+  priceBperA,
+  priceAperB,
 }) => {
   const bgColor = useColorModeValue('#F2F5F8', '#213345');
   const lightTextColor = useColorModeValue('#666', '#DCE6EF');
@@ -88,11 +92,21 @@ const ConfirmModal: React.FC<IModal> = ({
               padding="25px 0"
               fontWeight="normal"
             >
-              <Text fontSize="16px">You will receive</Text>
+              <Text
+                display={pairAvailable ? undefined : 'none'}
+                fontSize="16px"
+              >
+                You will receive
+              </Text>
               <Heading as="h2" margin="6px 0">
-                {parseFloat(amount).toFixed(6)}
+                {pairAvailable
+                  ? parseFloat(amount).toFixed(6)
+                  : `${from}/${to}`}
               </Heading>
-              <Text fontSize="16px">
+              <Text
+                display={pairAvailable ? undefined : 'none'}
+                fontSize="16px"
+              >
                 {from} / {to} Liquidity Token
               </Text>
             </Box>
@@ -100,13 +114,19 @@ const ConfirmModal: React.FC<IModal> = ({
               <Flex justifyContent="space-between" pb="3">
                 <Text color={lightTextColor}>Rates</Text>
                 <Text color={heavyTextColor}>
-                  1 {to} = {parseFloat(fromPrice).toFixed(6)} {from}
+                  1 {to} ={' '}
+                  {pairAvailable
+                    ? parseFloat(fromPrice).toFixed(6)
+                    : priceBperA}{' '}
+                  {from}
                 </Text>
               </Flex>
               <Flex justifyContent="space-between">
                 <Text></Text>
                 <Text color={heavyTextColor}>
-                  1 {from} = {parseFloat(toPrice).toFixed(6)} {to}
+                  1 {from} ={' '}
+                  {pairAvailable ? parseFloat(toPrice).toFixed(6) : priceAperB}{' '}
+                  {to}
                 </Text>
               </Flex>
             </Box>
@@ -142,9 +162,7 @@ const ConfirmModal: React.FC<IModal> = ({
               }}
             >
               {' '}
-              {pairAvailable
-                ? 'Confirm Supply'
-                : 'Create and Confirm Supply'}{' '}
+              {pairAvailable ? 'Confirm Supply' : 'Create Pool & Supply'}{' '}
             </Button>
             <Text mt="2" color={lightTextColor}>
               Output is estimated. If the price changes by more than{' '}

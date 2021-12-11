@@ -366,7 +366,6 @@ export const useAllowance = (
   const [hasTokenBBeenApproved, setHasTokenBBeenApproved] = useState(false);
   useMemo(async () => {
     if (CurrencyA && CurrencyB && account) {
-      console.log('allowance works');
       const currencyAAddress = getAddress(CurrencyA);
       const currencyBAddress = getAddress(CurrencyB);
       const [tokenA, tokenB] = await Promise.all([
@@ -404,13 +403,11 @@ export const usePriceForNewPool = (
   const [priceAperB, setPriceAperB] = useState('');
   const [priceBperA, setPriceBperA] = useState('');
   useMemo(() => {
-    console.log('start');
     if (!pairExist && inputA && inputB) {
       const priceA = parseFloat(inputB) / parseFloat(inputA);
       const priceB = parseFloat(inputA) / parseFloat(inputB);
       setPriceAperB(priceA.toString());
       setPriceBperA(priceB.toString());
-      console.log(priceA, priceB);
     } else {
       setPriceBperA('');
       setPriceAperB('');

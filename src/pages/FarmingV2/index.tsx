@@ -97,9 +97,6 @@ export function Index() {
   const handleAlert = () => {
     setShowAlert(false)
   }
-
-
-
   const getFarmData = async () => {
     setfarmDataLoading(true)
 
@@ -202,15 +199,10 @@ export function Index() {
       }
     }
   };
-
-
   const getTokenStaked = async () => {
     try {
       if (account) {
         const masterChefV2 = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number]);
-
-        console.log("MasterCheff V2", masterChefV2)
-
         const [
           poolOneEarned,
           poolTwoEarned,

@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { provider, getERC20Token } from '../utilsFunctions';
 import { ethers } from 'ethers';
 import { SupportedChainSymbols,SupportedChainLogo,SupportedChainName } from '../constants/chains';
 import { RGPADDRESSES } from '../addresses';
+import {useSelector} from "react-redux";
+import {RootState} from "../../state";
 
 export const useNativeBalance = () => {
   const { account, chainId } = useWeb3React();
@@ -11,6 +13,9 @@ export const useNativeBalance = () => {
   const [Symbol, setSymbol] = useState(SupportedChainSymbols[56]);
   const [Name, setName] = useState(SupportedChainName[56]);
   const [Logo, setLogo] = useState(SupportedChainLogo[56]);
+
+  const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
+  const stateChanged : boolean = trxState === 2;
 
   useEffect(() => {
     const getBalance = async () => {
@@ -36,7 +41,7 @@ export const useNativeBalance = () => {
       }
     };
     getBalance();
-  }, [account, chainId]);
+  }, [account, chainId, stateChanged]);
 
   return [Balance, Symbol,Name,Logo];
 };
@@ -44,6 +49,9 @@ export const useNativeBalance = () => {
 export const useRGPBalance = () => {
   const { chainId, account } = useWeb3React();
   const [RGPBalance, setRGPBalance] = useState('');
+
+  const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
+  const stateChanged : boolean = trxState === 2;
 
   useEffect(() => {
     const getBalance = async () => {
@@ -64,7 +72,7 @@ export const useRGPBalance = () => {
     };
 
     getBalance();
-  }, [account, chainId]);
+  }, [account, chainId, stateChanged]);
 
   return [RGPBalance];
 };
@@ -86,11 +94,11 @@ export const useTokenBalance = (address: string) => {
       }
     };
     getTokenAmount(address)
-  }, [address])
+  }, [address]);
 
   return [balance]
 
-}
+};
 
 export const getTokenAmount = async(tokenAddress: string) => {
   try {
