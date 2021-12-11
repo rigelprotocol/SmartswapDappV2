@@ -44,15 +44,13 @@ const ShowYieldFarmDetails = ({
     lpSymbol: string;
     tokensStaked: string[];
     availableToken: string;
+    deposit: string,
+
   };
 }) => {
   const mode = useColorModeValue("light", DARK_THEME);
   const bgColor = useColorModeValue("#FFF", "#15202B");
-  const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
-  const borderColor = useColorModeValue("#DEE6ED", "#324D68");
-  const dashedColor = useColorModeValue("#DEE6ED", "#4A739B");
-  const activeButtonColor = useColorModeValue("#319EF6", "#4CAFFF");
-  const buttonColor = useColorModeValue("#666666", "#7599BD");
+
   const [checked, setChecked] = useState(true);
   const modal2Disclosure = useDisclosure();
   const [unstakeButtonValue, setUnstakeButtonValue] = useState("Confirm");
@@ -103,7 +101,7 @@ const ShowYieldFarmDetails = ({
   }, [unstakeToken]);
 
   // show max value
-  const showMaxValue = async (lpSymbol: any, input: any) => {
+  const showMaxValue = async (deposit: any, input: any) => {
     try {
       //  if (input === 'lpSymbol') {
       //  setDepositTokenValue(content.availableToken);
@@ -115,6 +113,7 @@ const ShowYieldFarmDetails = ({
         "sorry there is a few error, you are most likely not logged in. Please login to ypur metamask extensition and try again."
       );
     }
+
   };
 
   async function confirmUnstakeDeposit(val: string) {
@@ -127,11 +126,13 @@ const ShowYieldFarmDetails = ({
         })
       );
 
+
+
       if (account) {
-        if (val === "RGP") {
-          await RGPUnstake();
-        } else if (val === "RGB-BNB") {
-          await tokensWithdrawal(2)
+        if (val === 'RGP') {
+          await RGPUnstake()
+        } else if (val === 'RGP-BNB') {
+          await tokensWithdrawal(2);
         } else if (val === 'RBG-BUSD') {
           await tokensWithdrawal(1)
         } else if (val === 'BNB-BUSD') {
@@ -142,6 +143,7 @@ const ShowYieldFarmDetails = ({
           await tokensWithdrawal(5)
         }
       }
+
     } catch (err) {
       console.log(err);
       dispatch(
@@ -164,11 +166,8 @@ const ShowYieldFarmDetails = ({
 
   // withdrawal for the Liquidity Provider tokens for all pools
   const tokensWithdrawal = async (pid: number) => {
-
     if (account) {
-
       try {
-
         const lpTokens = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number]);
         const data = await lpTokens.withdraw(
           pid,
@@ -264,7 +263,7 @@ const ShowYieldFarmDetails = ({
                 marginRight="20px"
                 fontWeight="bold"
               >
-                0.000
+                {content.tokensStaked[1]}
               </Text>
               <Text
                 fontSize="16px"
@@ -449,7 +448,7 @@ const ShowYieldFarmDetails = ({
           minHeight="40vh"
         >
           <ModalHeader fontSize="18px" fontWeight="regular" align="center">
-            Unstake {content.lpSymbol} Tokens
+            Unstake {content.deposit} Tokens
           </ModalHeader>
 
           <ModalCloseButton
@@ -465,8 +464,8 @@ const ShowYieldFarmDetails = ({
 
           <ModalBody py={2}>
             <Text color="gray.400" align="right" mb={3}>
-              {content.tokensStaked[1]} {content.lpSymbol} Staked
-              {/* Work here */}
+              {`${content.tokensStaked[1]}
+               ${content.deposit} Staked `}
             </Text>
 
             <InputGroup size="md">
@@ -491,7 +490,7 @@ const ShowYieldFarmDetails = ({
                   height="20px"
                   cursor="pointer"
                   _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
-                  onClick={() => showMaxValue(content.lpSymbol, "lpSymbol")}
+                  onClick={() => showMaxValue(content.deposit, "lpSymbol")}
                 >
                   MAX
                 </Button>
@@ -555,7 +554,7 @@ const ShowYieldFarmDetails = ({
                         ? { background: "rgba(64, 186, 213, 0.15)" }
                         : { background: "#444159" }
                     }
-                    onClick={() => confirmUnstakeDeposit(content.lpSymbol)}
+                    onClick={() => confirmUnstakeDeposit(content.deposit)}
                   >
                     {unstakeButtonValue}
                   </Button>

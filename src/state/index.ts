@@ -9,7 +9,7 @@ import user from './user/reducer'
 import blockReducer from "./block"
 import transactions from './transaction/reducer';
 import mint from './mint/reducer'
-import farms from "./farm"
+import farms from "./farm/reducer"
 
 
 const PERSISTED_KEYS: string[] = ['user','lists']
