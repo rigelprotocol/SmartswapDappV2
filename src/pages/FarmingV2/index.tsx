@@ -60,19 +60,6 @@ export function Index() {
   const FarmData = useFarms()
 
   //temporary
-
-  /** 
-    const chosenFarmsMemoized = async () => {
-      let chosenFarms = FarmData.contents as any[]
-  
-      const activeFarms = chosenFarms.filter(
-        (farm) => farm?.pid !== 0 && !isNaN(farm?.ARYValue),
-      )
-      setFarms(activeFarms)
-      console.log('Active is ', activeFarms)
-    }
-  */
-
   useEffect(() => {
     getFarmData()
     getTokenStaked()
@@ -142,15 +129,14 @@ export function Index() {
         pool5.getReserves(),
       ]);
 
-      const RGPprice = ethers.utils.formatUnits(
+      const RGPprice: number | any = ethers.utils.formatUnits(
         pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
         3,
       );
 
       const BNBprice = getBnbPrice(pool3, pool3Reserve);
-      // const AXSprice = getAXSPrice(pool5, pool5Reserve);
       const RGPLiquidity = ethers.utils
-        .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * Number(RGPprice))), 21)
+        .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * RGPprice)), 21)
         .toString();
       const BUSD_RGPLiquidity = ethers.utils
         .formatEther(pool1Reserve[0].mul(2))
@@ -320,7 +306,7 @@ export function Index() {
 
 
   const getBnbPrice = (pool3: any, pool3Reserve: any): number => {
-    const pool3testnet = '0x120f3e6908899af930715ee598be013016cde8a5';
+    const pool3testnet = '0x120f3E6908899Af930715ee598BE013016cde8A5';
     let BNBprice;
     if (pool3 && pool3.address === pool3testnet) {
       BNBprice = ethers.utils.formatUnits(
@@ -337,8 +323,6 @@ export function Index() {
   };
 
   const getAXSBUSDLiquidity = (pool5: any, pool5Reserve: any) => {
-    // The quatity of BUSD (pool5Reserve[0]) multiply by 2 
-    // is the total liquidity
     const pool5Testnet = '0x816b823d9C7F30327B2c626DEe4aD731Dc9D3641';
     let AXS_BUSDLiquidity;
     // BUSD is token0 on testnet but token1 on mainnet, thus the reason to check
