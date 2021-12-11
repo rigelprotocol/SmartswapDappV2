@@ -73,7 +73,6 @@ const ShowYieldFarmDetails = ({
     // }
   };
 
-
   const handleChecked = () => {
     setChecked(true);
   };
@@ -83,6 +82,11 @@ const ShowYieldFarmDetails = ({
   useEffect(() => {
     setInputHasError(false);
     setErrorButtonText("");
+
+    if (!account) {
+      setUnstakeButtonValue("Connect wallet")
+    }
+
     if (unstakeToken !== "") {
       if (
         isNaN(parseFloat(unstakeToken)) ||
@@ -98,7 +102,7 @@ const ShowYieldFarmDetails = ({
         setErrorButtonText("Insufficient Balance");
       }
     }
-  }, [unstakeToken]);
+  }, [unstakeToken, account]);
 
   // show max value
   const showMaxValue = async (deposit: any, input: any) => {
@@ -269,7 +273,7 @@ const ShowYieldFarmDetails = ({
                 fontSize="16px"
                 color={mode === DARK_THEME ? "#DCE5EF" : "#333333"}
               >
-                {false ? `RGP-BUSD` : "RGP"} Tokens Staked
+                {content.deposit} Tokens Staked
               </Text>
             </Flex>
 
@@ -541,7 +545,7 @@ const ShowYieldFarmDetails = ({
                     variant="brand"
                     mx="auto"
                     width="100%"
-                    disabled={unstakeButtonValue !== "Confirm" || !unstakeToken}
+                    disabled={unstakeButtonValue !== "Confirm" || !unstakeToken || !account}
                     cursor="pointer"
                     border="none"
                     borderRadius="0px"
