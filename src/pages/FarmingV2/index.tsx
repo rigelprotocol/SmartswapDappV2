@@ -17,18 +17,18 @@ import { useColorModeValue } from '@chakra-ui/react'
 import YieldFarm from './YieldFarm'
 import { contents } from './mock'
 import { AlertSvg } from './Icon'
-import { Web3Provider } from '@ethersproject/providers'
 import { useWeb3React } from '@web3-react/core'
 import { useRouteMatch } from 'react-router-dom'
+
+import { useDispatch } from "react-redux";
 import bigNumber from 'bignumber.js'
-import { useFarms } from '../../state/farm/hooks'
 import { ethers } from 'ethers'
-import SmartSwapLPToken2 from '../../utils/abis/LPToken2.json'
-import SmartSwapLPTokenTestnet from '../../utils/abis/testnet/LPToken1.json'
+import { updateTokenStaked, updateTotalLiquidity } from '../../state/farm/actions'
+import { useFarms } from '../../state/farm/hooks'
+import { MasterChefV2Contract, smartSwapLPTokenPoolOne, smartSwapLPTokenPoolThree, smartSwapLPTokenPoolTwo, smartSwapLPTokenV2PoolFive, smartSwapLPTokenV2PoolFour, RGPSpecialPool } from '../../utils/Contracts'
+import { RGPADDRESSES, RGPSPECIALPOOLADDRESSES, MASTERCHEFV2ADDRESSES, SMARTSWAPLP_TOKEN1ADDRESSES, SMARTSWAPLP_TOKEN2ADDRESSES, SMARTSWAPLP_TOKEN3ADDRESSES, SMARTSWAPLP_TOKEN4ADDRESSES, SMARTSWAPLP_TOKEN5ADDRESSES } from '../../utils/addresses'
+import { formatBigNumber } from '../../utils'
 
-import SpecialPool from '../../utils/abis/specialPool.json'
-
-import { signer } from '../../utils/utilsFunctions'
 
 export const BIG_TEN = new bigNumber(10)
 
@@ -43,11 +43,6 @@ export const STAKING_INDEX = 1
 export const MAINNET = 56
 export const TESTNET = 97
 
-export function useActiveWeb3React() {
-  const context = useWeb3React<Web3Provider>()
-  const contextNetwork = useWeb3React<Web3Provider>('NETWORK')
-  return context.active ? context : contextNetwork
-}
 
 export function Index() {
   const history = useHistory()
@@ -55,10 +50,21 @@ export function Index() {
   const [selected, setSelected] = useState(LIQUIDITY)
   const [isActive, setIsActive] = useState(V2)
   const [showAlert, setShowAlert] = useState(true)
-  const { data: farmsLP } = useFarms()
+  const [farmDataLoading, setfarmDataLoading] = useState(false)
+  const [initialLoad, setInitialLoad] = useState(false)
+  //const { data: farmsLP } = useFarms()
   const [farms, setFarms] = useState(contents)
-
+  const { account, chainId, library } = useWeb3React();
+  const dispatch = useDispatch();
   let match = useRouteMatch('/farming-V2/staking-RGP')
+  const FarmData = useFarms()
+
+  //temporary
+  useEffect(() => {
+    getFarmData()
+    getTokenStaked()
+  }, [chainId]);
+
 
   useEffect(() => {
     if (match) setSelected(STAKING)
@@ -91,146 +97,239 @@ export function Index() {
   const handleAlert = () => {
     setShowAlert(false)
   }
+  const getFarmData = async () => {
+    setfarmDataLoading(true)
 
-  const { chainId, library } = useActiveWeb3React()
+    try {
+      const [specialPool, pool1, pool2, pool3, pool4, pool5] = await Promise.all([
+        RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
+        smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]),
+        smartSwapLPTokenPoolTwo(SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number]),
+        smartSwapLPTokenPoolThree(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number]),
+        smartSwapLPTokenV2PoolFour(SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number]),
+        smartSwapLPTokenV2PoolFive(SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number]),
+      ]);
 
-  useEffect(() => {
-    const farmsList = async (farmsToDisplay: any) => {
-      const getPrice = async (index: number, type: string) => {
-        const contract = async () =>
-          new ethers.Contract(
-            farmsToDisplay[index].lpAddresses[
-              Number(chainId) !== MAINNET ? TESTNET : MAINNET
-            ],
+      const [
+        rgpTotalStaking,
+        pool1Reserve,
+        pool2Reserve,
+        pool3Reserve,
+        pool4Reserve,
+        pool5Reserve,
+      ] = await Promise.all([
+        specialPool.totalStaking(),
+        pool1.getReserves(),
+        pool2.getReserves(),
+        pool3.getReserves(),
+        pool4.getReserves(),
+        pool5.getReserves(),
+      ]);
 
-            Number(chainId) !== MAINNET
-              ? SmartSwapLPTokenTestnet
-              : SmartSwapLPToken2,
-            await signer(),
-          )
+      const RGPprice: number | any = ethers.utils.formatUnits(
+        pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
+        3,
+      );
 
-        const pool = await contract()
-        const poolReserve = await pool.getReserves()
+      const BNBprice = getBnbPrice(pool3, pool3Reserve);
+      const RGPLiquidity = ethers.utils
+        .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * RGPprice)), 21)
+        .toString();
+      const BUSD_RGPLiquidity = ethers.utils
+        .formatEther(pool1Reserve[0].mul(2))
+        .toString();
 
-        const price = ethers.utils.formatUnits(
-          poolReserve[
-            type === 'BNB' ? (Number(chainId) === MAINNET ? 1 : 0) : 0
-          ]
-            .mul(1000)
-            .div(
-              poolReserve[
-                type === 'BNB' ? (Number(chainId) === MAINNET ? 0 : 1) : 1
-              ],
-            ),
-          3,
-        )
-        return price
-      }
+      const RGP_BNBLiquidity = ethers.utils
+        .formatUnits(pool2Reserve[0].mul(Math.floor(BNBprice * 1000 * 2)), 21)
+        .toString();
+      const BUSD_BNBLiquidity = getBusdBnbLiquidity(pool3, pool3Reserve);
 
-      const RGPPrice = await getPrice(4, 'RGP')
-      const BNBPrice = await getPrice(2, 'BNB')
+      const AXS_BUSDLiquidity = getAXSBUSDLiquidity(pool5, pool5Reserve);
+      const AXS_RGPLiquidity = ethers.utils
+        .formatUnits(pool4Reserve[1].mul(Math.floor(Number(RGPprice) * 1000 * 2)), 21)
+        .toString();
 
-      let farmsToDisplayWithAPR = await farmsToDisplay.map(
-        async (farm: any, index: number) => {
-          let contract
-
-          if (farm.lpSymbol === 'RGP') {
-            contract = async () =>
-              new ethers.Contract(
-                farm.lpAddresses[
-                  Number(chainId) !== MAINNET ? TESTNET : MAINNET
-                ],
-                SpecialPool,
-                await signer(),
-              )
-            const pool = await contract()
-
-            const RgpTotalStake = await pool.totalStaking()
-
-            const RGPLiquidity = ethers.utils
-              .formatUnits(
-                RgpTotalStake.mul(Math.floor(1000 * Number(RGPPrice))),
-                21,
-              )
-              .toString()
-            const calculateApy =
-              (Number(RGPPrice) * farm.inflation * 365) / Number(RGPLiquidity)
-
-            return await {
-              ...farm,
-              earn: 'RGP',
-              ARYValue: calculateApy,
-              totalLiquidity: RGPLiquidity,
-            }
-          } else {
-            contract = async () =>
-              new ethers.Contract(
-                farm.lpAddresses[
-                  Number(chainId) !== MAINNET ? TESTNET : MAINNET
-                ],
-
-                Number(chainId) !== MAINNET
-                  ? SmartSwapLPTokenTestnet
-                  : SmartSwapLPToken2,
-                await signer(),
-              )
-
-            const pool = await contract()
-            const poolReserve = await pool.getReserves()
-
-            const totalLiquidity =
-              farm.pid === 2
-                ? ethers.utils
-                    .formatUnits(
-                      poolReserve[0].mul(
-                        Math.floor(Number(BNBPrice) * 1000 * 2),
-                      ),
-                      21,
-                    )
-                    .toString()
-                : farm.pid === 3 || farm.pid === 6
-                ? ethers.utils
-                    .formatEther(
-                      poolReserve[Number(chainId) === MAINNET ? 1 : 0].mul(2),
-                    )
-                    .toString()
-                : farm.pid === 4
-                ? ethers.utils
-                    .formatUnits(
-                      poolReserve[1].mul(
-                        Math.floor(Number(RGPPrice) * 1000 * 2),
-                      ),
-                      21,
-                    )
-                    .toString()
-                : farm.pid === 5
-                ? ethers.utils.formatEther(poolReserve[0].mul(2)).toString()
-                : ethers.utils.formatEther(poolReserve[1].mul(2)).toString()
-
-            const calculateApy =
-              (Number(RGPPrice) * farm.inflation * 365 * 100) /
-              Number(totalLiquidity)
-            return await {
-              ...farm,
-              earn: 'RGP',
-              ARYValue: calculateApy,
-              totalLiquidity: totalLiquidity,
-            }
-          }
+      dispatch(updateTotalLiquidity([
+        {
+          liquidity: RGPLiquidity,
+          apy: calculateApy(RGPprice, RGPLiquidity, 250),
         },
-      )
-      return await Promise.all(farmsToDisplayWithAPR)
+        {
+          liquidity: RGP_BNBLiquidity,
+          apy: calculateApy(RGPprice, RGP_BNBLiquidity, 953.3333333),
+        },
+        {
+          liquidity: BUSD_RGPLiquidity,
+          apy: calculateApy(RGPprice, BUSD_RGPLiquidity, 3336.666667),
+        },
+        {
+          liquidity: BUSD_BNBLiquidity,
+          apy: calculateApy(RGPprice, BUSD_BNBLiquidity, 476.6666667),
+        },
+        {
+          liquidity: AXS_RGPLiquidity,
+          apy: calculateApy(RGPprice, AXS_RGPLiquidity, 715),
+        },
+        {
+          liquidity: AXS_BUSDLiquidity,
+          apy: calculateApy(RGPprice, AXS_BUSDLiquidity, 238.3333333),
+        },
+      ]))
+
+    } catch (error: any) {
+      console.log(error.message)
+      setfarmDataLoading(false)
+      //if (!toast.isActive(id)) {
+      //  showErrorToast();
     }
-    const chosenFarmsMemoized = async () => {
-      let chosenFarms = (await farmsList(farmsLP)) as any[]
-      console.log({chosenFarms})
-      const activeFarms = chosenFarms.filter(
-        (farm) => farm?.pid !== 0 && !isNaN(farm?.ARYValue),
-      )
-      setFarms(activeFarms)
+    setfarmDataLoading(false)
+  };
+
+  const specialPoolStaked = async () => {
+    if (account) {
+      try {
+        const specialPool = await RGPSpecialPool(RGPADDRESSES[chainId as number]);
+        const RGPStakedEarned = await Promise.all([
+          specialPool.userData(account),
+          specialPool.calculateRewards(account),
+        ]);
+        return RGPStakedEarned;
+      } catch (error) {
+        return error;
+      }
     }
-    chosenFarmsMemoized()
-  }, [chainId, farmsLP])
+  };
+  const getTokenStaked = async () => {
+    try {
+      if (account) {
+        const masterChefV2 = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number]);
+        const [
+          poolOneEarned,
+          poolTwoEarned,
+          poolThreeEarned,
+          poolFourEarned,
+          poolFiveEarned,
+          poolOneStaked,
+          poolTwoStaked,
+          poolThreeStaked,
+          poolFourStaked,
+          poolFiveStaked,
+
+        ] = await Promise.all([
+          masterChefV2.pendingRigel(1, account),
+          masterChefV2.pendingRigel(2, account),
+          masterChefV2.pendingRigel(3, account),
+          masterChefV2.pendingRigel(4, account),
+          masterChefV2.pendingRigel(5, account),
+          masterChefV2.userInfo(1, account),
+          masterChefV2.userInfo(2, account),
+          masterChefV2.userInfo(3, account),
+          masterChefV2.userInfo(4, account),
+          masterChefV2.userInfo(5, account),
+
+        ]);
+
+        //console.log("poolFourStaked", poolFourStaked)
+        //const RGPStakedEarned = await specialPoolStaked();
+        let RGPStaked;
+        let RGPEarned;
+
+        //console.log("EARRNED", RGPStakedEarned)
+
+        //  if (RGPStakedEarned) {
+        //const [specialPoolStaked, specialPoolEarned] = RGPStakedEarned;
+
+        //  RGPStaked = formatBigNumber(specialPoolStaked.tokenQuantity);
+        // RGPEarned = formatBigNumber(specialPoolEarned);
+        //   } else {
+        RGPStaked = 0;
+        RGPEarned = 0;
+        //  }
+
+
+        dispatch(updateTokenStaked([
+          { staked: RGPStaked, earned: RGPEarned },
+          {
+            staked: formatBigNumber(poolTwoStaked.amount),
+            earned: formatBigNumber(poolTwoEarned),
+          },
+          {
+            staked: formatBigNumber(poolOneStaked.amount),
+            earned: formatBigNumber(poolOneEarned),
+          },
+          {
+            staked: formatBigNumber(poolThreeStaked.amount),
+            earned: formatBigNumber(poolThreeEarned),
+          },
+          {
+            staked: formatBigNumber(poolFourStaked.amount),
+            earned: formatBigNumber(poolFourEarned),
+          },
+          {
+            staked: formatBigNumber(poolFiveStaked.amount),
+            earned: formatBigNumber(poolFiveEarned),
+          },
+        ]))
+
+        setInitialLoad(false);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const calculateApy = (rgpPrice: any, totalLiquidity: any, inflation: any) =>
+    (rgpPrice * inflation * 365 * 100) / totalLiquidity;
+
+  const getBusdBnbLiquidity = (pool3: any, pool3Reserve: any) => {
+    const pool3Testnet = '0x120f3E6908899Af930715ee598BE013016cde8A5';
+    let BUSD_BNBLiquidity;
+    if (pool3 && pool3.address === pool3Testnet) {
+      BUSD_BNBLiquidity = ethers.utils
+        .formatEther(pool3Reserve[0].mul(2))
+        .toString();
+    } else {
+      BUSD_BNBLiquidity = ethers.utils
+        .formatEther(pool3Reserve[1].mul(2))
+        .toString();
+    }
+    return BUSD_BNBLiquidity;
+  };
+
+
+  const getBnbPrice = (pool3: any, pool3Reserve: any): number => {
+    const pool3testnet = '0x120f3E6908899Af930715ee598BE013016cde8A5';
+    let BNBprice;
+    if (pool3 && pool3.address === pool3testnet) {
+      BNBprice = ethers.utils.formatUnits(
+        pool3Reserve[0].mul(1000).div(pool3Reserve[1]),
+        3,
+      );
+    } else {
+      BNBprice = ethers.utils.formatUnits(
+        pool3Reserve[1].mul(1000).div(pool3Reserve[0]),
+        3,
+      );
+    }
+    return Number(BNBprice);
+  };
+
+  const getAXSBUSDLiquidity = (pool5: any, pool5Reserve: any) => {
+    const pool5Testnet = '0x816b823d9C7F30327B2c626DEe4aD731Dc9D3641';
+    let AXS_BUSDLiquidity;
+    // BUSD is token0 on testnet but token1 on mainnet, thus the reason to check
+    // before calculating the liquidity based on BUSD
+    if (pool5 && pool5.address === pool5Testnet) {
+      AXS_BUSDLiquidity = ethers.utils
+        .formatEther(pool5Reserve[0].mul(2))
+        .toString();
+    } else {
+      AXS_BUSDLiquidity = ethers.utils
+        .formatEther(pool5Reserve[1].mul(2))
+        .toString();
+    }
+    return AXS_BUSDLiquidity;
+  };
 
   return (
     <Box>
@@ -280,12 +379,12 @@ export function Index() {
             mode === LIGHT_THEME && isActive === V1
               ? '2px solid #DEE5ED !important'
               : mode === DARK_THEME && isActive === V1
-              ? '2px solid  #213345 !important'
-              : mode === DARK_THEME && isActive === V2
-              ? '2px solid  #213345 !important'
-              : mode === LIGHT_THEME && isActive === V2
-              ? '2px solid #DEE5ED !important'
-              : '2px solid #DEE5ED !important'
+                ? '2px solid  #213345 !important'
+                : mode === DARK_THEME && isActive === V2
+                  ? '2px solid  #213345 !important'
+                  : mode === LIGHT_THEME && isActive === V2
+                    ? '2px solid #DEE5ED !important'
+                    : '2px solid #DEE5ED !important'
           }
           p={1}
           mt={3}
@@ -298,23 +397,23 @@ export function Index() {
                 mode === LIGHT_THEME && isActive === V1
                   ? '#FFFFFF !important'
                   : mode === DARK_THEME && isActive === V1
-                  ? '#15202B !important'
-                  : mode === DARK_THEME && isActive === V2
-                  ? '#15202B !important'
-                  : mode === LIGHT_THEME && isActive === V2
-                  ? '#FFFFFF !important'
-                  : '#F2F5F8 !important'
+                    ? '#15202B !important'
+                    : mode === DARK_THEME && isActive === V2
+                      ? '#15202B !important'
+                      : mode === LIGHT_THEME && isActive === V2
+                        ? '#FFFFFF !important'
+                        : '#F2F5F8 !important'
               }
               color={
                 mode === LIGHT_THEME && isActive === V1
                   ? '#999999 !important'
                   : mode === DARK_THEME && isActive === V1
-                  ? '#7599BD !important'
-                  : mode === DARK_THEME && isActive === V2
-                  ? '#7599BD !important'
-                  : mode === LIGHT_THEME && isActive === V2
-                  ? '#999999 !important'
-                  : '#333333'
+                    ? '#7599BD !important'
+                    : mode === DARK_THEME && isActive === V2
+                      ? '#7599BD !important'
+                      : mode === LIGHT_THEME && isActive === V2
+                        ? '#999999 !important'
+                        : '#333333'
               }
               border="none"
               borderRadius="6px"
@@ -330,23 +429,23 @@ export function Index() {
                 mode === LIGHT_THEME && isActive === V2
                   ? '#F2F5F8 !important'
                   : mode === DARK_THEME && isActive === V2
-                  ? '#4A739B !important'
-                  : mode === DARK_THEME && isActive === V1
-                  ? '#4A739B !important'
-                  : mode === LIGHT_THEME && isActive === V1
-                  ? '#FFFFFF !important'
-                  : '#F2F5F8 !important'
+                    ? '#4A739B !important'
+                    : mode === DARK_THEME && isActive === V1
+                      ? '#4A739B !important'
+                      : mode === LIGHT_THEME && isActive === V1
+                        ? '#FFFFFF !important'
+                        : '#F2F5F8 !important'
               }
               color={
                 mode === LIGHT_THEME && isActive === V2
                   ? '#333333 !important'
                   : mode === DARK_THEME && isActive === V2
-                  ? '#F1F5F8 !important'
-                  : mode === DARK_THEME && isActive === V1
-                  ? '#F1F5F8 !important'
-                  : mode === LIGHT_THEME && isActive === V2
-                  ? '#333333 !important'
-                  : '#333333'
+                    ? '#F1F5F8 !important'
+                    : mode === DARK_THEME && isActive === V1
+                      ? '#F1F5F8 !important'
+                      : mode === LIGHT_THEME && isActive === V2
+                        ? '#333333 !important'
+                        : '#333333'
               }
               borderRadius="6px"
               border="none"
@@ -373,12 +472,12 @@ export function Index() {
               mode === LIGHT_THEME && selected === STAKING
                 ? '#FFFFFF !important'
                 : mode === DARK_THEME && selected === LIQUIDITY
-                ? '#213345 !important'
-                : mode === DARK_THEME && selected === STAKING
-                ? '#15202B !important'
-                : mode === LIGHT_THEME && selected === LIQUIDITY
-                ? '#DEE5ED !important'
-                : '#DEE5ED !important'
+                  ? '#213345 !important'
+                  : mode === DARK_THEME && selected === STAKING
+                    ? '#15202B !important'
+                    : mode === LIGHT_THEME && selected === LIQUIDITY
+                      ? '#DEE5ED !important'
+                      : '#DEE5ED !important'
             }
             px={5}
             py={4}
@@ -390,12 +489,12 @@ export function Index() {
               mode === LIGHT_THEME && selected === LIQUIDITY
                 ? '#F2F5F8 !important'
                 : mode === DARK_THEME && selected === LIQUIDITY
-                ? '#324D68 !important'
-                : mode === DARK_THEME && selected === STAKING
-                ? '#324D68 !important'
-                : mode === LIGHT_THEME && selected === STAKING
-                ? '#F2F5F8 !important'
-                : '#F2F5F8 !important'
+                  ? '#324D68 !important'
+                  : mode === DARK_THEME && selected === STAKING
+                    ? '#324D68 !important'
+                    : mode === LIGHT_THEME && selected === STAKING
+                      ? '#F2F5F8 !important'
+                      : '#F2F5F8 !important'
             }
           >
             <Text
@@ -403,12 +502,12 @@ export function Index() {
                 mode === LIGHT_THEME && selected === LIQUIDITY
                   ? '#333333'
                   : mode === DARK_THEME && selected === LIQUIDITY
-                  ? '#F1F5F8'
-                  : mode === DARK_THEME && selected === STAKING
-                  ? '#F1F5F8'
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? '#333333'
-                  : '#333333'
+                    ? '#F1F5F8'
+                    : mode === DARK_THEME && selected === STAKING
+                      ? '#F1F5F8'
+                      : mode === LIGHT_THEME && selected === STAKING
+                        ? '#333333'
+                        : '#333333'
               }
             >
               Liquidity Pools
@@ -421,34 +520,34 @@ export function Index() {
               mode === LIGHT_THEME && selected === LIQUIDITY
                 ? '#FFFFFF !important'
                 : mode === DARK_THEME && selected === STAKING
-                ? '#213345 !important'
-                : mode === DARK_THEME && selected === LIQUIDITY
-                ? '#15202B !important'
-                : mode === LIGHT_THEME && selected === STAKING
-                ? '#DEE5ED !important'
-                : '#DEE5ED !important'
+                  ? '#213345 !important'
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                    ? '#15202B !important'
+                    : mode === LIGHT_THEME && selected === STAKING
+                      ? '#DEE5ED !important'
+                      : '#DEE5ED !important'
             }
             color={
               mode === LIGHT_THEME && selected === LIQUIDITY
                 ? '#333333'
                 : mode === DARK_THEME && selected === LIQUIDITY
-                ? '#F1F5F8'
-                : mode === DARK_THEME && selected === STAKING
-                ? '#F1F5F8'
-                : mode === LIGHT_THEME && selected === STAKING
-                ? '#333333'
-                : '#333333'
+                  ? '#F1F5F8'
+                  : mode === DARK_THEME && selected === STAKING
+                    ? '#F1F5F8'
+                    : mode === LIGHT_THEME && selected === STAKING
+                      ? '#333333'
+                      : '#333333'
             }
             borderColor={
               mode === LIGHT_THEME && selected === LIQUIDITY
                 ? '#F2F5F8 !important'
                 : mode === DARK_THEME && selected === LIQUIDITY
-                ? '#324D68 !important'
-                : mode === DARK_THEME && selected === STAKING
-                ? '#324D68 !important'
-                : mode === LIGHT_THEME && selected === STAKING
-                ? '#F2F5F8 !important'
-                : '#F2F5F8 !important'
+                  ? '#324D68 !important'
+                  : mode === DARK_THEME && selected === STAKING
+                    ? '#324D68 !important'
+                    : mode === LIGHT_THEME && selected === STAKING
+                      ? '#F2F5F8 !important'
+                      : '#F2F5F8 !important'
             }
             px={5}
             py={4}
@@ -474,12 +573,12 @@ export function Index() {
                   mode === LIGHT_THEME && selected === STAKING
                     ? '#FFFFFF !important'
                     : mode === DARK_THEME && selected === LIQUIDITY
-                    ? '#15202B !important'
-                    : mode === DARK_THEME && selected === STAKING
-                    ? '#15202B !important'
-                    : mode === LIGHT_THEME && selected === LIQUIDITY
-                    ? '#FFFFFF !important'
-                    : '#FFFFFF !important'
+                      ? '#15202B !important'
+                      : mode === DARK_THEME && selected === STAKING
+                        ? '#15202B !important'
+                        : mode === LIGHT_THEME && selected === LIQUIDITY
+                          ? '#FFFFFF !important'
+                          : '#FFFFFF !important'
                 }
                 rounded="lg"
               >
@@ -493,23 +592,23 @@ export function Index() {
                       mode === LIGHT_THEME && selected === LIQUIDITY
                         ? '#F2F5F8  !important'
                         : mode === DARK_THEME && selected === LIQUIDITY
-                        ? '#213345'
-                        : mode === DARK_THEME && selected === STAKING
-                        ? '#213345'
-                        : mode === LIGHT_THEME && selected === STAKING
-                        ? '#F2F5F8'
-                        : '#F2F5F8 !important'
+                          ? '#213345'
+                          : mode === DARK_THEME && selected === STAKING
+                            ? '#213345'
+                            : mode === LIGHT_THEME && selected === STAKING
+                              ? '#F2F5F8'
+                              : '#F2F5F8 !important'
                     }
                     color={
                       mode === LIGHT_THEME && selected === LIQUIDITY
                         ? '#333333'
                         : mode === DARK_THEME && selected === STAKING
-                        ? '#F1F5F8'
-                        : mode === DARK_THEME && selected === LIQUIDITY
-                        ? '#F1F5F8'
-                        : mode === LIGHT_THEME && selected === STAKING
-                        ? '#333333'
-                        : '#333333'
+                          ? '#F1F5F8'
+                          : mode === DARK_THEME && selected === LIQUIDITY
+                            ? '#F1F5F8'
+                            : mode === LIGHT_THEME && selected === STAKING
+                              ? '#333333'
+                              : '#333333'
                     }
                     w={['100%', '100%', '100%']}
                     align="left"
@@ -517,8 +616,8 @@ export function Index() {
                       mode === LIGHT_THEME
                         ? '1px solid #DEE5ED !important'
                         : mode === DARK_THEME
-                        ? '1px solid #324D68 !important'
-                        : '1px solid #324D68'
+                          ? '1px solid #324D68 !important'
+                          : '1px solid #324D68'
                     }
                     display={{ base: 'none', md: 'flex', lg: 'flex' }}
                   >
@@ -529,9 +628,9 @@ export function Index() {
                     <Text />
                   </Flex>
 
-                  {farms.map((content: any, index: number) =>
+                  {FarmData.contents.map((content: any, index: number) =>
                     index !== 0 ? (
-                      <YieldFarm content={content} key={content.pid} />
+                      <YieldFarm farmDataLoading={farmDataLoading} content={content} key={content.pid} />
                     ) : null,
                   )}
                 </Box>
@@ -553,8 +652,8 @@ export function Index() {
                   mode === LIGHT_THEME
                     ? '#FFFFFF !important'
                     : mode === DARK_THEME
-                    ? '#15202B !important'
-                    : '#FFFFFF !important'
+                      ? '#15202B !important'
+                      : '#FFFFFF !important'
                 }
                 rounded="lg"
               >
@@ -568,15 +667,15 @@ export function Index() {
                       mode === DARK_THEME
                         ? '#213345'
                         : mode === LIGHT_THEME
-                        ? '#F2F5F8'
-                        : '#F2F5F8 !important'
+                          ? '#F2F5F8'
+                          : '#F2F5F8 !important'
                     }
                     color={
                       mode === LIGHT_THEME
                         ? '#333333'
                         : mode === DARK_THEME
-                        ? '#F1F5F8'
-                        : '#333333'
+                          ? '#F1F5F8'
+                          : '#333333'
                     }
                     w={['100%', '100%', '100%']}
                     align="left"
@@ -584,8 +683,8 @@ export function Index() {
                       mode === LIGHT_THEME
                         ? '1px solid #DEE5ED !important'
                         : mode === DARK_THEME
-                        ? '1px solid #324D68 !important'
-                        : '1px solid #324D68'
+                          ? '1px solid #324D68 !important'
+                          : '1px solid #324D68'
                     }
                     display={{ base: 'none', md: 'flex', lg: 'flex' }}
                   >
@@ -595,9 +694,9 @@ export function Index() {
                     <Text>Total Liquidity</Text>
                     <Text />
                   </Flex>
-                  {farms.map((content: any, index: number) =>
+                  {FarmData.contents.map((content: any, index: number) =>
                     index === 0 ? (
-                      <YieldFarm content={content} key={content.pid} />
+                      <YieldFarm farmDataLoading={farmDataLoading} content={content} key={content.pid} />
                     ) : null,
                   )}
                 </Box>

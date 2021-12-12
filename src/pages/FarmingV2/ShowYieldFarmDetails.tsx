@@ -30,7 +30,7 @@ import { useDispatch } from "react-redux";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { getExplorerLink, ExplorerDataType } from "../../utils/getExplorerLink";
 import { MasterChefV2Contract, RGPSpecialPool } from "../../utils/Contracts";
-import { SMARTSWAPROUTER } from "../../utils/addresses";
+import { MASTERCHEFV2ADDRESSES, RGPADDRESSES } from "../../utils/addresses";
 import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
 const ShowYieldFarmDetails = ({
   content,
@@ -44,15 +44,13 @@ const ShowYieldFarmDetails = ({
     lpSymbol: string;
     tokensStaked: string[];
     availableToken: string;
+    deposit: string,
+
   };
 }) => {
   const mode = useColorModeValue("light", DARK_THEME);
   const bgColor = useColorModeValue("#FFF", "#15202B");
-  const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
-  const borderColor = useColorModeValue("#DEE6ED", "#324D68");
-  const dashedColor = useColorModeValue("#DEE6ED", "#4A739B");
-  const activeButtonColor = useColorModeValue("#319EF6", "#4CAFFF");
-  const buttonColor = useColorModeValue("#666666", "#7599BD");
+
   const [checked, setChecked] = useState(true);
   const modal2Disclosure = useDisclosure();
   const [unstakeButtonValue, setUnstakeButtonValue] = useState("Confirm");
@@ -84,6 +82,11 @@ const ShowYieldFarmDetails = ({
   useEffect(() => {
     setInputHasError(false);
     setErrorButtonText("");
+
+    if (!account) {
+      setUnstakeButtonValue("Connect wallet")
+    }
+
     if (unstakeToken !== "") {
       if (
         isNaN(parseFloat(unstakeToken)) ||
@@ -99,10 +102,10 @@ const ShowYieldFarmDetails = ({
         setErrorButtonText("Insufficient Balance");
       }
     }
-  }, [unstakeToken]);
+  }, [unstakeToken, account]);
 
   // show max value
-  const showMaxValue = async (lpSymbol: any, input: any) => {
+  const showMaxValue = async (deposit: any, input: any) => {
     try {
       //  if (input === 'lpSymbol') {
       //  setDepositTokenValue(content.availableToken);
@@ -114,6 +117,7 @@ const ShowYieldFarmDetails = ({
         "sorry there is a few error, you are most likely not logged in. Please login to ypur metamask extensition and try again."
       );
     }
+
   };
 
   async function confirmUnstakeDeposit(val: string) {
@@ -126,15 +130,24 @@ const ShowYieldFarmDetails = ({
         })
       );
 
+
+
       if (account) {
-        if (val === "RGP") {
-          await RGPUnstake();
-        } else if (val === "RGB-BNB") {
+        if (val === 'RGP') {
+          await RGPUnstake()
+        } else if (val === 'RGP-BNB') {
           await tokensWithdrawal(2);
-        } else if (val === "RBG-BUSD") {
-          await tokensWithdrawal(1);
+        } else if (val === 'RBG-BUSD') {
+          await tokensWithdrawal(1)
+        } else if (val === 'BNB-BUSD') {
+          await tokensWithdrawal(3)
+        } else if (val === 'AXS-RGP') {
+          await tokensWithdrawal(4)
+        } else if (val === 'AXS-BUSD') {
+          await tokensWithdrawal(5)
         }
       }
+
     } catch (err) {
       console.log(err);
       dispatch(
@@ -154,50 +167,66 @@ const ShowYieldFarmDetails = ({
 
     return { confirmations, status, logs };
   };
+
   // withdrawal for the Liquidity Provider tokens for all pools
   const tokensWithdrawal = async (pid: number) => {
     if (account) {
-      const lpTokens = await MasterChefV2Contract(
-        SMARTSWAPROUTER[chainId as number]
-      );
-      const data = await lpTokens.withdraw(
-        pid,
-        ethers.utils.parseEther(unstakeToken.toString()),
-        {
-          from: account,
-          gasLimit: 250000,
-          gasPrice: ethers.utils.parseUnits("20", "gwei"),
-        }
-      );
-      const { confirmations, status, logs } = await fetchTransactionData(data);
-      const { hash } = data;
-      const amountUnstaked = convertToNumber(logs[1].data);
+      try {
+        const lpTokens = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number]);
+        const data = await lpTokens.withdraw(
+          pid,
+          ethers.utils.parseEther(unstakeToken.toString()),
+          {
+            from: account,
+            gasLimit: 250000,
+            gasPrice: ethers.utils.parseUnits('20', 'gwei'),
+          },
+        );
+        const { confirmations, status, logs } = await fetchTransactionData(data);
+        const { hash } = data;
+        const amountUnstaked = convertToNumber(logs[1].data)
 
-      const explorerLink = getExplorerLink(
-        chainId as number,
-        hash,
-        ExplorerDataType.TRANSACTION
-      );
+        const explorerLink = getExplorerLink(
+          chainId as number,
+          hash,
+          ExplorerDataType.TRANSACTION
+        );
 
-      dispatch(
-        addToast({
-          message: `Successfully unstaked ${convertFromWei(
-            amountUnstaked
-          )} RGP `,
-          URL: explorerLink,
+        dispatch(setOpenModal({
+          trxState: TrxState.TransactionSuccessful,
+          message: `Successfully unstaked ${convertFromWei(amountUnstaked)} RGP `
+        }))
+
+        dispatch(addToast({
+          message: `Successfully unstaked ${convertFromWei(amountUnstaked)} RGP `
+          ,
+
+          URL: explorerLink
         })
-      );
-      // dispatch the getTokenStaked action from here when data changes
-      //callRefreshFarm(confirmations, status);
-    }
-  };
+
+        )
+        // dispatch the getTokenStaked action from here when data changes
+        //callRefreshFarm(confirmations, status);
+
+
+      } catch (e) {
+        console.log(e);
+        dispatch(
+          setOpenModal({
+            trxState: TrxState.TransactionFailed,
+          })
+        );
+
+      }
+
+    };
+  }
 
   // withdrawal of funds
   const RGPUnstake = async () => {
     if (account) {
-      const specialPool = await RGPSpecialPool(
-        SMARTSWAPROUTER[chainId as number]
-      );
+
+      const specialPool = await RGPSpecialPool(RGPADDRESSES[chainId as number]);
       const data = await specialPool.unStake(
         ethers.utils.parseUnits(unstakeToken, "ether"), // user input from onclick shoild be here...
         {
@@ -238,13 +267,13 @@ const ShowYieldFarmDetails = ({
                 marginRight="20px"
                 fontWeight="bold"
               >
-                0.000
+                {content.tokensStaked[1]}
               </Text>
               <Text
                 fontSize="16px"
                 color={mode === DARK_THEME ? "#DCE5EF" : "#333333"}
               >
-                {false ? `RGP-BUSD` : "RGP"} Tokens Staked
+                {content.deposit} Tokens Staked
               </Text>
             </Flex>
 
@@ -423,7 +452,7 @@ const ShowYieldFarmDetails = ({
           minHeight="40vh"
         >
           <ModalHeader fontSize="18px" fontWeight="regular" align="center">
-            Unstake {content.lpSymbol} Tokens
+            Unstake {content.deposit} Tokens
           </ModalHeader>
 
           <ModalCloseButton
@@ -439,8 +468,8 @@ const ShowYieldFarmDetails = ({
 
           <ModalBody py={2}>
             <Text color="gray.400" align="right" mb={3}>
-              {content.tokensStaked[1]} {content.lpSymbol} Staked
-              {/* Work here */}
+              {`${content.tokensStaked[1]}
+               ${content.deposit} Staked `}
             </Text>
 
             <InputGroup size="md">
@@ -465,7 +494,7 @@ const ShowYieldFarmDetails = ({
                   height="20px"
                   cursor="pointer"
                   _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
-                  onClick={() => showMaxValue(content.lpSymbol, "lpSymbol")}
+                  onClick={() => showMaxValue(content.deposit, "lpSymbol")}
                 >
                   MAX
                 </Button>
@@ -480,14 +509,14 @@ const ShowYieldFarmDetails = ({
                     mx="auto"
                     color={
                       unstakeButtonValue === "Confirm" ||
-                      unstakeButtonValue === "Confirmed"
+                        unstakeButtonValue === "Confirmed"
                         ? "rgba(190, 190, 190, 1)"
                         : "#40BAD5"
                     }
                     width="100%"
                     background={
                       unstakeButtonValue === "Confirm" ||
-                      unstakeButtonValue === "Confirmed"
+                        unstakeButtonValue === "Confirmed"
                         ? "rgba(64, 186, 213, 0.15)"
                         : "#444159"
                     }
@@ -500,11 +529,11 @@ const ShowYieldFarmDetails = ({
                     fontSize="16px"
                     _hover={
                       unstakeButtonValue === "Confirm" ||
-                      unstakeButtonValue === "Confirmed"
+                        unstakeButtonValue === "Confirmed"
                         ? { background: "rgba(64, 186, 213, 0.15)" }
                         : { background: "#444159" }
                     }
-                    onClick={() => {}}
+                    onClick={() => { }}
                   >
                     {errorButtonText}
                   </Button>
@@ -516,7 +545,7 @@ const ShowYieldFarmDetails = ({
                     variant="brand"
                     mx="auto"
                     width="100%"
-                    disabled={unstakeButtonValue !== "Confirm" || !unstakeToken}
+                    disabled={unstakeButtonValue !== "Confirm" || !unstakeToken || !account}
                     cursor="pointer"
                     border="none"
                     borderRadius="0px"
@@ -525,11 +554,11 @@ const ShowYieldFarmDetails = ({
                     fontSize="16px"
                     _hover={
                       unstakeButtonValue === "Confirm" ||
-                      unstakeButtonValue === "Confirmed"
+                        unstakeButtonValue === "Confirmed"
                         ? { background: "rgba(64, 186, 213, 0.15)" }
                         : { background: "#444159" }
                     }
-                    onClick={() => confirmUnstakeDeposit(content.lpSymbol)}
+                    onClick={() => confirmUnstakeDeposit(content.deposit)}
                   >
                     {unstakeButtonValue}
                   </Button>

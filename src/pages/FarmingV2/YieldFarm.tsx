@@ -3,10 +3,11 @@ import { Box, Flex, Button, Spinner, Text } from "@chakra-ui/react";
 import ShowYieldFarmDetails from "./ShowYieldFarmDetails";
 import { useColorModeValue } from "@chakra-ui/react";
 import { RGPIcon } from "./Icon";
-import { LIGHT_THEME, DARK_THEME, useActiveWeb3React } from "./index";
-
+import { LIGHT_THEME, DARK_THEME } from "./index";
+import { useWeb3React } from "@web3-react/core";
+import { useFarms } from "../../state/farm/hooks";
 const YieldFarm = ({
-  content,
+  content, farmDataLoading
 }: {
   content: {
     pid: number;
@@ -17,11 +18,12 @@ const YieldFarm = ({
     lpSymbol: string;
     tokensStaked: string[];
     availableToken: string;
-  };
+    deposit: string,
+
+  }, farmDataLoading: boolean
 }) => {
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
-
-  const { chainId, library } = useActiveWeb3React();
+  const { account, chainId, library } = useWeb3React();
 
   const active = chainId && library;
   const loadingTotalLiquidity = false;
@@ -30,7 +32,7 @@ const YieldFarm = ({
   const formatAmount = (value: any) => parseFloat(value).toLocaleString();
 
   const totalLiquidityValue = () => {
-    if (loadingTotalLiquidity) return <Spinner speed="0.65s" color="#333333" />;
+    if (farmDataLoading) return <Spinner speed="0.65s" color="#333333" />;
 
     if (content.totalLiquidity) {
       return `$ ${formatAmount(content.totalLiquidity)}`;
@@ -47,22 +49,22 @@ const YieldFarm = ({
           mode === LIGHT_THEME
             ? "#FFFFFF !important"
             : mode === DARK_THEME
-            ? "#15202B !important"
-            : "#FFFFFF !important"
+              ? "#15202B !important"
+              : "#FFFFFF !important"
         }
         color={
           mode === LIGHT_THEME
             ? "#333333"
             : mode === DARK_THEME
-            ? "#DCE5EF"
-            : "#333333"
+              ? "#DCE5EF"
+              : "#333333"
         }
         borderColor={
           mode === LIGHT_THEME
             ? "#F2F5F8 !important"
             : mode === DARK_THEME
-            ? "#213345 !important"
-            : "#F2F5F8 !important"
+              ? "#213345 !important"
+              : "#F2F5F8 !important"
         }
         padding="15px 20px"
         width={["100%", "100%", "100%"]}
@@ -77,7 +79,7 @@ const YieldFarm = ({
             Deposit
           </Box>
           <Box marginTop="15px" align="left">
-            {content.lpSymbol}
+            {content.deposit}
           </Box>
         </Flex>
         <Flex justifyContent="space-between" width="100%">
@@ -138,34 +140,34 @@ const YieldFarm = ({
                 mode === LIGHT_THEME && active
                   ? "#FFFFFF !important"
                   : mode === DARK_THEME && active
-                  ? "#319EF6 !important"
-                  : mode === LIGHT_THEME && !active
-                  ? "#FFFFFF !important"
-                  : mode === DARK_THEME && !active
-                  ? "#15202B !important"
-                  : "#FFFFFF !important"
+                    ? "#319EF6 !important"
+                    : mode === LIGHT_THEME && !active
+                      ? "#FFFFFF !important"
+                      : mode === DARK_THEME && !active
+                        ? "#15202B !important"
+                        : "#FFFFFF !important"
               }
               color={
                 mode === LIGHT_THEME && active
                   ? "#319EF6"
                   : mode === DARK_THEME && active
-                  ? "#FFFFFF"
-                  : mode === LIGHT_THEME && !active
-                  ? "#319EF6"
-                  : mode === DARK_THEME && !active
-                  ? "#4CAFFF"
-                  : "#333333"
+                    ? "#FFFFFF"
+                    : mode === LIGHT_THEME && !active
+                      ? "#319EF6"
+                      : mode === DARK_THEME && !active
+                        ? "#4CAFFF"
+                        : "#333333"
               }
               borderColor={
                 mode === LIGHT_THEME && active
                   ? "#4CAFFF !important"
                   : mode === DARK_THEME && active
-                  ? "#319EF6 !important"
-                  : mode === LIGHT_THEME && !active
-                  ? "#4CAFFF !important"
-                  : mode === DARK_THEME && !active
-                  ? "#4CAFFF !important"
-                  : "#319EF6 !important"
+                    ? "#319EF6 !important"
+                    : mode === LIGHT_THEME && !active
+                      ? "#4CAFFF !important"
+                      : mode === DARK_THEME && !active
+                        ? "#4CAFFF !important"
+                        : "#319EF6 !important"
               }
               borderRadius="6px"
               mb="4"
@@ -183,34 +185,34 @@ const YieldFarm = ({
                 mode === LIGHT_THEME && active
                   ? "#FFFFFF !important"
                   : mode === DARK_THEME && active
-                  ? "#319EF6 !important"
-                  : mode === LIGHT_THEME && !active
-                  ? "#FFFFFF !important"
-                  : mode === DARK_THEME && !active
-                  ? "#15202B !important"
-                  : "#FFFFFF !important"
+                    ? "#319EF6 !important"
+                    : mode === LIGHT_THEME && !active
+                      ? "#FFFFFF !important"
+                      : mode === DARK_THEME && !active
+                        ? "#15202B !important"
+                        : "#FFFFFF !important"
               }
               color={
                 mode === LIGHT_THEME && active
                   ? "#319EF6"
                   : mode === DARK_THEME && active
-                  ? "#FFFFFF"
-                  : mode === LIGHT_THEME && !active
-                  ? "#319EF6"
-                  : mode === DARK_THEME && !active
-                  ? "#4CAFFF"
-                  : "#333333"
+                    ? "#FFFFFF"
+                    : mode === LIGHT_THEME && !active
+                      ? "#319EF6"
+                      : mode === DARK_THEME && !active
+                        ? "#4CAFFF"
+                        : "#333333"
               }
               borderColor={
                 mode === LIGHT_THEME && active
                   ? "#4CAFFF !important"
                   : mode === DARK_THEME && active
-                  ? "#319EF6 !important"
-                  : mode === LIGHT_THEME && !active
-                  ? "#4CAFFF !important"
-                  : mode === DARK_THEME && !active
-                  ? "#4CAFFF !important"
-                  : "#319EF6 !important"
+                    ? "#319EF6 !important"
+                    : mode === LIGHT_THEME && !active
+                      ? "#4CAFFF !important"
+                      : mode === DARK_THEME && !active
+                        ? "#4CAFFF !important"
+                        : "#319EF6 !important"
               }
               borderRadius="6px"
               mb="4"
