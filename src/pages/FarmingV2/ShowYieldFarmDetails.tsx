@@ -165,6 +165,9 @@ const ShowYieldFarmDetails = ({
   useEffect(() => {
     setDepositInputHasError(false);
     setDepositErrorButtonText('');
+    if (!account) {
+      setDepositValue("Connect wallet")
+    }
     if (depositTokenValue !== '') {
       if (
         isNaN(parseFloat(depositTokenValue)) ||
@@ -334,13 +337,36 @@ const ShowYieldFarmDetails = ({
   // deposit for the Liquidity Provider tokens for all pools
   const LPDeposit = async (pid: any) => {
     if (account) {
-      if (parseFloat(content.tokensStaked[1]) == 0) {
-        if (parseInt(RGPBalance) < parseInt(farmingFee)) {
-          alert({
-            title: 'Insufficient Balance',
-            body: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
-            type: 'error',
-          });
+
+      try {
+        if (parseFloat(content.tokensStaked[1]) == 0) {
+          if (parseInt(RGPBalance) < parseInt(farmingFee)) {
+            alert({
+              title: 'Insufficient Balance',
+              body: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
+              type: 'error',
+            });
+          } else {
+            const lpTokens = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number]);
+
+            const data = await lpTokens.deposit(
+              pid,
+              ethers.utils.parseEther(depositTokenValue.toString()),
+              {
+                from: account,
+                gasLimit: 250000,
+                gasPrice: ethers.utils.parseUnits('20', 'gwei'),
+              },
+            );
+            const { confirmations, status, logs } = await fetchTransactionData(data);
+
+            dispatch(setOpenModal({
+              trxState: TrxState.TransactionSuccessful,
+              message: `Successfully deposited`
+            }))
+
+            //callRefreshFarm(confirmations, status);
+          }
         } else {
           const lpTokens = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number]);
 
@@ -354,23 +380,22 @@ const ShowYieldFarmDetails = ({
             },
           );
           const { confirmations, status } = await fetchTransactionData(data);
-          //callRefreshFarm(confirmations, status);
-        }
-      } else {
-        const lpTokens = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number]);
 
-        const data = await lpTokens.deposit(
-          pid,
-          ethers.utils.parseEther(depositTokenValue.toString()),
-          {
-            from: account,
-            gasLimit: 250000,
-            gasPrice: ethers.utils.parseUnits('20', 'gwei'),
-          },
+          dispatch(setOpenModal({
+            trxState: TrxState.TransactionSuccessful,
+            message: `Successfully deposited`
+          }))
+          //  callRefreshFarm(confirmations, status);
+        }
+      } catch (e) {
+        console.log(e);
+        dispatch(
+          setOpenModal({
+            trxState: TrxState.TransactionFailed,
+          })
         );
-        const { confirmations, status } = await fetchTransactionData(data);
-        //  callRefreshFarm(confirmations, status);
       }
+
     }
   };
 
@@ -379,7 +404,7 @@ const ShowYieldFarmDetails = ({
     setDepositValue('Pending Confirmation');
     dispatch(
       setOpenModal({
-        message: `Staking...', Staking ${depositTokenValue} ${val}`,
+        message: `Staking ${depositTokenValue} ${val}`,
         trxState: TrxState.WaitingForConfirmation,
       })
     );
@@ -410,10 +435,7 @@ const ShowYieldFarmDetails = ({
     }
     setTimeout(() => closeDepositeModal(), 400);
     //setDeposit(true);
-    dispatch(setOpenModal({
-      trxState: TrxState.TransactionSuccessful,
-      message: `Successfully deposited ${depositTokenValue} ${val} `
-    }))
+
 
     clearInputInfo(setDepositTokenValue, setDepositValue, 'Confirm');
 
