@@ -45,6 +45,7 @@ const ShowYieldFarmDetails = ({
     tokensStaked: string[];
     availableToken: string;
     deposit: string,
+    poolAllowance: any
 
   };
 }) => {
@@ -53,6 +54,7 @@ const ShowYieldFarmDetails = ({
 
   const [checked, setChecked] = useState(true);
   const modal2Disclosure = useDisclosure();
+  const modal1Disclosure = useDisclosure();
   const [unstakeButtonValue, setUnstakeButtonValue] = useState("Confirm");
   const [depositValue, setDepositValue] = useState("Confirm");
   const [unstakeToken, setUnstakeToken] = useState("");
@@ -60,7 +62,10 @@ const ShowYieldFarmDetails = ({
   const [errorButtonText, setErrorButtonText] = useState("");
   const { account, chainId } = useWeb3React();
   const dispatch = useDispatch();
-
+  const [depositTokenValue, setDepositTokenValue] = useState('');
+  const [depositInputHasError, setDepositInputHasError] = useState(false);
+  const [depositErrorButtonText, setDepositErrorButtonText] = useState('');
+  const [approvalLoading, setApprovalLoading] = useState(false);
   const closeModal = () => {
     modal2Disclosure.onClose();
   };
@@ -73,11 +78,41 @@ const ShowYieldFarmDetails = ({
     // }
   };
 
+  const openDepositeModal = () => {
+    //if (approveValueForOtherToken && approveValueForRGP) {
+    modal1Disclosure.onOpen();
+    // }
+  };
+
+  const closeDepositeModal = () => {
+    modal1Disclosure.onClose();
+  };
+
   const handleChecked = () => {
     setChecked(true);
   };
 
   //unstateButtton
+
+  useEffect(() => {
+    setDepositInputHasError(false);
+    setDepositErrorButtonText('');
+    if (depositTokenValue !== '') {
+      if (
+        isNaN(parseFloat(depositTokenValue)) ||
+        !Math.sign(parseFloat(depositTokenValue)) ||
+        Math.sign(parseFloat(depositTokenValue)) == -1
+      ) {
+        setDepositInputHasError(true);
+        setDepositErrorButtonText('Invalid Input');
+        return;
+      }
+      if (parseFloat(depositTokenValue) > parseFloat(content.availableToken)) {
+        setDepositInputHasError(true);
+        setDepositErrorButtonText('Insufficient Balance');
+      }
+    }
+  }, [depositTokenValue]);
 
   useEffect(() => {
     setInputHasError(false);
@@ -86,6 +121,8 @@ const ShowYieldFarmDetails = ({
     if (!account) {
       setUnstakeButtonValue("Connect wallet")
     }
+
+
 
     if (unstakeToken !== "") {
       if (
@@ -107,17 +144,23 @@ const ShowYieldFarmDetails = ({
   // show max value
   const showMaxValue = async (deposit: any, input: any) => {
     try {
-      //  if (input === 'lpSymbol') {
-      //  setDepositTokenValue(content.availableToken);
-      //  } else if (input === 'unstake') {
-      setUnstakeToken(content.tokensStaked[1]);
-      //  }
+      if (input === 'deposit') {
+        setDepositTokenValue(content.availableToken);
+      } else if (input === 'unstake') {
+        setUnstakeToken(content.tokensStaked[1]);
+      }
     } catch (e) {
       console.log(
         "sorry there is a few error, you are most likely not logged in. Please login to ypur metamask extensition and try again."
       );
     }
 
+  };
+  const enoughApproval = (allowance: any, balance: any) => {
+    if (allowance && balance) {
+      return allowance.gt(ethers.utils.parseEther(balance));
+    }
+    return true;
   };
 
   async function confirmUnstakeDeposit(val: string) {
@@ -129,8 +172,6 @@ const ShowYieldFarmDetails = ({
           trxState: TrxState.WaitingForConfirmation,
         })
       );
-
-
 
       if (account) {
         if (val === 'RGP') {
@@ -222,6 +263,9 @@ const ShowYieldFarmDetails = ({
     };
   }
 
+  //Deposit
+  const confirmDeposit = async (val: any) => { }
+
   // withdrawal of funds
   const RGPUnstake = async () => {
     if (account) {
@@ -240,6 +284,28 @@ const ShowYieldFarmDetails = ({
       //  callRefreshFarm(confirmations, status);
     }
   };
+
+  const approveLPToken = async (LPToken: any) => { }
+
+  const approvalButton = (LPToken: any) => (
+    <Button
+      my="2"
+      mx="auto"
+      color="rgba(190, 190, 190, 1)"
+      width="100%"
+      background="rgba(64, 186, 213, 0.15)"
+      cursor="pointer"
+      border="none"
+      borderRadius="0px"
+      padding="10px"
+      height="50px"
+      fontSize="16px"
+      _hover={{ background: 'rgba(64, 186, 213, 0.15)' }}
+      onClick={() => approveLPToken(LPToken)}
+    >
+      {approvalLoading ? 'Approving...' : 'Approve'} {LPToken}
+    </Button>
+  );
 
   return (
     <>
@@ -304,6 +370,7 @@ const ShowYieldFarmDetails = ({
                 mr="6"
                 padding="10px 40px"
                 cursor="pointer"
+                onClick={openDepositeModal}
               >
                 Deposit
               </Button>
@@ -441,6 +508,158 @@ const ShowYieldFarmDetails = ({
           </Flex>
         </Box>
       </Flex>
+      <Modal isOpen={modal1Disclosure.isOpen} onClose={closeDepositeModal} isCentered>
+        <ModalOverlay />
+        <ModalContent
+          width="95vw"
+          borderRadius="6px"
+          paddingBottom="20px"
+          bgColor={bgColor}
+          minHeight="40vh"
+        >
+
+          <ModalHeader fontSize="18px" fontWeight="regular" align="center">
+            Deposit {content.deposit} Tokens
+          </ModalHeader>
+
+          <ModalCloseButton
+            bg="none"
+            size={"sm"}
+            mt={3}
+            mr={3}
+            cursor="pointer"
+            _focus={{ outline: "none" }}
+            p={"7px"}
+            border={"1px solid"}
+          />
+          <ModalBody py={2}>
+            <Text color="gray.400" align="right" mb={3}>
+              {content.availableToken} {content.deposit} Available
+            </Text>
+            <InputGroup size="md">
+              <Input
+                placeholder="0"
+                opacity="0.5"
+                h="50px"
+                borderRadius="0px"
+                name="availableToken"
+                value={depositTokenValue}
+                onChange={e => setDepositTokenValue(e.target.value)}
+                border="2px"
+              />
+              <InputRightElement marginRight="15px">
+                <Button
+                  color="rgba(64, 186, 213, 1)"
+                  border="none"
+                  borderRadius="0px"
+                  fontSize="13px"
+                  p="1"
+                  mt="10px"
+                  height="20px"
+                  cursor="pointer"
+                  _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
+                  onClick={() => showMaxValue(content.deposit, 'deposit')}
+                >
+                  MAX
+                </Button>
+              </InputRightElement>
+            </InputGroup>
+            <Box mt={4}>
+              {depositInputHasError ? (
+                <>
+                  {/* Show Error Button */}
+                  <Button
+                    my="2"
+
+                    variant="brand"
+                    mx="auto"
+                    color={
+                      unstakeButtonValue === 'Confirm' ||
+                        unstakeButtonValue === 'Confirmed'
+                        ? 'rgba(190, 190, 190, 1)'
+                        : '#40BAD5'
+                    }
+                    width="100%"
+                    background={
+                      unstakeButtonValue === 'Confirm' ||
+                        unstakeButtonValue === 'Confirmed'
+                        ? 'rgba(64, 186, 213, 0.15)'
+                        : '#444159'
+                    }
+                    disabled={unstakeButtonValue !== 'Confirm'}
+                    cursor="pointer"
+                    border="none"
+                    borderRadius="0px"
+                    padding="10px"
+                    height="50px"
+                    fontSize="16px"
+                    _hover={
+                      unstakeButtonValue === 'Confirm' ||
+                        unstakeButtonValue === 'Confirmed'
+                        ? { background: 'rgba(64, 186, 213, 0.15)' }
+                        : { background: '#444159' }
+                    }
+                    onClick={() => { }}
+                  >
+                    {depositErrorButtonText}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  {enoughApproval(
+                    content.poolAllowance,
+                    content.availableToken,
+                  ) ? (
+                    <Button
+                      my="2"
+                      mx="auto"
+
+                      variant="brand"
+
+                      width="100%"
+
+                      disabled={depositValue !== 'Confirm' || !account}
+                      cursor="pointer"
+                      border="none"
+                      borderRadius="0px"
+                      padding="10px"
+                      height="50px"
+                      fontSize="16px"
+                      _hover={
+                        depositValue === 'Confirm'
+                          ? { background: 'rgba(64, 186, 213, 0.15)' }
+                          : { background: '#444159' }
+                      }
+                      onClick={() => confirmDeposit(content.deposit)}
+                    >
+                      {depositValue}
+                    </Button>
+                  ) : (
+                    approvalButton(content.deposit)
+                  )}
+                  <Button
+                    my="2"
+                    mx="auto"
+                    variant="brand"
+                    width="100%"
+                    cursor="pointer"
+                    border="none"
+                    borderRadius="0px"
+                    padding="10px"
+                    height="50px"
+                    fontSize="16px"
+                    onClick={closeDepositeModal}
+                  >
+                    Cancel
+                  </Button>
+                </>
+              )}
+            </Box>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+
 
       <Modal isCentered isOpen={modal2Disclosure.isOpen} onClose={closeModal}>
         <ModalOverlay />
@@ -494,7 +713,7 @@ const ShowYieldFarmDetails = ({
                   height="20px"
                   cursor="pointer"
                   _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
-                  onClick={() => showMaxValue(content.deposit, "lpSymbol")}
+                  onClick={() => showMaxValue(content.deposit, "unstake")}
                 >
                   MAX
                 </Button>

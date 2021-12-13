@@ -19,6 +19,7 @@ const YieldFarm = ({
     tokensStaked: string[];
     availableToken: string;
     deposit: string,
+    poolAllowance: any
 
   }, farmDataLoading: boolean
 }) => {
