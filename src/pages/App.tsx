@@ -30,6 +30,11 @@ export default function App() {
           <TransactionStateModal />
           <Switch>
             <ErrorBoundary>
+
+              <Route path="/">
+                <Redirect to="/swap"></Redirect>
+              </Route>
+              <Route exact strict path="/" component={Swap} />
               <Route exact strict path="/swap" component={Swap} />
               <Route exact strict path="/pool" component={Pool} />
 
@@ -53,9 +58,7 @@ export default function App() {
               />
               <Route exact path="/farming" component={FarmingV1} />
               <Route exact path="/farming-V2" component={FarmingV2} />
-              {/* <Route path="/">
-                <Redirect to="/swap" />
-              </Route> */}
+
             </ErrorBoundary>
           </Switch>
         </HashRouter>
