@@ -15,7 +15,7 @@ export const contents = [
     img: "bnb.svg",
     ARYValue: "30,000",
     earn: "RGP",
-    lpSymbol: "RGB - BNB",
+    lpSymbol: "RGB-BNB",
     tokensStaked: ["RGP-BNB", "3"],
     availableToken: "3.747948393",
   },

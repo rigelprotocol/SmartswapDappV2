@@ -49,9 +49,3 @@ export const smartSwapLPTokenV2PoolFive = async () =>
     SmartSwapLPTokenThree,
     signer,
   );
-export const smartSwapLPTokenV2PoolSix = async () =>
-  new ethers.Contract(
-    SMART_SWAP.masterChefV2PoolSix,
-    SmartSwapLPTokenThree,
-    signer,
-  );

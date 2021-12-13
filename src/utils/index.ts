@@ -2,6 +2,7 @@ import { getAddress } from '@ethersproject/address'
 import { Token } from '@uniswap/sdk-core'
 import { TokenAddressMap } from '../state/lists/hooks'
 import  Web3 from 'web3';
+import { ethers } from 'ethers';
 
 // returns the checksummed address if the address for valid address or returns false
 export function isAddress(value: any): string | false {
@@ -54,4 +55,19 @@ export function convertToNumber(hex : string, decimals?: number) {
     if (setButton) {
       setButton(value);
     }
+  };
+
+  export const  formatBigNumber = (bigNumber : any) => {
+    const number = Number.parseFloat(ethers.utils.formatEther(bigNumber));
+    if (number % 1 === 0) {
+      return number.toFixed(3);
+    }
+    const splitNumber = number.toString().split('.');
+    const [whole, decimal] = splitNumber;
+    const deci = decimal
+      .split('')
+      .slice(0, 3)
+      .join('');
+    const output = [whole, deci];
+    return output.join('.');
   };

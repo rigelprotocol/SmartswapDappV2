@@ -7,6 +7,10 @@ import masterChefV2 from './abis/masterChefV2.json'
 import specialPool from './abis/specialPool.json'
 import {approveAbi, allowanceAbi} from "../constants";
 import WETHABI from './abis/WETH9.json';
+import SmartSwapLPTokenABI1 from './abis/LPToken1.json'
+import SmartSwapLPTokenABI2 from './abis/LPToken2.json'
+import SmartSwapLPTokenABI3 from './abis/SmartSwapLPTokenThree.json'
+
 
 
 export const smartFactory = async (address: string) => {
@@ -97,3 +101,62 @@ export const RGPSpecialPool = async (address: string) => {
 
   return RGPSpecialPoolInstance;
 };
+
+//Liquuidity provider token contracts
+
+export const smartSwapLPTokenPoolOne = async (address: string) => {
+  const Provider = await provider();
+  const smartSwapLPTokenPoolOneInstance = new Contract(
+      address,
+      SmartSwapLPTokenABI1,
+      Provider?.getSigner()
+  );
+
+  return smartSwapLPTokenPoolOneInstance;
+};
+
+
+export const smartSwapLPTokenPoolTwo = async (address: string) => {
+  const Provider = await provider();
+  const smartSwapLPTokenPoolTwoInstance = new Contract(
+      address,
+      SmartSwapLPTokenABI2,
+      Provider?.getSigner()
+  );
+
+  return smartSwapLPTokenPoolTwoInstance;
+};
+
+export const smartSwapLPTokenPoolThree = async (address: string) => {
+  const Provider = await provider();
+  const smartSwapLPTokenPoolThreeInstance = new Contract(
+      address,
+      SmartSwapLPTokenABI3,
+      Provider?.getSigner()
+  );
+
+  return smartSwapLPTokenPoolThreeInstance;
+};
+
+export const smartSwapLPTokenV2PoolFour = async (address: string) => {
+  const Provider = await provider();
+  const smartSwapLPTokenV2PoolFourInstance = new Contract(
+      address,
+      SmartSwapLPTokenABI3,
+      Provider?.getSigner()
+  );
+
+  return smartSwapLPTokenV2PoolFourInstance;
+};
+
+export const smartSwapLPTokenV2PoolFive = async (address: string) => {
+  const Provider = await provider();
+  const smartSwapLPTokenV2PoolFiveInstance = new Contract(
+      address,
+      SmartSwapLPTokenABI3,
+      Provider?.getSigner()
+  );
+
+  return smartSwapLPTokenV2PoolFiveInstance;
+};
+

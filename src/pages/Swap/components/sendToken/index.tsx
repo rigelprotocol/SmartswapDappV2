@@ -37,7 +37,6 @@ import {
   getDeadline,
   getInPutDataFromEvent,
   getOutPutDataFromEvent,
-  tokenPrice,
   ZERO_ADDRESS,
 } from '../../../../constants';
 import { Token } from '@uniswap/sdk-core';
@@ -170,7 +169,6 @@ const SendToken = () => {
   );
 
   const minimum = minimumAmountToReceive().toFixed(16);
-  console.log(minimum);
 
   const LPFee = (0.003 * Number(formattedAmounts[Field.INPUT])).toFixed(4);
 
@@ -178,10 +176,6 @@ const SendToken = () => {
   const fromAmount = Number(formattedAmounts[Field.INPUT]);
 
   const parsedOutput = ethers.utils.parseEther(minimum.toString()).toString();
-  console.log(parsedOutput);
-
-  console.log(parsedAmount);
-
   const [hasBeenApproved, setHasBeenApproved] = useState(false);
   const [insufficientBalance, setInsufficientBalance] = useState(false);
 
@@ -201,7 +195,7 @@ const SendToken = () => {
     if (currencies[Field.INPUT]?.isNative) {
       return setHasBeenApproved(true);
     }
-    // @ts-ignore
+
     const status = await ApproveCheck(currencies[Field.INPUT].wrapped.address);
     const check = await status.allowance(
       account,
@@ -211,7 +205,6 @@ const SendToken = () => {
       }
     );
     const approveBalance = ethers.utils.formatEther(check).toString();
-    console.log(approveBalance);
     if (parseFloat(approveBalance) > Number(formattedAmounts[Field.INPUT])) {
       return setHasBeenApproved(true);
     }
@@ -235,7 +228,7 @@ const SendToken = () => {
           trxState: TrxState.WaitingForConfirmation,
         })
       );
-      // @ts-ignore
+
       const address = currencies[Field.INPUT].wrapped.address;
       const swapApproval = await ApprovalRouter(address);
       const approveTransaction = await swapApproval.approve(
@@ -685,16 +678,19 @@ const SendToken = () => {
       setRouteAddress([fromAddress, toAddress]);
     }
   };
-  useEffect(async () => {
-    await checkLiquidityPair();
-  }, [fromAddress, toAddress, path]);
+  // useEffect(async () => {
+  //   await checkLiquidityPair();
+  // }, [fromAddress, toAddress, path]);
 
   const calculatePriceImpact = async () => {
-    const SwapRouter = await SmartSwapRouter(
-      SMARTSWAPROUTER[chainId as number]
-    );
+    
+     
+       
     if (routeAddress.length === 2) {
       try {
+          const SwapRouter = await SmartSwapRouter(
+          SMARTSWAPROUTER[chainId as number ?? 56]
+        );
         const price = await SwapRouter.getAmountsOut(
           '1000000000000000000',
           routeAddress
@@ -706,12 +702,15 @@ const SendToken = () => {
         setPriceImpact(parseFloat(priceImpact).toFixed(2));
       } catch (e) {
         setPriceImpact(0);
+      
       }
-    }
+         }
+   
+
   };
   useEffect(async () => {
     calculatePriceImpact();
-  }, [fromAmount, receivedAmount]);
+  }, [fromAmount, receivedAmount,chainId]);
 
   return (
     <div>
