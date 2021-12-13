@@ -35,6 +35,7 @@ import { smartSwapLPTokenPoolOne, smartSwapLPTokenPoolThree, smartSwapLPTokenPoo
 import { RGPADDRESSES, RGP, RGPSPECIALPOOLADDRESSES, MASTERCHEFV2ADDRESSES, SMARTSWAPLP_TOKEN1ADDRESSES, SMARTSWAPLP_TOKEN2ADDRESSES, SMARTSWAPLP_TOKEN3ADDRESSES, SMARTSWAPLP_TOKEN4ADDRESSES, SMARTSWAPLP_TOKEN5ADDRESSES } from '../../utils/addresses'
 
 import { useRGPBalance } from "../../utils/hooks/useBalances";
+import { updateFarmAllowances } from "../../state/farm/actions";
 const ShowYieldFarmDetails = ({
   content,
 }: {
@@ -110,11 +111,13 @@ const ShowYieldFarmDetails = ({
     RGPfarmingFee();
   }, [account]);
 
-  const allowance = (contract: any) =>
-    contract.allowance(account, MASTERCHEFV2ADDRESSES[chainId as number]);
   useEffect(() => {
     getAllowances();
   }, []);
+
+  const allowance = (contract: any) =>
+    contract.allowance(account, MASTERCHEFV2ADDRESSES[chainId as number]);
+
 
   const getAllowances = async () => {
     try {
@@ -143,15 +146,13 @@ const ShowYieldFarmDetails = ({
         } else {
           rigelAllowance = pool1Allowance;
         }
-
-        /** 
-        updateFarmAllowances([
+        console.log("Contract ran", pool2Allowance)
+        dispatch(updateFarmAllowances([
           rigelAllowance,
           pool2Allowance,
           pool1Allowance,
           pool3Allowance,
-        ]);
-        */
+        ]))
       }
     } catch (error) {
       console.error(error, 'something went wrong');

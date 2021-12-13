@@ -23,10 +23,10 @@ import { useRouteMatch } from 'react-router-dom'
 import { useDispatch } from "react-redux";
 import bigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
-import { updateTokenStaked, updateTotalLiquidity } from '../../state/farm/actions'
+import { updateFarmBalances, updateTokenStaked, updateTotalLiquidity } from '../../state/farm/actions'
 import { useFarms } from '../../state/farm/hooks'
-import { MasterChefV2Contract, smartSwapLPTokenPoolOne, smartSwapLPTokenPoolThree, smartSwapLPTokenPoolTwo, smartSwapLPTokenV2PoolFive, smartSwapLPTokenV2PoolFour, RGPSpecialPool } from '../../utils/Contracts'
-import { RGPADDRESSES, RGPSPECIALPOOLADDRESSES, MASTERCHEFV2ADDRESSES, SMARTSWAPLP_TOKEN1ADDRESSES, SMARTSWAPLP_TOKEN2ADDRESSES, SMARTSWAPLP_TOKEN3ADDRESSES, SMARTSWAPLP_TOKEN4ADDRESSES, SMARTSWAPLP_TOKEN5ADDRESSES } from '../../utils/addresses'
+import { MasterChefV2Contract, smartSwapLPTokenPoolOne, smartSwapLPTokenPoolThree, smartSwapLPTokenPoolTwo, smartSwapLPTokenV2PoolFive, smartSwapLPTokenV2PoolFour, RGPSpecialPool, rigelToken } from '../../utils/Contracts'
+import { RGPADDRESSES, RGPSPECIALPOOLADDRESSES, MASTERCHEFV2ADDRESSES, SMARTSWAPLP_TOKEN1ADDRESSES, SMARTSWAPLP_TOKEN2ADDRESSES, SMARTSWAPLP_TOKEN3ADDRESSES, SMARTSWAPLP_TOKEN4ADDRESSES, SMARTSWAPLP_TOKEN5ADDRESSES, RGP } from '../../utils/addresses'
 import { formatBigNumber } from '../../utils'
 
 
@@ -63,6 +63,7 @@ export function Index() {
   useEffect(() => {
     getFarmData()
     getTokenStaked()
+    getFarmTokenBalance()
   }, [chainId]);
 
 
@@ -97,6 +98,53 @@ export function Index() {
   const handleAlert = () => {
     setShowAlert(false)
   }
+
+  const getFarmTokenBalance = async () => {
+    if (account) {
+      try {
+        const [RGPToken, poolOne, poolTwo, poolThree, poolFour, poolFive] = await Promise.all([
+          rigelToken(RGP[chainId as number]),
+          smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]),
+          smartSwapLPTokenPoolTwo(SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number]),
+          smartSwapLPTokenPoolThree(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number]),
+          smartSwapLPTokenV2PoolFour(SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number]),
+          smartSwapLPTokenV2PoolFive(SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number]),
+
+
+        ]);
+
+        const [
+          RGPbalance,
+          poolOneBalance,
+          poolTwoBalance,
+          poolThreeBalance,
+          poolFourBalance,
+          poolFiveBalance,
+        ] = await Promise.all([
+          RGPToken.balanceOf(account),
+          poolOne.balanceOf(account),
+          poolTwo.balanceOf(account),
+          poolThree.balanceOf(account),
+          poolFour.balanceOf(account),
+          poolFive.balanceOf(account),
+        ]);
+
+        dispatch(updateFarmBalances([
+          formatBigNumber(RGPbalance),
+          formatBigNumber(poolTwoBalance),
+          formatBigNumber(poolOneBalance),
+          formatBigNumber(poolThreeBalance),
+          formatBigNumber(poolFourBalance),
+          formatBigNumber(poolFiveBalance),
+
+        ]))
+
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
   const getFarmData = async () => {
     setfarmDataLoading(true)
 
