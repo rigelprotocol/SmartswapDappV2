@@ -30,7 +30,7 @@ import { useDispatch } from "react-redux";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { getExplorerLink, ExplorerDataType } from "../../utils/getExplorerLink";
 import { MasterChefV2Contract, RGPSpecialPool } from "../../utils/Contracts";
-import { MASTERCHEFV2ADDRESSES, RGPADDRESSES } from "../../utils/addresses";
+import {MASTERCHEFV2ADDRESSES, RGPADDRESSES, RGPSPECIALPOOLADDRESSES} from "../../utils/addresses";
 import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
 const ShowYieldFarmDetails = ({
   content,
@@ -45,6 +45,7 @@ const ShowYieldFarmDetails = ({
     tokensStaked: string[];
     availableToken: string;
     deposit: string,
+    RGPEarned: string
 
   };
 }) => {
@@ -184,7 +185,7 @@ const ShowYieldFarmDetails = ({
         );
         const { confirmations, status, logs } = await fetchTransactionData(data);
         const { hash } = data;
-        const amountUnstaked = convertToNumber(logs[1].data)
+        const amountUnstaked = convertToNumber(logs[1].data);
 
         const explorerLink = getExplorerLink(
           chainId as number,
@@ -195,7 +196,7 @@ const ShowYieldFarmDetails = ({
         dispatch(setOpenModal({
           trxState: TrxState.TransactionSuccessful,
           message: `Successfully unstaked ${convertFromWei(amountUnstaked)} RGP `
-        }))
+        }));
 
         dispatch(addToast({
           message: `Successfully unstaked ${convertFromWei(amountUnstaked)} RGP `
@@ -219,8 +220,71 @@ const ShowYieldFarmDetails = ({
 
       }
 
-    };
-  }
+    }
+  };
+
+  const harvestTokens = async (id: string | number) => {
+    if (account) {
+      try {
+        dispatch(
+            setOpenModal({
+              message: `Harvesting Tokens`,
+              trxState: TrxState.WaitingForConfirmation,
+            })
+        );
+        if (id === 0) {
+          const specialPool = await RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]);
+          const specialWithdraw = await specialPool.unStake(0);
+          const { confirmations, status, logs } = await fetchTransactionData(
+              specialWithdraw,
+          );
+
+          const amountOfRgbSpecial = convertToNumber(logs[1].data);
+
+          if (confirmations >= 1 && status) {
+            dispatch(setOpenModal({
+              trxState: TrxState.TransactionSuccessful,
+              message: `Successfully Harvested ${convertFromWei(amountOfRgbSpecial)} RGP `
+            }));
+          }
+        } else {
+          const lpTokens = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number]);
+          const withdraw = await lpTokens.withdraw(id, 0);
+          const { confirmations, status, logs } = await fetchTransactionData(
+              withdraw,
+          );
+          const amountOfRgb = convertToNumber(logs[1].data);
+
+          const { hash } = withdraw;
+
+          if (confirmations >= 1 && status) {
+            dispatch(setOpenModal({
+              trxState: TrxState.TransactionSuccessful,
+              message: `Successfully Harvested ${convertFromWei(amountOfRgb)} RGP `
+            }));
+          }
+
+          const explorerLink = getExplorerLink(
+              chainId as number,
+              hash,
+              ExplorerDataType.TRANSACTION
+          );
+          dispatch(addToast({
+            message: `Successfully harvested ${convertFromWei(amountOfRgb)} RGP `,
+            URL: explorerLink
+            })
+          )
+        }
+
+      } catch (e) {
+        console.log(e);
+        dispatch(setOpenModal({
+          trxState: TrxState.TransactionFailed,
+          message: `Transaction was not successful`
+        }));
+      }
+    }
+  };
 
   // withdrawal of funds
   const RGPUnstake = async () => {
@@ -298,7 +362,7 @@ const ShowYieldFarmDetails = ({
                 h="40px"
                 borderRadius="6px"
                 bg={mode === DARK_THEME ? "#4A739B" : "#999999"}
-                color={mode === DARK_THEME ? "##7599BD" : "#CCCCCC"}
+                color={mode === DARK_THEME ? "#7599BD" : "#CCCCCC"}
                 border="0"
                 mb="4"
                 mr="6"
@@ -333,7 +397,7 @@ const ShowYieldFarmDetails = ({
                 textAlign="center"
                 fontWeight="bold"
               >
-                5000
+                {content.RGPEarned}
               </Text>{" "}
               <Text color={mode === DARK_THEME ? "#DCE5EF" : "#333333"}>
                 RGP Earned
@@ -345,12 +409,14 @@ const ShowYieldFarmDetails = ({
               margin="0 auto"
               borderRadius="6px"
               bg={mode === DARK_THEME ? "#4A739B" : "#999999"}
-              color={mode === DARK_THEME ? "##7599BD" : "#CCCCCC"}
+              color={mode === DARK_THEME ? "#7599BD" : "#CCCCCC"}
               border="0"
               mb="4"
               mr="2"
               cursor="pointer"
               _hover={{ color: "white" }}
+              disabled={parseFloat(content.RGPEarned) <= 0}
+              onClick={() => harvestTokens(content.pId)}
             >
               Harvest
             </Button>
