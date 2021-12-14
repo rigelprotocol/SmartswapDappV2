@@ -21,6 +21,7 @@ const YieldFarm = ({
     tokensStaked: string[];
     availableToken: string;
     deposit: string,
+    RGPEarned: string
 
   }, farmDataLoading: boolean
 }) => {

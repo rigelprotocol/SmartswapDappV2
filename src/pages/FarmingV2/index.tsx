@@ -20,7 +20,7 @@ import { AlertSvg } from './Icon'
 import { useWeb3React } from '@web3-react/core'
 import { useRouteMatch } from 'react-router-dom'
 
-import { useDispatch } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import bigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
 import { updateTokenStaked, updateTotalLiquidity } from '../../state/farm/actions'
@@ -28,36 +28,37 @@ import { useFarms } from '../../state/farm/hooks'
 import { MasterChefV2Contract, smartSwapLPTokenPoolOne, smartSwapLPTokenPoolThree, smartSwapLPTokenPoolTwo, smartSwapLPTokenV2PoolFive, smartSwapLPTokenV2PoolFour, RGPSpecialPool } from '../../utils/Contracts'
 import { RGPADDRESSES, RGPSPECIALPOOLADDRESSES, MASTERCHEFV2ADDRESSES, SMARTSWAPLP_TOKEN1ADDRESSES, SMARTSWAPLP_TOKEN2ADDRESSES, SMARTSWAPLP_TOKEN3ADDRESSES, SMARTSWAPLP_TOKEN4ADDRESSES, SMARTSWAPLP_TOKEN5ADDRESSES } from '../../utils/addresses'
 import { formatBigNumber } from '../../utils'
+import {RootState} from "../../state";
 import { useNativeBalance, useRGPBalance } from '../../utils/hooks/useBalances';
 
-export const BIG_TEN = new bigNumber(10)
+export const BIG_TEN = new bigNumber(10);
 
-export const LIQUIDITY = 'liquidity'
-export const STAKING = 'staking'
-export const V1 = 'v1'
-export const V2 = 'v2'
-export const LIGHT_THEME = 'light'
-export const DARK_THEME = 'dark'
-export const LIQUIDITY_INDEX = 0
-export const STAKING_INDEX = 1
-export const MAINNET = 56
-export const TESTNET = 97
+export const LIQUIDITY = 'liquidity';
+export const STAKING = 'staking';
+export const V1 = 'v1';
+export const V2 = 'v2';
+export const LIGHT_THEME = 'light';
+export const DARK_THEME = 'dark';
+export const LIQUIDITY_INDEX = 0;
+export const STAKING_INDEX = 1;
+export const MAINNET = 56;
+export const TESTNET = 97;
 
 
 export function Index() {
-  const history = useHistory()
-  const mode = useColorModeValue(LIGHT_THEME, DARK_THEME)
-  const [selected, setSelected] = useState(LIQUIDITY)
-  const [isActive, setIsActive] = useState(V2)
-  const [showAlert, setShowAlert] = useState(true)
-  const [farmDataLoading, setfarmDataLoading] = useState(false)
-  const [initialLoad, setInitialLoad] = useState(false)
+  const history = useHistory();
+  const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
+  const [selected, setSelected] = useState(LIQUIDITY);
+  const [isActive, setIsActive] = useState(V2);
+  const [showAlert, setShowAlert] = useState(true);
+  const [farmDataLoading, setfarmDataLoading] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(false);
   //const { data: farmsLP } = useFarms()
-  const [farms, setFarms] = useState(contents)
+  const [farms, setFarms] = useState(contents);
   const { account, chainId, library } = useWeb3React();
   const dispatch = useDispatch();
-  let match = useRouteMatch('/farming-V2/staking-RGP')
-  const FarmData = useFarms()
+  let match = useRouteMatch('/farming-V2/staking-RGP');
+  const FarmData = useFarms();
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
   const [Balance, Symbol] = useNativeBalance();
@@ -68,47 +69,50 @@ export function Index() {
       signer: signer,
       chainId: chainId,
   }
+  
+  const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
+  const stateChanged : boolean = trxState === 2;
 
   //temporary
   useEffect(() => {
-    getFarmData()
+    getFarmData();
     getTokenStaked()
-  }, [chainId]);
+  }, [account, chainId, stateChanged]);
 
 
   useEffect(() => {
     if (match) setSelected(STAKING)
-  }, [match])
+  }, [match]);
 
   const changeVersion = (version: string) => {
     history.push(version)
-  }
+  };
 
   const handleSelect = (value: string) => {
     if (value === LIQUIDITY) {
-      setSelected(LIQUIDITY)
+      setSelected(LIQUIDITY);
       changeVersion('/farming-v2')
     } else if (value === STAKING) {
-      setSelected(STAKING)
+      setSelected(STAKING);
       changeVersion('/farming-v2/staking-RGP')
     }
-  }
+  };
 
   const handleActive = (value: string) => {
     if (value === V1) {
-      setIsActive(V1)
+      setIsActive(V1);
       changeVersion('/farming')
     } else if (value === V2) {
-      setIsActive(V2)
+      setIsActive(V2);
       changeVersion('/farming-v2')
     }
-  }
+  };
 
   const handleAlert = () => {
     setShowAlert(false)
-  }
+  };
   const getFarmData = async () => {
-    setfarmDataLoading(true)
+    setfarmDataLoading(true);
 
     try {
       const [specialPool, pool1, pool2, pool3, pool4, pool5] = await Promise.all([
@@ -187,7 +191,7 @@ export function Index() {
       ]))
 
     } catch (error: any) {
-      console.log(error.message)
+      console.log(error.message);
       setfarmDataLoading(false)
       //if (!toast.isActive(id)) {
       //  showErrorToast();
@@ -279,7 +283,7 @@ export function Index() {
             staked: formatBigNumber(poolFiveStaked.amount),
             earned: formatBigNumber(poolFiveEarned),
           },
-        ]))
+        ]));
 
         setInitialLoad(false);
       }
