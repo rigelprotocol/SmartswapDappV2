@@ -9,6 +9,7 @@ import user from './user/reducer'
 import blockReducer from "./block"
 import transactions from './transaction/reducer';
 import mint from './mint/reducer'
+import wallet from "./wallet/reducer"
 import farms from "./farm"
 
 
@@ -24,7 +25,7 @@ const store = configureStore({
         // Exchange
         swap,
         user,
-
+        wallet,
         mint,
 
         lists,

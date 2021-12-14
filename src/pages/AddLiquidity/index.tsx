@@ -324,7 +324,7 @@ export default function AddLiquidity({
               message: 'Transaction Successful',
               trxState: TrxState.TransactionSuccessful,
             })
-          );
+          ); 
           dispatch(
             addToast({
               message: `Add ${parseFloat(inputValueForTokenA as string).toFixed(

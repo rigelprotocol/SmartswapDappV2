@@ -18,6 +18,7 @@ import { maxAmountSpend } from '../../../../utils/maxAmountSpend';
 import { useUserSlippageTolerance } from '../../../../state/user/hooks';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOpenModal, TrxState } from '../../../../state/application/reducer';
+import { openWalletConnection } from '../../../../state/wallet/actions';
 import {
   ApprovalRouter,
   ApproveCheck,
@@ -46,6 +47,7 @@ import { GetAddressTokenBalance } from '../../../../state/wallet/hooks';
 import NewToken from '../../../../components/Tokens/newToken';
 import { SupportedChainId } from '../../../../constants/chains';
 import { SMARTSWAPFACTORYADDRESSES } from '../../../../utils/addresses';
+import { to } from 'react-spring';
 
 const SendToken = () => {
   const history = useHistory();
@@ -68,7 +70,7 @@ const SendToken = () => {
     [loadedInputCurrency, loadedOutputCurrency]
   );
 
-  const handleConfirmTokenWarning = useCallback(() => {
+  const handleConfirmTokenWarning = useCallback(() => { 
     setDismissTokenWarning(true);
   }, []);
 
@@ -153,7 +155,6 @@ const SendToken = () => {
     },
     [onUserInput]
   );
-
   const formattedAmounts = {
     [independentField]: typedValue,
     [dependentField]: showWrap
@@ -670,17 +671,18 @@ const SendToken = () => {
   const path = [fromAddress, toAddress];
 
   const checkLiquidityPair = async () => {
-    const factory = await smartFactory(
-      SMARTSWAPFACTORYADDRESSES[chainId as number]
+      const factory = await smartFactory(
+      SMARTSWAPFACTORYADDRESSES[chainId as number || 56]
     );
     const LPAddress = await factory.getPair(fromAddress, toAddress);
     if (LPAddress !== ZERO_ADDRESS) {
       setRouteAddress([fromAddress, toAddress]);
-    }
+    } 
+   
   };
-  // useEffect(async () => {
-  //   await checkLiquidityPair();
-  // }, [fromAddress, toAddress, path]);
+  useEffect(async () => {
+      // await checkLiquidityPair();    
+  }, [fromAddress, toAddress, path]);
 
   const calculatePriceImpact = async () => {
     
@@ -757,12 +759,13 @@ const SendToken = () => {
               h="48px"
               p="5px"
               mt={1}
-              disabled={inputError !== undefined || insufficientBalance}
+              disabled={(inputError !== undefined && inputError !== "Connect Wallet") || insufficientBalance}
               color={inputError ? color : '#FFFFFF'}
               bgColor={inputError ? switchBgcolor : buttonBgcolor}
               fontSize="18px"
               boxShadow={lightmode ? 'base' : 'lg'}
               _hover={{ bgColor: buttonBgcolor }}
+              onClick={()=>inputError === "Connect Wallet" && dispatch(openWalletConnection())}
             >
               {inputError
                 ? inputError

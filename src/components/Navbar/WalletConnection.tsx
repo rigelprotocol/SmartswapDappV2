@@ -12,11 +12,14 @@ import { shortenAddress } from '../../utils';
 import WalletModal from './modals/walletModal';
 import NetworkModal from "./modals/networkModal";
 import { useNativeBalance, useRGPBalance } from '../../utils/hooks/useBalances';
+import { useAppDispatch } from '../../state/hooks';
+import { openWalletConnection } from '../../state/wallet/actions';
 import StatusIcon from './StatusIcon';
 
 
 export default function WalletConnection() {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
+  const dispatch = useAppDispatch()
   const { account, error, activate, connector } = useWeb3React();
   const bg = useColorModeValue('#FFFFFF', '#15202B');
   const bgColor = useColorModeValue('lightBg.100', 'darkBg.100');
@@ -91,13 +94,13 @@ export default function WalletConnection() {
     return (
       <>
         <Button
-          onClick={() =>setDisplayNetwork(state => !state)}
+          onClick={()=>dispatch(openWalletConnection())}
           rightIcon={<IoWalletOutline />}
           variant="brand"
         >
           Connect Wallet
         </Button>
-        <NetworkModal displayNetwork={displayNetwork} setDisplayNetwork={setDisplayNetwork} />
+        <NetworkModal />
       </>
     );
   }
