@@ -33,7 +33,6 @@ import { MasterChefV2Contract, RGPSpecialPool, rigelToken } from "../../utils/Co
 import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
 import { smartSwapLPTokenPoolOne, smartSwapLPTokenPoolThree, smartSwapLPTokenPoolTwo, smartSwapLPTokenV2PoolFive, smartSwapLPTokenV2PoolFour } from '../../utils/Contracts'
 import { RGPADDRESSES, RGP, RGPSPECIALPOOLADDRESSES, MASTERCHEFV2ADDRESSES, SMARTSWAPLP_TOKEN1ADDRESSES, SMARTSWAPLP_TOKEN2ADDRESSES, SMARTSWAPLP_TOKEN3ADDRESSES, SMARTSWAPLP_TOKEN4ADDRESSES, SMARTSWAPLP_TOKEN5ADDRESSES } from '../../utils/addresses'
-
 import { useRGPBalance } from "../../utils/hooks/useBalances";
 import { updateFarmAllowances } from "../../state/farm/actions";
 const ShowYieldFarmDetails = ({
@@ -50,6 +49,7 @@ const ShowYieldFarmDetails = ({
     availableToken: string;
     deposit: string,
     poolAllowance: any
+    RGPEarned: string
 
   };
 }) => {
@@ -72,6 +72,7 @@ const ShowYieldFarmDetails = ({
   const [approvalLoading, setApprovalLoading] = useState(false);
   const [RGPBalance] = useRGPBalance();
   const [farmingFee, setFarmingFee] = useState('10')
+  const [deposited, setDeposited] = useState(false)
   const closeModal = () => {
     modal2Disclosure.onClose();
   };
@@ -113,7 +114,7 @@ const ShowYieldFarmDetails = ({
 
   useEffect(() => {
     getAllowances();
-  }, [account]);
+  }, [account, deposited]);
 
   const allowance = (contract: any) =>
     contract.allowance(account, MASTERCHEFV2ADDRESSES[chainId as number]);
@@ -293,7 +294,7 @@ const ShowYieldFarmDetails = ({
         );
         const { confirmations, status, logs } = await fetchTransactionData(data);
         const { hash } = data;
-        const amountUnstaked = convertToNumber(logs[1].data)
+        const amountUnstaked = convertToNumber(logs[1].data);
 
         const explorerLink = getExplorerLink(
           chainId as number,
@@ -304,7 +305,7 @@ const ShowYieldFarmDetails = ({
         dispatch(setOpenModal({
           trxState: TrxState.TransactionSuccessful,
           message: `Successfully unstaked ${convertFromWei(amountUnstaked)} RGP `
-        }))
+        }));
 
         dispatch(addToast({
           message: `Successfully unstaked ${convertFromWei(amountUnstaked)} RGP `
@@ -328,8 +329,71 @@ const ShowYieldFarmDetails = ({
 
       }
 
-    };
-  }
+    }
+  };
+
+  const harvestTokens = async (id: string | number) => {
+    if (account) {
+      try {
+        dispatch(
+          setOpenModal({
+            message: `Harvesting Tokens`,
+            trxState: TrxState.WaitingForConfirmation,
+          })
+        );
+        if (id === 0) {
+          const specialPool = await RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]);
+          const specialWithdraw = await specialPool.unStake(0);
+          const { confirmations, status, logs } = await fetchTransactionData(
+            specialWithdraw,
+          );
+
+          const amountOfRgbSpecial = convertToNumber(logs[1].data);
+
+          if (confirmations >= 1 && status) {
+            dispatch(setOpenModal({
+              trxState: TrxState.TransactionSuccessful,
+              message: `Successfully Harvested ${convertFromWei(amountOfRgbSpecial)} RGP `
+            }));
+          }
+        } else {
+          const lpTokens = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number]);
+          const withdraw = await lpTokens.withdraw(id, 0);
+          const { confirmations, status, logs } = await fetchTransactionData(
+            withdraw,
+          );
+          const amountOfRgb = convertToNumber(logs[1].data);
+
+          const { hash } = withdraw;
+
+          if (confirmations >= 1 && status) {
+            dispatch(setOpenModal({
+              trxState: TrxState.TransactionSuccessful,
+              message: `Successfully Harvested ${convertFromWei(amountOfRgb)} RGP `
+            }));
+          }
+
+          const explorerLink = getExplorerLink(
+            chainId as number,
+            hash,
+            ExplorerDataType.TRANSACTION
+          );
+          dispatch(addToast({
+            message: `Successfully harvested ${convertFromWei(amountOfRgb)} RGP `,
+            URL: explorerLink
+          })
+          )
+        }
+
+      } catch (e) {
+        console.log(e);
+        dispatch(setOpenModal({
+          trxState: TrxState.TransactionFailed,
+          message: `Transaction was not successful`
+        }));
+      }
+    }
+  };
 
   // deposit for the Liquidity Provider tokens for all pools
   const LPDeposit = async (pid: any) => {
@@ -363,6 +427,8 @@ const ShowYieldFarmDetails = ({
             }))
 
             //callRefreshFarm(confirmations, status);
+            //temporal
+            setDeposited(true)
           }
         } else {
           const lpTokens = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number]);
@@ -382,6 +448,7 @@ const ShowYieldFarmDetails = ({
             trxState: TrxState.TransactionSuccessful,
             message: `Successfully deposited`
           }))
+          setDeposited(true)
           //  callRefreshFarm(confirmations, status);
         }
       } catch (e) {
@@ -458,18 +525,31 @@ const ShowYieldFarmDetails = ({
   const RGPUnstake = async () => {
     if (account) {
 
-      const specialPool = await RGPSpecialPool(RGPADDRESSES[chainId as number]);
-      const data = await specialPool.unStake(
-        ethers.utils.parseUnits(unstakeToken, "ether"), // user input from onclick shoild be here...
-        {
-          from: account,
-          gasLimit: 150000,
-          gasPrice: ethers.utils.parseUnits("20", "gwei"),
-        }
-      );
-      const { confirmations, status } = await fetchTransactionData(data);
-      // dispatch the getTokenStaked action from here when data changes
-      //  callRefreshFarm(confirmations, status);
+      try {
+        const specialPool = await RGPSpecialPool(RGPADDRESSES[chainId as number]);
+        const data = await specialPool.unStake(
+          ethers.utils.parseUnits(unstakeToken, "ether"), // user input from onclick shoild be here...
+          {
+            from: account,
+            gasLimit: 150000,
+            gasPrice: ethers.utils.parseUnits("20", "gwei"),
+          }
+        );
+        const { confirmations, status } = await fetchTransactionData(data);
+
+        dispatch(setOpenModal({
+          trxState: TrxState.TransactionSuccessful,
+          message: `Successfully unstaked ${convertFromWei(unstakeToken)} RGP `
+        }));
+        // dispatch the getTokenStaked action from here when data changes
+        //  callRefreshFarm(confirmations, status);
+      } catch (e) {
+        console.log(e);
+        dispatch(setOpenModal({
+          trxState: TrxState.TransactionFailed,
+          message: `Transaction was not successful`
+        }));
+      }
     }
   };
 
@@ -629,7 +709,7 @@ const ShowYieldFarmDetails = ({
                 h="40px"
                 borderRadius="6px"
                 bg={mode === DARK_THEME ? "#4A739B" : "#999999"}
-                color={mode === DARK_THEME ? "##7599BD" : "#CCCCCC"}
+                color={mode === DARK_THEME ? "#7599BD" : "#CCCCCC"}
                 border="0"
                 mb="4"
                 mr="6"
@@ -665,7 +745,7 @@ const ShowYieldFarmDetails = ({
                 textAlign="center"
                 fontWeight="bold"
               >
-                5000
+                {content.RGPEarned}
               </Text>{" "}
               <Text color={mode === DARK_THEME ? "#DCE5EF" : "#333333"}>
                 RGP Earned
@@ -677,12 +757,14 @@ const ShowYieldFarmDetails = ({
               margin="0 auto"
               borderRadius="6px"
               bg={mode === DARK_THEME ? "#4A739B" : "#999999"}
-              color={mode === DARK_THEME ? "##7599BD" : "#CCCCCC"}
+              color={mode === DARK_THEME ? "#7599BD" : "#CCCCCC"}
               border="0"
               mb="4"
               mr="2"
               cursor="pointer"
               _hover={{ color: "white" }}
+              disabled={parseFloat(content.RGPEarned) <= 0}
+              onClick={() => harvestTokens(content.pId)}
             >
               Harvest
             </Button>
