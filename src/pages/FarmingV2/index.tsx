@@ -64,7 +64,7 @@ export function Index() {
     getFarmData()
     getTokenStaked()
     getFarmTokenBalance()
-  }, [chainId]);
+  }, [chainId, dispatch]);
 
 
   useEffect(() => {

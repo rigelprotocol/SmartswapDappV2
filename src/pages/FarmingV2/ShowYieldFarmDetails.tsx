@@ -113,7 +113,7 @@ const ShowYieldFarmDetails = ({
 
   useEffect(() => {
     getAllowances();
-  }, []);
+  }, [account]);
 
   const allowance = (contract: any) =>
     contract.allowance(account, MASTERCHEFV2ADDRESSES[chainId as number]);
@@ -192,9 +192,6 @@ const ShowYieldFarmDetails = ({
     if (!account) {
       setUnstakeButtonValue("Connect wallet")
     }
-
-
-
     if (unstakeToken !== "") {
       if (
         isNaN(parseFloat(unstakeToken)) ||
