@@ -7,7 +7,9 @@ import { LIGHT_THEME, DARK_THEME } from "./index";
 import { useWeb3React } from "@web3-react/core";
 import { useFarms } from "../../state/farm/hooks";
 const YieldFarm = ({
-  content, farmDataLoading
+  content,
+  farmDataLoading,
+  wallet,
 }: {
   content: {
     pid: number;
@@ -224,7 +226,7 @@ const YieldFarm = ({
           )}
         </Box>
       </Flex>
-      {showYieldfarm && <ShowYieldFarmDetails content={content} />}
+      {showYieldfarm && <ShowYieldFarmDetails content={content} wallet={wallet}/>}
     </>
   );
 };

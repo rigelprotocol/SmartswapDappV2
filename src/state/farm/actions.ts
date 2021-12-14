@@ -12,4 +12,4 @@ export interface valuenterface {
 export const changeFarmingContent = createAction<{ value: valuenterface }>('farm/changeFarmingContent');
 export const updateTotalLiquidity = createAction<{ liquidity: any, apy: any}[]>('farm/updateTotalLiquidity');
 export const updateTokenStaked = createAction<{  staked: any, earned: any }[]>('farm/updateTokenStaked');
-
+export const updateFarmAllowances = createAction<any[]>('farm/updateFarmAllowances');

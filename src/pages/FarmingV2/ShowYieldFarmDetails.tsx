@@ -29,11 +29,33 @@ import { addToast } from "../../components/Toast/toastSlice";
 import { useDispatch } from "react-redux";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { getExplorerLink, ExplorerDataType } from "../../utils/getExplorerLink";
-import { MasterChefV2Contract, RGPSpecialPool } from "../../utils/Contracts";
-import { MASTERCHEFV2ADDRESSES, RGPADDRESSES } from "../../utils/addresses";
+import {
+  MasterChefV2Contract,
+  RGPSpecialPool,
+  smartSwapLPTokenPoolOne,
+  smartSwapLPTokenPoolTwo,
+  smartSwapLPTokenPoolThree,
+  smartSwapLPTokenV2PoolFour,
+  smartSwapLPTokenV2PoolFive,
+  rigelToken,
+} from "../../utils/Contracts";
+import {
+  MASTERCHEFV2ADDRESSES,
+  RGPADDRESSES,
+  SMARTSWAPLP_TOKEN1ADDRESSES,
+  SMARTSWAPLP_TOKEN2ADDRESSES,
+  SMARTSWAPLP_TOKEN3ADDRESSES,
+  SMARTSWAPLP_TOKEN4ADDRESSES,
+  SMARTSWAPLP_TOKEN5ADDRESSES,
+  RGP,
+ } from "../../utils/addresses";
 import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
+import { SMART_SWAP } from '../../utils/constants';
+import { updateFarmAllowances } from '../../state/farm/actions';
+
 const ShowYieldFarmDetails = ({
   content,
+  wallet,
 }: {
   content: {
     pid: number;
@@ -58,19 +80,299 @@ const ShowYieldFarmDetails = ({
   const [unstakeToken, setUnstakeToken] = useState("");
   const [inputHasError, setInputHasError] = useState(false);
   const [errorButtonText, setErrorButtonText] = useState("");
+  const [approveValueForRGP, setApproveValueForRGP] = useState(false);
+  const [approveValueForOtherToken, setApproveValueForOtherToken] = useState(false);
+  const [approvalLoading, setApprovalLoading] = useState(false);
   const { account, chainId } = useWeb3React();
   const dispatch = useDispatch();
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
 
   const closeModal = () => {
     modal2Disclosure.onClose();
   };
 
-  const setApprove = () => {
-    // if (approveValueForOtherToken && approveValueForRGP) {
+  const getAllowances = async () => {
+  try {
+    const [rigel, pool1, pool2, pool3] = await Promise.all([
+      rigelToken(RGP[chainId as number]),
+      smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]),
+      smartSwapLPTokenPoolTwo(SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number]),
+      smartSwapLPTokenPoolThree(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number]),
+    ]);
+    if (wallet.address != '0x') {
+      const [
+        pool1Allowance,
+        pool2Allowance,
+        pool3Allowance,
+      ] = await Promise.all([
+        allowance(pool1),
+        allowance(pool2),
+        allowance(pool3),
+      ]);
+      let rigelAllowance;
+      if (SMART_SWAP.specialPool) {
+        rigelAllowance = await rigel.allowance(
+          account,
+          SMART_SWAP.specialPool,
+        );
+      } else {
+        rigelAllowance = pool1Allowance;
+      }
+
+      updateFarmAllowances([
+        rigelAllowance,
+        pool2Allowance,
+        pool1Allowance,
+        pool3Allowance,
+      ]);
+    }
+  } catch (error) {
+    console.error(error, 'something went wrong');
+  }
+};
+
+const allowance = contract =>
+  contract.allowance(account, SMART_SWAP.masterChefV2);
+
+useEffect(() => {
+  getAllowances();
+}, []);
+
+useEffect(() => {
+  const poolAllowance = async contract => {
+    if (signer !== 'signer') {
+      const rgpApproval = await contract.allowance(
+        account,
+        SMART_SWAP.masterChefV2,
+      );
+      return !(rgpApproval.toString() <= 0);
+    }
+  };
+
+  const checkForApproval = async () => {
+    const rgp = await rigelToken(RGP[chainId as number]);
+    const rgpApproval = await poolAllowance(rgp);
+    if (content.deposit === 'RGP-BNB') {
+      const poolTwo = await smartSwapLPTokenPoolTwo(SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number]);
+      const approvalForRGPBNB = await poolAllowance(poolTwo);
+      changeApprovalButton(approvalForRGPBNB, rgpApproval);
+    } else if (content.deposit === 'RGP-BUSD') {
+      const poolOne = await smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]);
+      const approvalForRGPBUSD = await poolAllowance(poolOne);
+      changeApprovalButton(approvalForRGPBUSD, rgpApproval);
+    } else if (content.deposit === 'BNB-BUSD') {
+      const poolThree = await smartSwapLPTokenPoolThree(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number]);
+      const approvalForBNBBUSD = await poolAllowance(poolThree);
+      changeApprovalButton(approvalForBNBBUSD, rgpApproval);
+    } else if (content.deposit === 'AXS-RGP') {
+      const poolFour = await smartSwapLPTokenV2PoolFour(SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number]);
+      const approveForAXSRGP = await poolAllowance(poolFour);
+      changeApprovalButton(approveForAXSRGP, rgpApproval);
+    } else if (content.deposit === 'AXS-BUSD') {
+      const poolFive = await smartSwapLPTokenV2PoolFive(SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number]);
+      const approveForAXSBUSD = await poolAllowance(poolFive);
+      changeApprovalButton(approveForAXSBUSD, rgpApproval);
+    }
+  };
+
+function changeApprovalButton(otherTokenApproval, rgpApproval) {
+  if (otherTokenApproval && rgpApproval) {
+    setApproveValueForOtherToken(true);
+    setApproveValueForRGP(true);
+  } else if (otherTokenApproval) {
+    setApproveValueForOtherToken(true);
+  } else if (rgpApproval) {
+    setApproveValueForRGP(true);
+  } else {
+    setApproveValueForRGP(false);
+    setApproveValueForOtherToken(false);
+  }
+}
+setApproveValueForRGP(false);
+setApproveValueForOtherToken(false);
+checkForApproval();
+}, [wallet, content]);
+
+const RGPApproval = async () => {
+  if (signer !== 'signer') {
+    try {
+      const rgp = await rigelToken(RGP[chainId as number]);
+      const walletBal = (await rgp.balanceOf(account)) + 400e18;
+      const data = await rgp.approve(SMART_SWAP.masterChefV2, walletBal, {
+        from: account,
+        gasLimit: 150000,
+        gasPrice: ethers.utils.parseUnits('20', 'gwei'),
+      });
+      setApprovalLoading(true);
+      const { confirmations, status } = await fetchTransactionData(data);
+      if (confirmations >= 3) {
+        setApproveValueForRGP(true);
+      }
+      getAllowances();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setApprovalLoading(false);
+    }
+  }
+};
+
+const RGPSpecialPoolApproval = async () => {
+  if (signer !== 'signer') {
+    try {
+      const rgp = await rigelToken(RGP[chainId as number]);
+      const walletBal = (await rgp.balanceOf(account)) + 400e18;
+      const data = await rgp.approve(SMART_SWAP.specialPool, walletBal, {
+        from: account,
+        gasLimit: 150000,
+        gasPrice: ethers.utils.parseUnits('20', 'gwei'),
+      });
+      setApprovalLoading(true);
+      const { confirmations, status } = await fetchTransactionData(data);
+      getAllowances();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setApprovalLoading(false);
+    }
+  }
+};
+
+const LPApproval = async contract => {
+  if (signer !== 'signer') {
+    try {
+      const walletBal = (await contract.balanceOf(account)) + 400e18;
+      const data = await contract.approve(
+        SMART_SWAP.masterChefV2,
+        walletBal,
+        {
+          from: account,
+          gasLimit: 150000,
+          gasPrice: ethers.utils.parseUnits('20', 'gwei'),
+        },
+      );
+      setApprovalLoading(true);
+      const { confirmations, status } = await fetchTransactionData(data);
+
+      if (confirmations >= 3) {
+        setApproveValueForOtherToken(true);
+      }
+      getAllowances();
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setApprovalLoading(false);
+    }
+  }
+};
+
+const approveLPToken = async LPToken => {
+  switch (LPToken) {
+    case 'RGP-BUSD':
+      const poolOne = await smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]);
+      LPApproval(poolOne);
+      break;
+    case 'RGP-BNB':
+      const poolTwo = await smartSwapLPTokenPoolTwo(SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number]);
+      LPApproval(poolTwo);
+      break;
+    case 'BNB-BUSD':
+      const poolThree = await smartSwapLPTokenPoolThree(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number]);
+      LPApproval(poolThree);
+      break;
+    case 'AXS-RGP':
+      const poolFour = await smartSwapLPTokenV2PoolFour(SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number]);
+      LPApproval(poolFour);
+      break;
+    case 'AXS-BUSD':
+      const poolFive = await smartSwapLPTokenV2PoolFive(SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number]);
+      LPApproval(poolFive);
+      break;
+    default:
+      RGPApproval();
+      break;
+  }
+};
+
+const setApprove = val => {
+  if (approveValueForOtherToken && approveValueForRGP) {
     modal2Disclosure.onOpen();
-    //} else {
-    //   checkUser(val);
-    // }
+  } else {
+    checkUser(val);
+  }
+};
+
+  const checkUser = async val => {
+    if (signer !== 'signer') {
+      if (val === 'RGP-BNB') {
+        const poolTwo = await smartSwapLPTokenPoolTwo(SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number]);
+        if (!approveValueForOtherToken && !approveValueForRGP) {
+          await RGPApproval();
+          await LPApproval(poolTwo);
+        } else if (!approveValueForRGP) {
+          await RGPApproval();
+        } else {
+          await LPApproval(poolTwo);
+        }
+        setApproveValueForOtherToken(true);
+        setApproveValueForRGP(true);
+      } else if (val === 'BNB-BUSD') {
+        const poolThree = await smartSwapLPTokenPoolThree(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number]);
+        if (!approveValueForOtherToken && !approveValueForRGP) {
+          await RGPApproval();
+          await LPApproval(poolThree);
+        } else if (!approveValueForRGP) {
+          await RGPApproval();
+        } else {
+          await LPApproval(poolThree);
+        }
+        setApproveValueForOtherToken(true);
+        setApproveValueForRGP(true);
+      } else if (val === 'RGP-BUSD') {
+        const poolOne = await smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]);
+        if (!approveValueForOtherToken && !approveValueForRGP) {
+          await RGPApproval();
+          await LPApproval(poolOne);
+        } else if (!approveValueForRGP) {
+          await RGPApproval();
+        } else {
+          await LPApproval(poolOne);
+        }
+        setApproveValueForOtherToken(true);
+        setApproveValueForRGP(true);
+      } else if (val === 'AXS-RGP') {
+        const poolFour = await smartSwapLPTokenV2PoolFour(SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number]);
+        if (!approveValueForOtherToken && !approveValueForRGP) {
+          await RGPApproval();
+          await LPApproval(poolFour);
+        } else if (!approveValueForRGP) {
+          await RGPApproval();
+        } else {
+          await LPApproval(poolFour);
+        }
+        setApproveValueForOtherToken(true);
+        setApproveValueForRGP(true);
+      } else if (val === 'AXS-BUSD') {
+        const poolFive = await smartSwapLPTokenV2PoolFive(SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number]);
+        if (!approveValueForOtherToken && !approveValueForRGP) {
+          await RGPApproval();
+          await LPApproval(poolFive);
+        } else if (!approveValueForRGP) {
+          await RGPApproval();
+        } else {
+          await LPApproval(poolFive);
+        }
+        setApproveValueForOtherToken(true);
+        setApproveValueForRGP(true);
+      } else if (val === 'RGP') {
+        await RGPSpecialPoolApproval();
+        setApproveValueForOtherToken(true);
+        setApproveValueForRGP(true);
+      }
+    } else if (ethers.utils.formatEther(checkAllow).toString() == 0.0) {
+      await RGPSpecialPoolApproval();
+    }
   };
 
   const handleChecked = () => {
@@ -289,9 +591,12 @@ const ShowYieldFarmDetails = ({
                 mr="6"
                 padding="10px 40px"
                 cursor="pointer"
-                onClick={() => setApprove()}
+                onClick={() => setApprove(content.deposit)}
               >
-                {true ? "Unstake" : "Approve"}
+                {approveValueForRGP && approveValueForOtherToken
+                  ? 'Unstake'
+                  : 'Approve'
+                }
               </Button>
               <Button
                 w="45%"
