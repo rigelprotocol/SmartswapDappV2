@@ -197,6 +197,12 @@ checkForApproval();
 const RGPApproval = async () => {
   if (signer !== 'signer') {
     try {
+      dispatch(
+        setOpenModal({
+          message: `Approving RGP`,
+          trxState: TrxState.WaitingForConfirmation,
+        })
+      );
       const rgp = await rigelToken(RGP[chainId as number]);
       const walletBal = (await rgp.balanceOf(account)) + 400e18;
       const data = await rgp.approve(SMART_SWAP.masterChefV2, walletBal, {
@@ -208,10 +214,20 @@ const RGPApproval = async () => {
       const { confirmations, status } = await fetchTransactionData(data);
       if (confirmations >= 3) {
         setApproveValueForRGP(true);
+        dispatch(setOpenModal({
+          trxState: TrxState.TransactionSuccessful,
+          message: `Successful RGP Approval`
+        }));
       }
       getAllowances();
     } catch (error) {
       console.error(error);
+      dispatch(
+        setOpenModal({
+          message: `Transaction failed`,
+          trxState: TrxState.TransactionFailed,
+        })
+      );
     } finally {
       setApprovalLoading(false);
     }
@@ -242,6 +258,12 @@ const RGPSpecialPoolApproval = async () => {
 const LPApproval = async contract => {
   if (signer !== 'signer') {
     try {
+      dispatch(
+        setOpenModal({
+          message: `Approving LP token`,
+          trxState: TrxState.WaitingForConfirmation,
+        })
+      );
       const walletBal = (await contract.balanceOf(account)) + 400e18;
       const data = await contract.approve(
         SMART_SWAP.masterChefV2,
@@ -257,10 +279,20 @@ const LPApproval = async contract => {
 
       if (confirmations >= 3) {
         setApproveValueForOtherToken(true);
+        dispatch(setOpenModal({
+          trxState: TrxState.TransactionSuccessful,
+          message: `Successful LP token Approval`
+        }));
       }
       getAllowances();
     } catch (e) {
       console.log(e);
+      dispatch(
+        setOpenModal({
+          message: `Transaction failed`,
+          trxState: TrxState.TransactionFailed,
+        })
+      );
     } finally {
       setApprovalLoading(false);
     }
