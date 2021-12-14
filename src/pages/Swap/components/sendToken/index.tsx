@@ -47,7 +47,6 @@ import { GetAddressTokenBalance } from '../../../../state/wallet/hooks';
 import NewToken from '../../../../components/Tokens/newToken';
 import { SupportedChainId } from '../../../../constants/chains';
 import { SMARTSWAPFACTORYADDRESSES } from '../../../../utils/addresses';
-import { to } from 'react-spring';
 
 const SendToken = () => {
   const history = useHistory();

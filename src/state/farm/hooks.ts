@@ -1,14 +1,13 @@
-import { useSelector } from 'react-redux'
-import BigNumber from 'bignumber.js'
+
 import { State } from '../types'
-import { SerializedFarm, DeserializedFarmUserData, DeserializedFarm, DeserializedFarmsState } from './types'
-import { deserializeToken } from '../../utils/helpers/token'
+import {farmStateInterface} from './reducer'
+import { updateTotalLiquidity } from './actions'
+import { useCallback,useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
+import { AppDispatch, RootState, useAppSelector } from '../index'
 
-export const BIG_ZERO = new BigNumber(0)
-export const BIG_ONE = new BigNumber(1)
-
-
+/** 
 const deserializeFarmUserData = (farm: SerializedFarm): DeserializedFarmUserData => {
   return {
     allowance: farm.userData ? new BigNumber(farm.userData.allowance) : BIG_ZERO,
@@ -17,6 +16,7 @@ const deserializeFarmUserData = (farm: SerializedFarm): DeserializedFarmUserData
     earnings: farm.userData ? new BigNumber(farm.userData.earnings) : BIG_ZERO,
   }
 }
+
 
 const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
   const { lpAddresses, lpSymbol, pid, dual, multiplier, isCommunity, quoteTokenPriceBusd, tokenPriceBusd, inflation } = farm
@@ -41,15 +41,19 @@ const deserializeFarm = (farm: SerializedFarm): DeserializedFarm => {
     poolWeight: farm.poolWeight ? new BigNumber(farm.poolWeight) : BIG_ZERO,
   }
 }
+*/
 
-export const useFarms = (): DeserializedFarmsState => {
-
+export const useFarms = (): farmStateInterface => {
   const farms = useSelector((state: State) => state.farms)
-  const deserializedFarmsData = farms.data.map(deserializeFarm)
-  const { loadArchivedFarmsData, userDataLoaded } = farms
-  return {
-    loadArchivedFarmsData,
-    userDataLoaded,
-    data: deserializedFarmsData,
-  }
+  return  farms
 }
+
+/** 
+
+const useUpdateTotalLiquidity = useCallback(
+  ({ liquidity: any, apy: any}[]) => {
+    dispatch(updateTotalLiquidity({ userSlippageTolerance: slippage }))
+  },
+  [dispatch],
+);
+*/
