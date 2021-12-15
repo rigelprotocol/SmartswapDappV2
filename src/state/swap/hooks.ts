@@ -1,7 +1,7 @@
 import { AppDispatch, RootState } from '../index';
 import { provider } from '../../utils/utilsFunctions';
 import { useCallback, useEffect, useState } from 'react';
-import { Field, selectCurrency, typeInput, replaceSwapState } from './actions';
+import { Field, selectCurrency, typeInput, replaceSwapState, switchCurrencies } from './actions';
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
 import { ParsedQs } from 'qs';
 import { useCurrency } from '../../hooks/Tokens';
@@ -45,6 +45,7 @@ export function useSwapState(): RootState['swap'] {
 export function useSwapActionHandlers(): {
   onCurrencySelection: (field: Field, currency: Currency) => void;
   onUserInput: (field: Field, typedValue: string) => void;
+  onSwitchTokens: () => void
 } {
   const { chainId, account } = useActiveWeb3React();
   const {
@@ -56,6 +57,7 @@ export function useSwapActionHandlers(): {
   } = useSwapState();
 
   const [Balance, Symbol] = useNativeBalance();
+
 
   const dispatch = useDispatch<AppDispatch>();
   const onCurrencySelection = useCallback(
@@ -74,6 +76,12 @@ export function useSwapActionHandlers(): {
     [dispatch]
   );
 
+  
+  const onSwitchTokens = useCallback(() => {
+    dispatch(switchCurrencies())
+  }, [dispatch])
+
+
   const onUserInput = useCallback(
     (field: Field, typedValue: string) => {
       dispatch(typeInput({ field, typedValue }));
@@ -83,6 +91,7 @@ export function useSwapActionHandlers(): {
   return {
     onCurrencySelection,
     onUserInput,
+    onSwitchTokens
   };
 }
 
