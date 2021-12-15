@@ -260,7 +260,7 @@ export function Index() {
       dispatch(
         updateTotalLiquidity([
           {
-            deposit: "RGP",
+            deposit: 'RGP',
             liquidity: RGPLiquidity,
             apy: calculateApy(RGPprice, RGPLiquidity, 250),
           },
