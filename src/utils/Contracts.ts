@@ -177,7 +177,7 @@ export const smartSwapLPTokenV2 = async (address: string) => {
   const Provider = await provider();
   const smartSwapLPTokenV2Instance = new Contract(
       address,
-      SmartSwapLPTokenABI,
+      SmartSwapLPTokenABI3,
       Provider?.getSigner()
   );
 

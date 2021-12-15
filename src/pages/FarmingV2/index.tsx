@@ -188,14 +188,14 @@ export function Index() {
 
     try {
       const [
-        // specialPool,
+        specialPool,
         pool1,
         pool2,
         pool3,
         pool4,
         pool5,
       ] = await Promise.all([
-        // RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
+        RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
         smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]),
         smartSwapLPTokenPoolTwo(SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number]),
         smartSwapLPTokenPoolThree(
@@ -210,14 +210,14 @@ export function Index() {
       ])
 
       const [
-        // rgpTotalStaking,
+        rgpTotalStaking,
         pool1Reserve,
         pool2Reserve,
         pool3Reserve,
         pool4Reserve,
         pool5Reserve,
       ] = await Promise.all([
-        // specialPool.totalStaking(),
+        specialPool.totalStaking(),
         pool1.getReserves(),
         pool2.getReserves(),
         pool3.getReserves(),
@@ -237,9 +237,9 @@ export function Index() {
       )
 
       const BNBprice = getBnbPrice(pool3, pool3Reserve)
-      // const RGPLiquidity = ethers.utils
-      //   .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * RGPprice)), 21)
-      //   .toString()
+      const RGPLiquidity = ethers.utils
+        .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * RGPprice)), 21)
+        .toString()
       const BUSD_RGPLiquidity = ethers.utils
         .formatEther(pool1Reserve[0].mul(2))
         .toString()
@@ -259,10 +259,11 @@ export function Index() {
 
       dispatch(
         updateTotalLiquidity([
-          // {
-          //   liquidity: RGPLiquidity,
-          //   apy: calculateApy(RGPprice, RGPLiquidity, 250),
-          // },
+          {
+            deposit: "RGP",
+            liquidity: RGPLiquidity,
+            apy: calculateApy(RGPprice, RGPLiquidity, 250),
+          },
           {
             deposit: await deposit(pool1.token0, pool1.token1),
             liquidity: RGP_BNBLiquidity,
