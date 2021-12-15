@@ -48,9 +48,11 @@ import {
   SMARTSWAPLP_TOKEN4ADDRESSES,
   SMARTSWAPLP_TOKEN5ADDRESSES,
   RGP,
+  RGPSPECIALPOOLADDRESSES,
  } from "../../utils/addresses";
 import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
 import { SMART_SWAP } from '../../utils/constants';
+import { useRGPBalance } from "../../utils/hooks/useBalances";
 import { updateFarmAllowances } from '../../state/farm/actions';
 
 const ShowYieldFarmDetails = ({
