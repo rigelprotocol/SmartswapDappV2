@@ -26,6 +26,10 @@ const buttons = {
         rgpButton: {
             bg: "#EBF6FE",
             color: "#319EF6",
+            _hover: {
+                bg: "blue.500",
+                color: '#EBF6FE'
+            }
 
         }
     }
