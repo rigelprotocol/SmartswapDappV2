@@ -43,6 +43,7 @@ export default function WalletConnection() {
           display={isMobileDevice ? 'none' : undefined}
           variant="rgpButton"
           bg={bgColor}
+          fontSize="14px"
         >
           {RGPBalance} {RGPBalance ? 'RGP' : '0.0000 RGP'}
         </Button>

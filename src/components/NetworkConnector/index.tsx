@@ -40,7 +40,7 @@ function NetworkIndicator() {
       >
         <Flex alignItems="center">
           <Box mr={2}>
-            {info.label !== 'Binance' && info.label !== 'Binance Testnet' ? (
+            {info.label !== 'Binance' && info.label !== 'BSC Testnet' ? (
               <EthereumIcon />
             ) : (
               <BinanceIcon />
