@@ -701,6 +701,15 @@ const SendToken = () => {
     calculatePriceImpact();
   }, [fromAmount, receivedAmount, chainId]);
 
+  const [isLoadingValue, setIsLoadingValue] = useState(false);
+  useEffect(() =>{
+    if (formattedAmounts[Field.INPUT] && !formattedAmounts[Field.OUTPUT]){
+      setIsLoadingValue(true);
+    }else{
+      setIsLoadingValue(false);
+    }
+  }, [formattedAmounts[Field.OUTPUT]]);
+
   return (
     <div>
       <NewToken
@@ -778,7 +787,26 @@ const SendToken = () => {
             >
               Approve Transaction
             </Button>
-          ) : (
+          ) : isLoadingValue ? (
+            <Button
+              w="100%"
+              borderRadius="6px"
+              border={lightmode ? '2px' : 'none'}
+              borderColor={borderColor}
+              h="48px"
+              p="5px"
+              mt={1}
+              disabled={true}
+              bgColor={inputError ? switchBgcolor : buttonBgcolor}
+              fontSize="18px"
+              boxShadow={lightmode ? 'base' : 'lg'}
+              _hover={{ bgColor: buttonBgcolor }}
+            >
+              {inputError
+                ? inputError
+                : `Loading...`}
+            </Button>
+          ):(
             <Button
               w="100%"
               borderRadius="6px"
