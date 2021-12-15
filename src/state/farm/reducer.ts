@@ -1,5 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
-import {changeFarmingContent,updateTokenStaked, updateTotalLiquidity} from './actions'
+import {changeFarmingContent,updateTokenStaked, updateTotalLiquidity, updateFarmAllowances, updateFarmBalances} from './actions'
 
 
 export interface farmStateInterface {
@@ -84,6 +84,7 @@ export const initialState: farmStateInterface = {
       totalVolumePerPool: 0,
       farmingFee: 0,
       pId: 1,
+      poolAllowance: '',
     },
 
     {
@@ -178,8 +179,23 @@ export default createReducer(initialState, (builder) =>
       ];
       state.contents[index].RGPEarned = item.earned;
     });
-    
   })
+
+  .addCase(updateFarmAllowances, (state, action) => {
+    const allowances = action.payload;
+    console.log("#######", allowances)
+    allowances.forEach((item, index) => {
+      state.contents[index].poolAllowance = item;
+    });
+  })
+
+  .addCase(updateFarmBalances, (state, action) => {
+    const balances = action.payload;
+        balances.forEach((item, index) => {
+          state.contents[index].availableToken = item;
+        });
+  })
+  
 
     
 )

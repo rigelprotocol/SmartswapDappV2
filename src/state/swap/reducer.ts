@@ -1,5 +1,5 @@
 import { createReducer } from "@reduxjs/toolkit";
-import {Field, selectCurrency, typeInput, replaceSwapState} from "./actions";
+import {Field, selectCurrency, typeInput, replaceSwapState, switchCurrencies} from "./actions";
 export interface SwapState {
     readonly independentField: Field
   readonly typedValue: string
@@ -59,6 +59,14 @@ const initialState: SwapState = {
             ...state,
             [field]: { currencyId },
         }
+    })
+    .addCase(switchCurrencies, (state) => {
+      return {
+        ...state,
+        independentField: state.independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT,
+        [Field.INPUT]: { currencyId: state[Field.OUTPUT].currencyId },
+        [Field.OUTPUT]: { currencyId: state[Field.INPUT].currencyId },
+      }
     })
     .addCase(typeInput, (state, { payload: { field, typedValue } }) => {
       return {
