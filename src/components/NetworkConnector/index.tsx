@@ -46,7 +46,7 @@ function NetworkIndicator() {
               <BinanceIcon />
             )}
           </Box>
-          <Text textColor={textColor}>{info.label}</Text>
+          <Text textColor={textColor} fontSize="14px">{info.label}</Text>
         </Flex>
       </Button>
 
