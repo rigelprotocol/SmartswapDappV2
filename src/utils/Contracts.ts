@@ -10,7 +10,7 @@ import WETHABI from './abis/WETH9.json';
 import SmartSwapLPTokenABI1 from './abis/LPToken1.json'
 import SmartSwapLPTokenABI2 from './abis/LPToken2.json'
 import SmartSwapLPTokenABI3 from './abis/SmartSwapLPTokenThree.json'
-import RigelToken from './abis/RigelToken.json';
+import RigelToken from './abis/RigelToken.json'
 
 export const smartFactory = async (address: string) => {
   const Provider = await provider();
@@ -166,5 +166,6 @@ export const rigelToken = async (address: string) => {
       RigelToken,
       Provider?.getSigner()
   );
+
   return rigelTokenInstance;
 };

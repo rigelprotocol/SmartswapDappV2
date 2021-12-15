@@ -93,7 +93,7 @@ const SendToken = () => {
 
   const [showModal, setShowModal] = useState(false);
 
-  const { onCurrencySelection, onUserInput } = useSwapActionHandlers();
+  const { onCurrencySelection, onUserInput, onSwitchTokens } = useSwapActionHandlers();
   const {
     currencies,
     getMaxValue,
@@ -118,15 +118,15 @@ const SendToken = () => {
     () =>
       showWrap
         ? {
-            [Field.INPUT]: typedValue,
-            [Field.OUTPUT]: typedValue,
-          }
+          [Field.INPUT]: typedValue,
+          [Field.OUTPUT]: typedValue,
+        }
         : {
-            [Field.INPUT]:
-              independentField === Field.INPUT ? parsedAmount : bestTrade,
-            [Field.OUTPUT]:
-              independentField === Field.OUTPUT ? parsedAmount : bestTrade,
-          },
+          [Field.INPUT]:
+            independentField === Field.INPUT ? parsedAmount : bestTrade,
+          [Field.OUTPUT]:
+            independentField === Field.OUTPUT ? parsedAmount : bestTrade,
+        },
     [independentField, parsedAmount, showWrap, bestTrade]
   );
 
@@ -282,11 +282,9 @@ const SendToken = () => {
       setSendingTrx(true);
       dispatch(
         setOpenModal({
-          message: `Swapping ${formattedAmounts[Field.INPUT]} ${
-            currencies[Field.INPUT]?.symbol
-          } for ${formattedAmounts[Field.OUTPUT]} ${
-            currencies[Field.OUTPUT]?.symbol
-          }`,
+          message: `Swapping ${formattedAmounts[Field.INPUT]} ${currencies[Field.INPUT]?.symbol
+            } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol
+            }`,
           trxState: TrxState.WaitingForConfirmation,
         })
       );
@@ -331,9 +329,8 @@ const SendToken = () => {
         );
         dispatch(
           addToast({
-            message: `Swap ${inputAmount} ${
-              currencies[Field.INPUT]?.symbol
-            } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${inputAmount} ${currencies[Field.INPUT]?.symbol
+              } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
@@ -362,9 +359,8 @@ const SendToken = () => {
       setSendingTrx(true);
       dispatch(
         setOpenModal({
-          message: `Swapping ${formattedAmounts[Field.INPUT]} BNB for ${
-            formattedAmounts[Field.OUTPUT]
-          } ${currencies[Field.OUTPUT]?.symbol}`,
+          message: `Swapping ${formattedAmounts[Field.INPUT]} BNB for ${formattedAmounts[Field.OUTPUT]
+            } ${currencies[Field.OUTPUT]?.symbol}`,
           trxState: TrxState.WaitingForConfirmation,
         })
       );
@@ -410,11 +406,9 @@ const SendToken = () => {
         );
         dispatch(
           addToast({
-            message: `Swap ${inputAmountForDisplay} ${
-              currencies[Field.INPUT]?.symbol
-            } for ${outputAmountForDisplay} ${
-              currencies[Field.OUTPUT]?.symbol
-            }`,
+            message: `Swap ${inputAmountForDisplay} ${currencies[Field.INPUT]?.symbol
+              } for ${outputAmountForDisplay} ${currencies[Field.OUTPUT]?.symbol
+              }`,
             URL: explorerLink,
           })
         );
@@ -443,9 +437,8 @@ const SendToken = () => {
       setSendingTrx(true);
       dispatch(
         setOpenModal({
-          message: `Swapping ${formattedAmounts[Field.INPUT]} ${
-            currencies[Field.INPUT]?.symbol
-          } for ${formattedAmounts[Field.OUTPUT]} BNB`,
+          message: `Swapping ${formattedAmounts[Field.INPUT]} ${currencies[Field.INPUT]?.symbol
+            } for ${formattedAmounts[Field.OUTPUT]} BNB`,
           trxState: TrxState.WaitingForConfirmation,
         })
       );
@@ -480,17 +473,15 @@ const SendToken = () => {
         );
         dispatch(
           setOpenModal({
-            message: `Swap tokens for ${
-              currencies[Field.OUTPUT]?.symbol
-            } Successful.`,
+            message: `Swap tokens for ${currencies[Field.OUTPUT]?.symbol
+              } Successful.`,
             trxState: TrxState.TransactionSuccessful,
           })
         );
         dispatch(
           addToast({
-            message: `Swap ${inputAmount} ${
-              currencies[Field.INPUT]?.symbol
-            } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${inputAmount} ${currencies[Field.INPUT]?.symbol
+              } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
@@ -543,9 +534,8 @@ const SendToken = () => {
         );
         dispatch(
           addToast({
-            message: `Swap ${typedValue} ${
-              currencies[Field.INPUT]?.symbol
-            } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${typedValue} ${currencies[Field.INPUT]?.symbol
+              } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
@@ -596,9 +586,8 @@ const SendToken = () => {
         );
         dispatch(
           addToast({
-            message: `Swap ${typedValue} ${
-              currencies[Field.INPUT]?.symbol
-            } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${typedValue} ${currencies[Field.INPUT]?.symbol
+              } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
@@ -683,12 +672,12 @@ const SendToken = () => {
   // }, [fromAddress, toAddress, path]);
 
   const calculatePriceImpact = async () => {
-    
-     
-       
+
+
+
     if (routeAddress.length === 2) {
       try {
-          const SwapRouter = await SmartSwapRouter(
+        const SwapRouter = await SmartSwapRouter(
           SMARTSWAPROUTER[chainId as number ?? 56]
         );
         const price = await SwapRouter.getAmountsOut(
@@ -702,15 +691,15 @@ const SendToken = () => {
         setPriceImpact(parseFloat(priceImpact).toFixed(2));
       } catch (e) {
         setPriceImpact(0);
-      
+
       }
-         }
-   
+    }
+
 
   };
   useEffect(async () => {
     calculatePriceImpact();
-  }, [fromAmount, receivedAmount,chainId]);
+  }, [fromAmount, receivedAmount, chainId]);
 
   return (
     <div>
@@ -736,7 +725,7 @@ const SendToken = () => {
           onMax={handleMaxInput}
           value={formattedAmounts[Field.INPUT]}
         />
-        <Flex justifyContent="center">
+        <Flex justifyContent="center" onClick={onSwitchTokens} >
           <SwitchIcon />
         </Flex>
         <To
