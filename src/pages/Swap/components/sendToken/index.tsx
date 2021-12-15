@@ -92,7 +92,6 @@ const SendToken = () => {
   const buttonBgcolor = useColorModeValue('#319EF6', '#4CAFFF');
 
   const [showModal, setShowModal] = useState(false);
-
   const { onCurrencySelection, onUserInput } = useSwapActionHandlers();
   const {
     currencies,
@@ -174,11 +173,9 @@ const SendToken = () => {
 
   const receivedAmount = Number(formattedAmounts[Field.OUTPUT]).toFixed(4);
   const fromAmount = Number(formattedAmounts[Field.INPUT]);
-
   const parsedOutput = ethers.utils.parseEther(minimum.toString()).toString();
   const [hasBeenApproved, setHasBeenApproved] = useState(false);
   const [insufficientBalance, setInsufficientBalance] = useState(false);
-
   const [balance] = GetAddressTokenBalance(
     currencies[Field.INPUT] ?? undefined
   );
@@ -683,9 +680,9 @@ const SendToken = () => {
   // }, [fromAddress, toAddress, path]);
 
   const calculatePriceImpact = async () => {
-    
-     
-       
+
+
+
     if (routeAddress.length === 2) {
       try {
           const SwapRouter = await SmartSwapRouter(
@@ -702,15 +699,24 @@ const SendToken = () => {
         setPriceImpact(parseFloat(priceImpact).toFixed(2));
       } catch (e) {
         setPriceImpact(0);
-      
+
       }
          }
-   
+
 
   };
   useEffect(async () => {
     calculatePriceImpact();
   }, [fromAmount, receivedAmount,chainId]);
+  
+  const [isLoadingValue, setIsLoadingValue] = useState(false);
+  useEffect(() =>{
+    if (formattedAmounts[Field.INPUT] && !formattedAmounts[Field.OUTPUT]){
+      setIsLoadingValue(true);
+    }else{
+      setIsLoadingValue(false);
+    }
+  }, [formattedAmounts[Field.OUTPUT]]);
 
   return (
     <div>
@@ -789,7 +795,25 @@ const SendToken = () => {
             >
               Approve Transaction
             </Button>
-          ) : (
+          ) : isLoadingValue ? (
+            <Button
+              w="100%"
+              borderRadius="6px"
+              border={lightmode ? '2px' : 'none'}
+              borderColor={borderColor}
+              h="48px"
+              p="5px"
+              mt={1}
+              disabled={true}
+              fontSize="18px"
+              boxShadow={lightmode ? 'base' : 'lg'}
+              _hover={{ bgColor: buttonBgcolor }}
+            >
+              {inputError
+                ? inputError
+                : `Loading...`}
+            </Button>
+          ):(
             <Button
               w="100%"
               borderRadius="6px"

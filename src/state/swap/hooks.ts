@@ -151,7 +151,7 @@ export function useDerivedSwapInfo(): {
     inputError = 'Connect Wallet';
   }
 
-  if (inputCurrency && outputCurrency && !typedValue) {
+  if ((inputCurrency && outputCurrency && !typedValue) || (inputCurrency && outputCurrency && typedValue == 0)){
     inputError = 'Enter an amount';
   }
 
