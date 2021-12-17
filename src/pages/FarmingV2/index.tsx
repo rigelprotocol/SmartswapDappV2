@@ -28,8 +28,8 @@ import { useFarms } from '../../state/farm/hooks'
 import { MasterChefV2Contract, smartSwapLPTokenPoolOne, smartSwapLPTokenPoolThree, smartSwapLPTokenPoolTwo, smartSwapLPTokenV2PoolFive, smartSwapLPTokenV2PoolFour, RGPSpecialPool, rigelToken } from '../../utils/Contracts'
 import { RGPADDRESSES, RGPSPECIALPOOLADDRESSES, MASTERCHEFV2ADDRESSES, SMARTSWAPLP_TOKEN1ADDRESSES, SMARTSWAPLP_TOKEN2ADDRESSES, SMARTSWAPLP_TOKEN3ADDRESSES, SMARTSWAPLP_TOKEN4ADDRESSES, SMARTSWAPLP_TOKEN5ADDRESSES, RGP } from '../../utils/addresses'
 import { formatBigNumber } from '../../utils'
-import { RootState } from "../../state";
-
+import {RootState} from "../../state";
+import { useNativeBalance, useRGPBalance } from '../../utils/hooks/useBalances';
 
 export const BIG_TEN = new bigNumber(10);
 
@@ -59,6 +59,16 @@ export function Index() {
   const dispatch = useDispatch();
   let match = useRouteMatch('/farming-V2/staking-RGP');
   const FarmData = useFarms();
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const [Balance, Symbol] = useNativeBalance();
+  const wallet = {
+      balance: Balance,
+      address: account,
+      provider: provider,
+      signer: signer,
+      chainId: chainId,
+  }
 
   const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
   const stateChanged: boolean = trxState === 2;
@@ -682,7 +692,7 @@ export function Index() {
 
                   {FarmData.contents.map((content: any, index: number) =>
                     index !== 0 ? (
-                      <YieldFarm farmDataLoading={farmDataLoading} content={content} key={content.pid} />
+                      <YieldFarm farmDataLoading={farmDataLoading} content={content} key={content.pid} wallet={wallet}/>
                     ) : null,
                   )}
                 </Box>
@@ -748,7 +758,7 @@ export function Index() {
                   </Flex>
                   {FarmData.contents.map((content: any, index: number) =>
                     index === 0 ? (
-                      <YieldFarm farmDataLoading={farmDataLoading} content={content} key={content.pid} />
+                      <YieldFarm farmDataLoading={farmDataLoading} content={content} key={content.pid} wallet={wallet}/>
                     ) : null,
                   )}
                 </Box>

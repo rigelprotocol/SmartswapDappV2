@@ -169,5 +169,3 @@ export const rigelToken = async (address: string) => {
 
   return rigelTokenInstance;
 };
-
-
