@@ -231,86 +231,147 @@ export function Index() {
         return `${sym0}-${sym1}`
       }
 
-      const RGPprice: number | any = ethers.utils.formatUnits(
-        pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
-        3,
-      )
+      //maticRGP
+      //  console.log(pool1Reserve, pool2Reserve, pool3Reserve, pool4Reserve, pool5Reserve)
 
-      const BNBprice = getBnbPrice(pool3, pool3Reserve)
-      const RGPLiquidity = ethers.utils
-        .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * RGPprice)), 21)
-        .toString()
-      const BUSD_RGPLiquidity = ethers.utils
-        .formatEther(pool1Reserve[0].mul(2))
-        .toString()
-
-      const RGP_BNBLiquidity = ethers.utils
-        .formatUnits(pool2Reserve[0].mul(Math.floor(BNBprice * 1000 * 2)), 21)
-        .toString()
-      const BUSD_BNBLiquidity = getBusdBnbLiquidity(pool3, pool3Reserve)
-
-      const AXS_BUSDLiquidity = getAXSBUSDLiquidity(pool5, pool5Reserve)
-      const AXS_RGPLiquidity = ethers.utils
-        .formatUnits(
-          pool4Reserve[1].mul(Math.floor(Number(RGPprice) * 1000 * 2)),
-          21,
+      if (Number(chainId) === Number(SupportedChainId.POLYGONTEST)) {
+        const MRGPprice: number | any = ethers.utils.formatUnits(
+          pool3Reserve[1].mul(1000).div(pool3Reserve[0]),
+          3,
         )
-        .toString()
+        const getMaticPrice = (): number => {
+          let MaticPrice
+          MaticPrice = ethers.utils.formatUnits(
+            pool5Reserve[0].mul(1000).div(pool5Reserve[1]),
+            3,
+          )
 
-      dispatch(
-        updateTotalLiquidity([
-          {
-            deposit: 'RGP',
-            liquidity: RGPLiquidity,
-            apy: calculateApy(RGPprice, RGPLiquidity, 250),
-          },
-          {
-            deposit: await deposit(pool1.token0, pool1.token1),
-            liquidity: RGP_BNBLiquidity,
-            apy: calculateApy(
-              RGPprice,
-              RGP_BNBLiquidity,
-              chainId !== SupportedChainId.POLYGONTEST ? 953.3333333 : 1116.25,
-            ),
-          },
-          {
-            deposit: await deposit(pool2.token0, pool2.token1),
-            liquidity: BUSD_RGPLiquidity,
-            apy: calculateApy(
-              RGPprice,
-              BUSD_RGPLiquidity,
-              chainId !== SupportedChainId.POLYGONTEST ? 3336.666667 : 781.375,
-            ),
-          },
-          {
-            deposit: await deposit(pool3.token0, pool3.token1),
-            liquidity: BUSD_BNBLiquidity,
-            apy: calculateApy(
-              RGPprice,
-              BUSD_BNBLiquidity,
-              chainId !== SupportedChainId.POLYGONTEST ? 476.6666667 : 781.375,
-            ),
-          },
-          {
-            deposit: await deposit(pool4.token0, pool4.token1),
-            liquidity: AXS_RGPLiquidity,
-            apy: calculateApy(
-              RGPprice,
-              AXS_RGPLiquidity,
-              chainId !== SupportedChainId.POLYGONTEST ? 715 : 334.875,
-            ),
-          },
-          {
-            deposit: await deposit(pool5.token0, pool5.token1),
-            liquidity: AXS_BUSDLiquidity,
-            apy: calculateApy(
-              RGPprice,
-              AXS_BUSDLiquidity,
-              chainId !== SupportedChainId.POLYGONTEST ? 238.3333333 : 334.875,
-            ),
-          },
-        ]),
-      )
+          return Number(MaticPrice)
+        }
+        const MaticPrice = getMaticPrice()
+        const MRGPLiquidity = ethers.utils
+          .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * MRGPprice)), 21)
+          .toString()
+
+        const RGP_WMATICLiquidity = ethers.utils
+          .formatUnits(
+            pool1Reserve[0].mul(Math.floor(MaticPrice * 1000 * 2)),
+            21,
+          )
+          .toString()
+
+        const USDT_RGPLiquidity = ethers.utils
+          .formatEther(pool2Reserve[0].mul(Number(MRGPprice) * 1000 * 2))
+          .toString()
+
+        const RGP_USDCLiquidity = ethers.utils
+          .formatEther(pool3Reserve[1].mul(Number(MRGPprice) * 1000 * 2))
+          .toString()
+
+        const USDT_WMATICLiquidity = ethers.utils
+          .formatEther(pool4Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
+          .toString()
+
+        const WMATIC_USDCLiquidity = ethers.utils
+          .formatEther(pool5Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
+          .toString()
+
+        dispatch(
+          updateTotalLiquidity([
+            {
+              deposit: 'RGP',
+              liquidity: MRGPLiquidity,
+              apy: calculateApy(MRGPprice, MRGPLiquidity, 250),
+            },
+            {
+              deposit: await deposit(pool1.token0, pool1.token1),
+              liquidity: RGP_WMATICLiquidity,
+              apy: calculateApy(MRGPprice, RGP_WMATICLiquidity, 1116.25),
+            },
+            {
+              deposit: await deposit(pool2.token0, pool2.token1),
+              liquidity: USDT_RGPLiquidity,
+              apy: calculateApy(MRGPprice, USDT_RGPLiquidity, 781.375),
+            },
+            {
+              deposit: await deposit(pool3.token0, pool3.token1),
+              liquidity: RGP_USDCLiquidity,
+              apy: calculateApy(MRGPprice, RGP_USDCLiquidity, 781.375),
+            },
+            {
+              deposit: await deposit(pool4.token0, pool4.token1),
+              liquidity: USDT_WMATICLiquidity,
+              apy: calculateApy(MRGPprice, USDT_WMATICLiquidity, 334.875),
+            },
+            {
+              deposit: await deposit(pool5.token0, pool5.token1),
+              liquidity: WMATIC_USDCLiquidity,
+              apy: calculateApy(MRGPprice, WMATIC_USDCLiquidity, 334.875),
+            },
+          ]),
+        )
+      } else {
+        const RGPprice: number | any = ethers.utils.formatUnits(
+          pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
+          3,
+        )
+
+        const BNBprice = getBnbPrice(pool3, pool3Reserve)
+        const RGPLiquidity = ethers.utils
+          .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * RGPprice)), 21)
+          .toString()
+        const BUSD_RGPLiquidity = ethers.utils
+          .formatEther(pool1Reserve[0].mul(2))
+          .toString()
+
+        const RGP_BNBLiquidity = ethers.utils
+          .formatUnits(pool2Reserve[0].mul(Math.floor(BNBprice * 1000 * 2)), 21)
+          .toString()
+        const BUSD_BNBLiquidity = getBusdBnbLiquidity(pool3, pool3Reserve)
+
+        const AXS_BUSDLiquidity = getAXSBUSDLiquidity(pool5, pool5Reserve)
+        const AXS_RGPLiquidity = ethers.utils
+          .formatUnits(
+            pool4Reserve[1].mul(Math.floor(Number(RGPprice) * 1000 * 2)),
+            21,
+          )
+          .toString()
+
+        dispatch(
+          updateTotalLiquidity([
+            {
+              deposit: 'RGP',
+              liquidity: RGPLiquidity,
+              apy: calculateApy(RGPprice, RGPLiquidity, 250),
+            },
+            {
+              deposit: await deposit(pool1.token0, pool1.token1),
+              liquidity: RGP_BNBLiquidity,
+              apy: calculateApy(RGPprice, RGP_BNBLiquidity, 953.3333333),
+            },
+            {
+              deposit: await deposit(pool2.token0, pool2.token1),
+              liquidity: BUSD_RGPLiquidity,
+              apy: calculateApy(RGPprice, BUSD_RGPLiquidity, 3336.666667),
+            },
+            {
+              deposit: await deposit(pool3.token0, pool3.token1),
+              liquidity: BUSD_BNBLiquidity,
+              apy: calculateApy(RGPprice, BUSD_BNBLiquidity, 476.6666667),
+            },
+            {
+              deposit: await deposit(pool4.token0, pool4.token1),
+              liquidity: AXS_RGPLiquidity,
+              apy: calculateApy(RGPprice, AXS_RGPLiquidity, 715),
+            },
+            {
+              deposit: await deposit(pool5.token0, pool5.token1),
+              liquidity: AXS_BUSDLiquidity,
+              apy: calculateApy(RGPprice, AXS_BUSDLiquidity, 238.3333333),
+            },
+          ]),
+        )
+      }
     } catch (error) {
       console.log(error.message)
       setfarmDataLoading(false)

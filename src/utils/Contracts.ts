@@ -181,7 +181,5 @@ export const smartSwapLPTokenV2 = async (address: string) => {
       Provider?.getSigner()
   );
 
-  console.log(smartSwapLPTokenV2Instance)
-
   return smartSwapLPTokenV2Instance;
 };
