@@ -20,10 +20,13 @@ import UnsupportNetwork from '../NetworkConnector/UnsupportNetwork';
 
 
 export default function WalletConnection() {
-  const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
+
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { account, error, activate, connector, chainId } = useWeb3React();
+
+  const [isMobileDevice] = useMediaQuery('(max-width: 1200px)');
+
   const bg = useColorModeValue('#FFFFFF', '#15202B');
   const bgColor = useColorModeValue('lightBg.100', 'darkBg.100');
   const bgColor2 = useColorModeValue('lightBg.200', 'darkBg.100');
@@ -63,6 +66,7 @@ export default function WalletConnection() {
           display={isMobileDevice ? 'none' : undefined}
           variant="rgpButton"
           bg={bgColor}
+          fontSize="14px"
         >
           {RGPBalance} {RGPBalance ? 'RGP' : '0.0000 RGP'}
         </Button>
@@ -82,13 +86,14 @@ export default function WalletConnection() {
             bg={bgColor2}
             px={2}
           >
-            <Text fontWeight={'bold'}>
+            <Text fontWeight={'bold'} fontSize="14px">
               {Balance} {Symbol}
             </Text>
           </Flex>
           <Button
             onClick={() => setDisplayWallet((state) => !state)}
             variant={'ghost'}
+            fontSize="14px"
             rightIcon={<StatusIcon connector={connector} />}
           >
             {shortenAddress(account)}

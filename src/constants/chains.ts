@@ -86,7 +86,7 @@ export const CHAIN_INFO: ChainInfo = {
     docs: '',
     explorer: 'https://testnet.bscscan.com/',
     infoLink: '',
-    label: 'Binance Testnet',
+    label: 'BSC Testnet',
     nativeCurrency: { name: 'Binance', symbol: 'tBNB', decimals: 18 },
   },
   [SupportedChainId.POLYGON]: {
