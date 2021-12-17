@@ -15,6 +15,7 @@ import { useColorModeValue } from '@chakra-ui/react';
 import { CHAIN_INFO } from '../../constants/chains';
 import { provider, switchNetwork } from '../../utils/utilsFunctions';
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
+import { useWeb3React } from '@web3-react/core';
 
 
 interface uProps {
@@ -27,15 +28,10 @@ function UnsupportNetwork({ openModal, setDisplayModal }: uProps) {
     const mode = useColorModeValue('light', 'dark')
     const buttonBgColor = useColorModeValue('#EBF6FE', '#213345');
     const textColor = useColorModeValue('#319EF6', '#4CAFFF');
-    const { chainId, library, account } = useActiveWeb3React();
+    const { chainId, account } = useActiveWeb3React();
+    const { library } = useWeb3React()
+
     const info = chainId ? CHAIN_INFO[chainId] : undefined;
-
-    async function getProvider() {
-        let provid = await provider()
-        return provid
-    }
-
-
 
     return (
         <>
@@ -66,7 +62,7 @@ function UnsupportNetwork({ openModal, setDisplayModal }: uProps) {
                                 color={mode === 'dark' ? '#F1F5F8' : '#333333'}
                                 mb={3}
                             >
-                                Please connect to the {library}
+                                Please switch your wallet
                             </Text>
                         </Flex>
                         <Flex

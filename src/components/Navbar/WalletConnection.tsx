@@ -55,7 +55,7 @@ export default function WalletConnection() {
   const isSupportedNetwork = (chainId: any) =>
     supportedNetworks.includes(chainId);
 
-
+  console.log("CHAIN ID IS ", chainId)
   if (account) {
     return (
       <>
@@ -101,10 +101,10 @@ export default function WalletConnection() {
         />
       </>
     );
-  } else if (!isSupportedNetwork(chainId)) {
+  }
+  if (!isSupportedNetwork(chainId)) {
     return (
       <>
-
         <Button
           variant="brand"
           border="none"
@@ -112,11 +112,6 @@ export default function WalletConnection() {
           fontSize="md"
           rounded="xl"
           cursor="pointer"
-          bg="rgba(64, 186, 213,0.25)"
-          color="#40BAD5"
-          _hover={{ background: 'rgba(64, 186, 213,0.35)' }}
-          _active={{ outline: '#29235E' }}
-          _expanded={{ bg: '#29235E' }}
           onClick={() => setDisplayModal(state => !state)}
         >
           Unsupported Network
@@ -126,25 +121,17 @@ export default function WalletConnection() {
 
     )
   }
-
-  else if (error) {
-    return (
-      <Button bg="red.300" rightIcon={<IoWalletOutline />} variant="brand">
-        {error instanceof UnsupportedChainIdError ? 'Wrong Network' : 'Error'}
+  return (
+    <>
+      <Button
+        onClick={() => setDisplayNetwork(state => !state)}
+        rightIcon={<IoWalletOutline />}
+        variant="brand"
+      >
+        Connect Wallet
       </Button>
-    );
-  } else {
-    return (
-      <>
-        <Button
-          onClick={() => setDisplayNetwork(state => !state)}
-          rightIcon={<IoWalletOutline />}
-          variant="brand"
-        >
-          Connect Wallet
-        </Button>
-        <NetworkModal displayNetwork={displayNetwork} setDisplayNetwork={setDisplayNetwork} />
-      </>
-    );
-  }
+      <NetworkModal displayNetwork={displayNetwork} setDisplayNetwork={setDisplayNetwork} />
+    </>
+  );
 }
+
