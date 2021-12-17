@@ -5,6 +5,7 @@ import {
   Button,
   useColorModeValue,
   useMediaQuery,
+  useDisclosure
 } from '@chakra-ui/react';
 import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core';
 import { IoWalletOutline } from 'react-icons/io5';
@@ -13,11 +14,16 @@ import WalletModal from './modals/walletModal';
 import NetworkModal from "./modals/networkModal";
 import { useNativeBalance, useRGPBalance } from '../../utils/hooks/useBalances';
 import StatusIcon from './StatusIcon';
+import UnsupportNetwork from '../NetworkConnector/UnsupportNetwork';
+
+
 
 
 export default function WalletConnection() {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
-  const { account, error, activate, connector } = useWeb3React();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { account, error, activate, connector, chainId } = useWeb3React();
   const bg = useColorModeValue('#FFFFFF', '#15202B');
   const bgColor = useColorModeValue('lightBg.100', 'darkBg.100');
   const bgColor2 = useColorModeValue('lightBg.200', 'darkBg.100');
@@ -32,8 +38,22 @@ export default function WalletConnection() {
   const [displayWallet, setDisplayWallet] = useState(false);
   const [displayNetwork, setDisplayNetwork] = useState(false);
   const [RGPBalance] = useRGPBalance();
+  const [modalDisplay, setDisplayModal] = useState(false)
+
+  const supportedNetworks = [1,
+    3,
+    4,
+    5,
+    6,
+    137,
+    56,
+    97,
+    80001]
 
 
+
+  const isSupportedNetwork = (chainId: any) =>
+    supportedNetworks.includes(chainId);
 
 
   if (account) {
@@ -81,7 +101,33 @@ export default function WalletConnection() {
         />
       </>
     );
-  } else if (error) {
+  } else if (!isSupportedNetwork(chainId)) {
+    return (
+      <>
+
+        <Button
+          variant="brand"
+          border="none"
+          fontWeight="regular"
+          fontSize="md"
+          rounded="xl"
+          cursor="pointer"
+          bg="rgba(64, 186, 213,0.25)"
+          color="#40BAD5"
+          _hover={{ background: 'rgba(64, 186, 213,0.35)' }}
+          _active={{ outline: '#29235E' }}
+          _expanded={{ bg: '#29235E' }}
+          onClick={() => setDisplayModal(state => !state)}
+        >
+          Unsupported Network
+        </Button>
+
+        <UnsupportNetwork openModal={modalDisplay} setDisplayModal={setDisplayModal} /></>
+
+    )
+  }
+
+  else if (error) {
     return (
       <Button bg="red.300" rightIcon={<IoWalletOutline />} variant="brand">
         {error instanceof UnsupportedChainIdError ? 'Wrong Network' : 'Error'}
@@ -91,7 +137,7 @@ export default function WalletConnection() {
     return (
       <>
         <Button
-          onClick={() =>setDisplayNetwork(state => !state)}
+          onClick={() => setDisplayNetwork(state => !state)}
           rightIcon={<IoWalletOutline />}
           variant="brand"
         >

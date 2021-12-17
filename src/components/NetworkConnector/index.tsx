@@ -77,7 +77,7 @@ function NetworkIndicator() {
                 color={mode === 'dark' ? '#F1F5F8' : '#333333'}
                 mb={3}
               >
-                You are currently on the{' '}
+                You are  currently on the{' '}
                 <span style={{ color: '#319EF6' }}>
                   {info.nativeCurrency.name}
                 </span>{' '}
