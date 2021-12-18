@@ -15,7 +15,7 @@ import {
 import { useHistory } from 'react-router-dom'
 import { useColorModeValue } from '@chakra-ui/react'
 import YieldFarm from './YieldFarm'
-import { contents } from './mock'
+// import { contents } from './mock'
 import { AlertSvg } from './Icon'
 import { useWeb3React } from '@web3-react/core'
 import { useRouteMatch } from 'react-router-dom'
@@ -78,7 +78,7 @@ export function Index() {
   const [farmDataLoading, setfarmDataLoading] = useState(false)
   const [initialLoad, setInitialLoad] = useState(false)
   //const { data: farmsLP } = useFarms()
-  const [farms, setFarms] = useState(contents);
+  // const [farms, setFarms] = useState(contents);
   const { account, chainId, library } = useWeb3React();
   const dispatch = useDispatch();
   let match = useRouteMatch('/farming-V2/staking-RGP');
@@ -381,22 +381,22 @@ export function Index() {
     setfarmDataLoading(false)
   }
 
-  const specialPoolStaked = async () => {
-    if (account) {
-      try {
-        const specialPool = await RGPSpecialPool(
-          RGPADDRESSES[chainId as number],
-        )
-        const RGPStakedEarned = await Promise.all([
-          specialPool.userData(account),
-          specialPool.calculateRewards(account),
-        ])
-        return RGPStakedEarned
-      } catch (error) {
-        return error
-      }
-    }
-  }
+  // const specialPoolStaked = async () => {
+  //   if (account) {
+  //     try {
+  //       const specialPool = await RGPSpecialPool(
+  //         RGPADDRESSES[chainId as number],
+  //       )
+  //       const RGPStakedEarned = await Promise.all([
+  //         specialPool.userData(account),
+  //         specialPool.calculateRewards(account),
+  //       ])
+  //       return RGPStakedEarned
+  //     } catch (error) {
+  //       return error
+  //     }
+  //   }
+  // }
   const getTokenStaked = async () => {
     try {
       if (account) {

@@ -24,7 +24,8 @@ const YieldFarm = ({
     poolAllowance: any
     RGPEarned: string
 
-  }, farmDataLoading: boolean
+  }, farmDataLoading: boolean,
+  wallet: any
 }) => {
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
   const { account, chainId, library } = useWeb3React();
