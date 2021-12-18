@@ -46,6 +46,7 @@ import { GetAddressTokenBalance } from '../../../../state/wallet/hooks';
 import NewToken from '../../../../components/Tokens/newToken';
 import { SupportedChainId } from '../../../../constants/chains';
 import { SMARTSWAPFACTORYADDRESSES } from '../../../../utils/addresses';
+import { useCalculatePriceImpact } from '../../../../hooks/usePriceImpact';
 
 const SendToken = () => {
   const history = useHistory();
@@ -93,7 +94,8 @@ const SendToken = () => {
 
   const [showModal, setShowModal] = useState(false);
 
-  const { onCurrencySelection, onUserInput } = useSwapActionHandlers();
+  const { onCurrencySelection, onUserInput, onSwitchTokens } =
+    useSwapActionHandlers();
   const {
     currencies,
     getMaxValue,
@@ -131,7 +133,7 @@ const SendToken = () => {
   );
 
   const { chainId, account } = useActiveWeb3React();
-  const [priceImpact, setPriceImpact] = useState(0);
+  // const [priceImpact, setPriceImpact] = useState(0);
 
   const handleMaxInput = async () => {
     const value = await getMaxValue(currencies[Field.INPUT]);
@@ -216,6 +218,12 @@ const SendToken = () => {
       checkApproval();
     }
   }, [inputError]);
+
+  const { priceImpact } = useCalculatePriceImpact(
+    pathArray,
+    parseFloat(receivedAmount),
+    fromAmount
+  );
 
   const approveSwap = async () => {
     if (currencies[Field.INPUT]?.isNative) {
@@ -683,13 +691,10 @@ const SendToken = () => {
   // }, [fromAddress, toAddress, path]);
 
   const calculatePriceImpact = async () => {
-    
-     
-       
     if (routeAddress.length === 2) {
       try {
-          const SwapRouter = await SmartSwapRouter(
-          SMARTSWAPROUTER[chainId as number ?? 56]
+        const SwapRouter = await SmartSwapRouter(
+          SMARTSWAPROUTER[(chainId as number) ?? 56]
         );
         const price = await SwapRouter.getAmountsOut(
           '1000000000000000000',
@@ -702,15 +707,21 @@ const SendToken = () => {
         setPriceImpact(parseFloat(priceImpact).toFixed(2));
       } catch (e) {
         setPriceImpact(0);
-      
       }
-         }
-   
-
+    }
   };
   useEffect(async () => {
     calculatePriceImpact();
-  }, [fromAmount, receivedAmount,chainId]);
+  }, [fromAmount, receivedAmount, chainId]);
+
+  const [isLoadingValue, setIsLoadingValue] = useState(false);
+  useEffect(() =>{
+    if (formattedAmounts[Field.INPUT] && !formattedAmounts[Field.OUTPUT]){
+      setIsLoadingValue(true);
+    }else{
+      setIsLoadingValue(false);
+    }
+  }, [formattedAmounts[Field.OUTPUT]]);
 
   return (
     <div>
@@ -736,7 +747,7 @@ const SendToken = () => {
           onMax={handleMaxInput}
           value={formattedAmounts[Field.INPUT]}
         />
-        <Flex justifyContent="center">
+        <Flex justifyContent="center" onClick={onSwitchTokens}>
           <SwitchIcon />
         </Flex>
         <To
@@ -789,7 +800,26 @@ const SendToken = () => {
             >
               Approve Transaction
             </Button>
-          ) : (
+          ) : isLoadingValue ? (
+            <Button
+              w="100%"
+              borderRadius="6px"
+              border={lightmode ? '2px' : 'none'}
+              borderColor={borderColor}
+              h="48px"
+              p="5px"
+              mt={1}
+              disabled={true}
+              bgColor={inputError ? switchBgcolor : buttonBgcolor}
+              fontSize="18px"
+              boxShadow={lightmode ? 'base' : 'lg'}
+              _hover={{ bgColor: buttonBgcolor }}
+            >
+              {inputError
+                ? inputError
+                : `Loading...`}
+            </Button>
+          ):(
             <Button
               w="100%"
               borderRadius="6px"

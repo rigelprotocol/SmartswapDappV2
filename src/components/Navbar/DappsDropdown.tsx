@@ -30,6 +30,7 @@ function DappsDropdown() {
             _focus={{ boxShadow: 'outline' }}
             rightIcon={<ChevronDownIcon />}
             leftIcon={<AiOutlineAppstore />}
+            fontSize="14px"
           >
             DApps
           </MenuButton>

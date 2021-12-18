@@ -20,16 +20,16 @@ import { AlertSvg } from './Icon'
 import { useWeb3React } from '@web3-react/core'
 import { useRouteMatch } from 'react-router-dom'
 
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import bigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
-import { updateTokenStaked, updateTotalLiquidity } from '../../state/farm/actions'
+import { updateFarmBalances, updateTokenStaked, updateTotalLiquidity } from '../../state/farm/actions'
 import { useFarms } from '../../state/farm/hooks'
-import { MasterChefV2Contract, smartSwapLPTokenPoolOne, smartSwapLPTokenPoolThree, smartSwapLPTokenPoolTwo, smartSwapLPTokenV2PoolFive, smartSwapLPTokenV2PoolFour, RGPSpecialPool } from '../../utils/Contracts'
-import { RGPADDRESSES, RGPSPECIALPOOLADDRESSES, MASTERCHEFV2ADDRESSES, SMARTSWAPLP_TOKEN1ADDRESSES, SMARTSWAPLP_TOKEN2ADDRESSES, SMARTSWAPLP_TOKEN3ADDRESSES, SMARTSWAPLP_TOKEN4ADDRESSES, SMARTSWAPLP_TOKEN5ADDRESSES } from '../../utils/addresses'
+import { MasterChefV2Contract, smartSwapLPTokenPoolOne, smartSwapLPTokenPoolThree, smartSwapLPTokenPoolTwo, smartSwapLPTokenV2PoolFive, smartSwapLPTokenV2PoolFour, RGPSpecialPool, rigelToken } from '../../utils/Contracts'
+import { RGPADDRESSES, RGPSPECIALPOOLADDRESSES, MASTERCHEFV2ADDRESSES, SMARTSWAPLP_TOKEN1ADDRESSES, SMARTSWAPLP_TOKEN2ADDRESSES, SMARTSWAPLP_TOKEN3ADDRESSES, SMARTSWAPLP_TOKEN4ADDRESSES, SMARTSWAPLP_TOKEN5ADDRESSES, RGP } from '../../utils/addresses'
 import { formatBigNumber } from '../../utils'
 import {RootState} from "../../state";
-
+import { useNativeBalance, useRGPBalance } from '../../utils/hooks/useBalances';
 
 export const BIG_TEN = new bigNumber(10);
 
@@ -59,14 +59,25 @@ export function Index() {
   const dispatch = useDispatch();
   let match = useRouteMatch('/farming-V2/staking-RGP');
   const FarmData = useFarms();
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const [Balance, Symbol] = useNativeBalance();
+  const wallet = {
+      balance: Balance,
+      address: account,
+      provider: provider,
+      signer: signer,
+      chainId: chainId,
+  }
 
   const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
-  const stateChanged : boolean = trxState === 2;
+  const stateChanged: boolean = trxState === 2;
 
   //temporary
   useEffect(() => {
     getFarmData();
     getTokenStaked()
+    getFarmTokenBalance()
   }, [account, chainId, stateChanged]);
 
 
@@ -100,7 +111,54 @@ export function Index() {
 
   const handleAlert = () => {
     setShowAlert(false)
+  }
+
+  const getFarmTokenBalance = async () => {
+    if (account) {
+      try {
+        const [RGPToken, poolOne, poolTwo, poolThree, poolFour, poolFive] = await Promise.all([
+          rigelToken(RGP[chainId as number]),
+          smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]),
+          smartSwapLPTokenPoolTwo(SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number]),
+          smartSwapLPTokenPoolThree(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number]),
+          smartSwapLPTokenV2PoolFour(SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number]),
+          smartSwapLPTokenV2PoolFive(SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number]),
+
+
+        ]);
+
+        const [
+          RGPbalance,
+          poolOneBalance,
+          poolTwoBalance,
+          poolThreeBalance,
+          poolFourBalance,
+          poolFiveBalance,
+        ] = await Promise.all([
+          RGPToken.balanceOf(account),
+          poolOne.balanceOf(account),
+          poolTwo.balanceOf(account),
+          poolThree.balanceOf(account),
+          poolFour.balanceOf(account),
+          poolFive.balanceOf(account),
+        ]);
+
+        dispatch(updateFarmBalances([
+          formatBigNumber(RGPbalance),
+          formatBigNumber(poolTwoBalance),
+          formatBigNumber(poolOneBalance),
+          formatBigNumber(poolThreeBalance),
+          formatBigNumber(poolFourBalance),
+          formatBigNumber(poolFiveBalance),
+
+        ]))
+
+      } catch (error) {
+        console.error(error);
+      }
+    }
   };
+
   const getFarmData = async () => {
     setfarmDataLoading(true);
 
@@ -634,7 +692,7 @@ export function Index() {
 
                   {FarmData.contents.map((content: any, index: number) =>
                     index !== 0 ? (
-                      <YieldFarm farmDataLoading={farmDataLoading} content={content} key={content.pid} />
+                      <YieldFarm farmDataLoading={farmDataLoading} content={content} key={content.pid} wallet={wallet}/>
                     ) : null,
                   )}
                 </Box>
@@ -700,7 +758,7 @@ export function Index() {
                   </Flex>
                   {FarmData.contents.map((content: any, index: number) =>
                     index === 0 ? (
-                      <YieldFarm farmDataLoading={farmDataLoading} content={content} key={content.pid} />
+                      <YieldFarm farmDataLoading={farmDataLoading} content={content} key={content.pid} wallet={wallet}/>
                     ) : null,
                   )}
                 </Box>
