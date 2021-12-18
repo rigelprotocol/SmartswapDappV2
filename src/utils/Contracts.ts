@@ -11,6 +11,9 @@ import SmartSwapLPTokenABI1 from './abis/LPToken1.json'
 import SmartSwapLPTokenABI2 from './abis/LPToken2.json'
 import SmartSwapLPTokenABI3 from './abis/SmartSwapLPTokenThree.json'
 import RigelToken from './abis/RigelToken.json'
+import SmartSwapLPTokenABI from './abis/testnet/LPTokenContract.json'
+
+
 
 export const smartFactory = async (address: string) => {
   const Provider = await provider();
@@ -168,4 +171,15 @@ export const rigelToken = async (address: string) => {
   );
 
   return rigelTokenInstance;
+};
+
+export const smartSwapLPTokenV2 = async (address: string) => {
+  const Provider = await provider();
+  const smartSwapLPTokenV2Instance = new Contract(
+      address,
+      SmartSwapLPTokenABI3,
+      Provider?.getSigner()
+  );
+
+  return smartSwapLPTokenV2Instance;
 };
