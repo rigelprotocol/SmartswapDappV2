@@ -1,6 +1,6 @@
 import BNBLOGO from '../../assets/BNB.svg';
 import ETHLOGO from '../../assets/eth.svg';
-import NULL24LOGO from '../../assets/Null-24.svg';
+import MATICLOGO from '../../assets/Matic.svg';
 export const SupportedChainSymbols: { [key: string]: string } = {
   '1': 'ETH',
   '3': 'ETH',
@@ -27,8 +27,8 @@ export const SupportedChainLogo: { [key: string]: string } = {
   '4': ETHLOGO,
   '56': BNBLOGO,
   '97': BNBLOGO,
-  '137': NULL24LOGO,
-  '80001': NULL24LOGO,
+  '137': MATICLOGO,
+  '80001': MATICLOGO,
 };
 
 export const WrappedSymbols: { [key: string]: string } = {
