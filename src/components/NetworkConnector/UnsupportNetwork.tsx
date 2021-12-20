@@ -13,10 +13,8 @@ import React, { useState, useEffect } from 'react';
 import { BinanceIcon, EthereumIcon } from './Icons';
 import { useColorModeValue } from '@chakra-ui/react';
 import { CHAIN_INFO } from '../../constants/chains';
-import { provider, switchNetwork } from '../../utils/utilsFunctions';
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
-import { useWeb3React } from '@web3-react/core';
-
+import detectEthereumProvider from '@metamask/detect-provider';
 
 interface uProps {
     openModal: boolean
@@ -24,14 +22,36 @@ interface uProps {
 }
 
 
+
 function UnsupportNetwork({ openModal, setDisplayModal }: uProps) {
     const mode = useColorModeValue('light', 'dark')
     const buttonBgColor = useColorModeValue('#EBF6FE', '#213345');
     const textColor = useColorModeValue('#319EF6', '#4CAFFF');
-    const { chainId, account } = useActiveWeb3React();
-    const { library } = useWeb3React()
 
-    const info = chainId ? CHAIN_INFO[chainId] : undefined;
+
+    const checkMetamask = () => {
+        const provider = detectEthereumProvider();
+        return !!provider;
+    };
+
+
+    const switchToSupportedNetwrk = async (chain: string) => {
+        if (checkMetamask()) {
+            try {
+                await window.ethereum?.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: chain }],
+                });
+            } catch (switchError) {
+                console.log(switchError)
+                // This error code indicates that the chain has not been added to MetaMask.
+                //  if (switchError.code === 4902) {
+                // addBSCToMetamask();
+                //  }
+                // handle other  errors codes
+            }
+        }
+    };
 
     return (
         <>
@@ -77,7 +97,8 @@ function UnsupportNetwork({ openModal, setDisplayModal }: uProps) {
                             cursor="pointer"
                             onClick={() => {
                                 setDisplayModal(false)
-                                switchNetwork('0x1', account as string, library);
+                                switchToSupportedNetwrk('0x1')
+                                // switchNetwork('0x1', account as string, library as Web3Provider);
                             }}
                         >
                             <Box px={2}>
@@ -97,7 +118,8 @@ function UnsupportNetwork({ openModal, setDisplayModal }: uProps) {
                             cursor="pointer"
                             onClick={() => {
                                 setDisplayModal(false)
-                                switchNetwork('0x38', account as string, library);
+                                switchToSupportedNetwrk('0x38')
+                                // switchNetwork('0x38', account as string, library as Web3Provider);
                             }}
                         >
                             <Box px={2}>
@@ -117,7 +139,8 @@ function UnsupportNetwork({ openModal, setDisplayModal }: uProps) {
                             cursor="pointer"
                             onClick={() => {
                                 setDisplayModal(false)
-                                switchNetwork('0x89', account as string, library);
+                                switchToSupportedNetwrk('0x89')
+                                // switchNetwork('0x89', account as string, library as Web3Provider);
                             }}
                         >
                             <Box px={2}>

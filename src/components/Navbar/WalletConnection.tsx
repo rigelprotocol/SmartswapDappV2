@@ -15,6 +15,7 @@ import NetworkModal from "./modals/networkModal";
 import { useNativeBalance, useRGPBalance } from '../../utils/hooks/useBalances';
 import StatusIcon from './StatusIcon';
 import UnsupportNetwork from '../NetworkConnector/UnsupportNetwork';
+import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
 
 
 
@@ -24,6 +25,7 @@ export default function WalletConnection() {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { account, error, activate, connector, chainId } = useWeb3React();
+  const { library } = useActiveWeb3React()
   const bg = useColorModeValue('#FFFFFF', '#15202B');
   const bgColor = useColorModeValue('lightBg.100', 'darkBg.100');
   const bgColor2 = useColorModeValue('lightBg.200', 'darkBg.100');
@@ -50,12 +52,9 @@ export default function WalletConnection() {
     97,
     80001]
 
-
-
   const isSupportedNetwork = (chainId: any) =>
     supportedNetworks.includes(chainId);
 
-  console.log("CHAIN ID IS ", chainId)
   if (account) {
     return (
       <>
