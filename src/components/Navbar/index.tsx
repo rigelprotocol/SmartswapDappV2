@@ -91,6 +91,7 @@ const Index = () => {
               h="10"
               align="center"
               justify="space-around"
+              fontSize="14px"
             >
               <SwapDropdown />
               <Nav label="Liquidity" to="/pool" />

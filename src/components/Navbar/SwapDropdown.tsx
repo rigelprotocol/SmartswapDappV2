@@ -30,6 +30,7 @@ function SwapDropdown() {
         rightIcon={<ChevronDownIcon />}
         fontWeight={200}
         _focus={{color: "#319EF6"}}
+        fontSize="14px"
       >
         Swap
       </MenuButton>
