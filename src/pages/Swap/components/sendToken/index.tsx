@@ -46,6 +46,7 @@ import { GetAddressTokenBalance } from '../../../../state/wallet/hooks';
 import NewToken from '../../../../components/Tokens/newToken';
 import { SupportedChainId } from '../../../../constants/chains';
 import { SMARTSWAPFACTORYADDRESSES } from '../../../../utils/addresses';
+import { useCalculatePriceImpact } from '../../../../hooks/usePriceImpact';
 
 const SendToken = () => {
   const history = useHistory();
@@ -93,7 +94,8 @@ const SendToken = () => {
 
   const [showModal, setShowModal] = useState(false);
 
-  const { onCurrencySelection, onUserInput, onSwitchTokens } = useSwapActionHandlers();
+  const { onCurrencySelection, onUserInput, onSwitchTokens } =
+    useSwapActionHandlers();
   const {
     currencies,
     getMaxValue,
@@ -118,20 +120,20 @@ const SendToken = () => {
     () =>
       showWrap
         ? {
-          [Field.INPUT]: typedValue,
-          [Field.OUTPUT]: typedValue,
-        }
+            [Field.INPUT]: typedValue,
+            [Field.OUTPUT]: typedValue,
+          }
         : {
-          [Field.INPUT]:
-            independentField === Field.INPUT ? parsedAmount : bestTrade,
-          [Field.OUTPUT]:
-            independentField === Field.OUTPUT ? parsedAmount : bestTrade,
-        },
+            [Field.INPUT]:
+              independentField === Field.INPUT ? parsedAmount : bestTrade,
+            [Field.OUTPUT]:
+              independentField === Field.OUTPUT ? parsedAmount : bestTrade,
+          },
     [independentField, parsedAmount, showWrap, bestTrade]
   );
 
   const { chainId, account } = useActiveWeb3React();
-  const [priceImpact, setPriceImpact] = useState(0);
+  // const [priceImpact, setPriceImpact] = useState(0);
 
   const handleMaxInput = async () => {
     const value = await getMaxValue(currencies[Field.INPUT]);
@@ -217,6 +219,12 @@ const SendToken = () => {
     }
   }, [inputError]);
 
+  const { priceImpact } = useCalculatePriceImpact(
+    pathArray,
+    parseFloat(receivedAmount),
+    fromAmount
+  );
+
   const approveSwap = async () => {
     if (currencies[Field.INPUT]?.isNative) {
       return setHasBeenApproved(true);
@@ -282,9 +290,11 @@ const SendToken = () => {
       setSendingTrx(true);
       dispatch(
         setOpenModal({
-          message: `Swapping ${formattedAmounts[Field.INPUT]} ${currencies[Field.INPUT]?.symbol
-            } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol
-            }`,
+          message: `Swapping ${formattedAmounts[Field.INPUT]} ${
+            currencies[Field.INPUT]?.symbol
+          } for ${formattedAmounts[Field.OUTPUT]} ${
+            currencies[Field.OUTPUT]?.symbol
+          }`,
           trxState: TrxState.WaitingForConfirmation,
         })
       );
@@ -329,8 +339,9 @@ const SendToken = () => {
         );
         dispatch(
           addToast({
-            message: `Swap ${inputAmount} ${currencies[Field.INPUT]?.symbol
-              } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${inputAmount} ${
+              currencies[Field.INPUT]?.symbol
+            } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
@@ -359,8 +370,9 @@ const SendToken = () => {
       setSendingTrx(true);
       dispatch(
         setOpenModal({
-          message: `Swapping ${formattedAmounts[Field.INPUT]} BNB for ${formattedAmounts[Field.OUTPUT]
-            } ${currencies[Field.OUTPUT]?.symbol}`,
+          message: `Swapping ${formattedAmounts[Field.INPUT]} BNB for ${
+            formattedAmounts[Field.OUTPUT]
+          } ${currencies[Field.OUTPUT]?.symbol}`,
           trxState: TrxState.WaitingForConfirmation,
         })
       );
@@ -406,9 +418,11 @@ const SendToken = () => {
         );
         dispatch(
           addToast({
-            message: `Swap ${inputAmountForDisplay} ${currencies[Field.INPUT]?.symbol
-              } for ${outputAmountForDisplay} ${currencies[Field.OUTPUT]?.symbol
-              }`,
+            message: `Swap ${inputAmountForDisplay} ${
+              currencies[Field.INPUT]?.symbol
+            } for ${outputAmountForDisplay} ${
+              currencies[Field.OUTPUT]?.symbol
+            }`,
             URL: explorerLink,
           })
         );
@@ -437,8 +451,9 @@ const SendToken = () => {
       setSendingTrx(true);
       dispatch(
         setOpenModal({
-          message: `Swapping ${formattedAmounts[Field.INPUT]} ${currencies[Field.INPUT]?.symbol
-            } for ${formattedAmounts[Field.OUTPUT]} BNB`,
+          message: `Swapping ${formattedAmounts[Field.INPUT]} ${
+            currencies[Field.INPUT]?.symbol
+          } for ${formattedAmounts[Field.OUTPUT]} BNB`,
           trxState: TrxState.WaitingForConfirmation,
         })
       );
@@ -473,15 +488,17 @@ const SendToken = () => {
         );
         dispatch(
           setOpenModal({
-            message: `Swap tokens for ${currencies[Field.OUTPUT]?.symbol
-              } Successful.`,
+            message: `Swap tokens for ${
+              currencies[Field.OUTPUT]?.symbol
+            } Successful.`,
             trxState: TrxState.TransactionSuccessful,
           })
         );
         dispatch(
           addToast({
-            message: `Swap ${inputAmount} ${currencies[Field.INPUT]?.symbol
-              } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${inputAmount} ${
+              currencies[Field.INPUT]?.symbol
+            } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
@@ -534,8 +551,9 @@ const SendToken = () => {
         );
         dispatch(
           addToast({
-            message: `Swap ${typedValue} ${currencies[Field.INPUT]?.symbol
-              } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${typedValue} ${
+              currencies[Field.INPUT]?.symbol
+            } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
@@ -586,8 +604,9 @@ const SendToken = () => {
         );
         dispatch(
           addToast({
-            message: `Swap ${typedValue} ${currencies[Field.INPUT]?.symbol
-              } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${typedValue} ${
+              currencies[Field.INPUT]?.symbol
+            } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
@@ -672,13 +691,10 @@ const SendToken = () => {
   // }, [fromAddress, toAddress, path]);
 
   const calculatePriceImpact = async () => {
-
-
-
     if (routeAddress.length === 2) {
       try {
         const SwapRouter = await SmartSwapRouter(
-          SMARTSWAPROUTER[chainId as number ?? 56]
+          SMARTSWAPROUTER[(chainId as number) ?? 56]
         );
         const price = await SwapRouter.getAmountsOut(
           '1000000000000000000',
@@ -691,15 +707,21 @@ const SendToken = () => {
         setPriceImpact(parseFloat(priceImpact).toFixed(2));
       } catch (e) {
         setPriceImpact(0);
-
       }
     }
-
-
   };
   useEffect(async () => {
     calculatePriceImpact();
   }, [fromAmount, receivedAmount, chainId]);
+
+  const [isLoadingValue, setIsLoadingValue] = useState(false);
+  useEffect(() =>{
+    if (formattedAmounts[Field.INPUT] && !formattedAmounts[Field.OUTPUT]){
+      setIsLoadingValue(true);
+    }else{
+      setIsLoadingValue(false);
+    }
+  }, [formattedAmounts[Field.OUTPUT]]);
 
   return (
     <div>
@@ -725,7 +747,7 @@ const SendToken = () => {
           onMax={handleMaxInput}
           value={formattedAmounts[Field.INPUT]}
         />
-        <Flex justifyContent="center" onClick={onSwitchTokens} >
+        <Flex justifyContent="center" onClick={onSwitchTokens}>
           <SwitchIcon />
         </Flex>
         <To
@@ -778,7 +800,26 @@ const SendToken = () => {
             >
               Approve Transaction
             </Button>
-          ) : (
+          ) : isLoadingValue ? (
+            <Button
+              w="100%"
+              borderRadius="6px"
+              border={lightmode ? '2px' : 'none'}
+              borderColor={borderColor}
+              h="48px"
+              p="5px"
+              mt={1}
+              disabled={true}
+              bgColor={inputError ? switchBgcolor : buttonBgcolor}
+              fontSize="18px"
+              boxShadow={lightmode ? 'base' : 'lg'}
+              _hover={{ bgColor: buttonBgcolor }}
+            >
+              {inputError
+                ? inputError
+                : `Loading...`}
+            </Button>
+          ):(
             <Button
               w="100%"
               borderRadius="6px"

@@ -7,7 +7,9 @@ import { LIGHT_THEME, DARK_THEME } from "./index";
 import { useWeb3React } from "@web3-react/core";
 import { useFarms } from "../../state/farm/hooks";
 const YieldFarm = ({
-  content, farmDataLoading
+  content,
+  farmDataLoading,
+  wallet,
 }: {
   content: {
     pid: number;
@@ -22,7 +24,8 @@ const YieldFarm = ({
     poolAllowance: any
     RGPEarned: string
 
-  }, farmDataLoading: boolean
+  }, farmDataLoading: boolean,
+  wallet: any
 }) => {
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
   const { account, chainId, library } = useWeb3React();
@@ -226,7 +229,7 @@ const YieldFarm = ({
           )}
         </Box>
       </Flex>
-      {showYieldfarm && <ShowYieldFarmDetails content={content} />}
+      {showYieldfarm && <ShowYieldFarmDetails content={content} wallet={wallet}/>}
     </>
   );
 };

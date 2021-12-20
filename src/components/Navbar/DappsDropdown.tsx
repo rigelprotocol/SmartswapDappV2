@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Menu,
   MenuButton,
@@ -6,13 +6,16 @@ import {
   MenuDivider,
   MenuList,
   Button,
+  Badge,
+  Text,
+  Spacer,
   IconButton,
   Link,
   Icon,
   useMediaQuery,
-} from '@chakra-ui/react';
-import { ChevronDownIcon } from '@chakra-ui/icons';
-import { AiOutlineAppstore } from 'react-icons/ai';
+} from "@chakra-ui/react";
+import { ChevronDownIcon, ExternalLinkIcon } from "@chakra-ui/icons";
+import { AiOutlineAppstore } from "react-icons/ai";
 
 function DappsDropdown() {
   return (
@@ -26,8 +29,8 @@ function DappsDropdown() {
             transition="all 0.2s"
             borderRadius="md"
             borderWidth="1px"
-            _hover={{ bg: 'gray.100' }}
-            _focus={{ boxShadow: 'outline' }}
+            _hover={{ bg: "gray.100" }}
+            _focus={{ boxShadow: "outline" }}
             rightIcon={<ChevronDownIcon />}
             leftIcon={<AiOutlineAppstore />}
             fontSize="14px"
@@ -35,11 +38,30 @@ function DappsDropdown() {
             DApps
           </MenuButton>
           <MenuList>
-            <MenuItem>GiftDapp</MenuItem>
-            <MenuItem>Smart Bid</MenuItem>
+            <MenuItem>
+              <Link href="https://gift.rigelprotocol.com/" isExternal>
+                <Text>
+                  GiftDapp
+                  <ExternalLinkIcon mx="2px" />
+                </Text>
+              </Link>
+            </MenuItem>
+            <MenuItem>
+              <Text>
+                Smart Bid <Badge>Soon</Badge>
+              </Text>
+            </MenuItem>
             <MenuDivider />
-            <MenuItem>Margin Trading</MenuItem>
-            <MenuItem>Smart swap</MenuItem>
+            <MenuItem>
+              <Text>
+                Margin Trading <Badge>Soon</Badge>
+              </Text>
+            </MenuItem>
+            <MenuItem>
+              <Text>
+                Leverage EXchange <Badge>Soon</Badge>
+              </Text>
+            </MenuItem>
           </MenuList>
         </Menu>
       </>

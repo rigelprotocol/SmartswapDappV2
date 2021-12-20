@@ -14,9 +14,10 @@ import WalletModal from './modals/walletModal';
 import NetworkModal from "./modals/networkModal";
 import { useNativeBalance, useRGPBalance } from '../../utils/hooks/useBalances';
 import StatusIcon from './StatusIcon';
+
 import UnsupportNetwork from '../NetworkConnector/UnsupportNetwork';
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
-
+import RGPModal from "./modals/RGPModal";
 
 
 
@@ -54,6 +55,9 @@ export default function WalletConnection() {
     97,
     80001]
 
+  const [showRGP, setShowRGP] = useState(false);
+
+
   const isSupportedNetwork = (chainId: any) =>
     supportedNetworks.includes(chainId);
 
@@ -64,10 +68,12 @@ export default function WalletConnection() {
           display={isMobileDevice ? 'none' : undefined}
           variant="rgpButton"
           bg={bgColor}
+          onClick={() => setShowRGP(true)}
           fontSize="14px"
         >
           {RGPBalance} {RGPBalance ? 'RGP' : '0.0000 RGP'}
         </Button>
+          <RGPModal showRGP={showRGP} setShowRGP={setShowRGP} RGPBalance={RGPBalance} />
         <Flex
           ml={2}
           w={isMobileDevice ? '160px' : 'max-content'}
