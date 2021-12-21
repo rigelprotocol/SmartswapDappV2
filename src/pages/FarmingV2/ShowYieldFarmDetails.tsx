@@ -1002,7 +1002,7 @@ const setApprove = val => {
             {true && (
               <Flex marginTop="10px">
                 <Text fontSize="24px" marginTop="15px" fontWeight="bold">
-                  {FarmingFeeLoading ? (<Spinner speed="0.65s" color="#333333" />) : farmingFee}
+                  {FarmingFeeLoading ? (<Spinner speed="0.65s" color="#999999" />) : farmingFee}
                 </Text>
                 <Flex flexDirection={["column", "column", "column"]}>
                   <Text
