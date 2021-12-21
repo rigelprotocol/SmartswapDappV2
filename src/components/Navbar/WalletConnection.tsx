@@ -23,9 +23,12 @@ import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
 export default function WalletConnection() {
 
 
+
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { account, error, activate, connector, chainId } = useWeb3React();
 
+  console.log("Chain on walletc connect", chainId)
   const [isMobileDevice] = useMediaQuery('(max-width: 1200px)');
 
   const bg = useColorModeValue('#FFFFFF', '#15202B');
@@ -105,7 +108,7 @@ export default function WalletConnection() {
       </>
     );
   }
-  if (!isSupportedNetwork(chainId)) {
+  if (!isSupportedNetwork(chainId as number)) {
     return (
       <>
         <Button
@@ -123,18 +126,20 @@ export default function WalletConnection() {
         <UnsupportNetwork openModal={modalDisplay} setDisplayModal={setDisplayModal} /></>
 
     )
+  } else {
+    return (
+      <>
+        <Button
+          onClick={() => setDisplayNetwork(state => !state)}
+          rightIcon={<IoWalletOutline />}
+          variant="brand"
+        >
+          Connect Wallet
+        </Button>
+        <NetworkModal displayNetwork={displayNetwork} setDisplayNetwork={setDisplayNetwork} />
+      </>
+    );
   }
-  return (
-    <>
-      <Button
-        onClick={() => setDisplayNetwork(state => !state)}
-        rightIcon={<IoWalletOutline />}
-        variant="brand"
-      >
-        Connect Wallet
-      </Button>
-      <NetworkModal displayNetwork={displayNetwork} setDisplayNetwork={setDisplayNetwork} />
-    </>
-  );
+
 }
 
