@@ -166,6 +166,7 @@ export default createReducer(initialState, (builder) =>
          totalLiquidity.forEach((item, index) => {
           state.contents[index].totalLiquidity = item.liquidity;
           state.contents[index].ARYValue = item.apy;
+          state.contents[index].deposit = item.deposit;
         });
      
     })
