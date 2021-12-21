@@ -21,6 +21,7 @@ import {
   Circle,
   Divider,
   Tooltip,
+  Spinner,
 } from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import Switch from "react-switch";
@@ -95,6 +96,7 @@ const ShowYieldFarmDetails = ({
   const [depositErrorButtonText, setDepositErrorButtonText] = useState('');
   const [RGPBalance] = useRGPBalance();
   const [farmingFee, setFarmingFee] = useState('10')
+  const [FarmingFeeLoading, setFarmingFeeLoading] = useState(true);
   const [deposited, setDeposited] = useState(false)
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
@@ -276,10 +278,10 @@ const setApprove = val => {
     const RGPfarmingFee = async () => {
       if (account) {
         const masterChef = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number]);
-
         const minFarmingFee = await masterChef.farmingFee();
         const fee = Web3.utils.fromWei(minFarmingFee.toString());
         setFarmingFee(fee);
+        setFarmingFeeLoading(false);
       }
     };
     RGPfarmingFee();
@@ -1000,7 +1002,7 @@ const setApprove = val => {
             {true && (
               <Flex marginTop="10px">
                 <Text fontSize="24px" marginTop="15px" fontWeight="bold">
-                  12
+                  {FarmingFeeLoading ? (<Spinner speed="0.65s" color="#333333" />) : farmingFee}
                 </Text>
                 <Flex flexDirection={["column", "column", "column"]}>
                   <Text
