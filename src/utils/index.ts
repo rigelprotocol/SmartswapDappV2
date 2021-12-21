@@ -71,3 +71,17 @@ export function convertToNumber(hex : string, decimals?: number) {
     const output = [whole, deci];
     return output.join('.');
   };
+
+  const supportedNetworks = [1,
+    3,
+    4,
+    5,
+    6,
+    137,
+    56,
+    97,
+    80001]
+
+
+   export const isSupportedNetwork = (chainId: any) =>
+    supportedNetworks.includes(chainId);

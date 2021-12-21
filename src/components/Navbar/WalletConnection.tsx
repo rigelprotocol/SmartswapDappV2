@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react';
 import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core';
 import { IoWalletOutline } from 'react-icons/io5';
-import { shortenAddress } from '../../utils';
+import { isSupportedNetwork, shortenAddress } from '../../utils';
 import WalletModal from './modals/walletModal';
 import NetworkModal from "./modals/networkModal";
 import { useNativeBalance, useRGPBalance } from '../../utils/hooks/useBalances';
@@ -22,9 +22,6 @@ import RGPModal from "./modals/RGPModal";
 
 
 export default function WalletConnection() {
-
-
-
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { account, error, activate, connector, chainId } = useWeb3React();
@@ -48,21 +45,10 @@ export default function WalletConnection() {
   const [RGPBalance] = useRGPBalance();
   const [modalDisplay, setDisplayModal] = useState(false)
 
-  const supportedNetworks = [1,
-    3,
-    4,
-    5,
-    6,
-    137,
-    56,
-    97,
-    80001]
+
 
   const [showRGP, setShowRGP] = useState(false);
 
-
-  const isSupportedNetwork = (chainId: any) =>
-    supportedNetworks.includes(chainId);
 
   console.log("CHAIN ID IS", chainId)
 
@@ -116,7 +102,7 @@ export default function WalletConnection() {
       </>
     );
   }
-  if (chainId != undefined && !isSupportedNetwork(chainId as number)) {
+  if (!isSupportedNetwork(chainId as number)) {
     return (
       <>
         <Button
