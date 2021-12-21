@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Flex,
   Text,
@@ -18,6 +18,7 @@ import StatusIcon from './StatusIcon';
 import UnsupportNetwork from '../NetworkConnector/UnsupportNetwork';
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
 import RGPModal from "./modals/RGPModal";
+import { provider } from '../../utils/utilsFunctions';
 
 
 
@@ -26,7 +27,6 @@ export default function WalletConnection() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { account, error, activate, connector, chainId } = useWeb3React();
 
-  console.log("Chain on walletc connect", chainId)
   const [isMobileDevice] = useMediaQuery('(max-width: 1200px)');
 
   const bg = useColorModeValue('#FFFFFF', '#15202B');
@@ -44,13 +44,20 @@ export default function WalletConnection() {
   const [displayNetwork, setDisplayNetwork] = useState(false);
   const [RGPBalance] = useRGPBalance();
   const [modalDisplay, setDisplayModal] = useState(false)
-
-
-
   const [showRGP, setShowRGP] = useState(false);
+  const [chain, setChain] = useState('');
 
 
-  console.log("CHAIN ID IS", chainId)
+
+  useEffect(() => {
+    async function loadChain() {
+      const chanData = await window.ethereum?.request({ method: 'eth_chainId' });
+      setChain(chanData)
+    }
+
+    loadChain()
+  }, [account])
+
 
   if (account) {
     return (
@@ -102,7 +109,7 @@ export default function WalletConnection() {
       </>
     );
   }
-  if (!isSupportedNetwork(chainId as number)) {
+  if (!isSupportedNetwork(chain as any)) {
     return (
       <>
         <Button

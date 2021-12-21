@@ -12,7 +12,6 @@ export function isAddress(value: any): string | false {
         return false
     }
 }
-
 // shortens the address to the format: 0x + 4 characters at start and end
 export function shortenAddress(address: string, chars = 4): string {
     const parsed = isAddress(address)
@@ -80,7 +79,15 @@ export function convertToNumber(hex : string, decimals?: number) {
     137,
     56,
     97,
-    80001]
+    80001,
+    '0x1',
+    '0x13881',
+    '0x89',
+    '0x61',
+    '0x38',
+    '0x3',
+    '0x4'
+  ]
 
 
    export const isSupportedNetwork = (chainId: any) =>
