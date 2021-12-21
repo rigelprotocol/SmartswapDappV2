@@ -345,12 +345,12 @@ export function Index() {
               apy: calculateApy(RGPprice, RGPLiquidity, 250),
             },
             {
-              deposit: await deposit(pool1.token0, pool1.token1),
+              deposit: await deposit(pool2.token0, pool2.token1),
               liquidity: RGP_BNBLiquidity,
               apy: calculateApy(RGPprice, RGP_BNBLiquidity, 953.3333333),
             },
             {
-              deposit: await deposit(pool2.token0, pool2.token1),
+              deposit: await deposit(pool1.token0, pool1.token1),
               liquidity: BUSD_RGPLiquidity,
               apy: calculateApy(RGPprice, BUSD_RGPLiquidity, 3336.666667),
             },
