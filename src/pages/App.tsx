@@ -28,19 +28,19 @@ export default function App() {
           <Navbar />
           <Notify />
           <TransactionStateModal />
-          <Switch>
-            <ErrorBoundary>
-
-              <Route path="/">
-                <Redirect to="/swap"></Redirect>
-              </Route>
-              <Route exact strict path="/" component={Swap} />
+          <ErrorBoundary>
+            <Switch>
+              {/* <Route exact strict path="/" component={Swap} /> */}
               <Route exact strict path="/swap" component={Swap} />
               <Route exact strict path="/pool" component={Pool} />
 
               <Route exact strict path="/find" component={FindPool} />
               <Route exact path="/add" component={AddLiquidity} />
-              <Route exact path="/add/:currencyIdA/:currencyIdB" component={AddLiquidity} />
+              <Route
+                exact
+                path="/add/:currencyIdA/:currencyIdB"
+                component={AddLiquidity}
+              />
 
               <Route exact strict path="/set-price" component={SetPrice} />
               <Route exact path="/auto-time" component={AutoTime} />
@@ -57,10 +57,12 @@ export default function App() {
                 component={FarmingV2}
               />
               <Route exact path="/farming" component={FarmingV1} />
-              <Route exact path="/farming-V2" component={FarmingV2} />
-
-            </ErrorBoundary>
-          </Switch>
+              <Route path="/farming-V2" component={FarmingV2} />
+              <Route path="*">
+                <Redirect to="/swap" />
+              </Route>
+            </Switch>
+          </ErrorBoundary>
         </HashRouter>
       </AppWrapper>
     </Suspense>
