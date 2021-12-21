@@ -64,6 +64,8 @@ export default function WalletConnection() {
   const isSupportedNetwork = (chainId: any) =>
     supportedNetworks.includes(chainId);
 
+  console.log("CHAIN ID IS", chainId)
+
   if (account) {
     return (
       <>
@@ -76,7 +78,7 @@ export default function WalletConnection() {
         >
           {RGPBalance} {RGPBalance ? 'RGP' : '0.0000 RGP'}
         </Button>
-          <RGPModal showRGP={showRGP} setShowRGP={setShowRGP} RGPBalance={RGPBalance} />
+        <RGPModal showRGP={showRGP} setShowRGP={setShowRGP} RGPBalance={RGPBalance} />
         <Flex
           ml={2}
           w={isMobileDevice ? '160px' : 'max-content'}
@@ -114,7 +116,7 @@ export default function WalletConnection() {
       </>
     );
   }
-  if (!isSupportedNetwork(chainId as number)) {
+  if (chainId != undefined && !isSupportedNetwork(chainId as number)) {
     return (
       <>
         <Button
