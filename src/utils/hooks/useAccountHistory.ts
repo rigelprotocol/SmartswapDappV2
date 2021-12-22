@@ -1,4 +1,4 @@
-import  {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useWeb3React} from '@web3-react/core';
 import mainToken from '../../utils/main-token.json';
 import TokenLogo from '../../assets/Null-24.svg';
@@ -9,16 +9,18 @@ import {SMARTSWAPROUTER} from "../addresses";
 
 const abiDecoder = require('abi-decoder');
 
-export const convertTime = (trxTime: any) => {
-    const date = new Date(trxTime * 1000);
-    const hours = date.getHours();
-    const minutes = `0${date.getMinutes()}`;
-    const seconds = `0${date.getSeconds()}`;
-    // Displays time in 10:30:23 format
-    return `${hours}:${minutes.substr(-2)}:${seconds.substr(
-        -2,
-    )}`;
-};
+export function timeConverter(UNIX_timestamp: any){
+    const a = new Date(UNIX_timestamp * 1000);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const year = a.getFullYear();
+    const month = months[a.getMonth()];
+    const date = a.getDate();
+    const hour = a.getHours();
+    const min = a.getMinutes();
+    const sec = a.getSeconds();
+    return date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec;
+}
+console.log(timeConverter(68907790));
 
 interface DataIncoming {
     inputAmount: string,
@@ -123,7 +125,7 @@ const useAccountHistory = () => {
                             Number(data.value) > 0
                                 ? data.transactionObj[1].value[data.transactionObj[1].value.length - 1]
                                 : data.transactionObj[2].value[data.transactionObj[2].value.length - 1],
-                        time: convertTime(data.timestamp)
+                        time: timeConverter(data.timestamp)
                     }));
 
                     const swapDataForWallet = await Promise.all(

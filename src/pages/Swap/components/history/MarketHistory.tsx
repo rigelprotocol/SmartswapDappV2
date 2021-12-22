@@ -62,7 +62,7 @@ const MarketHistory = ({data} : {data: DataType}) => {
                   Type
                 </Text>
                 <Text    color={activeTabColor} fontSize="14px" fontWeight="regular">
-                  Auto Period
+                  Straight Swap
                 </Text>
               </Box>
               <Box>

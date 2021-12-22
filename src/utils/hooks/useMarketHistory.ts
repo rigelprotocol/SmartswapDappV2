@@ -1,7 +1,7 @@
 import  {useEffect, useState} from 'react';
 import {useWeb3React} from '@web3-react/core';
 import SmartSwapRouter02 from '../abis/swapAbiForDecoder.json';
-import {convertTime, getTokenSymbol, tokenList, formatAmount} from "./useAccountHistory";
+import {timeConverter, getTokenSymbol, tokenList, formatAmount} from "./useAccountHistory";
 import {SMARTSWAPROUTER} from "../addresses";
 
 
@@ -61,7 +61,7 @@ const useMarketHistory = () => {
                             Number(data.value) > 0
                                 ? data.transactionObj[1].value[data.transactionObj[1].value.length - 1]
                                 : data.transactionObj[2].value[data.transactionObj[2].value.length - 1],
-                        time: convertTime(data.timestamp),
+                        time: timeConverter(data.timestamp),
                         from: data.from,
                         to: data.to
                     }));
