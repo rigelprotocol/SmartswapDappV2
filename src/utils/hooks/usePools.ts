@@ -97,7 +97,22 @@ const getPoolData = async (
     reserves: reserves[0],
     decimals: decimals0,
   });
+
+  const pooledToken0Wei = getPooledTokenWei({
+    balance,
+    totalSupply,
+    reserves: reserves[0],
+    decimals: decimals0,
+  });
+
   const pooledToken1 = getPooledToken({
+    balance,
+    totalSupply,
+    reserves: reserves[1],
+    decimals: decimals1,
+  });
+
+  const pooledToken1Wei = getPooledTokenWei({
     balance,
     totalSupply,
     reserves: reserves[1],
@@ -109,6 +124,7 @@ const getPoolData = async (
   const liquidityObject = {
     pairAddress: address,
     poolToken: ethers.utils.formatEther(balance),
+    poolTokenWei: balance,
     totalSupply: totalSupply.toString(),
     poolShare: (balance.toString() / totalSupply) * 100,
     path: [
@@ -127,6 +143,8 @@ const getPoolData = async (
     ],
     pooledToken0,
     pooledToken1,
+    pooledToken0Wei,
+    pooledToken1Wei,
     approved: approved,
   };
   return liquidityObject;
@@ -150,6 +168,19 @@ const getPooledToken = (params: PoolTokenParams) => {
   const multiplyReserve = fraction.multiply(params.reserves.toString());
   const final = multiplyReserve.divide(Decimal);
   return final.toSignificant(params.decimals);
+};
+
+const getPooledTokenWei = (params: PoolTokenParams) => {
+  //construct decimal
+  const Decimal = 10 ** params.decimals;
+  //init fraction class
+  const fraction = new Fraction(
+    params.balance.toString(),
+    params.totalSupply.toString()
+  );
+  const multiplyReserve = fraction.multiply(params.reserves.toString());
+  // const final = multiplyReserve.divide(Decimal);
+  return multiplyReserve.toSignificant(params.decimals);
 };
 
 export const useGetLiquidityById = async (
@@ -234,11 +265,51 @@ export const useTokenValueToBeRemoved = ({
     if (pool && inputValue) {
       const poolToken0Fraction =
         (pool.pooledToken0 / 100) * parseInt(inputValue);
+
+      const poolToken0FractionForTx = JSBI.divide(
+        JSBI.BigInt(pool.pooledToken0Wei),
+        JSBI.BigInt(100)
+      );
+
+      const newPoolToken0 = JSBI.multiply(
+        poolToken0FractionForTx,
+        JSBI.BigInt(inputValue)
+      );
+
       const poolToken1Fraction =
         (pool.pooledToken1 / 100) * parseInt(inputValue);
 
+      const poolToken1FractionForTx = JSBI.divide(
+        JSBI.BigInt(pool.pooledToken1Wei),
+        JSBI.BigInt(100)
+      );
+
+      const newPoolToken1 = JSBI.multiply(
+        poolToken1FractionForTx,
+        JSBI.BigInt(inputValue)
+      );
+
       const poolTokenFraction = (pool.poolToken / 100) * parseInt(inputValue);
-      return [poolToken0Fraction, poolToken1Fraction, poolTokenFraction];
+
+      const poolTokenFractionForTx = JSBI.divide(
+        JSBI.BigInt(pool.poolTokenWei.toString()),
+        JSBI.BigInt(100)
+      );
+
+      const newPoolToken = JSBI.multiply(
+        poolTokenFractionForTx,
+        JSBI.BigInt(inputValue)
+      );
+      // console.log(fraction.toString());
+
+      return [
+        poolToken0Fraction,
+        poolToken1Fraction,
+        poolTokenFraction,
+        newPoolToken0.toString(),
+        newPoolToken1.toString(),
+        newPoolToken.toString(),
+      ];
     }
   }, [pool, inputValue]);
   // return [poolToken0Fraction, poolToken1Fraction, poolTokenFraction];

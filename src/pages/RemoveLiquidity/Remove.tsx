@@ -119,10 +119,10 @@ const Remove = () => {
           ? pool?.path[1].toPath
           : pool?.path[0].fromPath;
         removeLiquidityForETH(
-          valuesToBeRemoved[2],
+          valuesToBeRemoved[5] as string,
           tokenAddress,
-          valuesToBeRemoved[0],
-          valuesToBeRemoved[1],
+          valuesToBeRemoved[3] as string,
+          valuesToBeRemoved[4] as string,
           pool?.path[0].decimals,
           pool?.path[1].decimals
         );
@@ -130,11 +130,11 @@ const Remove = () => {
     } else {
       if (valuesToBeRemoved) {
         removeLiquidityForToken(
-          valuesToBeRemoved[2],
+          valuesToBeRemoved[5] as string,
           pool?.path[0].fromPath,
           pool?.path[1].toPath,
-          valuesToBeRemoved[0],
-          valuesToBeRemoved[1],
+          valuesToBeRemoved[3] as string,
+          valuesToBeRemoved[4] as string,
           pool?.path[0].decimals,
           pool?.path[1].decimals
         );
@@ -143,11 +143,11 @@ const Remove = () => {
   };
 
   const removeLiquidityForToken = async (
-    Liquidity: number,
+    Liquidity: string,
     tokenA: string,
     tokenB: string,
-    amountAMin: number,
-    amountBMin: number,
+    amountAMin: string,
+    amountBMin: string,
     tokenADecimals: number,
     tokenBDecimals: number
   ) => {
@@ -155,25 +155,26 @@ const Remove = () => {
       const smartswaprouter = await SmartSwapRouter(
         SMARTSWAPROUTER[chainId as number]
       );
-      const liquidity = formatAmountIn(Liquidity, 18);
-      const AmountAMin = formatAmountIn(amountAMin, tokenADecimals);
-      const AmountBMin = formatAmountIn(amountBMin, tokenBDecimals);
+      // const liquidity = formatAmountIn(Liquidity, 18);
+      // const AmountAMin = formatAmountIn(amountAMin, tokenADecimals);
+      // const AmountBMin = formatAmountIn(amountBMin, tokenBDecimals);
 
       const deadLine = getDeadline(userDeadline);
       try {
         dispatch(
           setOpenModal({
-            message: `Removing ${amountAMin.toFixed(6)} ${pool?.path[0].token
-              } and ${amountBMin.toFixed(6)} ${pool?.path[1].token} `,
+            message: `Removing ${parseFloat(amountAMin).toFixed(6)} ${
+              pool?.path[0].token
+            } and ${parseFloat(amountBMin).toFixed(6)} ${pool?.path[1].token} `,
             trxState: TrxState.WaitingForConfirmation,
           })
         );
         const remove = await smartswaprouter.removeLiquidity(
           tokenA,
           tokenB,
-          liquidity,
-          calculateSlippageAmount(AmountAMin, userSlippageTolerance),
-          calculateSlippageAmount(AmountBMin, userSlippageTolerance),
+          Liquidity,
+          calculateSlippageAmount(amountAMin, userSlippageTolerance),
+          calculateSlippageAmount(amountBMin, userSlippageTolerance),
           account,
           deadLine,
           {
@@ -206,19 +207,21 @@ const Remove = () => {
           );
           dispatch(
             setOpenModal({
-              message: `${pool?.path[0].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[0].token === 'WETH'
+              message: `${
+                pool?.path[0].token === 'WBNB'
+                  ? 'BNB'
+                  : pool?.path[0].token === 'WETH'
                   ? 'ETH'
                   : pool?.path[0].token
-                }
+              }
             /
-            ${pool?.path[1].token === 'WBNB'
-                  ? 'BNB'
-                  : pool?.path[1].token === 'WETH'
-                    ? 'ETH'
-                    : pool?.path[1].token
-                } LP token Removal`,
+            ${
+              pool?.path[1].token === 'WBNB'
+                ? 'BNB'
+                : pool?.path[1].token === 'WETH'
+                ? 'ETH'
+                : pool?.path[1].token
+            } LP token Removal`,
               trxState: TrxState.TransactionSuccessful,
             })
           );
@@ -234,19 +237,21 @@ const Remove = () => {
         console.log(err);
         dispatch(
           setOpenModal({
-            message: `${pool?.path[0].token === 'WBNB'
-              ? 'BNB'
-              : pool?.path[0].token === 'WETH'
+            message: `${
+              pool?.path[0].token === 'WBNB'
+                ? 'BNB'
+                : pool?.path[0].token === 'WETH'
                 ? 'ETH'
                 : pool?.path[0].token
-              }
+            }
           /
-          ${pool?.path[1].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[1].token === 'WETH'
-                  ? 'ETH'
-                  : pool?.path[1].token
-              } LP token Removal`,
+          ${
+            pool?.path[1].token === 'WBNB'
+              ? 'BNB'
+              : pool?.path[1].token === 'WETH'
+              ? 'ETH'
+              : pool?.path[1].token
+          } LP token Removal`,
             trxState: TrxState.TransactionFailed,
           })
         );
@@ -255,10 +260,10 @@ const Remove = () => {
   };
 
   const removeLiquidityForETH = async (
-    Liquidity: number,
+    Liquidity: string,
     tokenAddress: any,
-    amountAMin: number,
-    amountBMin: number,
+    amountAMin: string,
+    amountBMin: string,
     tokenADecimals: number,
     tokenBDecimals: number
   ) => {
@@ -266,43 +271,45 @@ const Remove = () => {
       const smartswaprouter = await SmartSwapRouter(
         SMARTSWAPROUTER[chainId as number]
       );
-      const liquidity = formatAmountIn(Liquidity, 18);
+      // const liquidity = formatAmountIn(Liquidity, 18);
 
-      const AmountAMin = formatAmountIn(amountAMin, tokenADecimals);
+      // const AmountAMin = formatAmountIn(amountAMin, tokenADecimals);
 
-      const AmountBMin = formatAmountIn(amountBMin, tokenBDecimals);
+      // const AmountBMin = formatAmountIn(amountBMin, tokenBDecimals);
 
       const deadLine = getDeadline(userDeadline);
 
       try {
         dispatch(
           setOpenModal({
-            message: ` Removing ${amountAMin.toFixed(6)} ${pool?.path[0].token === 'WBNB'
-              ? 'BNB'
-              : pool?.path[0].token === 'WETH'
+            message: ` Removing ${parseFloat(amountAMin).toFixed(6)} ${
+              pool?.path[0].token === 'WBNB'
+                ? 'BNB'
+                : pool?.path[0].token === 'WETH'
                 ? 'ETH'
                 : pool?.path[0].token
-              }
-           and ${amountBMin.toFixed(6)}
-          ${pool?.path[1].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[1].token === 'WETH'
-                  ? 'ETH'
-                  : pool?.path[1].token
-              } `,
+            }
+           and ${parseFloat(amountBMin).toFixed(6)}
+          ${
+            pool?.path[1].token === 'WBNB'
+              ? 'BNB'
+              : pool?.path[1].token === 'WETH'
+              ? 'ETH'
+              : pool?.path[1].token
+          } `,
             trxState: TrxState.WaitingForConfirmation,
           })
         );
         const remove = await smartswaprouter.removeLiquidityETH(
           tokenAddress,
-          liquidity,
+          Liquidity,
           isNative(pool?.path[0].token, chainId as number)
-            ? calculateSlippageAmount(AmountBMin, userSlippageTolerance)
-            : calculateSlippageAmount(AmountAMin, userSlippageTolerance),
+            ? calculateSlippageAmount(amountBMin, userSlippageTolerance)
+            : calculateSlippageAmount(amountAMin, userSlippageTolerance),
 
           isNative(pool?.path[0].token, chainId as number)
-            ? calculateSlippageAmount(AmountAMin, userSlippageTolerance)
-            : calculateSlippageAmount(AmountBMin, userSlippageTolerance),
+            ? calculateSlippageAmount(amountAMin, userSlippageTolerance)
+            : calculateSlippageAmount(amountBMin, userSlippageTolerance),
 
           account,
           deadLine,
@@ -341,19 +348,21 @@ const Remove = () => {
           );
           dispatch(
             addToast({
-              message: `Remove ${outPutValueForTokenA} ${pool?.path[0].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[0].token === 'WETH'
+              message: `Remove ${outPutValueForTokenA} ${
+                pool?.path[0].token === 'WBNB'
+                  ? 'BNB'
+                  : pool?.path[0].token === 'WETH'
                   ? 'ETH'
                   : pool?.path[0].token
-                }
+              }
             and ${outPutValueForTokenB}
-            ${pool?.path[1].token === 'WBNB'
-                  ? 'BNB'
-                  : pool?.path[1].token === 'WETH'
-                    ? 'ETH'
-                    : pool?.path[1].token
-                } `,
+            ${
+              pool?.path[1].token === 'WBNB'
+                ? 'BNB'
+                : pool?.path[1].token === 'WETH'
+                ? 'ETH'
+                : pool?.path[1].token
+            } `,
               URL: explorerLink,
             })
           );
@@ -362,19 +371,21 @@ const Remove = () => {
         console.log(err);
         dispatch(
           setOpenModal({
-            message: `${pool?.path[0].token === 'WBNB'
-              ? 'BNB'
-              : pool?.path[0].token === 'WETH'
+            message: `${
+              pool?.path[0].token === 'WBNB'
+                ? 'BNB'
+                : pool?.path[0].token === 'WETH'
                 ? 'ETH'
                 : pool?.path[0].token
-              }
+            }
           /
-          ${pool?.path[1].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[1].token === 'WETH'
-                  ? 'ETH'
-                  : pool?.path[1].token
-              } LP token Removal`,
+          ${
+            pool?.path[1].token === 'WBNB'
+              ? 'BNB'
+              : pool?.path[1].token === 'WETH'
+              ? 'ETH'
+              : pool?.path[1].token
+          } LP token Removal`,
             trxState: TrxState.TransactionFailed,
           })
         );
@@ -387,23 +398,25 @@ const Remove = () => {
       try {
         dispatch(
           setOpenModal({
-            message: `${pool?.path[0].token === 'WBNB'
-              ? 'BNB'
-              : pool?.path[0].token === 'WETH'
+            message: `${
+              pool?.path[0].token === 'WBNB'
+                ? 'BNB'
+                : pool?.path[0].token === 'WETH'
                 ? 'ETH'
                 : pool?.path[0].token === 'WMATIC'
-                  ? 'MATIC'
-                  : pool?.path[0].token
-              }
+                ? 'MATIC'
+                : pool?.path[0].token
+            }
           /
-          ${pool?.path[1].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[1].token === 'WETH'
-                  ? 'ETH'
-                  : pool?.path[1].token === 'WMATIC'
-                    ? 'MATIC'
-                    : pool?.path[1].token
-              } LP token Approval`,
+          ${
+            pool?.path[1].token === 'WBNB'
+              ? 'BNB'
+              : pool?.path[1].token === 'WETH'
+              ? 'ETH'
+              : pool?.path[1].token === 'WMATIC'
+              ? 'MATIC'
+              : pool?.path[1].token
+          } LP token Approval`,
             trxState: TrxState.WaitingForConfirmation,
           })
         );
@@ -427,45 +440,49 @@ const Remove = () => {
           );
           dispatch(
             setOpenModal({
-              message: `${pool?.path[0].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[0].token === 'WETH'
+              message: `${
+                pool?.path[0].token === 'WBNB'
+                  ? 'BNB'
+                  : pool?.path[0].token === 'WETH'
                   ? 'ETH'
                   : pool?.path[0].token === 'WMATIC'
-                    ? 'MATIC'
-                    : pool?.path[0].token
-                }
+                  ? 'MATIC'
+                  : pool?.path[0].token
+              }
             /
-            ${pool?.path[1].token === 'WBNB'
-                  ? 'BNB'
-                  : pool?.path[1].token === 'WETH'
-                    ? 'ETH'
-                    : pool?.path[1].token === 'WMATIC'
-                      ? 'MATIC'
-                      : pool?.path[1].token
-                } LP token Approval`,
+            ${
+              pool?.path[1].token === 'WBNB'
+                ? 'BNB'
+                : pool?.path[1].token === 'WETH'
+                ? 'ETH'
+                : pool?.path[1].token === 'WMATIC'
+                ? 'MATIC'
+                : pool?.path[1].token
+            } LP token Approval`,
               trxState: TrxState.TransactionSuccessful,
             })
           );
           dispatch(
             addToast({
-              message: `Approve ${pool?.path[0].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[0].token === 'WETH'
+              message: `Approve ${
+                pool?.path[0].token === 'WBNB'
+                  ? 'BNB'
+                  : pool?.path[0].token === 'WETH'
                   ? 'ETH'
                   : pool?.path[0].token === 'WMATIC'
-                    ? 'MATIC'
-                    : pool?.path[0].token
-                }
+                  ? 'MATIC'
+                  : pool?.path[0].token
+              }
             /
-            ${pool?.path[1].token === 'WBNB'
-                  ? 'BNB'
-                  : pool?.path[1].token === 'WETH'
-                    ? 'ETH'
-                    : pool?.path[1].token === 'WMATIC'
-                      ? 'MATIC'
-                      : pool?.path[1].token
-                } LP token`,
+            ${
+              pool?.path[1].token === 'WBNB'
+                ? 'BNB'
+                : pool?.path[1].token === 'WETH'
+                ? 'ETH'
+                : pool?.path[1].token === 'WMATIC'
+                ? 'MATIC'
+                : pool?.path[1].token
+            } LP token`,
               URL: explorerLink,
             })
           );
@@ -474,23 +491,25 @@ const Remove = () => {
         console.log(e);
         dispatch(
           setOpenModal({
-            message: `${pool?.path[0].token === 'WBNB'
-              ? 'BNB'
-              : pool?.path[0].token === 'WETH'
+            message: `${
+              pool?.path[0].token === 'WBNB'
+                ? 'BNB'
+                : pool?.path[0].token === 'WETH'
                 ? 'ETH'
                 : pool?.path[0].token === 'WMATIC'
-                  ? 'MATIC'
-                  : pool?.path[0].token
-              }
+                ? 'MATIC'
+                : pool?.path[0].token
+            }
           /
-          ${pool?.path[1].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[1].token === 'WETH'
-                  ? 'ETH'
-                  : pool?.path[1].token === 'WMATIC'
-                    ? 'MATIC'
-                    : pool?.path[1].token
-              } LP token Approval`,
+          ${
+            pool?.path[1].token === 'WBNB'
+              ? 'BNB'
+              : pool?.path[1].token === 'WETH'
+              ? 'ETH'
+              : pool?.path[1].token === 'WMATIC'
+              ? 'MATIC'
+              : pool?.path[1].token
+          } LP token Approval`,
             trxState: TrxState.TransactionFailed,
           })
         );
@@ -503,23 +522,25 @@ const Remove = () => {
       try {
         dispatch(
           setOpenModal({
-            message: `Removing approval for ${pool?.path[0].token === 'WBNB'
-              ? 'BNB'
-              : pool?.path[0].token === 'WETH'
+            message: `Removing approval for ${
+              pool?.path[0].token === 'WBNB'
+                ? 'BNB'
+                : pool?.path[0].token === 'WETH'
                 ? 'ETH'
                 : pool?.path[0].token === 'WMATIC'
-                  ? 'MATIC'
-                  : pool?.path[0].token
-              }
+                ? 'MATIC'
+                : pool?.path[0].token
+            }
           /
-          ${pool?.path[1].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[1].token === 'WETH'
-                  ? 'ETH'
-                  : pool?.path[1].token === 'WMATIC'
-                    ? 'MATIC'
-                    : pool?.path[1].token
-              } LP token`,
+          ${
+            pool?.path[1].token === 'WBNB'
+              ? 'BNB'
+              : pool?.path[1].token === 'WETH'
+              ? 'ETH'
+              : pool?.path[1].token === 'WMATIC'
+              ? 'MATIC'
+              : pool?.path[1].token
+          } LP token`,
             trxState: TrxState.WaitingForConfirmation,
           })
         );
@@ -542,45 +563,49 @@ const Remove = () => {
           );
           dispatch(
             setOpenModal({
-              message: `Removing approval for ${pool?.path[0].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[0].token === 'WETH'
+              message: `Removing approval for ${
+                pool?.path[0].token === 'WBNB'
+                  ? 'BNB'
+                  : pool?.path[0].token === 'WETH'
                   ? 'ETH'
                   : pool?.path[0].token === 'WMATIC'
-                    ? 'MATIC'
-                    : pool?.path[0].token
-                }
+                  ? 'MATIC'
+                  : pool?.path[0].token
+              }
             /
-            ${pool?.path[1].token === 'WBNB'
-                  ? 'BNB'
-                  : pool?.path[1].token === 'WETH'
-                    ? 'ETH'
-                    : pool?.path[1].token === 'WMATIC'
-                      ? 'MATIC'
-                      : pool?.path[1].token
-                } LP token`,
+            ${
+              pool?.path[1].token === 'WBNB'
+                ? 'BNB'
+                : pool?.path[1].token === 'WETH'
+                ? 'ETH'
+                : pool?.path[1].token === 'WMATIC'
+                ? 'MATIC'
+                : pool?.path[1].token
+            } LP token`,
               trxState: TrxState.TransactionSuccessful,
             })
           );
           dispatch(
             addToast({
-              message: `UnApprove ${pool?.path[0].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[0].token === 'WETH'
+              message: `UnApprove ${
+                pool?.path[0].token === 'WBNB'
+                  ? 'BNB'
+                  : pool?.path[0].token === 'WETH'
                   ? 'ETH'
                   : pool?.path[0].token === 'WMATIC'
-                    ? 'MATIC'
-                    : pool?.path[0].token
-                }
+                  ? 'MATIC'
+                  : pool?.path[0].token
+              }
             /
-            ${pool?.path[1].token === 'WBNB'
-                  ? 'BNB'
-                  : pool?.path[1].token === 'WETH'
-                    ? 'ETH'
-                    : pool?.path[1].token === 'WMATIC'
-                      ? 'MATIC'
-                      : pool?.path[1].token
-                } LP token`,
+            ${
+              pool?.path[1].token === 'WBNB'
+                ? 'BNB'
+                : pool?.path[1].token === 'WETH'
+                ? 'ETH'
+                : pool?.path[1].token === 'WMATIC'
+                ? 'MATIC'
+                : pool?.path[1].token
+            } LP token`,
               URL: explorerLink,
             })
           );
@@ -589,23 +614,25 @@ const Remove = () => {
         console.log(e);
         dispatch(
           setOpenModal({
-            message: `Removing approval for ${pool?.path[0].token === 'WBNB'
-              ? 'BNB'
-              : pool?.path[0].token === 'WETH'
+            message: `Removing approval for ${
+              pool?.path[0].token === 'WBNB'
+                ? 'BNB'
+                : pool?.path[0].token === 'WETH'
                 ? 'ETH'
                 : pool?.path[0].token === 'WMATIC'
-                  ? 'MATIC'
-                  : pool?.path[0].token
-              }
+                ? 'MATIC'
+                : pool?.path[0].token
+            }
           /
-          ${pool?.path[1].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[1].token === 'WETH'
-                  ? 'ETH'
-                  : pool?.path[1].token === 'WMATIC'
-                    ? 'MATIC'
-                    : pool?.path[1].token
-              } LP token`,
+          ${
+            pool?.path[1].token === 'WBNB'
+              ? 'BNB'
+              : pool?.path[1].token === 'WETH'
+              ? 'ETH'
+              : pool?.path[1].token === 'WMATIC'
+              ? 'MATIC'
+              : pool?.path[1].token
+          } LP token`,
             trxState: TrxState.TransactionFailed,
           })
         );
@@ -727,18 +754,18 @@ const Remove = () => {
                       {pool?.path[0].token === 'WBNB'
                         ? 'BNB'
                         : pool?.path[0].token === 'WETH'
-                          ? 'ETH'
-                          : pool?.path[0].token === 'WMATIC'
-                            ? 'MATIC'
-                            : pool?.path[0].token}{' '}
+                        ? 'ETH'
+                        : pool?.path[0].token === 'WMATIC'
+                        ? 'MATIC'
+                        : pool?.path[0].token}{' '}
                       /{' '}
                       {pool?.path[1].token === 'WBNB'
                         ? 'BNB'
                         : pool?.path[1].token === 'WETH'
-                          ? 'ETH'
-                          : pool?.path[1].token === 'WMATIC'
-                            ? 'MATIC'
-                            : pool?.path[1].token}
+                        ? 'ETH'
+                        : pool?.path[1].token === 'WMATIC'
+                        ? 'MATIC'
+                        : pool?.path[1].token}
                     </Text>
                   </Flex>
                   <Flex alignItems="center">
@@ -778,10 +805,10 @@ const Remove = () => {
                         {pool?.path[0].token === 'WBNB'
                           ? 'BNB'
                           : pool?.path[0].token === 'WETH'
-                            ? 'ETH'
-                            : pool?.path[0].token === 'WMATIC'
-                              ? 'MATIC'
-                              : pool?.path[0].token}
+                          ? 'ETH'
+                          : pool?.path[0].token === 'WMATIC'
+                          ? 'MATIC'
+                          : pool?.path[0].token}
                         :
                       </Text>
                       <Text>{pool?.pooledToken0}</Text>
@@ -796,10 +823,10 @@ const Remove = () => {
                         {pool?.path[1].token === 'WBNB'
                           ? 'BNB'
                           : pool?.path[1].token === 'WETH'
-                            ? 'ETH'
-                            : pool?.path[1].token === 'WMATIC'
-                              ? 'MATIC'
-                              : pool?.path[1].token}
+                          ? 'ETH'
+                          : pool?.path[1].token === 'WMATIC'
+                          ? 'MATIC'
+                          : pool?.path[1].token}
                         :
                       </Text>
                       <Text>{pool?.pooledToken1}</Text>
@@ -834,7 +861,6 @@ const Remove = () => {
               </Flex>
               <Flex justifyContent="space-between" alignItems="center">
                 <Input
-
                   focusBorderColor="none"
                   fontSize="24px"
                   p="0"
@@ -907,12 +933,12 @@ const Remove = () => {
                       {loading || pool.length === 0
                         ? ''
                         : pool?.path[0].token === 'WBNB'
-                          ? 'BNB'
-                          : pool?.path[0].token === 'WETH'
-                            ? 'ETH'
-                            : pool?.path[0].token === 'WMATIC'
-                              ? 'MATIC'
-                              : pool?.path[0].token}
+                        ? 'BNB'
+                        : pool?.path[0].token === 'WETH'
+                        ? 'ETH'
+                        : pool?.path[0].token === 'WMATIC'
+                        ? 'MATIC'
+                        : pool?.path[0].token}
                     </Text>
                   </Flex>
                 </Flex>
@@ -951,12 +977,12 @@ const Remove = () => {
                       {loading || pool.length === 0
                         ? ''
                         : pool?.path[1].token === 'WBNB'
-                          ? 'BNB'
-                          : pool?.path[1].token === 'WETH'
-                            ? 'ETH'
-                            : pool?.path[1].token === 'WMATIC'
-                              ? 'MATIC'
-                              : pool?.path[1].token}
+                        ? 'BNB'
+                        : pool?.path[1].token === 'WETH'
+                        ? 'ETH'
+                        : pool?.path[1].token === 'WMATIC'
+                        ? 'MATIC'
+                        : pool?.path[1].token}
                     </Text>
                   </Flex>
                 </Flex>
@@ -970,31 +996,31 @@ const Remove = () => {
                 hasBeenApproved && inputValue
                   ? approvedButtonColor
                   : inputValue
-                    ? approveButtonColor
-                    : inActiveApproveButtonColor
+                  ? approveButtonColor
+                  : inActiveApproveButtonColor
               }
               bgColor={
                 hasBeenApproved && inputValue
                   ? approvedButtonBgColor
                   : inputValue
-                    ? approveButtonBgColor
-                    : inActiveApproveButtonBgColor
+                  ? approveButtonBgColor
+                  : inActiveApproveButtonBgColor
               }
               _active={{
                 bgColor:
                   hasBeenApproved && inputValue
                     ? approvedButtonBgColor
                     : inputValue
-                      ? approveButtonBgColor
-                      : inActiveApproveButtonBgColor,
+                    ? approveButtonBgColor
+                    : inActiveApproveButtonBgColor,
               }}
               _hover={{
                 bgColor:
                   hasBeenApproved && inputValue
                     ? approvedButtonBgColor
                     : inputValue
-                      ? approveButtonBgColor
-                      : inActiveApproveButtonBgColor,
+                    ? approveButtonBgColor
+                    : inActiveApproveButtonBgColor,
               }}
               borderRadius="6px"
               w="46%"
@@ -1005,13 +1031,13 @@ const Remove = () => {
               onClick={
                 hasBeenApproved && inputValue
                   ? () => {
-                    removeApproval();
-                  }
+                      removeApproval();
+                    }
                   : !hasBeenApproved && inputValue
-                    ? () => {
+                  ? () => {
                       approveLPTokens();
                     }
-                    : undefined
+                  : undefined
               }
             >
               {hasBeenApproved && inputValue ? 'Approved' : 'Approve'}
