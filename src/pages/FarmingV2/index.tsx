@@ -352,27 +352,27 @@ export function Index() {
               apy: calculateApy(RGPprice, RGPLiquidity, 250),
             },
             {
-              deposit: await deposit(pool2.token0, pool2.token1),
+              deposit: "RGP-BNB",
               liquidity: RGP_BNBLiquidity,
               apy: calculateApy(RGPprice, RGP_BNBLiquidity, 953.3333333),
             },
             {
-              deposit: await deposit(pool1.token0, pool1.token1),
+              deposit: "RGP-BUSD",
               liquidity: BUSD_RGPLiquidity,
               apy: calculateApy(RGPprice, BUSD_RGPLiquidity, 3336.666667),
             },
             {
-              deposit: await deposit(pool3.token0, pool3.token1),
+              deposit: "BNB-BUSD",
               liquidity: BUSD_BNBLiquidity,
               apy: calculateApy(RGPprice, BUSD_BNBLiquidity, 476.6666667),
             },
             {
-              deposit: await deposit(pool4.token0, pool4.token1),
+              deposit: "AXS-RGP",
               liquidity: AXS_RGPLiquidity,
               apy: calculateApy(RGPprice, AXS_RGPLiquidity, 715),
             },
             {
-              deposit: await deposit(pool5.token0, pool5.token1),
+              deposit: "AXS-BUSD",
               liquidity: AXS_BUSDLiquidity,
               apy: calculateApy(RGPprice, AXS_BUSDLiquidity, 238.3333333),
             },
