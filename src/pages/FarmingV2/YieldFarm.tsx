@@ -20,12 +20,12 @@ const YieldFarm = ({
     lpSymbol: string;
     tokensStaked: string[];
     availableToken: string;
-    deposit: string,
-    poolAllowance: any
-    RGPEarned: string
-
-  }, farmDataLoading: boolean,
-  wallet: any
+    deposit: string;
+    poolAllowance: any;
+    RGPEarned: string;
+  };
+  farmDataLoading: boolean;
+  wallet: any;
 }) => {
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
   const { account, chainId, library } = useWeb3React();
@@ -54,22 +54,22 @@ const YieldFarm = ({
           mode === LIGHT_THEME
             ? "#FFFFFF !important"
             : mode === DARK_THEME
-              ? "#15202B !important"
-              : "#FFFFFF !important"
+            ? "#15202B !important"
+            : "#FFFFFF !important"
         }
         color={
           mode === LIGHT_THEME
             ? "#333333"
             : mode === DARK_THEME
-              ? "#DCE5EF"
-              : "#333333"
+            ? "#DCE5EF"
+            : "#333333"
         }
         borderColor={
           mode === LIGHT_THEME
             ? "#F2F5F8 !important"
             : mode === DARK_THEME
-              ? "#213345 !important"
-              : "#F2F5F8 !important"
+            ? "#213345 !important"
+            : "#F2F5F8 !important"
         }
         padding="15px 20px"
         width={["100%", "100%", "100%"]}
@@ -145,34 +145,34 @@ const YieldFarm = ({
                 mode === LIGHT_THEME && active
                   ? "#FFFFFF !important"
                   : mode === DARK_THEME && active
-                    ? "#319EF6 !important"
-                    : mode === LIGHT_THEME && !active
-                      ? "#FFFFFF !important"
-                      : mode === DARK_THEME && !active
-                        ? "#15202B !important"
-                        : "#FFFFFF !important"
+                  ? "#319EF6 !important"
+                  : mode === LIGHT_THEME && !active
+                  ? "#FFFFFF !important"
+                  : mode === DARK_THEME && !active
+                  ? "#15202B !important"
+                  : "#FFFFFF !important"
               }
               color={
                 mode === LIGHT_THEME && active
                   ? "#319EF6"
                   : mode === DARK_THEME && active
-                    ? "#FFFFFF"
-                    : mode === LIGHT_THEME && !active
-                      ? "#319EF6"
-                      : mode === DARK_THEME && !active
-                        ? "#4CAFFF"
-                        : "#333333"
+                  ? "#FFFFFF"
+                  : mode === LIGHT_THEME && !active
+                  ? "#319EF6"
+                  : mode === DARK_THEME && !active
+                  ? "#4CAFFF"
+                  : "#333333"
               }
               borderColor={
                 mode === LIGHT_THEME && active
                   ? "#4CAFFF !important"
                   : mode === DARK_THEME && active
-                    ? "#319EF6 !important"
-                    : mode === LIGHT_THEME && !active
-                      ? "#4CAFFF !important"
-                      : mode === DARK_THEME && !active
-                        ? "#4CAFFF !important"
-                        : "#319EF6 !important"
+                  ? "#319EF6 !important"
+                  : mode === LIGHT_THEME && !active
+                  ? "#4CAFFF !important"
+                  : mode === DARK_THEME && !active
+                  ? "#4CAFFF !important"
+                  : "#319EF6 !important"
               }
               borderRadius="6px"
               mb="4"
@@ -190,34 +190,34 @@ const YieldFarm = ({
                 mode === LIGHT_THEME && active
                   ? "#FFFFFF !important"
                   : mode === DARK_THEME && active
-                    ? "#319EF6 !important"
-                    : mode === LIGHT_THEME && !active
-                      ? "#FFFFFF !important"
-                      : mode === DARK_THEME && !active
-                        ? "#15202B !important"
-                        : "#FFFFFF !important"
+                  ? "#319EF6 !important"
+                  : mode === LIGHT_THEME && !active
+                  ? "#FFFFFF !important"
+                  : mode === DARK_THEME && !active
+                  ? "#15202B !important"
+                  : "#FFFFFF !important"
               }
               color={
                 mode === LIGHT_THEME && active
                   ? "#319EF6"
                   : mode === DARK_THEME && active
-                    ? "#FFFFFF"
-                    : mode === LIGHT_THEME && !active
-                      ? "#319EF6"
-                      : mode === DARK_THEME && !active
-                        ? "#4CAFFF"
-                        : "#333333"
+                  ? "#FFFFFF"
+                  : mode === LIGHT_THEME && !active
+                  ? "#319EF6"
+                  : mode === DARK_THEME && !active
+                  ? "#4CAFFF"
+                  : "#333333"
               }
               borderColor={
                 mode === LIGHT_THEME && active
                   ? "#4CAFFF !important"
                   : mode === DARK_THEME && active
-                    ? "#319EF6 !important"
-                    : mode === LIGHT_THEME && !active
-                      ? "#4CAFFF !important"
-                      : mode === DARK_THEME && !active
-                        ? "#4CAFFF !important"
-                        : "#319EF6 !important"
+                  ? "#319EF6 !important"
+                  : mode === LIGHT_THEME && !active
+                  ? "#4CAFFF !important"
+                  : mode === DARK_THEME && !active
+                  ? "#4CAFFF !important"
+                  : "#319EF6 !important"
               }
               borderRadius="6px"
               mb="4"
@@ -229,7 +229,9 @@ const YieldFarm = ({
           )}
         </Box>
       </Flex>
-      {showYieldfarm && <ShowYieldFarmDetails content={content} wallet={wallet}/>}
+      {showYieldfarm && (
+        <ShowYieldFarmDetails content={content} wallet={wallet} />
+      )}
     </>
   );
 };
