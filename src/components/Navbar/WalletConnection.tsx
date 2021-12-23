@@ -56,9 +56,12 @@ export default function WalletConnection() {
     }
 
     loadChain()
-  }, [account])
+  }, [chain, networkChange])
 
-
+  window.ethereum.on('networkChanged', function (networkId) {
+    //console.log('networkChanged', networkId, "22");
+    window.location.reload();
+  });
 
   if (account) {
     return (
