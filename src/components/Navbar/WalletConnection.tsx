@@ -59,6 +59,7 @@ export default function WalletConnection() {
   }, [account])
 
 
+
   if (account) {
     return (
       <>
@@ -109,7 +110,7 @@ export default function WalletConnection() {
       </>
     );
   }
-  if (!isSupportedNetwork(chain as any)) {
+  else if (!isSupportedNetwork(chain as any)) {
     return (
       <>
         <Button

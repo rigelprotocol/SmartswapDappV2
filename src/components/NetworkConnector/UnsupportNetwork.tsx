@@ -42,6 +42,7 @@ function UnsupportNetwork({ openModal, setDisplayModal }: uProps) {
                     method: 'wallet_switchEthereumChain',
                     params: [{ chainId: chain }],
                 });
+                window.location.reload();
             } catch (switchError) {
                 console.log(switchError)
                 // This error code indicates that the chain has not been added to MetaMask.
