@@ -54,11 +54,10 @@ export default function WalletConnection() {
       const chanData = await window.ethereum?.request({ method: 'eth_chainId' });
       setChain(chanData)
     }
-
     loadChain()
-  }, [chain, networkChange])
+  }, [chain])
 
-  window.ethereum.on('networkChanged', function (networkId) {
+  window.ethereum?.on('networkChanged', function () {
     //console.log('networkChanged', networkId, "22");
     window.location.reload();
   });
