@@ -1,8 +1,7 @@
-import { Currency } from '@uniswap/sdk-core';
-import { useEffect } from 'react';
-import { useActiveWeb3React } from '../utils/hooks/useActiveWeb3React';
-import { useState } from 'react';
-import { smartFactory, SmartSwapRouter } from '../utils/Contracts';
+import {Currency} from '@uniswap/sdk-core';
+import {useEffect, useState} from 'react';
+import {useActiveWeb3React} from '../utils/hooks/useActiveWeb3React';
+import {smartFactory, SmartSwapRouter} from '../utils/Contracts';
 import {
   BUSD,
   RGPADDRESSES,
@@ -11,18 +10,17 @@ import {
   USDT,
   WNATIVEADDRESSES,
 } from '../utils/addresses';
-import { ZERO_ADDRESS } from '../constants';
-import { ethers } from 'ethers';
-import { getAddress } from '../utils/hooks/usePools';
-import { SupportedChainSymbols } from '../utils/constants/chains';
+import {ZERO_ADDRESS} from '../constants';
+import {ethers} from 'ethers';
+import {getAddress} from '../utils/hooks/usePools';
+import {SupportedChainSymbols} from '../utils/constants/chains';
 
 const formatAmount = (number: string) => {
   // const numb = ethers.BigNumber.from(number).toString();
   // let res = ethers.utils.formatEther(num);
   // res = (+res).toString();
   // return res;
-  const num = ethers.utils.formatEther(number);
-  return num;
+  return ethers.utils.formatEther(number);
 };
 
 export const useSwap = (
@@ -35,7 +33,7 @@ export const useSwap = (
   const [loading, setLoading] = useState<boolean>(false);
   const [amount, setAmount] = useState<string | undefined>('');
   const [wrap, setWrap] = useState<boolean>(false);
-  const [pathArray, setPath] = useState<string[] | undefined>([]);
+  const [pathArray, setPath] = useState<string[] | undefined>(undefined);
   const [pathSymbol, setPathSymbol] = useState('');
 
   let nativeAddress;
@@ -328,8 +326,12 @@ export const useSwap = (
               }
             }
           } catch (e) {
-            console.log(e);
+            console.log('Selected Currency Address cannot be matched');
           }
+        } else {
+          setAmount('');
+          setPathSymbol('');
+          setPath([]);
         }
       } catch (e) {
         console.log(`Error occurs here: ${e}`);

@@ -20,7 +20,6 @@ export function timeConverter(UNIX_timestamp: any){
     const sec = a.getSeconds();
     return date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec;
 }
-console.log(timeConverter(68907790));
 
 interface DataIncoming {
     inputAmount: string,

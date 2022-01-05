@@ -102,7 +102,7 @@ export function useDerivedSwapInfo(): {
   inputError?: string;
   parsedAmount: string | undefined;
   showWrap: boolean;
-  pathArray: string[];
+  pathArray: [];
   pathSymbol: string;
 } {
   const { account } = useActiveWeb3React();
@@ -138,6 +138,7 @@ export function useDerivedSwapInfo(): {
   const showWrap = wrap;
 
   const bestTrade = amount;
+  console.log(pathArray);
 
   const getMaxValue = async (currency: Currency) => {
     if (currency.isNative) {
@@ -168,7 +169,7 @@ export function useDerivedSwapInfo(): {
     inputError = inputError ?? 'Select a Token';
   }
 
-  if (pathArray === [] && !wrap) {
+  if (parseFloat(typedValue) > 0 && pathArray?.length === 0 && !wrap) {
     inputError = 'Insufficient Liquidity for this Trade.';
   }
 
