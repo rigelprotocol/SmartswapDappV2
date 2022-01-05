@@ -49,8 +49,10 @@ export const MASTERCHEFV2ADDRESSES: { [key: string]: string } = {
 export const RGPSPECIALPOOLADDRESSES: { [key: string]: string } = {
   '1': '0x',
   '3': '0x',
-  '56': '0x100514759dcd6e2ccbb9eb87481b96de28c4b77f',
-  '97': '0x21228b8a9490e21dda803a0e5a07671c981d0eaf',
+  // '56': '0x100514759dcd6e2ccbb9eb87481b96de28c4b77f',
+  // '97': '0x21228b8a9490e21dda803a0e5a07671c981d0eaf',
+  '56': '0x100514759DCD6e2Ccbb9EB87481b96de28C4b77F',
+  '97': '0x7fE2Ec631716FeF3657BcB8d80CffBB2A34F7617',
   '137': '0x',
   '80001': '0x60715e85cba9892addc49830cf0655cf5fb09c3a',
 };
