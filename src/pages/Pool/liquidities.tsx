@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 // import { Box, Flex, Text } from '@chakra-ui/layout';
 import {
   Box,
   Flex,
   Text,
   Img,
-  useColorModeValue,
-  IconButton,
+  useColorModeValue
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import BNBImage from '../../assets/BNB.svg';

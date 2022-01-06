@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { SmartSwapRouter } from '../utils/Contracts';
 import { SMARTSWAPROUTER } from '../utils/addresses';
 import { useWeb3React } from '@web3-react/core';
@@ -9,7 +9,7 @@ export const useCalculatePriceImpact = (
   amountIn: number,
   fromAmount: number
 ) => {
-  const { account, chainId } = useWeb3React();
+  const { chainId } = useWeb3React();
   const [priceImpact, setPriceImpact] = useState('');
 
   useMemo(async () => {

@@ -1,20 +1,8 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { Field } from '../../../state/mint/actions';
-import { RouteComponentProps } from 'react-router-dom';
 import InputSelector from '../../Swap/components/sendToken/InputSelector';
-import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
+import { Currency } from '@uniswap/sdk-core';
 import { GetAddressTokenBalance } from '../../../state/wallet/hooks';
-import { useWeb3React } from '@web3-react/core';
-import {
-  useMintActionHandlers,
-  useDerivedMintInfo,
-  useMintState,
-} from '../../../state/mint/hooks';
-import { maxAmountSpend } from '../../../utils/maxAmountSpend';
-import { ethers } from 'ethers';
-import { SmartSwapRouter } from '../../../utils/Contracts';
-import { SMARTSWAPROUTER } from '../../../utils/addresses';
-import { getAddress } from '../../../utils/hooks/usePools';
 
 interface OutputCurrencyProps {
   onUserOutput: (value: string) => void;

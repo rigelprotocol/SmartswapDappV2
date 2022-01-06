@@ -11,7 +11,6 @@ import SmartSwapLPTokenABI1 from './abis/LPToken1.json'
 import SmartSwapLPTokenABI2 from './abis/LPToken2.json'
 import SmartSwapLPTokenABI3 from './abis/SmartSwapLPTokenThree.json'
 import RigelToken from './abis/RigelToken.json'
-import SmartSwapLPTokenABI from './abis/testnet/LPTokenContract.json'
 
 
 

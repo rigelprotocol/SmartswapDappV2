@@ -8,12 +8,7 @@ export const GetAmountsOut = async (
   CurrencyA: any,
   CurrencyB: Currency | undefined
 ) => {
-  console.log(CurrencyA);
   // const RouterContract = await SmartSwapRouter(SMARTSWAPROUTER[chainId]);
   if (CurrencyA && CurrencyB) {
-    console.log(CurrencyA);
-    // console.log(RouterContract);
-    console.log(CurrencyA);
-    console.log(CurrencyB);
   }
 };

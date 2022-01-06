@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import  { useState, useEffect, useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import {
   smartFactory,
@@ -8,9 +8,8 @@ import {
 import { SMARTSWAPFACTORYADDRESSES, SMARTSWAPROUTER } from '../addresses';
 import { getERC20Token } from '../utilsFunctions';
 import { ethers } from 'ethers';
-import { Currency, Fraction, Percent } from '@uniswap/sdk-core';
+import { Currency, Fraction } from '@uniswap/sdk-core';
 import { WNATIVEADDRESSES } from '../addresses';
-import JSBI from 'jsbi';
 
 export const useGetUserLiquidities = async () => {
   const { account, chainId } = useWeb3React();
@@ -386,7 +385,6 @@ export const useAllowance = (
         ? true
         : allowanceB.toString() > 0;
 
-      // console.log(isTokenAApproved, isTokenBApproved);
       setHasTokenABeenApproved(isTokenAApproved);
       setHasTokenBBeenApproved(isTokenBApproved);
     }

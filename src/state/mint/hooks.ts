@@ -1,13 +1,9 @@
 import {
-  Currency,
-  CurrencyAmount,
-  Percent,
-  Price,
-  Token,
+  Currency
 } from '@uniswap/sdk-core';
 
 import JSBI from 'jsbi';
-import { ReactNode, useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../index';
 
@@ -23,8 +19,6 @@ import { ethers } from 'ethers';
 import { parseUnits } from '@ethersproject/units';
 // import {useMint}
 import { useMint } from '../../hooks/useMint';
-import { ZERO_ADDRESS } from '../../constants';
-const ZERO = JSBI.BigInt(0);
 
 export function useMintState(): RootState['mint'] {
   return useSelector<RootState, RootState['mint']>((state) => state.mint);
@@ -54,16 +48,6 @@ export function useMintActionHandlers(): {
   onCurrencySelection: (field: Field, currency: Currency) => void;
   onUserInput: (field: Field, typedValue: string, no: boolean) => void;
 } {
-  const { chainId, account } = useActiveWeb3React();
-  const {
-    independentField,
-    typedValue,
-    [Field.INPUT]: { currencyId: inputCurrencyId },
-    [Field.OUTPUT]: { currencyId: outputCurrencyId },
-    recipient,
-  } = useMintState();
-
-  const [Balance, Symbol] = useNativeBalance();
   const dispatch = useDispatch<AppDispatch>();
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
@@ -102,13 +86,11 @@ export function useDerivedMintInfo(): {
   showWrap: boolean;
 } {
   const { account } = useActiveWeb3React();
-  const [Balance] = useNativeBalance();
   const {
     independentField,
     typedValue,
     [Field.INPUT]: { currencyId: inputCurrencyId },
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
-    recipient,
   } = useMintState();
 
   const inputCurrency = useCurrency(inputCurrencyId);
@@ -125,7 +107,7 @@ export function useDerivedMintInfo(): {
     (isExactIn ? inputCurrency : outputCurrency) ?? undefined
   );
 
-  const [address, wrap, amount] = useMint(
+  const [, wrap, amount] = useMint(
     isExactIn ? inputCurrency : outputCurrency,
     isExactIn ? outputCurrency : inputCurrency,
     parsedAmount

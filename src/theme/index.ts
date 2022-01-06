@@ -6,11 +6,11 @@ import styles from "./styles"
 import borders from "./foundations/borders"
 // Component style overrides
 import Button from "./components/button"
-const baseStylePopper = {
-  w: "70px",
-  maxW: "60px",
-  zIndex: 10,
-};
+// const baseStylePopper = {
+//   w: "70px",
+//   maxW: "60px",
+//   zIndex: 10,
+// };
 const overrides = {
     styles,
     borders,

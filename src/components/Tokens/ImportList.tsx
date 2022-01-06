@@ -40,8 +40,6 @@ const ImportList:React.FC<ImportProps> = ({
     closeModal,
     open}) => {
 
-  const addToken = useAddUserToken()
-
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const boxShadow= useColorModeValue('#DEE6ED', '#324D68');
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
@@ -49,9 +47,6 @@ const ImportList:React.FC<ImportProps> = ({
     const textColor = useColorModeValue("#319EF6","#4CAFFF")
     const boxColor = useColorModeValue("#F2F5F8","#213345")
     const WarningLogo = useColorModeValue(LightWarning,Warning)
-    const {
-        onClose,
-      } = useDisclosure();
       const dispatch = useDispatch()
       const [addError, setAddError] = useState<string | null>(null)
       const lists = useAllLists()

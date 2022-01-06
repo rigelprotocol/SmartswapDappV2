@@ -1,16 +1,14 @@
-import {useMemo,useCallback, useEffect} from "react"
+import {useMemo} from "react"
 import DEFAULT_TOKEN_LIST from "@rigelprotocol_01/default-token-list"
 import { TokenList } from '@uniswap/token-lists'
 import {WrappedTokenInfo} from "./WrappedTokenInfo"
 import { TagInfo } from "./WrappedTokenInfo"
 import { Tags } from "@uniswap/token-lists"
 import { DEFAULT_LIST_OF_LISTS } from "../../utils/constants/lists"
-import { AppDispatch, RootState } from ".."
+import { RootState } from ".."
 import { UNSUPPORTED_LIST_URLS } from "../../utils/constants/lists"
-import UNSUPPORTED_TOKEN_LIST from '../../utils/constants/tokenList/rigelprotocol-unsupported.tokenlist.json'
-import { useAllInactiveTokens } from "../../hooks/Tokens"
 
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 type TagDetails = Tags[keyof Tags]
 export interface TagInfo extends TagDetails {
   id: string

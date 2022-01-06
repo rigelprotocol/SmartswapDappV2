@@ -184,7 +184,6 @@ export default createReducer(initialState, (builder) =>
 
   .addCase(updateFarmAllowances, (state, action) => {
     const allowances = action.payload;
-    console.log("#######", allowances)
     allowances.forEach((item, index) => {
       state.contents[index].poolAllowance = item;
     });

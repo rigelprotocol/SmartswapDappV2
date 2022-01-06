@@ -35,7 +35,6 @@ export type Currencies = {
 
 const FindPool = () => {
   const mode = useColorModeValue('light', 'dark');
-  const infoBg = ('#EBF6FE', '#EAF6FF');
   const genBorder = useColorModeValue('#DEE6ED', '#324D68');
   const bgColor = useColorModeValue('#F2F5F8', '#213345');
   const topIcons = useColorModeValue('#666666', '#DCE6EF');
@@ -57,11 +56,6 @@ const FindPool = () => {
   const factory = useGetUserLiquidities();
 
   const loadedUrlParams = useDefaultsFromURLSearch();
-
-  const [inputcurrency] = [useCurrency(loadedUrlParams?.inputCurrencyId)];
-
-  const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
-
   const history = useHistory();
 
   useEffect(() => {

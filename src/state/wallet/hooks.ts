@@ -1,8 +1,8 @@
-import {useMemo,useState,useEffect} from "react"
+import {useState,useEffect} from "react"
 import { getERC20Token } from "../../utils/utilsFunctions";
 import { isAddress } from "@ethersproject/address";
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React'
-import { Currency, Token,NativeCurrency,CurrencyAmount,Ether} from '@uniswap/sdk-core'
+import { Currency, Token,CurrencyAmount} from '@uniswap/sdk-core'
 import { ethers } from "ethers";
 import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { checkSupportedIds } from "../../connectors";

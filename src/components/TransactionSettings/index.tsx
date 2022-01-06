@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import {
-  Box,
   Text,
   Flex,
   useColorModeValue,
@@ -18,7 +17,6 @@ import {
   Tooltip,
  }
  from '@chakra-ui/react';
-import { TimeIcon } from '@chakra-ui/icons';
 import { SettingsIcon } from '../../theme/components/Icons';
 import { ExclamationIcon } from '../../theme/components/Icons';
 import { useUserSlippageTolerance, useUserTransactionTTL } from '../../state/user/hooks'
@@ -38,18 +36,11 @@ const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`);
 
 const TransactionSettings = () => {
   const textColor = useColorModeValue('#333333', '#F1F5F8');
-  const iconColor = useColorModeValue('#666666', '#DCE5EF');
   const bgColor = useColorModeValue('#ffffff', '#15202B');
   const buttonBgcolor = useColorModeValue('#F2F5F8', '#213345');
-  const buttonBgColorTwo = useColorModeValue('#F2F5F8', '#324D68');
   const textColorTwo = useColorModeValue('#666666', '#DCE6EF');
   const borderColor = useColorModeValue('#DEE6ED', '#324D68');
   const activeButtonColor = useColorModeValue("#319EF6","#4CAFFF");
-  const [slippageValue, setSlippageValue] = useState("");
-  const handleClick = (e) => {
-    e.preventDefault();
-    setSlippageValue(e.target.value)
-  }
   const [userSlippageTolerance, setUserSlippageTolerance] = useUserSlippageTolerance();
   const [slippageInput, setSlippageInput] = useState('');
   const [ttl, setTtl] = useUserTransactionTTL();

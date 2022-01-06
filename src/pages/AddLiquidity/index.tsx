@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import { Field } from '../../state/mint/actions';
 import { RouteComponentProps } from 'react-router-dom';
 import TransactionSettings from '../../components/TransactionSettings';
@@ -22,7 +22,6 @@ import InputCurrency from './AddLquidityInputs/InputCurrency';
 import { useMintActionHandlers } from '../../state/mint/hooks';
 import {
   useIsPoolsAvailable,
-  usePoolShare,
   usePricePerToken,
   useAllowance,
   usePriceForNewPool,

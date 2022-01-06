@@ -23,7 +23,6 @@ export const useMint = (
 ) => {
   const { chainId } = useActiveWeb3React();
   const [address, setAddress] = useState<string>();
-  const [loading, setLoading] = useState<boolean>(false);
   const [amount, setAmount] = useState<string | undefined>('');
   const [wrap, setWrap] = useState<boolean>(false);
 
@@ -42,7 +41,7 @@ export const useMint = (
     : [undefined, undefined];
   const tokenOneAddress = tokenA?.address || nativeAddress?.address;
   const tokenTwoAddress = tokenB?.address || nativeAddress?.address;
-  const wrappable: boolean = tokenOneAddress == tokenTwoAddress;
+  const wrappable: boolean = tokenOneAddress === tokenTwoAddress;
   let validSmartAddress: string;
   if (SMARTSWAPFACTORYADDRESSES[chainId as number] !== '0x') {
     validSmartAddress = SMARTSWAPFACTORYADDRESSES[chainId as number];

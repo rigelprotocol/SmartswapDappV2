@@ -1,4 +1,4 @@
-import { Fraction, Percent } from '@uniswap/sdk-core';
+import { Fraction } from '@uniswap/sdk-core';
 
 export function calculateSlippageAmount(value: any, slippage: number): string {
   const fraction = new Fraction(slippage, 100)

@@ -15,7 +15,7 @@ import {
   useGetLiquidityById,
   useTokenValueToBeRemoved,
 } from '../../utils/hooks/usePools';
-import { Router, useHistory, useParams } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 import BNBImage from '../../assets/BNB.svg';
 import RGPImage from '../../assets/rgp.svg';
 import ETHImage from '../../assets/eth.svg';
@@ -39,8 +39,6 @@ import {
   formatAmountIn,
   getOutPutDataFromEvent,
 } from '../../utils/utilsFunctions';
-import JSBI from 'jsbi';
-import { Percent } from '@uniswap/sdk-core';
 import { ethers } from 'ethers';
 import MATICImage from '../../assets/Matic.svg';
 

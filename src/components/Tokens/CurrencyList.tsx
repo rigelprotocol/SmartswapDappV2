@@ -1,7 +1,7 @@
 
 import React from 'react'
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React'
-import { Token,Currency,CurrencyAmount } from "@uniswap/sdk-core"
+import { Currency,CurrencyAmount } from "@uniswap/sdk-core"
 import CurrencyLogo from '../currencyLogo';
 import {
     useColorModeValue,

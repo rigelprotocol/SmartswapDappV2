@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import React from 'react';
 
 import {
     Button,
-    Heading,
-    useDisclosure
 } from "@chakra-ui/react";
 import { setOpenModal, TrxState } from '../../../state/application/reducer';
 import {useDispatch} from "react-redux";

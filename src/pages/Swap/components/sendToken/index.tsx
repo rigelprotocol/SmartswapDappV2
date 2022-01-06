@@ -69,9 +69,6 @@ const SendToken = () => {
     [loadedInputCurrency, loadedOutputCurrency]
   );
 
-  const handleConfirmTokenWarning = useCallback(() => {
-    setDismissTokenWarning(true);
-  }, []);
 
   // dismiss warning if all imported tokens are in active lists
   const defaultTokens = useAllTokens();
@@ -675,17 +672,17 @@ const SendToken = () => {
   const toAddress = currencies[Field.OUTPUT]?.isNative
     ? WNATIVEADDRESSES[chainId as number]
     : currencies[Field.OUTPUT]?.wrapped.address;
-  const path = [fromAddress, toAddress];
+  // const path = [fromAddress, toAddress];
 
-  const checkLiquidityPair = async () => {
-    const factory = await smartFactory(
-      SMARTSWAPFACTORYADDRESSES[chainId as number]
-    );
-    const LPAddress = await factory.getPair(fromAddress, toAddress);
-    if (LPAddress !== ZERO_ADDRESS) {
-      setRouteAddress([fromAddress, toAddress]);
-    }
-  };
+  // const checkLiquidityPair = async () => {
+  //   const factory = await smartFactory(
+  //     SMARTSWAPFACTORYADDRESSES[chainId as number]
+  //   );
+  //   const LPAddress = await factory.getPair(fromAddress, toAddress);
+  //   if (LPAddress !== ZERO_ADDRESS) {
+  //     setRouteAddress([fromAddress, toAddress]);
+  //   }
+  // };
   // useEffect(async () => {
   //   await checkLiquidityPair();
   // }, [fromAddress, toAddress, path]);

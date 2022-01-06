@@ -3,17 +3,14 @@ import { provider } from '../../utils/utilsFunctions';
 import { useCallback, useEffect, useState } from 'react';
 import { Field, selectCurrency, typeInput, replaceSwapState, switchCurrencies } from './actions';
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
-import { ParsedQs } from 'qs';
 import { useCurrency } from '../../hooks/Tokens';
 import { useDispatch, useSelector } from 'react-redux';
 import { Currency } from '@uniswap/sdk-core';
-import { useNativeBalance } from '../../utils/hooks/useBalances';
 import { getERC20Token } from '../../utils/utilsFunctions';
 import { isAddress } from '../../utils';
 import { ethers } from 'ethers';
 import { SupportedChainSymbols } from '../../utils/constants/chains';
 import { useSwap } from '../../hooks/useSwap';
-import { ZERO_ADDRESS } from '../../constants';
 import { parseUnits } from '@ethersproject/units';
 import useParsedQueryString from '../../hooks/useParsedQueryString';
 import JSBI from 'jsbi';
@@ -47,18 +44,6 @@ export function useSwapActionHandlers(): {
   onUserInput: (field: Field, typedValue: string) => void;
   onSwitchTokens: () => void
 } {
-  const { chainId, account } = useActiveWeb3React();
-  const {
-    independentField,
-    typedValue,
-    [Field.INPUT]: { currencyId: inputCurrencyId },
-    [Field.OUTPUT]: { currencyId: outputCurrencyId },
-    recipient,
-  } = useSwapState();
-
-  const [Balance, Symbol] = useNativeBalance();
-
-
   const dispatch = useDispatch<AppDispatch>();
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
@@ -106,13 +91,11 @@ export function useDerivedSwapInfo(): {
   pathSymbol: string;
 } {
   const { account } = useActiveWeb3React();
-  const [Balance] = useNativeBalance();
   const {
     independentField,
     typedValue,
     [Field.INPUT]: { currencyId: inputCurrencyId },
-    [Field.OUTPUT]: { currencyId: outputCurrencyId },
-    recipient,
+    [Field.OUTPUT]: { currencyId: outputCurrencyId }
   } = useSwapState();
   const inputCurrency = useCurrency(inputCurrencyId);
   const outputCurrency = useCurrency(outputCurrencyId);
@@ -247,7 +230,6 @@ function queryParametersToSwapState(parsedQs: any, chainId: number) {
 // updates the swap state to use the defaults for a given network
 export function useDefaultsFromURLSearch() {
   const { chainId, account } = useActiveWeb3React();
-  const [, Symbol] = useNativeBalance();
   const dispatch = useDispatch<AppDispatch>();
   const parsedQs = useParsedQueryString();
   const [result, setResult] = useState<

@@ -164,13 +164,13 @@ const RGPSpecialPoolApproval = async () => {
     try {
       const rgp = await rigelToken(RGP[chainId as number]);
       const walletBal = (await rgp.balanceOf(account)) + 400e18;
-      const data = await rgp.approve(SMART_SWAP.specialPool, walletBal, {
-        from: account,
-        gasLimit: 150000,
-        gasPrice: ethers.utils.parseUnits('20', 'gwei'),
-      });
+      // const data = await rgp.approve(SMART_SWAP.specialPool, walletBal, {
+      //   from: account,
+      //   gasLimit: 150000,
+      //   gasPrice: ethers.utils.parseUnits('20', 'gwei'),
+      // });
       setApprovalLoading(true);
-      const { confirmations, status } = await fetchTransactionData(data);
+      // const { confirmations, status } = await fetchTransactionData(data);
       getAllowances();
     } catch (error) {
       console.error(error);
@@ -322,7 +322,6 @@ const setApprove = val => {
         } else {
           rigelAllowance = pool1Allowance;
         }
-        console.log("Contract ran", pool2Allowance)
         dispatch(updateFarmAllowances([
           rigelAllowance,
           pool2Allowance,
@@ -348,7 +347,7 @@ const setApprove = val => {
       if (
         isNaN(parseFloat(depositTokenValue)) ||
         !Math.sign(parseFloat(depositTokenValue)) ||
-        Math.sign(parseFloat(depositTokenValue)) == -1
+        Math.sign(parseFloat(depositTokenValue)) === -1
       ) {
         setDepositInputHasError(true);
         setDepositErrorButtonText('Invalid Input');
@@ -467,7 +466,7 @@ const setApprove = val => {
             gasPrice: ethers.utils.parseUnits('20', 'gwei'),
           },
         );
-        const { confirmations, status, logs } = await fetchTransactionData(data);
+        const { logs } = await fetchTransactionData(data);
         const { hash } = data;
         const amountUnstaked = convertToNumber(logs[1].data);
 
@@ -594,7 +593,7 @@ const setApprove = val => {
                 gasPrice: ethers.utils.parseUnits('20', 'gwei'),
               },
             );
-            const { confirmations, status, logs } = await fetchTransactionData(data);
+            // const { confirmations, status, logs } = await fetchTransactionData(data);
 
             dispatch(setOpenModal({
               trxState: TrxState.TransactionSuccessful,
@@ -617,7 +616,7 @@ const setApprove = val => {
               gasPrice: ethers.utils.parseUnits('20', 'gwei'),
             },
           );
-          const { confirmations, status } = await fetchTransactionData(data);
+          // const { confirmations, status } = await fetchTransactionData(data);
 
           dispatch(setOpenModal({
             trxState: TrxState.TransactionSuccessful,
@@ -692,7 +691,7 @@ const setApprove = val => {
           gasPrice: ethers.utils.parseUnits('20', 'gwei'),
         },
       );
-      const { confirmations, status } = await fetchTransactionData(data);
+      // const { confirmations, status } = await fetchTransactionData(data);
       // callRefreshFarm(confirmations, status);
     }
   };

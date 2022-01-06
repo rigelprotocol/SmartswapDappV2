@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import {
     Text,
@@ -9,7 +9,6 @@ import {
     Modal,
     ModalBody,
     useColorModeValue,
-    useDisclosure,
     Circle, Button, Link
 } from "@chakra-ui/react";
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons'
@@ -25,8 +24,6 @@ const TransactionStateModal: React.FC = () => {
     const closeButtonBgColour = useColorModeValue("#319EF6", "#008DFF");
     const successBgColour = useColorModeValue("#22BB33", "#75F083");
     const errorBgColour = useColorModeValue("#CC334F", "#FF3358");
-    
-    const [modalOpen, setModalOpen] = useState(false)
     const dispatch = useDispatch();
     const modalDetails = useSelector((state: RootState) => state.application.modal);
     const setOpen = modalDetails === null ? false : true

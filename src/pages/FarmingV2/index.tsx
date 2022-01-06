@@ -41,7 +41,6 @@ import {
   rigelToken,
 } from "../../utils/Contracts";
 import {
-  RGPADDRESSES,
   RGPSPECIALPOOLADDRESSES,
   MASTERCHEFV2ADDRESSES,
   SMARTSWAPLP_TOKEN1ADDRESSES,
@@ -54,7 +53,7 @@ import {
 import { formatBigNumber } from "../../utils";
 import { RootState } from "../../state";
 import { SupportedChainId } from "../../constants/chains";
-import { useNativeBalance, useRGPBalance } from "../../utils/hooks/useBalances";
+import { useNativeBalance} from "../../utils/hooks/useBalances";
 
 export const BIG_TEN = new bigNumber(10);
 
@@ -84,7 +83,7 @@ export function Index() {
   const FarmData = useFarms();
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
-  const [Balance, Symbol] = useNativeBalance();
+  const [Balance] = useNativeBalance();
   const wallet = {
     balance: Balance,
     address: account,
@@ -238,8 +237,6 @@ export function Index() {
         return `${sym0}-${sym1}`;
       };
 
-      //maticRGP
-      //  console.log(pool1Reserve, pool2Reserve, pool3Reserve, pool4Reserve, pool5Reserve)
 
       if (Number(chainId) === Number(SupportedChainId.POLYGONTEST)) {
         const MRGPprice: number | any = ethers.utils.formatUnits(
@@ -433,13 +430,10 @@ export function Index() {
           masterChefV2.userInfo(4, account),
           masterChefV2.userInfo(5, account),
         ]);
-
-        //console.log("poolFourStaked", poolFourStaked)
         //const RGPStakedEarned = await specialPoolStaked();
         let RGPStaked;
         let RGPEarned;
 
-        //console.log("EARRNED", RGPStakedEarned)
 
         //  if (RGPStakedEarned) {
         //const [specialPoolStaked, specialPoolEarned] = RGPStakedEarned;

@@ -1,11 +1,8 @@
 import { Web3Provider } from '@ethersproject/providers';
 import { Contract } from '@ethersproject/contracts';
 import detectEthereumProvider from '@metamask/detect-provider';
-import { getAddress } from '@ethersproject/address';
 import ERC20Token from './abis/erc20.json';
 import { WrappedSymbols } from './constants/chains';
-import { Fraction } from '@uniswap/sdk-core';
-import { ethers } from 'ethers';
 
 export const removeSideTab = (sideBarName: string): void => {
   localStorage.setItem(sideBarName, 'removed');

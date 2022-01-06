@@ -17,7 +17,7 @@ import ModalInput from "./input"
 import Manage from "./Manage"
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React'
 import CurrencyList from "./CurrencyList"
-import { Token,Currency,NativeCurrency } from "@uniswap/sdk-core"
+import { Token,Currency } from "@uniswap/sdk-core"
 import useDebounce from "../../hooks/useDebounce";
 import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { useAllTokens,ExtendedEther,useToken,useIsUserAddedToken } from "../../hooks/Tokens"
@@ -25,7 +25,6 @@ import { isAddress } from "../../utils"
 import { filterTokens } from "./filtering"
 import ImportRow from "./ImportRow"
 import NewToken from "./newToken"
-import {NATIVE} from "@sushiswap/sdk";
 
 
 type IModal= {
@@ -84,9 +83,6 @@ const SelectToken:React.FC<IModal> = ({
       }
       return filteredTokens
     },[debouncedQuery, ether, filteredTokens]);
-    const {
-        onClose,
-      } = useDisclosure();
 const openManageToken = ():void => {
 setDisplayManageToken(state => !state)
 };

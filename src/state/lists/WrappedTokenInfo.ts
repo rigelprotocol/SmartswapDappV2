@@ -1,4 +1,4 @@
-import { Currency, Token,Ether } from '@uniswap/sdk-core'
+import { Currency, Token } from '@uniswap/sdk-core'
 import { Tags, TokenInfo } from '@uniswap/token-lists'
 import {isAddress} from "../../utils"
 

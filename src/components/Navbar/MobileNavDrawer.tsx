@@ -30,8 +30,6 @@ const MobileNavDrawer = () => {
   const HamburgerIconColor = useColorModeValue('#333333', '#F1F5F8');
   const SwapBgColor = useColorModeValue('#F2F5F8', '#213345');
   const closeButtonBorder = useColorModeValue('#666666', '#DCE5EF');
-  const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
-
   const Nav = ({ to, label }: { to: string; label: string }) => (
     <NavLink
       to={to}

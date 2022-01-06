@@ -1,7 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit';
 import {
   Field,
-  resetMintState,
   typeInput,
   selectCurrency,
   replaceMintState,

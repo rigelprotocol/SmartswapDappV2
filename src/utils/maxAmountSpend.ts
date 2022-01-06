@@ -1,6 +1,6 @@
 
 import { MIN_BNB } from './constants'
-import { Currency, CurrencyAmount } from '@uniswap/sdk-core'
+import { Currency } from '@uniswap/sdk-core'
 import JSBI from 'jsbi'
 import { ethers } from 'ethers'
 /**

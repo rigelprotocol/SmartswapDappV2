@@ -5,7 +5,6 @@ import { useUserAddedTokens } from "../state/user/hooks"
 import { useActiveWeb3React } from '../utils/hooks/useActiveWeb3React'
 import {TokenAddressMap} from "../state/lists/hooks"
 import {useState, useEffect } from "react"
-import { checkSupportedIds } from "../connectors"
 import { isAddress } from "../utils"
 import { getERC20Token } from "../utils/utilsFunctions"
 import { useNativeBalance } from "../utils/hooks/useBalances"

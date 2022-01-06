@@ -1,20 +1,15 @@
-import { Box, Flex, Text } from '@chakra-ui/layout';
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Menu,
   MenuButton,
   MenuItem,
   MenuDivider,
   MenuList,
-  Button,
   IconButton,
-  Link,
-  Icon,
 } from '@chakra-ui/react';
 import { IoEllipsisHorizontalOutline } from 'react-icons/io5';
 
 const SocialMediaLinks = () => {
-  const [show, setShow] = useState(false);
   return (
     <Menu>
       <MenuButton

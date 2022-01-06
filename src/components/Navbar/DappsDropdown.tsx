@@ -8,11 +8,7 @@ import {
   Button,
   Badge,
   Text,
-  Spacer,
-  IconButton,
   Link,
-  Icon,
-  useMediaQuery,
 } from "@chakra-ui/react";
 import { ChevronDownIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import { AiOutlineAppstore } from "react-icons/ai";

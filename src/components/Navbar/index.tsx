@@ -4,16 +4,11 @@ import {
   Spacer,
   Box,
   Img,
-  Text,
-  Stack,
   Link,
-  Button,
-  Image,
   useColorModeValue,
   useMediaQuery,
 } from '@chakra-ui/react';
 import { NavLink } from 'react-router-dom';
-import { ExternalLinkIcon, HamburgerIcon } from '@chakra-ui/icons';
 import { ColorModeSwitcher } from '../ColorModeSwitcher';
 import SocialMedia from './SocialMedia';
 import DappsDropdown from './DappsDropdown';
@@ -21,7 +16,6 @@ import WalletConnection from './WalletConnection';
 import SwapDropdown from './SwapDropdown';
 import LightLogo from './../../assets/logo/logo-light.svg';
 import DarkLogo from './../../assets/logo/logo-dark.svg';
-import MetamaskLogo from './../../assets/metamaskLogo.png';
 import MobileNavDrawer from './MobileNavDrawer';
 import NetworkConnector from '../NetworkConnector';
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
