@@ -119,10 +119,10 @@ const Remove = () => {
           ? pool?.path[1].toPath
           : pool?.path[0].fromPath;
         removeLiquidityForETH(
-          valuesToBeRemoved[2],
+          valuesToBeRemoved[5] as string,
           tokenAddress,
-          valuesToBeRemoved[0],
-          valuesToBeRemoved[1],
+          valuesToBeRemoved[3] as string,
+          valuesToBeRemoved[4] as string,
           pool?.path[0].decimals,
           pool?.path[1].decimals
         );
@@ -130,11 +130,11 @@ const Remove = () => {
     } else {
       if (valuesToBeRemoved) {
         removeLiquidityForToken(
-          valuesToBeRemoved[2],
+          valuesToBeRemoved[5] as string,
           pool?.path[0].fromPath,
           pool?.path[1].toPath,
-          valuesToBeRemoved[0],
-          valuesToBeRemoved[1],
+          valuesToBeRemoved[3] as string,
+          valuesToBeRemoved[4] as string,
           pool?.path[0].decimals,
           pool?.path[1].decimals
         );
@@ -143,11 +143,11 @@ const Remove = () => {
   };
 
   const removeLiquidityForToken = async (
-    Liquidity: number,
+    liquidity: string,
     tokenA: string,
     tokenB: string,
-    amountAMin: number,
-    amountBMin: number,
+    AmountAMin: string,
+    AmountBMin: string,
     tokenADecimals: number,
     tokenBDecimals: number
   ) => {
@@ -155,16 +155,26 @@ const Remove = () => {
       const smartswaprouter = await SmartSwapRouter(
         SMARTSWAPROUTER[chainId as number]
       );
-      const liquidity = formatAmountIn(Liquidity, 18);
-      const AmountAMin = formatAmountIn(amountAMin, tokenADecimals);
-      const AmountBMin = formatAmountIn(amountBMin, tokenBDecimals);
+      const Liquidity = formatAmountIn(valuesToBeRemoved[2], 18);
+      const amountAMin = formatAmountIn(valuesToBeRemoved[0], tokenADecimals);
+      const amountBMin = formatAmountIn(valuesToBeRemoved[1], tokenBDecimals);
+
+      const formatAmountAMin = ethers.utils.formatEther(AmountAMin)
+      const formatAmountBMin = ethers.utils.formatEther(AmountBMin)
+
+      console.log(AmountAMin,AmountBMin,liquidity)
+      console.log(Liquidity,amountAMin,amountBMin)
+
+      const slippage = calculateSlippageAmount(AmountAMin, userSlippageTolerance)
+
+      console.log('slippage',slippage)
 
       const deadLine = getDeadline(userDeadline);
       try {
         dispatch(
           setOpenModal({
-            message: `Removing ${amountAMin.toFixed(6)} ${pool?.path[0].token
-              } and ${amountBMin.toFixed(6)} ${pool?.path[1].token} `,
+            message: `Removing ${parseFloat(formatAmountAMin).toFixed(6)} ${pool?.path[0].token
+              } and ${parseFloat(formatAmountBMin).toFixed(6)} ${pool?.path[1].token} `,
             trxState: TrxState.WaitingForConfirmation,
           })
         );
@@ -255,10 +265,10 @@ const Remove = () => {
   };
 
   const removeLiquidityForETH = async (
-    Liquidity: number,
+    liquidity: string,
     tokenAddress: any,
-    amountAMin: number,
-    amountBMin: number,
+    AmountAMin: string,
+    AmountBMin: string,
     tokenADecimals: number,
     tokenBDecimals: number
   ) => {
@@ -266,24 +276,27 @@ const Remove = () => {
       const smartswaprouter = await SmartSwapRouter(
         SMARTSWAPROUTER[chainId as number]
       );
-      const liquidity = formatAmountIn(Liquidity, 18);
+      // const liquidity = formatAmountIn(Liquidity, 18);
 
-      const AmountAMin = formatAmountIn(amountAMin, tokenADecimals);
+      const formatAmountAMin = ethers.utils.formatEther(AmountAMin)
+      const formatAmountBMin = ethers.utils.formatEther(AmountBMin)
 
-      const AmountBMin = formatAmountIn(amountBMin, tokenBDecimals);
+      // const AmountAMin = formatAmountIn(amountAMin, tokenADecimals);
+
+      // const AmountBMin = formatAmountIn(amountBMin, tokenBDecimals);
 
       const deadLine = getDeadline(userDeadline);
 
       try {
         dispatch(
           setOpenModal({
-            message: ` Removing ${amountAMin.toFixed(6)} ${pool?.path[0].token === 'WBNB'
+            message: ` Removing ${parseFloat(formatAmountAMin).toFixed(6)} ${pool?.path[0].token === 'WBNB'
               ? 'BNB'
               : pool?.path[0].token === 'WETH'
                 ? 'ETH'
                 : pool?.path[0].token
               }
-           and ${amountBMin.toFixed(6)}
+           and ${parseFloat(formatAmountBMin).toFixed(6)}
           ${pool?.path[1].token === 'WBNB'
                 ? 'BNB'
                 : pool?.path[1].token === 'WETH'
