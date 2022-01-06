@@ -162,12 +162,7 @@ const Remove = () => {
       const formatAmountAMin = ethers.utils.formatEther(AmountAMin)
       const formatAmountBMin = ethers.utils.formatEther(AmountBMin)
 
-      console.log(AmountAMin,AmountBMin,liquidity)
-      console.log(Liquidity,amountAMin,amountBMin)
-
-      const slippage = calculateSlippageAmount(AmountAMin, userSlippageTolerance)
-
-      console.log('slippage',slippage)
+      
 
       const deadLine = getDeadline(userDeadline);
       try {

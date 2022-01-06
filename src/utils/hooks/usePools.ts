@@ -156,9 +156,6 @@ const getPooledToken = (params: PoolTokenParams) => {
     params.balance.toString(),
     params.totalSupply.toString()
   );
-
-  
-
  
   const multiplyReserve = fraction.multiply(params.reserves.toString());
 
