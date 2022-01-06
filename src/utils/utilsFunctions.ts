@@ -56,26 +56,61 @@ export const switchNetwork = async (
   account: string,
   library: Web3Provider
 ) => {
+  const polygonParams = {
+    chainId: '0x89',
+    chainName: 'Matic',
+    nativeCurrency: {
+      name: 'Matic',
+      symbol: 'MATIC',
+      decimals: 18,
+    },
+    rpcUrls: ['https://polygon-rpc.com'],
+    blockExplorerUrls: ['https://polygonscan.com'],
+  };
+  const binanceParams = {
+    chainId: '0x38',
+    chainName: 'Binance Smart Chain',
+    nativeCurrency: {
+      name: 'Binance Coin',
+      symbol: 'BNB',
+      decimals: 18,
+    },
+    rpcUrls: ['https://bsc-dataseed.binance.org'],
+    blockExplorerUrls: ['https://bscscan.com'],
+  };
+
   if (chainId === '0x1') {
     library?.send('wallet_switchEthereumChain', [{ chainId }, account]);
   } else if (chainId === '0x38') {
-    library?.send('wallet_addEthereumChain', [
-      {
-        chainId: '0x38',
-        rpcUrls: ['https://bsc-dataseed.binance.org'],
-        blockExplorerUrls: ['https://bscscan.com'],
-      },
-      account,
-    ]);
+    try {
+      await library?.send('wallet_switchEthereumChain', [{ chainId: '0x38' }, account]);
+    }catch (switchError) {
+      if (switchError.code === 4902) {
+          try {
+            await library?.send('wallet_addEthereumChain', [binanceParams, account])
+          } catch (addError) {
+            // handle "add" error
+            console.error(`Add chain error ${addError}`)
+          }
+        }
+        console.error(`Switch chain error ${switchError}`)
+      // handle other "switch" errors
+    }
   } else if (chainId === '0x89') {
-    library?.send('wallet_addEthereumChain', [
-      {
-        chainId: '0x89',
-        rpcUrls: ['https://polygon-rpc.com'],
-        blockExplorerUrls: ['https://polygonscan.com'],
-      },
-      account,
-    ]);
+    try {
+      await library?.send('wallet_switchEthereumChain', [{ chainId: '0x89' }, account]);
+    }catch (switchError) {
+      if (switchError.code === 4902) {
+          try {
+            await library?.send('wallet_addEthereumChain', [polygonParams, account])
+          } catch (addError) {
+            // handle "add" error
+            console.error(`Add chain error ${addError}`)
+          }
+        }
+        console.error(`Switch chain error ${switchError}`)
+      // handle other "switch" errors
+    }
   }
 };
 
