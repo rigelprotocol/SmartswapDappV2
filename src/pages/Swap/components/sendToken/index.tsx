@@ -800,7 +800,7 @@ const SendToken = () => {
             >
               Approve Transaction
             </Button>
-          ) : isLoadingValue ? (
+          ) : inputError ? (
             <Button
               w="100%"
               borderRadius="6px"
@@ -815,9 +815,10 @@ const SendToken = () => {
               boxShadow={lightmode ? 'base' : 'lg'}
               _hover={{ bgColor: buttonBgcolor }}
             >
-              {inputError
-                ? inputError
-                : `Loading...`}
+              {/*{inputError*/}
+              {/*  ? inputError*/}
+              {/*  : `Loading...`}*/}
+              {inputError}
             </Button>
           ):(
             <Button
