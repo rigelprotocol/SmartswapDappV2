@@ -109,24 +109,33 @@ const getPoolData = async (
   const liquidityObject = {
     pairAddress: address,
     poolToken: ethers.utils.formatEther(balance),
+    poolTokenWei: balance,
+    totalSupplyWei: totalSupply,
     totalSupply: totalSupply.toString(),
     poolShare: (balance.toString() / totalSupply) * 100,
     path: [
       {
         fromPath: token0,
         token: symbol0,
-        amount: pooledToken0,
+        amount: pooledToken0[0],
+        amountWei: pooledToken0[1],
         decimals: decimals0,
+        reservesWei: reserves[0],
+        multiplyreserves: pooledToken0[2]
       },
       {
         toPath: token1,
         token: symbol1,
-        amount: pooledToken1,
+        amount: pooledToken1[0],
+        amountWei: pooledToken1[1],
         decimals: decimals1,
+        reservesWei: reserves[1],
+        multiplyreserves: pooledToken1[2]
+
       },
     ],
-    pooledToken0,
-    pooledToken1,
+    pooledToken0:pooledToken0[0],
+    pooledToken1:pooledToken1[0],
     approved: approved,
   };
   return liquidityObject;
@@ -147,9 +156,14 @@ const getPooledToken = (params: PoolTokenParams) => {
     params.balance.toString(),
     params.totalSupply.toString()
   );
+ 
   const multiplyReserve = fraction.multiply(params.reserves.toString());
+
+  const finalWei = multiplyReserve.multiply(Decimal).toSignificant(18)
+
+
   const final = multiplyReserve.divide(Decimal);
-  return final.toSignificant(params.decimals);
+  return [final.toSignificant(params.decimals),finalWei,multiplyReserve];
 };
 
 export const useGetLiquidityById = async (
@@ -232,13 +246,29 @@ export const useTokenValueToBeRemoved = ({
   return useMemo(() => {
     // const percent = new Percent
     if (pool && inputValue) {
-      const poolToken0Fraction =
+      const poolToken0Fraction = 
         (pool.pooledToken0 / 100) * parseInt(inputValue);
+      
+      const pooltoken0quotient = pool.path[0].multiplyreserves.quotient.toString()
+      const pooltoken1quotient = pool.path[1].multiplyreserves.quotient.toString()
+
+      const fixpooltoken0 = JSBI.divide(JSBI.BigInt(pooltoken0quotient),JSBI.BigInt(100))
+      const fixpooltoken0Fraction = JSBI.multiply(fixpooltoken0,JSBI.BigInt(inputValue)).toString()
+
+
       const poolToken1Fraction =
         (pool.pooledToken1 / 100) * parseInt(inputValue);
 
+        const fixpooltoken1 = JSBI.divide(JSBI.BigInt(pooltoken1quotient),JSBI.BigInt(100))
+        const fixpooltoken1Fraction = JSBI.multiply(fixpooltoken1,JSBI.BigInt(inputValue)).toString()
+
+
       const poolTokenFraction = (pool.poolToken / 100) * parseInt(inputValue);
-      return [poolToken0Fraction, poolToken1Fraction, poolTokenFraction];
+      const fixToken = JSBI.divide(JSBI.BigInt(pool.poolTokenWei.toString()),JSBI.BigInt(100))
+    
+      const fixTokenFraction = parseFloat(inputValue) === 100 ? pool.poolTokenWei.toString() : JSBI.multiply(fixToken,JSBI.BigInt(inputValue)).toString()
+  
+      return [poolToken0Fraction, poolToken1Fraction, poolTokenFraction,fixpooltoken0Fraction,fixpooltoken1Fraction,fixTokenFraction];
     }
   }, [pool, inputValue]);
   // return [poolToken0Fraction, poolToken1Fraction, poolTokenFraction];
