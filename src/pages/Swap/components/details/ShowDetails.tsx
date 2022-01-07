@@ -5,6 +5,9 @@ import { removeSideTab, checkSideTab } from '../../../../utils/utilsFunctions';
 import { ArrowDownIcon } from "@chakra-ui/icons";
 import DetailBox from "./DetailBox";
 import {animated, Transition} from 'react-spring';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../state';
+import { useDetails } from '../../../../utils/hooks/useDetails';
 
 const ShowDetails = () => {
   const textColor = useColorModeValue('#333333', '#F1F5F8');
@@ -14,6 +17,11 @@ const ShowDetails = () => {
 
   const [sideBarRemoved, setSideBarRemoved] = useState<Boolean>(false);
   const [viewInfo, setViewInfo] = useState<Boolean>(false);
+  const swapDetails = useSelector((state: RootState) => state.swap);
+
+  useDetails(swapDetails)
+
+  console.log('swapdetails',swapDetails)
 
   useEffect(() => {
     const isActive = checkSideTab('details');

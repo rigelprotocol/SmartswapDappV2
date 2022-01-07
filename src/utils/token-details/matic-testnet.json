@@ -1,0 +1,72 @@
+[
+    {
+      "name": "Rigel Token",
+      "address": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
+      "symbol": "RGP",
+      "decimals": 18,
+      "chainId": 80001,
+      "logoURI": "https://bscscan.com/token/images/rigelprotocol_32.png",
+      "description":"Rigel Protocol is a decentralized protocol of several DeFi products. RigelProtocol is completely considered, initiated, developed, and driven by the Rigelprotocol community.",
+      "supply":"20,000,000"
+    },
+    {
+      "name": "Dai Stablecoin",
+      "address": "0xcB1e72786A6eb3b44C2a2429e317c8a2462CFeb1",
+      "symbol": "DAI",
+      "decimals": 18,
+      "chainId": 80001,
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png",
+      "description":"Dai is the native stablecoin for the Maker protocol. It is the world’s first crypto-collateralized and decentralized stablecoin, whose value is soft pegged to the US Dollar. The collateralized assets backing Dai are other cryptocurrencies instead of fiat and are held within smart contracts rather than in institutions.",
+      "supply":"8,927,647,295"
+    },
+    {
+      "name": "Ether",
+      "address": "0x714550C2C1Ea08688607D86ed8EeF4f5E4F22323",
+      "symbol": "ETH",
+      "decimals": 18,
+      "chainId": 80001,
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png",
+      "description":"Ethereum is a global, open-source platform for decentralized applications. In other words, the vision is to create a world computer that anyone can build applications in a decentralized manner; while all states and data are distributed and publicly accessible.",
+      "supply":""
+    },
+    {
+      "name": "USDTToken",
+      "address": "0x7E1cF971de65eB065A72595B3Ac9e1b9Cc630564",
+      "symbol": "USDT",
+      "decimals": 18,
+      "chainId": 80001,
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png",
+      "description":"Tether is a stablecoin pegged to the US Dollar. A stablecoin is a type of cryptocurrency whose value is pegged to another fiat currency like the US Dollar or to a commodity like Gold.",
+      "supply":"78,426,163,467"
+    },
+    {
+      "name": "Wrapped Matic",
+      "address": "0x9d91d1f8Ac4CF6C698a1a15c738323E2ad6F23E4",
+      "symbol": "WMATIC",
+      "decimals": 18,
+      "chainId": 80001,
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0/logo.png",
+      "description":"Wrapped Matic is an ERC-20 token on the Ethereum blockchain that represents Matic. Each WMATIC is backed 1:1 with Matic.",
+      "supply":""
+    },
+    {
+      "name": "Matic",
+      "address": "0x9d91d1f8Ac4CF6C698a1a15c738323E2ad6F23E4",
+      "symbol": "MATIC",
+      "decimals": 18,
+      "chainId": 80001,
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0/logo.png",
+      "description":"Polygon (Previously Matic Network) is the first well-structured, easy-to-use platform for Ethereum scaling and infrastructure development. Its core component is Polygon SDK, a modular, flexible framework that supports building multiple types of applications.",
+      "supply":"10,000,000,000"
+    },
+    {
+      "name": "USDCToken",
+      "address": "0xd22c5DbE967C2f9ac302729354fE32eB88b6B645",
+      "symbol": "USDC",
+      "decimals": 18,
+      "chainId": 80001,
+      "logoURI": "https://etherscan.io/token/images/centre-usdc_28.png",
+      "description":"Nexo is a lending platform for cryptocurrencies. Lenders can lend their digital assets such as bitcoin, tether, USDC, and more for interest.",
+      "supply":"1,000,000,000"
+    }
+  ]
