@@ -12,7 +12,7 @@ import mint from './mint/reducer'
 import farms from "./farm/reducer"
 
 
-const PERSISTED_KEYS: string[] = ['user','lists']
+const PERSISTED_KEYS: string[] = ['user','lists'];
 
 const store = configureStore({
     reducer: {
@@ -39,4 +39,4 @@ export default store
 
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;
-export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

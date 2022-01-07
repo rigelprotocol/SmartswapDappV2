@@ -7,6 +7,9 @@ import useAccountHistory from "../../../../utils/hooks/useAccountHistory";
 import useMarketHistory from "../../../../utils/hooks/useMarketHistory";
 import {DataType} from "./TransactionHistory";
 import MarketHistory from "./MarketHistory";
+import {transactionTab} from "../../../../state/transaction/actions";
+import {useDispatch, useSelector} from "react-redux";
+import {AppDispatch, RootState} from "../../../../state";
 
 const History = () => {
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
@@ -14,10 +17,12 @@ const History = () => {
   const iconColor = useColorModeValue('#666666', '#DCE5EF');
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
 
-  const [sideBarRemoved, setSideBarRemoved] = useState<Boolean>(false);
+ // const [sideBarRemoved, setSideBarRemoved] = useState<Boolean>(false);
   
   const [show, setShow] = useState<Boolean>(false);
   const [showMarketHistory, setShowMarketHistory] = useState(false);
+
+  const sideBarRemoved = useSelector((state: RootState) => state.transactions.removeSideTab);
 
   const {historyData, loading} = useAccountHistory();
   const {marketHistoryData, loadMarketData } = useMarketHistory();
@@ -25,10 +30,13 @@ const History = () => {
   const userData = Object.keys(historyData).map((i ) => historyData[i]);
   const historyArray = Object.keys(marketHistoryData).map((i ) => marketHistoryData[i]);
 
+  const dispatch = useDispatch<AppDispatch>();
+
 
   useEffect(() => {
-    const isActive = checkSideTab('history');
-    setSideBarRemoved(isActive);
+     const isActive = checkSideTab('history');
+    dispatch(transactionTab({removeSideTab: isActive}))
+
   }, []);
 
 
@@ -103,7 +111,8 @@ const History = () => {
               borderRadius="6px"
               cursor="pointer"
               onClick={() => {
-                setSideBarRemoved(true);
+                //setSideBarRemoved(true);
+                dispatch(transactionTab({removeSideTab: true}));
                 removeSideTab('history');
               }}
             >

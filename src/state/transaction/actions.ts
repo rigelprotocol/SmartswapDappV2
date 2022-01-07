@@ -37,3 +37,5 @@ export const checkedTransaction = createAction<{
     hash: string
     blockNumber: number
 }>('transactions/checkedTransaction');
+
+export const transactionTab = createAction<{removeSideTab : boolean}>('transactions/transactionTab');
