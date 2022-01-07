@@ -126,6 +126,11 @@ useEffect(() => {
       const poolOne = await smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]);
       const approvalForRGPBUSD = await poolAllowance(poolOne);
       changeApprovalButton(approvalForRGPBUSD, rgpApproval);
+      }
+      else if (content.deposit === 'RGP') {
+      
+      changeApprovalButton(true, rgpApproval);
+
     } else if (content.deposit === 'BNB-BUSD') {
       const poolThree = await smartSwapLPTokenPoolThree(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number]);
       const approvalForBNBBUSD = await poolAllowance(poolThree);
@@ -148,6 +153,7 @@ function changeApprovalButton(otherTokenApproval, rgpApproval) {
   } else if (otherTokenApproval) {
     setApproveValueForOtherToken(true);
   } else if (rgpApproval) {
+     setApproveValueForOtherToken(true);
     setApproveValueForRGP(true);
   } else {
     setApproveValueForRGP(false);
@@ -977,7 +983,9 @@ const setApprove = val => {
               mr="2"
               cursor="pointer"
               _hover={{ color: "white" }}
-              disabled={parseFloat(content.RGPEarned) <= 0}
+    
+              disabled={parseFloat(content.RGPEarned
+                ) <= 0}
               onClick={() => harvestTokens(content.pId)}
             >
               Harvest
