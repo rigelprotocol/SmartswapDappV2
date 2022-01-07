@@ -229,7 +229,6 @@ const [addError, setAddError] = useState<string | undefined>()
                       defaultChecked={isActive}
                       colorScheme={switchColor}
                       onChange={() => {
-                        alert("yes")
                         if (isActive) {
                           handleDisableList()
                         } else {
