@@ -5,6 +5,7 @@ import {
   Button,
   useColorModeValue,
   useMediaQuery,
+  useDisclosure
 } from '@chakra-ui/react';
 import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core';
 import { IoWalletOutline } from 'react-icons/io5';
@@ -14,7 +15,7 @@ import NetworkModal from "./modals/networkModal";
 import { useNativeBalance, useRGPBalance } from '../../utils/hooks/useBalances';
 import StatusIcon from './StatusIcon';
 import RGPModal from "./modals/RGPModal";
-
+import UnsupportNetwork from './UnsupportNetwork';
 
 export default function WalletConnection() {
   const [isMobileDevice] = useMediaQuery('(max-width: 1200px)');
@@ -34,7 +35,9 @@ export default function WalletConnection() {
   const [displayNetwork, setDisplayNetwork] = useState(false);
   const [RGPBalance] = useRGPBalance();
   const [showRGP, setShowRGP] = useState(false);
+  const [modalDisplay, setDisplayModal] = useState(false)
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
 
   if (account) {
@@ -49,7 +52,7 @@ export default function WalletConnection() {
         >
           {RGPBalance} {RGPBalance ? 'RGP' : '0.0000 RGP'}
         </Button>
-          <RGPModal showRGP={showRGP} setShowRGP={setShowRGP} RGPBalance={RGPBalance} />
+        <RGPModal showRGP={showRGP} setShowRGP={setShowRGP} RGPBalance={RGPBalance} />
         <Flex
           ml={2}
           w={isMobileDevice ? '160px' : 'max-content'}
@@ -88,15 +91,22 @@ export default function WalletConnection() {
     );
   } else if (error) {
     return (
-      <Button bg="red.300" rightIcon={<IoWalletOutline />} variant="brand">
-        {error instanceof UnsupportedChainIdError ? 'Wrong Network' : 'Error'}
+      <>{error.name === "UnsupportedChainIdError" ? <> <Button
+        bg="red.300" rightIcon={<IoWalletOutline />} variant="brand"
+
+        onClick={() => setDisplayModal(state => !state)}
+      >
+        Unsupported Network
       </Button>
+        <UnsupportNetwork openModal={modalDisplay} setDisplayModal={setDisplayModal} />
+      </> : 'Error'}</>
+
     );
   } else {
     return (
       <>
         <Button
-          onClick={() =>setDisplayNetwork(state => !state)}
+          onClick={() => setDisplayNetwork(state => !state)}
           rightIcon={<IoWalletOutline />}
           variant="brand"
         >

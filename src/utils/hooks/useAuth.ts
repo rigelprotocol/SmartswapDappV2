@@ -1,10 +1,12 @@
 import { useCallback } from 'react'
-import {  useWeb3React } from '@web3-react/core'
+import {  UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
 import {ConnectorNames, connectorsByName, connectorKey} from "../../connectors";
-
+import { Web3Provider } from '@ethersproject/providers'
 
 const useAuth = () => {
-    const { activate, deactivate } = useWeb3React();
+    const context = useWeb3React<Web3Provider>()
+  const { activate, deactivate, setError } = context
+
 
     const login = useCallback((connectorID: ConnectorNames) => {
         const connector = connectorsByName[connectorID];
@@ -13,13 +15,16 @@ const useAuth = () => {
                 if(!error){
                     activate(connector)
                 }
+                if (error instanceof UnsupportedChainIdError) {
+                   
+                    setError({ name: "UnsupportedChainIdError", message: error.message});
+                  }
             })
 
         } else {
             console.log('Unable to connect wallet')
         }
-    }, [activate]);
-
+    }, [activate,setError]);
     const logout = useCallback(() => {
         deactivate();
         if (window.localStorage.getItem('walletconnect')) {
