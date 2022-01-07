@@ -1,5 +1,5 @@
 import {useMemo,useCallback, useEffect} from "react"
-import DEFAULT_TOKEN_LIST from "@rigelprotocol_01/default-token-list"
+import DEFAULT_TOKEN_LIST from "../../utils/constants/tokenList/rigelprotocol-default.tokenList.json"
 import { TokenList } from '@uniswap/token-lists'
 import {WrappedTokenInfo} from "./WrappedTokenInfo"
 import { TagInfo } from "./WrappedTokenInfo"
