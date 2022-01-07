@@ -682,7 +682,7 @@ const setApprove = val => {
 
   const RGPuseStake = async (depositToken: any) => {
     if (account) {
-      const specialPool = await RGPSpecialPool(RGPADDRESSES[chainId as number]);
+      const specialPool = await RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]);
 
       const data = await specialPool.stake(
         ethers.utils.parseEther(depositTokenValue.toString()),
@@ -701,7 +701,7 @@ const setApprove = val => {
     if (account) {
 
       try {
-        const specialPool = await RGPSpecialPool(RGPADDRESSES[chainId as number]);
+        const specialPool = await RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]);
         const data = await specialPool.unStake(
           ethers.utils.parseUnits(unstakeToken, "ether"), // user input from onclick shoild be here...
           {
@@ -814,7 +814,7 @@ const setApprove = val => {
         );
         const rgp = await rigelToken(RGP[chainId as number]);
         const walletBal = (await rgp.balanceOf(account)) + 400e18;
-        const data = await rgp.approve(MASTERCHEFV2ADDRESSES[chainId as number], walletBal, {
+        const data = await rgp.approve(RGPSPECIALPOOLADDRESSES[chainId as number], walletBal, {
           from: account,
           gasLimit: 150000,
           gasPrice: ethers.utils.parseUnits('20', 'gwei'),
