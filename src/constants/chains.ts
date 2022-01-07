@@ -1,7 +1,7 @@
 // import ethereumLogoUrl from 'assets/images/ethereum-logo.png'
 
 export enum SupportedChainId {
-  MAINNET = 1,
+  //MAINNET = 1,
   ROPSTEN = 3,
   RINKEBY = 4,
   GOERLI = 5,
@@ -13,7 +13,7 @@ export enum SupportedChainId {
 }
 
 export const ALL_SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
-  SupportedChainId.MAINNET,
+  //SupportedChainId.MAINNET,
   SupportedChainId.BINANCE,
   SupportedChainId.POLYGON,
 
@@ -28,7 +28,7 @@ export const ALL_SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
 ]
 
 export const L1_CHAIN_IDS = [
-  SupportedChainId.MAINNET,
+ // SupportedChainId.MAINNET,
   SupportedChainId.ROPSTEN,
   SupportedChainId.RINKEBY,
   SupportedChainId.GOERLI,
@@ -103,7 +103,7 @@ export const CHAIN_INFO: ChainInfo = {
     label: 'Mumbai Testnet',
     nativeCurrency: { name: 'Polygon', symbol: 'POL', decimals: 18 },
   },
-
+/*
   [SupportedChainId.MAINNET]: {
     docs: '',
     explorer: 'https://etherscan.io/',
@@ -111,6 +111,7 @@ export const CHAIN_INFO: ChainInfo = {
     label: 'Ethereum',
     nativeCurrency: { name: 'Ethereum', symbol: 'ETH', decimals: 18 },
   },
+  */
   [SupportedChainId.RINKEBY]: {
     docs: '',
     explorer: 'https://rinkeby.etherscan.io/',

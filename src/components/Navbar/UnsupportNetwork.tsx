@@ -1,5 +1,4 @@
 import {
-    Button,
     Modal,
     Box,
     Text,
@@ -7,13 +6,11 @@ import {
     ModalCloseButton,
     ModalContent,
     ModalOverlay,
-    useDisclosure,
 } from '@chakra-ui/react';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BinanceIcon, EthereumIcon } from '../NetworkConnector/Icons';
 import { useColorModeValue } from '@chakra-ui/react';
 import { CHAIN_INFO } from '../../constants/chains';
-import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
 import detectEthereumProvider from '@metamask/detect-provider';
 
 interface uProps {
@@ -25,9 +22,6 @@ interface uProps {
 
 function UnsupportNetwork({ openModal, setDisplayModal }: uProps) {
     const mode = useColorModeValue('light', 'dark')
-    const buttonBgColor = useColorModeValue('#EBF6FE', '#213345');
-    const textColor = useColorModeValue('#319EF6', '#4CAFFF');
-
 
     const checkMetamask = () => {
         const provider = detectEthereumProvider();
@@ -98,14 +92,14 @@ function UnsupportNetwork({ openModal, setDisplayModal }: uProps) {
                             cursor="pointer"
                             onClick={() => {
                                 setDisplayModal(false)
-                                switchToSupportedNetwrk('0x1')
+                                switchToSupportedNetwrk('0x3')
                                 // switchNetwork('0x1', account as string, library as Web3Provider);
                             }}
                         >
                             <Box px={2}>
                                 <EthereumIcon />
                             </Box>
-                            <Box>{CHAIN_INFO[1].label}</Box>
+                            <Box>{CHAIN_INFO[3]?.label}</Box>
                         </Flex>
                         <Flex
                             backgroundColor={mode === 'dark' ? '#15202B' : '#FFFFFF'}
@@ -126,7 +120,7 @@ function UnsupportNetwork({ openModal, setDisplayModal }: uProps) {
                             <Box px={2}>
                                 <BinanceIcon />
                             </Box>
-                            <Box>{CHAIN_INFO[56].label} Smart Chain</Box>
+                            <Box>{CHAIN_INFO[56]?.label} Smart Chain</Box>
                         </Flex>
                         <Flex
                             backgroundColor={mode === 'dark' ? '#15202B' : '#FFFFFF'}
@@ -147,7 +141,7 @@ function UnsupportNetwork({ openModal, setDisplayModal }: uProps) {
                             <Box px={2}>
                                 <EthereumIcon />
                             </Box>
-                            <Box>{CHAIN_INFO[137].label}</Box>
+                            <Box>{CHAIN_INFO[137]?.label}</Box>
                         </Flex>
                     </Flex>
                 </ModalContent>
