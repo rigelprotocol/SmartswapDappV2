@@ -388,22 +388,22 @@ export function Index() {
     setfarmDataLoading(false);
   };
 
-  // const specialPoolStaked = async () => {
-  //   if (account) {
-  //     try {
-  //       const specialPool = await RGPSpecialPool(
-  //         RGPADDRESSES[chainId as number],
-  //       )
-  //       const RGPStakedEarned = await Promise.all([
-  //         specialPool.userData(account),
-  //         specialPool.calculateRewards(account),
-  //       ])
-  //       return RGPStakedEarned
-  //     } catch (error) {
-  //       return error
-  //     }
-  //   }
-  // }
+  const specialPoolStaked = async () => {
+    if (account) {
+      try {
+        const specialPool = await RGPSpecialPool(
+          RGPSPECIALPOOLADDRESSES[chainId as number],
+        )
+        const RGPStakedEarned = await Promise.all([
+          specialPool.userData(account),
+          specialPool.calculateRewards(account),
+        ])
+        return RGPStakedEarned
+      } catch (error) {
+        return error
+      }
+    }
+  }
   const getTokenStaked = async () => {
     try {
       if (account) {
@@ -435,21 +435,21 @@ export function Index() {
         ]);
 
         //console.log("poolFourStaked", poolFourStaked)
-        //const RGPStakedEarned = await specialPoolStaked();
+        const RGPStakedEarned = await specialPoolStaked();
         let RGPStaked;
         let RGPEarned;
 
         //console.log("EARRNED", RGPStakedEarned)
 
-        //  if (RGPStakedEarned) {
-        //const [specialPoolStaked, specialPoolEarned] = RGPStakedEarned;
+         if (RGPStakedEarned) {
+        const [specialPoolStaked, specialPoolEarned] = RGPStakedEarned;
 
-        //  RGPStaked = formatBigNumber(specialPoolStaked.tokenQuantity);
-        // RGPEarned = formatBigNumber(specialPoolEarned);
-        //   } else {
+         RGPStaked = formatBigNumber(specialPoolStaked.tokenQuantity);
+        RGPEarned = formatBigNumber(specialPoolEarned);
+          } else {
         RGPStaked = 0;
         RGPEarned = 0;
-        //  }
+         }
 
         dispatch(
           updateTokenStaked([
