@@ -19,8 +19,8 @@ const binanceChainListener = async () =>
 const useConnectWallet = () => {
     const { login } = useAuth();
 
-    useEffect(() => {
         const connectorId = window.localStorage.getItem(connectorKey) as ConnectorNames;
+    useEffect(() => {
 
         if (connectorId) {
             const isConnectorBinanceChain = connectorId === ConnectorNames.BSC;
@@ -34,7 +34,7 @@ const useConnectWallet = () => {
 
             login(connectorId)
         }
-    }, [login])
+    }, [login, connectorId])
 };
 
 export default useConnectWallet;
