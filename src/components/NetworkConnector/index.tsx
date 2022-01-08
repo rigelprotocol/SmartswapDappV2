@@ -96,13 +96,13 @@ function NetworkIndicator() {
               cursor="pointer"
               onClick={() => {
                 onClose();
-                switchNetwork('0x1', account as string, library);
+                switchNetwork('0x3', account as string, library);
               }}
             >
               <Box px={2}>
                 <EthereumIcon />
               </Box>
-              <Box>{CHAIN_INFO[1].label}</Box>
+              <Box>{CHAIN_INFO[3]?.label}</Box>
             </Flex>
             <Flex
               backgroundColor={mode === 'dark' ? '#15202B' : '#FFFFFF'}
