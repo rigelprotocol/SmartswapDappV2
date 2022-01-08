@@ -699,6 +699,11 @@ const setApprove = val => {
         },
       );
       const { confirmations, status } = await fetchTransactionData(data);
+
+      dispatch(setOpenModal({
+        trxState: TrxState.TransactionSuccessful,
+        message: `Successfully staked ${convertFromWei(depositTokenValue)} RGP `
+      }));
       // callRefreshFarm(confirmations, status);
     }
   };
