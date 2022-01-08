@@ -933,7 +933,7 @@ const setApprove = val => {
                 w="45%"
                 h="40px"
                 borderRadius="6px"
-                bg={mode === DARK_THEME ? "#4A739B" : "#999999"}
+                bg={mode === DARK_THEME ? "#319EF6" : "#319EF6"}
                 color={mode === DARK_THEME ? "#7599BD" : "#CCCCCC"}
                 border="0"
                 mb="4"
