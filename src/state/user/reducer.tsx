@@ -1,11 +1,11 @@
 import { createReducer } from '@reduxjs/toolkit';
 import {INITIAL_ALLOWED_SLIPPAGE} from '../../utils/constants';
 import {
-  updateUserSlippageTolerance,
-  SerializedToken,
-  addSerializedToken,
-  removeSerializedToken,
-  updateUserDeadline,
+    updateUserSlippageTolerance,
+    SerializedToken,
+    addSerializedToken,
+    removeSerializedToken,
+    updateUserDeadline,
 } from './actions'
 import { updateVersion } from '../global/actions'
 
@@ -28,7 +28,8 @@ export interface UserState {
     [chainId: number]: {
       [address: string]: SerializedToken
     }
-  }
+  },
+    removeTab: boolean
 }
 
 export const initialState: UserState = {
@@ -36,6 +37,7 @@ export const initialState: UserState = {
   userDeadline: DEFAULT_DEADLINE_FROM_NOW,
   timestamp: currentTimestamp(),
   tokens: {},
+    removeTab: false
 };
 
 export default createReducer(initialState, (builder) =>

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {
   Box,
   Text,
@@ -23,6 +23,10 @@ import { SettingsIcon } from '../../theme/components/Icons';
 import { ExclamationIcon } from '../../theme/components/Icons';
 import { useUserSlippageTolerance, useUserTransactionTTL } from '../../state/user/hooks'
 import { escapeRegExp } from '../../utils'
+import {useDispatch, useSelector} from "react-redux";
+import {AppDispatch, RootState} from "../../state";
+import {transactionTab} from "../../state/transaction/actions";
+import {removeSideTab} from "../../utils/utilsFunctions";
 
 enum SlippageError {
   InvalidInput = 'InvalidInput',
@@ -49,16 +53,30 @@ const TransactionSettings = () => {
   const handleClick = (e) => {
     e.preventDefault();
     setSlippageValue(e.target.value)
-  }
+  };
   const [userSlippageTolerance, setUserSlippageTolerance] = useUserSlippageTolerance();
   const [slippageInput, setSlippageInput] = useState('');
   const [ttl, setTtl] = useUserTransactionTTL();
   const [deadlineInput, setDeadlineInput] = useState('');
+  const dispatch = useDispatch<AppDispatch>();
+
+  const transactionState = useSelector((state: RootState) => state.transactions.removeSideTab);
+
+  const showDetails = () => {
+    dispatch(transactionTab({removeSideTab: false}));
+    window.localStorage.removeItem('history');
+  };
+
+  const hideDetails = () => {
+    dispatch(transactionTab({removeSideTab: true}));
+    removeSideTab('history');
+  };
+
 
   const slippageInputIsValid =
     slippageInput === '' || (userSlippageTolerance / 100).toFixed(2) === Number.parseFloat(slippageInput).toFixed(2);
 
-  let slippageError: SlippageError | undefined
+  let slippageError: SlippageError | undefined;
   if (slippageInput !== '' && !slippageInputIsValid) {
     slippageError = SlippageError.InvalidInput
   } else if (slippageInputIsValid && userSlippageTolerance < 50) {
@@ -71,10 +89,10 @@ const TransactionSettings = () => {
 
   const parseCustomSlippage = (value: string) => {
     if (value === '' || inputRegex.test(escapeRegExp(value))) {
-      setSlippageInput(value)
+      setSlippageInput(value);
 
       try {
-        const valueAsIntFromRoundedFloat = Number.parseInt((Number.parseFloat(value) * 100).toString())
+        const valueAsIntFromRoundedFloat = Number.parseInt((Number.parseFloat(value) * 100).toString());
         if (!Number.isNaN(valueAsIntFromRoundedFloat) && valueAsIntFromRoundedFloat < 5000) {
           setUserSlippageTolerance(valueAsIntFromRoundedFloat)
         }
@@ -82,10 +100,10 @@ const TransactionSettings = () => {
         console.error(error)
       }
     }
-  }
+  };
 
-  const deadlineInputIsValid = deadlineInput === '' || (ttl / 60).toString() === deadlineInput
-  let deadlineError: DeadlineError | undefined
+  const deadlineInputIsValid = deadlineInput === '' || (ttl / 60).toString() === deadlineInput;
+  let deadlineError: DeadlineError | undefined;
   if (deadlineInput !== '' && !deadlineInputIsValid) {
     deadlineError = DeadlineError.InvalidInput
   } else {
@@ -93,17 +111,17 @@ const TransactionSettings = () => {
   }
 
   const parseCustomDeadline = (value: string) => {
-    setDeadlineInput(value)
+    setDeadlineInput(value);
 
     try {
-      const valueAsInt: number = Number.parseInt(value) * 60
+      const valueAsInt: number = Number.parseInt(value) * 60;
       if (!Number.isNaN(valueAsInt) && valueAsInt > 0) {
         setTtl(valueAsInt)
       }
     } catch (error) {
       console.error(error)
     }
-  }
+  };
 
   return (
   <Flex alignItems="center" fontWeight="bold" rounded={100}>
@@ -145,7 +163,7 @@ const TransactionSettings = () => {
             <Button
             value='0.1'
             onClick={() => {
-              setSlippageInput('')
+              setSlippageInput('');
               setUserSlippageTolerance(10)
             }}
             mr={2}
@@ -163,7 +181,7 @@ const TransactionSettings = () => {
             <Button
             value='0.5'
             onClick={() => {
-              setSlippageInput('')
+              setSlippageInput('');
               setUserSlippageTolerance(50)
             }}
             mr={2}
@@ -181,7 +199,7 @@ const TransactionSettings = () => {
             <Button
             value='1.0'
             onClick={() => {
-              setSlippageInput('')
+              setSlippageInput('');
               setUserSlippageTolerance(100)
             }}
             mr={2}
@@ -275,6 +293,14 @@ const TransactionSettings = () => {
             borderWidth="1px"
             />
          </InputGroup>
+          <Button
+              onClick={transactionState ? showDetails : hideDetails}
+              bgColor={buttonBgcolor}
+              borderColor={borderColor}
+              color={textColorTwo}
+          >
+            {transactionState ?  'Show History Tab' : 'Hide History Tab'}
+          </Button>
         </PopoverBody>
       </PopoverContent>
     </Popover>
