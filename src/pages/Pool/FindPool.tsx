@@ -27,6 +27,8 @@ import { useWeb3React } from '@web3-react/core';
 import { filterPools } from '../../utils/hooks/usePools';
 import { Link } from 'react-router-dom';
 import { GetAddressTokenBalance } from '../../state/wallet/hooks';
+import TransactionSettings from '../../components/TransactionSettings';
+
 
 export type Currencies = {
   TokenA: Currency | undefined;
@@ -141,7 +143,7 @@ const FindPool = () => {
             Import Pool
           </Heading>
           <Spacer />
-          <SettingsIcon color={topIcons} />
+          <TransactionSettings />
           <TimeIcon w={6} h={7} pt={1} color={topIcons} />
         </Flex>
         <Box
