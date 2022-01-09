@@ -138,7 +138,7 @@ export function useDerivedSwapInfo(): {
   const showWrap = wrap;
 
   const bestTrade = amount;
-  console.log(pathArray);
+  // console.log(pathArray);
 
   const getMaxValue = async (currency: Currency) => {
     if (currency.isNative) {

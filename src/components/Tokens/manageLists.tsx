@@ -23,6 +23,7 @@ import { TokenList,Version } from "@uniswap/token-lists";
 import useFetchListCallback from "../../utils/hooks/useFetchListCallback";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import ListLogo from "../Logo/ListLogo";
+import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
 import { useActiveListUrls,useIsListActive } from "../../state/lists/hooks";
 type IModal= {
   setListURL:React.Dispatch<React.SetStateAction<string>>
@@ -36,7 +37,7 @@ const ManageList:React.FC<IModal> = ({
           setTokenList,
           setOpenImportToken,
 }) => {
-
+console.log(123)
 // temporary fetched list for import flow
 const [tempList, setTempList] = useState<TokenList>()
 const [addError, setAddError] = useState<string | undefined>()
@@ -297,6 +298,6 @@ const [addError, setAddError] = useState<string | undefined>()
     )
 }
 
-export default ManageList
+export default React.memo(ManageList) 
 
 
