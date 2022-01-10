@@ -52,4 +52,5 @@ export const useDetails = (swapDetails:SwapState) => {
             setoutputdetails(outputtoken)
         }
     },[swapDetails,chainId])
+    return {inputdetails,outputdetails}
 }
