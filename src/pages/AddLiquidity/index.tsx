@@ -536,6 +536,8 @@ export default function AddLiquidity({
             onMax={handleMaxInput}
             value={formattedAmounts[Field.INPUT]}
             setBalanceA={setBalanceA}
+            setCheckTokenApproval={setCheckTokenApproval}
+            approveTokens={approveTokens}
           />
         </Box>
         <Flex justifyContent="center">
@@ -567,6 +569,8 @@ export default function AddLiquidity({
             value={formattedAmounts[Field.OUTPUT]}
             onUserOutput={handleTypeOutput}
             setBalanceB={setBalanceB}
+            setCheckTokenApproval={setCheckTokenApproval}
+            approveTokens={approveTokens}
           />
         </Box>
         <Box
@@ -625,7 +629,7 @@ export default function AddLiquidity({
             </VStack>
           </Flex>
         </Box>
-        <Button
+        {/* <Button
           size="lg"
           height="48px"
           width="200px"
@@ -655,8 +659,8 @@ export default function AddLiquidity({
           }
         >
           {`Approve ${currencies[Field.INPUT]?.symbol}`}
-        </Button>
-        <Button
+        </Button> */}
+        {/* <Button
           size="lg"
           height="48px"
           width="200px"
@@ -686,7 +690,7 @@ export default function AddLiquidity({
           }
         >
           {`Approve ${currencies[Field.OUTPUT]?.symbol}`}
-        </Button>
+        </Button> */}
         <Button
           size="lg"
           height="48px"

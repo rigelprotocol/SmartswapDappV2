@@ -12,10 +12,11 @@ import {
 } from '../../../state/mint/hooks';
 import { maxAmountSpend } from '../../../utils/maxAmountSpend';
 import { GetAmountsOut } from '../../../utils/getAmountsOut';
-import { SmartSwapRouter } from '../../../utils/Contracts';
+import { ApproveCheck, SmartSwapRouter } from '../../../utils/Contracts';
 import { SMARTSWAPROUTER } from '../../../utils/addresses';
 import { getAddress } from '../../../utils/hooks/usePools';
 import { ethers } from 'ethers';
+import { useActiveWeb3React } from '../../../utils/hooks/useActiveWeb3React';
 
 interface InputCurrencyProps {
   onUserInput: (value: string) => void;
@@ -35,15 +36,45 @@ const InputCurrency = ({
   onMax,
   value,
   setBalanceA,
+  setCheckTokenApproval,
+  approveTokens
 }: InputCurrencyProps) => {
   const [tokenModal, setTokenModal] = useState(false);
   const [balance] = GetAddressTokenBalance(currency ?? undefined);
+
+  const { chainId, account } = useActiveWeb3React();
+
+  const checkApproval = async (inputCurrency) => {
+    if (inputCurrency?.isNative) {
+      return setCheckTokenApproval(true);
+    }
+
+    const status = await ApproveCheck(inputCurrency?.wrapped.address);
+    const check = await status.allowance(
+      account,
+      SMARTSWAPROUTER[chainId as number],
+      {
+        from: account,
+      }
+    );
+    const approveBalance = ethers.utils.formatEther(check).toString();
+    if (parseFloat(approveBalance) > value) {
+      return setCheckTokenApproval(true);
+    }
+    return setCheckTokenApproval(false);
+  };
+  
   const handleInputSelect = useCallback(
     (inputCurrency) => {
       onCurrencySelection(Field.INPUT, inputCurrency);
       setTokenModal((state) => !state);
+      checkApproval(inputCurrency);
+      // approveTokens(
+      //   currency?.address,
+      //   currency?.symbol as string
+      // )
     },
-    [onCurrencySelection]
+    [approveTokens, currency?.address, currency?.symbol, setCheckTokenApproval, onCurrencySelection]
   );
 
   useEffect(() => {
