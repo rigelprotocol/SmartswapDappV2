@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {
-  Box,
   Text,
   Flex,
   useColorModeValue,
@@ -25,7 +24,7 @@ import { useUserSlippageTolerance, useUserTransactionTTL } from '../../state/use
 import { escapeRegExp } from '../../utils'
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../../state";
-import {transactionTab} from "../../state/transaction/actions";
+import {detailsTab, transactionTab} from "../../state/transaction/actions";
 import {removeSideTab} from "../../utils/utilsFunctions";
 
 enum SlippageError {
@@ -61,15 +60,26 @@ const TransactionSettings = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const transactionState = useSelector((state: RootState) => state.transactions.removeSideTab);
+  const detailsState = useSelector((state: RootState) => state.transactions.removeDetailsTab);
 
-  const showDetails = () => {
+  const showTransactionTab = () => {
     dispatch(transactionTab({removeSideTab: false}));
     window.localStorage.removeItem('history');
   };
 
-  const hideDetails = () => {
+  const hideTransactionTab = () => {
     dispatch(transactionTab({removeSideTab: true}));
     removeSideTab('history');
+  };
+
+  const showDetails = () => {
+    dispatch(detailsTab({removeDetailsTab: false}));
+    window.localStorage.removeItem('details');
+  };
+
+  const hideDetails = () => {
+    dispatch(detailsTab({removeDetailsTab: true}));
+    removeSideTab('details');
   };
 
 
@@ -294,12 +304,22 @@ const TransactionSettings = () => {
             />
          </InputGroup>
           <Button
-              onClick={transactionState ? showDetails : hideDetails}
+              onClick={transactionState ? showTransactionTab : hideTransactionTab}
               bgColor={buttonBgcolor}
               borderColor={borderColor}
               color={textColorTwo}
           >
             {transactionState ?  'Show History Tab' : 'Hide History Tab'}
+          </Button>
+
+          <Button
+              onClick={detailsState ? showDetails : hideDetails}
+              bgColor={buttonBgcolor}
+              borderColor={borderColor}
+              color={textColorTwo}
+              my={3}
+          >
+            {detailsState ?  'Show Details Tab' : 'Hide Details Tab'}
           </Button>
         </PopoverBody>
       </PopoverContent>

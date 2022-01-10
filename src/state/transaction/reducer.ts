@@ -3,7 +3,7 @@ import {
     addTransaction,
     checkedTransaction,
     clearAllTransactions,
-    finalizeTransaction, transactionTab,
+    finalizeTransaction, transactionTab, detailsTab,
 } from './actions'
 
 import { createReducer } from '@reduxjs/toolkit'
@@ -32,11 +32,13 @@ export interface TransactionState {
     [chainId: number]: {
         [txHash: string]: TransactionDetails
     },
-    removeSideTab: boolean
+    removeSideTab: boolean,
+    removeDetailsTab: boolean
 }
 
 export const initialState: TransactionState = {
-    removeSideTab: false
+    removeSideTab: false,
+    removeDetailsTab: false
 };
 
 export default createReducer(initialState, (builder) =>
@@ -83,4 +85,7 @@ export default createReducer(initialState, (builder) =>
         .addCase(transactionTab, (transactions, { payload: { removeSideTab } }) => {
             transactions.removeSideTab = removeSideTab;
         })
+        .addCase(detailsTab, (transactions, { payload: { removeDetailsTab } }) => {
+        transactions.removeDetailsTab = removeDetailsTab;
+    })
 )
