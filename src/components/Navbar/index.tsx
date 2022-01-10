@@ -96,7 +96,7 @@ const Index = () => {
               <SwapDropdown />
               <Nav label="Liquidity" to="/pool" />
               <Nav label="Farming" to="/farming-v2" />
-              <Link href="https://rigelprotocol.com" isExternal>
+              <Link href="#">
                 Analytics
               </Link>
             </Flex>

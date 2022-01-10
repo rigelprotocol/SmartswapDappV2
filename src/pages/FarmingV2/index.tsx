@@ -109,7 +109,10 @@ export function Index() {
     if (match) setSelected(STAKING);
   }, [match]);
 
-  const changeVersion = (version: string) => {
+  const changeVersion = (version: string, external?: boolean) => {
+    if (external) {
+      window.open(version);
+    }
     history.push(version);
   };
 
@@ -126,7 +129,7 @@ export function Index() {
   const handleActive = (value: string) => {
     if (value === V1) {
       setIsActive(V1);
-      changeVersion("/farming");
+      changeVersion("https://smartswap.rigelprotocol.com/farming", true);
     } else if (value === V2) {
       setIsActive(V2);
       changeVersion("/farming-v2");
@@ -584,12 +587,12 @@ export function Index() {
             mode === LIGHT_THEME && isActive === V1
               ? "2px solid #DEE5ED !important"
               : mode === DARK_THEME && isActive === V1
-              ? "2px solid  #213345 !important"
-              : mode === DARK_THEME && isActive === V2
-              ? "2px solid  #213345 !important"
-              : mode === LIGHT_THEME && isActive === V2
-              ? "2px solid #DEE5ED !important"
-              : "2px solid #DEE5ED !important"
+                ? "2px solid  #213345 !important"
+                : mode === DARK_THEME && isActive === V2
+                  ? "2px solid  #213345 !important"
+                  : mode === LIGHT_THEME && isActive === V2
+                    ? "2px solid #DEE5ED !important"
+                    : "2px solid #DEE5ED !important"
           }
           p={1}
           mt={3}
@@ -602,23 +605,23 @@ export function Index() {
                 mode === LIGHT_THEME && isActive === V1
                   ? "#FFFFFF !important"
                   : mode === DARK_THEME && isActive === V1
-                  ? "#15202B !important"
-                  : mode === DARK_THEME && isActive === V2
-                  ? "#15202B !important"
-                  : mode === LIGHT_THEME && isActive === V2
-                  ? "#FFFFFF !important"
-                  : "#F2F5F8 !important"
+                    ? "#15202B !important"
+                    : mode === DARK_THEME && isActive === V2
+                      ? "#15202B !important"
+                      : mode === LIGHT_THEME && isActive === V2
+                        ? "#FFFFFF !important"
+                        : "#F2F5F8 !important"
               }
               color={
                 mode === LIGHT_THEME && isActive === V1
                   ? "#999999 !important"
                   : mode === DARK_THEME && isActive === V1
-                  ? "#7599BD !important"
-                  : mode === DARK_THEME && isActive === V2
-                  ? "#7599BD !important"
-                  : mode === LIGHT_THEME && isActive === V2
-                  ? "#999999 !important"
-                  : "#333333"
+                    ? "#7599BD !important"
+                    : mode === DARK_THEME && isActive === V2
+                      ? "#7599BD !important"
+                      : mode === LIGHT_THEME && isActive === V2
+                        ? "#999999 !important"
+                        : "#333333"
               }
               border="none"
               borderRadius="6px"
@@ -634,23 +637,23 @@ export function Index() {
                 mode === LIGHT_THEME && isActive === V2
                   ? "#F2F5F8 !important"
                   : mode === DARK_THEME && isActive === V2
-                  ? "#4A739B !important"
-                  : mode === DARK_THEME && isActive === V1
-                  ? "#4A739B !important"
-                  : mode === LIGHT_THEME && isActive === V1
-                  ? "#FFFFFF !important"
-                  : "#F2F5F8 !important"
+                    ? "#4A739B !important"
+                    : mode === DARK_THEME && isActive === V1
+                      ? "#4A739B !important"
+                      : mode === LIGHT_THEME && isActive === V1
+                        ? "#FFFFFF !important"
+                        : "#F2F5F8 !important"
               }
               color={
                 mode === LIGHT_THEME && isActive === V2
                   ? "#333333 !important"
                   : mode === DARK_THEME && isActive === V2
-                  ? "#F1F5F8 !important"
-                  : mode === DARK_THEME && isActive === V1
-                  ? "#F1F5F8 !important"
-                  : mode === LIGHT_THEME && isActive === V2
-                  ? "#333333 !important"
-                  : "#333333"
+                    ? "#F1F5F8 !important"
+                    : mode === DARK_THEME && isActive === V1
+                      ? "#F1F5F8 !important"
+                      : mode === LIGHT_THEME && isActive === V2
+                        ? "#333333 !important"
+                        : "#333333"
               }
               borderRadius="6px"
               border="none"
@@ -677,12 +680,12 @@ export function Index() {
               mode === LIGHT_THEME && selected === STAKING
                 ? "#FFFFFF !important"
                 : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#213345 !important"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#15202B !important"
-                : mode === LIGHT_THEME && selected === LIQUIDITY
-                ? "#DEE5ED !important"
-                : "#DEE5ED !important"
+                  ? "#213345 !important"
+                  : mode === DARK_THEME && selected === STAKING
+                    ? "#15202B !important"
+                    : mode === LIGHT_THEME && selected === LIQUIDITY
+                      ? "#DEE5ED !important"
+                      : "#DEE5ED !important"
             }
             px={5}
             py={4}
@@ -694,12 +697,12 @@ export function Index() {
               mode === LIGHT_THEME && selected === LIQUIDITY
                 ? "#F2F5F8 !important"
                 : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#324D68 !important"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#324D68 !important"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#F2F5F8 !important"
-                : "#F2F5F8 !important"
+                  ? "#324D68 !important"
+                  : mode === DARK_THEME && selected === STAKING
+                    ? "#324D68 !important"
+                    : mode === LIGHT_THEME && selected === STAKING
+                      ? "#F2F5F8 !important"
+                      : "#F2F5F8 !important"
             }
           >
             <Text
@@ -707,12 +710,12 @@ export function Index() {
                 mode === LIGHT_THEME && selected === LIQUIDITY
                   ? "#333333"
                   : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#F1F5F8"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#F1F5F8"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#333333"
-                  : "#333333"
+                    ? "#F1F5F8"
+                    : mode === DARK_THEME && selected === STAKING
+                      ? "#F1F5F8"
+                      : mode === LIGHT_THEME && selected === STAKING
+                        ? "#333333"
+                        : "#333333"
               }
             >
               Liquidity Pools
@@ -725,34 +728,34 @@ export function Index() {
               mode === LIGHT_THEME && selected === LIQUIDITY
                 ? "#FFFFFF !important"
                 : mode === DARK_THEME && selected === STAKING
-                ? "#213345 !important"
-                : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#15202B !important"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#DEE5ED !important"
-                : "#DEE5ED !important"
+                  ? "#213345 !important"
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                    ? "#15202B !important"
+                    : mode === LIGHT_THEME && selected === STAKING
+                      ? "#DEE5ED !important"
+                      : "#DEE5ED !important"
             }
             color={
               mode === LIGHT_THEME && selected === LIQUIDITY
                 ? "#333333"
                 : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#F1F5F8"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#F1F5F8"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#333333"
-                : "#333333"
+                  ? "#F1F5F8"
+                  : mode === DARK_THEME && selected === STAKING
+                    ? "#F1F5F8"
+                    : mode === LIGHT_THEME && selected === STAKING
+                      ? "#333333"
+                      : "#333333"
             }
             borderColor={
               mode === LIGHT_THEME && selected === LIQUIDITY
                 ? "#F2F5F8 !important"
                 : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#324D68 !important"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#324D68 !important"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#F2F5F8 !important"
-                : "#F2F5F8 !important"
+                  ? "#324D68 !important"
+                  : mode === DARK_THEME && selected === STAKING
+                    ? "#324D68 !important"
+                    : mode === LIGHT_THEME && selected === STAKING
+                      ? "#F2F5F8 !important"
+                      : "#F2F5F8 !important"
             }
             px={5}
             py={4}
@@ -778,12 +781,12 @@ export function Index() {
                   mode === LIGHT_THEME && selected === STAKING
                     ? "#FFFFFF !important"
                     : mode === DARK_THEME && selected === LIQUIDITY
-                    ? "#15202B !important"
-                    : mode === DARK_THEME && selected === STAKING
-                    ? "#15202B !important"
-                    : mode === LIGHT_THEME && selected === LIQUIDITY
-                    ? "#FFFFFF !important"
-                    : "#FFFFFF !important"
+                      ? "#15202B !important"
+                      : mode === DARK_THEME && selected === STAKING
+                        ? "#15202B !important"
+                        : mode === LIGHT_THEME && selected === LIQUIDITY
+                          ? "#FFFFFF !important"
+                          : "#FFFFFF !important"
                 }
                 rounded="lg"
               >
@@ -797,23 +800,23 @@ export function Index() {
                       mode === LIGHT_THEME && selected === LIQUIDITY
                         ? "#F2F5F8  !important"
                         : mode === DARK_THEME && selected === LIQUIDITY
-                        ? "#213345"
-                        : mode === DARK_THEME && selected === STAKING
-                        ? "#213345"
-                        : mode === LIGHT_THEME && selected === STAKING
-                        ? "#F2F5F8"
-                        : "#F2F5F8 !important"
+                          ? "#213345"
+                          : mode === DARK_THEME && selected === STAKING
+                            ? "#213345"
+                            : mode === LIGHT_THEME && selected === STAKING
+                              ? "#F2F5F8"
+                              : "#F2F5F8 !important"
                     }
                     color={
                       mode === LIGHT_THEME && selected === LIQUIDITY
                         ? "#333333"
                         : mode === DARK_THEME && selected === STAKING
-                        ? "#F1F5F8"
-                        : mode === DARK_THEME && selected === LIQUIDITY
-                        ? "#F1F5F8"
-                        : mode === LIGHT_THEME && selected === STAKING
-                        ? "#333333"
-                        : "#333333"
+                          ? "#F1F5F8"
+                          : mode === DARK_THEME && selected === LIQUIDITY
+                            ? "#F1F5F8"
+                            : mode === LIGHT_THEME && selected === STAKING
+                              ? "#333333"
+                              : "#333333"
                     }
                     w={["100%", "100%", "100%"]}
                     align="left"
@@ -821,8 +824,8 @@ export function Index() {
                       mode === LIGHT_THEME
                         ? "1px solid #DEE5ED !important"
                         : mode === DARK_THEME
-                        ? "1px solid #324D68 !important"
-                        : "1px solid #324D68"
+                          ? "1px solid #324D68 !important"
+                          : "1px solid #324D68"
                     }
                     display={{ base: "none", md: "flex", lg: "flex" }}
                   >
@@ -862,8 +865,8 @@ export function Index() {
                   mode === LIGHT_THEME
                     ? "#FFFFFF !important"
                     : mode === DARK_THEME
-                    ? "#15202B !important"
-                    : "#FFFFFF !important"
+                      ? "#15202B !important"
+                      : "#FFFFFF !important"
                 }
                 rounded="lg"
               >
@@ -877,15 +880,15 @@ export function Index() {
                       mode === DARK_THEME
                         ? "#213345"
                         : mode === LIGHT_THEME
-                        ? "#F2F5F8"
-                        : "#F2F5F8 !important"
+                          ? "#F2F5F8"
+                          : "#F2F5F8 !important"
                     }
                     color={
                       mode === LIGHT_THEME
                         ? "#333333"
                         : mode === DARK_THEME
-                        ? "#F1F5F8"
-                        : "#333333"
+                          ? "#F1F5F8"
+                          : "#333333"
                     }
                     w={["100%", "100%", "100%"]}
                     align="left"
@@ -893,8 +896,8 @@ export function Index() {
                       mode === LIGHT_THEME
                         ? "1px solid #DEE5ED !important"
                         : mode === DARK_THEME
-                        ? "1px solid #324D68 !important"
-                        : "1px solid #324D68"
+                          ? "1px solid #324D68 !important"
+                          : "1px solid #324D68"
                     }
                     display={{ base: "none", md: "flex", lg: "flex" }}
                   >
