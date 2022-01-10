@@ -5,9 +5,10 @@ import { removeSideTab, checkSideTab } from '../../../../utils/utilsFunctions';
 import { ArrowDownIcon } from "@chakra-ui/icons";
 import DetailBox from "./DetailBox";
 import {animated, Transition} from 'react-spring';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../../state';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppDispatch, RootState} from '../../../../state';
 import { useDetails } from '../../../../utils/hooks/useDetails';
+import {detailsTab} from "../../../../state/transaction/actions";
 
 const ShowDetails = () => {
   const textColor = useColorModeValue('#333333', '#F1F5F8');
@@ -15,19 +16,24 @@ const ShowDetails = () => {
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   const boxColor = useColorModeValue("#F2F5F8","#213345");
 
-  const [sideBarRemoved, setSideBarRemoved] = useState<Boolean>(false);
+
   const [viewInfo, setViewInfo] = useState<Boolean>(false);
   const swapDetails = useSelector((state: RootState) => state.swap);
 
-  const {inputdetails,outputdetails} = useDetails(swapDetails)
+  const dispatch = useDispatch<AppDispatch>();
 
-  console.log('swapdetails',swapDetails)
+  const sideBarRemoved = useSelector((state: RootState) => state.transactions.removeDetailsTab);
 
-  console.log(inputdetails)
+  const {inputdetails,outputdetails} = useDetails(swapDetails);
+
+  console.log('swapdetails',swapDetails);
+
+  console.log(inputdetails);
 
   useEffect(() => {
     const isActive = checkSideTab('details');
-    setSideBarRemoved(isActive);
+    dispatch(detailsTab({removeDetailsTab: isActive}));
+
   }, []);
 
   return (
@@ -70,7 +76,7 @@ const ShowDetails = () => {
               borderRadius="6px"
               cursor="pointer"
               onClick={() => {
-                setSideBarRemoved(true);
+                dispatch(detailsTab({removeDetailsTab: true}));
                 removeSideTab('details');
               }}
             >
