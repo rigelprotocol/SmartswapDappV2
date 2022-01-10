@@ -1,0 +1,62 @@
+[
+    {
+      "name": "RigelToken",
+      "symbol": "RGP",
+      "address": "0x9f0227A21987c1fFab1785BA3eBa60578eC1501B",
+      "chainId": 97,
+      "decimals": 18,
+      "logoURI": "https://bscscan.com/token/images/rigelprotocol_32.png",
+      "description":"Rigel Protocol is a decentralized protocol of several DeFi products. RigelProtocol is completely considered, initiated, developed, and driven by the Rigelprotocol community.",
+      "supply":"20,000,000"
+    },
+    {
+      "name": "WBNB Token",
+      "symbol": "WBNB",
+      "address": "0x23967E68bB6FeA03fcc3676F8E55272106F44A4A",
+      "chainId": 97,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png",
+      "description":"Wrapped BNB a wrapped version of the BNB native tokens on the BEP-20 standard on the Binance Smart Chain. Not to be confused with BNB Native Token on the BSC Chain.",
+      "supply":"5,470,235"
+    },
+    {
+      "name": "BNB",
+      "symbol": "BNB",
+      "address": "0x23967E68bB6FeA03fcc3676F8E55272106F44A4A",
+      "chainId": 97,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png",
+      "description":"Binance Coin (BNB) is an exchange-based token created and issued by the cryptocurrency exchange Binance",
+      "supply":"168,137,035"
+    },
+    {
+      "name": "BUSD Token",
+      "symbol": "BUSD",
+      "address": "0x10249E900B919FDEe9e2ED38b4cd83C4df857254",
+      "chainId": 97,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/BUSD-BD1/logo.png",
+      "description":"Binance USD (BUSD) is a stable coin pegged to USD that has received approval from the New York State Department of Financial Services (NYDFS).",
+      "supply":"14,381,645,616"
+    },
+    {
+      "name": "USDT Token",
+      "symbol": "USDT",
+      "address": "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd",
+      "chainId": 97,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/USDT-6D8/logo.png",
+      "description":"Tether is a stablecoin pegged to the US Dollar. A stablecoin is a type of cryptocurrency whose value is pegged to another fiat currency like the US Dollar or to a commodity like Gold.",
+      "supply":"78,426,163,467"
+    },
+    {
+      "name": "AXSToken",
+      "symbol": "AXS",
+      "address": "0x6b9A9df1e6a29F17BFC79040A8f505Aaa8866b6e",
+      "chainId": 97,
+      "decimals": 18,
+      "logoURI": "https://www.bscscan.com/token/images/axieinfinity_32.png",
+      "description": "AXS is the governance token for the Axie Infinity game. Token holders will be able to shape and vote for the direction of the game universe. This is unlike traditional games where all decisions are made by the game developers. AXS holders will be able to stake their tokens to earn more AXS and even vote for governance proposals.",
+      "supply":"270,000,000"
+    }
+  ]

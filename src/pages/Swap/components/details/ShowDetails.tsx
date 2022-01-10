@@ -5,6 +5,9 @@ import { removeSideTab, checkSideTab } from '../../../../utils/utilsFunctions';
 import { ArrowDownIcon } from "@chakra-ui/icons";
 import DetailBox from "./DetailBox";
 import {animated, Transition} from 'react-spring';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../state';
+import { useDetails } from '../../../../utils/hooks/useDetails';
 
 const ShowDetails = () => {
   const textColor = useColorModeValue('#333333', '#F1F5F8');
@@ -14,6 +17,13 @@ const ShowDetails = () => {
 
   const [sideBarRemoved, setSideBarRemoved] = useState<Boolean>(false);
   const [viewInfo, setViewInfo] = useState<Boolean>(false);
+  const swapDetails = useSelector((state: RootState) => state.swap);
+
+  const {inputdetails,outputdetails} = useDetails(swapDetails)
+
+  console.log('swapdetails',swapDetails)
+
+  console.log(inputdetails)
 
   useEffect(() => {
     const isActive = checkSideTab('details');
@@ -78,7 +88,7 @@ const ShowDetails = () => {
           {(styles, viewInfo) =>
               viewInfo &&
               <animated.div style={styles}>
-                <DetailBox/>
+                <DetailBox details={inputdetails} inputDetails={swapDetails.INPUT.currencyId}/>
                 <Flex justifyContent={'center'}>
                        <Box
                           display= "flex"
@@ -95,7 +105,7 @@ const ShowDetails = () => {
                         <ArrowDownIcon w={5} h={10}/>
                       </Box>
                     </Flex>
-                <DetailBox/>
+                <DetailBox details={outputdetails} inputDetails={swapDetails.OUTPUT.currencyId}/>
               </animated.div>
           }
         </Transition>

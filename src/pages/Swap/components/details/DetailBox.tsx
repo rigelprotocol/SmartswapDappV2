@@ -1,7 +1,12 @@
 import React from "react";
 import { Box, Text, useColorModeValue, VStack } from "@chakra-ui/react";
 
-const DetailBox = () => {
+interface DetailBoxProps {
+  details:any[],
+  inputDetails: string | undefined
+}
+
+const DetailBox = ({details,inputDetails}:DetailBoxProps) => {
   const textColor = useColorModeValue("#333333", "#F1F5F8");
   const borderColor = useColorModeValue("#DEE5ED", "#324D68");
   const secondaryText = useColorModeValue("#666666", "#DCE6EF");
@@ -26,7 +31,7 @@ const DetailBox = () => {
             color={textColor}
             my={"4px"}
           >
-            Rigel Protocol
+            {details.length >= 1 && inputDetails !== '' ? details[0].name : details.length <= 1 && inputDetails !== '' ? inputDetails  : 'Rigel Protocol'}
           </Text>
         </Box>
 
@@ -35,7 +40,7 @@ const DetailBox = () => {
             Token Amount
           </Text>
           <Text fontSize={"16px"} color={textColor} my={"4px"}>
-            14,320,420
+            {details.length >= 1 && inputDetails !== '' ? details[0].supply : details.length <= 1 && inputDetails !== '' ? '' : '20,000,000'}
           </Text>
         </Box>
 
@@ -44,9 +49,7 @@ const DetailBox = () => {
             Description
           </Text>
           <Text fontSize={"16px"} color={textColor} my={"4px"}>
-            Rigel Protocol is a decentralized protocol of several DeFi products.
-            RigelProtocol is completely considered, initiated, developed, and
-            driven by the Rigelprotocol community.
+            {details.length >= 1 && inputDetails !== '' ? details[0].description : details.length <= 1 && inputDetails !== '' ? '' : 'Rigel Protocol is a decentralized protocol of several DeFi products. RigelProtocol is completely considered, initiated, developed, and driven by the Rigelprotocol community.'}
           </Text>
         </Box>
       </VStack>

@@ -3,7 +3,7 @@ import { Contract } from '@ethersproject/contracts';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { getAddress } from '@ethersproject/address';
 import ERC20Token from './abis/erc20.json';
-import { WrappedSymbols } from './constants/chains';
+import { SupportedChainSymbols, WrappedSymbols } from './constants/chains';
 import { Fraction } from '@uniswap/sdk-core';
 import { ethers } from 'ethers';
 
@@ -121,6 +121,14 @@ export const getDeadline = (userDeadline: number) => {
 
 export const isNative = (symbol: string, chainId: number): boolean => {
   if (symbol === WrappedSymbols[chainId as number]) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+export const ISNATIVE = (symbol: string, chainId: number): boolean => {
+  if (symbol === SupportedChainSymbols[chainId as number]) {
     return true;
   } else {
     return false;
