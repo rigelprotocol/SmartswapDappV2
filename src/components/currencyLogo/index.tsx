@@ -20,19 +20,41 @@ function getCurrencySymbol(currency) {
     }
     
   }
-
+  const BLOCKCHAIN = {
+    [1]: 'ethereum',
+    [97]: 'binance',
+    [56]: 'binance',
+    [137]: 'polygon',
+    // [ChainId.OKEX]: 'okex',
+  }
   export function getCurrencyLogoUrls(currency) {
     const urls = []
   
     urls.push(`https://raw.githubusercontent.com/sushiswap/icons/master/token/${getCurrencySymbol(currency)}.jpg`)
-    if (currency.chainId in SupportedChainSymbols) {
+    // if (currency.chainId in SupportedChainSymbols) {
+    //   console.log(1238484)
+    //   urls.push(
+    //     `https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/${SupportedChainSymbols[currency.chainId]}/assets/${
+    //       currency.address
+    //     }/logo.png`
+    //   )
+    //   urls.push(
+    //     `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${SupportedChainSymbols[currency.chainId]}/assets/${
+    //       currency.address
+    //     }/logo.png`
+    //   )
+    //   urls.push(
+    //     `https://assets.trustwalletapp.com/blockchains/smartchain/assets/${currency.address}/logo.png`
+    //   )
+    // }
+    if (currency.chainId in BLOCKCHAIN) {
       urls.push(
-        `https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/${SupportedChainSymbols[currency.chainId]}/assets/${
+        `https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/${BLOCKCHAIN[currency.chainId]}/assets/${
           currency.address
         }/logo.png`
       )
       urls.push(
-        `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${SupportedChainSymbols[currency.chainId]}/assets/${
+        `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${BLOCKCHAIN[currency.chainId]}/assets/${
           currency.address
         }/logo.png`
       )
@@ -40,6 +62,9 @@ function getCurrencySymbol(currency) {
   
     return urls
   }
+
+  const BinanceCoinLogo = 'https://raw.githubusercontent.com/sushiswap/icons/master/token/bnb.jpg'
+const EthereumLogo = 'https://raw.githubusercontent.com/sushiswap/icons/master/token/eth.jpg'
 const LOGO = SupportedChainLogo
 
   interface CurrencyLogoProps {
@@ -76,6 +101,7 @@ const LOGO = SupportedChainLogo
       
   
       if (currency.isToken) {
+        console.log(currency)
         const defaultUrls = [...getCurrencyLogoUrls(currency)]
         if (currency instanceof WrappedTokenInfo) {
           return [...uriLocations, ...defaultUrls, unknown]

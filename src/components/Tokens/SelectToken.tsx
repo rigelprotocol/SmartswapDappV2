@@ -25,7 +25,6 @@ import { isAddress } from "../../utils"
 import { filterTokens } from "./filtering"
 import ImportRow from "./ImportRow"
 import NewToken from "./newToken"
-import {NATIVE} from "@sushiswap/sdk";
 
 
 type IModal= {
