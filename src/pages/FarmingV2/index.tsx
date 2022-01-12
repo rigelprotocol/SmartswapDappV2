@@ -683,8 +683,30 @@ export function Index() {
               Liquidity Pools
             </Text>
             <Select
+            borderColor={
+              mode === LIGHT_THEME && selected === LIQUIDITY
+                ? "#F2F5F8 !important"
+                : mode === DARK_THEME && selected === LIQUIDITY
+                ? "#324D68 !important"
+                : mode === DARK_THEME && selected === STAKING
+                ? "#324D68 !important"
+                : mode === LIGHT_THEME && selected === STAKING
+                ? "#F2F5F8 !important"
+                : "#F2F5F8 !important"
+            }
+            color={
+              mode === LIGHT_THEME && selected === LIQUIDITY
+                ? "#333333"
+                : mode === DARK_THEME && selected === LIQUIDITY
+                ? "#F1F5F8"
+                : mode === DARK_THEME && selected === STAKING
+                ? "#F1F5F8"
+                : mode === LIGHT_THEME && selected === STAKING
+                ? "#333333"
+                : "#333333"
+            }
               onChange={handleLiquidityTab}
-              background="#15202B"
+              background={mode === LIGHT_THEME ? "#f7f7f8": "#15202B"}
               /* Dark Mode / Blue / 1 */
 
               border=" 1px solid #008DFF"
@@ -750,8 +772,30 @@ export function Index() {
           >
             <Text>Staking</Text>
             <Select
+            borderColor={
+              mode === LIGHT_THEME && selected === LIQUIDITY
+                ? "#F2F5F8 !important"
+                : mode === DARK_THEME && selected === LIQUIDITY
+                ? "#324D68 !important"
+                : mode === DARK_THEME && selected === STAKING
+                ? "#324D68 !important"
+                : mode === LIGHT_THEME && selected === STAKING
+                ? "#F2F5F8 !important"
+                : "#F2F5F8 !important"
+            }
+            color={
+              mode === LIGHT_THEME && selected === LIQUIDITY
+                ? "#333333"
+                : mode === DARK_THEME && selected === LIQUIDITY
+                ? "#F1F5F8"
+                : mode === DARK_THEME && selected === STAKING
+                ? "#F1F5F8"
+                : mode === LIGHT_THEME && selected === STAKING
+                ? "#333333"
+                : "#333333"
+            }
               onChange={handleStakingTab}
-              background="#15202B"
+              background={mode === LIGHT_THEME ? "#f7f7f8": "#15202B"}
               /* Dark Mode / Blue / 1 */
 
               border=" 1px solid #008DFF"
