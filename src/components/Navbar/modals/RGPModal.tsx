@@ -10,10 +10,11 @@ import RGPImage from '../../../assets/rgp.svg';
 
 
 
-const RGPModal = ({showRGP, setShowRGP, RGPBalance}: {
+const RGPModal = ({showRGP, setShowRGP, RGPBalance, RGPPrice}: {
     showRGP: boolean;
     setShowRGP: Function;
-    RGPBalance: string
+    RGPBalance: string;
+    RGPPrice: number;
 }) => {
     const bgColor3 = useColorModeValue('#DEE6ED', '#4A739B');
     const shadow = useColorModeValue(
@@ -74,7 +75,7 @@ const RGPModal = ({showRGP, setShowRGP, RGPBalance}: {
                                 RGP price:
                             </Text>
                             <Text zIndex="10" fontSize="16px" >
-                                $0.1059
+                                ${RGPPrice}
                             </Text>
                         </Flex>
                         <Flex justifyContent="space-between" mb={2}>
