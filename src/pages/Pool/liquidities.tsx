@@ -15,7 +15,11 @@ import ETHImage from '../../assets/eth.svg';
 import NullImage from '../../assets/Null-24.svg';
 import BUSDImage from '../../assets/busd.svg';
 import LiquidityDetails from './liquidityDetails';
+import CurrencyLogo from '../../components/currencyLogo';
 import MATICIMAGE from '../../assets/Matic.svg';
+import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
+import { isAddress } from '../../utils';
+import { Token } from '@uniswap/sdk-core';
 
 const Liquidities = (props: Liquidity) => {
   const [showDetails, setShowDetails] = useState(false);
@@ -23,7 +27,7 @@ const Liquidities = (props: Liquidity) => {
   const liquidityPositionBgColor = useColorModeValue('#F2F5F8', '#213345');
   const textColor = useColorModeValue('#333333', '#F1F5F8');
   const manageColor = useColorModeValue('#666666', '#DCE5EF');
-
+  const {chainId} = useActiveWeb3React()
   return (
     <>
       <Flex
@@ -41,7 +45,24 @@ const Liquidities = (props: Liquidity) => {
       >
         <Flex justifyContent="space-between">
           <Flex>
-            <Box>
+            {/* {
+              console.log(props.pair.path[0])
+            } */}
+          <CurrencyLogo currency={{...props.pair.path[0],
+          chainId,
+          address:isAddress(props.pair.path[0].fromPath) ,
+          isToken: isAddress(props.pair.path[0]?.fromPath) ? true: false,
+          isNative: isAddress(props.pair.path[0]?.fromPath) ? false: true,
+          symbol: props.pair.path[0]?.token
+          }} size={24} squared={true}/>
+          <CurrencyLogo currency={{...props.pair.path[1],
+          chainId,
+          address:isAddress(props.pair.path[1].toPath) ,
+          isToken: isAddress(props.pair.path[1]?.toPath) ? true: false,
+          isNative: isAddress(props.pair.path[1]?.toPath) ? false: true,
+          symbol: props.pair.path[1]?.token
+          }} size={24} squared={true}/>
+            {/* <Box>
               {props.pair.path[0].token === 'RGP' ? (
                 <Img src={RGPImage} />
               ) : props.pair.path[0].token === 'BUSD' ? (
@@ -70,7 +91,7 @@ const Liquidities = (props: Liquidity) => {
               ) : (
                 <Img src={NullImage} />
               )}{' '}
-            </Box>
+            </Box>*/}
             <Box ml={3}>
               {props.pair.path[0].token == 'WBNB'
                 ? 'BNB'
@@ -87,7 +108,7 @@ const Liquidities = (props: Liquidity) => {
                 : props.pair.path[1].token == 'WMATIC'
                 ? 'MATIC'
                 : props.pair.path[1].token}
-            </Box>
+            </Box> 
           </Flex>
           <Flex align="center">
             <Text mr={1} color={manageColor} fontSize="14px">
