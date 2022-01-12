@@ -3,6 +3,7 @@ import { SupportedChainSymbols,SupportedChainLogo } from '../../utils/constants/
 import { Currency,WETH9 } from '@uniswap/sdk-core'
 import { WrappedTokenInfo } from '../../state/lists/WrappedTokenInfo'
 import Logo from '../Logo'
+
 import useHttpLocations from '../../utils/hooks/useHttpLocations'
 
 
@@ -13,6 +14,9 @@ function getCurrencySymbol(currency) {
     if (currency.symbol === 'WETH') {
       return 'eth'
     }
+    if (currency.symbol === 'WBNB') {
+      return 'bnb'
+    }
     try{
      return currency.symbol.toLowerCase() 
     }catch(e){
@@ -21,45 +25,30 @@ function getCurrencySymbol(currency) {
     
   }
   const BLOCKCHAIN = {
-    [1]: 'ethereum',
-    [97]: 'binance',
-    [56]: 'binance',
-    [137]: 'polygon',
+    [1]: 'mainnet',
+    [97]: 'bsc',
+    [56]: 'bsc-testnet',
+    [137]: 'matic',
     // [ChainId.OKEX]: 'okex',
   }
   export function getCurrencyLogoUrls(currency) {
     const urls = []
-  
     urls.push(`https://raw.githubusercontent.com/sushiswap/icons/master/token/${getCurrencySymbol(currency)}.jpg`)
-    // if (currency.chainId in SupportedChainSymbols) {
-    //   console.log(1238484)
-    //   urls.push(
-    //     `https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/${SupportedChainSymbols[currency.chainId]}/assets/${
-    //       currency.address
-    //     }/logo.png`
-    //   )
-    //   urls.push(
-    //     `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${SupportedChainSymbols[currency.chainId]}/assets/${
-    //       currency.address
-    //     }/logo.png`
-    //   )
-    //   urls.push(
-    //     `https://assets.trustwalletapp.com/blockchains/smartchain/assets/${currency.address}/logo.png`
-    //   )
-    // }
-    if (currency.chainId in BLOCKCHAIN) {
+    if (currency.chainId in SupportedChainSymbols) {
       urls.push(
-        `https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/${BLOCKCHAIN[currency.chainId]}/assets/${
+        `https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/${SupportedChainSymbols[currency.chainId]}/assets/${
           currency.address
         }/logo.png`
       )
       urls.push(
-        `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${BLOCKCHAIN[currency.chainId]}/assets/${
+        `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${SupportedChainSymbols[currency.chainId]}/assets/${
           currency.address
         }/logo.png`
+      )
+      urls.push(
+        `https://assets.trustwalletapp.com/blockchains/smartchain/assets/${currency.address}/logo.png`
       )
     }
-  
     return urls
   }
 
@@ -94,14 +83,15 @@ const LOGO = SupportedChainLogo
       try{
       if (currency.isNative || (currency.symbol==="WETH" && currency.equals(WETH9[currency.chainId]))) {
         return [LOGO[currency.chainId], unknown]
-      }  
+      }else if(currency.isToken && currency.symbol === "RGP"){
+        return ["https://bscscan.com/token/images/rigelprotocol_32.png"]
+      }
       }catch(e){
         console.log("cannot read property chainID")
       }
       
   
       if (currency.isToken) {
-        console.log(currency)
         const defaultUrls = [...getCurrencyLogoUrls(currency)]
         if (currency instanceof WrappedTokenInfo) {
           return [...uriLocations, ...defaultUrls, unknown]

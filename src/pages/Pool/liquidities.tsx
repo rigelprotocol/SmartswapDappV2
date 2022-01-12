@@ -45,13 +45,23 @@ const Liquidities = (props: Liquidity) => {
       >
         <Flex justifyContent="space-between">
           <Flex>
+            {/* {
+              console.log(props.pair.path[0])
+            } */}
           <CurrencyLogo currency={{...props.pair.path[0],
           chainId,
-          address:props.pair.path[0].fromPath,
+          address:isAddress(props.pair.path[0].fromPath) ,
           isToken: isAddress(props.pair.path[0]?.fromPath) ? true: false,
           isNative: isAddress(props.pair.path[0]?.fromPath) ? false: true,
+          symbol: props.pair.path[0]?.token
           }} size={24} squared={true}/>
-          <CurrencyLogo currency={props.pair.path[1]} size={24} squared={true}/>
+          <CurrencyLogo currency={{...props.pair.path[1],
+          chainId,
+          address:isAddress(props.pair.path[1].toPath) ,
+          isToken: isAddress(props.pair.path[1]?.toPath) ? true: false,
+          isNative: isAddress(props.pair.path[1]?.toPath) ? false: true,
+          symbol: props.pair.path[1]?.token
+          }} size={24} squared={true}/>
             {/* <Box>
               {props.pair.path[0].token === 'RGP' ? (
                 <Img src={RGPImage} />
