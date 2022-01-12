@@ -69,6 +69,7 @@ const MobileNavDrawer = () => {
             <Flex
               onClick={onClose}
               alignItems="center"
+              cursor="pointer"
               justifyContent="center"
               borderRadius="6px"
               w="24px"
@@ -147,13 +148,19 @@ const MobileNavDrawer = () => {
                   <Nav label="SmartSwap" to="/swap" />
                 </Flex>
                 <Flex ml={6} mb={3}>
-                  <Text>GiftDApp</Text>
+                  <Link href="https://gift.rigelprotocol.com/" isExternal>
+                    <Text>GiftDApp</Text>
+                  </Link>
                 </Flex>
                 <Flex ml={6} mb={3}>
                   <Text>Smart Bid</Text>
                 </Flex>
                 <Flex ml={6} mb={3}>
-                  <Text>Margin Trading</Text>
+                  <Text>Leverage Exchange</Text>
+                </Flex>
+
+                <Flex ml={6} mb={3}>
+                  <Text>LaunchPad</Text>
                 </Flex>
               </Flex>
             </Flex>
