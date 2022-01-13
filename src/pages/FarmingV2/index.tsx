@@ -13,6 +13,7 @@ import {
   TabPanel,
   Select,
   Button,
+  useMediaQuery,
 } from "@chakra-ui/react";
 import { useHistory } from "react-router-dom";
 import { useColorModeValue } from "@chakra-ui/react";
@@ -83,6 +84,7 @@ export function Index() {
   const [tabIndex, setTabIndex] = useState(0);
   const [liquidityIndex, setLiquidityIndex] = useState(0);
   const [stakingIndex, setStakingIndex] = useState(1);
+  const [isMobileDevice] = useMediaQuery("(max-width: 750px)");
 
   const handleTabsChange = (index: number) => {
     const useIndex =
@@ -572,50 +574,50 @@ export function Index() {
       {(chainId && library) || !showAlert ? null : (
         <Box mx={[5, 10, 15, 20]} my={4}>
           <Alert
-            color="#FFFFFF"
+            color='#FFFFFF'
             background={mode === DARK_THEME ? "#319EF6" : "#319EF6"}
-            borderRadius="8px"
+            borderRadius='8px'
           >
             <AlertSvg />
             <AlertDescription
-              fontFamily="Inter"
+              fontFamily='Inter'
               fontSize={{ base: "16px", md: "18px", lg: "20px" }}
-              fontWeight="500"
-              lineHeight="24px"
-              letterSpacing="0em"
-              textAlign="left"
-              padding="10px"
+              fontWeight='500'
+              lineHeight='24px'
+              letterSpacing='0em'
+              textAlign='left'
+              padding='10px'
             >
               This is the V2 Farm. You should migrate your stakings from V1
               Farm.
             </AlertDescription>
 
             <CloseButton
-              position="absolute"
-              margin="2px"
-              height="14px"
-              width="14px"
-              background="#319EF6"
-              color="#fff"
-              right="20px"
-              textAign="center"
+              position='absolute'
+              margin='2px'
+              height='14px'
+              width='14px'
+              background='#319EF6'
+              color='#fff'
+              right='20px'
+              textAign='center'
               onClick={handleAlert}
             />
           </Alert>
         </Box>
       )}
 
-      <Flex justifyContent="flex-end">
+      <Flex justifyContent='flex-end'>
         <Button
           // onClick={() => }
-          background="#4CAFFF"
-          boxShadow="0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)"
-          borderRadius="6px"
+          background='#4CAFFF'
+          boxShadow='0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)'
+          borderRadius='6px'
           mx={[5, 10, 15, 20]}
           position={{ base: "relative", md: "absolute" }}
-          padding=" 12px 32px"
+          padding=' 12px 32px'
           mt={3}
-          variant="brand"
+          variant='brand'
         >
           List your project
         </Button>
@@ -625,20 +627,22 @@ export function Index() {
         index={tabIndex}
         onChange={handleTabsChange}
         // isManual
-        variant="enclosed"
+        variant='enclosed'
         mx={[5, 10, 15, 20]}
         my={4}
+        isFitted={isMobileDevice ? true : false}
       >
         <TabList>
           <Tab
             isDisabled={switchTab}
-            display="flex"
-            flex-direction="row"
-            justify-content="center"
-            align-items="center"
-            padding="4px 12px"
-            border="1px solid #DEE5ED !important"
-            borderRadius="6px 0px 0px 0px"
+            display='flex'
+            flex-direction='row'
+            justify-content='center'
+            align-items='center'
+            flexWrap={isMobileDevice ? "wrap" : undefined}
+            padding='4px 12px'
+            border='1px solid #DEE5ED !important'
+            borderRadius='6px 0px 0px 0px'
             background={
               mode === LIGHT_THEME && selected === STAKING
                 ? "#FFFFFF !important"
@@ -679,45 +683,46 @@ export function Index() {
                   ? "#333333"
                   : "#333333"
               }
+              fontSize={isMobileDevice ? "14px" : undefined}
             >
               Liquidity Pools
             </Text>
             <Select
-            borderColor={
-              mode === LIGHT_THEME && selected === LIQUIDITY
-                ? "#F2F5F8 !important"
-                : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#324D68 !important"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#324D68 !important"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#F2F5F8 !important"
-                : "#F2F5F8 !important"
-            }
-            color={
-              mode === LIGHT_THEME && selected === LIQUIDITY
-                ? "#333333"
-                : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#F1F5F8"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#F1F5F8"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#333333"
-                : "#333333"
-            }
+              borderColor={
+                mode === LIGHT_THEME && selected === LIQUIDITY
+                  ? "#F2F5F8 !important"
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                  ? "#324D68 !important"
+                  : mode === DARK_THEME && selected === STAKING
+                  ? "#324D68 !important"
+                  : mode === LIGHT_THEME && selected === STAKING
+                  ? "#F2F5F8 !important"
+                  : "#F2F5F8 !important"
+              }
+              color={
+                mode === LIGHT_THEME && selected === LIQUIDITY
+                  ? "#333333"
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                  ? "#F1F5F8"
+                  : mode === DARK_THEME && selected === STAKING
+                  ? "#F1F5F8"
+                  : mode === LIGHT_THEME && selected === STAKING
+                  ? "#333333"
+                  : "#333333"
+              }
               onChange={handleLiquidityTab}
-              background={mode === LIGHT_THEME ? "#f7f7f8": "#15202B"}
+              background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
               /* Dark Mode / Blue / 1 */
 
-              border=" 1px solid #008DFF"
-              box-sizing="border-box"
-              borderRadius="50px"
+              border=' 1px solid #008DFF'
+              box-sizing='border-box'
+              borderRadius='50px'
               /* Inside auto layout */
-              width="fit-content"
-              flex="none"
-              order="1"
-              flex-grow="0"
-              margin="0px 16px"
+              width={isMobileDevice ? undefined : "fit-content"}
+              flex='none'
+              order='1'
+              flex-grow='0'
+              margin='0px 16px'
             >
               <option value={0}>V2</option>
               <option value={3}>V1</option>
@@ -725,13 +730,13 @@ export function Index() {
           </Tab>
           <Tab
             isDisabled={!switchTab}
-            display="flex"
-            flex-direction="row"
-            justify-content="center"
-            align-items="center"
-            padding="4px 12px"
-            borderRadius="0px 0px 0px 0px"
-            border="1px solid #DEE5ED"
+            display='flex'
+            flex-direction='row'
+            justify-content='center'
+            align-items='center'
+            padding='4px 12px'
+            borderRadius='0px 0px 0px 0px'
+            border='1px solid #DEE5ED'
             background={
               mode === LIGHT_THEME && selected === LIQUIDITY
                 ? "#FFFFFF !important"
@@ -772,41 +777,41 @@ export function Index() {
           >
             <Text>Staking</Text>
             <Select
-            borderColor={
-              mode === LIGHT_THEME && selected === LIQUIDITY
-                ? "#F2F5F8 !important"
-                : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#324D68 !important"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#324D68 !important"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#F2F5F8 !important"
-                : "#F2F5F8 !important"
-            }
-            color={
-              mode === LIGHT_THEME && selected === LIQUIDITY
-                ? "#333333"
-                : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#F1F5F8"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#F1F5F8"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#333333"
-                : "#333333"
-            }
+              borderColor={
+                mode === LIGHT_THEME && selected === LIQUIDITY
+                  ? "#F2F5F8 !important"
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                  ? "#324D68 !important"
+                  : mode === DARK_THEME && selected === STAKING
+                  ? "#324D68 !important"
+                  : mode === LIGHT_THEME && selected === STAKING
+                  ? "#F2F5F8 !important"
+                  : "#F2F5F8 !important"
+              }
+              color={
+                mode === LIGHT_THEME && selected === LIQUIDITY
+                  ? "#333333"
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                  ? "#F1F5F8"
+                  : mode === DARK_THEME && selected === STAKING
+                  ? "#F1F5F8"
+                  : mode === LIGHT_THEME && selected === STAKING
+                  ? "#333333"
+                  : "#333333"
+              }
               onChange={handleStakingTab}
-              background={mode === LIGHT_THEME ? "#f7f7f8": "#15202B"}
+              background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
               /* Dark Mode / Blue / 1 */
 
-              border=" 1px solid #008DFF"
-              box-sizing="border-box"
-              borderRadius="50px"
+              border=' 1px solid #008DFF'
+              box-sizing='border-box'
+              borderRadius='50px'
               /* Inside auto layout */
-              width="fit-content"
-              flex="none"
-              order="1"
-              flex-grow="0"
-              margin="0px 16px"
+              width='fit-content'
+              flex='none'
+              order='1'
+              flex-grow='0'
+              margin='0px 16px'
             >
               <option value={1}>V1</option>
               <option value={4}>V2</option>
@@ -814,8 +819,8 @@ export function Index() {
           </Tab>
           <Tab
             isDisabled={true}
-            borderRadius="0px 6px 0px 0px"
-            border="1px solid #DEE5ED"
+            borderRadius='0px 6px 0px 0px'
+            border='1px solid #DEE5ED'
             background={
               mode === LIGHT_THEME && selected === LIQUIDITY
                 ? "#FFFFFF !important"
@@ -857,17 +862,17 @@ export function Index() {
             <Text>Other Farms</Text>
           </Tab>
         </TabList>
-        <TabPanels padding="0px">
-          <TabPanel padding="0px">
+        <TabPanels padding='0px'>
+          <TabPanel padding='0px'>
             <Flex
-              justifyContent="center"
-              alignItems="center"
-              rounded="lg"
+              justifyContent='center'
+              alignItems='center'
+              rounded='lg'
               mb={4}
             >
               <Box
-                bg="#120136"
-                minHeight="89vh"
+                bg='#120136'
+                minHeight='89vh'
                 w={["100%", "100%", "100%"]}
                 background={
                   mode === LIGHT_THEME && selected === STAKING
@@ -880,12 +885,12 @@ export function Index() {
                     ? "#FFFFFF !important"
                     : "#FFFFFF !important"
                 }
-                rounded="lg"
+                rounded='lg'
               >
-                <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">
+                <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
                   <Flex
-                    alignItems="center"
-                    justifyContent="space-between"
+                    alignItems='center'
+                    justifyContent='space-between'
                     px={4}
                     py={4}
                     background={
@@ -911,7 +916,7 @@ export function Index() {
                         : "#333333"
                     }
                     w={["100%", "100%", "100%"]}
-                    align="left"
+                    align='left'
                     border={
                       mode === LIGHT_THEME
                         ? "1px solid #DEE5ED !important"
@@ -942,16 +947,16 @@ export function Index() {
               </Box>
             </Flex>
           </TabPanel>
-          <TabPanel padding="0px">
+          <TabPanel padding='0px'>
             <Flex
-              justifyContent="center"
-              alignItems="center"
-              rounded="lg"
+              justifyContent='center'
+              alignItems='center'
+              rounded='lg'
               mb={4}
             >
               <Box
-                bg="#120136"
-                minHeight="89vh"
+                bg='#120136'
+                minHeight='89vh'
                 w={["100%", "100%", "100%"]}
                 background={
                   mode === LIGHT_THEME
@@ -960,12 +965,12 @@ export function Index() {
                     ? "#15202B !important"
                     : "#FFFFFF !important"
                 }
-                rounded="lg"
+                rounded='lg'
               >
-                <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">
+                <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
                   <Flex
-                    alignItems="center"
-                    justifyContent="space-between"
+                    alignItems='center'
+                    justifyContent='space-between'
                     px={4}
                     py={4}
                     background={
@@ -983,7 +988,7 @@ export function Index() {
                         : "#333333"
                     }
                     w={["100%", "100%", "100%"]}
-                    align="left"
+                    align='left'
                     border={
                       mode === LIGHT_THEME
                         ? "1px solid #DEE5ED !important"
@@ -1013,9 +1018,9 @@ export function Index() {
               </Box>
             </Flex>
           </TabPanel>
-          <TabPanel padding="0px"></TabPanel>
-          <TabPanel padding="0px"></TabPanel>
-          <TabPanel padding="0px"></TabPanel>
+          <TabPanel padding='0px'></TabPanel>
+          <TabPanel padding='0px'></TabPanel>
+          <TabPanel padding='0px'></TabPanel>
         </TabPanels>
       </Tabs>
     </Box>
