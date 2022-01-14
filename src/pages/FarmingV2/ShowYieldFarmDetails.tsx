@@ -25,7 +25,7 @@ import {
 } from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import Switch from "react-switch";
-import { DARK_THEME } from "./index";
+import { DARK_THEME, V1, V2 } from "./index";
 import { addToast } from "../../components/Toast/toastSlice";
 import { useDispatch } from "react-redux";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
@@ -49,7 +49,8 @@ import {
   SMARTSWAPLP_TOKEN4ADDRESSES,
   SMARTSWAPLP_TOKEN5ADDRESSES,
   RGP,
-  RGPSPECIALPOOLADDRESSES,
+  RGPSPECIALPOOLADDRESSES2,
+  RGPSPECIALPOOLADDRESSES
  } from "../../utils/addresses";
 import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
 import { SMART_SWAP } from '../../utils/constants';
@@ -59,6 +60,7 @@ import { updateFarmAllowances } from '../../state/farm/actions';
 const ShowYieldFarmDetails = ({
   content,
   wallet,
+  stakingVersion
 }: {
   content: {
     pid: number;
@@ -72,8 +74,10 @@ const ShowYieldFarmDetails = ({
     deposit: string,
     poolAllowance: any
     RGPEarned: string
+  }
+  wallet: any;
+  stakingVersion: number
 
-  };
 }) => {
   const mode = useColorModeValue("light", DARK_THEME);
   const bgColor = useColorModeValue("#FFF", "#15202B");
@@ -320,12 +324,19 @@ const setApprove = val => {
           allowance(pool3),
         ]);
         let rigelAllowance;
-        if (RGPSPECIALPOOLADDRESSES[chainId as number]) {
+        if (stakingVersion === V1 && RGPSPECIALPOOLADDRESSES[chainId as number]) {
           rigelAllowance = await rigel.allowance(
             account,
             RGPSPECIALPOOLADDRESSES[chainId as number],
           );
-        } else {
+          
+        } else if (stakingVersion === V2 && RGPSPECIALPOOLADDRESSES2[chainId as number]) {
+          rigelAllowance = await rigel.allowance(
+            account,
+            RGPSPECIALPOOLADDRESSES2[chainId as number],
+          );
+          }
+        else {
           rigelAllowance = pool1Allowance;
         }
         console.log("Contract ran", pool2Allowance)
@@ -523,7 +534,9 @@ const setApprove = val => {
           })
         );
         if (id === 0) {
-          const specialPool = await RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]);
+          const specialPool = await RGPSpecialPool(
+            stakingVersion === V1 ? RGPSPECIALPOOLADDRESSES[chainId as number]
+            : stakingVersion === V2 ? RGPSPECIALPOOLADDRESSES2[chainId as number] : RGPSPECIALPOOLADDRESSES[chainId as number] );
           const specialWithdraw = await specialPool.unStake(0);
           const { confirmations, status, logs } = await fetchTransactionData(
             specialWithdraw,
@@ -688,8 +701,8 @@ const setApprove = val => {
 
   const RGPuseStake = async (depositToken: any) => {
     if (account) {
-      const specialPool = await RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]);
-
+      const specialPool = await RGPSpecialPool(stakingVersion === V1 ? RGPSPECIALPOOLADDRESSES[chainId as number]
+        : stakingVersion === V2 ? RGPSPECIALPOOLADDRESSES2[chainId as number] : RGPSPECIALPOOLADDRESSES[chainId as number] );
       const data = await specialPool.stake(
         ethers.utils.parseEther(depositTokenValue.toString()),
         {
@@ -712,7 +725,8 @@ const setApprove = val => {
     if (account) {
 
       try {
-        const specialPool = await RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]);
+        const specialPool = await RGPSpecialPool(stakingVersion === V1 ? RGPSPECIALPOOLADDRESSES[chainId as number]
+          : stakingVersion === V2 ? RGPSPECIALPOOLADDRESSES2[chainId as number] : RGPSPECIALPOOLADDRESSES[chainId as number] );
         const data = await specialPool.unStake(
           ethers.utils.parseUnits(unstakeToken, "ether"), // user input from onclick shoild be here...
           {

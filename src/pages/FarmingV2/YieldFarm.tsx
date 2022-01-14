@@ -10,6 +10,7 @@ const YieldFarm = ({
   content,
   farmDataLoading,
   wallet,
+  stakingVersion
 }: {
   content: {
     pid: number;
@@ -26,6 +27,7 @@ const YieldFarm = ({
   };
   farmDataLoading: boolean;
   wallet: any;
+  stakingVersion:number;
 }) => {
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
   const { account, chainId, library } = useWeb3React();
@@ -230,7 +232,11 @@ const YieldFarm = ({
         </Box>
       </Flex>
       {showYieldfarm && (
-        <ShowYieldFarmDetails content={content} wallet={wallet} />
+        <ShowYieldFarmDetails 
+        content={content} 
+        wallet={wallet} 
+        stakingVersion={stakingVersion}
+        />
       )}
     </>
   );

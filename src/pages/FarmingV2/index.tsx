@@ -43,7 +43,7 @@ import {
   rigelToken,
 } from "../../utils/Contracts";
 import {
-  RGPADDRESSES,
+  RGPSPECIALPOOLADDRESSES2,
   RGPSPECIALPOOLADDRESSES,
   MASTERCHEFV2ADDRESSES,
   SMARTSWAPLP_TOKEN1ADDRESSES,
@@ -63,8 +63,8 @@ export const BIG_TEN = new bigNumber(10);
 export const LIQUIDITY = "liquidity";
 export const STAKING = "staking";
 export const OTHER_FARMS = "other farms";
-export const V1 = "v1";
-export const V2 = "v2";
+export const V1 = 1;
+export const V2 = 4;
 export const LIGHT_THEME = "light";
 export const DARK_THEME = "dark";
 export const LIQUIDITY_INDEX = 0;
@@ -86,7 +86,7 @@ export function Index() {
 
   const handleTabsChange = (index: number) => {
     const useIndex =
-      index === 0 ? liquidityIndex : index === 1 ? stakingIndex : index;
+      index === LIQUIDITY_INDEX ? liquidityIndex : index === STAKING_INDEX ? stakingIndex : index;
     setTabIndex(useIndex);
   };
 
@@ -100,8 +100,7 @@ export function Index() {
     setTabIndex(parseInt(event.target.value, 10));
   };
 
-  //const { data: farmsLP } = useFarms()
-  // const [farms, setFarms] = useState(contents);
+
   const { account, chainId, library } = useWeb3React();
   const dispatch = useDispatch();
   let match = useRouteMatch("/farming-V2/staking-RGP");
@@ -127,7 +126,7 @@ export function Index() {
     getFarmData();
     getTokenStaked();
     getFarmTokenBalance();
-  }, [account, chainId, stateChanged]);
+  }, [account, chainId, stateChanged, stakingIndex]);
 
   useEffect(() => {
     if (match) setSelected(STAKING);
@@ -154,15 +153,15 @@ export function Index() {
     }
   };
 
-  const handleActive = (value: string) => {
-    if (value === V1) {
-      setIsActive(V1);
-      changeVersion("https://smartswap.rigelprotocol.com/farming", true);
-    } else if (value === V2) {
-      setIsActive(V2);
-      changeVersion("/farming-v2");
-    }
-  };
+  // const handleActive = (value: string) => {
+  //   if (value === V1) {
+  //     setIsActive(V1);
+  //     changeVersion("https://smartswap.rigelprotocol.com/farming", true);
+  //   } else if (value === V2) {
+  //     setIsActive(V2);
+  //     changeVersion("/farming-v2");
+  //   }
+  // };
 
   const handleAlert = () => {
     setShowAlert(false);
@@ -229,7 +228,11 @@ export function Index() {
     try {
       const [specialPool, pool1, pool2, pool3, pool4, pool5] =
         await Promise.all([
-          RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
+          RGPSpecialPool(stakingIndex === V1 ? 
+            RGPSPECIALPOOLADDRESSES[chainId as number] : 
+            stakingIndex === V2 ? 
+            RGPSPECIALPOOLADDRESSES2[chainId as number] : RGPSPECIALPOOLADDRESSES[chainId as number]
+            ),
           smartSwapLPTokenPoolOne(
             SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]
           ),
@@ -268,9 +271,6 @@ export function Index() {
         const sym1 = await (await smartSwapLPTokenV2(await token1())).symbol();
         return `${sym0}-${sym1}`;
       };
-
-      //maticRGP
-      //  console.log(pool1Reserve, pool2Reserve, pool3Reserve, pool4Reserve, pool5Reserve)
 
       if (Number(chainId) === Number(SupportedChainId.POLYGONTEST)) {
         const MRGPprice: number | any = ethers.utils.formatUnits(
@@ -422,9 +422,11 @@ export function Index() {
   const specialPoolStaked = async () => {
     if (account) {
       try {
-        const specialPool = await RGPSpecialPool(
-          RGPSPECIALPOOLADDRESSES[chainId as number]
-        );
+        const specialPool = await RGPSpecialPool(stakingIndex === V1 ? 
+          RGPSPECIALPOOLADDRESSES[chainId as number] : 
+          stakingIndex === V2 ? 
+          RGPSPECIALPOOLADDRESSES2[chainId as number] : RGPSPECIALPOOLADDRESSES[chainId as number]
+          )
         const RGPStakedEarned = await Promise.all([
           specialPool.userData(account),
           specialPool.calculateRewards(account),
@@ -935,6 +937,7 @@ export function Index() {
                         content={content}
                         key={content.pid}
                         wallet={wallet}
+                        stakingVersion={stakingIndex}
                       />
                     ) : null
                   )}
@@ -1006,6 +1009,7 @@ export function Index() {
                         content={content}
                         key={content.pid}
                         wallet={wallet}
+                        stakingVersion={stakingIndex}
                       />
                     ) : null
                   )}
@@ -1015,7 +1019,78 @@ export function Index() {
           </TabPanel>
           <TabPanel padding="0px"></TabPanel>
           <TabPanel padding="0px"></TabPanel>
-          <TabPanel padding="0px"></TabPanel>
+          <TabPanel padding="0px">
+          <Flex
+              justifyContent="center"
+              alignItems="center"
+              rounded="lg"
+              mb={4}
+            >
+              <Box
+                bg="#120136"
+                minHeight="89vh"
+                w={["100%", "100%", "100%"]}
+                background={
+                  mode === LIGHT_THEME
+                    ? "#FFFFFF !important"
+                    : mode === DARK_THEME
+                    ? "#15202B !important"
+                    : "#FFFFFF !important"
+                }
+                rounded="lg"
+              >
+                <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">
+                  <Flex
+                    alignItems="center"
+                    justifyContent="space-between"
+                    px={4}
+                    py={4}
+                    background={
+                      mode === DARK_THEME
+                        ? "#213345"
+                        : mode === LIGHT_THEME
+                        ? "#F2F5F8"
+                        : "#F2F5F8 !important"
+                    }
+                    color={
+                      mode === LIGHT_THEME
+                        ? "#333333"
+                        : mode === DARK_THEME
+                        ? "#F1F5F8"
+                        : "#333333"
+                    }
+                    w={["100%", "100%", "100%"]}
+                    align="left"
+                    border={
+                      mode === LIGHT_THEME
+                        ? "1px solid #DEE5ED !important"
+                        : mode === DARK_THEME
+                        ? "1px solid #324D68 !important"
+                        : "1px solid #324D68"
+                    }
+                    display={{ base: "none", md: "flex", lg: "flex" }}
+                  >
+                    <Text>Deposit</Text>
+                    <Text>Earn</Text>
+                    <Text>APY</Text>
+                    <Text>Total Liquidity</Text>
+                    <Text />
+                  </Flex>
+                  {FarmData.contents.map((content: any, index: number) =>
+                    index === 0 ? (
+                      <YieldFarm
+                        farmDataLoading={farmDataLoading}
+                        content={content}
+                        key={content.pid}
+                        wallet={wallet}
+                        stakingVersion={stakingIndex}
+                      />
+                    ) : null
+                  )}
+                </Box>
+              </Box>
+            </Flex>
+          </TabPanel>
         </TabPanels>
       </Tabs>
     </Box>

@@ -56,6 +56,16 @@ export const RGPSPECIALPOOLADDRESSES: { [key: string]: string } = {
   '137': '0x',
   '80001': '0x60715e85cba9892addc49830cf0655cf5fb09c3a',
 };
+
+
+export const RGPSPECIALPOOLADDRESSES2: { [key: string]: string } = {
+  '1': '0x',
+  '3': '0x',
+  '56': '0x100514759dcd6e2ccbb9eb87481b96de28c4b77f',
+  '97': '0x21228b8a9490e21dda803a0e5a07671c981d0eaf',
+  '137': '0x',
+  '80001': '0x60715e85cba9892addc49830cf0655cf5fb09c3a',
+};
 export const SMARTSWAPLP_TOKEN1ADDRESSES: { [key: string]: string } = {
   '1': '0x',
   '3': '0x',
