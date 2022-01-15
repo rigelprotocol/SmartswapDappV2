@@ -86,7 +86,11 @@ export function Index() {
 
   const handleTabsChange = (index: number) => {
     const useIndex =
-      index === LIQUIDITY_INDEX ? liquidityIndex : index === STAKING_INDEX ? stakingIndex : index;
+      index === LIQUIDITY_INDEX
+        ? liquidityIndex
+        : index === STAKING_INDEX
+        ? stakingIndex
+        : index;
     setTabIndex(useIndex);
   };
 
@@ -99,7 +103,6 @@ export function Index() {
     setLiquidityIndex(parseInt(event.target.value, 10));
     setTabIndex(parseInt(event.target.value, 10));
   };
-
 
   const { account, chainId, library } = useWeb3React();
   const dispatch = useDispatch();
@@ -228,11 +231,13 @@ export function Index() {
     try {
       const [specialPool, pool1, pool2, pool3, pool4, pool5] =
         await Promise.all([
-          RGPSpecialPool(stakingIndex === V1 ? 
-            RGPSPECIALPOOLADDRESSES[chainId as number] : 
-            stakingIndex === V2 ? 
-            RGPSPECIALPOOLADDRESSES2[chainId as number] : RGPSPECIALPOOLADDRESSES[chainId as number]
-            ),
+          RGPSpecialPool(
+            stakingIndex === V1
+              ? RGPSPECIALPOOLADDRESSES[chainId as number]
+              : stakingIndex === V2
+              ? RGPSPECIALPOOLADDRESSES2[chainId as number]
+              : RGPSPECIALPOOLADDRESSES[chainId as number]
+          ),
           smartSwapLPTokenPoolOne(
             SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]
           ),
@@ -267,8 +272,10 @@ export function Index() {
       ]);
 
       const deposit = async (token0: any, token1: any) => {
-        const sym0 = await (await smartSwapLPTokenV2(await token0())).symbol();
-        const sym1 = await (await smartSwapLPTokenV2(await token1())).symbol();
+        let sym0 = await (await smartSwapLPTokenV2(await token0())).symbol();
+        let sym1 = await (await smartSwapLPTokenV2(await token1())).symbol();
+        if (sym0 === "WMATIC") sym0 = "MATIC";
+        if (sym1 === "WMATIC") sym1 = "MATIC";
         return `${sym0}-${sym1}`;
       };
 
@@ -422,11 +429,13 @@ export function Index() {
   const specialPoolStaked = async () => {
     if (account) {
       try {
-        const specialPool = await RGPSpecialPool(stakingIndex === V1 ? 
-          RGPSPECIALPOOLADDRESSES[chainId as number] : 
-          stakingIndex === V2 ? 
-          RGPSPECIALPOOLADDRESSES2[chainId as number] : RGPSPECIALPOOLADDRESSES[chainId as number]
-          )
+        const specialPool = await RGPSpecialPool(
+          stakingIndex === V1
+            ? RGPSPECIALPOOLADDRESSES[chainId as number]
+            : stakingIndex === V2
+            ? RGPSPECIALPOOLADDRESSES2[chainId as number]
+            : RGPSPECIALPOOLADDRESSES[chainId as number]
+        );
         const RGPStakedEarned = await Promise.all([
           specialPool.userData(account),
           specialPool.calculateRewards(account),
@@ -685,36 +694,33 @@ export function Index() {
               Liquidity Pools
             </Text>
             <Select
-            borderColor={
-              mode === LIGHT_THEME && selected === LIQUIDITY
-                ? "#F2F5F8 !important"
-                : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#324D68 !important"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#324D68 !important"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#F2F5F8 !important"
-                : "#F2F5F8 !important"
-            }
-            color={
-              mode === LIGHT_THEME && selected === LIQUIDITY
-                ? "#333333"
-                : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#F1F5F8"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#F1F5F8"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#333333"
-                : "#333333"
-            }
+              borderColor={
+                mode === LIGHT_THEME && selected === LIQUIDITY
+                  ? "#F2F5F8 !important"
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                  ? "#324D68 !important"
+                  : mode === DARK_THEME && selected === STAKING
+                  ? "#324D68 !important"
+                  : mode === LIGHT_THEME && selected === STAKING
+                  ? "#F2F5F8 !important"
+                  : "#F2F5F8 !important"
+              }
+              color={
+                mode === LIGHT_THEME && selected === LIQUIDITY
+                  ? "#333333"
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                  ? "#F1F5F8"
+                  : mode === DARK_THEME && selected === STAKING
+                  ? "#F1F5F8"
+                  : mode === LIGHT_THEME && selected === STAKING
+                  ? "#333333"
+                  : "#333333"
+              }
               onChange={handleLiquidityTab}
-              background={mode === LIGHT_THEME ? "#f7f7f8": "#15202B"}
-              /* Dark Mode / Blue / 1 */
-
+              background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
               border=" 1px solid #008DFF"
               box-sizing="border-box"
               borderRadius="50px"
-              /* Inside auto layout */
               width="fit-content"
               flex="none"
               order="1"
@@ -774,36 +780,33 @@ export function Index() {
           >
             <Text>Staking</Text>
             <Select
-            borderColor={
-              mode === LIGHT_THEME && selected === LIQUIDITY
-                ? "#F2F5F8 !important"
-                : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#324D68 !important"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#324D68 !important"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#F2F5F8 !important"
-                : "#F2F5F8 !important"
-            }
-            color={
-              mode === LIGHT_THEME && selected === LIQUIDITY
-                ? "#333333"
-                : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#F1F5F8"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#F1F5F8"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#333333"
-                : "#333333"
-            }
+              borderColor={
+                mode === LIGHT_THEME && selected === LIQUIDITY
+                  ? "#F2F5F8 !important"
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                  ? "#324D68 !important"
+                  : mode === DARK_THEME && selected === STAKING
+                  ? "#324D68 !important"
+                  : mode === LIGHT_THEME && selected === STAKING
+                  ? "#F2F5F8 !important"
+                  : "#F2F5F8 !important"
+              }
+              color={
+                mode === LIGHT_THEME && selected === LIQUIDITY
+                  ? "#333333"
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                  ? "#F1F5F8"
+                  : mode === DARK_THEME && selected === STAKING
+                  ? "#F1F5F8"
+                  : mode === LIGHT_THEME && selected === STAKING
+                  ? "#333333"
+                  : "#333333"
+              }
               onChange={handleStakingTab}
-              background={mode === LIGHT_THEME ? "#f7f7f8": "#15202B"}
-              /* Dark Mode / Blue / 1 */
-
+              background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
               border=" 1px solid #008DFF"
               box-sizing="border-box"
               borderRadius="50px"
-              /* Inside auto layout */
               width="fit-content"
               flex="none"
               order="1"
@@ -1020,7 +1023,7 @@ export function Index() {
           <TabPanel padding="0px"></TabPanel>
           <TabPanel padding="0px"></TabPanel>
           <TabPanel padding="0px">
-          <Flex
+            <Flex
               justifyContent="center"
               alignItems="center"
               rounded="lg"
