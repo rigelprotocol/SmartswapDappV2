@@ -90,6 +90,11 @@ export function Index() {
     setTabIndex(useIndex);
   };
 
+  const goToV1 = (index: number) => {
+        setTabIndex(index);
+
+  };
+
   const handleStakingTab = (event: { target: { value: string } }) => {
     setStakingIndex(parseInt(event.target.value, 10));
     setTabIndex(parseInt(event.target.value, 10));
@@ -1014,7 +1019,92 @@ export function Index() {
             </Flex>
           </TabPanel>
           <TabPanel padding="0px"></TabPanel>
-          <TabPanel padding="0px"></TabPanel>
+          <TabPanel padding="0px">
+          <Flex
+              justifyContent="center"
+              alignItems="center"
+              rounded="lg"
+              mb={4}
+            >
+              <Box
+                bg="#120136"
+                minHeight="89vh"
+                w={["100%", "100%", "100%"]}
+                background={
+                  mode === LIGHT_THEME && selected === STAKING
+                    ? "#FFFFFF !important"
+                    : mode === DARK_THEME && selected === LIQUIDITY
+                    ? "#15202B !important"
+                    : mode === DARK_THEME && selected === STAKING
+                    ? "#15202B !important"
+                    : mode === LIGHT_THEME && selected === LIQUIDITY
+                    ? "#FFFFFF !important"
+                    : "#FFFFFF !important"
+                }
+                rounded="lg"
+              >
+                <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">
+                  <Flex
+                    alignItems="center"
+                    justifyContent="space-between"
+                    px={4}
+                    py={4}
+                    background={
+                      mode === LIGHT_THEME && selected === LIQUIDITY
+                        ? "#F2F5F8  !important"
+                        : mode === DARK_THEME && selected === LIQUIDITY
+                        ? "#213345"
+                        : mode === DARK_THEME && selected === STAKING
+                        ? "#213345"
+                        : mode === LIGHT_THEME && selected === STAKING
+                        ? "#F2F5F8"
+                        : "#F2F5F8 !important"
+                    }
+                    color={
+                      mode === LIGHT_THEME && selected === LIQUIDITY
+                        ? "#333333"
+                        : mode === DARK_THEME && selected === STAKING
+                        ? "#F1F5F8"
+                        : mode === DARK_THEME && selected === LIQUIDITY
+                        ? "#F1F5F8"
+                        : mode === LIGHT_THEME && selected === STAKING
+                        ? "#333333"
+                        : "#333333"
+                    }
+                    w={["100%", "100%", "100%"]}
+                    align="left"
+                    border={
+                      mode === LIGHT_THEME
+                        ? "1px solid #DEE5ED !important"
+                        : mode === DARK_THEME
+                        ? "1px solid #324D68 !important"
+                        : "1px solid #324D68"
+                    }
+                    display={{ base: "none", md: "flex", lg: "flex" }}
+                  >
+                    <Text>
+                    Please Migrate your LP token farming from farming V1 to this V2
+                  </Text>
+                  </Flex>
+
+                  <Button
+                    onClick={() => goToV1(LIQUIDITY_INDEX)}
+                    background="#4CAFFF"
+                    boxShadow="0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)"
+                    borderRadius="6px"
+                    mx={[5, 10, 15, 20]}
+                    position={{ base: "relative", md: "absolute" }}
+                    padding=" 12px 32px"
+                    mt={3}
+                    variant="brand"
+                  >
+                    Go to farming V1
+                  </Button>
+                </Box>
+              </Box>
+            </Flex>
+
+          </TabPanel>
           <TabPanel padding="0px"></TabPanel>
         </TabPanels>
       </Tabs>
