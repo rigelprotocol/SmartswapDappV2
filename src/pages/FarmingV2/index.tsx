@@ -11,6 +11,8 @@ import {
   TabPanels,
   Tab,
   TabPanel,
+  Select,
+  Button,
 } from "@chakra-ui/react";
 import { useHistory } from "react-router-dom";
 import { useColorModeValue } from "@chakra-ui/react";
@@ -60,6 +62,7 @@ export const BIG_TEN = new bigNumber(10);
 
 export const LIQUIDITY = "liquidity";
 export const STAKING = "staking";
+export const OTHER_FARMS = "other farms";
 export const V1 = "v1";
 export const V2 = "v2";
 export const LIGHT_THEME = "light";
@@ -76,6 +79,32 @@ export function Index() {
   const [showAlert, setShowAlert] = useState(true);
   const [farmDataLoading, setfarmDataLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(false);
+  const [switchTab, setSwitchTab] = useState(false);
+  const [tabIndex, setTabIndex] = useState(0);
+  const [liquidityIndex, setLiquidityIndex] = useState(0);
+  const [stakingIndex, setStakingIndex] = useState(1);
+
+  const handleTabsChange = (index: number) => {
+    const useIndex =
+      index === 0 ? liquidityIndex : index === 1 ? stakingIndex : index;
+    setTabIndex(useIndex);
+  };
+
+  const goToV1 = (index: number) => {
+        setTabIndex(index);
+
+  };
+
+  const handleStakingTab = (event: { target: { value: string } }) => {
+    setStakingIndex(parseInt(event.target.value, 10));
+    setTabIndex(parseInt(event.target.value, 10));
+  };
+
+  const handleLiquidityTab = (event: { target: { value: string } }) => {
+    setLiquidityIndex(parseInt(event.target.value, 10));
+    setTabIndex(parseInt(event.target.value, 10));
+  };
+
   //const { data: farmsLP } = useFarms()
   // const [farms, setFarms] = useState(contents);
   const { account, chainId, library } = useWeb3React();
@@ -118,11 +147,15 @@ export function Index() {
 
   const handleSelect = (value: string) => {
     if (value === LIQUIDITY) {
+      setSwitchTab(!switchTab);
       setSelected(LIQUIDITY);
       changeVersion("/farming-v2");
     } else if (value === STAKING) {
+      setSwitchTab(!switchTab);
       setSelected(STAKING);
       changeVersion("/farming-v2/staking-RGP");
+    } else {
+      setSwitchTab(false);
     }
   };
 
@@ -383,7 +416,7 @@ export function Index() {
         );
       }
     } catch (error) {
-      console.log(error.message);
+      // console.log(error.message);
       setfarmDataLoading(false);
       //if (!toast.isActive(id)) {
       //  showErrorToast();
@@ -395,18 +428,18 @@ export function Index() {
     if (account) {
       try {
         const specialPool = await RGPSpecialPool(
-          RGPSPECIALPOOLADDRESSES[chainId as number],
-        )
+          RGPSPECIALPOOLADDRESSES[chainId as number]
+        );
         const RGPStakedEarned = await Promise.all([
           specialPool.userData(account),
           specialPool.calculateRewards(account),
-        ])
-        return RGPStakedEarned
+        ]);
+        return RGPStakedEarned;
       } catch (error) {
-        return error
+        return error;
       }
     }
-  }
+  };
   const getTokenStaked = async () => {
     try {
       if (account) {
@@ -444,15 +477,15 @@ export function Index() {
 
         //console.log("EARRNED", RGPStakedEarned)
 
-         if (RGPStakedEarned) {
-        const [specialPoolStaked, specialPoolEarned] = RGPStakedEarned;
+        if (RGPStakedEarned) {
+          const [specialPoolStaked, specialPoolEarned] = RGPStakedEarned;
 
-         RGPStaked = formatBigNumber(specialPoolStaked.tokenQuantity);
-        RGPEarned = formatBigNumber(specialPoolEarned);
-          } else {
-        RGPStaked = 0;
-        RGPEarned = 0;
-         }
+          RGPStaked = formatBigNumber(specialPoolStaked.tokenQuantity);
+          RGPEarned = formatBigNumber(specialPoolEarned);
+        } else {
+          RGPStaked = 0;
+          RGPEarned = 0;
+        }
 
         dispatch(
           updateTokenStaked([
@@ -578,95 +611,24 @@ export function Index() {
       )}
 
       <Flex justifyContent="flex-end">
-        <Tabs
-          variant="soft-rounded"
+        <Button
+          // onClick={() => }
+          background="#4CAFFF"
+          boxShadow="0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)"
+          borderRadius="6px"
           mx={[5, 10, 15, 20]}
           position={{ base: "relative", md: "absolute" }}
-          borderRadius="6px"
-          border={
-            mode === LIGHT_THEME && isActive === V1
-              ? "2px solid #DEE5ED !important"
-              : mode === DARK_THEME && isActive === V1
-                ? "2px solid  #213345 !important"
-                : mode === DARK_THEME && isActive === V2
-                  ? "2px solid  #213345 !important"
-                  : mode === LIGHT_THEME && isActive === V2
-                    ? "2px solid #DEE5ED !important"
-                    : "2px solid #DEE5ED !important"
-          }
-          p={1}
+          padding=" 12px 32px"
           mt={3}
+          variant="brand"
         >
-          <TabList>
-            <Tab
-              padding="8px 34px"
-              marginTop="3px"
-              background={
-                mode === LIGHT_THEME && isActive === V1
-                  ? "#FFFFFF !important"
-                  : mode === DARK_THEME && isActive === V1
-                    ? "#15202B !important"
-                    : mode === DARK_THEME && isActive === V2
-                      ? "#15202B !important"
-                      : mode === LIGHT_THEME && isActive === V2
-                        ? "#FFFFFF !important"
-                        : "#F2F5F8 !important"
-              }
-              color={
-                mode === LIGHT_THEME && isActive === V1
-                  ? "#999999 !important"
-                  : mode === DARK_THEME && isActive === V1
-                    ? "#7599BD !important"
-                    : mode === DARK_THEME && isActive === V2
-                      ? "#7599BD !important"
-                      : mode === LIGHT_THEME && isActive === V2
-                        ? "#999999 !important"
-                        : "#333333"
-              }
-              border="none"
-              borderRadius="6px"
-              value={V1}
-              onClick={() => handleActive(V1)}
-            >
-              V1
-            </Tab>
-            <Tab
-              padding="8px 34px"
-              marginTop="3px"
-              background={
-                mode === LIGHT_THEME && isActive === V2
-                  ? "#F2F5F8 !important"
-                  : mode === DARK_THEME && isActive === V2
-                    ? "#4A739B !important"
-                    : mode === DARK_THEME && isActive === V1
-                      ? "#4A739B !important"
-                      : mode === LIGHT_THEME && isActive === V1
-                        ? "#FFFFFF !important"
-                        : "#F2F5F8 !important"
-              }
-              color={
-                mode === LIGHT_THEME && isActive === V2
-                  ? "#333333 !important"
-                  : mode === DARK_THEME && isActive === V2
-                    ? "#F1F5F8 !important"
-                    : mode === DARK_THEME && isActive === V1
-                      ? "#F1F5F8 !important"
-                      : mode === LIGHT_THEME && isActive === V2
-                        ? "#333333 !important"
-                        : "#333333"
-              }
-              borderRadius="6px"
-              border="none"
-              value={V2}
-              onClick={() => handleActive(V2)}
-            >
-              V2
-            </Tab>
-          </TabList>
-        </Tabs>
+          List your project
+        </Button>
       </Flex>
       <Tabs
         defaultIndex={match ? STAKING_INDEX : LIQUIDITY_INDEX}
+        index={tabIndex}
+        onChange={handleTabsChange}
         // isManual
         variant="enclosed"
         mx={[5, 10, 15, 20]}
@@ -674,35 +636,40 @@ export function Index() {
       >
         <TabList>
           <Tab
+            isDisabled={switchTab}
+            display="flex"
+            flex-direction="row"
+            justify-content="center"
+            align-items="center"
+            padding="4px 12px"
             border="1px solid #DEE5ED !important"
             borderRadius="6px 0px 0px 0px"
             background={
               mode === LIGHT_THEME && selected === STAKING
                 ? "#FFFFFF !important"
                 : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#213345 !important"
-                  : mode === DARK_THEME && selected === STAKING
-                    ? "#15202B !important"
-                    : mode === LIGHT_THEME && selected === LIQUIDITY
-                      ? "#DEE5ED !important"
-                      : "#DEE5ED !important"
+                ? "#213345 !important"
+                : mode === DARK_THEME && selected === STAKING
+                ? "#15202B !important"
+                : mode === LIGHT_THEME && selected === LIQUIDITY
+                ? "#DEE5ED !important"
+                : "#DEE5ED !important"
             }
             px={5}
             py={4}
             minWidth={{ base: "none", md: "200px", lg: "200px" }}
             value={LIQUIDITY}
             onClick={() => handleSelect(LIQUIDITY)}
-            // onClick={handleSelect}
             borderColor={
               mode === LIGHT_THEME && selected === LIQUIDITY
                 ? "#F2F5F8 !important"
                 : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#324D68 !important"
-                  : mode === DARK_THEME && selected === STAKING
-                    ? "#324D68 !important"
-                    : mode === LIGHT_THEME && selected === STAKING
-                      ? "#F2F5F8 !important"
-                      : "#F2F5F8 !important"
+                ? "#324D68 !important"
+                : mode === DARK_THEME && selected === STAKING
+                ? "#324D68 !important"
+                : mode === LIGHT_THEME && selected === STAKING
+                ? "#F2F5F8 !important"
+                : "#F2F5F8 !important"
             }
           >
             <Text
@@ -710,52 +677,98 @@ export function Index() {
                 mode === LIGHT_THEME && selected === LIQUIDITY
                   ? "#333333"
                   : mode === DARK_THEME && selected === LIQUIDITY
-                    ? "#F1F5F8"
-                    : mode === DARK_THEME && selected === STAKING
-                      ? "#F1F5F8"
-                      : mode === LIGHT_THEME && selected === STAKING
-                        ? "#333333"
-                        : "#333333"
+                  ? "#F1F5F8"
+                  : mode === DARK_THEME && selected === STAKING
+                  ? "#F1F5F8"
+                  : mode === LIGHT_THEME && selected === STAKING
+                  ? "#333333"
+                  : "#333333"
               }
             >
               Liquidity Pools
             </Text>
-          </Tab>
-          <Tab
-            borderRadius="0px 6px 0px 0px"
-            border="1px solid #DEE5ED"
-            background={
+            <Select
+            borderColor={
               mode === LIGHT_THEME && selected === LIQUIDITY
-                ? "#FFFFFF !important"
+                ? "#F2F5F8 !important"
+                : mode === DARK_THEME && selected === LIQUIDITY
+                ? "#324D68 !important"
                 : mode === DARK_THEME && selected === STAKING
-                  ? "#213345 !important"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                    ? "#15202B !important"
-                    : mode === LIGHT_THEME && selected === STAKING
-                      ? "#DEE5ED !important"
-                      : "#DEE5ED !important"
+                ? "#324D68 !important"
+                : mode === LIGHT_THEME && selected === STAKING
+                ? "#F2F5F8 !important"
+                : "#F2F5F8 !important"
             }
             color={
               mode === LIGHT_THEME && selected === LIQUIDITY
                 ? "#333333"
                 : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#F1F5F8"
-                  : mode === DARK_THEME && selected === STAKING
-                    ? "#F1F5F8"
-                    : mode === LIGHT_THEME && selected === STAKING
-                      ? "#333333"
-                      : "#333333"
+                ? "#F1F5F8"
+                : mode === DARK_THEME && selected === STAKING
+                ? "#F1F5F8"
+                : mode === LIGHT_THEME && selected === STAKING
+                ? "#333333"
+                : "#333333"
+            }
+              onChange={handleLiquidityTab}
+              background={mode === LIGHT_THEME ? "#f7f7f8": "#15202B"}
+              /* Dark Mode / Blue / 1 */
+
+              border=" 1px solid #008DFF"
+              box-sizing="border-box"
+              borderRadius="50px"
+              /* Inside auto layout */
+              width="fit-content"
+              flex="none"
+              order="1"
+              flex-grow="0"
+              margin="0px 16px"
+            >
+              <option value={0}>V2</option>
+              <option value={3}>V1</option>
+            </Select>
+          </Tab>
+          <Tab
+            isDisabled={!switchTab}
+            display="flex"
+            flex-direction="row"
+            justify-content="center"
+            align-items="center"
+            padding="4px 12px"
+            borderRadius="0px 0px 0px 0px"
+            border="1px solid #DEE5ED"
+            background={
+              mode === LIGHT_THEME && selected === LIQUIDITY
+                ? "#FFFFFF !important"
+                : mode === DARK_THEME && selected === STAKING
+                ? "#213345 !important"
+                : mode === DARK_THEME && selected === LIQUIDITY
+                ? "#15202B !important"
+                : mode === LIGHT_THEME && selected === STAKING
+                ? "#DEE5ED !important"
+                : "#DEE5ED !important"
+            }
+            color={
+              mode === LIGHT_THEME && selected === LIQUIDITY
+                ? "#333333"
+                : mode === DARK_THEME && selected === LIQUIDITY
+                ? "#F1F5F8"
+                : mode === DARK_THEME && selected === STAKING
+                ? "#F1F5F8"
+                : mode === LIGHT_THEME && selected === STAKING
+                ? "#333333"
+                : "#333333"
             }
             borderColor={
               mode === LIGHT_THEME && selected === LIQUIDITY
                 ? "#F2F5F8 !important"
                 : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#324D68 !important"
-                  : mode === DARK_THEME && selected === STAKING
-                    ? "#324D68 !important"
-                    : mode === LIGHT_THEME && selected === STAKING
-                      ? "#F2F5F8 !important"
-                      : "#F2F5F8 !important"
+                ? "#324D68 !important"
+                : mode === DARK_THEME && selected === STAKING
+                ? "#324D68 !important"
+                : mode === LIGHT_THEME && selected === STAKING
+                ? "#F2F5F8 !important"
+                : "#F2F5F8 !important"
             }
             px={5}
             py={4}
@@ -763,6 +776,90 @@ export function Index() {
             onClick={() => handleSelect(STAKING)}
           >
             <Text>Staking</Text>
+            <Select
+            borderColor={
+              mode === LIGHT_THEME && selected === LIQUIDITY
+                ? "#F2F5F8 !important"
+                : mode === DARK_THEME && selected === LIQUIDITY
+                ? "#324D68 !important"
+                : mode === DARK_THEME && selected === STAKING
+                ? "#324D68 !important"
+                : mode === LIGHT_THEME && selected === STAKING
+                ? "#F2F5F8 !important"
+                : "#F2F5F8 !important"
+            }
+            color={
+              mode === LIGHT_THEME && selected === LIQUIDITY
+                ? "#333333"
+                : mode === DARK_THEME && selected === LIQUIDITY
+                ? "#F1F5F8"
+                : mode === DARK_THEME && selected === STAKING
+                ? "#F1F5F8"
+                : mode === LIGHT_THEME && selected === STAKING
+                ? "#333333"
+                : "#333333"
+            }
+              onChange={handleStakingTab}
+              background={mode === LIGHT_THEME ? "#f7f7f8": "#15202B"}
+              /* Dark Mode / Blue / 1 */
+
+              border=" 1px solid #008DFF"
+              box-sizing="border-box"
+              borderRadius="50px"
+              /* Inside auto layout */
+              width="fit-content"
+              flex="none"
+              order="1"
+              flex-grow="0"
+              margin="0px 16px"
+            >
+              <option value={1}>V1</option>
+              <option value={4}>V2</option>
+            </Select>
+          </Tab>
+          <Tab
+            isDisabled={true}
+            borderRadius="0px 6px 0px 0px"
+            border="1px solid #DEE5ED"
+            background={
+              mode === LIGHT_THEME && selected === LIQUIDITY
+                ? "#FFFFFF !important"
+                : mode === DARK_THEME && selected === STAKING
+                ? "#213345 !important"
+                : mode === DARK_THEME && selected === LIQUIDITY
+                ? "#15202B !important"
+                : mode === LIGHT_THEME && selected === STAKING
+                ? "#DEE5ED !important"
+                : "#DEE5ED !important"
+            }
+            color={
+              mode === LIGHT_THEME && selected === LIQUIDITY
+                ? "#333333"
+                : mode === DARK_THEME && selected === LIQUIDITY
+                ? "#F1F5F8"
+                : mode === DARK_THEME && selected === STAKING
+                ? "#F1F5F8"
+                : mode === LIGHT_THEME && selected === STAKING
+                ? "#333333"
+                : "#333333"
+            }
+            borderColor={
+              mode === LIGHT_THEME && selected === LIQUIDITY
+                ? "#F2F5F8 !important"
+                : mode === DARK_THEME && selected === LIQUIDITY
+                ? "#324D68 !important"
+                : mode === DARK_THEME && selected === STAKING
+                ? "#324D68 !important"
+                : mode === LIGHT_THEME && selected === STAKING
+                ? "#F2F5F8 !important"
+                : "#F2F5F8 !important"
+            }
+            px={5}
+            py={4}
+            minWidth={{ base: "none", md: "200px", lg: "200px" }}
+            // onClick={() => handleSelect(OTHER_FARMS)}
+          >
+            <Text>Other Farms</Text>
           </Tab>
         </TabList>
         <TabPanels padding="0px">
@@ -781,12 +878,12 @@ export function Index() {
                   mode === LIGHT_THEME && selected === STAKING
                     ? "#FFFFFF !important"
                     : mode === DARK_THEME && selected === LIQUIDITY
-                      ? "#15202B !important"
-                      : mode === DARK_THEME && selected === STAKING
-                        ? "#15202B !important"
-                        : mode === LIGHT_THEME && selected === LIQUIDITY
-                          ? "#FFFFFF !important"
-                          : "#FFFFFF !important"
+                    ? "#15202B !important"
+                    : mode === DARK_THEME && selected === STAKING
+                    ? "#15202B !important"
+                    : mode === LIGHT_THEME && selected === LIQUIDITY
+                    ? "#FFFFFF !important"
+                    : "#FFFFFF !important"
                 }
                 rounded="lg"
               >
@@ -800,23 +897,23 @@ export function Index() {
                       mode === LIGHT_THEME && selected === LIQUIDITY
                         ? "#F2F5F8  !important"
                         : mode === DARK_THEME && selected === LIQUIDITY
-                          ? "#213345"
-                          : mode === DARK_THEME && selected === STAKING
-                            ? "#213345"
-                            : mode === LIGHT_THEME && selected === STAKING
-                              ? "#F2F5F8"
-                              : "#F2F5F8 !important"
+                        ? "#213345"
+                        : mode === DARK_THEME && selected === STAKING
+                        ? "#213345"
+                        : mode === LIGHT_THEME && selected === STAKING
+                        ? "#F2F5F8"
+                        : "#F2F5F8 !important"
                     }
                     color={
                       mode === LIGHT_THEME && selected === LIQUIDITY
                         ? "#333333"
                         : mode === DARK_THEME && selected === STAKING
-                          ? "#F1F5F8"
-                          : mode === DARK_THEME && selected === LIQUIDITY
-                            ? "#F1F5F8"
-                            : mode === LIGHT_THEME && selected === STAKING
-                              ? "#333333"
-                              : "#333333"
+                        ? "#F1F5F8"
+                        : mode === DARK_THEME && selected === LIQUIDITY
+                        ? "#F1F5F8"
+                        : mode === LIGHT_THEME && selected === STAKING
+                        ? "#333333"
+                        : "#333333"
                     }
                     w={["100%", "100%", "100%"]}
                     align="left"
@@ -824,8 +921,8 @@ export function Index() {
                       mode === LIGHT_THEME
                         ? "1px solid #DEE5ED !important"
                         : mode === DARK_THEME
-                          ? "1px solid #324D68 !important"
-                          : "1px solid #324D68"
+                        ? "1px solid #324D68 !important"
+                        : "1px solid #324D68"
                     }
                     display={{ base: "none", md: "flex", lg: "flex" }}
                   >
@@ -865,8 +962,8 @@ export function Index() {
                   mode === LIGHT_THEME
                     ? "#FFFFFF !important"
                     : mode === DARK_THEME
-                      ? "#15202B !important"
-                      : "#FFFFFF !important"
+                    ? "#15202B !important"
+                    : "#FFFFFF !important"
                 }
                 rounded="lg"
               >
@@ -880,15 +977,15 @@ export function Index() {
                       mode === DARK_THEME
                         ? "#213345"
                         : mode === LIGHT_THEME
-                          ? "#F2F5F8"
-                          : "#F2F5F8 !important"
+                        ? "#F2F5F8"
+                        : "#F2F5F8 !important"
                     }
                     color={
                       mode === LIGHT_THEME
                         ? "#333333"
                         : mode === DARK_THEME
-                          ? "#F1F5F8"
-                          : "#333333"
+                        ? "#F1F5F8"
+                        : "#333333"
                     }
                     w={["100%", "100%", "100%"]}
                     align="left"
@@ -896,8 +993,8 @@ export function Index() {
                       mode === LIGHT_THEME
                         ? "1px solid #DEE5ED !important"
                         : mode === DARK_THEME
-                          ? "1px solid #324D68 !important"
-                          : "1px solid #324D68"
+                        ? "1px solid #324D68 !important"
+                        : "1px solid #324D68"
                     }
                     display={{ base: "none", md: "flex", lg: "flex" }}
                   >
@@ -921,6 +1018,94 @@ export function Index() {
               </Box>
             </Flex>
           </TabPanel>
+          <TabPanel padding="0px"></TabPanel>
+          <TabPanel padding="0px">
+          <Flex
+              justifyContent="center"
+              alignItems="center"
+              rounded="lg"
+              mb={4}
+            >
+              <Box
+                bg="#120136"
+                minHeight="89vh"
+                w={["100%", "100%", "100%"]}
+                background={
+                  mode === LIGHT_THEME && selected === STAKING
+                    ? "#FFFFFF !important"
+                    : mode === DARK_THEME && selected === LIQUIDITY
+                    ? "#15202B !important"
+                    : mode === DARK_THEME && selected === STAKING
+                    ? "#15202B !important"
+                    : mode === LIGHT_THEME && selected === LIQUIDITY
+                    ? "#FFFFFF !important"
+                    : "#FFFFFF !important"
+                }
+                rounded="lg"
+              >
+                <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">
+                  <Flex
+                    alignItems="center"
+                    justifyContent="space-between"
+                    px={4}
+                    py={4}
+                    background={
+                      mode === LIGHT_THEME && selected === LIQUIDITY
+                        ? "#F2F5F8  !important"
+                        : mode === DARK_THEME && selected === LIQUIDITY
+                        ? "#213345"
+                        : mode === DARK_THEME && selected === STAKING
+                        ? "#213345"
+                        : mode === LIGHT_THEME && selected === STAKING
+                        ? "#F2F5F8"
+                        : "#F2F5F8 !important"
+                    }
+                    color={
+                      mode === LIGHT_THEME && selected === LIQUIDITY
+                        ? "#333333"
+                        : mode === DARK_THEME && selected === STAKING
+                        ? "#F1F5F8"
+                        : mode === DARK_THEME && selected === LIQUIDITY
+                        ? "#F1F5F8"
+                        : mode === LIGHT_THEME && selected === STAKING
+                        ? "#333333"
+                        : "#333333"
+                    }
+                    w={["100%", "100%", "100%"]}
+                    align="left"
+                    border={
+                      mode === LIGHT_THEME
+                        ? "1px solid #DEE5ED !important"
+                        : mode === DARK_THEME
+                        ? "1px solid #324D68 !important"
+                        : "1px solid #324D68"
+                    }
+                    display={{ base: "none", md: "flex", lg: "flex" }}
+                  >
+                    <Text>
+                    Please Migrate your LP token farming from farming V1 to this V2
+                  </Text>
+                  </Flex>
+
+                  <Button
+                    onClick={() => goToV1(LIQUIDITY_INDEX)}
+                    background="#4CAFFF"
+                    boxShadow="0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)"
+                    borderRadius="6px"
+                    mx={[5, 10, 15, 20]}
+                    position={{ base: "relative", md: "absolute" }}
+                    padding=" 12px 32px"
+                    mt={3}
+                    variant="brand"
+                  >
+                    Go to farming V1
+                  </Button>
+                </Box>
+              </Box>
+            </Flex>
+
+          </TabPanel>
+          <TabPanel padding="0px"></TabPanel>
         </TabPanels>
       </Tabs>
     </Box>

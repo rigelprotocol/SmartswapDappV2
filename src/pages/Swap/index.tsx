@@ -18,7 +18,7 @@ const Swap = () => {
         flexWrap="wrap"
       >
         {isMobileDevice ? (
-          <>
+          <Box mb="110px">
             <Box mx={4} mt={8} w={['100%', '100%', '45%', '29.5%']} mb={4}>
               <SendToken />
             </Box>
@@ -30,7 +30,7 @@ const Swap = () => {
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
               <History />
             </Box>
-          </>
+          </Box>
         ) : (
           <>
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>

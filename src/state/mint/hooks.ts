@@ -51,7 +51,8 @@ export function tryParseAmount<T extends Currency>(
 }
 
 export function useMintActionHandlers(): {
-  onCurrencySelection: (field: Field, currency: Currency) => void;
+  onCurrencyFor: (currencyAddress: string,field: Field, ) => void;
+   onCurrencySelection: (field: Field, currency: Currency) => void;
   onUserInput: (field: Field, typedValue: string, no: boolean) => void;
 } {
   const { chainId, account } = useActiveWeb3React();
@@ -81,6 +82,17 @@ export function useMintActionHandlers(): {
     [dispatch]
   );
 
+
+  const onCurrencyFor = useCallback(
+    ( currencyAddress: string,field: Field,) => {
+      dispatch(
+        selectCurrency( {field: field,
+          currencyId: currencyAddress})
+      );
+    },
+    [dispatch]
+  );
+
   const onUserInput = useCallback(
     (field: Field, typedValue: string, no: boolean) => {
       dispatch(typeInput({ field, typedValue, no }));
@@ -90,7 +102,8 @@ export function useMintActionHandlers(): {
   return {
     onCurrencySelection,
     onUserInput,
-  };
+    onCurrencyFor
+    };
 }
 
 export function useDerivedMintInfo(): {

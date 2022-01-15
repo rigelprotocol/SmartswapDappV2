@@ -45,8 +45,8 @@ const History = () => {
       border="1px"
       borderColor={borderColor}
       borderRadius="6px"
+      display={sideBarRemoved && "none"}
       alignItems="center"
-      display={sideBarRemoved && 'none'}
     >
       <Box w="100%" pl={3} my={4} pr={3}>
         <Flex alignItems="center" justifyContent="space-between" px={4}>
@@ -111,7 +111,6 @@ const History = () => {
               borderRadius="6px"
               cursor="pointer"
               onClick={() => {
-                //setSideBarRemoved(true);
                 dispatch(transactionTab({removeSideTab: true}));
                 removeSideTab('history');
               }}

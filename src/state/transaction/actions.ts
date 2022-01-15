@@ -39,3 +39,5 @@ export const checkedTransaction = createAction<{
 }>('transactions/checkedTransaction');
 
 export const transactionTab = createAction<{removeSideTab : boolean}>('transactions/transactionTab');
+
+export const detailsTab = createAction<{removeDetailsTab : boolean}>('transactions/detailsTab');
