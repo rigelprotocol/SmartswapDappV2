@@ -132,7 +132,6 @@ useEffect(() => {
       changeApprovalButton(approvalForRGPBUSD, rgpApproval);
       }
       else if (content.deposit === 'RGP') {
-      
       changeApprovalButton(true, rgpApproval);
 
     } else if (content.deposit === 'BNB-BUSD') {
@@ -419,6 +418,7 @@ const setApprove = val => {
   };
   const enoughApproval = (allowance: any, balance: any) => {
     if (allowance && balance) {
+
       return allowance.gt(ethers.utils.parseEther(balance));
     }
     return true;
@@ -839,7 +839,9 @@ const setApprove = val => {
         );
         const rgp = await rigelToken(RGP[chainId as number]);
         const walletBal = (await rgp.balanceOf(account)) + 400e18;
-        const data = await rgp.approve(RGPSPECIALPOOLADDRESSES[chainId as number], walletBal, {
+        const data = await rgp.approve(stakingVersion === V1 ? RGPSPECIALPOOLADDRESSES[chainId as number]
+          : stakingVersion === V2 ? RGPSPECIALPOOLADDRESSES2[chainId as number] : RGPSPECIALPOOLADDRESSES[chainId as number] 
+, walletBal, {
           from: account,
           gasLimit: 150000,
           gasPrice: ethers.utils.parseUnits('20', 'gwei'),
