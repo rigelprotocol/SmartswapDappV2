@@ -170,6 +170,13 @@ export function Index() {
     }
   };
 
+  const showProject = () => {
+    changeVersion(
+      "https://docs.google.com/forms/d/e/1FAIpQLSdJGAuABrJd6d0WSprUWB140we9hGqa-IwIbonx9ZJhxN2zsg/viewform", 
+      true);
+
+  }
+
   const handleAlert = () => {
     setShowAlert(false);
   };
@@ -613,7 +620,7 @@ export function Index() {
 
       <Flex justifyContent='flex-end'>
         <Button
-          // onClick={() => }
+          onClick={showProject}
           background='#4CAFFF'
           boxShadow='0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)'
           borderRadius='6px'
