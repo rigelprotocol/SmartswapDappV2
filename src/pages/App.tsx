@@ -15,6 +15,7 @@ import TransactionStateModal from "../components/Modals/TransactionsModal/Transa
 import SetPrice from "./Swap/SetPrice";
 import AutoTime from "./Swap/AutoTime";
 import FindPool from "./Pool/FindPool";
+import Index from "./index";
 import useConnectWallet from "../utils/hooks/useConnectWallet";
 
 export default function App() {
@@ -25,12 +26,14 @@ export default function App() {
       <Fonts />
       <AppWrapper>
         <HashRouter>
+        <Switch>
+              <Route exact strict path="/" component={Index} />
+              </Switch>
           <Navbar />
           <Notify />
           <TransactionStateModal />
           <ErrorBoundary>
             <Switch>
-              {/* <Route exact strict path="/" component={Swap} /> */}
               <Route exact strict path="/swap" component={Swap} />
               <Route exact strict path="/pool" component={Pool} />
 
@@ -58,9 +61,9 @@ export default function App() {
               />
               <Route exact path="/farming" component={FarmingV1} />
               <Route path="/farming-V2" component={FarmingV2} />
-              <Route path="*">
+              {/* <Route path="*">
                 <Redirect to="/swap" />
-              </Route>
+              </Route> */}
             </Switch>
           </ErrorBoundary>
         </HashRouter>
