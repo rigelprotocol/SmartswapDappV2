@@ -1133,19 +1133,16 @@ const ShowYieldFarmDetails = ({
                 marginTop='17px'
                 marginRight='10px'
               >
-                <Tooltip
-                  label='Auto Harvest (weekly)'
-                  fontSize='md'
-                  marginTop='15px'
-                >
+                <Tooltip label='Coming soon' fontSize='md' marginTop='15px'>
                   <QuestionOutlineIcon color='#120136' cursor='pointer' />
                 </Tooltip>
               </Circle>
             </Flex>
             <Flex>
               <Switch
+                disabled
                 onChange={handleChecked}
-                checked={checked}
+                checked={!checked}
                 className='react-switch'
               />
             </Flex>
