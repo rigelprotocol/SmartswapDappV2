@@ -296,6 +296,12 @@
        top: 100%;
        border-radius: 0;
    }
+   .multi_nav_head:hover{
+    color: rgb(192, 186, 186) !important
+   }
+   .multi_nav_head {
+    color: white !important;
+   }
 /*****************MAIN *******************/
 section {
    margin:120px 0;
@@ -540,7 +546,7 @@ line-height: 64px;
        .multi_navbar .multi_navbar_ul {
         position: absolute;
         top: 5px;
-        background: #fff;
+        background: #041522;
         width: 351px;
         box-shadow: 0px 1px 7px rgba(14, 31, 53, 0.08);
         border-radius: 8px;

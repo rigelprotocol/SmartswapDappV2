@@ -131,7 +131,8 @@ const Index = () => {
                </li>
                <li>
                 <a
-                 href="gift.rigelprotocol.com"
+                 href="https://gift.rigelprotocol.com/"
+                 target="blank"
                 >
                  <div className="multi_navbar_ul_div_item">
                    <p className="multi_nav_head">GiftDapp</p>
