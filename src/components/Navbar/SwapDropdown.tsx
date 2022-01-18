@@ -29,20 +29,20 @@ function SwapDropdown() {
         transition="all 0.2s"
         rightIcon={<ChevronDownIcon />}
         fontWeight={200}
-        _focus={{color: "#319EF6"}}
+        _focus={{ color: "#319EF6" }}
         fontSize="14px"
       >
         Swap
       </MenuButton>
       <MenuList>
-        <MenuItem _focus={{color: "#319EF6"}}>
+        <MenuItem _focus={{ color: "#319EF6" }}>
           <Nav label="Straight Swap" to="/swap" />
         </MenuItem>
-        <MenuItem _focus={{color: "#319EF6"}}>
-          <Nav label="Auto-Time" to="/auto-time" />
+        <MenuItem _focus={{ color: "#319EF6" }}>
+          <Nav label="Auto-Time" to="#" />
         </MenuItem>
-        <MenuItem _focus={{color: "#319EF6"}}>
-          <Nav label="Set Price" to="/set-price" />
+        <MenuItem _focus={{ color: "#319EF6" }}>
+          <Nav label="Set Price" to="#" />
         </MenuItem>
       </MenuList>
     </Menu>

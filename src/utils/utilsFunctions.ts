@@ -3,7 +3,7 @@ import { Contract } from '@ethersproject/contracts';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { getAddress } from '@ethersproject/address';
 import ERC20Token from './abis/erc20.json';
-import { WrappedSymbols } from './constants/chains';
+import { SupportedChainSymbols, WrappedSymbols } from './constants/chains';
 import { Fraction } from '@uniswap/sdk-core';
 import { ethers } from 'ethers';
 
@@ -67,6 +67,17 @@ export const switchNetwork = async (
     rpcUrls: ['https://polygon-rpc.com'],
     blockExplorerUrls: ['https://polygonscan.com'],
   };
+  const ropstenParams = {
+    chainId: '0x3',
+    chainName: 'Ropsten Test Network',
+    nativeCurrency: {
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18,
+    },
+    rpcUrls: ['https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
+    blockExplorerUrls: ['https://ropsten.etherscan.io'],
+  }
   const binanceParams = {
     chainId: '0x38',
     chainName: 'Binance Smart Chain',
@@ -78,9 +89,24 @@ export const switchNetwork = async (
     rpcUrls: ['https://bsc-dataseed.binance.org'],
     blockExplorerUrls: ['https://bscscan.com'],
   };
-
+console.log({chainId})
   if (chainId === '0x1') {
     library?.send('wallet_switchEthereumChain', [{ chainId }, account]);
+  } else if (chainId === '0x3') {
+    try {
+      await library?.send('wallet_switchEthereumChain', [{ chainId: '0x3' }, account]);
+    }catch (switchError) {
+      if (switchError.code === 4902) {
+          try {
+            await library?.send('wallet_addEthereumChain', [ropstenParams, account])
+          } catch (addError) {
+            // handle "add" error
+            console.error(`Add chain error ${addError}`)
+          }
+        }
+        console.error(`Switch chain error ${switchError}`)
+      // handle other "switch" errors
+    }
   } else if (chainId === '0x38') {
     try {
       await library?.send('wallet_switchEthereumChain', [{ chainId: '0x38' }, account]);
@@ -121,6 +147,14 @@ export const getDeadline = (userDeadline: number) => {
 
 export const isNative = (symbol: string, chainId: number): boolean => {
   if (symbol === WrappedSymbols[chainId as number]) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+export const ISNATIVE = (symbol: string, chainId: number): boolean => {
+  if (symbol === SupportedChainSymbols[chainId as number]) {
     return true;
   } else {
     return false;

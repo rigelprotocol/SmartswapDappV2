@@ -36,13 +36,13 @@ function Toast({ message, URL, remove }: ToastProps) {
   const faderStyle = useSpring({
     from: { width: '100%' },
     to: { width: '0%' },
-    config: { duration: 3000 },
+    config: { duration: 6000 },
   });
 
   useEffect(() => {
     setTimeout(() => {
       remove();
-    }, 3000);
+    }, 6000);
   }, []);
 
   return (

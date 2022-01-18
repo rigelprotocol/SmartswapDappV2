@@ -50,7 +50,7 @@ const Index = () => {
         flexDirection="column"
         minHeight="70vh"
         rounded="lg"
-        mb={4}
+        mb={["110px","110px","4"]}
       >
         <Box
           minHeight="100%"

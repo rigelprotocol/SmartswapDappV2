@@ -5,6 +5,10 @@ import { removeSideTab, checkSideTab } from '../../../../utils/utilsFunctions';
 import { ArrowDownIcon } from "@chakra-ui/icons";
 import DetailBox from "./DetailBox";
 import {animated, Transition} from 'react-spring';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppDispatch, RootState} from '../../../../state';
+import { useDetails } from '../../../../utils/hooks/useDetails';
+import {detailsTab} from "../../../../state/transaction/actions";
 
 const ShowDetails = () => {
   const textColor = useColorModeValue('#333333', '#F1F5F8');
@@ -12,12 +16,24 @@ const ShowDetails = () => {
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   const boxColor = useColorModeValue("#F2F5F8","#213345");
 
-  const [sideBarRemoved, setSideBarRemoved] = useState<Boolean>(false);
+
   const [viewInfo, setViewInfo] = useState<Boolean>(false);
+  const swapDetails = useSelector((state: RootState) => state.swap);
+
+  const dispatch = useDispatch<AppDispatch>();
+
+  const sideBarRemoved = useSelector((state: RootState) => state.transactions.removeDetailsTab);
+
+  const {inputdetails,outputdetails} = useDetails(swapDetails);
+
+  console.log('swapdetails',swapDetails);
+
+  console.log(inputdetails);
 
   useEffect(() => {
     const isActive = checkSideTab('details');
-    setSideBarRemoved(isActive);
+    dispatch(detailsTab({removeDetailsTab: isActive}));
+
   }, []);
 
   return (
@@ -60,7 +76,7 @@ const ShowDetails = () => {
               borderRadius="6px"
               cursor="pointer"
               onClick={() => {
-                setSideBarRemoved(true);
+                dispatch(detailsTab({removeDetailsTab: true}));
                 removeSideTab('details');
               }}
             >
@@ -78,7 +94,7 @@ const ShowDetails = () => {
           {(styles, viewInfo) =>
               viewInfo &&
               <animated.div style={styles}>
-                <DetailBox/>
+                <DetailBox details={inputdetails} inputDetails={swapDetails.INPUT.currencyId}/>
                 <Flex justifyContent={'center'}>
                        <Box
                           display= "flex"
@@ -95,7 +111,7 @@ const ShowDetails = () => {
                         <ArrowDownIcon w={5} h={10}/>
                       </Box>
                     </Flex>
-                <DetailBox/>
+                <DetailBox details={outputdetails} inputDetails={swapDetails.OUTPUT.currencyId}/>
               </animated.div>
           }
         </Transition>

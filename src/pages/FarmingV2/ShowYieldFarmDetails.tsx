@@ -50,7 +50,7 @@ import {
   SMARTSWAPLP_TOKEN5ADDRESSES,
   RGP,
   RGPSPECIALPOOLADDRESSES,
- } from "../../utils/addresses";
+} from "../../utils/addresses";
 import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
 import { SMART_SWAP } from '../../utils/constants';
 import { useRGPBalance } from "../../utils/hooks/useBalances";
@@ -104,95 +104,95 @@ const ShowYieldFarmDetails = ({
     modal2Disclosure.onClose();
   };
 
-useEffect(() => {
-  const poolAllowance = async contract => {
-    if (signer !== 'signer') {
-      const rgpApproval = await contract.allowance(
-        account,
-        SMART_SWAP.masterChefV2,
-      );
-      return !(rgpApproval.toString() <= 0);
-    }
-  };
+  useEffect(() => {
+    const poolAllowance = async contract => {
+      if (signer !== 'signer') {
+        const rgpApproval = await contract.allowance(
+          account,
+          SMART_SWAP.masterChefV2,
+        );
+        return !(rgpApproval.toString() <= 0);
+      }
+    };
 
-  const checkForApproval = async () => {
-    const rgp = await rigelToken(RGP[chainId as number]);
-    const rgpApproval = await poolAllowance(rgp);
-    if (content.deposit === 'RGP-BNB') {
-      const poolTwo = await smartSwapLPTokenPoolTwo(SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number]);
-      const approvalForRGPBNB = await poolAllowance(poolTwo);
-      changeApprovalButton(approvalForRGPBNB, rgpApproval);
-    } else if (content.deposit === 'RGP-BUSD') {
-      const poolOne = await smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]);
-      const approvalForRGPBUSD = await poolAllowance(poolOne);
-      changeApprovalButton(approvalForRGPBUSD, rgpApproval);
+    const checkForApproval = async () => {
+      const rgp = await rigelToken(RGP[chainId as number]);
+      const rgpApproval = await poolAllowance(rgp);
+      if (content.deposit === 'RGP-BNB') {
+        const poolTwo = await smartSwapLPTokenPoolTwo(SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number]);
+        const approvalForRGPBNB = await poolAllowance(poolTwo);
+        changeApprovalButton(approvalForRGPBNB, rgpApproval);
+      } else if (content.deposit === 'RGP-BUSD') {
+        const poolOne = await smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]);
+        const approvalForRGPBUSD = await poolAllowance(poolOne);
+        changeApprovalButton(approvalForRGPBUSD, rgpApproval);
       }
       else if (content.deposit === 'RGP') {
-      
-      changeApprovalButton(true, rgpApproval);
 
-    } else if (content.deposit === 'BNB-BUSD') {
-      const poolThree = await smartSwapLPTokenPoolThree(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number]);
-      const approvalForBNBBUSD = await poolAllowance(poolThree);
-      changeApprovalButton(approvalForBNBBUSD, rgpApproval);
-    } else if (content.deposit === 'AXS-RGP') {
-      const poolFour = await smartSwapLPTokenV2PoolFour(SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number]);
-      const approveForAXSRGP = await poolAllowance(poolFour);
-      changeApprovalButton(approveForAXSRGP, rgpApproval);
-    } else if (content.deposit === 'AXS-BUSD') {
-      const poolFive = await smartSwapLPTokenV2PoolFive(SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number]);
-      const approveForAXSBUSD = await poolAllowance(poolFive);
-      changeApprovalButton(approveForAXSBUSD, rgpApproval);
+        changeApprovalButton(true, rgpApproval);
+
+      } else if (content.deposit === 'BNB-BUSD') {
+        const poolThree = await smartSwapLPTokenPoolThree(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number]);
+        const approvalForBNBBUSD = await poolAllowance(poolThree);
+        changeApprovalButton(approvalForBNBBUSD, rgpApproval);
+      } else if (content.deposit === 'AXS-RGP') {
+        const poolFour = await smartSwapLPTokenV2PoolFour(SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number]);
+        const approveForAXSRGP = await poolAllowance(poolFour);
+        changeApprovalButton(approveForAXSRGP, rgpApproval);
+      } else if (content.deposit === 'AXS-BUSD') {
+        const poolFive = await smartSwapLPTokenV2PoolFive(SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number]);
+        const approveForAXSBUSD = await poolAllowance(poolFive);
+        changeApprovalButton(approveForAXSBUSD, rgpApproval);
+      }
+    };
+
+    function changeApprovalButton(otherTokenApproval, rgpApproval) {
+      if (otherTokenApproval && rgpApproval) {
+        setApproveValueForOtherToken(true);
+        setApproveValueForRGP(true);
+      } else if (otherTokenApproval) {
+        setApproveValueForOtherToken(true);
+      } else if (rgpApproval) {
+        setApproveValueForOtherToken(true);
+        setApproveValueForRGP(true);
+      } else {
+        setApproveValueForRGP(false);
+        setApproveValueForOtherToken(false);
+      }
+    }
+    setApproveValueForRGP(false);
+    setApproveValueForOtherToken(false);
+    checkForApproval();
+  }, [wallet, content]);
+
+  const RGPSpecialPoolApproval = async () => {
+    if (signer !== 'signer') {
+      try {
+        const rgp = await rigelToken(RGP[chainId as number]);
+        const walletBal = (await rgp.balanceOf(account)) + 400e18;
+        const data = await rgp.approve(SMART_SWAP.specialPool, walletBal, {
+          from: account,
+          gasLimit: 150000,
+          gasPrice: ethers.utils.parseUnits('20', 'gwei'),
+        });
+        setApprovalLoading(true);
+        const { confirmations, status } = await fetchTransactionData(data);
+        getAllowances();
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setApprovalLoading(false);
+      }
     }
   };
 
-function changeApprovalButton(otherTokenApproval, rgpApproval) {
-  if (otherTokenApproval && rgpApproval) {
-    setApproveValueForOtherToken(true);
-    setApproveValueForRGP(true);
-  } else if (otherTokenApproval) {
-    setApproveValueForOtherToken(true);
-  } else if (rgpApproval) {
-     setApproveValueForOtherToken(true);
-    setApproveValueForRGP(true);
-  } else {
-    setApproveValueForRGP(false);
-    setApproveValueForOtherToken(false);
-  }
-}
-setApproveValueForRGP(false);
-setApproveValueForOtherToken(false);
-checkForApproval();
-}, [wallet, content]);
-
-const RGPSpecialPoolApproval = async () => {
-  if (signer !== 'signer') {
-    try {
-      const rgp = await rigelToken(RGP[chainId as number]);
-      const walletBal = (await rgp.balanceOf(account)) + 400e18;
-      const data = await rgp.approve(SMART_SWAP.specialPool, walletBal, {
-        from: account,
-        gasLimit: 150000,
-        gasPrice: ethers.utils.parseUnits('20', 'gwei'),
-      });
-      setApprovalLoading(true);
-      const { confirmations, status } = await fetchTransactionData(data);
-      getAllowances();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setApprovalLoading(false);
+  const setApprove = val => {
+    if (approveValueForOtherToken && approveValueForRGP) {
+      modal2Disclosure.onOpen();
+    } else {
+      checkUser(val);
     }
-  }
-};
-
-const setApprove = val => {
-  if (approveValueForOtherToken && approveValueForRGP) {
-    modal2Disclosure.onOpen();
-  } else {
-    checkUser(val);
-  }
-};
+  };
 
   const checkUser = async val => {
     if (signer !== 'signer') {
@@ -982,15 +982,15 @@ const setApprove = val => {
               margin="0 auto"
               borderRadius="6px"
               bg={mode === DARK_THEME ? "#4A739B" : "#999999"}
-              color={mode === DARK_THEME ? "#7599BD" : "#CCCCCC"}
+              color={mode === DARK_THEME ? "#FFFFFF" : "#FFFFFF"}
               border="0"
               mb="4"
               mr="2"
               cursor="pointer"
               _hover={{ color: "white" }}
-    
+
               disabled={parseFloat(content.RGPEarned
-                ) <= 0}
+              ) <= 0}
               onClick={() => harvestTokens(content.pId)}
             >
               Harvest
@@ -1064,7 +1064,7 @@ const setApprove = val => {
                 marginRight="10px"
               >
                 <Tooltip
-                  label="Auto Harvest (weekly)"
+                  label="Coming soon"
                   fontSize="md"
                   marginTop="15px"
                 >
@@ -1074,8 +1074,9 @@ const setApprove = val => {
             </Flex>
             <Flex>
               <Switch
+                disabled
                 onChange={handleChecked}
-                checked={checked}
+                checked={!checked}
                 className="react-switch"
               />
             </Flex>
