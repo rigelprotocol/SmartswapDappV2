@@ -2,70 +2,70 @@
 
 import { Box, Flex } from '@chakra-ui/layout';
 import { Button } from '@chakra-ui/button';
-import { Text } from '@chakra-ui/react';
+import { Text,Img } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import { useColorModeValue } from '@chakra-ui/react';
-import { useGetUserLiquidities } from '../../utils/hooks/usePools';
+import DarkLogo from '../../assets/logo/LogoRGPImage.svg';
+import External from '../../assets/external.svg';
+import SmartSwap from '../../assets/smartswap-dark.svg';
+import Swap from '../../assets/swap.svg';
+import Liquidity from '../../assets/liquidity.svg';
+import YieldFarm from '../../assets/yieldfarm.svg';
+import Speed from '../../assets/speed_2.gif';
+import Security from '../../assets/security_2.gif';
+import Fees from '../../assets/fees.gif';
+import Github from '../../assets/Vectorgithub.svg';
+import Linkedin from '../../assets/Vectorlinkedin.svg';
+import Twitter from '../../assets/Vectortwitter.svg';
+import Discord from '../../assets/Vectordiscord.svg';
+import Telegram from '../../assets/Vectortelegram.svg';
+import Medium from '../../assets/Vectormedium.svg';
+import Polygon from '../../assets/Platformpolygon.svg';
+import Close from '../../assets/closeSquare.svg';
+import Ethereum from '../../assets/Groupethereum.svg';
+import Binance from '../../assets/Groupbinance.svg';
 import { Link } from 'react-router-dom';
 import "./landingpage.css"
 
 const Index = () => {
-  const mode = useColorModeValue('light', 'dark');
-  const factory = useGetUserLiquidities();
-  const [liquidities, setLiquidities] = useState<any[] | undefined>([]);
-  const [liquidityLength, setLiquidityLength] = useState(0);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    let cancel = false;
-    const load = async () => {
-      const details = await factory;
-      if (details && !cancel) {
-        try {
-          setLiquidities(details.liquidities);
-          setLiquidityLength(details.liquidityLength);
-          setLoading(details.Loading);
-        } catch (err) {
-          console.log(err);
-        }
-      }
-    };
-    load();
-    return () => {
-      cancel = true;
-    };
-  }, [factory]);
+  const [minNav1,setMinNav1] = useState(false)
+  const [minNav2,setMinNav2] = useState(false)
+  const [navBar,setNavBar] = useState(false)
 
   return (
-    <>
-       <header>
+    <div style={{background:"#000C15"}}>
+       <header className='mainHeader'>
         <div className="header">
          <nav>
           <div className="headerTop">
            <div className="logo">
             <a href="/">
-             <img src="./assets/images/logo.svg" alt="logo" className="logo-img" />
+             {/* <img src="../" alt="logo" className="logo-img" />
+              */}
+               <Img src={DarkLogo} />
             </a>
            </div>
      
-           <div className="menuToggle">
-            <div className="barsText">
+           <div className="menuToggle" onClick={()=>setNavBar(!navBar)}>
+             {
+             navBar ? <img src={Close} alt="" /> : <div className="barsText">
              <div className="bars"></div>
              <div className="bars"></div>
              <div className="bars"></div>
             </div>
-            <div className="close-nav"><img src="./assets/images/close-square.svg" alt="" /></div>
+            }
+           
            </div>
           </div>
      
-          <ul className="menu">
+      <ul className="menu" style={{"right":navBar ? 0 : "100%"}}>
           
-           <li className="multi_navbar">
+           <li className="multi_navbar" onClick={()=>
+  setMinNav1(!minNav1)}>
             <div className="multi_navbar_flex">
              <div className="multi_navbar_ul_div_heading"><a>Company</a></div>
              <div><i className="downArrow"></i></div>
             </div>
-            <ul className="multi_navbar_ul">
+            {minNav1 &&  <ul className="multi_navbar_ul">
              <div className="multi_navbar_ul_div">
               <div>
                <li>
@@ -105,14 +105,16 @@ const Index = () => {
             
               </div>
              </div>
-            </ul>
+            </ul>}
+           
            </li>
-           <li className="multi_navbar multi_navbar_2">
+           <li className="multi_navbar multi_navbar_2" onClick={()=>
+  setMinNav2(!minNav2)}>
             <div className="multi_navbar_flex">
              <div className="multi_navbar_ul_div_heading"><a>DApps</a></div>
              <div><i className="downArrow"></i></div>
             </div>
-            <ul className="multi_navbar_ul multi_navbar_ul_2">
+            {minNav2 && <ul className="multi_navbar_ul multi_navbar_ul_2">
              <div className="multi_navbar_ul_div">
               <div>
                <li>
@@ -178,16 +180,20 @@ const Index = () => {
             
               </div>
              </div>
-            </ul>
+            </ul>}
+            
            </li>
            <li>
             <a href="events.html">Events</a>
            </li>
            <li>
-            <a href="https://medium.com/rigelprotocol" target="_blank">Blog <img src ="./assets/images/external.svg" className="ml-1"/></a>
+             <Flex>
+                <a href="https://medium.com/rigelprotocol" target="_blank"></a>Blog <img src={External} style={{marginLeft:"6px"}} />
+             </Flex>
+           
            </li>
           {/* <div className="header__nav__button header__nav__bottom">
-            <button>
+            <button className="button">
               <span><a>Launch DApps</a></span>
               <i className="downArrow"></i>
             </button>
@@ -195,7 +201,7 @@ const Index = () => {
           </ul>
           <div className="header__nav__button__wrapper">
            <div className="header__nav__button">
-            <button>
+            <button className="button">
               <span><a>Launch DApps</a></span>
               <i className="downArrow"></i>
             </button>
@@ -212,15 +218,17 @@ const Index = () => {
 <div className="section__1__center">
   <h1>a SMART way to Swap</h1>
   <p>RigelProtocol Launchpad is an end to end tokenization platform combining a technology solution with key compliance and legal aspects.</p>
-  <button>
+ <Link to="/swap">
+ <button className="button">
     Launch DApp
   </button>
+ </Link> 
 </div>
        </section>
 
        
        <section className="section__2">
-         <img src="./assets/images/smartswap-dark.svg" alt="smartswap" />   
+         <Img src={SmartSwap} /> 
        </section>
         
         <section className="section__3">
@@ -230,15 +238,18 @@ const Index = () => {
           </div>
          <div className="section__3__top">
           <div>
-            <img src="./assets/images/swap.svg" alt="" />
+            <img src={Swap} alt="" />
                     </div>
            <div className="section__3__text">
              <h3>Swap</h3>
              <p>To get leverage tokens to trade with, you need to have deposited a certain amount of tokens. So to get started, you go to the SmartSwap Dapp and deposit tokens in the desired token you would like to trade with.</p>
              <div className="section__3__top__button">
-               <button>
+              <Link to="/swap">
+               <button className="button">
                  Launch DApp <span>&#8594;</span> 
                </button>
+              </Link>
+              
              </div>
            </div>
          </div>
@@ -247,26 +258,31 @@ const Index = () => {
              <h3>Liquidity</h3>
              <p>After depositing your trading token, you can now select a pair with said token and then set your spillage and leverage settings. You get up to 100x leverage for the amount of your deposited tokens for you to trade with.</p>
              <div className="section__3__top__button">
-               <button>
+             <Link to="/pool">
+               <button className="button">
                  Launch DApp <span>&#8594;</span>
                </button>
+               </Link>
              </div>
            </div>
            <div>
-            <img src="./assets/images/liquidity.svg" alt="" />
+           <img src={Liquidity} alt="" />
                     </div>
          </div>
          <div className="section__3__top">
             <div>
-            <img src="./assets/images/yieldfarm.svg" alt="" />
+            <img src={YieldFarm} alt="" />
            </div>
            <div className="section__3__text">
              <h3>Yield Farming</h3>
              <p>When you trade with the leverage you earn more back. From your earning your leveraged tokens are automatically removed with interest and you get to keep more earnings.</p>
              <div className="section__3__top__button">
-               <button>
+               <Link to="/farming-V2">
+                     <button className="button">
                  Launch DApp <span>&#8594;</span>
                </button>
+               </Link>
+           
              </div>
            </div>
           
@@ -277,13 +293,13 @@ const Index = () => {
        <div className="section__4__container">
          <div className="section__4__img__container">
         <div>
-          <img src="./assets/images/ethereum.svg" alt="ethereum"/>
+        <img src={Ethereum} alt="Ethereum" />
         </div>
         <div>
-          <img src="./assets/images/binance.svg" alt="binance"/>
+        <img src={Binance} alt="Binance" />
         </div>
         <div>
-          <img src="./assets/images/polygon.svg" alt="polygon"/>
+        <img src={Polygon} alt="Polygon" />
         </div>
        </div>
        <div className="section__4__text">
@@ -294,63 +310,111 @@ const Index = () => {
        <div className="section__4__grid">
          <div>
            <div className="section__4__grid__img">
-             <img src="./assets/images/security.svg" alt="security"/>
+             <img src={Security} alt="security" width="60px"/>
            </div>
-           <h4>Extra layer of security</h4>
+           <Box mt="4">
+ <h4>Extra layer of security</h4>
            <p>Easily exchange between your assets without giving control of your funds to anyone.</p>
+           </Box>
+          
          </div>
          <div>
            <div className="section__4__grid__img">
-             <img src="./assets/images/fees.svg" alt="fees"/>
+             <img src={Fees} alt="fees" width="60px"/>
            </div>
-           <h4>Low transaction fees</h4>
+           <Box mt="4">
+              <h4>Low transaction fees</h4>
            <p>We offer you the best transaction experience with the lowest fees available.</p>
+           </Box>
+          
          </div>
          <div>
            <div className="section__4__grid__img">
-             <img src="./assets/images/speed.svg" alt="speed"/>
+             <img src={Speed} alt="speed" width="60px"/>
            </div>
-           <h4>Speed of light</h4>
+           <Box mt="4">
+<h4>Speed of light</h4>
            <p>Your transactions are processed at lightning-fast speed.</p>
+           </Box>
+           
          </div>
        
        </div>
        
      </section>
+     <section className='section__5'>
+       <h4>SmartSwap BluePrints</h4>
+       <div className='section__5__link'>
+         <div>
+           <h6>Swap</h6>
+           <p><Link to="/swap">Straight Swap</Link></p>
+           <p><Link to="/auto-time">Auto Time</Link></p>
+           <p><Link to="/set-price">Set Price</Link></p>
+         </div>
+         <div>
+           <h6>Liquidity</h6>
+           <p><Link to="/add">Add Liquidity</Link></p>
+           <p><Link to="/pool">Create Liquidity Pair</Link></p>
+           <p><Link to="/find">Import Liquidity Pool</Link></p>
+         </div>
+         <div>
+           <h6>Farming</h6>
+           <p><Link to="/farming-V2">Liquidity Pools</Link></p>
+           <p><Link to="/farming-V2/staking-RGP">Staking</Link></p>
+           <p>Other Farms</p>
+           <p><a href="" target="_blank">List your Project</a></p>
+         </div>
+         <div>
+           <h6>Legal</h6>
+           <p><a href="https://rigelprotocol.com/design-compliance.html" target="_blank">Design Compliance</a></p>
+           <p><a href="https://rigelprotocol.com/privacy-policy.html" target="_blank">Privacy Policy</a></p>
+           <p><a href="https://rigelprotocol.com/terms-and-condition.html" target="_blank">Terms & Conditions</a></p>
+         </div>
+         <div>
+           <h6>Contact</h6>
+           <p><a href="https://twitter.com/rigelprotocol" target="_blank">Twitter</a></p>
+           <p> <a href="https://www.t.me/rigelprotocol" target="_blank">Telegram</a></p>
+           <p><a href="https://medium.com/rigelprotocol" target="_blank">Medium</a></p>
+         </div>
+       </div>
+     </section>
      </main>
-     <footer>
+     <footer className='mainFooter'>
       <div className="footer__top">
         <h3>Start your defi journey</h3>
         <p>Build your defi portfolio with DApps that guarantee you fast transaction times, low transaction fees and the best user experience.</p>
         <div className="footer__top__button">
-        <button>Launch App</button>
+          <Link to="/swap">
+            
+        <button className="button">Launch App</button>
+          </Link>
         </div>
       </div>
       <div className="footer__link">
         <div>
           <img src="./assets/images/Darklogo.svg" alt="" />
           <p>DApps with the best experience and low fees.</p>
-          <div className="social__media__icon">
+          <Box className="social__media__icon" mt="4">
               <a  href="https://www.linkedin.com/company/rigelprotocol"
               target="_blank">
-                 <img src="./assets/images/Vectorlinkedin.svg" alt="" />
+                 <img src={Linkedin} alt="" />
               </a>
             <a href="https://www.t.me/rigelprotocol" target="_blank">
-              <img src="./assets/images/Vectortelegram.svg" alt="" />
+              <img src={Telegram} alt="" />
             </a>
             <a href="https://discord.gg/j86NH95GDD" target="_blank">
-              <img src="./assets/images/bi_discorddiscord.svg" alt="" />
+              <img src={Discord} alt="" />
             </a>
             <a href="https://twitter.com/rigelprotocol" target="_blank">
-              <img src="./assets/images/Vectortwitter.svg" alt="" />
+              <img src={Twitter} alt="" />
             </a>
             <a href="https://medium.com/rigelprotocol" target="_blank">
-              <img src="./assets/images/Vectormedium.svg" alt="" />
+              <img src={Medium} alt="" />
             </a>
             <a href="https://github.com/rigelprotocol" target="_blank">
-              <img src="./assets/images/Vectorgithub.svg" alt="" />
+              <img src={Github} alt="" />
             </a>
-          </div>
+          </Box>
         </div>
         <div className="footer__container">
            <div className="footer__li__link">
@@ -409,7 +473,7 @@ const Index = () => {
       </div>
     </footer>
    </div>
-    </>
+    </div>
   );
 };
 

@@ -13,7 +13,7 @@ import {
   useMediaQuery,
 } from '@chakra-ui/react';
 import { NavLink } from 'react-router-dom';
-import { ExternalLinkIcon, HamburgerIcon } from '@chakra-ui/icons';
+import { useLocation } from 'react-router-dom';
 import { ColorModeSwitcher } from '../ColorModeSwitcher';
 import SocialMedia from './SocialMedia';
 import DappsDropdown from './DappsDropdown';
@@ -39,12 +39,16 @@ const Nav = ({ to, label }: { to: string; label: string }) => (
 
 const Index = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
+  const location = useLocation().pathname;
+  console.log(location)
   const Logo = useColorModeValue(LightLogo, DarkLogo);
   const mobileNavColor = useColorModeValue('#FFFFFF', '#15202B');
   const mobileNavBorderColor = useColorModeValue('#DEE5ED', '#324D68');
   const { library } = useActiveWeb3React();
   return (
-    <Flex px={6} py={2} boxShadow="sm">
+    <>
+    {location==="/" ? null : 
+      <Flex px={6} py={2} boxShadow="sm">
       {isMobileDevice ? (
         <>
           <Flex w="100%" justifyContent="space-between" h="10">
@@ -112,6 +116,10 @@ const Index = () => {
         </>
       )}
     </Flex>
+    }
+    </>
+    
+    
   );
 };
 
