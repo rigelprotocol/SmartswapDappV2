@@ -16,21 +16,23 @@ const BridgeCard = () => {
         mt={5}
         h="86px"
         pt={4}
-        px={4}
+        px={3}
         fontWeight="400"
         borderRadius="6px"
         backgroundColor={backgroundColor}
       >
         <Flex alignItems="center" justifyContent="space-between">
-          <Img w="28px" h="28px" src={MATICLOGO} />
-          <Box>
-            <Text fontWeight="normal" fontSize="16px" color={textColor}>
-              Polygon Token Bridge
-            </Text>
-            <Text fontWeight="normal" fontSize="14px" color={textColor}>
-              Deposit tokens to the polygon network.
-            </Text>
-          </Box>
+          <Flex alignItems="center">
+            <Img w="28px" h="28px" src={MATICLOGO} />
+            <Box ml={4}>
+              <Text fontWeight="normal" fontSize="16px" color={textColor} mb={2}>
+                Polygon Token Bridge
+              </Text>
+              <Text fontWeight="normal" fontSize="14px" color={textColor}>
+                Deposit tokens to the polygon network.
+              </Text>
+            </Box>
+          </Flex>
           <Link href='https://wallet.polygon.technology/bridge' isExternal>
             <ExternalLinkIcon w="28px" color={textColor} padding="2px" mb={3} h="28px" />
           </Link>
