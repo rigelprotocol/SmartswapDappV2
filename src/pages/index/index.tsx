@@ -218,7 +218,7 @@ const Index = () => {
        <section className="section__1">
 <div className="section__1__center">
   <h1>a SMART way to Swap</h1>
-  <p>RigelProtocol Launchpad is an end to end tokenization platform combining a technology solution with key compliance and legal aspects.</p>
+  <p>Direct cross chain swapping without order books, deposits or coin wrapping. High Yield Annual Interest for RGP token holders and Liquidity Providers.</p>
  <Link to="/swap">
  <button className="button">
     Launch DApp
@@ -243,7 +243,7 @@ const Index = () => {
                     </div>
            <div className="section__3__text">
              <h3>Swap</h3>
-             <p>To get leverage tokens to trade with, you need to have deposited a certain amount of tokens. So to get started, you go to the SmartSwap Dapp and deposit tokens in the desired token you would like to trade with.</p>
+             <p>To get leverage tokens to trade with, you need to have deposited a certain amount of tokens. So to get started, you go to the <Link to="/swap" style={{color:"rgba(24, 128, 197, 0.623)",textDecoration:"underline"}}>SmartSwap Dapp</Link>  and deposit tokens in the desired token you would like to trade with.</p>
              <div className="section__3__top__button">
               <Link to="/swap">
                <button className="button">

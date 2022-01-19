@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
+import { HashRouter, Route, Switch } from "react-router-dom";
 import AddLiquidity from "./AddLiquidity";
 import Pool from "./Pool";
 import RemoveLiquidity from "./RemoveLiquidity";

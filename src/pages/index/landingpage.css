@@ -312,7 +312,7 @@ main {
 
    /* SECTION 1 */
    .section__1{
-       padding: 80px 70px;
+       padding: 60px 20px;
        display: flex;
        justify-content: center;
        align-items: center;
@@ -320,9 +320,6 @@ main {
        color:var(--text-color);
 opacity: 0.9;
 margin:0;
-   }
-   .section__1 h1 span{
-       color:red ;
    }
    .section__1 p{
        margin: 20px 0;
