@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Flex, useMediaQuery, Button } from '@chakra-ui/react';
+import { Box, Flex, useMediaQuery } from '@chakra-ui/react';
 import ShowDetails from './components/details/ShowDetails';
 import SendToken from './components/sendToken/index';
 import History from './components/history/History';

@@ -1,19 +1,15 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useWeb3React } from '@web3-react/core';
-import {
-  smartFactory,
-  LiquidityPairInstance,
-  SmartSwapRouter,
-} from '../Contracts';
-import { SMARTSWAPFACTORYADDRESSES, SMARTSWAPROUTER } from '../addresses';
-import { getERC20Token } from '../utilsFunctions';
-import { ethers } from 'ethers';
-import { Currency, Fraction, Percent } from '@uniswap/sdk-core';
-import { WNATIVEADDRESSES } from '../addresses';
+import {useEffect, useMemo, useState} from 'react';
+import {LiquidityPairInstance, smartFactory, SmartSwapRouter,} from '../Contracts';
+import {SMARTSWAPFACTORYADDRESSES, SMARTSWAPROUTER, WNATIVEADDRESSES} from '../addresses';
+import {getERC20Token} from '../utilsFunctions';
+import {ethers} from 'ethers';
+import {Currency, Fraction} from '@uniswap/sdk-core';
 import JSBI from 'jsbi';
+import {useActiveWeb3React} from "./useActiveWeb3React";
+import {Web3Provider} from "@ethersproject/providers";
 
 export const useGetUserLiquidities = async () => {
-  const { account, chainId } = useWeb3React();
+  const { account, chainId, library } = useActiveWeb3React();
   const [liquidities, setLiquidities] = useState<any[]>();
   const [liquidityLength, setLiquidityLength] = useState(0);
   const [Loading, setLoading] = useState(true);
@@ -23,7 +19,7 @@ export const useGetUserLiquidities = async () => {
         setLoading(true);
         try {
           const SmartFactory = await smartFactory(
-            SMARTSWAPFACTORYADDRESSES[chainId as number]
+            SMARTSWAPFACTORYADDRESSES[chainId as number], library
           );
           const allLiquidityPairs = await SmartFactory.allPairsLength();
           const allExchange = await Promise.all(
@@ -31,7 +27,7 @@ export const useGetUserLiquidities = async () => {
           );
           const pairsData = await Promise.all(
             allExchange.map((address) =>
-              getPoolData(address, account, chainId as number)
+              getPoolData(address, account, chainId as number, library)
             )
           );
           const userPairs = pairsData.filter(
@@ -65,9 +61,10 @@ const getAllPairs = (length: number, allPairs: any): any[] => {
 const getPoolData = async (
   address: string,
   account: string,
-  chainId: number
+  chainId: number,
+  library: Web3Provider | undefined
 ) => {
-  const liquidity = await LiquidityPairInstance(address);
+  const liquidity = await LiquidityPairInstance(address, library);
   const [balance, totalSupply, reserves, token0, token1, allowance] =
     await Promise.all([
       liquidity.balanceOf(account),
@@ -78,8 +75,8 @@ const getPoolData = async (
       liquidity.allowance(account, SMARTSWAPROUTER[chainId]),
     ]);
   const [erc20Token0, erc20Token1] = await Promise.all([
-    getERC20Token(token0),
-    getERC20Token(token1),
+    getERC20Token(token0, library),
+    getERC20Token(token1, library),
   ]);
   const [symbol0, symbol1] = await Promise.all([
     erc20Token0.symbol(),
@@ -106,7 +103,7 @@ const getPoolData = async (
 
   const approved = allowance > balance;
 
-  const liquidityObject = {
+  return {
     pairAddress: address,
     poolToken: ethers.utils.formatEther(balance),
     poolTokenWei: balance,
@@ -134,11 +131,10 @@ const getPoolData = async (
 
       },
     ],
-    pooledToken0:pooledToken0[0],
-    pooledToken1:pooledToken1[0],
+    pooledToken0: pooledToken0[0],
+    pooledToken1: pooledToken1[0],
     approved: approved,
   };
-  return liquidityObject;
 };
 
 interface PoolTokenParams {
@@ -159,7 +155,7 @@ const getPooledToken = (params: PoolTokenParams) => {
  
   const multiplyReserve = fraction.multiply(params.reserves.toString());
 
-  const finalWei = multiplyReserve.multiply(Decimal).toSignificant(18)
+  const finalWei = multiplyReserve.multiply(Decimal).toSignificant(18);
 
 
   const final = multiplyReserve.divide(Decimal);
@@ -172,7 +168,7 @@ export const useGetLiquidityById = async (
   hasBeenApproved: boolean,
   loadData: boolean
 ) => {
-  const { account, chainId } = useWeb3React();
+  const { account, chainId, library } = useActiveWeb3React();
   const [loading, setLoading] = useState(true);
   const [LiquidityPairData, setLiquidityPairData] = useState<any>();
   const [approved, setApproved] = useState(false);
@@ -183,11 +179,11 @@ export const useGetLiquidityById = async (
         setLoading(true);
         try {
           const SmartFactory = await smartFactory(
-            SMARTSWAPFACTORYADDRESSES[chainId as number]
+            SMARTSWAPFACTORYADDRESSES[chainId as number], library
           );
 
           const Pair = await SmartFactory.getPair(address1, address2);
-          const PairData = await getPoolData(Pair, account, chainId as number);
+          const PairData = await getPoolData(Pair, account, chainId as number, library);
           setLoading(false);
           setLiquidityPairData(PairData);
           setApproved(PairData.approved);
@@ -204,10 +200,9 @@ export const useGetLiquidityById = async (
 };
 
 export const getAddress = (currency: Currency | undefined) => {
-  const address = currency?.isNative
-    ? WNATIVEADDRESSES[currency?.chainId as number]
-    : currency?.wrapped.address;
-  return address;
+  return currency?.isNative
+      ? WNATIVEADDRESSES[currency?.chainId as number]
+      : currency?.wrapped.address;
 };
 
 type FilterPoolsParams = {
@@ -224,14 +219,13 @@ export const filterPools = ({
   let tokenA = getAddress(TokenA);
   let tokenB = getAddress(TokenB);
 
-  const data = liquidities?.filter(
-    (liquidity) =>
-      (liquidity.path[0].fromPath === tokenA &&
-        liquidity.path[1].toPath === tokenB) ||
-      (liquidity.path[0].fromPath === tokenB &&
-        liquidity.path[1].toPath === tokenA)
+  return liquidities?.filter(
+      (liquidity) =>
+          (liquidity.path[0].fromPath === tokenA &&
+              liquidity.path[1].toPath === tokenB) ||
+          (liquidity.path[0].fromPath === tokenB &&
+              liquidity.path[1].toPath === tokenA)
   );
-  return data;
 };
 
 interface ValueToBeRemovedArgs {
@@ -249,24 +243,24 @@ export const useTokenValueToBeRemoved = ({
       const poolToken0Fraction = 
         (pool.pooledToken0 / 100) * parseInt(inputValue);
       
-      const pooltoken0quotient = pool.path[0].multiplyreserves.quotient.toString()
-      const pooltoken1quotient = pool.path[1].multiplyreserves.quotient.toString()
+      const pooltoken0quotient = pool.path[0].multiplyreserves.quotient.toString();
+      const pooltoken1quotient = pool.path[1].multiplyreserves.quotient.toString();
 
-      const fixpooltoken0 = JSBI.divide(JSBI.BigInt(pooltoken0quotient),JSBI.BigInt(100))
-      const fixpooltoken0Fraction = JSBI.multiply(fixpooltoken0,JSBI.BigInt(inputValue)).toString()
+      const fixpooltoken0 = JSBI.divide(JSBI.BigInt(pooltoken0quotient),JSBI.BigInt(100));
+      const fixpooltoken0Fraction = JSBI.multiply(fixpooltoken0,JSBI.BigInt(inputValue)).toString();
 
 
       const poolToken1Fraction =
         (pool.pooledToken1 / 100) * parseInt(inputValue);
 
-        const fixpooltoken1 = JSBI.divide(JSBI.BigInt(pooltoken1quotient),JSBI.BigInt(100))
-        const fixpooltoken1Fraction = JSBI.multiply(fixpooltoken1,JSBI.BigInt(inputValue)).toString()
+        const fixpooltoken1 = JSBI.divide(JSBI.BigInt(pooltoken1quotient),JSBI.BigInt(100));
+        const fixpooltoken1Fraction = JSBI.multiply(fixpooltoken1,JSBI.BigInt(inputValue)).toString();
 
 
       const poolTokenFraction = (pool.poolToken / 100) * parseInt(inputValue);
-      const fixToken = JSBI.divide(JSBI.BigInt(pool.poolTokenWei.toString()),JSBI.BigInt(100))
+      const fixToken = JSBI.divide(JSBI.BigInt(pool.poolTokenWei.toString()),JSBI.BigInt(100));
     
-      const fixTokenFraction = parseFloat(inputValue) === 100 ? pool.poolTokenWei.toString() : JSBI.multiply(fixToken,JSBI.BigInt(inputValue)).toString()
+      const fixTokenFraction = parseFloat(inputValue) === 100 ? pool.poolTokenWei.toString() : JSBI.multiply(fixToken,JSBI.BigInt(inputValue)).toString();
   
       return [poolToken0Fraction, poolToken1Fraction, poolTokenFraction,fixpooltoken0Fraction,fixpooltoken1Fraction,fixTokenFraction];
     }
@@ -278,12 +272,12 @@ export const useIsPoolsAvailable = (
   CurrencyA: Currency | undefined,
   CurrencyB: Currency | undefined
 ) => {
-  const { chainId, account } = useWeb3React();
+  const { chainId, account , library} = useActiveWeb3React();
   const [pairAvailable, setPairAvailable] = useState(false);
   useMemo(async () => {
     if (CurrencyA && CurrencyB && account) {
       const factory = await smartFactory(
-        SMARTSWAPFACTORYADDRESSES[chainId as number]
+        SMARTSWAPFACTORYADDRESSES[chainId as number], library
       );
       const currencyAAddress = getAddress(CurrencyA);
       const currencyBAddress = getAddress(CurrencyB);
@@ -303,12 +297,12 @@ export const usePoolShare = (
   CurrencyA: Currency | undefined,
   CurrencyB: Currency | undefined
 ) => {
-  const { chainId, account } = useWeb3React();
+  const { chainId, account, library } = useActiveWeb3React();
   const [poolShare, setPoolShare] = useState(0);
   useMemo(async () => {
     if (account && CurrencyA && CurrencyB) {
       const factory = await smartFactory(
-        SMARTSWAPFACTORYADDRESSES[chainId as number]
+        SMARTSWAPFACTORYADDRESSES[chainId as number], library
       );
 
       const currencyAAddress = getAddress(CurrencyA);
@@ -316,7 +310,7 @@ export const usePoolShare = (
       const pair = await factory.getPair(currencyAAddress, currencyBAddress);
       if (pair !== '0x0000000000000000000000000000000000000000') {
         try {
-          const LPInstance = await LiquidityPairInstance(pair);
+          const LPInstance = await LiquidityPairInstance(pair, library);
           const [balance, totalSupply] = await Promise.all([
             LPInstance.balanceOf(account),
             LPInstance.totalSupply(),
@@ -340,15 +334,15 @@ export const usePricePerToken = (
   CurrencyA: Currency | undefined,
   CurrencyB: Currency | undefined
 ) => {
-  const { chainId, account } = useWeb3React();
+  const { chainId, account, library} = useActiveWeb3React();
   const [priceAToB, setPriceAToB] = useState<string | undefined>(undefined);
   const [priceBToA, setPriceBToA] = useState<string | undefined>(undefined);
 
   useMemo(async () => {
     if (account && CurrencyA && CurrencyB) {
-      const router = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number]);
+      const router = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
       const factory = await smartFactory(
-        SMARTSWAPFACTORYADDRESSES[chainId as number]
+        SMARTSWAPFACTORYADDRESSES[chainId as number], library
       );
       const currencyAAddress = getAddress(CurrencyA);
       const currencyBAddress = getAddress(CurrencyB);
@@ -391,7 +385,7 @@ export const useAllowance = (
   CurrencyB: Currency | undefined,
   checkTokenApproval: boolean
 ) => {
-  const { account, chainId } = useWeb3React();
+  const { account, chainId , library} = useActiveWeb3React();
   const [hasTokenABeenApproved, setHasTokenABeenApproved] = useState(false);
   const [hasTokenBBeenApproved, setHasTokenBBeenApproved] = useState(false);
   useMemo(async () => {
@@ -399,8 +393,8 @@ export const useAllowance = (
       const currencyAAddress = getAddress(CurrencyA);
       const currencyBAddress = getAddress(CurrencyB);
       const [tokenA, tokenB] = await Promise.all([
-        getERC20Token(currencyAAddress as string),
-        getERC20Token(currencyBAddress as string),
+        getERC20Token(currencyAAddress as string, library),
+        getERC20Token(currencyBAddress as string, library),
       ]);
 
       const [allowanceA, allowanceB] = await Promise.all([
@@ -454,18 +448,16 @@ const calculateTokenToBeMinted = (
   amounta: string,
   amountb: string
 ) => {
-  const minted = Math.min(
-    (parseFloat(amounta) * parseFloat(totalsupply)) / parseFloat(reservesa),
-    (parseFloat(amountb) * parseFloat(totalsupply)) / parseFloat(reservesb)
+  return Math.min(
+      (parseFloat(amounta) * parseFloat(totalsupply)) / parseFloat(reservesa),
+      (parseFloat(amountb) * parseFloat(totalsupply)) / parseFloat(reservesb)
   );
-  return minted;
 };
 
 const calculatePoolShare = (minted: number, totalSupply: string) => {
   const supply = ethers.utils.formatEther(totalSupply);
   const value = parseFloat(supply) + minted;
-  const poolshare = (minted / value) * 100;
-  return poolshare;
+  return (minted / value) * 100;
 };
 
 export const useMintedLiquidity = (
@@ -474,7 +466,7 @@ export const useMintedLiquidity = (
   AmountA: string,
   AmountB: string
 ) => {
-  const { chainId, account } = useWeb3React();
+  const { chainId, account, library } = useActiveWeb3React();
   const [poolShare, setPoolShare] = useState('');
   const [minted, setMinted] = useState('');
 
@@ -484,11 +476,11 @@ export const useMintedLiquidity = (
         const addressA = getAddress(CurrencyA);
         const addressB = getAddress(CurrencyB);
         const factory = await smartFactory(
-          SMARTSWAPFACTORYADDRESSES[chainId as number]
+          SMARTSWAPFACTORYADDRESSES[chainId as number], library
         );
 
         const pair = await factory.getPair(addressA, addressB);
-        const LPInstance = await LiquidityPairInstance(pair);
+        const LPInstance = await LiquidityPairInstance(pair, library);
         const reserves = await LPInstance.getReserves();
         const totalSupply = await LPInstance.totalSupply();
         const minted = calculateTokenToBeMinted(

@@ -48,6 +48,7 @@ import { useUserTransactionTTL } from '../../state/user/hooks';
 import { Currency } from '@uniswap/sdk';
 import { SmartSwapRouter } from '../../utils/Contracts';
 import { ethers } from 'ethers';
+import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 
 export default function AddLiquidity({
   match: {
@@ -55,7 +56,7 @@ export default function AddLiquidity({
   },
   history,
 }: RouteComponentProps<{ currencyIdA?: string; currencyIdB?: string }>) {
-  const infoBg = ('#EBF6FE', '#EAF6FF');
+  const infoBg = useColorModeValue('#EBF6FE', '#EAF6FF');
   const genBorder = useColorModeValue('#DEE6ED', '#324D68');
   const bgColor = useColorModeValue('#F2F5F8', '#213345');
   const topIcons = useColorModeValue('#666666', '#DCE6EF');
@@ -71,7 +72,7 @@ export default function AddLiquidity({
   const dependentField: Field =
     independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
 
-  const { chainId, account } = useWeb3React();
+  const { chainId, account, library } = useActiveWeb3React();
   const dispatch = useDispatch();
 
   const { pairAvailable } = useIsPoolsAvailable(
@@ -163,7 +164,7 @@ export default function AddLiquidity({
 
   const approveTokens = async (address: string, symbol: string) => {
     if (account) {
-      const token = await getERC20Token(address);
+      const token = await getERC20Token(address, library);
       try {
         dispatch(
           setOpenModal({
@@ -221,7 +222,7 @@ export default function AddLiquidity({
   ) => {
     if (account) {
       const smartswaprouter = await SmartSwapRouter(
-        SMARTSWAPROUTER[chainId as number]
+        SMARTSWAPROUTER[chainId as number], library
       );
       const deadLine = getDeadline(userDeadline);
       const AmountAMin = formatAmountIn(amountA, currencyA.decimals);
@@ -356,7 +357,7 @@ export default function AddLiquidity({
   ) => {
     if (account) {
       const smartswaprouter = await SmartSwapRouter(
-        SMARTSWAPROUTER[chainId as number]
+        SMARTSWAPROUTER[chainId as number], library
       );
       const deadLine = getDeadline(userDeadline);
       const AmountAMin = formatAmountIn(amountA, currencyA.decimals);

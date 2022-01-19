@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Flex, Text, useColorModeValue } from '@chakra-ui/react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 const LiquidityDetails = (props: LiquidityDetail) => {
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');

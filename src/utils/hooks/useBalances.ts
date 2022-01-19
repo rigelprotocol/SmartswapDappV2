@@ -1,14 +1,15 @@
 import  { useEffect, useState } from 'react';
-import { useWeb3React } from '@web3-react/core';
-import { provider, getERC20Token } from '../utilsFunctions';
+import {  getERC20Token } from '../utilsFunctions';
 import { ethers } from 'ethers';
 import { SupportedChainSymbols,SupportedChainLogo,SupportedChainName } from '../constants/chains';
 import { RGPADDRESSES } from '../addresses';
 import {useSelector} from "react-redux";
 import {RootState} from "../../state";
+import {useActiveWeb3React} from "./useActiveWeb3React";
+import {Web3Provider} from "@ethersproject/providers";
 
 export const useNativeBalance = () => {
-  const { account, chainId } = useWeb3React();
+  const { account, chainId, library } = useActiveWeb3React();
   const [Balance, setBalance] = useState<string>('');
   const [Symbol, setSymbol] = useState(SupportedChainSymbols[56]);
   const [Name, setName] = useState(SupportedChainName[56]);
@@ -20,9 +21,9 @@ export const useNativeBalance = () => {
   useEffect(() => {
     const getBalance = async () => {
       if (account) {
+
         try {
-          const Provider = await provider();
-          const balance = await Provider?.getBalance(account as string);
+           const balance = await library?.getBalance(account as string);
           setBalance(
             parseFloat(ethers.utils.formatEther(balance as any)).toFixed(4)
           );
@@ -32,6 +33,8 @@ export const useNativeBalance = () => {
 
         } catch (err) {
           console.log(err);
+          // Needs Fixing
+          window.location.reload();
         }
       } else {
         console.log('Connect wallet');
@@ -41,13 +44,13 @@ export const useNativeBalance = () => {
       }
     };
     getBalance();
-  }, [account, chainId, stateChanged]);
+  }, [account, library, chainId, stateChanged]);
 
   return [Balance, Symbol,Name,Logo];
 };
 
 export const useRGPBalance = () => {
-  const { chainId, account } = useWeb3React();
+  const { chainId, account, library} = useActiveWeb3React();
   const [RGPBalance, setRGPBalance] = useState('');
 
   const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
@@ -57,7 +60,7 @@ export const useRGPBalance = () => {
     const getBalance = async () => {
       if (account) {
         try {
-          const token = await getERC20Token(RGPADDRESSES[chainId as number]);
+          const token = await getERC20Token(RGPADDRESSES[chainId as number], library);
           const balance = await token.balanceOf(account);
           setRGPBalance(
             parseFloat(ethers.utils.formatEther(balance)).toFixed(4)
@@ -79,12 +82,12 @@ export const useRGPBalance = () => {
 
 export const useTokenBalance = (address: string) => {
   const [balance, setBalance] = useState('');
+  const { library} = useActiveWeb3React();
  
   useEffect(() => {
     const getTokenAmount = async(tokenAddress: string) => {
       try {
-        const Provider = await provider();
-        const balance = await Provider?.getBalance(tokenAddress as string);
+        const balance = await library?.getBalance(tokenAddress as string);
        
           setBalance(parseFloat(ethers.utils.formatEther(balance as any)).toFixed(4))
      
@@ -100,10 +103,10 @@ export const useTokenBalance = (address: string) => {
 
 };
 
-export const getTokenAmount = async(tokenAddress: string) => {
+export const getTokenAmount = async(tokenAddress: string, library: Web3Provider | undefined) => {
   try {
-    const Provider = await provider();
-    const balance = await Provider?.getBalance(tokenAddress as string);
+
+    const balance = await library?.getBalance(tokenAddress as string);
       return parseFloat(ethers.utils.formatEther(balance as any)).toFixed(4)
  
   } catch (err) {

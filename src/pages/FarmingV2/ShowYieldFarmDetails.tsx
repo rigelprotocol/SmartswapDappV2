@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import Web3 from 'web3';
-import { useWeb3React } from "@web3-react/core";
 import {
   ModalOverlay,
   ModalContent,
@@ -42,7 +41,6 @@ import {
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
-  RGPADDRESSES,
   SMARTSWAPLP_TOKEN1ADDRESSES,
   SMARTSWAPLP_TOKEN2ADDRESSES,
   SMARTSWAPLP_TOKEN3ADDRESSES,
@@ -55,6 +53,7 @@ import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
 import { SMART_SWAP } from '../../utils/constants';
 import { useRGPBalance } from "../../utils/hooks/useBalances";
 import { updateFarmAllowances } from '../../state/farm/actions';
+import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 
 const ShowYieldFarmDetails = ({
   content,
@@ -89,17 +88,16 @@ const ShowYieldFarmDetails = ({
   const [approveValueForRGP, setApproveValueForRGP] = useState(false);
   const [approveValueForOtherToken, setApproveValueForOtherToken] = useState(false);
   const [approvalLoading, setApprovalLoading] = useState(false);
-  const { account, chainId } = useWeb3React();
+  const { account, chainId, library } = useActiveWeb3React();
   const dispatch = useDispatch();
   const [depositTokenValue, setDepositTokenValue] = useState('');
   const [depositInputHasError, setDepositInputHasError] = useState(false);
   const [depositErrorButtonText, setDepositErrorButtonText] = useState('');
   const [RGPBalance] = useRGPBalance();
-  const [farmingFee, setFarmingFee] = useState('10')
+  const [farmingFee, setFarmingFee] = useState('10');
   const [FarmingFeeLoading, setFarmingFeeLoading] = useState(true);
-  const [deposited, setDeposited] = useState(false)
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
+  const [deposited, setDeposited] = useState(false);
+  const signer = library?.getSigner();
   const closeModal = () => {
     modal2Disclosure.onClose();
   };
@@ -116,14 +114,14 @@ useEffect(() => {
   };
 
   const checkForApproval = async () => {
-    const rgp = await rigelToken(RGP[chainId as number]);
+    const rgp = await rigelToken(RGP[chainId as number], library);
     const rgpApproval = await poolAllowance(rgp);
     if (content.deposit === 'RGP-BNB') {
-      const poolTwo = await smartSwapLPTokenPoolTwo(SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number]);
+      const poolTwo = await smartSwapLPTokenPoolTwo(SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number], library);
       const approvalForRGPBNB = await poolAllowance(poolTwo);
       changeApprovalButton(approvalForRGPBNB, rgpApproval);
     } else if (content.deposit === 'RGP-BUSD') {
-      const poolOne = await smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]);
+      const poolOne = await smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number], library);
       const approvalForRGPBUSD = await poolAllowance(poolOne);
       changeApprovalButton(approvalForRGPBUSD, rgpApproval);
       }
@@ -132,15 +130,15 @@ useEffect(() => {
       changeApprovalButton(true, rgpApproval);
 
     } else if (content.deposit === 'BNB-BUSD') {
-      const poolThree = await smartSwapLPTokenPoolThree(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number]);
+      const poolThree = await smartSwapLPTokenPoolThree(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number], library);
       const approvalForBNBBUSD = await poolAllowance(poolThree);
       changeApprovalButton(approvalForBNBBUSD, rgpApproval);
     } else if (content.deposit === 'AXS-RGP') {
-      const poolFour = await smartSwapLPTokenV2PoolFour(SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number]);
+      const poolFour = await smartSwapLPTokenV2PoolFour(SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number], library);
       const approveForAXSRGP = await poolAllowance(poolFour);
       changeApprovalButton(approveForAXSRGP, rgpApproval);
     } else if (content.deposit === 'AXS-BUSD') {
-      const poolFive = await smartSwapLPTokenV2PoolFive(SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number]);
+      const poolFive = await smartSwapLPTokenV2PoolFive(SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number], library);
       const approveForAXSBUSD = await poolAllowance(poolFive);
       changeApprovalButton(approveForAXSBUSD, rgpApproval);
     }
@@ -168,7 +166,7 @@ checkForApproval();
 const RGPSpecialPoolApproval = async () => {
   if (signer !== 'signer') {
     try {
-      const rgp = await rigelToken(RGP[chainId as number]);
+      const rgp = await rigelToken(RGP[chainId as number], library);
       const walletBal = (await rgp.balanceOf(account)) + 400e18;
       const data = await rgp.approve(SMART_SWAP.specialPool, walletBal, {
         from: account,
@@ -197,7 +195,7 @@ const setApprove = val => {
   const checkUser = async val => {
     if (signer !== 'signer') {
       if (val === 'RGP-BNB') {
-        const poolTwo = await smartSwapLPTokenPoolTwo(SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number]);
+        const poolTwo = await smartSwapLPTokenPoolTwo(SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number], library);
         if (!approveValueForOtherToken && !approveValueForRGP) {
           await RGPApproval();
           await LPApproval(poolTwo);
@@ -209,7 +207,7 @@ const setApprove = val => {
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
       } else if (val === 'BNB-BUSD') {
-        const poolThree = await smartSwapLPTokenPoolThree(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number]);
+        const poolThree = await smartSwapLPTokenPoolThree(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number], library);
         if (!approveValueForOtherToken && !approveValueForRGP) {
           await RGPApproval();
           await LPApproval(poolThree);
@@ -221,7 +219,7 @@ const setApprove = val => {
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
       } else if (val === 'RGP-BUSD') {
-        const poolOne = await smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]);
+        const poolOne = await smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number], library);
         if (!approveValueForOtherToken && !approveValueForRGP) {
           await RGPApproval();
           await LPApproval(poolOne);
@@ -245,7 +243,7 @@ const setApprove = val => {
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
       } else if (val === 'AXS-BUSD') {
-        const poolFive = await smartSwapLPTokenV2PoolFive(SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number]);
+        const poolFive = await smartSwapLPTokenV2PoolFive(SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number], library);
         if (!approveValueForOtherToken && !approveValueForRGP) {
           await RGPApproval();
           await LPApproval(poolFive);
@@ -283,7 +281,7 @@ const setApprove = val => {
   useEffect(() => {
     const RGPfarmingFee = async () => {
       if (account) {
-        const masterChef = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number]);
+        const masterChef = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number], library);
         const minFarmingFee = await masterChef.farmingFee();
         const fee = Web3.utils.fromWei(minFarmingFee.toString());
         setFarmingFee(fee);
@@ -304,10 +302,10 @@ const setApprove = val => {
   const getAllowances = async () => {
     try {
       const [rigel, pool1, pool2, pool3] = await Promise.all([
-        rigelToken(RGP[chainId as number]),
-        smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]),
-        smartSwapLPTokenPoolTwo(SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number]),
-        smartSwapLPTokenPoolThree(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number]),
+        rigelToken(RGP[chainId as number], library),
+        smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number], library),
+        smartSwapLPTokenPoolTwo(SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number], library),
+        smartSwapLPTokenPoolThree(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number], library),
       ]);
       if (account) {
         const [
@@ -328,7 +326,7 @@ const setApprove = val => {
         } else {
           rigelAllowance = pool1Allowance;
         }
-        console.log("Contract ran", pool2Allowance)
+        console.log("Contract ran", pool2Allowance);
         dispatch(updateFarmAllowances([
           rigelAllowance,
           pool2Allowance,
@@ -463,7 +461,7 @@ const setApprove = val => {
   const tokensWithdrawal = async (pid: number) => {
     if (account) {
       try {
-        const lpTokens = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number]);
+        const lpTokens = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number], library);
         const data = await lpTokens.withdraw(
           pid,
           ethers.utils.parseEther(unstakeToken.toString()),
@@ -523,7 +521,7 @@ const setApprove = val => {
           })
         );
         if (id === 0) {
-          const specialPool = await RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]);
+          const specialPool = await RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library);
           const specialWithdraw = await specialPool.unStake(0);
           const { confirmations, status, logs } = await fetchTransactionData(
             specialWithdraw,
@@ -538,7 +536,7 @@ const setApprove = val => {
             }));
           }
         } else {
-          const lpTokens = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number]);
+          const lpTokens = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number], library);
           const withdraw = await lpTokens.withdraw(id, 0);
           const { confirmations, status, logs } = await fetchTransactionData(
             withdraw,
@@ -589,7 +587,7 @@ const setApprove = val => {
               type: 'error',
             });
           } else {
-            const lpTokens = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number]);
+            const lpTokens = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number], library);
 
             const data = await lpTokens.deposit(
               pid,
@@ -612,7 +610,7 @@ const setApprove = val => {
             setDeposited(true)
           }
         } else {
-          const lpTokens = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number]);
+          const lpTokens = await MasterChefV2Contract(MASTERCHEFV2ADDRESSES[chainId as number], library);
 
           const data = await lpTokens.deposit(
             pid,
@@ -628,7 +626,7 @@ const setApprove = val => {
           dispatch(setOpenModal({
             trxState: TrxState.TransactionSuccessful,
             message: `Successfully deposited`
-          }))
+          }));
           setDeposited(true)
           //  callRefreshFarm(confirmations, status);
         }
@@ -688,7 +686,7 @@ const setApprove = val => {
 
   const RGPuseStake = async (depositToken: any) => {
     if (account) {
-      const specialPool = await RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]);
+      const specialPool = await RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library);
 
       const data = await specialPool.stake(
         ethers.utils.parseEther(depositTokenValue.toString()),
@@ -712,7 +710,7 @@ const setApprove = val => {
     if (account) {
 
       try {
-        const specialPool = await RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]);
+        const specialPool = await RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library);
         const data = await specialPool.unStake(
           ethers.utils.parseUnits(unstakeToken, "ether"), // user input from onclick shoild be here...
           {
@@ -770,7 +768,7 @@ const setApprove = val => {
         getAllowances();
       } catch (e) {
         // props.showErrorMessage(e);
-        console.log(e)
+        console.log(e);
         dispatch(
           setOpenModal({
             message: `Transaction failed`,
@@ -787,30 +785,30 @@ const setApprove = val => {
   const approveLPToken = async (LPToken: any) => {
     switch (LPToken) {
       case 'RGP-BUSD':
-        const poolOne = await smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number])
+        const poolOne = await smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number], library);
         LPApproval(poolOne);
         break;
       case 'RGP-BNB':
-        const poolTwo = await smartSwapLPTokenPoolTwo(SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number])
+        const poolTwo = await smartSwapLPTokenPoolTwo(SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number], library);
         LPApproval(poolTwo);
         break;
       case 'BNB-BUSD':
-        const poolThree = await smartSwapLPTokenPoolThree(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number])
+        const poolThree = await smartSwapLPTokenPoolThree(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number], library);
         LPApproval(poolThree);
         break;
       case 'AXS-RGP':
-        const poolFour = await smartSwapLPTokenV2PoolFour(SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number])
+        const poolFour = await smartSwapLPTokenV2PoolFour(SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number], library);
         LPApproval(poolFour);
         break;
       case 'AXS-BUSD':
-        const poolFive = await smartSwapLPTokenV2PoolFive(SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number])
+        const poolFive = await smartSwapLPTokenV2PoolFive(SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number], library);
         LPApproval(poolFive);
         break;
       default:
         RGPApproval();
         break;
     }
-  }
+  };
 
 
 
@@ -823,7 +821,7 @@ const setApprove = val => {
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        const rgp = await rigelToken(RGP[chainId as number]);
+        const rgp = await rigelToken(RGP[chainId as number], library);
         const walletBal = (await rgp.balanceOf(account)) + 400e18;
         const data = await rgp.approve(RGPSPECIALPOOLADDRESSES[chainId as number], walletBal, {
           from: account,

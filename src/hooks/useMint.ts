@@ -1,19 +1,13 @@
-import { Currency } from '@uniswap/sdk-core';
-import { useEffect } from 'react';
-import { useActiveWeb3React } from '../utils/hooks/useActiveWeb3React';
-import { useState } from 'react';
-import { smartFactory, SmartSwapRouter } from '../utils/Contracts';
-import {
-  SMARTSWAPFACTORYADDRESSES,
-  SMARTSWAPROUTER,
-  WNATIVEADDRESSES,
-} from '../utils/addresses';
-import { ZERO_ADDRESS } from '../constants';
-import { ethers } from 'ethers';
+import {Currency} from '@uniswap/sdk-core';
+import {useEffect, useState} from 'react';
+import {useActiveWeb3React} from '../utils/hooks/useActiveWeb3React';
+import {smartFactory, SmartSwapRouter} from '../utils/Contracts';
+import {SMARTSWAPFACTORYADDRESSES, SMARTSWAPROUTER, WNATIVEADDRESSES,} from '../utils/addresses';
+import {ZERO_ADDRESS} from '../constants';
+import {ethers} from 'ethers';
 
 const formatAmount = (number: string) => {
-  const num = ethers.utils.formatEther(number);
-  return num;
+  return ethers.utils.formatEther(number);
 };
 
 export const useMint = (
@@ -21,7 +15,7 @@ export const useMint = (
   currencyB: Currency,
   amountIn?: string
 ) => {
-  const { chainId } = useActiveWeb3React();
+  const { chainId, library } = useActiveWeb3React();
   const [address, setAddress] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
   const [amount, setAmount] = useState<string | undefined>('');
@@ -51,7 +45,7 @@ export const useMint = (
   useEffect(() => {
     const getPairs = async () => {
       try {
-        const SmartFactory = await smartFactory(validSmartAddress);
+        const SmartFactory = await smartFactory(validSmartAddress, library);
         const pairAddress = await SmartFactory.getPair(
           tokenOneAddress,
           tokenTwoAddress
@@ -67,7 +61,7 @@ export const useMint = (
           if (amountIn !== undefined) {
             //setLoading(!loading);
             const SwapRouter = await SmartSwapRouter(
-              SMARTSWAPROUTER[chainId as number]
+              SMARTSWAPROUTER[chainId as number], library
             );
             const amountOut = await SwapRouter.getAmountsOut(amountIn, [
               tokenOneAddress,
