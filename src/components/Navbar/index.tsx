@@ -40,7 +40,6 @@ const Nav = ({ to, label }: { to: string; label: string }) => (
 const Index = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
   const location = useLocation().pathname;
-  console.log(location)
   const Logo = useColorModeValue(LightLogo, DarkLogo);
   const mobileNavColor = useColorModeValue('#FFFFFF', '#15202B');
   const mobileNavBorderColor = useColorModeValue('#DEE5ED', '#324D68');

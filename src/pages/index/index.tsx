@@ -1,7 +1,6 @@
 /** @format */
 
 import { Box, Flex } from '@chakra-ui/layout';
-import { Button } from '@chakra-ui/button';
 import { Text,Img } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import DarkLogo from '../../assets/logo/LogoRGPImage.svg';
@@ -32,7 +31,12 @@ const Index = () => {
   const [navBar,setNavBar] = useState(false)
 
   return (
-    <div style={{background:"#000C15"}}>
+    <div style={{background:"#000C15"}} onClick={(e)=>{
+      if(e.target.className !=="subList" && e.target.className !=="downArrow" && e.target.className !=="list"){
+      setMinNav1(false)
+      setMinNav2(false)
+      }
+    }}>
        <header className='mainHeader'>
         <div className="header">
          <nav>
@@ -62,14 +66,14 @@ const Index = () => {
            <li className="multi_navbar" onClick={()=>
   setMinNav1(!minNav1)}>
             <div className="multi_navbar_flex">
-             <div className="multi_navbar_ul_div_heading"><a>Company</a></div>
+             <div className="multi_navbar_ul_div_heading"><a className='subList'>Company</a></div>
              <div><i className="downArrow"></i></div>
             </div>
             {minNav1 &&  <ul className="multi_navbar_ul">
              <div className="multi_navbar_ul_div">
               <div>
-               <li>
-                <a href="about.html"
+               <li className='list'>
+                <a href="https://rigelprotocol.com/about.html" target="_blank"
                 >
                  <div className="multi_navbar_ul_div_item">
                    <p className="multi_nav_head">About us</p>
@@ -79,8 +83,8 @@ const Index = () => {
                  </div>
                 </a>
                </li>
-               <li>
-                <a href="career.html"
+               <li className='list'>
+                <a href="https://rigelprotocol.com/career.html" target="_blank"
                 >
                  <div className="multi_navbar_ul_div_item">
                    <p className="multi_nav_head">Career</p>
@@ -90,9 +94,9 @@ const Index = () => {
                  </div>
                 </a>
                </li>
-               <li>
+               <li className='list'>
                 <a
-                 href="press.html"
+                 href="https://rigelprotocol.com/press.html" target="_blank"
                 >
                  <div className="multi_navbar_ul_div_item">
                    <p className="multi_nav_head">Press resources</p>
@@ -111,13 +115,13 @@ const Index = () => {
            <li className="multi_navbar multi_navbar_2" onClick={()=>
   setMinNav2(!minNav2)}>
             <div className="multi_navbar_flex">
-             <div className="multi_navbar_ul_div_heading"><a>DApps</a></div>
+             <div className="multi_navbar_ul_div_heading"><a className='subList'>DApps</a></div>
              <div><i className="downArrow"></i></div>
             </div>
             {minNav2 && <ul className="multi_navbar_ul multi_navbar_ul_2">
              <div className="multi_navbar_ul_div">
               <div>
-               <li>
+               <li className='list'>
                 <a
                  href="#"
                 >
@@ -129,7 +133,7 @@ const Index = () => {
                  </div>
                 </a>
                </li>
-               <li>
+               <li className='list'>
                 <a
                  href="https://gift.rigelprotocol.com/"
                  target="blank"
@@ -142,7 +146,7 @@ const Index = () => {
                  </div>
                 </a>
                </li>
-               <li>
+               <li className='list'>
                 <a
                 href="smartbid.html"
                 >
@@ -154,7 +158,7 @@ const Index = () => {
                  </div>
                 </a>
                </li>
-               <li>
+               <li className='list'>
                 <a
                 href="leverage-exchange.html"
                 >
@@ -166,7 +170,7 @@ const Index = () => {
                  </div>
                 </a>
                </li>
-               <li>
+               <li className='list'>
                 <a
                  href="launchpad.html"
                 >
@@ -185,7 +189,7 @@ const Index = () => {
             
            </li>
            <li>
-            <a href="events.html">Events</a>
+            <a href="https://rigelprotocol.com/events.html">Events</a>
            </li>
            <li>
              <Flex>
@@ -243,7 +247,7 @@ const Index = () => {
                     </div>
            <div className="section__3__text">
              <h3>Swap</h3>
-             <p>To get leverage tokens to trade with, you need to have deposited a certain amount of tokens. So to get started, you go to the <Link to="/swap" style={{color:"rgba(24, 128, 197, 0.623)",textDecoration:"underline"}}>SmartSwap Dapp</Link>  and deposit tokens in the desired token you would like to trade with.</p>
+             <p>To get leverage tokens to trade with, you need to have deposited a certain amount of tokens. So to get started, you go to the <Link to="/swap" style={{color:"#9BD0FD",textDecoration:"underline"}}>SmartSwap Dapp</Link>  and deposit tokens in the desired token you would like to trade with.</p>
              <div className="section__3__top__button">
               <Link to="/swap">
                <button className="button">
@@ -447,25 +451,25 @@ const Index = () => {
 <div>
 <p>Company</p>
 <ul>
- <li><a href="about.html">About us</a> </li>
- <li><a className="inner-page-link" href="#roadMaps">Road Map</a></li>
- <li><a className="inner-page-link" href="#partners">Partners</a></li>
- <li><a href="press.html">Press Resources</a></li>
+ <li><a href="https://rigelprotocol.com/about.html" target="_blank">About us</a> </li>
+ <li><a className="inner-page-link" href="https://rigelprotocol.com/#roadMaps" target="_blank">Road Map</a></li>
+ <li><a className="inner-page-link" href="https://rigelprotocol.com/#partners" target="_blank">Partners</a></li>
+ <li><a href="https://rigelprotocol.com/press.html" target="_blank">Press Resources</a></li>
 </ul>
 </div>
 <div>
 <p>Support</p>
 <ul>
- <li><a href="faqs.html">FAQs</a> </li>
+ <li><a href="https://rigelprotocol.com/faqs.html" target="_blank">FAQs</a> </li>
  <li><a href="https://medium.com/rigelprotocol" target="_blank">Blog</a></li>
 </ul>
 </div>
 <div>
 <p>Legal</p>
 <ul>
- <li><a href="design-compliance.html">Design Compliance</a> </li>
- <li><a href="privacy-policy.html">Private Policy</a> </li>
- <li><a href="terms-and-condition.html">Terms & Conditions</a> </li>
+ <li><a href="https://rigelprotocol.com/design-compliance.html" target="_blank">Design Compliance</a> </li>
+ <li><a href="https://rigelprotocol.com/privacy-policy.html" target="_blank">Private Policy</a> </li>
+ <li><a href="https://rigelprotocol.com/terms-and-condition.html" target="_blank">Terms & Conditions</a> </li>
 </ul>
 </div>
         </div> 
