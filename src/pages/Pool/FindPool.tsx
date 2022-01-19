@@ -59,10 +59,6 @@ const FindPool = () => {
 
   const loadedUrlParams = useDefaultsFromURLSearch();
 
-  const [inputcurrency] = [useCurrency(loadedUrlParams?.inputCurrencyId)];
-
-  const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
-
   const history = useHistory();
 
   useEffect(() => {
@@ -128,6 +124,7 @@ const FindPool = () => {
         overflow="hidden"
         alignItems="center"
         p={4}
+        mb={["110px","110px","4"]}
       >
         <Flex>
           <ArrowBackIcon

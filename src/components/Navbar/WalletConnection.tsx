@@ -13,6 +13,7 @@ import { shortenAddress } from '../../utils';
 import WalletModal from './modals/walletModal';
 import NetworkModal from "./modals/networkModal";
 import { useNativeBalance, useRGPBalance } from '../../utils/hooks/useBalances';
+import { useRGPPrice } from '../../utils/hooks/useRGPPrice';
 import StatusIcon from './StatusIcon';
 import RGPModal from "./modals/RGPModal";
 import UnsupportNetwork from './UnsupportNetwork';
@@ -35,6 +36,7 @@ export default function WalletConnection() {
   const [displayWallet, setDisplayWallet] = useState(false);
   const [displayNetwork, setDisplayNetwork] = useState(false);
   const [RGPBalance] = useRGPBalance();
+  const [RGPPrice] = useRGPPrice();
   const [showRGP, setShowRGP] = useState(false);
   const [modalDisplay, setDisplayModal] = useState(false);
 
@@ -53,7 +55,7 @@ export default function WalletConnection() {
         >
           {RGPBalance} {RGPBalance ? 'RGP' : '0.0000 RGP'}
         </Button>
-        <RGPModal showRGP={showRGP} setShowRGP={setShowRGP} RGPBalance={RGPBalance} />
+        <RGPModal showRGP={showRGP} setShowRGP={setShowRGP} RGPBalance={RGPBalance} RGPPrice={RGPPrice}/>
         <Flex
           ml={2}
           w={isMobileDevice ? '160px' : 'max-content'}

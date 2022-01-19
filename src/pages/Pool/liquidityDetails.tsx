@@ -43,10 +43,10 @@ const LiquidityDetails = (props: LiquidityDetail) => {
             {props.pair.path[0].token == 'WBNB'
               ? 'BNB'
               : props.pair.path[0].token == 'WETH'
-              ? 'ETH'
-              : props.pair.path[0].token == 'WMATIC'
-              ? 'MATIC'
-              : props.pair.path[0].token}
+                ? 'ETH'
+                : props.pair.path[0].token == 'WMATIC'
+                  ? 'MATIC'
+                  : props.pair.path[0].token}
             :
           </Text>
           <Text>{props.pair.pooledToken0}</Text>
@@ -57,10 +57,10 @@ const LiquidityDetails = (props: LiquidityDetail) => {
             {props.pair.path[1].token == 'WBNB'
               ? 'BNB'
               : props.pair.path[1].token == 'WETH'
-              ? 'ETH'
-              : props.pair.path[1].token === 'WMATIC'
-              ? 'MATIC'
-              : props.pair.path[1].token}
+                ? 'ETH'
+                : props.pair.path[1].token === 'WMATIC'
+                  ? 'MATIC'
+                  : props.pair.path[1].token}
           </Text>
           <Text>{props.pair.pooledToken1}</Text>
         </Flex>
@@ -79,9 +79,9 @@ const LiquidityDetails = (props: LiquidityDetail) => {
           mb={2}
           _hover={{ bgColor: addButtonBgColor, color: addButtonColor }}
           _active={{ bgColor: addButtonBgColor, color: addButtonColor }}
-           onClick={() =>
+          onClick={() =>
             history.push(
-              `/add`
+              `/add/${props.pair.path[0].fromPath}/${props.pair.path[1].toPath}`
             )
           }
         >
@@ -103,7 +103,7 @@ const LiquidityDetails = (props: LiquidityDetail) => {
               `/remove/${props.pair.path[0].fromPath}/${props.pair.path[1].toPath}`
             )
           }
-          // as={<Link to="/remove" />}
+        // as={<Link to="/remove" />}
         >
           Remove
         </Button>

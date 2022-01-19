@@ -1,52 +1,53 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Button, Flex, useColorModeValue } from '@chakra-ui/react';
-import SwapSettings from './SwapSettings';
-import { useHistory } from 'react-router';
-import From from './From';
-import To from './To';
-import { SwitchIcon } from '../../../../theme/components/Icons';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Box, Button, Flex, useColorModeValue } from "@chakra-ui/react";
+import SwapSettings from "./SwapSettings";
+import { useHistory } from "react-router";
+import From from "./From";
+import To from "./To";
+import { SwitchIcon } from "../../../../theme/components/Icons";
 import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
   useSwapActionHandlers,
   useSwapState,
-} from '../../../../state/swap/hooks';
-import { useCurrency } from '../../../../hooks/Tokens';
-import ConfirmModal from '../../modals/confirmModal';
-import { Field } from '../../../../state/swap/actions';
-import { maxAmountSpend } from '../../../../utils/maxAmountSpend';
-import { useUserSlippageTolerance } from '../../../../state/user/hooks';
-import { useDispatch, useSelector } from 'react-redux';
-import { setOpenModal, TrxState } from '../../../../state/application/reducer';
+} from "../../../../state/swap/hooks";
+import { useCurrency } from "../../../../hooks/Tokens";
+import ConfirmModal from "../../modals/confirmModal";
+import { Field } from "../../../../state/swap/actions";
+import { maxAmountSpend } from "../../../../utils/maxAmountSpend";
+import { useUserSlippageTolerance } from "../../../../state/user/hooks";
+import { useDispatch, useSelector } from "react-redux";
+import { setOpenModal, TrxState } from "../../../../state/application/reducer";
 import {
   ApprovalRouter,
   ApproveCheck,
   SmartSwapRouter,
   WETH,
   smartFactory,
-} from '../../../../utils/Contracts';
-import { useActiveWeb3React } from '../../../../utils/hooks/useActiveWeb3React';
-import { SMARTSWAPROUTER, WNATIVEADDRESSES } from '../../../../utils/addresses';
+} from "../../../../utils/Contracts";
+import { useActiveWeb3React } from "../../../../utils/hooks/useActiveWeb3React";
+import { SMARTSWAPROUTER, WNATIVEADDRESSES } from "../../../../utils/addresses";
 import {
   ExplorerDataType,
   getExplorerLink,
-} from '../../../../utils/getExplorerLink';
-import { addToast } from '../../../../components/Toast/toastSlice';
-import { RootState } from '../../../../state';
+} from "../../../../utils/getExplorerLink";
+import { addToast } from "../../../../components/Toast/toastSlice";
+import { RootState } from "../../../../state";
 import {
   getDeadline,
   getInPutDataFromEvent,
   getOutPutDataFromEvent,
   ZERO_ADDRESS,
-} from '../../../../constants';
-import { Token } from '@uniswap/sdk-core';
-import { useAllTokens } from '../../../../hooks/Tokens';
-import { ethers } from 'ethers';
-import { GetAddressTokenBalance } from '../../../../state/wallet/hooks';
-import NewToken from '../../../../components/Tokens/newToken';
-import { SupportedChainId } from '../../../../constants/chains';
-import { SMARTSWAPFACTORYADDRESSES } from '../../../../utils/addresses';
-import { useCalculatePriceImpact } from '../../../../hooks/usePriceImpact';
+} from "../../../../constants";
+import { Token } from "@uniswap/sdk-core";
+import { useAllTokens } from "../../../../hooks/Tokens";
+import { ethers } from "ethers";
+import { GetAddressTokenBalance } from "../../../../state/wallet/hooks";
+import NewToken from "../../../../components/Tokens/newToken";
+import { SupportedChainId } from "../../../../constants/chains";
+import { SMARTSWAPFACTORYADDRESSES } from "../../../../utils/addresses";
+import { useCalculatePriceImpact } from "../../../../hooks/usePriceImpact";
+import { getERC20Token } from "../../../../utils/utilsFunctions";
 
 const SendToken = () => {
   const history = useHistory();
@@ -83,14 +84,14 @@ const SendToken = () => {
 
   const handleDismissTokenWarning = useCallback(() => {
     setDismissTokenWarning(true);
-    history.push('/swap');
+    history.push("/swap");
   }, [history]);
 
-  const borderColor = useColorModeValue('#DEE5ED', '#324D68');
-  const color = useColorModeValue('#999999', '#7599BD');
+  const borderColor = useColorModeValue("#DEE5ED", "#324D68");
+  const color = useColorModeValue("#999999", "#7599BD");
   const lightmode = useColorModeValue(true, false);
-  const switchBgcolor = useColorModeValue('#F2F5F8', '#213345');
-  const buttonBgcolor = useColorModeValue('#319EF6', '#4CAFFF');
+  const switchBgcolor = useColorModeValue("#F2F5F8", "#213345");
+  const buttonBgcolor = useColorModeValue("#319EF6", "#4CAFFF");
 
   const [showModal, setShowModal] = useState(false);
 
@@ -159,8 +160,8 @@ const SendToken = () => {
   const formattedAmounts = {
     [independentField]: typedValue,
     [dependentField]: showWrap
-      ? parsedAmounts[independentField] ?? '' //?.toExact() ?? ''
-      : parsedAmounts[dependentField] ?? '', //?.toSignificant(6) ?? '',
+      ? parsedAmounts[independentField] ?? "" //?.toExact() ?? ''
+      : parsedAmounts[dependentField] ?? "", //?.toSignificant(6) ?? '',
   };
 
   const minimumAmountToReceive = useCallback(
@@ -230,6 +231,7 @@ const SendToken = () => {
       return setHasBeenApproved(true);
     }
     try {
+      console.log(parsedAmount);
       dispatch(
         setOpenModal({
           message: `Approve Tokens for Swap`,
@@ -239,9 +241,13 @@ const SendToken = () => {
 
       const address = currencies[Field.INPUT].wrapped.address;
       const swapApproval = await ApprovalRouter(address, library);
+        
+      const token = await getERC20Token(address);
+      const walletBal = (await token.balanceOf(account)) + 4e18;
+
       const approveTransaction = await swapApproval.approve(
         SMARTSWAPROUTER[chainId as number],
-        parsedAmount,
+        walletBal,
         {
           from: account,
         }
@@ -308,7 +314,7 @@ const SendToken = () => {
         {
           from: account,
           gasLimit: 290000,
-          gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+          gasPrice: ethers.utils.parseUnits("10", "gwei"),
         }
       );
       const { hash } = sendTransaction;
@@ -321,7 +327,7 @@ const SendToken = () => {
         parsedAmount
       );
       if (
-        typeof sendTransaction.hash !== 'undefined' &&
+        typeof sendTransaction.hash !== "undefined" &&
         confirmations >= 3 &&
         status
       ) {
@@ -345,7 +351,7 @@ const SendToken = () => {
             URL: explorerLink,
           })
         );
-        onUserInput(Field.INPUT, '');
+        onUserInput(Field.INPUT, "");
       }
     } catch (e) {
       console.log(e);
@@ -356,7 +362,7 @@ const SendToken = () => {
           trxState: TrxState.TransactionFailed,
         })
       );
-      onUserInput(Field.INPUT, '');
+      onUserInput(Field.INPUT, "");
     }
   };
 
@@ -400,7 +406,7 @@ const SendToken = () => {
       );
 
       if (
-        typeof sendTransaction.hash !== 'undefined' &&
+        typeof sendTransaction.hash !== "undefined" &&
         confirmations >= 3 &&
         status
       ) {
@@ -426,7 +432,7 @@ const SendToken = () => {
             URL: explorerLink,
           })
         );
-        onUserInput(Field.INPUT, '');
+        onUserInput(Field.INPUT, "");
       }
     } catch (e) {
       console.log(e);
@@ -437,7 +443,7 @@ const SendToken = () => {
           trxState: TrxState.TransactionFailed,
         })
       );
-      onUserInput(Field.INPUT, '');
+      onUserInput(Field.INPUT, "");
     }
   };
 
@@ -476,7 +482,7 @@ const SendToken = () => {
       );
 
       if (
-        typeof sendTransaction.hash !== 'undefined' &&
+        typeof sendTransaction.hash !== "undefined" &&
         confirmations >= 3 &&
         status
       ) {
@@ -502,7 +508,7 @@ const SendToken = () => {
             URL: explorerLink,
           })
         );
-        onUserInput(Field.INPUT, '');
+        onUserInput(Field.INPUT, "");
       }
     } catch (e) {
       console.log(e);
@@ -513,7 +519,7 @@ const SendToken = () => {
           trxState: TrxState.TransactionFailed,
         })
       );
-      onUserInput(Field.INPUT, '');
+      onUserInput(Field.INPUT, "");
     }
   };
 
@@ -533,7 +539,7 @@ const SendToken = () => {
       const { confirmations, status } = await sendTransaction.wait(3);
       const { hash } = sendTransaction;
       if (
-        typeof sendTransaction.hash !== 'undefined' &&
+        typeof sendTransaction.hash !== "undefined" &&
         confirmations >= 3 &&
         status
       ) {
@@ -557,7 +563,7 @@ const SendToken = () => {
             URL: explorerLink,
           })
         );
-        onUserInput(Field.INPUT, '');
+        onUserInput(Field.INPUT, "");
       }
     } catch (e) {
       console.log(e);
@@ -568,7 +574,7 @@ const SendToken = () => {
           trxState: TrxState.TransactionFailed,
         })
       );
-      onUserInput(Field.INPUT, '');
+      onUserInput(Field.INPUT, "");
     }
   };
 
@@ -586,7 +592,7 @@ const SendToken = () => {
       const { confirmations, status } = await sendTransaction.wait(3);
       const { hash } = sendTransaction;
       if (
-        typeof sendTransaction.hash !== 'undefined' &&
+        typeof sendTransaction.hash !== "undefined" &&
         confirmations >= 3 &&
         status
       ) {
@@ -610,7 +616,7 @@ const SendToken = () => {
             URL: explorerLink,
           })
         );
-        onUserInput(Field.INPUT, '');
+        onUserInput(Field.INPUT, "");
       }
     } catch (e) {
       console.log(e);
@@ -621,20 +627,20 @@ const SendToken = () => {
           trxState: TrxState.TransactionFailed,
         })
       );
-      onUserInput(Field.INPUT, '');
+      onUserInput(Field.INPUT, "");
     }
   };
 
   const swapTokens = async () => {
     if (chainId === SupportedChainId.POLYGONTEST) {
       if (
-        currencies[Field.INPUT]?.symbol === 'MATIC' &&
-        currencies[Field.OUTPUT]?.symbol === 'WMATIC'
+        currencies[Field.INPUT]?.symbol === "MATIC" &&
+        currencies[Field.OUTPUT]?.symbol === "WMATIC"
       ) {
         await deposit();
       } else if (
-        currencies[Field.INPUT]?.symbol === 'WMATIC' &&
-        currencies[Field.OUTPUT]?.symbol === 'MATIC'
+        currencies[Field.INPUT]?.symbol === "WMATIC" &&
+        currencies[Field.OUTPUT]?.symbol === "MATIC"
       ) {
         await withdraw();
       } else if (currencies[Field.INPUT]?.isNative) {
@@ -649,18 +655,18 @@ const SendToken = () => {
       chainId === SupportedChainId.BINANCE
     ) {
       if (
-        currencies[Field.INPUT]?.symbol === 'BNB' &&
-        currencies[Field.OUTPUT]?.symbol === 'WBNB'
+        currencies[Field.INPUT]?.symbol === "BNB" &&
+        currencies[Field.OUTPUT]?.symbol === "WBNB"
       ) {
         await deposit();
       } else if (
-        currencies[Field.INPUT]?.symbol === 'WBNB' &&
-        currencies[Field.OUTPUT]?.symbol === 'BNB'
+        currencies[Field.INPUT]?.symbol === "WBNB" &&
+        currencies[Field.OUTPUT]?.symbol === "BNB"
       ) {
         await withdraw();
-      } else if (currencies[Field.INPUT]?.symbol === 'BNB') {
+      } else if (currencies[Field.INPUT]?.symbol === "BNB") {
         await swapDefaultForOtherTokens();
-      } else if (currencies[Field.OUTPUT]?.symbol === 'BNB') {
+      } else if (currencies[Field.OUTPUT]?.symbol === "BNB") {
         await swapOtherTokensForDefault();
       } else {
         await swapDifferentTokens();
@@ -697,7 +703,7 @@ const SendToken = () => {
           SMARTSWAPROUTER[(chainId as number) ?? 56], library
         );
         const price = await SwapRouter.getAmountsOut(
-          '1000000000000000000',
+          "1000000000000000000",
           routeAddress
         );
         const marketPrice = ethers.utils.formatEther(price[1].toString());
@@ -715,10 +721,10 @@ const SendToken = () => {
   }, [fromAmount, receivedAmount, chainId]);
 
   const [isLoadingValue, setIsLoadingValue] = useState(false);
-  useEffect(() =>{
-    if (formattedAmounts[Field.INPUT] && !formattedAmounts[Field.OUTPUT]){
+  useEffect(() => {
+    if (formattedAmounts[Field.INPUT] && !formattedAmounts[Field.OUTPUT]) {
       setIsLoadingValue(true);
-    }else{
+    } else {
       setIsLoadingValue(false);
     }
   }, [formattedAmounts[Field.OUTPUT]]);
@@ -731,10 +737,10 @@ const SendToken = () => {
         setDisplayImportedToken={handleDismissTokenWarning}
       />
       <Box
-        border="1px"
+        border='1px'
         borderColor={borderColor}
-        borderRadius="6px"
-        h="420px"
+        borderRadius='6px'
+        h='420px'
         pl={3}
         pr={3}
       >
@@ -747,7 +753,7 @@ const SendToken = () => {
           onMax={handleMaxInput}
           value={formattedAmounts[Field.INPUT]}
         />
-        <Flex justifyContent="center" onClick={onSwitchTokens}>
+        <Flex justifyContent='center' onClick={onSwitchTokens}>
           <SwitchIcon />
         </Flex>
         <To
@@ -758,21 +764,21 @@ const SendToken = () => {
           onUserOutput={handleTypeOutput}
         />
 
-        <Flex alignItems="center">
+        <Flex alignItems='center'>
           {insufficientBalance || inputError ? (
             <Button
-              w="100%"
-              borderRadius="6px"
-              border={lightmode ? '2px' : 'none'}
+              w='100%'
+              borderRadius='6px'
+              border={lightmode ? "2px" : "none"}
               borderColor={borderColor}
-              h="48px"
-              p="5px"
+              h='48px'
+              p='5px'
               mt={1}
               disabled={inputError !== undefined || insufficientBalance}
-              color={inputError ? color : '#FFFFFF'}
+              color={inputError ? color : "#FFFFFF"}
               bgColor={inputError ? switchBgcolor : buttonBgcolor}
-              fontSize="18px"
-              boxShadow={lightmode ? 'base' : 'lg'}
+              fontSize='18px'
+              boxShadow={lightmode ? "base" : "lg"}
               _hover={{ bgColor: buttonBgcolor }}
             >
               {inputError
@@ -781,18 +787,18 @@ const SendToken = () => {
             </Button>
           ) : !hasBeenApproved ? (
             <Button
-              w="100%"
-              borderRadius="6px"
-              border={lightmode ? '2px' : 'none'}
+              w='100%'
+              borderRadius='6px'
+              border={lightmode ? "2px" : "none"}
               borderColor={borderColor}
-              h="48px"
-              p="5px"
+              h='48px'
+              p='5px'
               mt={1}
               disabled={inputError !== undefined || insufficientBalance}
-              color={inputError ? color : '#FFFFFF'}
+              color={inputError ? color : "#FFFFFF"}
               bgColor={inputError ? switchBgcolor : buttonBgcolor}
-              fontSize="18px"
-              boxShadow={lightmode ? 'base' : 'lg'}
+              fontSize='18px'
+              boxShadow={lightmode ? "base" : "lg"}
               _hover={{ bgColor: buttonBgcolor }}
               onClick={() => {
                 approveSwap();
@@ -802,17 +808,17 @@ const SendToken = () => {
             </Button>
           ) : inputError ? (
             <Button
-              w="100%"
-              borderRadius="6px"
-              border={lightmode ? '2px' : 'none'}
+              w='100%'
+              borderRadius='6px'
+              border={lightmode ? "2px" : "none"}
               borderColor={borderColor}
-              h="48px"
-              p="5px"
+              h='48px'
+              p='5px'
               mt={1}
               disabled={true}
               bgColor={inputError ? switchBgcolor : buttonBgcolor}
-              fontSize="18px"
-              boxShadow={lightmode ? 'base' : 'lg'}
+              fontSize='18px'
+              boxShadow={lightmode ? "base" : "lg"}
               _hover={{ bgColor: buttonBgcolor }}
             >
               {/*{inputError*/}
@@ -820,20 +826,20 @@ const SendToken = () => {
               {/*  : `Loading...`}*/}
               {inputError}
             </Button>
-          ):(
+          ) : (
             <Button
-              w="100%"
-              borderRadius="6px"
-              border={lightmode ? '2px' : 'none'}
+              w='100%'
+              borderRadius='6px'
+              border={lightmode ? "2px" : "none"}
               borderColor={borderColor}
-              h="48px"
-              p="5px"
+              h='48px'
+              p='5px'
               mt={1}
               disabled={inputError !== undefined || insufficientBalance}
-              color={inputError ? color : '#FFFFFF'}
+              color={inputError ? color : "#FFFFFF"}
               bgColor={inputError ? switchBgcolor : buttonBgcolor}
-              fontSize="18px"
-              boxShadow={lightmode ? 'base' : 'lg'}
+              fontSize='18px'
+              boxShadow={lightmode ? "base" : "lg"}
               _hover={{ bgColor: buttonBgcolor }}
               onClick={() => setShowModal(!showModal)}
             >
@@ -846,7 +852,7 @@ const SendToken = () => {
           setShowModal={setShowModal}
           from={currencies[Field.INPUT]?.symbol}
           to={currencies[Field.OUTPUT]?.symbol}
-          title={'Confirm Swap'}
+          title={"Confirm Swap"}
           inputLogo={currencies[Field.INPUT]?.logoURI}
           outputLogo={currencies[Field.OUTPUT]?.logoURI}
           minRecieved={minimum}

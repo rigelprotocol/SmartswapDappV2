@@ -27,7 +27,6 @@ import ImportRow from "./ImportRow"
 import NewToken from "./newToken"
 
 
-
 type IModal= {
 tokenModal:boolean,
 setTokenModal:React.Dispatch<React.SetStateAction<boolean>>
