@@ -16,27 +16,9 @@ import SetPrice from "./Swap/SetPrice";
 import AutoTime from "./Swap/AutoTime";
 import FindPool from "./Pool/FindPool";
 import useConnectWallet from "../utils/hooks/useConnectWallet";
-import {useActiveWeb3React} from "../utils/hooks/useActiveWeb3React";
-import {ConnectorNames} from "../connectors";
-import {WalletConnectConnector} from "@web3-react/walletconnect-connector";
 
 export default function App() {
   useConnectWallet();
-
-  const {connector, account} = useActiveWeb3React();
-  const [count, setCount] = useState(2);
-  console.log(useActiveWeb3React());
-
-  const wallet = window.localStorage.getItem('walletconnect');
-
-  useMemo(() => {
-      setTimeout(() => {
-       // window.location.reload()
-        console.log('Name')
-
-      }, 1000)
-  }, [account]);
-
 
   return (
     <Suspense fallback={null}>

@@ -242,7 +242,7 @@ const SendToken = () => {
       const address = currencies[Field.INPUT].wrapped.address;
       const swapApproval = await ApprovalRouter(address, library);
         
-      const token = await getERC20Token(address);
+      const token = await getERC20Token(address, library);
       const walletBal = (await token.balanceOf(account)) + 4e18;
 
       const approveTransaction = await swapApproval.approve(
