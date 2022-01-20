@@ -771,13 +771,7 @@ const ShowYieldFarmDetails = ({
           RGPSPECIALPOOLADDRESSES2[chainId as number]
         );
 
-        // const minimumStake = await specialPool.setMinimumStakeAmount(ethers.utils.parseUnits('20', 'gwei'),{
-        //   from: account,
-        //   gasLimit: 200000,
-        //   gasPrice: ethers.utils.parseUnits('20', 'gwei'),
-        // },)
-        //console.log(depositTokenValue.toString(), minimumStake,  "deposit")
-        data = await specialPool.stake(
+         data = await specialPool.stake(
           ethers.utils.parseEther(depositTokenValue.toString()),
           RGPSPECIALPOOLADDRESSES2[chainId as number],
           {
