@@ -49,7 +49,8 @@ const Index = () => {
         <>
           <Flex w="100%" justifyContent="space-between" h="10">
             <Box mr={6}>
-              <Img src={Logo} />
+              <NavLink to='/'> <Img src={Logo} /></NavLink>
+
             </Box>
             <MobileNavDrawer />
           </Flex>
@@ -81,7 +82,7 @@ const Index = () => {
         <>
           <Flex h="10">
             <Box mr={4}>
-              <Img src={Logo} />
+              <NavLink to='/'> <Img src={Logo} /> </NavLink>
             </Box>
             <DappsDropdown />
 
