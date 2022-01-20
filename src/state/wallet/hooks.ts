@@ -30,7 +30,7 @@ import JSBI from "jsbi";
             const amount = value ? JSBI.BigInt(value.toString()) : undefined
            if(amount && chainId){
              const amountValue = parseFloat(ethers.utils.formatUnits(amount.toString(), currency.decimals))
-             amountValue ===  0 ? setBalance('0') : setBalance(amountValue.toFixed(4))
+             amountValue ===  0 ? setBalance('0') : setBalance(amountValue)
            }
               }
           } catch (err) {

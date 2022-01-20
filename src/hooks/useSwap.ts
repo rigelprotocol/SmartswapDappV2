@@ -335,6 +335,7 @@ export const useSwap = (
         }
       } catch (e) {
         console.log(`Error occurs here: ${e}`);
+     
         setAmount('');
       }
     };

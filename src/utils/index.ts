@@ -13,6 +13,15 @@ export function isAddress(value: any): string | false {
     }
 }
 
+
+// return token balance in 4 decimal places without rounding it up
+ export function ParseFloat(str : string, val : number) {
+  str = str.toString();
+  str = str.slice(0, (str.indexOf(".")) + val + 1);
+  return str;
+}
+
+
 // shortens the address to the format: 0x + 4 characters at start and end
 export function shortenAddress(address: string, chars = 4): string {
     const parsed = isAddress(address)

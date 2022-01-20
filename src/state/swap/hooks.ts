@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Currency } from '@uniswap/sdk-core';
 import { useNativeBalance } from '../../utils/hooks/useBalances';
 import { getERC20Token } from '../../utils/utilsFunctions';
-import { isAddress } from '../../utils';
+import { isAddress, ParseFloat } from '../../utils';
 import { ethers } from 'ethers';
 import { SupportedChainSymbols } from '../../utils/constants/chains';
 import { useSwap } from '../../hooks/useSwap';
@@ -140,6 +140,8 @@ export function useDerivedSwapInfo(): {
   const bestTrade = amount;
   // console.log(pathArray);
 
+
+
   const getMaxValue = async (currency: Currency) => {
     if (currency.isNative) {
       // return Balance === "0.0000" ? "0" :  Balance
@@ -151,8 +153,9 @@ export function useDerivedSwapInfo(): {
         currency.address ? currency.address : ''
       );
       const balance = await token.balanceOf(account);
-      const amount = ethers.utils.formatEther(balance);
-      return amount === '0.0' ? '0' : parseFloat(amount).toFixed(4);
+
+      const amount = ethers.utils.formatUnits(balance);
+      return amount === '0.0' ? '0' : ParseFloat(amount, 4);
     }
   };
 
