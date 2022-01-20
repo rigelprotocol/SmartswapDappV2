@@ -274,8 +274,6 @@ export function Index() {
       const deposit = async (token0: any, token1: any) => {
         let sym0 = await (await smartSwapLPTokenV2(await token0())).symbol();
         let sym1 = await (await smartSwapLPTokenV2(await token1())).symbol();
-        if (sym0 === "WMATIC") sym0 = "MATIC";
-        if (sym1 === "WMATIC") sym1 = "MATIC";
         return `${sym0}-${sym1}`;
       };
 
