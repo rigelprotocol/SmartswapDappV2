@@ -93,8 +93,9 @@ setDisplayManageToken(state => !state)
 const handleInput = useCallback(
   (event) => {
     const input = event.target.value;
-    const checksummedInput = isAddress(input);
+       const checksummedInput = isAddress(input);
     setSearchQuery(checksummedInput || input)
+   
   },
   [],
 );

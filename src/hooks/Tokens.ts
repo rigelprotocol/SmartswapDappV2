@@ -121,9 +121,8 @@ export function useToken(tokenAddress?: string): Token | undefined | null {
     const getToken = async (tokenAddress:string | undefined,chainId:number) => {
       const address = isAddress(tokenAddress);
   const token: Token | undefined = address ? tokens[address] : undefined;
-
-
-    if (token) setToken(token);
+try{
+   if (token) setToken(token);
     if (!chainId || !address) setToken(undefined);
     if( address && !tokens[address]){
 
@@ -140,7 +139,12 @@ export function useToken(tokenAddress?: string): Token | undefined | null {
         name,
       );
       setToken(newToken)
-    }
+    } 
+}catch(e){
+ console.log("no Token found")
+}
+
+  
     // setToken(undefined) 
 
  };
