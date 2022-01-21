@@ -498,6 +498,15 @@ export default function AddLiquidity({
     }
   };
 
+  const [isLoadingValue, setIsLoadingValue] = useState(false);
+  useEffect(() =>{
+    if (formattedAmounts[Field.INPUT] && !formattedAmounts[Field.OUTPUT]){
+      setIsLoadingValue(true);
+    }else{
+      setIsLoadingValue(false);
+    }
+  }, [formattedAmounts[Field.OUTPUT], formattedAmounts[Field.INPUT]]);
+
   return (
     <Center m={8}>
       <Box
@@ -700,24 +709,42 @@ export default function AddLiquidity({
         >
           {`Approve ${currencies[Field.OUTPUT]?.symbol}`}
         </Button>
-        <Button
-          size='lg'
-          height='48px'
-          width='200px'
-          border='2px'
-          borderColor={genBorder}
-          color={btnTextColor}
-          w='100%'
-          _hover={{ bgColor: "none" }}
-          _active={{ bgColor: "none" }}
-          display={
-            formattedAmounts[Field.INPUT] && formattedAmounts[Field.OUTPUT]
-              ? "none"
-              : undefined
-          }
-        >
-          Enter An Amount
-        </Button>
+        { isLoadingValue ? (
+          <Button
+            size="lg"
+            height="48px"
+            width="200px"
+            border="2px"
+            borderColor={genBorder}
+            color={btnTextColor}
+            w="100%"
+            _hover={{ bgColor: 'none' }}
+            _active={{ bgColor: 'none' }}
+            disabled={true}
+          >
+            Loading...
+          </Button>
+        ) : (
+          <Button
+            size="lg"
+            height="48px"
+            width="200px"
+            border="2px"
+            borderColor={genBorder}
+            color={btnTextColor}
+            w="100%"
+            _hover={{ bgColor: 'none' }}
+            _active={{ bgColor: 'none' }}
+            display={
+              formattedAmounts[Field.INPUT] && formattedAmounts[Field.OUTPUT]
+                ? 'none'
+                : undefined
+            }
+          >
+            Enter An Amount
+          </Button>
+        )}
+
         <Button
           size='lg'
           height='48px'
