@@ -75,14 +75,14 @@ export function getExplorerLink(
   if (chainId === SupportedChainId.BINANCETEST) {
     switch (type) {
       case ExplorerDataType.TRANSACTION:
-        return `testnet.bscscan.com/tx/${data}`;
+        return `https://testnet.bscscan.com/tx/${data}`;
       case ExplorerDataType.ADDRESS:
       case ExplorerDataType.TOKEN:
-        return `testnet.bscscan.com/address/${data}`;
+        return `https://testnet.bscscan.com/address/${data}`;
       case ExplorerDataType.BLOCK:
-        return `testnet.bscscan.com/block/${data}`;
+        return `https://testnet.bscscan.com/block/${data}`;
       default:
-        return `testnet.bscscan.com`;
+        return `https://testnet.bscscan.com`;
     }
   }
 
