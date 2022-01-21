@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useWeb3React } from '@web3-react/core';
+import React, { useState, useEffect, useMemo } from "react";
+import { useWeb3React } from "@web3-react/core";
 import {
   smartFactory,
   LiquidityPairInstance,
   SmartSwapRouter,
-} from '../Contracts';
-import { SMARTSWAPFACTORYADDRESSES, SMARTSWAPROUTER } from '../addresses';
-import { getERC20Token } from '../utilsFunctions';
-import { ethers } from 'ethers';
-import { Currency, Fraction, Percent } from '@uniswap/sdk-core';
-import { WNATIVEADDRESSES } from '../addresses';
-import JSBI from 'jsbi';
+} from "../Contracts";
+import { SMARTSWAPFACTORYADDRESSES, SMARTSWAPROUTER } from "../addresses";
+import { getERC20Token } from "../utilsFunctions";
+import { ethers } from "ethers";
+import { Currency, Fraction, Percent } from "@uniswap/sdk-core";
+import { WNATIVEADDRESSES } from "../addresses";
+import JSBI from "jsbi";
 
 export const useGetUserLiquidities = async () => {
   const { account, chainId } = useWeb3React();
@@ -121,7 +121,7 @@ const getPoolData = async (
         amountWei: pooledToken0[1],
         decimals: decimals0,
         reservesWei: reserves[0],
-        multiplyreserves: pooledToken0[2]
+        multiplyreserves: pooledToken0[2],
       },
       {
         toPath: token1,
@@ -130,12 +130,11 @@ const getPoolData = async (
         amountWei: pooledToken1[1],
         decimals: decimals1,
         reservesWei: reserves[1],
-        multiplyreserves: pooledToken1[2]
-
+        multiplyreserves: pooledToken1[2],
       },
     ],
-    pooledToken0:pooledToken0[0],
-    pooledToken1:pooledToken1[0],
+    pooledToken0: pooledToken0[0],
+    pooledToken1: pooledToken1[0],
     approved: approved,
   };
   return liquidityObject;
@@ -156,14 +155,13 @@ const getPooledToken = (params: PoolTokenParams) => {
     params.balance.toString(),
     params.totalSupply.toString()
   );
- 
+
   const multiplyReserve = fraction.multiply(params.reserves.toString());
 
-  const finalWei = multiplyReserve.multiply(Decimal).toSignificant(18)
-
+  const finalWei = multiplyReserve.multiply(Decimal).toSignificant(18);
 
   const final = multiplyReserve.divide(Decimal);
-  return [final.toSignificant(params.decimals),finalWei,multiplyReserve];
+  return [final.toSignificant(params.decimals), finalWei, multiplyReserve];
 };
 
 export const useGetLiquidityById = async (
@@ -246,29 +244,54 @@ export const useTokenValueToBeRemoved = ({
   return useMemo(() => {
     // const percent = new Percent
     if (pool && inputValue) {
-      const poolToken0Fraction = 
+      const poolToken0Fraction =
         (pool.pooledToken0 / 100) * parseInt(inputValue);
-      
-      const pooltoken0quotient = pool.path[0].multiplyreserves.quotient.toString()
-      const pooltoken1quotient = pool.path[1].multiplyreserves.quotient.toString()
 
-      const fixpooltoken0 = JSBI.divide(JSBI.BigInt(pooltoken0quotient),JSBI.BigInt(100))
-      const fixpooltoken0Fraction = JSBI.multiply(fixpooltoken0,JSBI.BigInt(inputValue)).toString()
+      const pooltoken0quotient =
+        pool.path[0].multiplyreserves.quotient.toString();
+      const pooltoken1quotient =
+        pool.path[1].multiplyreserves.quotient.toString();
 
+      const fixpooltoken0 = JSBI.divide(
+        JSBI.BigInt(pooltoken0quotient),
+        JSBI.BigInt(100)
+      );
+      const fixpooltoken0Fraction = JSBI.multiply(
+        fixpooltoken0,
+        JSBI.BigInt(inputValue)
+      ).toString();
 
       const poolToken1Fraction =
         (pool.pooledToken1 / 100) * parseInt(inputValue);
 
-        const fixpooltoken1 = JSBI.divide(JSBI.BigInt(pooltoken1quotient),JSBI.BigInt(100))
-        const fixpooltoken1Fraction = JSBI.multiply(fixpooltoken1,JSBI.BigInt(inputValue)).toString()
-
+      const fixpooltoken1 = JSBI.divide(
+        JSBI.BigInt(pooltoken1quotient),
+        JSBI.BigInt(100)
+      );
+      const fixpooltoken1Fraction = JSBI.multiply(
+        fixpooltoken1,
+        JSBI.BigInt(inputValue)
+      ).toString();
 
       const poolTokenFraction = (pool.poolToken / 100) * parseInt(inputValue);
-      const fixToken = JSBI.divide(JSBI.BigInt(pool.poolTokenWei.toString()),JSBI.BigInt(100))
-    
-      const fixTokenFraction = parseFloat(inputValue) === 100 ? pool.poolTokenWei.toString() : JSBI.multiply(fixToken,JSBI.BigInt(inputValue)).toString()
-  
-      return [poolToken0Fraction, poolToken1Fraction, poolTokenFraction,fixpooltoken0Fraction,fixpooltoken1Fraction,fixTokenFraction];
+      const fixToken = JSBI.divide(
+        JSBI.BigInt(pool.poolTokenWei.toString()),
+        JSBI.BigInt(100)
+      );
+
+      const fixTokenFraction =
+        parseFloat(inputValue) === 100
+          ? pool.poolTokenWei.toString()
+          : JSBI.multiply(fixToken, JSBI.BigInt(inputValue)).toString();
+
+      return [
+        poolToken0Fraction,
+        poolToken1Fraction,
+        poolTokenFraction,
+        fixpooltoken0Fraction,
+        fixpooltoken1Fraction,
+        fixTokenFraction,
+      ];
     }
   }, [pool, inputValue]);
   // return [poolToken0Fraction, poolToken1Fraction, poolTokenFraction];
@@ -289,7 +312,7 @@ export const useIsPoolsAvailable = (
       const currencyBAddress = getAddress(CurrencyB);
 
       const pair = await factory.getPair(currencyAAddress, currencyBAddress);
-      if (pair !== '0x0000000000000000000000000000000000000000') {
+      if (pair !== "0x0000000000000000000000000000000000000000") {
         setPairAvailable(true);
       } else {
         setPairAvailable(false);
@@ -314,7 +337,7 @@ export const usePoolShare = (
       const currencyAAddress = getAddress(CurrencyA);
       const currencyBAddress = getAddress(CurrencyB);
       const pair = await factory.getPair(currencyAAddress, currencyBAddress);
-      if (pair !== '0x0000000000000000000000000000000000000000') {
+      if (pair !== "0x0000000000000000000000000000000000000000") {
         try {
           const LPInstance = await LiquidityPairInstance(pair);
           const [balance, totalSupply] = await Promise.all([
@@ -350,29 +373,31 @@ export const usePricePerToken = (
       const factory = await smartFactory(
         SMARTSWAPFACTORYADDRESSES[chainId as number]
       );
+      
       const currencyAAddress = getAddress(CurrencyA);
       const currencyBAddress = getAddress(CurrencyB);
       const pair = await factory.getPair(currencyAAddress, currencyBAddress);
 
-      if (pair !== '0x0000000000000000000000000000000000000000') {
+      if (pair !== "0x0000000000000000000000000000000000000000") {
         try {
+          const pairinstance = await LiquidityPairInstance(pair);
+          const reserves = await pairinstance.getReserves();
+
           const [PriceAToB, PriceBToA] = await Promise.all([
-            router.getAmountsOut(ethers.utils.parseEther('1'), [
-              currencyAAddress,
-              currencyBAddress,
-            ]),
-            router.getAmountsOut(ethers.utils.parseEther('1'), [
-              currencyBAddress,
-              currencyAAddress,
-            ]),
+            router.quote(
+              ethers.utils.parseUnits("1", 18),
+              reserves[0],
+              reserves[1]
+            ),
+            router.quote(
+              ethers.utils.parseUnits("1", 18),
+              reserves[1],
+              reserves[0]
+            ),
           ]);
 
-          setPriceAToB(
-            ethers.utils.formatEther(PriceAToB.toString().split(',')[1])
-          );
-          setPriceBToA(
-            ethers.utils.formatEther(PriceBToA.toString().split(',')[1])
-          );
+          setPriceAToB(ethers.utils.formatUnits(PriceAToB.toString(), 18));
+          setPriceBToA(ethers.utils.formatUnits(PriceBToA.toString(), 18));
         } catch (err) {
           setPriceAToB(undefined);
           setPriceBToA(undefined);
@@ -430,8 +455,8 @@ export const usePriceForNewPool = (
   inputB: string,
   pairExist: boolean
 ) => {
-  const [priceAperB, setPriceAperB] = useState('');
-  const [priceBperA, setPriceBperA] = useState('');
+  const [priceAperB, setPriceAperB] = useState("");
+  const [priceBperA, setPriceBperA] = useState("");
   useMemo(() => {
     if (!pairExist && inputA && inputB) {
       const priceA = parseFloat(inputB) / parseFloat(inputA);
@@ -439,8 +464,8 @@ export const usePriceForNewPool = (
       setPriceAperB(priceA.toString());
       setPriceBperA(priceB.toString());
     } else {
-      setPriceBperA('');
-      setPriceAperB('');
+      setPriceBperA("");
+      setPriceAperB("");
     }
   }, [pairExist, inputA, inputB]);
 
@@ -475,8 +500,8 @@ export const useMintedLiquidity = (
   AmountB: string
 ) => {
   const { chainId, account } = useWeb3React();
-  const [poolShare, setPoolShare] = useState('');
-  const [minted, setMinted] = useState('');
+  const [poolShare, setPoolShare] = useState("");
+  const [minted, setMinted] = useState("");
 
   useMemo(async () => {
     if (account && CurrencyA && CurrencyB && AmountA && AmountB) {

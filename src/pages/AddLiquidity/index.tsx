@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
-import { Field } from '../../state/mint/actions';
-import { RouteComponentProps, useParams } from 'react-router-dom';
-import TransactionSettings from '../../components/TransactionSettings';
+import React, { useCallback, useEffect, useState, useMemo } from "react";
+import { Field } from "../../state/mint/actions";
+import { RouteComponentProps, useParams } from "react-router-dom";
+import TransactionSettings from "../../components/TransactionSettings";
 import {
   Box,
   Flex,
@@ -13,13 +13,13 @@ import {
   useColorModeValue,
   Divider,
   Center,
-} from '@chakra-ui/react';
-import { TimeIcon, ArrowBackIcon, AddIcon } from '@chakra-ui/icons';
-import { useDerivedMintInfo, useMintState } from '../../state/mint/hooks';
-import { useWeb3React } from '@web3-react/core';
-import OutputCurrecy from './AddLquidityInputs/OutputCurrecy';
-import InputCurrency from './AddLquidityInputs/InputCurrency';
-import { useMintActionHandlers } from '../../state/mint/hooks';
+} from "@chakra-ui/react";
+import { TimeIcon, ArrowBackIcon, AddIcon } from "@chakra-ui/icons";
+import { useDerivedMintInfo, useMintState } from "../../state/mint/hooks";
+import { useWeb3React } from "@web3-react/core";
+import OutputCurrecy from "./AddLquidityInputs/OutputCurrecy";
+import InputCurrency from "./AddLquidityInputs/InputCurrency";
+import { useMintActionHandlers } from "../../state/mint/hooks";
 import {
   useIsPoolsAvailable,
   usePoolShare,
@@ -28,26 +28,26 @@ import {
   usePriceForNewPool,
   useMintedLiquidity,
   getAddress,
-} from '../../utils/hooks/usePools';
-import { maxAmountSpend } from '../../utils/maxAmountSpend';
+} from "../../utils/hooks/usePools";
+import { maxAmountSpend } from "../../utils/maxAmountSpend";
 import {
   getERC20Token,
   getDeadline,
   formatAmountIn,
   getOutPutDataFromEvent,
-} from '../../utils/utilsFunctions';
-import { SMARTSWAPROUTER } from '../../utils/addresses';
-import { setOpenModal, TrxState } from '../../state/application/reducer';
-import { useDispatch } from 'react-redux';
-import { getExplorerLink, ExplorerDataType } from '../../utils/getExplorerLink';
-import { addToast } from '../../components/Toast/toastSlice';
-import { calculateSlippageAmount } from '../../utils/calculateSlippageAmount';
-import ConfirmModal from './modals/ConfirmModal';
-import { useUserSlippageTolerance } from '../../state/user/hooks';
-import { useUserTransactionTTL } from '../../state/user/hooks';
-import { Currency } from '@uniswap/sdk';
-import { SmartSwapRouter } from '../../utils/Contracts';
-import { ethers } from 'ethers';
+} from "../../utils/utilsFunctions";
+import { SMARTSWAPROUTER } from "../../utils/addresses";
+import { setOpenModal, TrxState } from "../../state/application/reducer";
+import { useDispatch } from "react-redux";
+import { getExplorerLink, ExplorerDataType } from "../../utils/getExplorerLink";
+import { addToast } from "../../components/Toast/toastSlice";
+import { calculateSlippageAmount } from "../../utils/calculateSlippageAmount";
+import ConfirmModal from "./modals/ConfirmModal";
+import { useUserSlippageTolerance } from "../../state/user/hooks";
+import { useUserTransactionTTL } from "../../state/user/hooks";
+import { Currency } from "@uniswap/sdk";
+import { SmartSwapRouter } from "../../utils/Contracts";
+import { ethers } from "ethers";
 
 export default function AddLiquidity({
   match: {
@@ -55,19 +55,18 @@ export default function AddLiquidity({
   },
   history,
 }: RouteComponentProps<{ currencyIdA?: string; currencyIdB?: string }>) {
-  const infoBg = ('#EBF6FE', '#EAF6FF');
-  const genBorder = useColorModeValue('#DEE6ED', '#324D68');
-  const bgColor = useColorModeValue('#F2F5F8', '#213345');
-  const topIcons = useColorModeValue('#666666', '#DCE6EF');
-  const textColorOne = useColorModeValue('#333333', '#F1F5F8');
-  const btnTextColor = useColorModeValue('#999999', '#7599BD');
-  const approveButtonBgColor = useColorModeValue('#319EF6', '#4CAFFF');
-  const approveButtonColor = useColorModeValue('#FFFFFF', '#F1F5F8');
+  const infoBg = ("#EBF6FE", "#EAF6FF");
+  const genBorder = useColorModeValue("#DEE6ED", "#324D68");
+  const bgColor = useColorModeValue("#F2F5F8", "#213345");
+  const topIcons = useColorModeValue("#666666", "#DCE6EF");
+  const textColorOne = useColorModeValue("#333333", "#F1F5F8");
+  const btnTextColor = useColorModeValue("#999999", "#7599BD");
+  const approveButtonBgColor = useColorModeValue("#319EF6", "#4CAFFF");
+  const approveButtonColor = useColorModeValue("#FFFFFF", "#F1F5F8");
   const { independentField, typedValue, otherTypedValue } = useMintState();
 
-
-
-  const { onCurrencySelection, onUserInput, onCurrencyFor } = useMintActionHandlers();
+  const { onCurrencySelection, onUserInput, onCurrencyFor } =
+    useMintActionHandlers();
   const { currencies, getMaxValue, bestTrade, parsedAmount, showWrap } =
     useDerivedMintInfo();
   const dependentField: Field =
@@ -81,27 +80,23 @@ export default function AddLiquidity({
     currencies[Field.OUTPUT]
   );
 
-  const [balanceA, setBalanceA] = useState('');
-  const [balanceB, setBalanceB] = useState('');
+  const [balanceA, setBalanceA] = useState("");
+  const [balanceB, setBalanceB] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [checkTokenApproval, setCheckTokenApproval] = useState(false);
 
   const [userSlippageTolerance] = useUserSlippageTolerance();
   const [userDeadline] = useUserTransactionTTL();
 
-
-  console.log("P1", currencyIdA)
-  console.log("P2", currencyIdB)
-
-
+  console.log("P1", currencyIdA);
+  console.log("P2", currencyIdB);
 
   useEffect(() => {
     if (currencyIdA && currencyIdB) {
-      onCurrencyFor(currencyIdA, Field.INPUT)
-      onCurrencyFor(currencyIdB, Field.OUTPUT)
+      onCurrencyFor(currencyIdA, Field.INPUT);
+      onCurrencyFor(currencyIdB, Field.OUTPUT);
     }
-  }, [currencyIdB, currencyIdA])
-
+  }, [currencyIdB, currencyIdA]);
 
   const { priceAToB, priceBToA } = usePricePerToken(
     currencies[Field.INPUT],
@@ -112,15 +107,15 @@ export default function AddLiquidity({
     () =>
       showWrap
         ? {
-          [Field.INPUT]: typedValue,
-          [Field.OUTPUT]: typedValue,
-        }
+            [Field.INPUT]: typedValue,
+            [Field.OUTPUT]: typedValue,
+          }
         : {
-          [Field.INPUT]:
-            independentField === Field.INPUT ? parsedAmount : bestTrade,
-          [Field.OUTPUT]:
-            independentField === Field.OUTPUT ? parsedAmount : bestTrade,
-        },
+            [Field.INPUT]:
+              independentField === Field.INPUT ? parsedAmount : bestTrade,
+            [Field.OUTPUT]:
+              independentField === Field.OUTPUT ? parsedAmount : bestTrade,
+          },
     [independentField, parsedAmount, showWrap, bestTrade, typedValue]
   );
 
@@ -129,8 +124,8 @@ export default function AddLiquidity({
     [dependentField]: !pairAvailable
       ? otherTypedValue
       : showWrap
-        ? parsedAmounts[independentField] ?? ''
-        : parsedAmounts[dependentField] ?? '',
+      ? parsedAmounts[independentField] ?? ""
+      : parsedAmounts[dependentField] ?? "",
   };
   const { priceAperB, priceBperA } = usePriceForNewPool(
     formattedAmounts[Field.INPUT],
@@ -229,6 +224,7 @@ export default function AddLiquidity({
     }
   };
 
+
   const addLiquidityETH = async (
     amountA: string,
     amountB: string,
@@ -246,8 +242,9 @@ export default function AddLiquidity({
       try {
         dispatch(
           setOpenModal({
-            message: `Supplying ${parseFloat(amountA).toFixed(6)} ${currencyA.symbol
-              } and ${parseFloat(amountB).toFixed(6)} ${currencyB.symbol}`,
+            message: `Supplying ${parseFloat(amountA).toFixed(6)} ${
+              currencyA.symbol
+            } and ${parseFloat(amountB).toFixed(6)} ${currencyB.symbol}`,
             trxState: TrxState.WaitingForConfirmation,
           })
         );
@@ -256,27 +253,27 @@ export default function AddLiquidity({
           currencyA.isNative ? AmountBMin : AmountAMin,
           currencyA.isNative
             ? calculateSlippageAmount(
-              AmountBMin,
-              pairAvailable ? userSlippageTolerance : 0
-            )
+                AmountBMin,
+                pairAvailable ? userSlippageTolerance : 0
+              )
             : calculateSlippageAmount(
-              AmountAMin,
-              pairAvailable ? userSlippageTolerance : 0
-            ),
+                AmountAMin,
+                pairAvailable ? userSlippageTolerance : 0
+              ),
           currencyA.isNative
             ? calculateSlippageAmount(
-              AmountAMin,
-              pairAvailable ? userSlippageTolerance : 0
-            )
+                AmountAMin,
+                pairAvailable ? userSlippageTolerance : 0
+              )
             : calculateSlippageAmount(
-              AmountBMin,
-              pairAvailable ? userSlippageTolerance : 0
-            ),
+                AmountBMin,
+                pairAvailable ? userSlippageTolerance : 0
+              ),
           account,
           deadLine,
           {
             value: currencyA.isNative ? AmountAMin : AmountBMin,
-            gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+            // gasPrice: ethers.utils.parseUnits("10", "gwei"),
           }
         );
 
@@ -285,28 +282,28 @@ export default function AddLiquidity({
           currencyA.isNative ? AmountBMin : AmountAMin,
           currencyA.isNative
             ? calculateSlippageAmount(
-              AmountBMin,
-              pairAvailable ? userSlippageTolerance : 0
-            )
+                AmountBMin,
+                pairAvailable ? userSlippageTolerance : 0
+              )
             : calculateSlippageAmount(
-              AmountAMin,
-              pairAvailable ? userSlippageTolerance : 0
-            ),
+                AmountAMin,
+                pairAvailable ? userSlippageTolerance : 0
+              ),
           currencyA.isNative
             ? calculateSlippageAmount(
-              AmountAMin,
-              pairAvailable ? userSlippageTolerance : 0
-            )
+                AmountAMin,
+                pairAvailable ? userSlippageTolerance : 0
+              )
             : calculateSlippageAmount(
-              AmountBMin,
-              pairAvailable ? userSlippageTolerance : 0
-            ),
+                AmountBMin,
+                pairAvailable ? userSlippageTolerance : 0
+              ),
           account,
           deadLine,
           {
             value: currencyA.isNative ? AmountAMin : AmountBMin,
-            gasLimit: parseFloat(gasCost.toString()) * 2,
-            gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+            //  gasLimit: parseFloat(gasCost.toString()) * 2,
+            //  gasPrice: ethers.utils.parseUnits("10", "gwei"),
           }
         );
         const { confirmations, events } = await data.wait(3);
@@ -331,12 +328,12 @@ export default function AddLiquidity({
             ExplorerDataType.TRANSACTION
           );
 
-          onUserInput(Field.OUTPUT, '', pairAvailable);
-          onUserInput(Field.INPUT, '', pairAvailable);
+          onUserInput(Field.OUTPUT, "", pairAvailable);
+          onUserInput(Field.INPUT, "", pairAvailable);
 
           dispatch(
             setOpenModal({
-              message: 'Transaction Successful',
+              message: "Transaction Successful",
               trxState: TrxState.TransactionSuccessful,
             })
           );
@@ -380,8 +377,9 @@ export default function AddLiquidity({
       try {
         dispatch(
           setOpenModal({
-            message: `Supplying ${parseFloat(amountA).toFixed(6)} ${currencyA.symbol
-              } and ${parseFloat(amountB).toFixed(6)} ${currencyB.symbol}`,
+            message: `Supplying ${parseFloat(amountA).toFixed(6)} ${
+              currencyA.symbol
+            } and ${parseFloat(amountB).toFixed(6)} ${currencyB.symbol}`,
             trxState: TrxState.WaitingForConfirmation,
           })
         );
@@ -401,7 +399,7 @@ export default function AddLiquidity({
           account,
           deadLine,
           {
-            gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+            // gasPrice: ethers.utils.parseUnits("10", "gwei"),
           }
         );
 
@@ -421,8 +419,8 @@ export default function AddLiquidity({
           account,
           deadLine,
           {
-            gasLimit: parseFloat(gasCost.toString()) * 2,
-            gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+            // gasLimit: parseFloat(gasCost.toString()) * 2,
+            // gasPrice: ethers.utils.parseUnits("10", "gwei"),
           }
         );
         const { confirmations, events } = await data.wait(3);
@@ -447,12 +445,12 @@ export default function AddLiquidity({
             ExplorerDataType.TRANSACTION
           );
 
-          onUserInput(Field.OUTPUT, '', pairAvailable);
-          onUserInput(Field.INPUT, '', pairAvailable);
+          onUserInput(Field.OUTPUT, "", pairAvailable);
+          onUserInput(Field.INPUT, "", pairAvailable);
 
           dispatch(
             setOpenModal({
-              message: 'Transaction Successful',
+              message: "Transaction Successful",
               trxState: TrxState.TransactionSuccessful,
             })
           );
@@ -503,14 +501,14 @@ export default function AddLiquidity({
   return (
     <Center m={8}>
       <Box
-        maxW="496px"
-        borderWidth="1px"
-        borderRadius="md"
+        maxW='496px'
+        borderWidth='1px'
+        borderRadius='md'
         borderColor={genBorder}
-        overflow="hidden"
-        alignItems="center"
+        overflow='hidden'
+        alignItems='center'
         p={4}
-        mb={["110px","110px","4"]}
+        mb={["110px", "110px", "4"]}
       >
         <Flex>
           <ArrowBackIcon
@@ -518,18 +516,18 @@ export default function AddLiquidity({
             w={6}
             h={6}
             color={topIcons}
-            cursor="pointer"
+            cursor='pointer'
           />
           <Spacer />
-          <Heading as="h4" size="md">
+          <Heading as='h4' size='md'>
             Add Liquidity
           </Heading>
           <Spacer />
           <TransactionSettings />
           <TimeIcon w={6} h={7} color={topIcons} />
         </Flex>
-        <Box bg={infoBg} borderRadius="md" p={4} mt={4} mb={5}>
-          <Text color="#319EF6" fontWeight="400" fontSize="14px">
+        <Box bg={infoBg} borderRadius='md' p={4} mt={4} mb={5}>
+          <Text color='#319EF6' fontWeight='400' fontSize='14px'>
             Tip: When you add liquidity, you will receive pool tokens
             representing your position. These tokens automatically earn fees
             proportional to your share of the pool, and can be redeemed at any
@@ -537,8 +535,8 @@ export default function AddLiquidity({
           </Text>
         </Box>
         <Box
-          borderRadius="md"
-          borderWidth="1px"
+          borderRadius='md'
+          borderWidth='1px'
           pt={2}
           pb={2}
           borderColor={genBorder}
@@ -553,15 +551,15 @@ export default function AddLiquidity({
             setBalanceA={setBalanceA}
           />
         </Box>
-        <Flex justifyContent="center">
+        <Flex justifyContent='center'>
           <Center
-            w="40px"
-            h="40px"
+            w='40px'
+            h='40px'
             bg={bgColor}
-            borderWidth="3px"
+            borderWidth='3px'
             borderColor={genBorder}
-            color="#333333"
-            borderRadius="xl"
+            color='#333333'
+            borderRadius='xl'
             mt={5}
             mb={5}
           >
@@ -569,8 +567,8 @@ export default function AddLiquidity({
           </Center>
         </Flex>
         <Box
-          borderRadius="md"
-          border="1px solid #DEE6ED"
+          borderRadius='md'
+          border='1px solid #DEE6ED'
           pt={2}
           pb={2}
           borderColor={genBorder}
@@ -585,27 +583,27 @@ export default function AddLiquidity({
           />
         </Box>
         <Box
-          borderRadius="md"
-          borderWidth="1px"
+          borderRadius='md'
+          borderWidth='1px'
           borderColor={genBorder}
-          mt="5"
-          mb="3"
+          mt='5'
+          mb='3'
         >
-          <Text p="4" fontWeight="400">
+          <Text p='4' fontWeight='400'>
             Prices & pool share
           </Text>
-          <Divider orientation="horizontal" borderColor={genBorder} />
-          <Flex p="4">
+          <Divider orientation='horizontal' borderColor={genBorder} />
+          <Flex p='4'>
             <VStack>
               <Text color={textColorOne}>
                 {priceBToA && pairAvailable
                   ? parseFloat(priceBToA).toFixed(6)
                   : !pairAvailable && priceBperA
-                    ? priceBperA
-                    : '-'}
+                  ? priceBperA
+                  : "-"}
               </Text>
               <Text color={topIcons}>
-                {currencies[Field.INPUT]?.symbol} per{' '}
+                {currencies[Field.INPUT]?.symbol} per{" "}
                 {currencies[Field.OUTPUT]?.symbol}
               </Text>
             </VStack>
@@ -615,11 +613,11 @@ export default function AddLiquidity({
                 {priceAToB && pairAvailable
                   ? parseFloat(priceAToB).toFixed(6)
                   : priceAperB && !pairAvailable
-                    ? priceAperB
-                    : '-'}
+                  ? priceAperB
+                  : "-"}
               </Text>
               <Text color={topIcons}>
-                {currencies[Field.OUTPUT]?.symbol} per{' '}
+                {currencies[Field.OUTPUT]?.symbol} per{" "}
                 {currencies[Field.INPUT]?.symbol}
               </Text>
             </VStack>
@@ -627,40 +625,40 @@ export default function AddLiquidity({
             <VStack>
               <Text color={textColorOne}>
                 {!pairAvailable &&
-                  formattedAmounts[Field.INPUT] &&
-                  formattedAmounts[Field.OUTPUT]
-                  ? '100%'
+                formattedAmounts[Field.INPUT] &&
+                formattedAmounts[Field.OUTPUT]
+                  ? "100%"
                   : poolShare &&
                     formattedAmounts[Field.INPUT] &&
                     formattedAmounts[Field.OUTPUT]
-                    ? `${parseFloat(poolShare).toFixed(6)}% `
-                    : '-'}
+                  ? `${parseFloat(poolShare).toFixed(6)}% `
+                  : "-"}
               </Text>
               <Text color={topIcons}>Share of Pool</Text>
             </VStack>
           </Flex>
         </Box>
         <Button
-          size="lg"
-          height="48px"
-          width="200px"
+          size='lg'
+          height='48px'
+          width='200px'
           bgColor={approveButtonBgColor}
           color={approveButtonColor}
-          w="100%"
+          w='100%'
           mb={3}
-          _hover={{ bgColor: 'none' }}
-          _active={{ bgColor: 'none' }}
+          _hover={{ bgColor: "none" }}
+          _active={{ bgColor: "none" }}
           display={
             formattedAmounts[Field.INPUT] &&
-              formattedAmounts[Field.OUTPUT] &&
-              !hasTokenABeenApproved
+            formattedAmounts[Field.OUTPUT] &&
+            !hasTokenABeenApproved
               ? undefined
               : parseFloat(formattedAmounts[Field.INPUT]) >
-                parseFloat(balanceA) ||
+                  parseFloat(balanceA) ||
                 parseFloat(formattedAmounts[Field.OUTPUT]) >
-                parseFloat(balanceB)
-                ? 'none'
-                : 'none'
+                  parseFloat(balanceB)
+              ? "none"
+              : "none"
           }
           onClick={() =>
             approveTokens(
@@ -672,26 +670,26 @@ export default function AddLiquidity({
           {`Approve ${currencies[Field.INPUT]?.symbol}`}
         </Button>
         <Button
-          size="lg"
-          height="48px"
-          width="200px"
+          size='lg'
+          height='48px'
+          width='200px'
           mb={3}
           bgColor={approveButtonBgColor}
           color={approveButtonColor}
-          w="100%"
-          _hover={{ bgColor: 'none' }}
-          _active={{ bgColor: 'none' }}
+          w='100%'
+          _hover={{ bgColor: "none" }}
+          _active={{ bgColor: "none" }}
           display={
             formattedAmounts[Field.INPUT] &&
-              formattedAmounts[Field.OUTPUT] &&
-              !hasTokenBBeenApproved
+            formattedAmounts[Field.OUTPUT] &&
+            !hasTokenBBeenApproved
               ? undefined
               : parseFloat(formattedAmounts[Field.INPUT]) >
-                parseFloat(balanceA) ||
+                  parseFloat(balanceA) ||
                 parseFloat(formattedAmounts[Field.OUTPUT]) >
-                parseFloat(balanceB)
-                ? 'none'
-                : 'none'
+                  parseFloat(balanceB)
+              ? "none"
+              : "none"
           }
           onClick={() =>
             approveTokens(
@@ -703,31 +701,31 @@ export default function AddLiquidity({
           {`Approve ${currencies[Field.OUTPUT]?.symbol}`}
         </Button>
         <Button
-          size="lg"
-          height="48px"
-          width="200px"
-          border="2px"
+          size='lg'
+          height='48px'
+          width='200px'
+          border='2px'
           borderColor={genBorder}
           color={btnTextColor}
-          w="100%"
-          _hover={{ bgColor: 'none' }}
-          _active={{ bgColor: 'none' }}
+          w='100%'
+          _hover={{ bgColor: "none" }}
+          _active={{ bgColor: "none" }}
           display={
             formattedAmounts[Field.INPUT] && formattedAmounts[Field.OUTPUT]
-              ? 'none'
+              ? "none"
               : undefined
           }
         >
           Enter An Amount
         </Button>
         <Button
-          size="lg"
-          height="48px"
-          width="200px"
+          size='lg'
+          height='48px'
+          width='200px'
           display={
             formattedAmounts[Field.INPUT] && formattedAmounts[Field.OUTPUT]
               ? undefined
-              : 'none'
+              : "none"
           }
           disabled={
             !hasTokenBBeenApproved ||
@@ -737,54 +735,55 @@ export default function AddLiquidity({
           }
           border={
             formattedAmounts[Field.INPUT] &&
-              formattedAmounts[Field.OUTPUT] &&
-              hasTokenABeenApproved &&
-              hasTokenBBeenApproved
-              ? ''
-              : '2px'
+            formattedAmounts[Field.OUTPUT] &&
+            hasTokenABeenApproved &&
+            hasTokenBBeenApproved
+              ? ""
+              : "2px"
           }
           borderColor={
             formattedAmounts[Field.INPUT] &&
-              formattedAmounts[Field.OUTPUT] &&
-              hasTokenABeenApproved &&
-              hasTokenBBeenApproved
-              ? ''
+            formattedAmounts[Field.OUTPUT] &&
+            hasTokenABeenApproved &&
+            hasTokenBBeenApproved
+              ? ""
               : genBorder
           }
           bgColor={
             formattedAmounts[Field.INPUT] &&
-              formattedAmounts[Field.OUTPUT] &&
-              hasTokenABeenApproved &&
-              hasTokenBBeenApproved
+            formattedAmounts[Field.OUTPUT] &&
+            hasTokenABeenApproved &&
+            hasTokenBBeenApproved
               ? approveButtonBgColor
-              : ''
+              : ""
           }
           color={
             formattedAmounts[Field.OUTPUT] &&
-              formattedAmounts[Field.INPUT] &&
-              hasTokenABeenApproved &&
-              hasTokenBBeenApproved
+            formattedAmounts[Field.INPUT] &&
+            hasTokenABeenApproved &&
+            hasTokenBBeenApproved
               ? approveButtonColor
               : btnTextColor
           }
           // color={btnTextColor}
-          w="100%"
-          _hover={{ bgColor: 'none' }}
-          _active={{ bgColor: 'none' }}
+          w='100%'
+          _hover={{ bgColor: "none" }}
+          _active={{ bgColor: "none" }}
           onClick={() => {
             setShowModal(true);
           }}
         >
           {parseFloat(formattedAmounts[Field.INPUT]) > parseFloat(balanceA) ||
-            parseFloat(formattedAmounts[Field.OUTPUT]) > parseFloat(balanceB)
-            ? ` Insufficient ${parseFloat(formattedAmounts[Field.INPUT]) > parseFloat(balanceA)
-              ? currencies[Field.INPUT]?.symbol
-              : currencies[Field.OUTPUT]?.symbol
-            } balance`
-            : 'Confirm Liquidity Add'}
+          parseFloat(formattedAmounts[Field.OUTPUT]) > parseFloat(balanceB)
+            ? ` Insufficient ${
+                parseFloat(formattedAmounts[Field.INPUT]) > parseFloat(balanceA)
+                  ? currencies[Field.INPUT]?.symbol
+                  : currencies[Field.OUTPUT]?.symbol
+              } balance`
+            : "Confirm Liquidity Add"}
         </Button>
         <ConfirmModal
-          title={pairAvailable ? 'Confirm' : 'You are creating a new pool'}
+          title={pairAvailable ? "Confirm" : "You are creating a new pool"}
           amount={minted}
           from={currencies[Field.INPUT]?.symbol as string}
           fromPrice={priceBToA as string}

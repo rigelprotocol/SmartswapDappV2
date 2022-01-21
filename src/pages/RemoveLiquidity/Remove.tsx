@@ -39,8 +39,6 @@ import {
   formatAmountIn,
   getOutPutDataFromEvent,
 } from '../../utils/utilsFunctions';
-import JSBI from 'jsbi';
-import { Percent } from '@uniswap/sdk-core';
 import { ethers } from 'ethers';
 import MATICImage from '../../assets/Matic.svg';
 
@@ -57,9 +55,8 @@ const Remove = () => {
   const pairinformationBgColor = useColorModeValue('#FFFFFF', '#15202B');
   const pairinformationBorderColor = useColorModeValue('#DEE5ED', '#324D68');
   const approveButtonColor = useColorModeValue('#FFFFFF', '#FFFFFF');
-  const WithdrawalButtonColor = useColorModeValue('#999999', '#7599BD');
+  const WithdrawalButtonColor = useColorModeValue( '#FFFFFF','#FFFFFF');
   const approveButtonBgColor = useColorModeValue('#319EF6', '#4CAFFF');
-  const withdrawalButtonBorderColor = useColorModeValue('#666666', '#324D68');
   const withdrawaButtonBgColor = useColorModeValue('#FFFFFF', '#15202B');
   const inActiveApproveButtonBgColor = useColorModeValue('#999999', '#7599BD');
   const inActiveApproveButtonColor = useColorModeValue('#CCCCCC', '#4A739B');
@@ -93,6 +90,7 @@ const Remove = () => {
     const load = async () => {
       const details = await data;
       if (details && !cancel) {
+        console.log({details})
         try {
           setHasBeenApproved(details.approved);
           setPool(details.LiquidityPairData);
@@ -183,8 +181,8 @@ const Remove = () => {
           deadLine,
           {
             from: account,
-            gasLimit: 390000,
-            gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+            // gasLimit: 390000,
+            // gasPrice: ethers.utils.parseUnits('10', 'gwei'),
           }
         );
         const { confirmations, events } = await remove.wait(1);
@@ -316,8 +314,8 @@ const Remove = () => {
           deadLine,
           {
             from: account,
-            gasLimit: 390000,
-            gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+            // gasLimit: 390000,
+            // gasPrice: ethers.utils.parseUnits('10', 'gwei'),
           }
         );
         const { confirmations, events } = await remove.wait(1);
@@ -848,7 +846,7 @@ const Remove = () => {
                   p="0"
                   border="none"
                   value={inputValue}
-                  placeholder="0"
+                  placeholder="0.00"
                   onChange={(e) => {
                     let input = e.target.value;
                     let regex = /(^100([.]0{1,2})?)$|(^\d{1,2}([.]\d{1,2})?)$/;
@@ -983,7 +981,7 @@ const Remove = () => {
               }
               bgColor={
                 hasBeenApproved && inputValue
-                  ? approvedButtonBgColor
+                  ? "transparent"
                   : inputValue
                     ? approveButtonBgColor
                     : inActiveApproveButtonBgColor
@@ -998,7 +996,7 @@ const Remove = () => {
               }}
               _hover={{
                 bgColor:
-                  hasBeenApproved && inputValue
+                  hasBeenApproved 
                     ? approvedButtonBgColor
                     : inputValue
                       ? approveButtonBgColor
@@ -1029,9 +1027,13 @@ const Remove = () => {
               w="46%"
               borderRadius="6px"
               color={WithdrawalButtonColor}
-              border="1px"
-              borderColor={withdrawalButtonBorderColor}
-              bgColor={withdrawaButtonBgColor}
+              bgColor={
+                hasBeenApproved
+                  ? approveButtonBgColor
+                  : inputValue && hasBeenApproved
+                    ? approveButtonBgColor
+                    : "transparent"
+              }
               _active={{ bgColor: withdrawaButtonBgColor }}
               _hover={{ bgColor: withdrawaButtonBgColor }}
               px={14}
@@ -1039,7 +1041,7 @@ const Remove = () => {
               onClick={() => RemoveLiquidity()}
               disabled={!hasBeenApproved || inputValue === ''}
             >
-              <Text>Confirm Withdrawal</Text>
+              <Text>{inputValue === "" ? "Enter an amount" : "Confirm Withdrawal"}</Text>
             </Button>
           </Flex>
         </Flex>
