@@ -181,8 +181,8 @@ const Remove = () => {
           deadLine,
           {
             from: account,
-            gasLimit: 390000,
-            gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+            // gasLimit: 390000,
+            // gasPrice: ethers.utils.parseUnits('10', 'gwei'),
           }
         );
         const { confirmations, events } = await remove.wait(1);
@@ -314,8 +314,8 @@ const Remove = () => {
           deadLine,
           {
             from: account,
-            gasLimit: 390000,
-            gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+            // gasLimit: 390000,
+            // gasPrice: ethers.utils.parseUnits('10', 'gwei'),
           }
         );
         const { confirmations, events } = await remove.wait(1);

@@ -224,6 +224,7 @@ export default function AddLiquidity({
     }
   };
 
+
   const addLiquidityETH = async (
     amountA: string,
     amountB: string,
@@ -272,7 +273,7 @@ export default function AddLiquidity({
           deadLine,
           {
             value: currencyA.isNative ? AmountAMin : AmountBMin,
-            gasPrice: ethers.utils.parseUnits("10", "gwei"),
+            // gasPrice: ethers.utils.parseUnits("10", "gwei"),
           }
         );
 
@@ -301,8 +302,8 @@ export default function AddLiquidity({
           deadLine,
           {
             value: currencyA.isNative ? AmountAMin : AmountBMin,
-            gasLimit: parseFloat(gasCost.toString()) * 2,
-            gasPrice: ethers.utils.parseUnits("10", "gwei"),
+            //  gasLimit: parseFloat(gasCost.toString()) * 2,
+            //  gasPrice: ethers.utils.parseUnits("10", "gwei"),
           }
         );
         const { confirmations, events } = await data.wait(3);
@@ -398,7 +399,7 @@ export default function AddLiquidity({
           account,
           deadLine,
           {
-            gasPrice: ethers.utils.parseUnits("10", "gwei"),
+            // gasPrice: ethers.utils.parseUnits("10", "gwei"),
           }
         );
 
@@ -418,8 +419,8 @@ export default function AddLiquidity({
           account,
           deadLine,
           {
-            gasLimit: parseFloat(gasCost.toString()) * 2,
-            gasPrice: ethers.utils.parseUnits("10", "gwei"),
+            // gasLimit: parseFloat(gasCost.toString()) * 2,
+            // gasPrice: ethers.utils.parseUnits("10", "gwei"),
           }
         );
         const { confirmations, events } = await data.wait(3);

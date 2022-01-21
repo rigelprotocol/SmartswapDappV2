@@ -312,8 +312,8 @@ const SendToken = () => {
         dl,
         {
           from: account,
-          gasLimit: 290000,
-          gasPrice: ethers.utils.parseUnits("10", "gwei"),
+          // gasLimit: 290000,
+          // gasPrice: ethers.utils.parseUnits("10", "gwei"),
         }
       );
       const { hash } = sendTransaction;

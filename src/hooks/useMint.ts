@@ -12,8 +12,8 @@ import { ZERO_ADDRESS } from "../constants";
 import { ethers } from "ethers";
 import { LiquidityPairInstance } from "../utils/Contracts";
 
-const formatAmount = (number: string) => {
-  const num = ethers.utils.formatEther(number);
+const formatAmount = (amount: string, decimals: number) => {
+  const num = ethers.utils.formatUnits(amount, decimals);
   return num;
 };
 
@@ -81,8 +81,8 @@ export const useMint = (
               tokenOneAddress === token0 ? reserves[0] : reserves[1],
               tokenOneAddress === token0 ? reserves[1] : reserves[0]
             );
-
-            const output = formatAmount(outputAmount.toString());
+            
+            const output = formatAmount(outputAmount.toString(), currencyB.decimals);
 
             setAmount(output);
           } else {

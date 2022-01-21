@@ -373,6 +373,7 @@ export const usePricePerToken = (
       const factory = await smartFactory(
         SMARTSWAPFACTORYADDRESSES[chainId as number]
       );
+      
       const currencyAAddress = getAddress(CurrencyA);
       const currencyBAddress = getAddress(CurrencyB);
       const pair = await factory.getPair(currencyAAddress, currencyBAddress);
@@ -384,19 +385,19 @@ export const usePricePerToken = (
 
           const [PriceAToB, PriceBToA] = await Promise.all([
             router.quote(
-              ethers.utils.parseEther("1"),
+              ethers.utils.parseUnits("1", 18),
               reserves[0],
               reserves[1]
             ),
             router.quote(
-              ethers.utils.parseEther("1"),
+              ethers.utils.parseUnits("1", 18),
               reserves[1],
               reserves[0]
             ),
           ]);
 
-          setPriceAToB(ethers.utils.formatEther(PriceAToB.toString()));
-          setPriceBToA(ethers.utils.formatEther(PriceBToA.toString()));
+          setPriceAToB(ethers.utils.formatUnits(PriceAToB.toString(), 18));
+          setPriceBToA(ethers.utils.formatUnits(PriceBToA.toString(), 18));
         } catch (err) {
           setPriceAToB(undefined);
           setPriceBToA(undefined);
