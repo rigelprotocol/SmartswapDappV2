@@ -156,11 +156,19 @@ export const ISNATIVE = (symbol: string, chainId: number): boolean => {
 };
 
 export const formatAmountIn = (amount: any, decimals: number) => {
-  const Decimal = 10 ** decimals;
-  const amountMin = amount * Decimal;
-  return amountMin.toFixed();
+  
+  return ethers.utils.parseUnits(truncate(amount, decimals), decimals)
 };
 
+export function truncate(str:string, maxDecimalDigits: number) {
+  
+  if (str && str.toString()?.includes('.')) {
+    const parts = str.toString().split('.'); 
+    return parts[0] + '.' + parts[1].slice(0, maxDecimalDigits);
+  }
+  
+  return str;
+}
 export const getOutPutDataFromEvent = async (
   tokenAddress,
   eventsArray,

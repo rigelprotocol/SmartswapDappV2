@@ -108,17 +108,17 @@ const Liquidities = (props: Liquidity) => {
                 : props.pair.path[1].token}
             </Box> 
           </Flex>
-          <Flex align="center">
+          <Flex align="center" 
+              onClick={() => {
+                setShowDetails(!showDetails);
+              }}
+              cursor="pointer">
             <Text mr={1} color={manageColor} fontSize="14px">
               Manage
             </Text>
             <ChevronDownIcon
               h={4}
               w={4}
-              onClick={() => {
-                setShowDetails(!showDetails);
-              }}
-              cursor="pointer"
             />
           </Flex>
         </Flex>

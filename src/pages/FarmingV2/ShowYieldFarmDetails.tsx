@@ -175,8 +175,8 @@ const ShowYieldFarmDetails = ({content, wallet}: {
         const walletBal = (await rgp.balanceOf(account)) + 400e18;
         const data = await rgp.approve(SMART_SWAP.specialPool, walletBal, {
           from: account,
-          gasLimit: 150000,
-          gasPrice: ethers.utils.parseUnits("20", "gwei"),
+          // gasLimit: 150000,
+          // gasPrice: ethers.utils.parseUnits("20", "gwei"),
         });
         setApprovalLoading(true);
         const { confirmations, status } = await fetchTransactionData(data);
@@ -479,13 +479,14 @@ const ShowYieldFarmDetails = ({content, wallet}: {
             MASTERCHEFV2ADDRESSES[chainId as number], library
         );
         const data = await lpTokens.withdraw(
-            pid,
-            ethers.utils.parseEther(unstakeToken.toString()),
-            {
-              from: account,
-              gasLimit: 250000,
-              gasPrice: ethers.utils.parseUnits("20", "gwei"),
-            }
+
+          pid,
+          ethers.utils.parseEther(unstakeToken.toString()),
+          {
+            from: account,
+            // gasLimit: 250000,
+            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+          }
         );
         const { confirmations, status, logs } = await fetchTransactionData(
             data
@@ -625,13 +626,13 @@ const ShowYieldFarmDetails = ({content, wallet}: {
             );
 
             const data = await lpTokens.deposit(
-                pid,
-                ethers.utils.parseEther(depositTokenValue.toString()),
-                {
-                  from: account,
-                  gasLimit: 250000,
-                  gasPrice: ethers.utils.parseUnits("20", "gwei"),
-                }
+              pid,
+              ethers.utils.parseEther(depositTokenValue.toString()),
+              {
+                from: account,
+                // gasLimit: 250000,
+                // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+              }
             );
             const { confirmations, status, logs } = await fetchTransactionData(
                 data
@@ -654,13 +655,13 @@ const ShowYieldFarmDetails = ({content, wallet}: {
           );
 
           const data = await lpTokens.deposit(
-              pid,
-              ethers.utils.parseEther(depositTokenValue.toString()),
-              {
-                from: account,
-                gasLimit: 250000,
-                gasPrice: ethers.utils.parseUnits("20", "gwei"),
-              }
+            pid,
+            ethers.utils.parseEther(depositTokenValue.toString()),
+            {
+              from: account,
+              // gasLimit: 250000,
+              // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+            }
           );
           const { confirmations, status } = await fetchTransactionData(data);
 
@@ -731,12 +732,12 @@ const ShowYieldFarmDetails = ({content, wallet}: {
       );
 
       const data = await specialPool.stake(
-          ethers.utils.parseEther(depositTokenValue.toString()),
-          {
-            from: account,
-            gasLimit: 200000,
-            gasPrice: ethers.utils.parseUnits("20", "gwei"),
-          }
+        ethers.utils.parseEther(depositTokenValue.toString()),
+        {
+          from: account,
+          // gasLimit: 200000,
+          // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+        }
       );
       const { confirmations, status } = await fetchTransactionData(data);
 
@@ -759,12 +760,12 @@ const ShowYieldFarmDetails = ({content, wallet}: {
             RGPSPECIALPOOLADDRESSES[chainId as number], library
         );
         const data = await specialPool.unStake(
-            ethers.utils.parseUnits(unstakeToken, "ether"), // user input from onclick shoild be here...
-            {
-              from: account,
-              gasLimit: 150000,
-              gasPrice: ethers.utils.parseUnits("20", "gwei"),
-            }
+          ethers.utils.parseUnits(unstakeToken, "ether"), // user input from onclick shoild be here...
+          {
+            from: account,
+            // gasLimit: 150000,
+            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+          }
         );
         const { confirmations, status } = await fetchTransactionData(data);
 
@@ -801,13 +802,13 @@ const ShowYieldFarmDetails = ({content, wallet}: {
         );
         const walletBal = (await contract.balanceOf(account)) + 400e18;
         const data = await contract.approve(
-            MASTERCHEFV2ADDRESSES[chainId as number],
-            walletBal,
-            {
-              from: account,
-              gasLimit: 150000,
-              gasPrice: ethers.utils.parseUnits("20", "gwei"),
-            }
+          MASTERCHEFV2ADDRESSES[chainId as number],
+          walletBal,
+          {
+            from: account,
+            // gasLimit: 150000,
+            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+          }
         );
         setApprovalLoading(true);
         const { confirmations, status } = await fetchTransactionData(data);
@@ -886,13 +887,13 @@ const ShowYieldFarmDetails = ({content, wallet}: {
         const rgp = await rigelToken(RGP[chainId as number], library);
         const walletBal = (await rgp.balanceOf(account)) + 400e18;
         const data = await rgp.approve(
-            MASTERCHEFV2ADDRESSES[chainId as number],
-            walletBal,
-            {
-              from: account,
-              gasLimit: 150000,
-              gasPrice: ethers.utils.parseUnits("20", "gwei"),
-            }
+          MASTERCHEFV2ADDRESSES[chainId as number],
+          walletBal,
+          {
+            from: account,
+            // gasLimit: 150000,
+            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+          }
         );
         setApprovalLoading(true);
         const { confirmations, status } = await fetchTransactionData(data);

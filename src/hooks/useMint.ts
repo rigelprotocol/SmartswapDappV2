@@ -8,6 +8,7 @@ import {ethers} from 'ethers';
 
 const formatAmount = (number: string) => {
   return ethers.utils.formatEther(number);
+
 };
 
 export const useMint = (
@@ -18,7 +19,7 @@ export const useMint = (
   const { chainId, library } = useActiveWeb3React();
   const [address, setAddress] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
-  const [amount, setAmount] = useState<string | undefined>('');
+  const [amount, setAmount] = useState<string | undefined>("");
   const [wrap, setWrap] = useState<boolean>(false);
 
   let nativeAddress;
@@ -38,7 +39,7 @@ export const useMint = (
   const tokenTwoAddress = tokenB?.address || nativeAddress?.address;
   const wrappable: boolean = tokenOneAddress == tokenTwoAddress;
   let validSmartAddress: string;
-  if (SMARTSWAPFACTORYADDRESSES[chainId as number] !== '0x') {
+  if (SMARTSWAPFACTORYADDRESSES[chainId as number] !== "0x") {
     validSmartAddress = SMARTSWAPFACTORYADDRESSES[chainId as number];
   }
 
@@ -60,24 +61,31 @@ export const useMint = (
           setWrap(false);
           if (amountIn !== undefined) {
             //setLoading(!loading);
+            const pairinstance = await LiquidityPairInstance(pairAddress);
+            const token0 = await pairinstance.token0();
+            const token1 = await pairinstance.token1();
+            const reserves = await pairinstance.getReserves();
+
             const SwapRouter = await SmartSwapRouter(
               SMARTSWAPROUTER[chainId as number], library
             );
-            const amountOut = await SwapRouter.getAmountsOut(amountIn, [
-              tokenOneAddress,
-              tokenTwoAddress,
-            ]);
 
-            const output = formatAmount(amountOut[1]);
+            const outputAmount = await SwapRouter.quote(
+              amountIn,
+              tokenOneAddress === token0 ? reserves[0] : reserves[1],
+              tokenOneAddress === token0 ? reserves[1] : reserves[0]
+            );
+            
+            const output = formatAmount(outputAmount.toString(), currencyB.decimals);
 
             setAmount(output);
           } else {
-            setAmount('');
+            setAmount("");
           }
         }
       } catch (e) {
         console.log(e);
-        setAmount('');
+        setAmount("");
       }
     };
 
