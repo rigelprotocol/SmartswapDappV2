@@ -361,6 +361,83 @@ export function Index() {
             },
           ])
         );
+      }
+      else if (Number(chainId) === Number(SupportedChainId.POLYGON)) {
+        const MRGPprice: number | any = ethers.utils.formatUnits(
+          pool3Reserve[1].mul(1000).div(pool3Reserve[0]),
+          3
+        );
+        const getMaticPrice = (): number => {
+          let MaticPrice;
+          MaticPrice = ethers.utils.formatUnits(
+            pool5Reserve[0].mul(1000).div(pool5Reserve[1]),
+            3
+          );
+
+          return Number(MaticPrice);
+        };
+        const MaticPrice = getMaticPrice();
+        const MRGPLiquidity = ethers.utils
+          .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * MRGPprice)), 21)
+          .toString();
+
+        const RGP_WMATICLiquidity = ethers.utils
+          .formatUnits(
+            pool1Reserve[0].mul(Math.floor(MaticPrice * 1000 * 2)),
+            21
+          )
+          .toString();
+
+        const USDT_RGPLiquidity = ethers.utils
+          .formatEther(pool2Reserve[0].mul(Number(MRGPprice) * 1000 * 2))
+          .toString();
+
+        const RGP_USDCLiquidity = ethers.utils
+          .formatEther(pool3Reserve[1].mul(Number(MRGPprice) * 1000 * 2))
+          .toString();
+
+        const USDT_WMATICLiquidity = ethers.utils
+          .formatEther(pool4Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
+          .toString();
+
+        const WMATIC_USDCLiquidity = ethers.utils
+          .formatEther(pool5Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
+          .toString();
+
+        dispatch(
+          updateTotalLiquidity([
+            {
+              deposit: "RGP",
+              liquidity: MRGPLiquidity,
+              apy: calculateApy(MRGPprice, MRGPLiquidity, 250),
+            },
+            {
+              deposit: await deposit(pool1.token0, pool1.token1),
+              liquidity: RGP_WMATICLiquidity,
+              apy: calculateApy(MRGPprice, RGP_WMATICLiquidity, 1500),
+            },
+            {
+              deposit: await deposit(pool2.token0, pool2.token1),
+              liquidity: USDT_RGPLiquidity,
+              apy: calculateApy(MRGPprice, USDT_RGPLiquidity, 1050),
+            },
+            {
+              deposit: await deposit(pool3.token0, pool3.token1),
+              liquidity: RGP_USDCLiquidity,
+              apy: calculateApy(MRGPprice, RGP_USDCLiquidity, 1050),
+            },
+            {
+              deposit: await deposit(pool4.token0, pool4.token1),
+              liquidity: USDT_WMATICLiquidity,
+              apy: calculateApy(MRGPprice, USDT_WMATICLiquidity, 334.875),
+            },
+            {
+              deposit: await deposit(pool5.token0, pool5.token1),
+              liquidity: WMATIC_USDCLiquidity,
+              apy: calculateApy(MRGPprice, WMATIC_USDCLiquidity, 334.875),
+            },
+          ])
+        );
       } else {
         const RGPprice: number | any = ethers.utils.formatUnits(
           pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
