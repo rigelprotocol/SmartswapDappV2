@@ -136,7 +136,7 @@ export function useDerivedSwapInfo(): {
   );
 
   const showWrap = wrap;
-
+console.log({amount, parsedAmount})
   const bestTrade = amount;
   // console.log(pathArray);
 
@@ -150,9 +150,9 @@ export function useDerivedSwapInfo(): {
       const token = await getERC20Token(
         currency.address ? currency.address : ''
       );
-      const balance = await token.balanceOf(account);
-      const amount = ethers.utils.formatEther(balance);
-      return amount === '0.0' ? '0' : parseFloat(amount).toFixed(4);
+      const [balance, decimals] = await Promise.all([token.balanceOf(account), token.decimals()])
+      const amount = ethers.utils.formatUnits(balance, decimals);
+      return amount === '0.0' ? '0' : amount;
     }
   };
 
