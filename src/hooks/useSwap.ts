@@ -20,9 +20,11 @@ const formatAmount = (number: string) => {
   // let res = ethers.utils.formatEther(num);
   // res = (+res).toString();
   // return res;
-  return ethers.utils.formatEther(number);
+  return ethers.utils.formatUnits(number,);
 };
-
+const formatWithDecimals = (amount: string, decimals: number) =>{
+  return ethers.utils.formatUnits(amount, decimals);
+}
 export const useSwap = (
   currencyA: Currency,
   currencyB: Currency,
@@ -81,8 +83,9 @@ export const useSwap = (
               tokenOneAddress,
               tokenTwoAddress,
             ]);
+            console.log(amountOut[1].toString())
 
-            const output = formatAmount(amountOut[1]);
+            const output = formatWithDecimals(amountOut[1], currencyB.decimals);
             setPath([tokenOneAddress as string, tokenTwoAddress as string]);
             setPathSymbol(`${currencyA.symbol} - ${currencyB.symbol}`);
             setAmount(output);
@@ -145,6 +148,8 @@ export const useSwap = (
                   firstAmount[1].toString(),
                   [USDT[chainId as number], CurrencyB]
                 );
+            
+
                 const output = formatAmount(secondAmount[1]);
                 setPath([
                   CurrencyA as string,
@@ -214,6 +219,8 @@ export const useSwap = (
                     SupportedChainSymbols[chainId as number]
                   } - ${currencyB.symbol}`
                 );
+            
+
                 setAmount(output);
               } else {
                 setAmount('');
@@ -333,6 +340,7 @@ export const useSwap = (
           setPathSymbol('');
           setPath([]);
         }
+        console.log({amount})
       } catch (e) {
         console.log(`Error occurs here: ${e}`);
         setAmount('');

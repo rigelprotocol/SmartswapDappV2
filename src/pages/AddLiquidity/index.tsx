@@ -248,34 +248,34 @@ export default function AddLiquidity({
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        const gasCost = await smartswaprouter.estimateGas.addLiquidityETH(
-          currencyA.isNative ? currencyB.address : currencyA.address,
-          currencyA.isNative ? AmountBMin : AmountAMin,
-          currencyA.isNative
-            ? calculateSlippageAmount(
-                AmountBMin,
-                pairAvailable ? userSlippageTolerance : 0
-              )
-            : calculateSlippageAmount(
-                AmountAMin,
-                pairAvailable ? userSlippageTolerance : 0
-              ),
-          currencyA.isNative
-            ? calculateSlippageAmount(
-                AmountAMin,
-                pairAvailable ? userSlippageTolerance : 0
-              )
-            : calculateSlippageAmount(
-                AmountBMin,
-                pairAvailable ? userSlippageTolerance : 0
-              ),
-          account,
-          deadLine,
-          {
-            value: currencyA.isNative ? AmountAMin : AmountBMin,
-            // gasPrice: ethers.utils.parseUnits("10", "gwei"),
-          }
-        );
+        // const gasCost = await smartswaprouter.estimateGas.addLiquidityETH(
+        //   currencyA.isNative ? currencyB.address : currencyA.address,
+        //   currencyA.isNative ? AmountBMin : AmountAMin,
+        //   currencyA.isNative
+        //     ? calculateSlippageAmount(
+        //         AmountBMin,
+        //         pairAvailable ? userSlippageTolerance : 0
+        //       )
+        //     : calculateSlippageAmount(
+        //         AmountAMin,
+        //         pairAvailable ? userSlippageTolerance : 0
+        //       ),
+        //   currencyA.isNative
+        //     ? calculateSlippageAmount(
+        //         AmountAMin,
+        //         pairAvailable ? userSlippageTolerance : 0
+        //       )
+        //     : calculateSlippageAmount(
+        //         AmountBMin,
+        //         pairAvailable ? userSlippageTolerance : 0
+        //       ),
+        //   account,
+        //   deadLine,
+        //   {
+        //     value: currencyA.isNative ? AmountAMin : AmountBMin,
+        //     // gasPrice: ethers.utils.parseUnits("10", "gwei"),
+        //   }
+        // );
 
         const data = await smartswaprouter.addLiquidityETH(
           currencyA.isNative ? currencyB.address : currencyA.address,
@@ -383,25 +383,25 @@ export default function AddLiquidity({
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        const gasCost = await smartswaprouter.estimateGas.addLiquidity(
-          currencyA.address,
-          currencyB.address,
-          AmountAMin,
-          AmountBMin,
-          calculateSlippageAmount(
-            AmountAMin,
-            pairAvailable ? userSlippageTolerance : 0
-          ),
-          calculateSlippageAmount(
-            AmountBMin,
-            pairAvailable ? userSlippageTolerance : 0
-          ),
-          account,
-          deadLine,
-          {
-            // gasPrice: ethers.utils.parseUnits("10", "gwei"),
-          }
-        );
+        // const gasCost = await smartswaprouter.estimateGas.addLiquidity(
+        //   currencyA.address,
+        //   currencyB.address,
+        //   AmountAMin,
+        //   AmountBMin,
+        //   calculateSlippageAmount(
+        //     AmountAMin,
+        //     pairAvailable ? userSlippageTolerance : 0
+        //   ),
+        //   calculateSlippageAmount(
+        //     AmountBMin,
+        //     pairAvailable ? userSlippageTolerance : 0
+        //   ),
+        //   account,
+        //   deadLine,
+        //   {
+        //     // gasPrice: ethers.utils.parseUnits("10", "gwei"),
+        //   }
+        // );
 
         const data = await smartswaprouter.addLiquidity(
           currencyA.address,
@@ -497,6 +497,15 @@ export default function AddLiquidity({
       );
     }
   };
+
+  const [isLoadingValue, setIsLoadingValue] = useState(false);
+  useEffect(() =>{
+    if (formattedAmounts[Field.INPUT] && !formattedAmounts[Field.OUTPUT]){
+      setIsLoadingValue(true);
+    }else{
+      setIsLoadingValue(false);
+    }
+  }, [formattedAmounts[Field.OUTPUT], formattedAmounts[Field.INPUT]]);
 
   return (
     <Center m={8}>
@@ -700,24 +709,42 @@ export default function AddLiquidity({
         >
           {`Approve ${currencies[Field.OUTPUT]?.symbol}`}
         </Button>
-        <Button
-          size='lg'
-          height='48px'
-          width='200px'
-          border='2px'
-          borderColor={genBorder}
-          color={btnTextColor}
-          w='100%'
-          _hover={{ bgColor: "none" }}
-          _active={{ bgColor: "none" }}
-          display={
-            formattedAmounts[Field.INPUT] && formattedAmounts[Field.OUTPUT]
-              ? "none"
-              : undefined
-          }
-        >
-          Enter An Amount
-        </Button>
+        { isLoadingValue ? (
+          <Button
+            size="lg"
+            height="48px"
+            width="200px"
+            border="2px"
+            borderColor={genBorder}
+            color={btnTextColor}
+            w="100%"
+            _hover={{ bgColor: 'none' }}
+            _active={{ bgColor: 'none' }}
+            disabled={true}
+          >
+            Loading...
+          </Button>
+        ) : (
+          <Button
+            size="lg"
+            height="48px"
+            width="200px"
+            border="2px"
+            borderColor={genBorder}
+            color={btnTextColor}
+            w="100%"
+            _hover={{ bgColor: 'none' }}
+            _active={{ bgColor: 'none' }}
+            display={
+              formattedAmounts[Field.INPUT] && formattedAmounts[Field.OUTPUT]
+                ? 'none'
+                : undefined
+            }
+          >
+            Enter An Amount
+          </Button>
+        )}
+
         <Button
           size='lg'
           height='48px'
