@@ -48,6 +48,7 @@ import { SupportedChainId } from "../../../../constants/chains";
 import { SMARTSWAPFACTORYADDRESSES } from "../../../../utils/addresses";
 import { useCalculatePriceImpact } from "../../../../hooks/usePriceImpact";
 import { getERC20Token } from "../../../../utils/utilsFunctions";
+import BigNumber from "bignumber.js";
 
 const SendToken = () => {
   const history = useHistory();
@@ -166,7 +167,7 @@ const SendToken = () => {
 
   const minimumAmountToReceive = useCallback(
     () =>
-      ((100 - Number(allowedSlippage / 100)) / 100) *
+      ((100 - Number(allowedSlippage / 100)) / 100)  *
       Number(formattedAmounts[Field.OUTPUT]),
     [allowedSlippage, bestTrade]
   );
@@ -285,6 +286,12 @@ const SendToken = () => {
   };
 
   const [sendingTrx, setSendingTrx] = useState(false);
+  const outputToken = useMemo((): any => {
+    if(parsedAmounts[Field.OUTPUT]){
+      return ethers.utils.parseUnits((parsedAmounts[Field.OUTPUT] as string ), currencies[Field.OUTPUT]?.decimals)
+    }
+
+  },[parsedAmounts] )
 
   const swapDifferentTokens = async () => {
     const route = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number]);
@@ -303,9 +310,11 @@ const SendToken = () => {
           trxState: TrxState.WaitingForConfirmation,
         })
       );
+      
+      console.log({parsedAmount, parsedOutput, parsedAmounts, pathArray, account, dl})
       const sendTransaction = await route.swapExactTokensForTokens(
         parsedAmount,
-        parsedOutput,
+        outputToken,
         // [from, to],
         pathArray,
         account,
@@ -323,7 +332,7 @@ const SendToken = () => {
       const inputAmount = await getInPutDataFromEvent(
         from,
         receipt.events,
-        parsedAmount
+        outputToken
       );
       if (
         typeof sendTransaction.hash !== "undefined" &&
@@ -346,7 +355,7 @@ const SendToken = () => {
           addToast({
             message: `Swap ${inputAmount} ${
               currencies[Field.INPUT]?.symbol
-            } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
+            } for ${outputToken} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
@@ -631,7 +640,7 @@ const SendToken = () => {
   };
 
   const swapTokens = async () => {
-    if (chainId === SupportedChainId.POLYGONTEST) {
+    if (chainId === SupportedChainId.POLYGONTEST || SupportedChainId.POLYGON) {
       if (
         currencies[Field.INPUT]?.symbol === "MATIC" &&
         currencies[Field.OUTPUT]?.symbol === "WMATIC"

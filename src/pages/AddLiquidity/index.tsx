@@ -248,34 +248,34 @@ export default function AddLiquidity({
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        const gasCost = await smartswaprouter.estimateGas.addLiquidityETH(
-          currencyA.isNative ? currencyB.address : currencyA.address,
-          currencyA.isNative ? AmountBMin : AmountAMin,
-          currencyA.isNative
-            ? calculateSlippageAmount(
-                AmountBMin,
-                pairAvailable ? userSlippageTolerance : 0
-              )
-            : calculateSlippageAmount(
-                AmountAMin,
-                pairAvailable ? userSlippageTolerance : 0
-              ),
-          currencyA.isNative
-            ? calculateSlippageAmount(
-                AmountAMin,
-                pairAvailable ? userSlippageTolerance : 0
-              )
-            : calculateSlippageAmount(
-                AmountBMin,
-                pairAvailable ? userSlippageTolerance : 0
-              ),
-          account,
-          deadLine,
-          {
-            value: currencyA.isNative ? AmountAMin : AmountBMin,
-            // gasPrice: ethers.utils.parseUnits("10", "gwei"),
-          }
-        );
+        // const gasCost = await smartswaprouter.estimateGas.addLiquidityETH(
+        //   currencyA.isNative ? currencyB.address : currencyA.address,
+        //   currencyA.isNative ? AmountBMin : AmountAMin,
+        //   currencyA.isNative
+        //     ? calculateSlippageAmount(
+        //         AmountBMin,
+        //         pairAvailable ? userSlippageTolerance : 0
+        //       )
+        //     : calculateSlippageAmount(
+        //         AmountAMin,
+        //         pairAvailable ? userSlippageTolerance : 0
+        //       ),
+        //   currencyA.isNative
+        //     ? calculateSlippageAmount(
+        //         AmountAMin,
+        //         pairAvailable ? userSlippageTolerance : 0
+        //       )
+        //     : calculateSlippageAmount(
+        //         AmountBMin,
+        //         pairAvailable ? userSlippageTolerance : 0
+        //       ),
+        //   account,
+        //   deadLine,
+        //   {
+        //     value: currencyA.isNative ? AmountAMin : AmountBMin,
+        //     // gasPrice: ethers.utils.parseUnits("10", "gwei"),
+        //   }
+        // );
 
         const data = await smartswaprouter.addLiquidityETH(
           currencyA.isNative ? currencyB.address : currencyA.address,
@@ -383,25 +383,25 @@ export default function AddLiquidity({
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        const gasCost = await smartswaprouter.estimateGas.addLiquidity(
-          currencyA.address,
-          currencyB.address,
-          AmountAMin,
-          AmountBMin,
-          calculateSlippageAmount(
-            AmountAMin,
-            pairAvailable ? userSlippageTolerance : 0
-          ),
-          calculateSlippageAmount(
-            AmountBMin,
-            pairAvailable ? userSlippageTolerance : 0
-          ),
-          account,
-          deadLine,
-          {
-            // gasPrice: ethers.utils.parseUnits("10", "gwei"),
-          }
-        );
+        // const gasCost = await smartswaprouter.estimateGas.addLiquidity(
+        //   currencyA.address,
+        //   currencyB.address,
+        //   AmountAMin,
+        //   AmountBMin,
+        //   calculateSlippageAmount(
+        //     AmountAMin,
+        //     pairAvailable ? userSlippageTolerance : 0
+        //   ),
+        //   calculateSlippageAmount(
+        //     AmountBMin,
+        //     pairAvailable ? userSlippageTolerance : 0
+        //   ),
+        //   account,
+        //   deadLine,
+        //   {
+        //     // gasPrice: ethers.utils.parseUnits("10", "gwei"),
+        //   }
+        // );
 
         const data = await smartswaprouter.addLiquidity(
           currencyA.address,

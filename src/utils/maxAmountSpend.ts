@@ -14,7 +14,7 @@ export function maxAmountSpend(value:any,currency:Currency|undefined ) {
     if (JSBI.greaterThan(value, MIN_BNB)) {
       const subtract = JSBI.subtract(value, MIN_BNB)
      const toNumber = JSBI.toNumber(subtract)
-      return  parseFloat(ethers.utils.formatEther(toNumber.toString())).toFixed(4)
+      return  ethers.utils.formatEther(toNumber.toString())
     }else{
        return "0"
     }
