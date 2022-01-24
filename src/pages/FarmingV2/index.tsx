@@ -935,7 +935,11 @@ export function Index() {
             >
               Liquidity Pools
             </Text>
-            <Select
+            
+              
+                
+
+<Select
               borderColor={
                 mode === LIGHT_THEME && selected === LIQUIDITY
                   ? "#F2F5F8 !important"
@@ -972,12 +976,16 @@ export function Index() {
               flex-grow='0'
               margin='10px 16px'
             >
+              
               <option value={0}>V2</option>
               <option value={3}>V1</option>
             </Select>
+              
+            
+            
           </Tab>
           <Tab
-            isDisabled={!switchTab}
+            isDisabled={!switchTab || (Number(chainId) === Number(SupportedChainId.POLYGON))}
             display='flex'
             flex-direction='row'
             justify-content='center'
@@ -1024,24 +1032,10 @@ export function Index() {
             // minWidth={{ base: "none", md: "200px", lg: "200px" }}
             onClick={() => handleSelect(STAKING)}
           >
-             <Text
-              color={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#333333"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#F1F5F8"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#F1F5F8"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#333333"
-                  : "#333333"
-              }
-              fontSize={isMobileDevice ? "14px" : undefined}
-              mt="2"
-            >
-              Staking
-            </Text>
-            <Select
+            <Text>Staking</Text>
+            {
+              Number(chainId) === Number(SupportedChainId.POLYGON) ? null :
+              <Select
               borderColor={
                 mode === LIGHT_THEME && selected === LIQUIDITY
                   ? "#F2F5F8 !important"
@@ -1082,6 +1076,8 @@ export function Index() {
               <option value={1}>V1</option>
               <option value={4}>V2</option>
             </Select>
+            }
+           
           </Tab>
           <Tab
             isDisabled={true}
