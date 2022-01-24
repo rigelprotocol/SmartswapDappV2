@@ -1,14 +1,13 @@
 import {Currency} from '@uniswap/sdk-core';
 import {useEffect, useState} from 'react';
 import {useActiveWeb3React} from '../utils/hooks/useActiveWeb3React';
-import {smartFactory, SmartSwapRouter} from '../utils/Contracts';
+import {LiquidityPairInstance, smartFactory, SmartSwapRouter} from '../utils/Contracts';
 import {SMARTSWAPFACTORYADDRESSES, SMARTSWAPROUTER, WNATIVEADDRESSES,} from '../utils/addresses';
 import {ZERO_ADDRESS} from '../constants';
 import {ethers} from 'ethers';
 
-const formatAmount = (number: string) => {
-  return ethers.utils.formatEther(number);
-
+const formatAmount = (amount: string, decimals: number) => {
+  return ethers.utils.formatUnits(amount, decimals);
 };
 
 export const useMint = (
@@ -61,7 +60,7 @@ export const useMint = (
           setWrap(false);
           if (amountIn !== undefined) {
             //setLoading(!loading);
-            const pairinstance = await LiquidityPairInstance(pairAddress);
+            const pairinstance = await LiquidityPairInstance(pairAddress, library);
             const token0 = await pairinstance.token0();
             const token1 = await pairinstance.token1();
             const reserves = await pairinstance.getReserves();
@@ -79,6 +78,7 @@ export const useMint = (
             const output = formatAmount(outputAmount.toString(), currencyB.decimals);
 
             setAmount(output);
+            console.log(outputAmount.toString())
           } else {
             setAmount("");
           }
