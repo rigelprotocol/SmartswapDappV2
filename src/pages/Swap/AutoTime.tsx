@@ -28,7 +28,7 @@ import {
 
 const SetPrice = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
-  const borderColor = useColorModeValue('#DEE6ED', '#324D68')
+  const borderColor = useColorModeValue('#DEE6ED', '#324D68');
   const iconColor = useColorModeValue('#666666', '#DCE6EF');
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
   const bgColor = useColorModeValue('#ffffff', '#15202B');

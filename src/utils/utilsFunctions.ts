@@ -1,11 +1,8 @@
-import { Web3Provider } from '@ethersproject/providers';
-import { Contract } from '@ethersproject/contracts';
-import detectEthereumProvider from '@metamask/detect-provider';
-import { getAddress } from '@ethersproject/address';
+import {Web3Provider} from '@ethersproject/providers';
+import {Contract} from '@ethersproject/contracts';
 import ERC20Token from './abis/erc20.json';
-import { SupportedChainSymbols, WrappedSymbols } from './constants/chains';
-import { Fraction } from '@uniswap/sdk-core';
-import { ethers } from 'ethers';
+import {SupportedChainSymbols, WrappedSymbols} from './constants/chains';
+import detectEthereumProvider from "@metamask/detect-provider";
 
 export const removeSideTab = (sideBarName: string): void => {
   localStorage.setItem(sideBarName, 'removed');
@@ -34,20 +31,17 @@ export const provider = async () => {
   }
 };
 
-export const signer = async () => {
+export const signer = async (library: Web3Provider | undefined) => {
   try {
-    const getProvider = await provider();
-    const providerSigner = await getProvider?.getSigner()
-    return providerSigner;
+    return await library?.getSigner();
   } catch (e) {
 
     console.log("provider error",e);
   }
 };
 
-export const getERC20Token = async (address: string) => {
-  const Provider = await provider();
-  const token = new Contract(address, ERC20Token, Provider?.getSigner());
+export const getERC20Token = async (address: string, library: Web3Provider | undefined) => {
+  const token = new Contract(address, ERC20Token, library?.getSigner());
   return token;
 };
 

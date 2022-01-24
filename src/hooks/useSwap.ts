@@ -30,7 +30,7 @@ export const useSwap = (
   currencyB: Currency,
   amountIn?: string
 ) => {
-  const { chainId } = useActiveWeb3React();
+  const { chainId, library } = useActiveWeb3React();
   const [address, setAddress] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
   const [amount, setAmount] = useState<string | undefined>('');
@@ -62,7 +62,7 @@ export const useSwap = (
   useEffect(() => {
     const getPairs = async () => {
       try {
-        const SmartFactory = await smartFactory(validSmartAddress);
+        const SmartFactory = await smartFactory(validSmartAddress, library);
         const pairAddress = await SmartFactory.getPair(
           tokenOneAddress,
           tokenTwoAddress
@@ -77,7 +77,7 @@ export const useSwap = (
           setWrap(false);
           if (amountIn !== undefined) {
             const SwapRouter = await SmartSwapRouter(
-              SMARTSWAPROUTER[chainId as number]
+              SMARTSWAPROUTER[chainId as number], library
             );
             const amountOut = await SwapRouter.getAmountsOut(amountIn, [
               tokenOneAddress,
@@ -100,10 +100,10 @@ export const useSwap = (
           const CurrencyA = getAddress(currencyA);
           const CurrencyB = getAddress(currencyB);
           const factory = await smartFactory(
-            SMARTSWAPFACTORYADDRESSES[chainId as number]
+            SMARTSWAPFACTORYADDRESSES[chainId as number], library
           );
           const SwapRouter = await SmartSwapRouter(
-            SMARTSWAPROUTER[chainId as number]
+            SMARTSWAPROUTER[chainId as number], library
           );
 
           const [
@@ -349,7 +349,7 @@ export const useSwap = (
 
     getPairs();
   }, [
-    chainId,
+
     currencyA,
     currencyB,
     address,

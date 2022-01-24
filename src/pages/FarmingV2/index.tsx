@@ -20,7 +20,6 @@ import { useColorModeValue } from "@chakra-ui/react";
 import YieldFarm from "./YieldFarm";
 // import { contents } from './mock'
 import { AlertSvg } from "./Icon";
-import { useWeb3React } from "@web3-react/core";
 import { useRouteMatch } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -57,7 +56,8 @@ import {
 import { formatBigNumber } from "../../utils";
 import { RootState } from "../../state";
 import { SupportedChainId } from "../../constants/chains";
-import { useNativeBalance, useRGPBalance } from "../../utils/hooks/useBalances";
+import { useNativeBalance } from "../../utils/hooks/useBalances";
+import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 
 export const BIG_TEN = new bigNumber(10);
 
@@ -108,18 +108,17 @@ export function Index() {
 
   //const { data: farmsLP } = useFarms()
   // const [farms, setFarms] = useState(contents);
-  const { account, chainId, library } = useWeb3React();
+  const { account, chainId, library } = useActiveWeb3React();
   const dispatch = useDispatch();
   let match = useRouteMatch("/farming-V2/staking-RGP");
   const FarmData = useFarms();
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
+
   const [Balance, Symbol] = useNativeBalance();
   const wallet = {
     balance: Balance,
     address: account,
-    provider: provider,
-    signer: signer,
+    provider: library,
+    signer: library?.getSigner(),
     chainId: chainId,
   };
 
@@ -186,21 +185,21 @@ export function Index() {
       try {
         const [RGPToken, poolOne, poolTwo, poolThree, poolFour, poolFive] =
           await Promise.all([
-            rigelToken(RGP[chainId as number]),
+            rigelToken(RGP[chainId as number], library),
             smartSwapLPTokenPoolOne(
-              SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]
+              SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number], library
             ),
             smartSwapLPTokenPoolTwo(
-              SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number]
+              SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number], library
             ),
             smartSwapLPTokenPoolThree(
-              SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number]
+              SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number], library
             ),
             smartSwapLPTokenV2PoolFour(
-              SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number]
+              SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number], library
             ),
             smartSwapLPTokenV2PoolFive(
-              SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number]
+              SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number], library
             ),
           ]);
 
@@ -242,21 +241,21 @@ export function Index() {
     try {
       const [specialPool, pool1, pool2, pool3, pool4, pool5] =
         await Promise.all([
-          RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
+          RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library),
           smartSwapLPTokenPoolOne(
-            SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]
+            SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number], library
           ),
           smartSwapLPTokenPoolTwo(
-            SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number]
+            SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number], library
           ),
           smartSwapLPTokenPoolThree(
-            SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number]
+            SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number], library
           ),
           smartSwapLPTokenV2PoolFour(
-            SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number]
+            SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number], library
           ),
           smartSwapLPTokenV2PoolFive(
-            SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number]
+            SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number], library
           ),
         ]);
 
@@ -276,10 +275,8 @@ export function Index() {
         pool5.getReserves(),
       ]);
       const deposit = async (token0: any, token1: any) => {
-        let sym0 = await (await smartSwapLPTokenV2(await token0())).symbol();
-        let sym1 = await (await smartSwapLPTokenV2(await token1())).symbol();
-        if (sym0 === "WMATIC") sym0 = "MATIC";
-        if (sym1 === "WMATIC") sym1 = "MATIC";
+        const sym0 = await (await smartSwapLPTokenV2(await token0(), library)).symbol();
+        const sym1 = await (await smartSwapLPTokenV2(await token1(), library)).symbol();
         return `${sym0}-${sym1}`;
       };
 
@@ -437,8 +434,8 @@ export function Index() {
     if (account) {
       try {
         const specialPool = await RGPSpecialPool(
-          RGPSPECIALPOOLADDRESSES[chainId as number]
-        );
+          RGPSPECIALPOOLADDRESSES[chainId as number], library
+        )
         const RGPStakedEarned = await Promise.all([
           specialPool.userData(account),
           specialPool.calculateRewards(account),
@@ -453,7 +450,7 @@ export function Index() {
     try {
       if (account) {
         const masterChefV2 = await MasterChefV2Contract(
-          MASTERCHEFV2ADDRESSES[chainId as number]
+          MASTERCHEFV2ADDRESSES[chainId as number], library
         );
         const [
           poolOneEarned,

@@ -308,6 +308,8 @@ const TransactionSettings = () => {
               bgColor={buttonBgcolor}
               borderColor={borderColor}
               color={textColorTwo}
+              _hover={{border:`1px solid ${activeButtonColor}`,color:`${activeButtonColor}`, background: `$buttonBgColorTwo`}}
+              _focus={{border:`1px solid ${activeButtonColor}`,color:`${activeButtonColor}`, background: `$buttonBgColorTwo`}}
           >
             {transactionState ?  'Show History Tab' : 'Hide History Tab'}
           </Button>
@@ -318,6 +320,8 @@ const TransactionSettings = () => {
               borderColor={borderColor}
               color={textColorTwo}
               my={3}
+              _hover={{border:`1px solid ${activeButtonColor}`,color:`${activeButtonColor}`, background: `$buttonBgColorTwo`}}
+              _focus={{border:`1px solid ${activeButtonColor}`,color:`${activeButtonColor}`, background: `$buttonBgColorTwo`}}
           >
             {detailsState ?  'Show Details Tab' : 'Hide Details Tab'}
           </Button>

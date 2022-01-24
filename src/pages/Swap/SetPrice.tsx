@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import ShowDetails from './components/details/ShowDetails';
 import History from './components/history/History';
 import { VectorIcon, ExclamationIcon, SwitchIcon } from '../../theme/components/Icons';
@@ -26,7 +26,7 @@ import { maxAmountSpend } from '../../utils/maxAmountSpend';
 
 const SetPrice = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
-  const borderColor = useColorModeValue('#DEE6ED', '#324D68')
+  const borderColor = useColorModeValue('#DEE6ED', '#324D68');
   const iconColor = useColorModeValue('#666666', '#DCE6EF');
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
   const lightmode = useColorModeValue(true, false);

@@ -134,7 +134,7 @@ const SendToken = () => {
     [independentField, parsedAmount, showWrap, bestTrade]
   );
 
-  const { chainId, account } = useActiveWeb3React();
+  const { chainId, account, library } = useActiveWeb3React();
   // const [priceImpact, setPriceImpact] = useState(0);
 
   const handleMaxInput = async () => {
@@ -200,7 +200,7 @@ const SendToken = () => {
       return setHasBeenApproved(true);
     }
 
-    const status = await ApproveCheck(currencies[Field.INPUT].wrapped.address);
+    const status = await ApproveCheck(currencies[Field.INPUT].wrapped.address, library);
     const check = await status.allowance(
       account,
       SMARTSWAPROUTER[chainId as number],
@@ -241,10 +241,11 @@ const SendToken = () => {
       );
 
       const address = currencies[Field.INPUT].wrapped.address;
-      const token = await getERC20Token(address);
+      const swapApproval = await ApprovalRouter(address, library);
+        
+      const token = await getERC20Token(address, library);
       const walletBal = (await token.balanceOf(account)) + 4e18;
 
-      const swapApproval = await ApprovalRouter(address);
       const approveTransaction = await swapApproval.approve(
         SMARTSWAPROUTER[chainId as number],
         walletBal,
@@ -294,7 +295,7 @@ const SendToken = () => {
   },[parsedAmounts] )
 
   const swapDifferentTokens = async () => {
-    const route = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number]);
+    const route = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
     const dl = getDeadline(deadline);
     const from = currencies[Field.INPUT]?.wrapped.address;
     const to = currencies[Field.OUTPUT]?.wrapped.address;
@@ -375,7 +376,7 @@ const SendToken = () => {
   };
 
   const swapDefaultForOtherTokens = async () => {
-    const route = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number]);
+    const route = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
     const dl = getDeadline(deadline);
     const from = WNATIVEADDRESSES[chainId as number];
     const to = currencies[Field.OUTPUT]?.wrapped.address;
@@ -456,7 +457,7 @@ const SendToken = () => {
   };
 
   const swapOtherTokensForDefault = async () => {
-    const route = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number]);
+    const route = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
     const dl = getDeadline(deadline);
     const from = currencies[Field.INPUT]?.wrapped.address;
     const to = WNATIVEADDRESSES[chainId as number];
@@ -532,7 +533,7 @@ const SendToken = () => {
   };
 
   const deposit = async () => {
-    const weth = await WETH(WNATIVEADDRESSES[chainId as number]);
+    const weth = await WETH(WNATIVEADDRESSES[chainId as number], library);
     setSendingTrx(true);
     dispatch(
       setOpenModal({
@@ -587,7 +588,7 @@ const SendToken = () => {
   };
 
   const withdraw = async () => {
-    const weth = await WETH(WNATIVEADDRESSES[chainId as number]);
+    const weth = await WETH(WNATIVEADDRESSES[chainId as number], library);
     setSendingTrx(true);
     dispatch(
       setOpenModal({
@@ -693,7 +694,7 @@ const SendToken = () => {
 
   const checkLiquidityPair = async () => {
     const factory = await smartFactory(
-      SMARTSWAPFACTORYADDRESSES[chainId as number]
+      SMARTSWAPFACTORYADDRESSES[chainId as number], library
     );
     const LPAddress = await factory.getPair(fromAddress, toAddress);
     if (LPAddress !== ZERO_ADDRESS) {
@@ -708,7 +709,7 @@ const SendToken = () => {
     if (routeAddress.length === 2) {
       try {
         const SwapRouter = await SmartSwapRouter(
-          SMARTSWAPROUTER[(chainId as number) ?? 56]
+          SMARTSWAPROUTER[(chainId as number) ?? 56], library
         );
         const price = await SwapRouter.getAmountsOut(
           "1000000000000000000",
