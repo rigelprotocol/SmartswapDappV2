@@ -15,6 +15,8 @@ import { ZERO_ADDRESS } from "../constants";
 import { ethers } from "ethers";
 import { useSelector } from "react-redux";
 import { RootState } from "../state";
+import { getDecimals } from "../utils/utilsFunctions";
+import { getNativeAddress } from "../utils/hooks/usePools";
 
 const formatAmount = (number: string, decimal: number) => {
   return ethers.utils.formatUnits(number, decimal);
@@ -97,14 +99,20 @@ export const useMint = (
               tokenOneAddress === token0 ? reserves[1] : reserves[0]
             );
 
-            console.log(
+            const dependentAddress =
               tokenOneAddress ===
+              getNativeAddress(
                 independentFieldId[independentFieldString].currencyId
+              )
                 ? tokenTwoAddress
-                : tokenOneAddress
+                : tokenOneAddress;
+
+            const decimals = await getDecimals(
+              dependentAddress as string,
+              library
             );
 
-            const output = formatAmount(outputAmount.toString(), 6);
+            const output = formatAmount(outputAmount.toString(), decimals);
 
             setAmount(output);
           } else {

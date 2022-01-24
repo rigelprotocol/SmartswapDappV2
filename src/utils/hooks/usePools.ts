@@ -303,6 +303,11 @@ export const useTokenValueToBeRemoved = ({
   // return [poolToken0Fraction, poolToken1Fraction, poolTokenFraction];
 };
 
+export const getNativeAddress = (address: string): string => {
+  const isAddress = WNATIVEADDRESSES[address];
+  return !isAddress ? address : isAddress;
+};
+
 export const useIsPoolsAvailable = (
   CurrencyA: Currency | undefined,
   CurrencyB: Currency | undefined
