@@ -58,6 +58,7 @@ const Remove = () => {
   const WithdrawalButtonColor = useColorModeValue( '#FFFFFF','#FFFFFF');
   const approveButtonBgColor = useColorModeValue('#319EF6', '#4CAFFF');
   const withdrawaButtonBgColor = useColorModeValue('#FFFFFF', '#15202B');
+  const hoverwithdrawaButtonBgColor = useColorModeValue('#15202B', '#7599BD');
   const inActiveApproveButtonBgColor = useColorModeValue('#999999', '#7599BD');
   const inActiveApproveButtonColor = useColorModeValue('#CCCCCC', '#4A739B');
   const approvedButtonColor = useColorModeValue('#3CB1D2', '#1B90B1');
@@ -1035,7 +1036,7 @@ const Remove = () => {
                     : "transparent"
               }
               _active={{ bgColor: withdrawaButtonBgColor }}
-              _hover={{ bgColor: withdrawaButtonBgColor }}
+              _hover={{ bgColor: hoverwithdrawaButtonBgColor }}
               px={14}
               fontSize={isTabDevice && isTabDevice2 ? '12px' : ''}
               onClick={() => RemoveLiquidity()}
