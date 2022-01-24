@@ -1,14 +1,21 @@
-import {Currency} from '@uniswap/sdk-core';
-import {useEffect, useState} from 'react';
-import {useActiveWeb3React} from '../utils/hooks/useActiveWeb3React';
-import {smartFactory, SmartSwapRouter} from '../utils/Contracts';
-import {SMARTSWAPFACTORYADDRESSES, SMARTSWAPROUTER, WNATIVEADDRESSES,} from '../utils/addresses';
-import {ZERO_ADDRESS} from '../constants';
-import {ethers} from 'ethers';
+import { Currency } from "@uniswap/sdk-core";
+import { useEffect, useState } from "react";
+import { useActiveWeb3React } from "../utils/hooks/useActiveWeb3React";
+import {
+  smartFactory,
+  SmartSwapRouter,
+  LiquidityPairInstance,
+} from "../utils/Contracts";
+import {
+  SMARTSWAPFACTORYADDRESSES,
+  SMARTSWAPROUTER,
+  WNATIVEADDRESSES,
+} from "../utils/addresses";
+import { ZERO_ADDRESS } from "../constants";
+import { ethers } from "ethers";
 
 const formatAmount = (number: string) => {
   return ethers.utils.formatEther(number);
-
 };
 
 export const useMint = (
@@ -61,22 +68,28 @@ export const useMint = (
           setWrap(false);
           if (amountIn !== undefined) {
             //setLoading(!loading);
-            const pairinstance = await LiquidityPairInstance(pairAddress);
+            const pairinstance = await LiquidityPairInstance(
+              pairAddress,
+              library
+            );
             const token0 = await pairinstance.token0();
             const token1 = await pairinstance.token1();
             const reserves = await pairinstance.getReserves();
 
             const SwapRouter = await SmartSwapRouter(
-              SMARTSWAPROUTER[chainId as number], library
+              SMARTSWAPROUTER[chainId as number],
+              library
             );
+
+            console.log(tokenOneAddress, token0);
 
             const outputAmount = await SwapRouter.quote(
               amountIn,
               tokenOneAddress === token0 ? reserves[0] : reserves[1],
               tokenOneAddress === token0 ? reserves[1] : reserves[0]
             );
-            
-            const output = formatAmount(outputAmount.toString(), currencyB.decimals);
+
+            const output = formatAmount(outputAmount.toString());
 
             setAmount(output);
           } else {
