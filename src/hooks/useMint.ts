@@ -81,8 +81,6 @@ export const useMint = (
               library
             );
 
-            console.log(tokenOneAddress, token0);
-
             const outputAmount = await SwapRouter.quote(
               amountIn,
               tokenOneAddress === token0 ? reserves[0] : reserves[1],
