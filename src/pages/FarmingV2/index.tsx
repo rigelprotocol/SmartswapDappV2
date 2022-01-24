@@ -476,16 +476,16 @@ export function Index() {
               liquidity: RGP_USDCLiquidity,
               apy: calculateApy(MRGPprice, RGP_USDCLiquidity, 1050),
             },
-            {
-              deposit: "USDT - MATIC", // await deposit(pool4.token0, pool4.token1),
-              liquidity: 0, //USDT_WMATICLiquidity,
-              apy: "0" // calculateApy(MRGPprice, USDT_WMATICLiquidity, 334.875),
-            },
-            {
-              deposit: "MATIC - USDC", // await deposit(pool5.token0, pool5.token1),
-              liquidity: 0, //WMATIC_USDCLiquidity,
-              apy: "0" // calculateApy(MRGPprice, WMATIC_USDCLiquidity, 334.875),
-            },
+            // {
+            //   deposit: "USDT - MATIC", // await deposit(pool4.token0, pool4.token1),
+            //   liquidity: 0, //USDT_WMATICLiquidity,
+            //   apy: "0" // calculateApy(MRGPprice, USDT_WMATICLiquidity, 334.875),
+            // },
+            // {
+            //   deposit: "MATIC - USDC", // await deposit(pool5.token0, pool5.token1),
+            //   liquidity: 0, //WMATIC_USDCLiquidity,
+            //   apy: "0" // calculateApy(MRGPprice, WMATIC_USDCLiquidity, 334.875),
+            // },
           ])
         );
       } else {
