@@ -35,19 +35,21 @@ import {
   getDeadline,
   formatAmountIn,
   getOutPutDataFromEvent,
-} from "../../utils/utilsFunctions";
-import { SMARTSWAPROUTER } from "../../utils/addresses";
-import { setOpenModal, TrxState } from "../../state/application/reducer";
-import { useDispatch } from "react-redux";
-import { getExplorerLink, ExplorerDataType } from "../../utils/getExplorerLink";
-import { addToast } from "../../components/Toast/toastSlice";
-import { calculateSlippageAmount } from "../../utils/calculateSlippageAmount";
-import ConfirmModal from "./modals/ConfirmModal";
-import { useUserSlippageTolerance } from "../../state/user/hooks";
-import { useUserTransactionTTL } from "../../state/user/hooks";
-import { Currency } from "@uniswap/sdk";
-import { SmartSwapRouter } from "../../utils/Contracts";
-import { ethers } from "ethers";
+} from '../../utils/utilsFunctions';
+import { SMARTSWAPROUTER } from '../../utils/addresses';
+import { setOpenModal, TrxState } from '../../state/application/reducer';
+import { useDispatch } from 'react-redux';
+import { getExplorerLink, ExplorerDataType } from '../../utils/getExplorerLink';
+import { addToast } from '../../components/Toast/toastSlice';
+import { calculateSlippageAmount } from '../../utils/calculateSlippageAmount';
+import ConfirmModal from './modals/ConfirmModal';
+import { useUserSlippageTolerance } from '../../state/user/hooks';
+import { useUserTransactionTTL } from '../../state/user/hooks';
+import { Currency } from '@uniswap/sdk';
+import { SmartSwapRouter } from '../../utils/Contracts';
+import { ethers } from 'ethers';
+import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
+
 
 export default function AddLiquidity({
   match: {
@@ -55,14 +57,15 @@ export default function AddLiquidity({
   },
   history,
 }: RouteComponentProps<{ currencyIdA?: string; currencyIdB?: string }>) {
-  const infoBg = ("#EBF6FE", "#EAF6FF");
-  const genBorder = useColorModeValue("#DEE6ED", "#324D68");
-  const bgColor = useColorModeValue("#F2F5F8", "#213345");
-  const topIcons = useColorModeValue("#666666", "#DCE6EF");
-  const textColorOne = useColorModeValue("#333333", "#F1F5F8");
-  const btnTextColor = useColorModeValue("#999999", "#7599BD");
-  const approveButtonBgColor = useColorModeValue("#319EF6", "#4CAFFF");
-  const approveButtonColor = useColorModeValue("#FFFFFF", "#F1F5F8");
+  const infoBg = useColorModeValue('#EBF6FE', '#EAF6FF');
+  const genBorder = useColorModeValue('#DEE6ED', '#324D68');
+  const bgColor = useColorModeValue('#F2F5F8', '#213345');
+  const topIcons = useColorModeValue('#666666', '#DCE6EF');
+  const textColorOne = useColorModeValue('#333333', '#F1F5F8');
+  const btnTextColor = useColorModeValue('#999999', '#7599BD');
+  const approveButtonBgColor = useColorModeValue('#319EF6', '#4CAFFF');
+  const approveButtonColor = useColorModeValue('#FFFFFF', '#F1F5F8');
+
   const { independentField, typedValue, otherTypedValue } = useMintState();
 
   const { onCurrencySelection, onUserInput, onCurrencyFor } =
@@ -72,7 +75,7 @@ export default function AddLiquidity({
   const dependentField: Field =
     independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
 
-  const { chainId, account } = useWeb3React();
+  const { chainId, account, library } = useActiveWeb3React();
   const dispatch = useDispatch();
 
   const { pairAvailable } = useIsPoolsAvailable(
@@ -174,7 +177,7 @@ export default function AddLiquidity({
 
   const approveTokens = async (address: string, symbol: string) => {
     if (account) {
-      const token = await getERC20Token(address);
+      const token = await getERC20Token(address, library);
       try {
         dispatch(
           setOpenModal({
@@ -224,6 +227,7 @@ export default function AddLiquidity({
     }
   };
 
+
   const addLiquidityETH = async (
     amountA: string,
     amountB: string,
@@ -232,7 +236,7 @@ export default function AddLiquidity({
   ) => {
     if (account) {
       const smartswaprouter = await SmartSwapRouter(
-        SMARTSWAPROUTER[chainId as number]
+        SMARTSWAPROUTER[chainId as number], library
       );
       const deadLine = getDeadline(userDeadline);
       const AmountAMin = formatAmountIn(amountA, currencyA.decimals);
@@ -247,34 +251,34 @@ export default function AddLiquidity({
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        const gasCost = await smartswaprouter.estimateGas.addLiquidityETH(
-          currencyA.isNative ? currencyB.address : currencyA.address,
-          currencyA.isNative ? AmountBMin : AmountAMin,
-          currencyA.isNative
-            ? calculateSlippageAmount(
-                AmountBMin,
-                pairAvailable ? userSlippageTolerance : 0
-              )
-            : calculateSlippageAmount(
-                AmountAMin,
-                pairAvailable ? userSlippageTolerance : 0
-              ),
-          currencyA.isNative
-            ? calculateSlippageAmount(
-                AmountAMin,
-                pairAvailable ? userSlippageTolerance : 0
-              )
-            : calculateSlippageAmount(
-                AmountBMin,
-                pairAvailable ? userSlippageTolerance : 0
-              ),
-          account,
-          deadLine,
-          {
-            value: currencyA.isNative ? AmountAMin : AmountBMin,
-            gasPrice: ethers.utils.parseUnits("10", "gwei"),
-          }
-        );
+        // const gasCost = await smartswaprouter.estimateGas.addLiquidityETH(
+        //   currencyA.isNative ? currencyB.address : currencyA.address,
+        //   currencyA.isNative ? AmountBMin : AmountAMin,
+        //   currencyA.isNative
+        //     ? calculateSlippageAmount(
+        //         AmountBMin,
+        //         pairAvailable ? userSlippageTolerance : 0
+        //       )
+        //     : calculateSlippageAmount(
+        //         AmountAMin,
+        //         pairAvailable ? userSlippageTolerance : 0
+        //       ),
+        //   currencyA.isNative
+        //     ? calculateSlippageAmount(
+        //         AmountAMin,
+        //         pairAvailable ? userSlippageTolerance : 0
+        //       )
+        //     : calculateSlippageAmount(
+        //         AmountBMin,
+        //         pairAvailable ? userSlippageTolerance : 0
+        //       ),
+        //   account,
+        //   deadLine,
+        //   {
+        //     value: currencyA.isNative ? AmountAMin : AmountBMin,
+        //     // gasPrice: ethers.utils.parseUnits("10", "gwei"),
+        //   }
+        // );
 
         const data = await smartswaprouter.addLiquidityETH(
           currencyA.isNative ? currencyB.address : currencyA.address,
@@ -301,8 +305,8 @@ export default function AddLiquidity({
           deadLine,
           {
             value: currencyA.isNative ? AmountAMin : AmountBMin,
-            gasLimit: parseFloat(gasCost.toString()) * 2,
-            gasPrice: ethers.utils.parseUnits("10", "gwei"),
+            //  gasLimit: parseFloat(gasCost.toString()) * 2,
+            //  gasPrice: ethers.utils.parseUnits("10", "gwei"),
           }
         );
         const { confirmations, events } = await data.wait(3);
@@ -367,7 +371,7 @@ export default function AddLiquidity({
   ) => {
     if (account) {
       const smartswaprouter = await SmartSwapRouter(
-        SMARTSWAPROUTER[chainId as number]
+        SMARTSWAPROUTER[chainId as number], library
       );
       const deadLine = getDeadline(userDeadline);
       const AmountAMin = formatAmountIn(amountA, currencyA.decimals);
@@ -382,25 +386,25 @@ export default function AddLiquidity({
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        const gasCost = await smartswaprouter.estimateGas.addLiquidity(
-          currencyA.address,
-          currencyB.address,
-          AmountAMin,
-          AmountBMin,
-          calculateSlippageAmount(
-            AmountAMin,
-            pairAvailable ? userSlippageTolerance : 0
-          ),
-          calculateSlippageAmount(
-            AmountBMin,
-            pairAvailable ? userSlippageTolerance : 0
-          ),
-          account,
-          deadLine,
-          {
-            gasPrice: ethers.utils.parseUnits("10", "gwei"),
-          }
-        );
+        // const gasCost = await smartswaprouter.estimateGas.addLiquidity(
+        //   currencyA.address,
+        //   currencyB.address,
+        //   AmountAMin,
+        //   AmountBMin,
+        //   calculateSlippageAmount(
+        //     AmountAMin,
+        //     pairAvailable ? userSlippageTolerance : 0
+        //   ),
+        //   calculateSlippageAmount(
+        //     AmountBMin,
+        //     pairAvailable ? userSlippageTolerance : 0
+        //   ),
+        //   account,
+        //   deadLine,
+        //   {
+        //     // gasPrice: ethers.utils.parseUnits("10", "gwei"),
+        //   }
+        // );
 
         const data = await smartswaprouter.addLiquidity(
           currencyA.address,
@@ -418,8 +422,8 @@ export default function AddLiquidity({
           account,
           deadLine,
           {
-            gasLimit: parseFloat(gasCost.toString()) * 2,
-            gasPrice: ethers.utils.parseUnits("10", "gwei"),
+            // gasLimit: parseFloat(gasCost.toString()) * 2,
+            // gasPrice: ethers.utils.parseUnits("10", "gwei"),
           }
         );
         const { confirmations, events } = await data.wait(3);
@@ -496,6 +500,15 @@ export default function AddLiquidity({
       );
     }
   };
+
+  const [isLoadingValue, setIsLoadingValue] = useState(false);
+  useEffect(() =>{
+    if (formattedAmounts[Field.INPUT] && !formattedAmounts[Field.OUTPUT]){
+      setIsLoadingValue(true);
+    }else{
+      setIsLoadingValue(false);
+    }
+  }, [formattedAmounts[Field.OUTPUT], formattedAmounts[Field.INPUT]]);
 
   return (
     <Center m={8}>
@@ -699,24 +712,42 @@ export default function AddLiquidity({
         >
           {`Approve ${currencies[Field.OUTPUT]?.symbol}`}
         </Button>
-        <Button
-          size='lg'
-          height='48px'
-          width='200px'
-          border='2px'
-          borderColor={genBorder}
-          color={btnTextColor}
-          w='100%'
-          _hover={{ bgColor: "none" }}
-          _active={{ bgColor: "none" }}
-          display={
-            formattedAmounts[Field.INPUT] && formattedAmounts[Field.OUTPUT]
-              ? "none"
-              : undefined
-          }
-        >
-          Enter An Amount
-        </Button>
+        { isLoadingValue ? (
+          <Button
+            size="lg"
+            height="48px"
+            width="200px"
+            border="2px"
+            borderColor={genBorder}
+            color={btnTextColor}
+            w="100%"
+            _hover={{ bgColor: 'none' }}
+            _active={{ bgColor: 'none' }}
+            disabled={true}
+          >
+            Loading...
+          </Button>
+        ) : (
+          <Button
+            size="lg"
+            height="48px"
+            width="200px"
+            border="2px"
+            borderColor={genBorder}
+            color={btnTextColor}
+            w="100%"
+            _hover={{ bgColor: 'none' }}
+            _active={{ bgColor: 'none' }}
+            display={
+              formattedAmounts[Field.INPUT] && formattedAmounts[Field.OUTPUT]
+                ? 'none'
+                : undefined
+            }
+          >
+            Enter An Amount
+          </Button>
+        )}
+
         <Button
           size='lg'
           height='48px'

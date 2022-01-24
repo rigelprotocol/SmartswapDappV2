@@ -15,7 +15,7 @@ import {
   useGetLiquidityById,
   useTokenValueToBeRemoved,
 } from '../../utils/hooks/usePools';
-import { Router, useHistory, useParams } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 import BNBImage from '../../assets/BNB.svg';
 import RGPImage from '../../assets/rgp.svg';
 import ETHImage from '../../assets/eth.svg';
@@ -41,6 +41,7 @@ import {
 } from '../../utils/utilsFunctions';
 import { ethers } from 'ethers';
 import MATICImage from '../../assets/Matic.svg';
+import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 
 const Remove = () => {
   const [isTabDevice] = useMediaQuery('(min-width: 990px)');
@@ -58,6 +59,7 @@ const Remove = () => {
   const WithdrawalButtonColor = useColorModeValue( '#FFFFFF','#FFFFFF');
   const approveButtonBgColor = useColorModeValue('#319EF6', '#4CAFFF');
   const withdrawaButtonBgColor = useColorModeValue('#FFFFFF', '#15202B');
+  const hoverwithdrawaButtonBgColor = useColorModeValue('#15202B', '#7599BD');
   const inActiveApproveButtonBgColor = useColorModeValue('#999999', '#7599BD');
   const inActiveApproveButtonColor = useColorModeValue('#CCCCCC', '#4A739B');
   const approvedButtonColor = useColorModeValue('#3CB1D2', '#1B90B1');
@@ -68,7 +70,7 @@ const Remove = () => {
   const [loading, setLoading] = useState(true);
   const [hasBeenApproved, setHasBeenApproved] = useState(false);
   const [loadData, setLoadData] = useState(false);
-  const { account, chainId } = useWeb3React();
+  const { account, chainId , library} = useActiveWeb3React();
   const [userSlippageTolerance] = useUserSlippageTolerance();
   const [userDeadline] = useUserTransactionTTL();
 
@@ -151,14 +153,14 @@ const Remove = () => {
   ) => {
     if (account && valuesToBeRemoved) {
       const smartswaprouter = await SmartSwapRouter(
-        SMARTSWAPROUTER[chainId as number]
+        SMARTSWAPROUTER[chainId as number], library
       );
       const Liquidity = formatAmountIn(valuesToBeRemoved[2], 18);
       const amountAMin = formatAmountIn(valuesToBeRemoved[0], tokenADecimals);
       const amountBMin = formatAmountIn(valuesToBeRemoved[1], tokenBDecimals);
 
-      const formatAmountAMin = ethers.utils.formatEther(AmountAMin)
-      const formatAmountBMin = ethers.utils.formatEther(AmountBMin)
+      const formatAmountAMin = ethers.utils.formatEther(AmountAMin);
+      const formatAmountBMin = ethers.utils.formatEther(AmountBMin);
 
       
 
@@ -181,8 +183,8 @@ const Remove = () => {
           deadLine,
           {
             from: account,
-            gasLimit: 390000,
-            gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+            // gasLimit: 390000,
+            // gasPrice: ethers.utils.parseUnits('10', 'gwei'),
           }
         );
         const { confirmations, events } = await remove.wait(1);
@@ -267,12 +269,12 @@ const Remove = () => {
   ) => {
     if (account && valuesToBeRemoved) {
       const smartswaprouter = await SmartSwapRouter(
-        SMARTSWAPROUTER[chainId as number]
+        SMARTSWAPROUTER[chainId as number], library
       );
       // const liquidity = formatAmountIn(Liquidity, 18);
 
-      const formatAmountAMin = ethers.utils.formatEther(AmountAMin)
-      const formatAmountBMin = ethers.utils.formatEther(AmountBMin)
+      const formatAmountAMin = ethers.utils.formatEther(AmountAMin);
+      const formatAmountBMin = ethers.utils.formatEther(AmountBMin);
 
       // const AmountAMin = formatAmountIn(amountAMin, tokenADecimals);
 
@@ -314,8 +316,8 @@ const Remove = () => {
           deadLine,
           {
             from: account,
-            gasLimit: 390000,
-            gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+            // gasLimit: 390000,
+            // gasPrice: ethers.utils.parseUnits('10', 'gwei'),
           }
         );
         const { confirmations, events } = await remove.wait(1);
@@ -413,7 +415,7 @@ const Remove = () => {
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        const smartSwapLP = await LiquidityPairInstance(pool.pairAddress);
+        const smartSwapLP = await LiquidityPairInstance(pool.pairAddress, library);
         const walletBal = (await smartSwapLP.balanceOf(account)) + 4e18;
         const approveTransaction = await smartSwapLP.approve(
           SMARTSWAPROUTER[chainId as number],
@@ -529,7 +531,7 @@ const Remove = () => {
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        const smartSwapLP = await LiquidityPairInstance(pool.pairAddress);
+        const smartSwapLP = await LiquidityPairInstance(pool.pairAddress, library);
         const approveTransaction = await smartSwapLP.approve(
           SMARTSWAPROUTER[chainId as number],
           0,
@@ -1035,7 +1037,7 @@ const Remove = () => {
                     : "transparent"
               }
               _active={{ bgColor: withdrawaButtonBgColor }}
-              _hover={{ bgColor: withdrawaButtonBgColor }}
+              _hover={{ bgColor: hoverwithdrawaButtonBgColor }}
               px={14}
               fontSize={isTabDevice && isTabDevice2 ? '12px' : ''}
               onClick={() => RemoveLiquidity()}

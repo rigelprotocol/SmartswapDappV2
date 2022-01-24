@@ -1,7 +1,6 @@
-
 import React from 'react'
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React'
-import { Token,Currency,CurrencyAmount } from "@uniswap/sdk-core"
+import { Currency,CurrencyAmount } from "@uniswap/sdk-core"
 import CurrencyLogo from '../currencyLogo';
 import {
     useColorModeValue,
@@ -27,26 +26,26 @@ const CurrencyList =({
    otherSelectedCurrency
 }:ICurrencyList) => {
 
-    const {account } = useActiveWeb3React()
+    const {account } = useActiveWeb3React();
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
     const heavyTextColor = useColorModeValue("#333333", "#F1F5F8"); 
        const hover = useColorModeValue('rgba(228, 225, 222, 0.74)', "#14181b6c");
 
-       const selectedTokenList = useCombinedActiveList()
-       const isOnSelectedList = isTokenOnList(selectedTokenList, currency.isToken ? currency : undefined)
-       const customAdded = useIsUserAddedToken(currency)
+       const selectedTokenList = useCombinedActiveList();
+       const isOnSelectedList = isTokenOnList(selectedTokenList, currency.isToken ? currency : undefined);
+       const customAdded = useIsUserAddedToken(currency);
 
-    const [balance] = GetAddressTokenBalance(currency)
+    const [balance] = GetAddressTokenBalance(currency);
     const selected = (selectedCurrency:Currency | null | undefined,currency:Currency)=>{
         if(selectedCurrency && currency && currency.isNative){
           return (selectedCurrency.symbol === currency.symbol) && (selectedCurrency.chainId === currency.chainId) ? true : false
         }else if(selectedCurrency && currency && !currency.isNative){
             return (selectedCurrency.address === currency.address) && (selectedCurrency.chainId === currency.chainId) ? true : false 
         }
-    }
-    const isSelected = selected(selectedCurrency,currency)
-    const otherSelected = selected(otherSelectedCurrency,currency)
-    const handleSelect = () => onCurrencySelect(currency)
+    };
+    const isSelected = selected(selectedCurrency,currency);
+    const otherSelected = selected(otherSelectedCurrency,currency);
+    const handleSelect = () => onCurrencySelect(currency);
 
     function Balance({ balance }: { balance: CurrencyAmount<Currency> }) {
         return <Text>{balance.currency?.isToken? balance: balance}</Text>
@@ -90,6 +89,6 @@ const CurrencyList =({
 
 
     )
-}
+};
 
 export default CurrencyList

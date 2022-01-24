@@ -63,8 +63,10 @@ const Index = () => {
      
       <ul className="menu" style={{"right":navBar ? 0 : "100%"}}>
           
-           <li className="multi_navbar" onClick={()=>
-  setMinNav1(!minNav1)}>
+           <li className="multi_navbar" onClick={()=>{
+  setMinNav2(false)
+  setMinNav1(!minNav1) 
+           }}>
             <div className="multi_navbar_flex">
              <div className="multi_navbar_ul_div_heading"><a className='subList'>Company</a></div>
              <div><i className="downArrow"></i></div>
@@ -112,8 +114,10 @@ const Index = () => {
             </ul>}
            
            </li>
-           <li className="multi_navbar multi_navbar_2" onClick={()=>
-  setMinNav2(!minNav2)}>
+           <li className="multi_navbar multi_navbar_2" onClick={()=>{
+setMinNav1(false)
+setMinNav2(!minNav2)
+           }}>
             <div className="multi_navbar_flex">
              <div className="multi_navbar_ul_div_heading"><a className='subList'>DApps</a></div>
              <div><i className="downArrow"></i></div>
@@ -147,9 +151,14 @@ const Index = () => {
                 </a>
                </li>
                <li className='list'>
-                <a
+               <a
+  data-toggle="tooltip"
+  data-placement="bottom"
+  title="coming soon"
+  href="#" style={{cursor:"not-allowed"}}>
+                {/* <a
                 href="smartbid.html"
-                >
+                > */}
                  <div className="multi_navbar_ul_div_item">
                    <p className="multi_nav_head">SmartBid</p>
                   <div>
@@ -159,9 +168,14 @@ const Index = () => {
                 </a>
                </li>
                <li className='list'>
-                <a
+               <a
+  data-toggle="tooltip"
+  data-placement="bottom"
+  title="coming soon"
+  href="#" style={{cursor:"not-allowed"}}>
+                {/* <a
                 href="leverage-exchange.html"
-                >
+                > */}
                  <div className="multi_navbar_ul_div_item">
                    <p className="multi_nav_head">Leverage Exchange</p>
                   <div>
@@ -171,9 +185,14 @@ const Index = () => {
                 </a>
                </li>
                <li className='list'>
-                <a
+                {/* <a
                  href="launchpad.html"
-                >
+                > */}
+                   <a
+  data-toggle="tooltip"
+  data-placement="bottom"
+  title="coming soon"
+  href="#" style={{cursor:"not-allowed"}}>
                  <div className="multi_navbar_ul_div_item">
                    <p className="multi_nav_head">LanchPad</p>
                   <div>
@@ -191,10 +210,11 @@ const Index = () => {
            <li>
             <a href="https://rigelprotocol.com/events.html">Events</a>
            </li>
-           <li>
-             <Flex>
-                <a href="https://medium.com/rigelprotocol" target="_blank"></a>Blog <img src={External} style={{marginLeft:"6px"}} />
+           <li> 
+             <a href="https://medium.com/rigelprotocol" target="_blank">
+             <Flex>Blog <img src={External} style={{marginLeft:"6px"}} />
              </Flex>
+               </a>
            
            </li>
           {/* <div className="header__nav__button header__nav__bottom">
@@ -207,8 +227,8 @@ const Index = () => {
           <div className="header__nav__button__wrapper">
            <div className="header__nav__button">
             <button className="button">
-              <span><a>Launch DApps</a></span>
-              <i className="downArrow"></i>
+              <span><Link to="/swap">Launch DApps<i className="downArrow"></i></Link></span>
+              
             </button>
            </div>
           </div>

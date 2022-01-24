@@ -20,15 +20,17 @@ const formatAmount = (number: string) => {
   // let res = ethers.utils.formatEther(num);
   // res = (+res).toString();
   // return res;
-  return ethers.utils.formatEther(number);
+  return ethers.utils.formatUnits(number,);
 };
-
+const formatWithDecimals = (amount: string, decimals: number) =>{
+  return ethers.utils.formatUnits(amount, decimals);
+}
 export const useSwap = (
   currencyA: Currency,
   currencyB: Currency,
   amountIn?: string
 ) => {
-  const { chainId } = useActiveWeb3React();
+  const { chainId, library } = useActiveWeb3React();
   const [address, setAddress] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
   const [amount, setAmount] = useState<string | undefined>('');
@@ -60,7 +62,7 @@ export const useSwap = (
   useEffect(() => {
     const getPairs = async () => {
       try {
-        const SmartFactory = await smartFactory(validSmartAddress);
+        const SmartFactory = await smartFactory(validSmartAddress, library);
         const pairAddress = await SmartFactory.getPair(
           tokenOneAddress,
           tokenTwoAddress
@@ -75,14 +77,15 @@ export const useSwap = (
           setWrap(false);
           if (amountIn !== undefined) {
             const SwapRouter = await SmartSwapRouter(
-              SMARTSWAPROUTER[chainId as number]
+              SMARTSWAPROUTER[chainId as number], library
             );
             const amountOut = await SwapRouter.getAmountsOut(amountIn, [
               tokenOneAddress,
               tokenTwoAddress,
             ]);
+            console.log(amountOut[1].toString())
 
-            const output = formatAmount(amountOut[1]);
+            const output = formatWithDecimals(amountOut[1], currencyB.decimals);
             setPath([tokenOneAddress as string, tokenTwoAddress as string]);
             setPathSymbol(`${currencyA.symbol} - ${currencyB.symbol}`);
             setAmount(output);
@@ -97,10 +100,10 @@ export const useSwap = (
           const CurrencyA = getAddress(currencyA);
           const CurrencyB = getAddress(currencyB);
           const factory = await smartFactory(
-            SMARTSWAPFACTORYADDRESSES[chainId as number]
+            SMARTSWAPFACTORYADDRESSES[chainId as number], library
           );
           const SwapRouter = await SmartSwapRouter(
-            SMARTSWAPROUTER[chainId as number]
+            SMARTSWAPROUTER[chainId as number], library
           );
 
           const [
@@ -145,6 +148,8 @@ export const useSwap = (
                   firstAmount[1].toString(),
                   [USDT[chainId as number], CurrencyB]
                 );
+            
+
                 const output = formatAmount(secondAmount[1]);
                 setPath([
                   CurrencyA as string,
@@ -214,6 +219,8 @@ export const useSwap = (
                     SupportedChainSymbols[chainId as number]
                   } - ${currencyB.symbol}`
                 );
+            
+
                 setAmount(output);
               } else {
                 setAmount('');
@@ -333,6 +340,7 @@ export const useSwap = (
           setPathSymbol('');
           setPath([]);
         }
+        console.log({amount})
       } catch (e) {
         console.log(`Error occurs here: ${e}`);
      
@@ -342,7 +350,7 @@ export const useSwap = (
 
     getPairs();
   }, [
-    chainId,
+
     currencyA,
     currencyB,
     address,

@@ -48,6 +48,7 @@ import { SupportedChainId } from "../../../../constants/chains";
 import { SMARTSWAPFACTORYADDRESSES } from "../../../../utils/addresses";
 import { useCalculatePriceImpact } from "../../../../hooks/usePriceImpact";
 import { getERC20Token } from "../../../../utils/utilsFunctions";
+import BigNumber from "bignumber.js";
 
 const SendToken = () => {
   const history = useHistory();
@@ -133,7 +134,7 @@ const SendToken = () => {
     [independentField, parsedAmount, showWrap, bestTrade]
   );
 
-  const { chainId, account } = useActiveWeb3React();
+  const { chainId, account, library } = useActiveWeb3React();
   // const [priceImpact, setPriceImpact] = useState(0);
 
   const handleMaxInput = async () => {
@@ -166,7 +167,7 @@ const SendToken = () => {
 
   const minimumAmountToReceive = useCallback(
     () =>
-      ((100 - Number(allowedSlippage / 100)) / 100) *
+      ((100 - Number(allowedSlippage / 100)) / 100)  *
       Number(formattedAmounts[Field.OUTPUT]),
     [allowedSlippage, bestTrade]
   );
@@ -199,7 +200,7 @@ const SendToken = () => {
       return setHasBeenApproved(true);
     }
 
-    const status = await ApproveCheck(currencies[Field.INPUT].wrapped.address);
+    const status = await ApproveCheck(currencies[Field.INPUT].wrapped.address, library);
     const check = await status.allowance(
       account,
       SMARTSWAPROUTER[chainId as number],
@@ -240,10 +241,11 @@ const SendToken = () => {
       );
 
       const address = currencies[Field.INPUT].wrapped.address;
-      const token = await getERC20Token(address);
+      const swapApproval = await ApprovalRouter(address, library);
+        
+      const token = await getERC20Token(address, library);
       const walletBal = (await token.balanceOf(account)) + 4e18;
 
-      const swapApproval = await ApprovalRouter(address);
       const approveTransaction = await swapApproval.approve(
         SMARTSWAPROUTER[chainId as number],
         walletBal,
@@ -285,9 +287,15 @@ const SendToken = () => {
   };
 
   const [sendingTrx, setSendingTrx] = useState(false);
+  const outputToken = useMemo((): any => {
+    if(parsedAmounts[Field.OUTPUT]){
+      return ethers.utils.parseUnits((parsedAmounts[Field.OUTPUT] as string ), currencies[Field.OUTPUT]?.decimals)
+    }
+
+  },[parsedAmounts] )
 
   const swapDifferentTokens = async () => {
-    const route = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number]);
+    const route = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
     const dl = getDeadline(deadline);
     const from = currencies[Field.INPUT]?.wrapped.address;
     const to = currencies[Field.OUTPUT]?.wrapped.address;
@@ -303,17 +311,19 @@ const SendToken = () => {
           trxState: TrxState.WaitingForConfirmation,
         })
       );
+      
+      console.log({parsedAmount, parsedOutput, parsedAmounts, pathArray, account, dl})
       const sendTransaction = await route.swapExactTokensForTokens(
         parsedAmount,
-        parsedOutput,
+        outputToken,
         // [from, to],
         pathArray,
         account,
         dl,
         {
           from: account,
-          gasLimit: 290000,
-          gasPrice: ethers.utils.parseUnits("10", "gwei"),
+          // gasLimit: 290000,
+          // gasPrice: ethers.utils.parseUnits("10", "gwei"),
         }
       );
       const { hash } = sendTransaction;
@@ -323,7 +333,7 @@ const SendToken = () => {
       const inputAmount = await getInPutDataFromEvent(
         from,
         receipt.events,
-        parsedAmount
+        outputToken
       );
       if (
         typeof sendTransaction.hash !== "undefined" &&
@@ -346,7 +356,7 @@ const SendToken = () => {
           addToast({
             message: `Swap ${inputAmount} ${
               currencies[Field.INPUT]?.symbol
-            } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
+            } for ${outputToken} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
@@ -366,7 +376,7 @@ const SendToken = () => {
   };
 
   const swapDefaultForOtherTokens = async () => {
-    const route = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number]);
+    const route = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
     const dl = getDeadline(deadline);
     const from = WNATIVEADDRESSES[chainId as number];
     const to = currencies[Field.OUTPUT]?.wrapped.address;
@@ -447,7 +457,7 @@ const SendToken = () => {
   };
 
   const swapOtherTokensForDefault = async () => {
-    const route = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number]);
+    const route = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
     const dl = getDeadline(deadline);
     const from = currencies[Field.INPUT]?.wrapped.address;
     const to = WNATIVEADDRESSES[chainId as number];
@@ -523,7 +533,7 @@ const SendToken = () => {
   };
 
   const deposit = async () => {
-    const weth = await WETH(WNATIVEADDRESSES[chainId as number]);
+    const weth = await WETH(WNATIVEADDRESSES[chainId as number], library);
     setSendingTrx(true);
     dispatch(
       setOpenModal({
@@ -578,7 +588,7 @@ const SendToken = () => {
   };
 
   const withdraw = async () => {
-    const weth = await WETH(WNATIVEADDRESSES[chainId as number]);
+    const weth = await WETH(WNATIVEADDRESSES[chainId as number], library);
     setSendingTrx(true);
     dispatch(
       setOpenModal({
@@ -631,7 +641,7 @@ const SendToken = () => {
   };
 
   const swapTokens = async () => {
-    if (chainId === SupportedChainId.POLYGONTEST) {
+    if (chainId === SupportedChainId.POLYGONTEST || SupportedChainId.POLYGON) {
       if (
         currencies[Field.INPUT]?.symbol === "MATIC" &&
         currencies[Field.OUTPUT]?.symbol === "WMATIC"
@@ -684,7 +694,7 @@ const SendToken = () => {
 
   const checkLiquidityPair = async () => {
     const factory = await smartFactory(
-      SMARTSWAPFACTORYADDRESSES[chainId as number]
+      SMARTSWAPFACTORYADDRESSES[chainId as number], library
     );
     const LPAddress = await factory.getPair(fromAddress, toAddress);
     if (LPAddress !== ZERO_ADDRESS) {
@@ -699,7 +709,7 @@ const SendToken = () => {
     if (routeAddress.length === 2) {
       try {
         const SwapRouter = await SmartSwapRouter(
-          SMARTSWAPROUTER[(chainId as number) ?? 56]
+          SMARTSWAPROUTER[(chainId as number) ?? 56], library
         );
         const price = await SwapRouter.getAmountsOut(
           "1000000000000000000",

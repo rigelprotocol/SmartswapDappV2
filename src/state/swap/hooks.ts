@@ -1,5 +1,4 @@
 import { AppDispatch, RootState } from '../index';
-import { provider } from '../../utils/utilsFunctions';
 import { useCallback, useEffect, useState } from 'react';
 import { Field, selectCurrency, typeInput, replaceSwapState, switchCurrencies } from './actions';
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
@@ -17,6 +16,7 @@ import { ZERO_ADDRESS } from '../../constants';
 import { parseUnits } from '@ethersproject/units';
 import useParsedQueryString from '../../hooks/useParsedQueryString';
 import JSBI from 'jsbi';
+import {Web3Provider} from "@ethersproject/providers";
 
 export function tryParseAmount<T extends Currency>(
   value?: string,
@@ -136,26 +136,26 @@ export function useDerivedSwapInfo(): {
   );
 
   const showWrap = wrap;
-
+console.log({amount, parsedAmount})
   const bestTrade = amount;
   // console.log(pathArray);
 
 
+  const getMaxValue = async (currency: Currency, library: Web3Provider | undefined) => {
 
-  const getMaxValue = async (currency: Currency) => {
     if (currency.isNative) {
       // return Balance === "0.0000" ? "0" :  Balance
-      const Provider = await provider();
-      const balance = await Provider?.getBalance(account as string);
+      const balance = await library?.getBalance(account as string);
       return balance ? JSBI.BigInt(balance.toString()) : undefined;
     } else if (isAddress(currency.address)) {
       const token = await getERC20Token(
-        currency.address ? currency.address : ''
+        currency.address ? currency.address : '', library
       );
-      const balance = await token.balanceOf(account);
 
-      const amount = ethers.utils.formatUnits(balance);
-      return amount === '0.0' ? '0' : ParseFloat(amount, 4);
+      const [balance, decimals] = await Promise.all([token.balanceOf(account), token.decimals()])
+      const amount = ethers.utils.formatUnits(balance, decimals);
+      return amount === '0.0' ? '0' : amount;
+
     }
   };
 

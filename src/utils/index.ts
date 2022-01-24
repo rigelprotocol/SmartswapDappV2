@@ -8,7 +8,7 @@ import { ethers } from 'ethers';
 export function isAddress(value: any): string | false {
     try {
         return getAddress(value)
-    } catch {
+    } catch(e) {
         return false
     }
 }
