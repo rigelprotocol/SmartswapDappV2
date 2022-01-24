@@ -177,6 +177,7 @@ export function Index() {
       true);
 
   }
+  
 
   const handleAlert = () => {
     setShowAlert(false);
@@ -210,15 +211,15 @@ export function Index() {
           poolOneBalance,
           poolTwoBalance,
           poolThreeBalance,
-          poolFourBalance,
-          poolFiveBalance,
+          // poolFourBalance,
+          // poolFiveBalance,
         ] = await Promise.all([
           RGPToken.balanceOf(account),
           poolOne.balanceOf(account),
           poolTwo.balanceOf(account),
           poolThree.balanceOf(account),
-          poolFour.balanceOf(account),
-          poolFive.balanceOf(account),
+          // poolFour.balanceOf(account),
+          // poolFive.balanceOf(account),
         ]);
 
         dispatch(
@@ -227,12 +228,12 @@ export function Index() {
             formatBigNumber(poolTwoBalance),
             formatBigNumber(poolOneBalance),
             formatBigNumber(poolThreeBalance),
-            formatBigNumber(poolFourBalance),
-            formatBigNumber(poolFiveBalance),
+            // formatBigNumber(poolFourBalance),
+            // formatBigNumber(poolFiveBalance),
           ])
         );
       } catch (error) {
-        console.error(error);
+        console.error(error, "getFarmTokenBalance => Farminv2");
       }
     }
   };
@@ -241,7 +242,20 @@ export function Index() {
     setfarmDataLoading(true);
 
     try {
-      const [specialPool, pool1, pool2, pool3, pool4, pool5] =
+
+      const deposit = async (token0: any, token1: any) => {
+        let sym0 = await (await smartSwapLPTokenV2(await token0())).symbol();
+        let sym1 = await (await smartSwapLPTokenV2(await token1())).symbol();
+        if (sym0 === "WMATIC") sym0 = "MATIC";
+        if (sym1 === "WMATIC") sym1 = "MATIC";
+        return `${sym0}-${sym1}`;
+      };
+
+      //maticRGP
+      //  console.log(pool1Reserve, pool2Reserve, pool3Reserve, pool4Reserve, pool5Reserve)
+
+      if (Number(chainId) === Number(SupportedChainId.POLYGONTEST)) {
+        const [specialPool, pool1, pool2, pool3, pool4, pool5] =
         await Promise.all([
           RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library),
           smartSwapLPTokenPoolOne(
@@ -269,7 +283,7 @@ export function Index() {
         pool4Reserve,
         pool5Reserve,
       ] = await Promise.all([
-        specialPool.totalStaking(),
+        await specialPool.totalStaking(),
         pool1.getReserves(),
         pool2.getReserves(),
         pool3.getReserves(),
@@ -363,23 +377,59 @@ export function Index() {
         );
       }
       else if (Number(chainId) === Number(SupportedChainId.POLYGON)) {
+              const [pool1, pool2, pool3, ] =
+        await Promise.all([
+          // RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
+          smartSwapLPTokenPoolOne(
+            SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]
+          ),
+          smartSwapLPTokenPoolTwo(
+            SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number]
+          ),
+          smartSwapLPTokenPoolThree(
+            SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number]
+          ),
+          // smartSwapLPTokenV2PoolFour(
+          //   SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number]
+          // ),
+          // smartSwapLPTokenV2PoolFive(
+          //   SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number]
+          // ),
+        ]);
+
+      const [
+        // rgpTotalStaking,
+        pool1Reserve,
+        pool2Reserve,
+        pool3Reserve,
+        // pool4Reserve,
+        // pool5Reserve,
+      ] = await Promise.all([
+        // await specialPool.totalStaking(),
+        pool1.getReserves(),
+        pool2.getReserves(),
+        pool3.getReserves(),
+        // pool4.getReserves(),
+        // pool5.getReserves(),
+      ]);
         const MRGPprice: number | any = ethers.utils.formatUnits(
-          pool3Reserve[1].mul(1000).div(pool3Reserve[0]),
+          pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
           3
         );
+        console.log(MRGPprice, "mgp price")
         const getMaticPrice = (): number => {
           let MaticPrice;
           MaticPrice = ethers.utils.formatUnits(
-            pool5Reserve[0].mul(1000).div(pool5Reserve[1]),
+            pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
             3
           );
 
           return Number(MaticPrice);
         };
-        const MaticPrice = getMaticPrice();
-        const MRGPLiquidity = ethers.utils
-          .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * MRGPprice)), 21)
-          .toString();
+        const MaticPrice = 1.53 //getMaticPrice();
+        // const MRGPLiquidity = ethers.utils
+        //   .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * MRGPprice)), 21)
+        //   .toString();
 
         const RGP_WMATICLiquidity = ethers.utils
           .formatUnits(
@@ -396,20 +446,20 @@ export function Index() {
           .formatEther(pool3Reserve[1].mul(Number(MRGPprice) * 1000 * 2))
           .toString();
 
-        const USDT_WMATICLiquidity = ethers.utils
-          .formatEther(pool4Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
-          .toString();
+        // const USDT_WMATICLiquidity = ethers.utils
+        //   .formatEther(pool4Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
+        //   .toString();
 
-        const WMATIC_USDCLiquidity = ethers.utils
-          .formatEther(pool5Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
-          .toString();
+        // const WMATIC_USDCLiquidity = ethers.utils
+        //   .formatEther(pool5Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
+        //   .toString();
 
         dispatch(
           updateTotalLiquidity([
             {
               deposit: "RGP",
-              liquidity: MRGPLiquidity,
-              apy: calculateApy(MRGPprice, MRGPLiquidity, 250),
+              liquidity:"0",// MRGPLiquidity,
+              apy: "0" // calculateApy(MRGPprice, MRGPLiquidity, 250),
             },
             {
               deposit: await deposit(pool1.token0, pool1.token1),
@@ -427,18 +477,53 @@ export function Index() {
               apy: calculateApy(MRGPprice, RGP_USDCLiquidity, 1050),
             },
             {
-              deposit: await deposit(pool4.token0, pool4.token1),
-              liquidity: USDT_WMATICLiquidity,
-              apy: calculateApy(MRGPprice, USDT_WMATICLiquidity, 334.875),
+              deposit: "USDT - MATIC", // await deposit(pool4.token0, pool4.token1),
+              liquidity: 0, //USDT_WMATICLiquidity,
+              apy: "0" // calculateApy(MRGPprice, USDT_WMATICLiquidity, 334.875),
             },
             {
-              deposit: await deposit(pool5.token0, pool5.token1),
-              liquidity: WMATIC_USDCLiquidity,
-              apy: calculateApy(MRGPprice, WMATIC_USDCLiquidity, 334.875),
+              deposit: "MATIC - USDC", // await deposit(pool5.token0, pool5.token1),
+              liquidity: 0, //WMATIC_USDCLiquidity,
+              apy: "0" // calculateApy(MRGPprice, WMATIC_USDCLiquidity, 334.875),
             },
           ])
         );
       } else {
+        const [specialPool, pool1, pool2, pool3, pool4, pool5] =
+        await Promise.all([
+          RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
+          smartSwapLPTokenPoolOne(
+            SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]
+          ),
+          smartSwapLPTokenPoolTwo(
+            SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number]
+          ),
+          smartSwapLPTokenPoolThree(
+            SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number]
+          ),
+          smartSwapLPTokenV2PoolFour(
+            SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number]
+          ),
+          smartSwapLPTokenV2PoolFive(
+            SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number]
+          ),
+        ]);
+
+      const [
+        rgpTotalStaking,
+        pool1Reserve,
+        pool2Reserve,
+        pool3Reserve,
+        pool4Reserve,
+        pool5Reserve,
+      ] = await Promise.all([
+        await specialPool.totalStaking(),
+        pool1.getReserves(),
+        pool2.getReserves(),
+        pool3.getReserves(),
+        pool4.getReserves(),
+        pool5.getReserves(),
+      ]);
         const RGPprice: number | any = ethers.utils.formatUnits(
           pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
           3
@@ -501,7 +586,7 @@ export function Index() {
         );
       }
     } catch (error) {
-      // console.log(error.message);
+      console.log(error, "get farm data");
       setfarmDataLoading(false);
       //if (!toast.isActive(id)) {
       //  showErrorToast();
@@ -516,8 +601,8 @@ export function Index() {
           RGPSPECIALPOOLADDRESSES[chainId as number], library
         )
         const RGPStakedEarned = await Promise.all([
-          specialPool.userData(account),
-          specialPool.calculateRewards(account),
+          await specialPool.userData(account),
+          await specialPool.calculateRewards(account),
         ]);
         return RGPStakedEarned;
       } catch (error) {
@@ -527,7 +612,7 @@ export function Index() {
   };
   const getTokenStaked = async () => {
     try {
-      if (account) {
+      if (account && (Number(chainId) !== Number(SupportedChainId.POLYGON))) {
         const masterChefV2 = await MasterChefV2Contract(
           MASTERCHEFV2ADDRESSES[chainId as number], library
         );
@@ -599,9 +684,82 @@ export function Index() {
         );
 
         setInitialLoad(false);
+      } 
+      if(account && (Number(chainId) === Number(SupportedChainId.POLYGON))) {
+        const masterChefV2 = await MasterChefV2Contract(
+          MASTERCHEFV2ADDRESSES[chainId as number]
+        );
+        const [
+          poolOneEarned,
+          poolTwoEarned,
+          poolThreeEarned,
+          // poolFourEarned,
+          // poolFiveEarned,
+          poolOneStaked,
+          poolTwoStaked,
+          poolThreeStaked,
+          // poolFourStaked,
+          // poolFiveStaked,
+        ] = await Promise.all([
+          masterChefV2.pendingRigel(1, account),
+          masterChefV2.pendingRigel(2, account),
+          masterChefV2.pendingRigel(3, account),
+          // masterChefV2.pendingRigel(4, account),
+          // masterChefV2.pendingRigel(5, account),
+          masterChefV2.userInfo(1, account),
+          masterChefV2.userInfo(2, account),
+          masterChefV2.userInfo(3, account),
+          // masterChefV2.userInfo(4, account),
+          // masterChefV2.userInfo(5, account),
+        ]);
+
+        //console.log("poolFourStaked", poolFourStaked)
+        // const RGPStakedEarned = await specialPoolStaked();
+        let RGPStaked;
+        let RGPEarned;
+
+        // console.log("EARRNED", RGPStakedEarned)
+
+        // if (RGPStakedEarned) {
+          // const [specialPoolStaked, specialPoolEarned] = await RGPStakedEarned;
+
+          // RGPStaked = formatBigNumber(specialPoolStaked.tokenQuantity);
+          // RGPEarned = formatBigNumber(specialPoolEarned);
+        // } else {
+          RGPStaked = 0;
+          RGPEarned = 0;
+        // }
+
+        dispatch(
+          updateTokenStaked([
+            { staked: RGPStaked, earned: RGPEarned },
+            {
+              staked: formatBigNumber(poolTwoStaked.amount),
+              earned: formatBigNumber(poolTwoEarned),
+            },
+            {
+              staked: formatBigNumber(poolOneStaked.amount),
+              earned: formatBigNumber(poolOneEarned),
+            },
+            {
+              staked: formatBigNumber(poolThreeStaked.amount),
+              earned: formatBigNumber(poolThreeEarned),
+            },
+            // {
+            //   staked: formatBigNumber(poolFourStaked.amount),
+            //   earned: formatBigNumber(poolFourEarned),
+            // },
+            // {
+            //   staked: formatBigNumber(poolFiveStaked.amount),
+            //   earned: formatBigNumber(poolFiveEarned),
+            // },
+          ])
+        );
+
+        setInitialLoad(false);
       }
     } catch (error) {
-      console.error(error);
+      console.error(error, "getTokenStaked =>Farming v2");
     }
   };
 
