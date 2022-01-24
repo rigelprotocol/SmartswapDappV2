@@ -48,7 +48,6 @@ import { SupportedChainId } from "../../../../constants/chains";
 import { SMARTSWAPFACTORYADDRESSES } from "../../../../utils/addresses";
 import { useCalculatePriceImpact } from "../../../../hooks/usePriceImpact";
 import { getERC20Token } from "../../../../utils/utilsFunctions";
-import BigNumber from "bignumber.js";
 
 const SendToken = () => {
   const history = useHistory();
@@ -311,8 +310,7 @@ const SendToken = () => {
           trxState: TrxState.WaitingForConfirmation,
         })
       );
-      
-      console.log({parsedAmount, parsedOutput, parsedAmounts, pathArray, account, dl})
+
       const sendTransaction = await route.swapExactTokensForTokens(
         parsedAmount,
         outputToken,
@@ -385,7 +383,9 @@ const SendToken = () => {
       setSendingTrx(true);
       dispatch(
         setOpenModal({
-          message: `Swapping ${formattedAmounts[Field.INPUT]} BNB for ${
+          message: `Swapping ${formattedAmounts[Field.INPUT]} ${
+              currencies[Field.INPUT]?.symbol
+          } for ${
             formattedAmounts[Field.OUTPUT]
           } ${currencies[Field.OUTPUT]?.symbol}`,
           trxState: TrxState.WaitingForConfirmation,
@@ -468,7 +468,9 @@ const SendToken = () => {
         setOpenModal({
           message: `Swapping ${formattedAmounts[Field.INPUT]} ${
             currencies[Field.INPUT]?.symbol
-          } for ${formattedAmounts[Field.OUTPUT]} BNB`,
+          } for ${formattedAmounts[Field.OUTPUT]} ${
+              currencies[Field.OUTPUT]?.symbol
+          }`,
           trxState: TrxState.WaitingForConfirmation,
         })
       );
@@ -537,8 +539,9 @@ const SendToken = () => {
     setSendingTrx(true);
     dispatch(
       setOpenModal({
-        message: `Swapping ${typedValue} BNB for ${typedValue} WBNB`,
-        trxState: TrxState.WaitingForConfirmation,
+        message: `Swapping ${typedValue} ${
+            currencies[Field.INPUT]?.symbol
+        } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`, trxState: TrxState.WaitingForConfirmation,
       })
     );
     try {
@@ -592,7 +595,9 @@ const SendToken = () => {
     setSendingTrx(true);
     dispatch(
       setOpenModal({
-        message: `Swapping ${typedValue} WBNB for ${typedValue} BNB`,
+        message: `Swapping ${typedValue} ${
+            currencies[Field.INPUT]?.symbol
+        } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
         trxState: TrxState.WaitingForConfirmation,
       })
     );
