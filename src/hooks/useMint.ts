@@ -13,9 +13,11 @@ import {
 } from "../utils/addresses";
 import { ZERO_ADDRESS } from "../constants";
 import { ethers } from "ethers";
+import { useSelector } from "react-redux";
+import { RootState } from "../state";
 
-const formatAmount = (number: string) => {
-  return ethers.utils.formatEther(number);
+const formatAmount = (number: string, decimal: number) => {
+  return ethers.utils.formatUnits(number, decimal);
 };
 
 export const useMint = (
@@ -28,6 +30,14 @@ export const useMint = (
   const [loading, setLoading] = useState<boolean>(false);
   const [amount, setAmount] = useState<string | undefined>("");
   const [wrap, setWrap] = useState<boolean>(false);
+
+  const independentFieldString = useSelector<RootState, string>(
+    (state) => state.mint.independentField
+  );
+
+  const independentFieldId = useSelector<RootState, string>(
+    (state) => state.mint
+  );
 
   let nativeAddress;
 
@@ -87,7 +97,14 @@ export const useMint = (
               tokenOneAddress === token0 ? reserves[1] : reserves[0]
             );
 
-            const output = formatAmount(outputAmount.toString());
+            console.log(
+              tokenOneAddress ===
+                independentFieldId[independentFieldString].currencyId
+                ? tokenTwoAddress
+                : tokenOneAddress
+            );
+
+            const output = formatAmount(outputAmount.toString(), 6);
 
             setAmount(output);
           } else {
