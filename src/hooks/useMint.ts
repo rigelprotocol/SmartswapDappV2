@@ -115,7 +115,6 @@ export const useMint = (
             const output = formatAmount(outputAmount.toString(), decimals);
 
             setAmount(output);
-            console.log(outputAmount.toString())
           } else {
             setAmount("");
           }
