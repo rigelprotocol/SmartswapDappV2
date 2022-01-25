@@ -166,7 +166,7 @@ const SendToken = () => {
 
   const minimumAmountToReceive = useCallback(
     () =>
-      ((100 - Number(allowedSlippage / 100)) / 100)  *
+      ((100 - Number(allowedSlippage / 100)) / 100) *
       Number(formattedAmounts[Field.OUTPUT]),
     [allowedSlippage, bestTrade]
   );
@@ -199,7 +199,10 @@ const SendToken = () => {
       return setHasBeenApproved(true);
     }
 
-    const status = await ApproveCheck(currencies[Field.INPUT].wrapped.address, library);
+    const status = await ApproveCheck(
+      currencies[Field.INPUT].wrapped.address,
+      library
+    );
     const check = await status.allowance(
       account,
       SMARTSWAPROUTER[chainId as number],
@@ -241,7 +244,7 @@ const SendToken = () => {
 
       const address = currencies[Field.INPUT].wrapped.address;
       const swapApproval = await ApprovalRouter(address, library);
-        
+
       const token = await getERC20Token(address, library);
       const walletBal = (await token.balanceOf(account)) + 4e18;
 
@@ -286,15 +289,20 @@ const SendToken = () => {
   };
 
   const [sendingTrx, setSendingTrx] = useState(false);
-  const outputToken = useMemo((): any => {
-    if(parsedAmounts[Field.OUTPUT]){
-      return ethers.utils.parseUnits((parsedAmounts[Field.OUTPUT] as string ), currencies[Field.OUTPUT]?.decimals)
+  const outputToken = useCallback((): any => {
+    if (parsedAmounts[Field.OUTPUT]) {
+      return ethers.utils.parseUnits(
+        parsedAmounts[Field.OUTPUT] as string,
+        currencies[Field.OUTPUT]?.decimals
+      );
     }
-
-  },[parsedAmounts] )
+  }, [parsedAmounts]);
 
   const swapDifferentTokens = async () => {
-    const route = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
+    const route = await SmartSwapRouter(
+      SMARTSWAPROUTER[chainId as number],
+      library
+    );
     const dl = getDeadline(deadline);
     const from = currencies[Field.INPUT]?.wrapped.address;
     const to = currencies[Field.OUTPUT]?.wrapped.address;
@@ -374,7 +382,10 @@ const SendToken = () => {
   };
 
   const swapDefaultForOtherTokens = async () => {
-    const route = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
+    const route = await SmartSwapRouter(
+      SMARTSWAPROUTER[chainId as number],
+      library
+    );
     const dl = getDeadline(deadline);
     const from = WNATIVEADDRESSES[chainId as number];
     const to = currencies[Field.OUTPUT]?.wrapped.address;
@@ -457,7 +468,10 @@ const SendToken = () => {
   };
 
   const swapOtherTokensForDefault = async () => {
-    const route = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
+    const route = await SmartSwapRouter(
+      SMARTSWAPROUTER[chainId as number],
+      library
+    );
     const dl = getDeadline(deadline);
     const from = currencies[Field.INPUT]?.wrapped.address;
     const to = WNATIVEADDRESSES[chainId as number];
@@ -699,7 +713,8 @@ const SendToken = () => {
 
   const checkLiquidityPair = async () => {
     const factory = await smartFactory(
-      SMARTSWAPFACTORYADDRESSES[chainId as number], library
+      SMARTSWAPFACTORYADDRESSES[chainId as number],
+      library
     );
     const LPAddress = await factory.getPair(fromAddress, toAddress);
     if (LPAddress !== ZERO_ADDRESS) {
@@ -714,7 +729,8 @@ const SendToken = () => {
     if (routeAddress.length === 2) {
       try {
         const SwapRouter = await SmartSwapRouter(
-          SMARTSWAPROUTER[(chainId as number) ?? 56], library
+          SMARTSWAPROUTER[(chainId as number) ?? 56],
+          library
         );
         const price = await SwapRouter.getAmountsOut(
           "1000000000000000000",
