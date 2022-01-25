@@ -230,8 +230,8 @@ export function Index() {
         dispatch(
           updateFarmBalances([
             formatBigNumber(RGPbalance),
-            formatBigNumber(poolTwoBalance),
             formatBigNumber(poolOneBalance),
+            formatBigNumber(poolTwoBalance),
             formatBigNumber(poolThreeBalance),
             // formatBigNumber(poolFourBalance),
             // formatBigNumber(poolFiveBalance),
@@ -302,12 +302,7 @@ export function Index() {
     setfarmDataLoading(true);
 
     try {
-      // const deposit = async (token0: any, token1: any) => {
-      //   let sym0 = await (await smartSwapLPTokenV2(await token0())).symbol();
-      //   let sym1 = await (await smartSwapLPTokenV2(await token1())).symbol();
-      //
-      //   return `${sym0}-${sym1}`;
-      // };
+   
 
       const deposit = async (token0: any, token1: any) => {
         let sym0 = await (
@@ -497,10 +492,7 @@ export function Index() {
           15
         );
         const rgpPrice = totalUSDT / totalRGP;
-        console.log(rgpPrice, totalRGP1, "mgp10 price");
-
         const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
-
         const USDT_RGPLiquidity = ethers.utils.formatUnits(
           pool2Reserve[1].div(1000).mul(2),
           3
