@@ -211,15 +211,15 @@ export function Index() {
           poolOneBalance,
           poolTwoBalance,
           poolThreeBalance,
-          // poolFourBalance,
-          // poolFiveBalance,
+          poolFourBalance,
+          poolFiveBalance,
         ] = await Promise.all([
           RGPToken.balanceOf(account),
           poolOne.balanceOf(account),
           poolTwo.balanceOf(account),
           poolThree.balanceOf(account),
-          // poolFour.balanceOf(account),
-          // poolFive.balanceOf(account),
+          poolFour.balanceOf(account),
+          poolFive.balanceOf(account),
         ]);
 
         dispatch(
@@ -412,39 +412,35 @@ export function Index() {
         // pool4.getReserves(),
         // pool5.getReserves(),
       ]);
-        const MRGPprice: number | any = ethers.utils.formatUnits(
-          pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
+        
+        
+        const totalUSDT: number | any = ethers.utils.formatUnits(
+          pool3Reserve[0].div(1000),
           3
         );
-        console.log(MRGPprice, "mgp price")
-        const getMaticPrice = (): number => {
-          let MaticPrice;
-          MaticPrice = ethers.utils.formatUnits(
-            pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
-            3
-          );
+        const totalRGP: number | any = ethers.utils.formatUnits(
+          pool3Reserve[1].div(1000),
+          15
+        );
+        const totalRGP1: number | any = ethers.utils.formatUnits(
+          pool1Reserve[1].div(1000),
+          15
+        );
+          const rgpPrice = totalUSDT/totalRGP
+        console.log(rgpPrice, totalRGP1, "mgp10 price")
+        
 
-          return Number(MaticPrice);
-        };
-        const MaticPrice = 1.53 //getMaticPrice();
-        // const MRGPLiquidity = ethers.utils
-        //   .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * MRGPprice)), 21)
-        //   .toString();
+        const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2
 
-        const RGP_WMATICLiquidity = ethers.utils
-          .formatUnits(
-            pool1Reserve[0].mul(Math.floor(MaticPrice * 1000 * 2)),
-            21
-          )
-          .toString();
+        const USDT_RGPLiquidity = ethers.utils.formatUnits(
+          pool2Reserve[1].div(1000).mul(2),
+          3
+        );
 
-        const USDT_RGPLiquidity = ethers.utils
-          .formatEther(pool2Reserve[0].mul(Number(MRGPprice) * 1000 * 2))
-          .toString();
-
-        const RGP_USDCLiquidity = ethers.utils
-          .formatEther(pool3Reserve[1].mul(Number(MRGPprice) * 1000 * 2))
-          .toString();
+        const RGP_USDCLiquidity = ethers.utils.formatUnits(
+          pool3Reserve[0].div(1000).mul(2),
+          3
+        );
 
         // const USDT_WMATICLiquidity = ethers.utils
         //   .formatEther(pool4Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
@@ -464,17 +460,17 @@ export function Index() {
             {
               deposit: await deposit(pool1.token0, pool1.token1),
               liquidity: RGP_WMATICLiquidity,
-              apy: calculateApy(MRGPprice, RGP_WMATICLiquidity, 1500),
+              apy: calculateApy(rgpPrice, RGP_WMATICLiquidity, 1500),
             },
             {
               deposit: await deposit(pool2.token0, pool2.token1),
               liquidity: USDT_RGPLiquidity,
-              apy: calculateApy(MRGPprice, USDT_RGPLiquidity, 1050),
+              apy: calculateApy(rgpPrice, USDT_RGPLiquidity, 1050),
             },
             {
-              deposit: await deposit(pool3.token0, pool3.token1),
+              deposit: "RGP-USDC", //await deposit(pool3.token0, pool3.token1),
               liquidity: RGP_USDCLiquidity,
-              apy: calculateApy(MRGPprice, RGP_USDCLiquidity, 1050),
+              apy: calculateApy(rgpPrice, RGP_USDCLiquidity, 1050),
             },
             // {
             //   deposit: "USDT - MATIC", // await deposit(pool4.token0, pool4.token1),
