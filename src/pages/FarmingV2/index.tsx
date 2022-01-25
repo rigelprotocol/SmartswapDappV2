@@ -185,7 +185,61 @@ export function Index() {
   const getFarmTokenBalance = async () => {
     if (account) {
       try {
-        const [RGPToken, poolOne, poolTwo, poolThree, poolFour, poolFive] =
+        if(Number(chainId) === Number(SupportedChainId.POLYGON)) {
+          const [RGPToken, poolOne, poolTwo, poolThree] =
+          await Promise.all([
+            rigelToken(RGP[chainId as number], library),
+            smartSwapLPTokenPoolOne(
+              SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
+              library
+            ),
+            smartSwapLPTokenPoolTwo(
+              SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
+              library
+            ),
+            smartSwapLPTokenPoolThree(
+              SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
+              library
+            ),
+            // smartSwapLPTokenV2PoolFour(
+            //   SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number],
+            //   library
+            // ),
+            // smartSwapLPTokenV2PoolFive(
+            //   SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
+            //   library
+            // ),
+          ]);
+
+        const [
+          RGPbalance,
+          poolOneBalance,
+          poolTwoBalance,
+          poolThreeBalance,
+          // poolFourBalance,
+          // poolFiveBalance,
+        ] = await Promise.all([
+          RGPToken.balanceOf(account),
+          poolOne.balanceOf(account),
+          poolTwo.balanceOf(account),
+          poolThree.balanceOf(account),
+          // poolFour.balanceOf(account),
+          // poolFive.balanceOf(account),
+        ]);
+
+        dispatch(
+          updateFarmBalances([
+            formatBigNumber(RGPbalance),
+            formatBigNumber(poolTwoBalance),
+            formatBigNumber(poolOneBalance),
+            formatBigNumber(poolThreeBalance),
+            // formatBigNumber(poolFourBalance),
+            // formatBigNumber(poolFiveBalance),
+          ])
+        );
+        } 
+        else {
+          const [RGPToken, poolOne, poolTwo, poolThree, poolFour, poolFive] =
           await Promise.all([
             rigelToken(RGP[chainId as number], library),
             smartSwapLPTokenPoolOne(
@@ -236,6 +290,8 @@ export function Index() {
             formatBigNumber(poolFiveBalance),
           ])
         );
+        }
+        
       } catch (error) {
         console.error(error, "getFarmTokenBalance => Farminv2");
       }
@@ -952,7 +1008,8 @@ export function Index() {
             >
               Liquidity Pools
             </Text>
-
+            {Number(chainId) === Number(SupportedChainId.POLYGON) ? null : (
+           
             <Select
               borderColor={
                 mode === LIGHT_THEME && selected === LIQUIDITY
@@ -993,6 +1050,7 @@ export function Index() {
               <option value={0}>V2</option>
               <option value={3}>V1</option>
             </Select>
+             )}
           </Tab>
           <Tab
             isDisabled={!switchTab || (Number(chainId) === Number(SupportedChainId.POLYGON))}
