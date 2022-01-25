@@ -163,7 +163,9 @@ export default createReducer(initialState, (builder) =>
 
   .addCase(updateTotalLiquidity, (state, action) => {
         const totalLiquidity = action.payload;
-        state.contents.length = totalLiquidity.length
+        // state.contents = initialState.contents;
+        // state.contents = totalLiquidity
+        // console.log(state.contents, "contents")
          totalLiquidity.forEach((item, index) => {
           state.contents[index].totalLiquidity = item.liquidity;
           state.contents[index].ARYValue = item.apy;
