@@ -1,14 +1,25 @@
-import {Currency} from '@uniswap/sdk-core';
-import {useEffect, useState} from 'react';
-import {useActiveWeb3React} from '../utils/hooks/useActiveWeb3React';
-import {smartFactory, SmartSwapRouter} from '../utils/Contracts';
-import {SMARTSWAPFACTORYADDRESSES, SMARTSWAPROUTER, WNATIVEADDRESSES,} from '../utils/addresses';
-import {ZERO_ADDRESS} from '../constants';
-import {ethers} from 'ethers';
+import { Currency } from "@uniswap/sdk-core";
+import { useEffect, useState } from "react";
+import { useActiveWeb3React } from "../utils/hooks/useActiveWeb3React";
+import {
+  smartFactory,
+  SmartSwapRouter,
+  LiquidityPairInstance,
+} from "../utils/Contracts";
+import {
+  SMARTSWAPFACTORYADDRESSES,
+  SMARTSWAPROUTER,
+  WNATIVEADDRESSES,
+} from "../utils/addresses";
+import { ZERO_ADDRESS } from "../constants";
+import { ethers } from "ethers";
+import { useSelector } from "react-redux";
+import { RootState } from "../state";
+import { getDecimals } from "../utils/utilsFunctions";
+import { getNativeAddress } from "../utils/hooks/usePools";
 
-const formatAmount = (number: string) => {
-  return ethers.utils.formatEther(number);
-
+const formatAmount = (number: string, decimal: number) => {
+  return ethers.utils.formatUnits(number, decimal);
 };
 
 export const useMint = (
@@ -21,6 +32,14 @@ export const useMint = (
   const [loading, setLoading] = useState<boolean>(false);
   const [amount, setAmount] = useState<string | undefined>("");
   const [wrap, setWrap] = useState<boolean>(false);
+
+  const independentFieldString = useSelector<RootState, string>(
+    (state) => state.mint.independentField
+  );
+
+  const independentFieldId = useSelector<RootState, string>(
+    (state) => state.mint
+  );
 
   let nativeAddress;
 
@@ -61,13 +80,17 @@ export const useMint = (
           setWrap(false);
           if (amountIn !== undefined) {
             //setLoading(!loading);
-            const pairinstance = await LiquidityPairInstance(pairAddress);
+            const pairinstance = await LiquidityPairInstance(
+              pairAddress,
+              library
+            );
             const token0 = await pairinstance.token0();
             const token1 = await pairinstance.token1();
             const reserves = await pairinstance.getReserves();
 
             const SwapRouter = await SmartSwapRouter(
-              SMARTSWAPROUTER[chainId as number], library
+              SMARTSWAPROUTER[chainId as number],
+              library
             );
 
             const outputAmount = await SwapRouter.quote(
@@ -75,8 +98,21 @@ export const useMint = (
               tokenOneAddress === token0 ? reserves[0] : reserves[1],
               tokenOneAddress === token0 ? reserves[1] : reserves[0]
             );
-            
-            const output = formatAmount(outputAmount.toString(), currencyB.decimals);
+
+            const dependentAddress =
+              tokenOneAddress ===
+              getNativeAddress(
+                independentFieldId[independentFieldString].currencyId
+              )
+                ? tokenTwoAddress
+                : tokenOneAddress;
+
+            const decimals = await getDecimals(
+              dependentAddress as string,
+              library
+            );
+
+            const output = formatAmount(outputAmount.toString(), decimals);
 
             setAmount(output);
           } else {

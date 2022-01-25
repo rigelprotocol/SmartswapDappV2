@@ -1,7 +1,7 @@
-import {Currency} from '@uniswap/sdk-core';
-import {useEffect, useState} from 'react';
-import {useActiveWeb3React} from '../utils/hooks/useActiveWeb3React';
-import {smartFactory, SmartSwapRouter} from '../utils/Contracts';
+import { Currency } from "@uniswap/sdk-core";
+import { useEffect, useState } from "react";
+import { useActiveWeb3React } from "../utils/hooks/useActiveWeb3React";
+import { smartFactory, SmartSwapRouter } from "../utils/Contracts";
 import {
   BUSD,
   RGPADDRESSES,
@@ -9,22 +9,26 @@ import {
   SMARTSWAPROUTER,
   USDT,
   WNATIVEADDRESSES,
-} from '../utils/addresses';
-import {ZERO_ADDRESS} from '../constants';
-import {ethers} from 'ethers';
-import {getAddress} from '../utils/hooks/usePools';
-import {SupportedChainSymbols} from '../utils/constants/chains';
+} from "../utils/addresses";
+import { ZERO_ADDRESS } from "../constants";
+import { ethers } from "ethers";
+import { getAddress } from "../utils/hooks/usePools";
+import { SupportedChainSymbols } from "../utils/constants/chains";
+import { useSelector } from "react-redux";
+import { RootState } from "../state";
+import { getNativeAddress } from "../utils/hooks/usePools";
+import { getDecimals } from "../utils/utilsFunctions";
 
-const formatAmount = (number: string) => {
+const formatAmount = (number: string, decimals: number) => {
   // const numb = ethers.BigNumber.from(number).toString();
   // let res = ethers.utils.formatEther(num);
   // res = (+res).toString();
   // return res;
-  return ethers.utils.formatUnits(number,);
+  return ethers.utils.formatUnits(number, decimals);
 };
-const formatWithDecimals = (amount: string, decimals: number) =>{
+const formatWithDecimals = (amount: string, decimals: number) => {
   return ethers.utils.formatUnits(amount, decimals);
-}
+};
 export const useSwap = (
   currencyA: Currency,
   currencyB: Currency,
@@ -33,10 +37,18 @@ export const useSwap = (
   const { chainId, library } = useActiveWeb3React();
   const [address, setAddress] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
-  const [amount, setAmount] = useState<string | undefined>('');
+  const [amount, setAmount] = useState<string | undefined>("");
   const [wrap, setWrap] = useState<boolean>(false);
   const [pathArray, setPath] = useState<string[] | undefined>(undefined);
-  const [pathSymbol, setPathSymbol] = useState('');
+  const [pathSymbol, setPathSymbol] = useState("");
+
+  const independentFieldString = useSelector<RootState, string>(
+    (state) => state.mint.independentField
+  );
+
+  const independentFieldId = useSelector<RootState, string>(
+    (state) => state.mint
+  );
 
   let nativeAddress;
 
@@ -55,7 +67,7 @@ export const useSwap = (
   const tokenTwoAddress = tokenB?.address || nativeAddress?.address;
   const wrappable: boolean = tokenOneAddress == tokenTwoAddress;
   let validSmartAddress: string;
-  if (SMARTSWAPFACTORYADDRESSES[chainId as number] !== '0x') {
+  if (SMARTSWAPFACTORYADDRESSES[chainId as number] !== "0x") {
     validSmartAddress = SMARTSWAPFACTORYADDRESSES[chainId as number];
   }
 
@@ -77,20 +89,22 @@ export const useSwap = (
           setWrap(false);
           if (amountIn !== undefined) {
             const SwapRouter = await SmartSwapRouter(
-              SMARTSWAPROUTER[chainId as number], library
+              SMARTSWAPROUTER[chainId as number],
+              library
             );
             const amountOut = await SwapRouter.getAmountsOut(amountIn, [
               tokenOneAddress,
               tokenTwoAddress,
             ]);
-            console.log(amountOut[1].toString())
+
+            console.log(amountOut[1].toString());
 
             const output = formatWithDecimals(amountOut[1], currencyB.decimals);
             setPath([tokenOneAddress as string, tokenTwoAddress as string]);
             setPathSymbol(`${currencyA.symbol} - ${currencyB.symbol}`);
             setAmount(output);
           } else {
-            setAmount('');
+            setAmount("");
           }
           // setLoading(false)
         } else if (!wrappable && address === ZERO_ADDRESS) {
@@ -100,10 +114,12 @@ export const useSwap = (
           const CurrencyA = getAddress(currencyA);
           const CurrencyB = getAddress(currencyB);
           const factory = await smartFactory(
-            SMARTSWAPFACTORYADDRESSES[chainId as number], library
+            SMARTSWAPFACTORYADDRESSES[chainId as number],
+            library
           );
           const SwapRouter = await SmartSwapRouter(
-            SMARTSWAPROUTER[chainId as number], library
+            SMARTSWAPROUTER[chainId as number],
+            library
           );
 
           const [
@@ -148,7 +164,6 @@ export const useSwap = (
                   firstAmount[1].toString(),
                   [USDT[chainId as number], CurrencyB]
                 );
-            
 
                 const output = formatAmount(secondAmount[1]);
                 setPath([
@@ -162,8 +177,8 @@ export const useSwap = (
 
                 setAmount(output);
               } else {
-                setAmount('');
-                setPathSymbol('');
+                setAmount("");
+                setPathSymbol("");
                 setPath([]);
               }
             } else if (
@@ -191,8 +206,8 @@ export const useSwap = (
 
                 setAmount(output);
               } else {
-                setAmount('');
-                setPathSymbol('');
+                setAmount("");
+                setPathSymbol("");
                 setPath([]);
               }
             } else if (
@@ -219,12 +234,11 @@ export const useSwap = (
                     SupportedChainSymbols[chainId as number]
                   } - ${currencyB.symbol}`
                 );
-            
 
                 setAmount(output);
               } else {
-                setAmount('');
-                setPathSymbol('');
+                setAmount("");
+                setPathSymbol("");
                 setPath([]);
               }
             } else if (
@@ -253,8 +267,8 @@ export const useSwap = (
 
                 setAmount(output);
               } else {
-                setAmount('');
-                setPathSymbol('');
+                setAmount("");
+                setPathSymbol("");
                 setPath([]);
               }
             } else if (
@@ -289,8 +303,8 @@ export const useSwap = (
 
                 setAmount(output);
               } else {
-                setAmount('');
-                setPathSymbol('');
+                setAmount("");
+                setPathSymbol("");
                 setPath([]);
               }
             } else if (
@@ -327,29 +341,28 @@ export const useSwap = (
 
                 setAmount(output);
               } else {
-                setAmount('');
-                setPathSymbol('');
+                setAmount("");
+                setPathSymbol("");
                 setPath([]);
               }
             }
           } catch (e) {
-            console.log('Selected Currency Address cannot be matched');
+            console.log("Selected Currency Address cannot be matched");
           }
         } else {
-          setAmount('');
-          setPathSymbol('');
+          setAmount("");
+          setPathSymbol("");
           setPath([]);
         }
-        console.log({amount})
+        console.log({ amount });
       } catch (e) {
         console.log(`Error occurs here: ${e}`);
-        setAmount('');
+        setAmount("");
       }
     };
 
     getPairs();
   }, [
-
     currencyA,
     currencyB,
     address,
