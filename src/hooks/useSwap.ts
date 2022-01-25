@@ -165,7 +165,7 @@ export const useSwap = (
                   [USDT[chainId as number], CurrencyB]
                 );
 
-                const output = formatAmount(secondAmount[1]);
+                const output = formatAmount(secondAmount[1], currencyB.decimals);
                 setPath([
                   CurrencyA as string,
                   USDT[chainId as number],
@@ -194,7 +194,7 @@ export const useSwap = (
                   firstAmount[1].toString(),
                   [RGPADDRESSES[chainId as number], CurrencyB]
                 );
-                const output = formatAmount(secondAmount[1]);
+                const output = formatAmount(secondAmount[1], currencyB.decimals);
                 setPath([
                   CurrencyA as string,
                   RGPADDRESSES[chainId as number],
@@ -223,7 +223,7 @@ export const useSwap = (
                   firstAmount[1].toString(),
                   [WNATIVEADDRESSES[chainId as number], CurrencyB]
                 );
-                const output = formatAmount(secondAmount[1]);
+                const output = formatAmount(secondAmount[1], currencyB.decimals);
                 setPath([
                   CurrencyA as string,
                   WNATIVEADDRESSES[chainId as number],
@@ -254,7 +254,7 @@ export const useSwap = (
                   firstAmount[1].toString(),
                   [BUSD[chainId as number], CurrencyB]
                 );
-                const output = formatAmount(secondAmount[1]);
+                const output = formatAmount(secondAmount[1], currencyB.decimals);
 
                 setPath([
                   CurrencyA as string,
@@ -290,7 +290,7 @@ export const useSwap = (
                   secondAmount[1].toString(),
                   [USDT[chainId as number], CurrencyB]
                 );
-                const output = formatAmount(thirdAmount[1]);
+                const output = formatAmount(thirdAmount[1], currencyB.decimals);
                 setPath([
                   CurrencyA as string,
                   RGPADDRESSES[chainId as number],
@@ -326,7 +326,7 @@ export const useSwap = (
                   secondAmount[1].toString(),
                   [WNATIVEADDRESSES[chainId as number], CurrencyB]
                 );
-                const output = formatAmount(thirdAmount[1]);
+                const output = formatAmount(thirdAmount[1], currencyB.decimals);
                 setPath([
                   CurrencyA as string,
                   USDT[chainId as number],
