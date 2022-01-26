@@ -51,7 +51,6 @@ import {
   RGPSPECIALPOOLADDRESSES,
 } from "../../utils/addresses";
 import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
-import { SMART_SWAP } from "../../utils/constants";
 import { useRGPBalance } from "../../utils/hooks/useBalances";
 import { updateFarmAllowances } from "../../state/farm/actions";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
@@ -105,8 +104,9 @@ const ShowYieldFarmDetails = ({content, wallet}: {
       if (signer !== "signer") {
         const rgpApproval = await contract.allowance(
             account,
-            SMART_SWAP.masterChefV2
+            MASTERCHEFV2ADDRESSES[chainId as number]
         );
+        console.log(rgpApproval, "rgpApproval")
         return !(rgpApproval.toString() <= 0);
       }
     };
@@ -119,12 +119,14 @@ const ShowYieldFarmDetails = ({content, wallet}: {
             SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number], library
         );
         const approvalForRGPBNB = await poolAllowance(poolTwo);
+        console.log(approvalForRGPBNB, "approval-usdt")
         changeApprovalButton(approvalForRGPBNB, rgpApproval);
       } else if (content.deposit === "RGP-BUSD" || content.deposit === "MATIC-RGP") {
         const poolOne = await smartSwapLPTokenPoolOne(
             SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number], library
         );
         const approvalForRGPBUSD = await poolAllowance(poolOne);
+        console.log(approvalForRGPBUSD, "approval-matic")
         changeApprovalButton(approvalForRGPBUSD, rgpApproval);
       } else if (content.deposit === "RGP") {
         changeApprovalButton(true, rgpApproval);
@@ -173,7 +175,9 @@ const ShowYieldFarmDetails = ({content, wallet}: {
       try {
         const rgp = await rigelToken(RGP[chainId as number], library);
         const walletBal = (await rgp.balanceOf(account)) + 400e18;
-        const data = await rgp.approve(SMART_SWAP.specialPool, walletBal, {
+        const data = await rgp.approve(
+          RGPSPECIALPOOLADDRESSES[chainId as number] , 
+          walletBal, {
           from: account,
           // gasLimit: 150000,
           // gasPrice: ethers.utils.parseUnits("20", "gwei"),
@@ -1002,13 +1006,19 @@ const ShowYieldFarmDetails = ({content, wallet}: {
                     w='45%'
                     h='40px'
                     borderRadius='6px'
-                    bg={mode === DARK_THEME ? "#319EF6" : "#319EF6"}
+                    bg={mode === DARK_THEME && (content.tokensStaked[1]) > 0 ? "#319EF6" : "#4A739B"}
                     color={mode === DARK_THEME ? "#FFFFFF" : "#FFFFFF"}
+                    // {
+                    //   bg={mode === DARK_THEME ? "#4A739B" : "#999999"}
+                    //   color={mode === DARK_THEME ? "#FFFFFF" : "#FFFFFF"}
+    
+                    // }
                     border='0'
                     mb='4'
                     mr='6'
                     padding='10px 40px'
                     cursor='pointer'
+                    disabled={parseFloat(content.tokensStaked[1]) <= 0}
                     onClick={openDepositeModal}
                 >
                   Deposit
