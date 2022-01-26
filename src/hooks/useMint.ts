@@ -1,8 +1,11 @@
 import { Currency } from "@uniswap/sdk-core";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useActiveWeb3React } from "../utils/hooks/useActiveWeb3React";
-import { useState } from "react";
-import { smartFactory, SmartSwapRouter } from "../utils/Contracts";
+import {
+  smartFactory,
+  SmartSwapRouter,
+  LiquidityPairInstance,
+} from "../utils/Contracts";
 import {
   SMARTSWAPFACTORYADDRESSES,
   SMARTSWAPROUTER,
@@ -10,11 +13,13 @@ import {
 } from "../utils/addresses";
 import { ZERO_ADDRESS } from "../constants";
 import { ethers } from "ethers";
-import { LiquidityPairInstance } from "../utils/Contracts";
+import { useSelector } from "react-redux";
+import { RootState } from "../state";
+import { getDecimals } from "../utils/utilsFunctions";
+import { getNativeAddress } from "../utils/hooks/usePools";
 
-const formatAmount = (amount: string, decimals: number) => {
-  const num = ethers.utils.formatUnits(amount, decimals);
-  return num;
+const formatAmount = (number: string, decimal: number) => {
+  return ethers.utils.formatUnits(number, decimal);
 };
 
 export const useMint = (
@@ -22,11 +27,19 @@ export const useMint = (
   currencyB: Currency,
   amountIn?: string
 ) => {
-  const { chainId } = useActiveWeb3React();
+  const { chainId, library } = useActiveWeb3React();
   const [address, setAddress] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
   const [amount, setAmount] = useState<string | undefined>("");
   const [wrap, setWrap] = useState<boolean>(false);
+
+  const independentFieldString = useSelector<RootState, string>(
+    (state) => state.mint.independentField
+  );
+
+  const independentFieldId = useSelector<RootState, string>(
+    (state) => state.mint
+  );
 
   let nativeAddress;
 
@@ -52,7 +65,7 @@ export const useMint = (
   useEffect(() => {
     const getPairs = async () => {
       try {
-        const SmartFactory = await smartFactory(validSmartAddress);
+        const SmartFactory = await smartFactory(validSmartAddress, library);
         const pairAddress = await SmartFactory.getPair(
           tokenOneAddress,
           tokenTwoAddress
@@ -67,13 +80,17 @@ export const useMint = (
           setWrap(false);
           if (amountIn !== undefined) {
             //setLoading(!loading);
-            const pairinstance = await LiquidityPairInstance(pairAddress);
+            const pairinstance = await LiquidityPairInstance(
+              pairAddress,
+              library
+            );
             const token0 = await pairinstance.token0();
             const token1 = await pairinstance.token1();
             const reserves = await pairinstance.getReserves();
 
             const SwapRouter = await SmartSwapRouter(
-              SMARTSWAPROUTER[chainId as number]
+              SMARTSWAPROUTER[chainId as number],
+              library
             );
 
             const outputAmount = await SwapRouter.quote(
@@ -81,8 +98,21 @@ export const useMint = (
               tokenOneAddress === token0 ? reserves[0] : reserves[1],
               tokenOneAddress === token0 ? reserves[1] : reserves[0]
             );
-            
-            const output = formatAmount(outputAmount.toString(), currencyB.decimals);
+
+            const dependentAddress =
+              tokenOneAddress ===
+              getNativeAddress(
+                independentFieldId[independentFieldString].currencyId
+              )
+                ? tokenTwoAddress
+                : tokenOneAddress;
+
+            const decimals = await getDecimals(
+              dependentAddress as string,
+              library
+            );
+
+            const output = formatAmount(outputAmount.toString(), decimals);
 
             setAmount(output);
           } else {

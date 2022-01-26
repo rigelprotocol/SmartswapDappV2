@@ -14,13 +14,14 @@ import {
   Select,
   Button,
   useMediaQuery,
+  Stack,
+  Divider
 } from "@chakra-ui/react";
 import { useHistory } from "react-router-dom";
 import { useColorModeValue } from "@chakra-ui/react";
 import YieldFarm from "./YieldFarm";
 // import { contents } from './mock'
 import { AlertSvg } from "./Icon";
-import { useWeb3React } from "@web3-react/core";
 import { useRouteMatch } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -57,7 +58,8 @@ import {
 import { formatBigNumber } from "../../utils";
 import { RootState } from "../../state";
 import { SupportedChainId } from "../../constants/chains";
-import { useNativeBalance, useRGPBalance } from "../../utils/hooks/useBalances";
+import { useNativeBalance } from "../../utils/hooks/useBalances";
+import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 
 export const BIG_TEN = new bigNumber(10);
 
@@ -108,18 +110,17 @@ export function Index() {
 
   //const { data: farmsLP } = useFarms()
   // const [farms, setFarms] = useState(contents);
-  const { account, chainId, library } = useWeb3React();
+  const { account, chainId, library } = useActiveWeb3React();
   const dispatch = useDispatch();
   let match = useRouteMatch("/farming-V2/staking-RGP");
   const FarmData = useFarms();
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
+
   const [Balance, Symbol] = useNativeBalance();
   const wallet = {
     balance: Balance,
     address: account,
-    provider: provider,
-    signer: signer,
+    provider: library,
+    signer: library?.getSigner(),
     chainId: chainId,
   };
 
@@ -186,21 +187,21 @@ export function Index() {
       try {
         const [RGPToken, poolOne, poolTwo, poolThree, poolFour, poolFive] =
           await Promise.all([
-            rigelToken(RGP[chainId as number]),
+            rigelToken(RGP[chainId as number], library),
             smartSwapLPTokenPoolOne(
-              SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]
+              SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number], library
             ),
             smartSwapLPTokenPoolTwo(
-              SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number]
+              SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number], library
             ),
             smartSwapLPTokenPoolThree(
-              SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number]
+              SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number], library
             ),
             smartSwapLPTokenV2PoolFour(
-              SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number]
+              SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number], library
             ),
             smartSwapLPTokenV2PoolFive(
-              SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number]
+              SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number], library
             ),
           ]);
 
@@ -242,21 +243,21 @@ export function Index() {
     try {
       const [specialPool, pool1, pool2, pool3, pool4, pool5] =
         await Promise.all([
-          RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
+          RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library),
           smartSwapLPTokenPoolOne(
-            SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]
+            SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number], library
           ),
           smartSwapLPTokenPoolTwo(
-            SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number]
+            SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number], library
           ),
           smartSwapLPTokenPoolThree(
-            SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number]
+            SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number], library
           ),
           smartSwapLPTokenV2PoolFour(
-            SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number]
+            SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number], library
           ),
           smartSwapLPTokenV2PoolFive(
-            SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number]
+            SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number], library
           ),
         ]);
 
@@ -276,10 +277,8 @@ export function Index() {
         pool5.getReserves(),
       ]);
       const deposit = async (token0: any, token1: any) => {
-        let sym0 = await (await smartSwapLPTokenV2(await token0())).symbol();
-        let sym1 = await (await smartSwapLPTokenV2(await token1())).symbol();
-        if (sym0 === "WMATIC") sym0 = "MATIC";
-        if (sym1 === "WMATIC") sym1 = "MATIC";
+        const sym0 = await (await smartSwapLPTokenV2(await token0(), library)).symbol();
+        const sym1 = await (await smartSwapLPTokenV2(await token1(), library)).symbol();
         return `${sym0}-${sym1}`;
       };
 
@@ -437,8 +436,8 @@ export function Index() {
     if (account) {
       try {
         const specialPool = await RGPSpecialPool(
-          RGPSPECIALPOOLADDRESSES[chainId as number]
-        );
+          RGPSPECIALPOOLADDRESSES[chainId as number], library
+        )
         const RGPStakedEarned = await Promise.all([
           specialPool.userData(account),
           specialPool.calculateRewards(account),
@@ -453,7 +452,7 @@ export function Index() {
     try {
       if (account) {
         const masterChefV2 = await MasterChefV2Contract(
-          MASTERCHEFV2ADDRESSES[chainId as number]
+          MASTERCHEFV2ADDRESSES[chainId as number], library
         );
         const [
           poolOneEarned,
@@ -644,7 +643,8 @@ export function Index() {
         my={4}
         isFitted={isMobileDevice ? true : false}
       >
-        <TabList>
+ 
+        <TabList borderBottom={0}>
           <Tab
             isDisabled={switchTab}
             display='flex'
@@ -654,7 +654,7 @@ export function Index() {
             flexWrap={isMobileDevice ? "wrap" : undefined}
             padding='4px 12px'
             border='1px solid #DEE5ED !important'
-            borderRadius='6px 0px 0px 0px'
+            borderRadius='10px 0px 0px 10px'
             background={
               mode === LIGHT_THEME && selected === STAKING
                 ? "#FFFFFF !important"
@@ -666,9 +666,9 @@ export function Index() {
                 ? "#DEE5ED !important"
                 : "#DEE5ED !important"
             }
-            px={5}
-            py={4}
-            minWidth={{ base: "none", md: "200px", lg: "200px" }}
+            // px={5}
+            // py={4}
+            // minWidth={{ base: "none", md: "200px", lg: "200px" }}
             value={LIQUIDITY}
             onClick={() => handleSelect(LIQUIDITY)}
             borderColor={
@@ -696,6 +696,7 @@ export function Index() {
                   : "#333333"
               }
               fontSize={isMobileDevice ? "14px" : undefined}
+              mt="2"
             >
               Liquidity Pools
             </Text>
@@ -722,10 +723,10 @@ export function Index() {
                   ? "#333333"
                   : "#333333"
               }
+
               onChange={handleLiquidityTab}
               background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
-              /* Dark Mode / Blue / 1 */
-
+              cursor="pointer"
               border=' 1px solid #008DFF'
               box-sizing='border-box'
               borderRadius='50px'
@@ -734,7 +735,7 @@ export function Index() {
               flex='none'
               order='1'
               flex-grow='0'
-              margin='0px 16px'
+              margin='10px 16px'
             >
               <option value={0}>V2</option>
               <option value={3}>V1</option>
@@ -746,6 +747,7 @@ export function Index() {
             flex-direction='row'
             justify-content='center'
             align-items='center'
+            flexWrap={isMobileDevice ? "wrap" : undefined}
             padding='4px 12px'
             borderRadius='0px 0px 0px 0px'
             border='1px solid #DEE5ED'
@@ -782,12 +784,28 @@ export function Index() {
                 ? "#F2F5F8 !important"
                 : "#F2F5F8 !important"
             }
-            px={5}
-            py={4}
-            minWidth={{ base: "none", md: "200px", lg: "200px" }}
+            // px={5}
+            // py={4}
+            // minWidth={{ base: "none", md: "200px", lg: "200px" }}
             onClick={() => handleSelect(STAKING)}
           >
-            <Text>Staking</Text>
+             <Text
+              color={
+                mode === LIGHT_THEME && selected === LIQUIDITY
+                  ? "#333333"
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                  ? "#F1F5F8"
+                  : mode === DARK_THEME && selected === STAKING
+                  ? "#F1F5F8"
+                  : mode === LIGHT_THEME && selected === STAKING
+                  ? "#333333"
+                  : "#333333"
+              }
+              fontSize={isMobileDevice ? "14px" : undefined}
+              mt="2"
+            >
+              Staking
+            </Text>
             <Select
               borderColor={
                 mode === LIGHT_THEME && selected === LIQUIDITY
@@ -800,6 +818,7 @@ export function Index() {
                   ? "#F2F5F8 !important"
                   : "#F2F5F8 !important"
               }
+              cursor="pointer"
               color={
                 mode === LIGHT_THEME && selected === LIQUIDITY
                   ? "#333333"
@@ -819,11 +838,11 @@ export function Index() {
               box-sizing='border-box'
               borderRadius='50px'
               /* Inside auto layout */
-              width='fit-content'
+              width={isMobileDevice ? undefined : "fit-content"}
               flex='none'
               order='1'
               flex-grow='0'
-              margin='0px 16px'
+              margin='10px 16px'
             >
               <option value={1}>V1</option>
               <option value={4}>V2</option>
@@ -831,7 +850,7 @@ export function Index() {
           </Tab>
           <Tab
             isDisabled={true}
-            borderRadius='0px 6px 0px 0px'
+            borderRadius='0px 10px 10px 0px'
             border='1px solid #DEE5ED'
             background={
               mode === LIGHT_THEME && selected === LIQUIDITY
@@ -866,14 +885,15 @@ export function Index() {
                 ? "#F2F5F8 !important"
                 : "#F2F5F8 !important"
             }
-            px={5}
-            py={4}
-            minWidth={{ base: "none", md: "200px", lg: "200px" }}
+            // px={5}
+            // py={4}
+            // minWidth={{ base: "none", md: "200px", lg: "200px" }}
             // onClick={() => handleSelect(OTHER_FARMS)}
           >
             <Text>Other Farms</Text>
           </Tab>
         </TabList>
+        <Divider my="4" />
         <TabPanels padding='0px'>
           <TabPanel padding='0px'>
             <Flex

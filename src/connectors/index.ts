@@ -3,11 +3,20 @@ import { InjectedConnector } from '@web3-react/injected-connector';
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 import { BscConnector } from '@binance-chain/bsc-connector';
 import { NetworkConnector } from './NetworkConnector';
-import { ALL_SUPPORTED_CHAIN_IDS } from '../constants/chains';
-// import SMARTSWAP_LOGO from '../assets/images/rgpLogo.webp'
-// import Logo from '/logo192.png'
+import {ALL_SUPPORTED_CHAIN_IDS, SupportedChainId} from '../constants/chains';
 
 const NETWORK_URL = process.env.REACT_APP_NETWORK_URL;
+
+const RPC = {
+    [SupportedChainId.BINANCE]: `https://bsc-dataseed.binance.org`,
+    [SupportedChainId.BINANCETEST]: 'https://data-seed-prebsc-2-s3.binance.org:8545',
+    [SupportedChainId.ROPSTEN]: 'https://eth-ropsten.alchemyapi.io/v2/cidKix2Xr-snU3f6f6Zjq_rYdalKKHmW',
+    [SupportedChainId.RINKEBY]: 'https://eth-rinkeby.alchemyapi.io/v2/XVLwDlhGP6ApBXFz_lfv0aZ6VmurWhYD',
+    [SupportedChainId.GOERLI]: 'https://eth-goerli.alchemyapi.io/v2/Dkk5d02QjttYEoGmhZnJG37rKt8Yl3Im',
+    [SupportedChainId.KOVAN]: 'https://eth-kovan.alchemyapi.io/v2/6OVAa_B_rypWWl9HqtiYK26IRxXiYqER',
+    [SupportedChainId.POLYGON]: `https://rpc-mainnet.maticvigil.com/`,
+    [SupportedChainId.POLYGONTEST]: 'https://rpc-mumbai.matic.today',
+};
 
 export enum ConnectorNames {
   Injected = "injected",
@@ -26,7 +35,7 @@ if (typeof NETWORK_URL === 'undefined') {
 }
 
 export const network = new NetworkConnector({
-  urls: { [NETWORK_CHAIN_ID]: NETWORK_URL },
+    urls: { [NETWORK_CHAIN_ID]: NETWORK_URL },
 });
 
 let networkLibrary: Web3Provider | undefined;
@@ -46,12 +55,11 @@ export const bscConnector = new BscConnector({
 });
 
 export const walletconnect = new WalletConnectConnector({
-  rpc: {
-      56 : NETWORK_URL
-  },
-  bridge: 'https://bridge.walletconnect.org',
-  qrcode: true,
-  pollingInterval: 15000,
+     supportedChainIds: ALL_SUPPORTED_CHAIN_IDS,
+    rpc: RPC,
+    qrcode: true,
+    // bridge: 'https://bridge.walletconnect.org',
+    // pollingInterval: 15000,
 });
 
 // export const walletlink = new WalletLinkConnector({

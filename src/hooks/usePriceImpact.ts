@@ -1,20 +1,20 @@
 import React, { useMemo, useState } from 'react';
 import { SmartSwapRouter } from '../utils/Contracts';
 import { SMARTSWAPROUTER } from '../utils/addresses';
-import { useWeb3React } from '@web3-react/core';
 import { ethers } from 'ethers';
+import {useActiveWeb3React} from "../utils/hooks/useActiveWeb3React";
 
 export const useCalculatePriceImpact = (
   routeAddress: any,
   amountIn: number,
   fromAmount: number
 ) => {
-  const { account, chainId } = useWeb3React();
+  const { account, chainId, library } = useActiveWeb3React();
   const [priceImpact, setPriceImpact] = useState('');
 
   useMemo(async () => {
     if (routeAddress && amountIn && fromAmount) {
-      const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number]);
+      const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
       if (routeAddress.length === 2) {
         try {
           const price = await rout.getAmountsOut(

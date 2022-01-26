@@ -1,14 +1,9 @@
 import React from 'react';
-import {
-  ModalOverlay,
-  ModalContent,
-  Modal,
-  ModalCloseButton,
-  useColorModeValue,
-} from '@chakra-ui/react';
+import {Modal, ModalCloseButton, ModalContent, ModalOverlay, useColorModeValue,} from '@chakra-ui/react';
 import WalletOptions from '../WalletOptions';
-import { ConnectorNames, connectorKey } from '../../../connectors';
+import {connectorKey, ConnectorNames} from '../../../connectors';
 import useAuth from '../../../utils/hooks/useAuth';
+import {useActiveWeb3React} from "../../../utils/hooks/useActiveWeb3React";
 
 const NetworkModal = ({
   displayNetwork,
