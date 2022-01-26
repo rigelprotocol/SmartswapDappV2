@@ -320,14 +320,6 @@ const SendToken = () => {
         })
       );
 
-      console.log({
-        parsedAmount,
-        parsedOutput,
-        parsedAmounts,
-        pathArray,
-        account,
-        dl,
-      });
       const sendTransaction = await route.swapExactTokensForTokens(
         parsedAmount,
         outputToken,

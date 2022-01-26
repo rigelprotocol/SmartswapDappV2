@@ -136,7 +136,6 @@ export function useDerivedSwapInfo(): {
   );
 
   const showWrap = wrap;
-console.log({amount, parsedAmount})
   const bestTrade = amount;
   // console.log(pathArray);
 

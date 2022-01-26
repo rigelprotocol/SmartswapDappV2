@@ -92,7 +92,6 @@ const Remove = () => {
     const load = async () => {
       const details = await data;
       if (details && !cancel) {
-        console.log({details})
         try {
           setHasBeenApproved(details.approved);
           setPool(details.LiquidityPairData);

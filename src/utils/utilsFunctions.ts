@@ -94,7 +94,6 @@ export const switchNetwork = async (
     rpcUrls: ["https://bsc-dataseed.binance.org"],
     blockExplorerUrls: ["https://bscscan.com"],
   };
-  console.log({ chainId });
   if (chainId === "0x1") {
     library?.send("wallet_switchEthereumChain", [{ chainId }, account]);
   } else if (chainId === "0x3") {
