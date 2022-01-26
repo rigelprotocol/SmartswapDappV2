@@ -97,7 +97,6 @@ export const useSwap = (
               tokenTwoAddress,
             ]);
 
-            console.log(amountOut[1].toString());
 
             const output = formatWithDecimals(amountOut[1], currencyB.decimals);
             setPath([tokenOneAddress as string, tokenTwoAddress as string]);
@@ -354,7 +353,6 @@ export const useSwap = (
           setPathSymbol("");
           setPath([]);
         }
-        console.log({ amount });
       } catch (e) {
         console.log(`Error occurs here: ${e}`);
         setAmount("");
