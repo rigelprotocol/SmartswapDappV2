@@ -47,7 +47,7 @@ export function getExplorerLink(
   if (chainId === SupportedChainId.POLYGONTEST) {
     switch (type) {
       case ExplorerDataType.TRANSACTION:
-        return `https://mumbai.polygonscan.com/tx/${data}`;
+        return `uu`;
       case ExplorerDataType.ADDRESS:
       case ExplorerDataType.TOKEN:
         return `https://mumbai.polygonscan.com/address/${data}`;
