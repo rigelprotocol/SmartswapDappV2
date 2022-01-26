@@ -75,7 +75,15 @@ const TransactionStateModal: React.FC = () => {
                                         <Circle size="80px" background={bgColour} my={3}>
                                             <CloseIcon width="30px" height="30" color={errorBgColour} />
                                         </Circle>
-                                    </Circle> : null}
+                                    </Circle> :
+                                     modalDetails?.trxState === TrxState.MinimumStake ?
+                                     <Circle size="90px" background={errorBgColour} my={8}>
+                                         <Circle size="80px" background={bgColour} my={3}>
+                                             <CloseIcon width="30px" height="30" color={errorBgColour} />
+                                         </Circle>
+                                     </Circle> :
+                                     null
+                                     }
 
 
                         <Text fontSize="20px" fontWeight="normal" color={textColour}>
@@ -84,10 +92,17 @@ const TransactionStateModal: React.FC = () => {
                                 modalDetails?.trxState === TrxState.WaitingForConfirmation ?
                                     " Waiting for Confirmation" :
                                     modalDetails?.trxState === TrxState.TransactionFailed ?
-                                        " Transaction Not Successful" : null}
+                                        " Transaction Not Successful" :
+                                        modalDetails?.trxState === TrxState.MinimumStake ?
+                                        " Transaction Not Completed" :
+                                         null}
                         </Text>
 
                         {modalDetails?.trxState === TrxState.WaitingForConfirmation ?
+                            <Text fontSize="16px" py={5} fontWeight="bold" color={textColour}>
+                                {modalDetails?.message}
+                            </Text> :
+                            modalDetails?.trxState === TrxState.MinimumStake ?
                             <Text fontSize="16px" py={5} fontWeight="bold" color={textColour}>
                                 {modalDetails?.message}
                             </Text> :

@@ -767,6 +767,16 @@ const ShowYieldFarmDetails = ({
           }
         );
       } else if (stakingVersion === V2) {
+        if(Number(depositTokenValue) < 1000) {
+          
+      dispatch(
+        setOpenModal({
+          trxState: TrxState.MinimumStake,
+          message: ` ${depositTokenValue} RGP is below the minimum 1000 RGP `,
+        })
+      );
+      return;
+        }
         const specialPool = await RGPSpecialPool2(
           RGPSPECIALPOOLADDRESSES2[chainId as number]
         );
