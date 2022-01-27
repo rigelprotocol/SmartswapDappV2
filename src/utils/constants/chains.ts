@@ -10,6 +10,7 @@ export const SupportedChainSymbols: { [key: string]: string } = {
   "137": "MATIC",
   "80001": "MATIC",
   "42261": "ROSE",
+  "42262": "ROSE",
 };
 
 export const SupportedChainName: { [key: string]: string } = {
@@ -21,6 +22,7 @@ export const SupportedChainName: { [key: string]: string } = {
   "137": "Matic",
   "80001": "Matic",
   "42261": "ROSE",
+  "42262": "ROSE",
 };
 
 export const SupportedChainLogo: { [key: string]: string } = {
