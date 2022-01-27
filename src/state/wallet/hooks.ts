@@ -29,7 +29,6 @@ import JSBI from "jsbi";
               console.log({token,currency})
             const value = await token.balanceOf(account);
             
-              console.log({value})
             const amount = value ? JSBI.BigInt(value.toString()) : undefined;
            if(amount && chainId){
              const amountValue = parseFloat(ethers.utils.formatUnits(amount.toString(), currency.decimals))
