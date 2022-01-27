@@ -443,11 +443,11 @@ const ShowYieldFarmDetails = ({content, wallet}: {
       if (account) {
         if (val === "RGP") {
           await RGPUnstake();
-        } else if (val === "RGP-BNB") {
+        } else if (val === "RGP-BNB" || val === "RGP-USDT") {
           await tokensWithdrawal(2);
-        } else if (val === "RBG-BUSD") {
+        } else if (val === "RBG-BUSD" || val === "MATIC-RGP") {
           await tokensWithdrawal(1);
-        } else if (val === "BNB-BUSD") {
+        } else if (val === "BNB-BUSD" || val === "RGP-USDC") {
           await tokensWithdrawal(3);
         } else if (val === "AXS-RGP") {
           await tokensWithdrawal(4);
@@ -702,11 +702,11 @@ const ShowYieldFarmDetails = ({content, wallet}: {
       if (account) {
         if (val === "RGP") {
           await RGPuseStake(depositTokenValue);
-        } else if (val === "RGP-BNB") {
+        } else if (val === "RGP-BNB" || val === "RGP-USDT") {
           await LPDeposit(2);
-        } else if (val === "BNB-BUSD") {
+        } else if (val === "BNB-BUSD" || val === "RGP-USDC") {
           await LPDeposit(3);
-        } else if (val === "RGP-BUSD") {
+        } else if (val === "RGP-BUSD" || val === "MATIC-RGP") {
           await LPDeposit(1);
         } else if (val === "AXS-RGP") {
           await LPDeposit(4);
@@ -1006,7 +1006,7 @@ const ShowYieldFarmDetails = ({content, wallet}: {
                     w='45%'
                     h='40px'
                     borderRadius='6px'
-                    bg={mode === DARK_THEME && (content.tokensStaked[1]) > 0 ? "#319EF6" : "#4A739B"}
+                    bg={mode === DARK_THEME && !approveValueForRGP ? "#319EF6" : "#4A739B"}
                     color={mode === DARK_THEME ? "#FFFFFF" : "#FFFFFF"}
                     // {
                     //   bg={mode === DARK_THEME ? "#4A739B" : "#999999"}
@@ -1018,7 +1018,7 @@ const ShowYieldFarmDetails = ({content, wallet}: {
                     mr='6'
                     padding='10px 40px'
                     cursor='pointer'
-                    disabled={parseFloat(content.tokensStaked[1]) <= 0}
+                    disabled={!approveValueForRGP}
                     onClick={openDepositeModal}
                 >
                   Deposit
