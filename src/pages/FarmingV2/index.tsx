@@ -621,8 +621,9 @@ export function Index() {
 
       <Flex justifyContent='flex-end'>
         <Link
+          href='https://docs.google.com/forms/d/e/1FAIpQLSdJGAuABrJd6d0WSprUWB140we9hGqa-IwIbonx9ZJhxN2zsg/viewform'
           position={{ base: "relative", md: "absolute" }}
-          href="https://docs.google.com/forms/d/e/1FAIpQLSdJGAuABrJd6d0WSprUWB140we9hGqa-IwIbonx9ZJhxN2zsg/viewform" isExternal
+          isExternal
         >
           <Button
             background='#4CAFFF'
