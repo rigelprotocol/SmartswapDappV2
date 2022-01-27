@@ -228,12 +228,12 @@
       "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xc778417E063141139Fce010982780140Aa0cD5Ab/logo.png"
     },
     {
-      "name": "USD Coin",
-      "address": "0x10109Fc961dCA80DAb569bd38b8D20b12B25028A",
-      "symbol": "USDC",
+      "name": "Tether USD",
+      "address": "0xa30b641533D2509089CeF6F097a5BFB62dF7BC8b",
+      "symbol": "USDT",
       "decimals": 6,
       "chainId": 42261,
-      "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg"
+      "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
     },
     {
       "name": "Wrapped ROSE",
