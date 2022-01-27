@@ -233,7 +233,7 @@
       "symbol": "USDT",
       "decimals": 6,
       "chainId": 42261,
-      "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg"
+      "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
     },
     {
       "name": "Wrapped ROSE",
