@@ -170,7 +170,7 @@ export function Index() {
       changeVersion("/farming-v2");
     }
   };
-
+  
   const showProject = () => {
     changeVersion(
       "https://docs.google.com/forms/d/e/1FAIpQLSdJGAuABrJd6d0WSprUWB140we9hGqa-IwIbonx9ZJhxN2zsg/viewform",
@@ -1135,7 +1135,7 @@ export function Index() {
               <option value={1}>V1</option>
               <option value={4}>V2</option>
             </Select>
-            }
+            )}
            
           </Tab>
           <Tab
