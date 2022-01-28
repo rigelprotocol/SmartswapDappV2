@@ -51,7 +51,6 @@ import {
   RGPSPECIALPOOLADDRESSES,
 } from "../../utils/addresses";
 import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
-import { SMART_SWAP } from "../../utils/constants";
 import { useRGPBalance } from "../../utils/hooks/useBalances";
 import { updateFarmAllowances } from "../../state/farm/actions";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
@@ -105,8 +104,9 @@ const ShowYieldFarmDetails = ({content, wallet}: {
       if (signer !== "signer") {
         const rgpApproval = await contract.allowance(
             account,
-            SMART_SWAP.masterChefV2
+            MASTERCHEFV2ADDRESSES[chainId as number]
         );
+        console.log(rgpApproval, "rgpApproval")
         return !(rgpApproval.toString() <= 0);
       }
     };
@@ -114,21 +114,23 @@ const ShowYieldFarmDetails = ({content, wallet}: {
     const checkForApproval = async () => {
       const rgp = await rigelToken(RGP[chainId as number], library);
       const rgpApproval = await poolAllowance(rgp);
-      if (content.deposit === "RGP-BNB") {
+      if (content.deposit === "RGP-BNB" || content.deposit === "RGP-USDT") {
         const poolTwo = await smartSwapLPTokenPoolTwo(
             SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number], library
         );
         const approvalForRGPBNB = await poolAllowance(poolTwo);
+        console.log(approvalForRGPBNB, "approval-usdt")
         changeApprovalButton(approvalForRGPBNB, rgpApproval);
-      } else if (content.deposit === "RGP-BUSD") {
+      } else if (content.deposit === "RGP-BUSD" || content.deposit === "MATIC-RGP") {
         const poolOne = await smartSwapLPTokenPoolOne(
             SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number], library
         );
         const approvalForRGPBUSD = await poolAllowance(poolOne);
+        console.log(approvalForRGPBUSD, "approval-matic")
         changeApprovalButton(approvalForRGPBUSD, rgpApproval);
       } else if (content.deposit === "RGP") {
         changeApprovalButton(true, rgpApproval);
-      } else if (content.deposit === "BNB-BUSD") {
+      } else if (content.deposit === "BNB-BUSD" || content.deposit === "RGP-USDC") {
         const poolThree = await smartSwapLPTokenPoolThree(
             SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number], library
         );
@@ -173,7 +175,9 @@ const ShowYieldFarmDetails = ({content, wallet}: {
       try {
         const rgp = await rigelToken(RGP[chainId as number], library);
         const walletBal = (await rgp.balanceOf(account)) + 400e18;
-        const data = await rgp.approve(SMART_SWAP.specialPool, walletBal, {
+        const data = await rgp.approve(
+          RGPSPECIALPOOLADDRESSES[chainId as number] , 
+          walletBal, {
           from: account,
           // gasLimit: 150000,
           // gasPrice: ethers.utils.parseUnits("20", "gwei"),
@@ -199,7 +203,7 @@ const ShowYieldFarmDetails = ({content, wallet}: {
 
   const checkUser = async (val) => {
     if (signer !== "signer") {
-      if (val === "RGP-BNB") {
+      if (val === "RGP-BNB" || val === "RGP-USDT") {
         const poolTwo = await smartSwapLPTokenPoolTwo(
             SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number], library
         );
@@ -213,7 +217,7 @@ const ShowYieldFarmDetails = ({content, wallet}: {
         }
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
-      } else if (val === "BNB-BUSD") {
+      } else if (val === "BNB-BUSD" || val === "RGP-USDC") {
         const poolThree = await smartSwapLPTokenPoolThree(
             SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number], library
         );
@@ -227,7 +231,7 @@ const ShowYieldFarmDetails = ({content, wallet}: {
         }
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
-      } else if (val === "RGP-BUSD") {
+      } else if (val === "RGP-BUSD" || val === "MATIC-RGP") {
         const poolOne = await smartSwapLPTokenPoolOne(
             SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number], library
         );
@@ -439,11 +443,11 @@ const ShowYieldFarmDetails = ({content, wallet}: {
       if (account) {
         if (val === "RGP") {
           await RGPUnstake();
-        } else if (val === "RGP-BNB") {
+        } else if (val === "RGP-BNB" || val === "RGP-USDT") {
           await tokensWithdrawal(2);
-        } else if (val === "RBG-BUSD") {
+        } else if (val === "RBG-BUSD" || val === "MATIC-RGP") {
           await tokensWithdrawal(1);
-        } else if (val === "BNB-BUSD") {
+        } else if (val === "BNB-BUSD" || val === "RGP-USDC") {
           await tokensWithdrawal(3);
         } else if (val === "AXS-RGP") {
           await tokensWithdrawal(4);
@@ -698,11 +702,11 @@ const ShowYieldFarmDetails = ({content, wallet}: {
       if (account) {
         if (val === "RGP") {
           await RGPuseStake(depositTokenValue);
-        } else if (val === "RGP-BNB") {
+        } else if (val === "RGP-BNB" || val === "RGP-USDT") {
           await LPDeposit(2);
-        } else if (val === "BNB-BUSD") {
+        } else if (val === "BNB-BUSD" || val === "RGP-USDC") {
           await LPDeposit(3);
-        } else if (val === "RGP-BUSD") {
+        } else if (val === "RGP-BUSD" || val === "MATIC-RGP") {
           await LPDeposit(1);
         } else if (val === "AXS-RGP") {
           await LPDeposit(4);
@@ -838,20 +842,24 @@ const ShowYieldFarmDetails = ({content, wallet}: {
   };
 
   const approveLPToken = async (LPToken: any) => {
+    console.log(LPToken, "tokens")
     switch (LPToken) {
       case "RGP-BUSD":
+        case "MATIC-RGP":
         const poolOne = await smartSwapLPTokenPoolOne(
             SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number], library
         );
         LPApproval(poolOne);
         break;
       case "RGP-BNB":
+        case "RGP-USDT":
         const poolTwo = await smartSwapLPTokenPoolTwo(
             SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number], library
         );
         LPApproval(poolTwo);
         break;
       case "BNB-BUSD":
+        case "RGP-USDC":
         const poolThree = await smartSwapLPTokenPoolThree(
             SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number], library
         );
@@ -998,13 +1006,19 @@ const ShowYieldFarmDetails = ({content, wallet}: {
                     w='45%'
                     h='40px'
                     borderRadius='6px'
-                    bg={mode === DARK_THEME ? "#319EF6" : "#319EF6"}
+                    bg={mode === DARK_THEME && !approveValueForRGP ? "#319EF6" : "#4A739B"}
                     color={mode === DARK_THEME ? "#FFFFFF" : "#FFFFFF"}
+                    // {
+                    //   bg={mode === DARK_THEME ? "#4A739B" : "#999999"}
+                    //   color={mode === DARK_THEME ? "#FFFFFF" : "#FFFFFF"}
+    
+                    // }
                     border='0'
                     mb='4'
                     mr='6'
                     padding='10px 40px'
                     cursor='pointer'
+                    disabled={!approveValueForRGP}
                     onClick={openDepositeModal}
                 >
                   Deposit
