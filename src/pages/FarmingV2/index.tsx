@@ -229,7 +229,7 @@ export function Index() {
             // poolFive.balanceOf(account),
           ]);
 
-          console.log({ poolOneBalance, poolTwo });
+          console.log({ poolOneBalance }, poolTwoBalance.toString());
           dispatch(
             updateFarmBalances([
               formatBigNumber(RGPbalance),

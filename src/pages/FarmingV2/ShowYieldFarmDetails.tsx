@@ -861,7 +861,6 @@ const ShowYieldFarmDetails = ({
           );
         }
         getAllowances();
-        window.location.reload();
       } catch (e) {
         // props.showErrorMessage(e);
         console.log(e);

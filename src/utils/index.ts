@@ -66,7 +66,7 @@ export function convertToNumber(hex : string, decimals?: number) {
     const [whole, decimal] = splitNumber;
     const deci = decimal
       .split('')
-      .slice(0, 3)
+      .slice(0, 18)
       .join('');
     const output = [whole, deci];
     return output.join('.');
