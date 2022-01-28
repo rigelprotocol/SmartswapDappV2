@@ -144,6 +144,26 @@ function NetworkIndicator() {
               </Box>
               <Box>{CHAIN_INFO[137].label}</Box>
             </Flex>
+            <Flex
+              backgroundColor={mode === 'dark' ? '#15202B' : '#FFFFFF'}
+              border={
+                mode === 'dark' ? '1px solid #324D68' : '1px solid #DEE6ED'
+              }
+              borderRadius="6px"
+              px={3}
+              py={4}
+              mb={4}
+              cursor="pointer"
+              onClick={() => {
+                onClose();
+                switchNetwork('0xa516', account as string, library);
+              }}
+            >
+              <Box px={2}>
+                <EthereumIcon />
+              </Box>
+              <Box>{CHAIN_INFO[42262].label}</Box>
+            </Flex>
           </Flex>
         </ModalContent>
       </Modal>
