@@ -15,7 +15,7 @@ import {
   Button,
   useMediaQuery,
   Stack,
-  Divider
+  Divider,
 } from "@chakra-ui/react";
 import { useHistory } from "react-router-dom";
 import { useColorModeValue } from "@chakra-ui/react";
@@ -170,7 +170,7 @@ export function Index() {
       changeVersion("/farming-v2");
     }
   };
-  
+
   const showProject = () => {
     changeVersion(
       "https://docs.google.com/forms/d/e/1FAIpQLSdJGAuABrJd6d0WSprUWB140we9hGqa-IwIbonx9ZJhxN2zsg/viewform",
@@ -185,9 +185,8 @@ export function Index() {
   const getFarmTokenBalance = async () => {
     if (account) {
       try {
-        if(Number(chainId) === Number(SupportedChainId.POLYGON)) {
-          const [RGPToken, poolOne, poolTwo, poolThree] =
-          await Promise.all([
+        if (Number(chainId) === Number(SupportedChainId.POLYGON)) {
+          const [RGPToken, poolOne, poolTwo, poolThree] = await Promise.all([
             rigelToken(RGP[chainId as number], library),
             smartSwapLPTokenPoolOne(
               SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
@@ -210,88 +209,89 @@ export function Index() {
             //   library
             // ),
           ]);
+          console.log({ poolOne, poolTwo, poolThree }, poolOne.token0);
 
-        const [
-          RGPbalance,
-          poolOneBalance,
-          poolTwoBalance,
-          poolThreeBalance,
-          // poolFourBalance,
-          // poolFiveBalance,
-        ] = await Promise.all([
-          RGPToken.balanceOf(account),
-          poolOne.balanceOf(account),
-          poolTwo.balanceOf(account),
-          poolThree.balanceOf(account),
-          // poolFour.balanceOf(account),
-          // poolFive.balanceOf(account),
-        ]);
+          const [
+            RGPbalance,
+            poolOneBalance,
+            poolTwoBalance,
+            poolThreeBalance,
 
-        dispatch(
-          updateFarmBalances([
-            formatBigNumber(RGPbalance),
-            formatBigNumber(poolOneBalance),
-            formatBigNumber(poolTwoBalance),
-            formatBigNumber(poolThreeBalance),
-            // formatBigNumber(poolFourBalance),
-            // formatBigNumber(poolFiveBalance),
-          ])
-        );
-        } 
-        else {
-          const [RGPToken, poolOne, poolTwo, poolThree, poolFour, poolFive] =
-          await Promise.all([
-            rigelToken(RGP[chainId as number], library),
-            smartSwapLPTokenPoolOne(
-              SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
-              library
-            ),
-            smartSwapLPTokenPoolTwo(
-              SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
-              library
-            ),
-            smartSwapLPTokenPoolThree(
-              SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
-              library
-            ),
-            smartSwapLPTokenV2PoolFour(
-              SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number],
-              library
-            ),
-            smartSwapLPTokenV2PoolFive(
-              SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
-              library
-            ),
+            // poolFourBalance,
+            // poolFiveBalance,
+          ] = await Promise.all([
+            RGPToken.balanceOf(account),
+            poolOne.balanceOf(account),
+            poolTwo.balanceOf(account),
+            poolThree.balanceOf(account),
+
+            // poolFour.balanceOf(account),
+            // poolFive.balanceOf(account),
           ]);
 
-        const [
-          RGPbalance,
-          poolOneBalance,
-          poolTwoBalance,
-          poolThreeBalance,
-          poolFourBalance,
-          poolFiveBalance,
-        ] = await Promise.all([
-          RGPToken.balanceOf(account),
-          poolOne.balanceOf(account),
-          poolTwo.balanceOf(account),
-          poolThree.balanceOf(account),
-          poolFour.balanceOf(account),
-          poolFive.balanceOf(account),
-        ]);
+          dispatch(
+            updateFarmBalances([
+              formatBigNumber(RGPbalance),
+              formatBigNumber(poolOneBalance),
+              formatBigNumber(poolTwoBalance),
+              formatBigNumber(poolThreeBalance),
+              // formatBigNumber(poolFourBalance),
+              // formatBigNumber(poolFiveBalance),
+            ])
+          );
+        } else {
+          const [RGPToken, poolOne, poolTwo, poolThree, poolFour, poolFive] =
+            await Promise.all([
+              rigelToken(RGP[chainId as number], library),
+              smartSwapLPTokenPoolOne(
+                SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
+                library
+              ),
+              smartSwapLPTokenPoolTwo(
+                SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
+                library
+              ),
+              smartSwapLPTokenPoolThree(
+                SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
+                library
+              ),
+              smartSwapLPTokenV2PoolFour(
+                SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number],
+                library
+              ),
+              smartSwapLPTokenV2PoolFive(
+                SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
+                library
+              ),
+            ]);
 
-        dispatch(
-          updateFarmBalances([
-            formatBigNumber(RGPbalance),
-            formatBigNumber(poolTwoBalance),
-            formatBigNumber(poolOneBalance),
-            formatBigNumber(poolThreeBalance),
-            formatBigNumber(poolFourBalance),
-            formatBigNumber(poolFiveBalance),
-          ])
-        );
+          const [
+            RGPbalance,
+            poolOneBalance,
+            poolTwoBalance,
+            poolThreeBalance,
+            poolFourBalance,
+            poolFiveBalance,
+          ] = await Promise.all([
+            RGPToken.balanceOf(account),
+            poolOne.balanceOf(account),
+            poolTwo.balanceOf(account),
+            poolThree.balanceOf(account),
+            poolFour.balanceOf(account),
+            poolFive.balanceOf(account),
+          ]);
+
+          dispatch(
+            updateFarmBalances([
+              formatBigNumber(RGPbalance),
+              formatBigNumber(poolTwoBalance),
+              formatBigNumber(poolOneBalance),
+              formatBigNumber(poolThreeBalance),
+              formatBigNumber(poolFourBalance),
+              formatBigNumber(poolFiveBalance),
+            ])
+          );
         }
-        
       } catch (error) {
         console.error(error, "getFarmTokenBalance => Farminv2");
       }
@@ -302,8 +302,6 @@ export function Index() {
     setfarmDataLoading(true);
 
     try {
-   
-
       const deposit = async (token0: any, token1: any) => {
         let sym0 = await (
           await smartSwapLPTokenV2(await token0(), library)
@@ -479,29 +477,37 @@ export function Index() {
           // pool5.getReserves(),
         ]);
 
-        const totalUSDT: number | any = ethers.utils.formatUnits(
-          pool3Reserve[0].div(1000),
-          3
+        const totalUSDT2: number | any = ethers.utils.formatUnits(
+          pool2Reserve[1],
+          6
         );
-        const totalRGP: number | any = ethers.utils.formatUnits(
-          pool3Reserve[1].div(1000),
-          15
+        const totalRGP2: number | any = ethers.utils.formatUnits(
+          pool2Reserve[0],
+          18
         );
         const totalRGP1: number | any = ethers.utils.formatUnits(
-          pool1Reserve[1].div(1000),
-          15
+          pool1Reserve[1],
+          18
         );
-        const rgpPrice = totalUSDT / totalRGP;
+        const totalRGP3: number | any = ethers.utils.formatUnits(
+          pool3Reserve[1],
+          18
+        );
+        const rgpPrice = totalUSDT2 / totalRGP2;
+        const RGP_USDTLiq = totalUSDT2 * 2;
+        console.log(RGP_USDTLiq);
         const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
-        const USDT_RGPLiquidity = ethers.utils.formatUnits(
-          pool2Reserve[1].div(1000).mul(2),
-          3
-        );
+        const USDC_RGPLiq = totalRGP3 * rgpPrice * 2;
+        // const USDT_RGPLiquidity = ethers.utils.formatUnits(
+        console.log({ rgpPrice });
+        //   pool2Reserve[1].div(1000).mul(2),
+        //   3
+        // );
 
-        const RGP_USDCLiquidity = ethers.utils.formatUnits(
-          pool3Reserve[0].div(1000).mul(2),
-          3
-        );
+        // const RGP_USDCLiquidity = ethers.utils.formatUnits(
+        //   pool3Reserve[0].div(1000).mul(2),
+        //   3
+        // );
 
         // const USDT_WMATICLiquidity = ethers.utils
         //   .formatEther(pool4Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
@@ -525,13 +531,13 @@ export function Index() {
             },
             {
               deposit: await deposit(pool2.token0, pool2.token1),
-              liquidity: USDT_RGPLiquidity,
-              apy: calculateApy(rgpPrice, USDT_RGPLiquidity, 1050),
+              liquidity: RGP_USDTLiq,
+              apy: calculateApy(rgpPrice, RGP_USDTLiq, 1050),
             },
             {
               deposit: "RGP-USDC", //await deposit(pool3.token0, pool3.token1),
-              liquidity: RGP_USDCLiquidity,
-              apy: calculateApy(rgpPrice, RGP_USDCLiquidity, 1050),
+              liquidity: USDC_RGPLiq,
+              apy: calculateApy(rgpPrice, USDC_RGPLiq, 1050),
             },
             // {
             //   deposit: "USDT - MATIC", // await deposit(pool4.token0, pool4.token1),
@@ -943,7 +949,6 @@ export function Index() {
         my={4}
         isFitted={isMobileDevice ? true : false}
       >
- 
         <TabList borderBottom={0}>
           <Tab
             isDisabled={switchTab}
@@ -952,9 +957,9 @@ export function Index() {
             justify-content="center"
             align-items="center"
             flexWrap={isMobileDevice ? "wrap" : undefined}
-            padding='4px 12px'
-            border='1px solid #DEE5ED !important'
-            borderRadius='10px 0px 0px 10px'
+            padding="4px 12px"
+            border="1px solid #DEE5ED !important"
+            borderRadius="10px 0px 0px 10px"
             background={
               mode === LIGHT_THEME && selected === STAKING
                 ? "#FFFFFF !important"
@@ -1001,59 +1006,59 @@ export function Index() {
               Liquidity Pools
             </Text>
             {Number(chainId) === Number(SupportedChainId.POLYGON) ? null : (
-           
-            <Select
-              borderColor={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#F2F5F8 !important"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#324D68 !important"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#324D68 !important"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#F2F5F8 !important"
-                  : "#F2F5F8 !important"
-              }
-              color={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#333333"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#F1F5F8"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#F1F5F8"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#333333"
-                  : "#333333"
-              }
-
-              onChange={handleLiquidityTab}
-              background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
-              cursor="pointer"
-              border=' 1px solid #008DFF'
-              box-sizing='border-box'
-              borderRadius='50px'
-              /* Inside auto layout */
-              width={isMobileDevice ? undefined : "fit-content"}
-              flex='none'
-              order='1'
-              flex-grow='0'
-              margin='10px 16px'
-            >
-              <option value={0}>V2</option>
-              <option value={3}>V1</option>
-            </Select>
-             )}
+              <Select
+                borderColor={
+                  mode === LIGHT_THEME && selected === LIQUIDITY
+                    ? "#F2F5F8 !important"
+                    : mode === DARK_THEME && selected === LIQUIDITY
+                    ? "#324D68 !important"
+                    : mode === DARK_THEME && selected === STAKING
+                    ? "#324D68 !important"
+                    : mode === LIGHT_THEME && selected === STAKING
+                    ? "#F2F5F8 !important"
+                    : "#F2F5F8 !important"
+                }
+                color={
+                  mode === LIGHT_THEME && selected === LIQUIDITY
+                    ? "#333333"
+                    : mode === DARK_THEME && selected === LIQUIDITY
+                    ? "#F1F5F8"
+                    : mode === DARK_THEME && selected === STAKING
+                    ? "#F1F5F8"
+                    : mode === LIGHT_THEME && selected === STAKING
+                    ? "#333333"
+                    : "#333333"
+                }
+                onChange={handleLiquidityTab}
+                background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
+                cursor="pointer"
+                border=" 1px solid #008DFF"
+                box-sizing="border-box"
+                borderRadius="50px"
+                /* Inside auto layout */
+                width={isMobileDevice ? undefined : "fit-content"}
+                flex="none"
+                order="1"
+                flex-grow="0"
+                margin="10px 16px"
+              >
+                <option value={0}>V2</option>
+                <option value={3}>V1</option>
+              </Select>
+            )}
           </Tab>
           <Tab
-            isDisabled={!switchTab || (Number(chainId) === Number(SupportedChainId.POLYGON))}
-            display='flex'
-            flex-direction='row'
-            justify-content='center'
-            align-items='center'
+            isDisabled={
+              !switchTab || Number(chainId) === Number(SupportedChainId.POLYGON)
+            }
+            display="flex"
+            flex-direction="row"
+            justify-content="center"
+            align-items="center"
             flexWrap={isMobileDevice ? "wrap" : undefined}
-            padding='4px 12px'
-            borderRadius='0px 0px 0px 0px'
-            border='1px solid #DEE5ED'
+            padding="4px 12px"
+            borderRadius="0px 0px 0px 0px"
+            border="1px solid #DEE5ED"
             background={
               mode === LIGHT_THEME && selected === LIQUIDITY
                 ? "#FFFFFF !important"
@@ -1095,53 +1100,52 @@ export function Index() {
             <Text>Staking</Text>
             {Number(chainId) === Number(SupportedChainId.POLYGON) ? null : (
               <Select
-              borderColor={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#F2F5F8 !important"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#324D68 !important"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#324D68 !important"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#F2F5F8 !important"
-                  : "#F2F5F8 !important"
-              }
-              cursor="pointer"
-              color={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#333333"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#F1F5F8"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#F1F5F8"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#333333"
-                  : "#333333"
-              }
-              onChange={handleStakingTab}
-              background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
-              /* Dark Mode / Blue / 1 */
+                borderColor={
+                  mode === LIGHT_THEME && selected === LIQUIDITY
+                    ? "#F2F5F8 !important"
+                    : mode === DARK_THEME && selected === LIQUIDITY
+                    ? "#324D68 !important"
+                    : mode === DARK_THEME && selected === STAKING
+                    ? "#324D68 !important"
+                    : mode === LIGHT_THEME && selected === STAKING
+                    ? "#F2F5F8 !important"
+                    : "#F2F5F8 !important"
+                }
+                cursor="pointer"
+                color={
+                  mode === LIGHT_THEME && selected === LIQUIDITY
+                    ? "#333333"
+                    : mode === DARK_THEME && selected === LIQUIDITY
+                    ? "#F1F5F8"
+                    : mode === DARK_THEME && selected === STAKING
+                    ? "#F1F5F8"
+                    : mode === LIGHT_THEME && selected === STAKING
+                    ? "#333333"
+                    : "#333333"
+                }
+                onChange={handleStakingTab}
+                background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
+                /* Dark Mode / Blue / 1 */
 
-              border=' 1px solid #008DFF'
-              box-sizing='border-box'
-              borderRadius='50px'
-              /* Inside auto layout */
-              width={isMobileDevice ? undefined : "fit-content"}
-              flex='none'
-              order='1'
-              flex-grow='0'
-              margin='10px 16px'
-            >
-              <option value={1}>V1</option>
-              <option value={4}>V2</option>
-            </Select>
+                border=" 1px solid #008DFF"
+                box-sizing="border-box"
+                borderRadius="50px"
+                /* Inside auto layout */
+                width={isMobileDevice ? undefined : "fit-content"}
+                flex="none"
+                order="1"
+                flex-grow="0"
+                margin="10px 16px"
+              >
+                <option value={1}>V1</option>
+                <option value={4}>V2</option>
+              </Select>
             )}
-           
           </Tab>
           <Tab
             isDisabled={true}
-            borderRadius='0px 10px 10px 0px'
-            border='1px solid #DEE5ED'
+            borderRadius="0px 10px 10px 0px"
+            border="1px solid #DEE5ED"
             background={
               mode === LIGHT_THEME && selected === LIQUIDITY
                 ? "#FFFFFF !important"
@@ -1184,8 +1188,8 @@ export function Index() {
           </Tab>
         </TabList>
         <Divider my="4" />
-        <TabPanels padding='0px'>
-          <TabPanel padding='0px'>
+        <TabPanels padding="0px">
+          <TabPanel padding="0px">
             <Flex
               justifyContent="center"
               alignItems="center"
