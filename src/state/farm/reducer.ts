@@ -145,6 +145,25 @@ export const initialState: farmStateInterface = {
       pId: 5,
       poolAllowance: '',
     },
+    {
+      id: '7',
+      img: 'rgp.svg',
+      // deposit: 'RGP',
+      deposit: 'RGP',
+      earn: 'RGP',
+      type: 'RGP',
+      ARYValue: '0',
+      totalLiquidity: '1223',
+      tokensStaked: ['RGP', '0'],
+      RGPEarned: '0',
+      availableToken: '',
+      inflationPerDay: 0,
+      tokenPrice: 0,
+      totalVolumePerPool: 0,
+      farmingFee: 0,
+      pId: 0,
+      poolAllowance: '',
+    },
   ],
 };
 
@@ -153,7 +172,7 @@ export default createReducer(initialState, (builder) =>
     .addCase(changeFarmingContent, (state, action) => {
         const id = `${action.payload.value.symbol0}-${action.payload.value.symbol1}`;
         let current = state.contents.findIndex(obj => obj.deposit === id);
-      
+
         if (current >= 0) {
             state.contents[current].totalLiquidity =
               parseInt(action.payload.value.reserves1) +
@@ -168,7 +187,7 @@ export default createReducer(initialState, (builder) =>
           state.contents[index].ARYValue = item.apy;
           state.contents[index].deposit = item.deposit;
         });
-     
+
     })
 
   .addCase(updateTokenStaked, (state, action) => {
@@ -196,7 +215,7 @@ export default createReducer(initialState, (builder) =>
           state.contents[index].availableToken = item;
         });
   })
-  
 
-    
+
+
 )

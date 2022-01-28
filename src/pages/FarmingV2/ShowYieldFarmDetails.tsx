@@ -73,6 +73,8 @@ const ShowYieldFarmDetails = ({content, wallet}: {
 }) => {
   const mode = useColorModeValue("light", DARK_THEME);
   const bgColor = useColorModeValue("#FFF", "#15202B");
+  const modalTextColor = useColorModeValue('#333333', '#F1F5F8');
+  const modalTextColor2 = useColorModeValue('#666666', '#DCE6EF')
 
   const [checked, setChecked] = useState(true);
   const modal2Disclosure = useDisclosure();
@@ -1146,155 +1148,311 @@ const ShowYieldFarmDetails = ({content, wallet}: {
             </Flex>
           </Box>
         </Flex>
-        <Modal
-            isOpen={modal1Disclosure.isOpen}
-            onClose={closeDepositeModal}
-            isCentered
-        >
-          <ModalOverlay />
-          <ModalContent
-              width='95vw'
-              borderRadius='6px'
-              paddingBottom='20px'
-              bgColor={bgColor}
-              minHeight='40vh'
+        {Number(content.id) === 7 ? (
+          <Modal
+              isOpen={modal1Disclosure.isOpen}
+              onClose={closeDepositeModal}
+              isCentered
           >
-            <ModalHeader fontSize='18px' fontWeight='regular' align='center'>
-              Deposit {content.deposit} Tokens
-            </ModalHeader>
+            <ModalOverlay />
+            <ModalContent
+                width='95vw'
+                borderRadius='6px'
+                paddingBottom='20px'
+                bgColor={bgColor}
+                minHeight='40vh'
+            >
+              <ModalHeader fontSize='20px' fontWeight='regular' color={modalTextColor}>
+                Deposit
+              </ModalHeader>
 
-            <ModalCloseButton
-                bg='none'
-                size={"sm"}
-                mt={3}
-                mr={3}
-                cursor='pointer'
-                _focus={{ outline: "none" }}
-                p={"7px"}
-                border={"1px solid"}
-            />
-            <ModalBody py={2}>
-              <Text color='gray.400' align='right' mb={3}>
-                {content.availableToken} {content.deposit} Available
-              </Text>
-              <InputGroup size='md'>
-                <Input
-                    placeholder='0'
-                    opacity='0.5'
-                    h='50px'
-                    borderRadius='0px'
-                    name='availableToken'
-                    value={depositTokenValue}
-                    onChange={(e) => setDepositTokenValue(e.target.value)}
-                    border='2px'
-                />
-                <InputRightElement marginRight='15px'>
-                  <Button
-                      color='rgba(64, 186, 213, 1)'
-                      border='none'
+              <ModalCloseButton
+                  bg='none'
+                  size={"sm"}
+                  mt={3}
+                  mr={3}
+                  cursor='pointer'
+                  _focus={{ outline: "none" }}
+                  p={"7px"}
+                  border={"1px solid"}
+              />
+              <ModalBody py={2}>
+                <Text color={modalTextColor} mb={3} fontSize='14px' fontWeight='regular'>
+                  Enter Amount
+                </Text>
+                <InputGroup size='md'>
+                  <Input
+                      placeholder='Enter RGP amount to stake'
+                      opacity='0.5'
+                      h='50px'
+                      borderRadius='6px'
+                      name='availableToken'
+                      value={depositTokenValue}
+                      onChange={(e) => setDepositTokenValue(e.target.value)}
+                      border='2px'
+                  />
+                  <InputRightElement marginRight='15px'>
+                    <Button
+                        color='rgba(64, 186, 213, 1)'
+                        border='none'
+                        borderRadius='0px'
+                        fontSize='13px'
+                        p='1'
+                        mt='10px'
+                        height='20px'
+                        cursor='pointer'
+                        background='none'
+                        _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
+                        onClick={() => showMaxValue(content.deposit, "deposit")}
+                    >
+                      MAX
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
+                <Text color={modalTextColor2} fontSize='14px' mb={5} mt={3}>
+                  RGP Earned: {content.availableToken} {content.deposit}
+                </Text>
+                <Text color={modalTextColor} fontSize='14px' mb={3}>
+                  Referral address
+                </Text>
+                <InputGroup size='md'>
+                  <Input
+                      placeholder='Enter referral address here'
+                      opacity='0.5'
+                      h='50px'
+                      borderRadius='6px'
+                      name='availableToken'
+                      value={depositTokenValue}
+                      onChange={(e) => setDepositTokenValue(e.target.value)}
+                      border='2px'
+                  />
+                </InputGroup>
+                <Box mt={4}>
+                  {depositInputHasError ? (
+                      <>
+                        {/* Show Error Button */}
+                        <Button
+                            my='2'
+                            variant='brand'
+                            mx='auto'
+                            color={
+                              unstakeButtonValue === "Confirm" ||
+                              unstakeButtonValue === "Confirmed"
+                                  ? "rgba(190, 190, 190, 1)"
+                                  : "#40BAD5"
+                            }
+                            width='100%'
+                            background={
+                              unstakeButtonValue === "Confirm" ||
+                              unstakeButtonValue === "Confirmed"
+                                  ? "rgba(64, 186, 213, 0.15)"
+                                  : "#444159"
+                            }
+                            disabled={unstakeButtonValue !== "Confirm"}
+                            cursor='pointer'
+                            border='none'
+                            borderRadius='0px'
+                            padding='10px'
+                            height='50px'
+                            fontSize='16px'
+                            _hover={
+                              unstakeButtonValue === "Confirm" ||
+                              unstakeButtonValue === "Confirmed"
+                                  ? { background: "rgba(64, 186, 213, 0.15)" }
+                                  : { background: "#444159" }
+                            }
+                            onClick={() => {}}
+                        >
+                          {depositErrorButtonText}
+                        </Button>
+                      </>
+                  ) : (
+                      <>
+                        {enoughApproval(
+                            content.poolAllowance,
+                            content.availableToken
+                        ) ? (
+                            <Button
+                                my='2'
+                                mx='auto'
+                                variant='brand'
+                                width='100%'
+                                disabled={depositValue !== "Confirm" || !account}
+                                cursor='pointer'
+                                border='none'
+                                borderRadius='0px'
+                                padding='10px'
+                                height='50px'
+                                fontSize='16px'
+                                _hover={
+                                  depositValue === "Confirm"
+                                      ? { background: "rgba(64, 186, 213, 0.15)" }
+                                      : { background: "#444159" }
+                                }
+                                onClick={() => confirmDeposit(content.deposit)}
+                            >
+                              {depositValue}
+                            </Button>
+                        ) : (
+                            approvalButton(content.deposit)
+                        )}
+                      </>
+                  )}
+                </Box>
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        ) : (
+          <Modal
+              isOpen={modal1Disclosure.isOpen}
+              onClose={closeDepositeModal}
+              isCentered
+          >
+            <ModalOverlay />
+            <ModalContent
+                width='95vw'
+                borderRadius='6px'
+                paddingBottom='20px'
+                bgColor={bgColor}
+                minHeight='40vh'
+            >
+              <ModalHeader fontSize='18px' fontWeight='regular' align='center'>
+                Deposit {content.deposit} Tokens
+              </ModalHeader>
+
+              <ModalCloseButton
+                  bg='none'
+                  size={"sm"}
+                  mt={3}
+                  mr={3}
+                  cursor='pointer'
+                  _focus={{ outline: "none" }}
+                  p={"7px"}
+                  border={"1px solid"}
+              />
+              <ModalBody py={2}>
+                <Text color='gray.400' align='right' mb={3}>
+                  {content.availableToken} {content.deposit} Available
+                </Text>
+                <InputGroup size='md'>
+                  <Input
+                      placeholder='0'
+                      opacity='0.5'
+                      h='50px'
                       borderRadius='0px'
-                      fontSize='13px'
-                      p='1'
-                      mt='10px'
-                      height='20px'
-                      cursor='pointer'
-                      _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
-                      onClick={() => showMaxValue(content.deposit, "deposit")}
-                  >
-                    MAX
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-              <Box mt={4}>
-                {depositInputHasError ? (
-                    <>
-                      {/* Show Error Button */}
-                      <Button
-                          my='2'
-                          variant='brand'
-                          mx='auto'
-                          color={
-                            unstakeButtonValue === "Confirm" ||
-                            unstakeButtonValue === "Confirmed"
-                                ? "rgba(190, 190, 190, 1)"
-                                : "#40BAD5"
-                          }
-                          width='100%'
-                          background={
-                            unstakeButtonValue === "Confirm" ||
-                            unstakeButtonValue === "Confirmed"
-                                ? "rgba(64, 186, 213, 0.15)"
-                                : "#444159"
-                          }
-                          disabled={unstakeButtonValue !== "Confirm"}
-                          cursor='pointer'
-                          border='none'
-                          borderRadius='0px'
-                          padding='10px'
-                          height='50px'
-                          fontSize='16px'
-                          _hover={
-                            unstakeButtonValue === "Confirm" ||
-                            unstakeButtonValue === "Confirmed"
-                                ? { background: "rgba(64, 186, 213, 0.15)" }
-                                : { background: "#444159" }
-                          }
-                          onClick={() => {}}
-                      >
-                        {depositErrorButtonText}
-                      </Button>
-                    </>
-                ) : (
-                    <>
-                      {enoughApproval(
-                          content.poolAllowance,
-                          content.availableToken
-                      ) ? (
-                          <Button
-                              my='2'
-                              mx='auto'
-                              variant='brand'
-                              width='100%'
-                              disabled={depositValue !== "Confirm" || !account}
-                              cursor='pointer'
-                              border='none'
-                              borderRadius='0px'
-                              padding='10px'
-                              height='50px'
-                              fontSize='16px'
-                              _hover={
-                                depositValue === "Confirm"
-                                    ? { background: "rgba(64, 186, 213, 0.15)" }
-                                    : { background: "#444159" }
-                              }
-                              onClick={() => confirmDeposit(content.deposit)}
-                          >
-                            {depositValue}
-                          </Button>
-                      ) : (
-                          approvalButton(content.deposit)
-                      )}
-                      <Button
-                          my='2'
-                          mx='auto'
-                          variant='brand'
-                          width='100%'
-                          cursor='pointer'
-                          border='none'
-                          borderRadius='0px'
-                          padding='10px'
-                          height='50px'
-                          fontSize='16px'
-                          onClick={closeDepositeModal}
-                      >
-                        Cancel
-                      </Button>
-                    </>
-                )}
-              </Box>
-            </ModalBody>
-          </ModalContent>
-        </Modal>
+                      name='availableToken'
+                      value={depositTokenValue}
+                      onChange={(e) => setDepositTokenValue(e.target.value)}
+                      border='2px'
+                  />
+                  <InputRightElement marginRight='15px'>
+                    <Button
+                        color='rgba(64, 186, 213, 1)'
+                        border='none'
+                        borderRadius='0px'
+                        fontSize='13px'
+                        p='1'
+                        mt='10px'
+                        height='20px'
+                        cursor='pointer'
+                        _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
+                        onClick={() => showMaxValue(content.deposit, "deposit")}
+                    >
+                      MAX
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
+                <Box mt={4}>
+                  {depositInputHasError ? (
+                      <>
+                        {/* Show Error Button */}
+                        <Button
+                            my='2'
+                            variant='brand'
+                            mx='auto'
+                            color={
+                              unstakeButtonValue === "Confirm" ||
+                              unstakeButtonValue === "Confirmed"
+                                  ? "rgba(190, 190, 190, 1)"
+                                  : "#40BAD5"
+                            }
+                            width='100%'
+                            background={
+                              unstakeButtonValue === "Confirm" ||
+                              unstakeButtonValue === "Confirmed"
+                                  ? "rgba(64, 186, 213, 0.15)"
+                                  : "#444159"
+                            }
+                            disabled={unstakeButtonValue !== "Confirm"}
+                            cursor='pointer'
+                            border='none'
+                            borderRadius='0px'
+                            padding='10px'
+                            height='50px'
+                            fontSize='16px'
+                            _hover={
+                              unstakeButtonValue === "Confirm" ||
+                              unstakeButtonValue === "Confirmed"
+                                  ? { background: "rgba(64, 186, 213, 0.15)" }
+                                  : { background: "#444159" }
+                            }
+                            onClick={() => {}}
+                        >
+                          {depositErrorButtonText}
+                        </Button>
+                      </>
+                  ) : (
+                      <>
+                        {enoughApproval(
+                            content.poolAllowance,
+                            content.availableToken
+                        ) ? (
+                            <Button
+                                my='2'
+                                mx='auto'
+                                variant='brand'
+                                width='100%'
+                                disabled={depositValue !== "Confirm" || !account}
+                                cursor='pointer'
+                                border='none'
+                                borderRadius='0px'
+                                padding='10px'
+                                height='50px'
+                                fontSize='16px'
+                                _hover={
+                                  depositValue === "Confirm"
+                                      ? { background: "rgba(64, 186, 213, 0.15)" }
+                                      : { background: "#444159" }
+                                }
+                                onClick={() => confirmDeposit(content.deposit)}
+                            >
+                              {depositValue}
+                            </Button>
+                        ) : (
+                            approvalButton(content.deposit)
+                        )}
+                        <Button
+                            my='2'
+                            mx='auto'
+                            variant='brand'
+                            width='100%'
+                            cursor='pointer'
+                            border='none'
+                            borderRadius='0px'
+                            padding='10px'
+                            height='50px'
+                            fontSize='16px'
+                            onClick={closeDepositeModal}
+                        >
+                          Cancel
+                        </Button>
+                      </>
+                  )}
+                </Box>
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        )}
 
         <Modal isCentered isOpen={modal2Disclosure.isOpen} onClose={closeModal}>
           <ModalOverlay />

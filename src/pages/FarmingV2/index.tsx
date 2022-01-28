@@ -966,7 +966,7 @@ export function Index() {
                   </Flex>
 
                   {FarmData.contents.map((content: any, index: number) =>
-                    index !== 0 ? (
+                    index !== 0 && index !== 6 ? (
                       <YieldFarm
                         farmDataLoading={farmDataLoading}
                         content={content}
@@ -1196,7 +1196,7 @@ export function Index() {
                     <Text />
                   </Flex>
                   {FarmData.contents.map((content: any, index: number) =>
-                    index === 0 ? (
+                    index === 6 ? (
                       <YieldFarm
                         farmDataLoading={farmDataLoading}
                         content={content}
