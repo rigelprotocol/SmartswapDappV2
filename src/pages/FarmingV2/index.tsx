@@ -31,6 +31,7 @@ import {
   updateTokenStaked,
   updateTotalLiquidity,
   updateFarmBalances,
+  updatePoolId,
 } from "../../state/farm/actions";
 import { useFarms } from "../../state/farm/hooks";
 import {
@@ -209,7 +210,6 @@ export function Index() {
             //   library
             // ),
           ]);
-          console.log({ poolOne, poolTwo, poolThree }, poolOne.token0);
 
           const [
             RGPbalance,
@@ -229,6 +229,7 @@ export function Index() {
             // poolFive.balanceOf(account),
           ]);
 
+          console.log({ poolOneBalance, poolTwo });
           dispatch(
             updateFarmBalances([
               formatBigNumber(RGPbalance),
@@ -239,6 +240,7 @@ export function Index() {
               // formatBigNumber(poolFiveBalance),
             ])
           );
+          dispatch(updatePoolId([0, 1, 2, 3]));
         } else {
           const [RGPToken, poolOne, poolTwo, poolThree, poolFour, poolFive] =
             await Promise.all([
@@ -710,7 +712,6 @@ export function Index() {
           masterChefV2.userInfo(5, account),
         ]);
 
-        //console.log("poolFourStaked", poolFourStaked)
         const RGPStakedEarned = await specialPoolStaked();
         let RGPStaked;
         let RGPEarned;
@@ -729,7 +730,7 @@ export function Index() {
 
         dispatch(
           updateTokenStaked([
-            { staked: RGPStaked, earned: RGPEarned },
+            { staked: RGPStaked, earned: RGPEarned, symbol: "RGP" },
             {
               staked: formatBigNumber(poolTwoStaked.amount),
               earned: formatBigNumber(poolTwoEarned),
@@ -786,8 +787,8 @@ export function Index() {
 
         //console.log("poolFourStaked", poolFourStaked)
         // const RGPStakedEarned = await specialPoolStaked();
-        let RGPStaked;
-        let RGPEarned;
+        // let RGPStaked;
+        // let RGPEarned;
 
         // console.log("EARRNED", RGPStakedEarned)
 
@@ -797,20 +798,20 @@ export function Index() {
         // RGPStaked = formatBigNumber(specialPoolStaked.tokenQuantity);
         // RGPEarned = formatBigNumber(specialPoolEarned);
         // } else {
-        RGPStaked = 0;
-        RGPEarned = 0;
+        // RGPStaked = 0;
+        // RGPEarned = 0;
         // }
 
         dispatch(
           updateTokenStaked([
-            { staked: RGPStaked, earned: RGPEarned },
-            {
-              staked: formatBigNumber(poolTwoStaked.amount),
-              earned: formatBigNumber(poolTwoEarned),
-            },
+            { staked: 0, earned: 0 },
             {
               staked: formatBigNumber(poolOneStaked.amount),
               earned: formatBigNumber(poolOneEarned),
+            },
+            {
+              staked: formatBigNumber(poolTwoStaked.amount),
+              earned: formatBigNumber(poolTwoEarned),
             },
             {
               staked: formatBigNumber(poolThreeStaked.amount),
