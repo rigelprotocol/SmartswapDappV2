@@ -120,7 +120,6 @@ export function useToken(tokenAddress?: string): Token | undefined | null {
   useEffect(() => {
     const getToken = async (tokenAddress:string | undefined,chainId:number) => {
       const address = isAddress(tokenAddress);
-      console.log({address})
   const token: Token | undefined = address ? tokens[address] : undefined;
 try{
    if (token) setToken(token);
@@ -129,7 +128,6 @@ try{
 
       const tokenContract =await getERC20Token(address,library)
       const name =await tokenContract.name()
-      console.log({tokenContract,address})
       const tokenDecimal =await tokenContract.decimals()
       const tokenSymbol=await tokenContract.symbol()
 
