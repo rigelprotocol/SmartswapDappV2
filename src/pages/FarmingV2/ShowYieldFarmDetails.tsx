@@ -1222,8 +1222,6 @@ const ShowYieldFarmDetails = ({content, wallet}: {
                       h='50px'
                       borderRadius='6px'
                       name='availableToken'
-                      value={depositTokenValue}
-                      onChange={(e) => setDepositTokenValue(e.target.value)}
                       border='2px'
                   />
                 </InputGroup>
