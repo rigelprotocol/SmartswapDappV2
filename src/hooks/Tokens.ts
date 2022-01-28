@@ -122,7 +122,7 @@ export function useToken(tokenAddress?: string): Token | undefined | null {
       const address = isAddress(tokenAddress);
       console.log({address})
   const token: Token | undefined = address ? tokens[address] : undefined;
-// try{
+try{
    if (token) setToken(token);
     if (!chainId || !address) setToken(undefined);
     if( address && !tokens[address]){
@@ -140,12 +140,11 @@ export function useToken(tokenAddress?: string): Token | undefined | null {
         tokenSymbol,
         name,
       );
-      console.log(newToken)
       setToken(newToken)
     } 
-// }catch(e){
-//  console.log("no Token found")
-// }
+}catch(e){
+ console.log("no Token found")
+}
 
   
     // setToken(undefined) 
