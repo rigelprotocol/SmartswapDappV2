@@ -62,7 +62,6 @@ export function convertToNumber(hex : string, decimals?: number) {
     if (Number(amount)  === 0 || !amount?.includes('.')) {
       return amount
     }
-    console.log(amount)
     const splitAmount = amount.toString().split('.');
     const [whole, decimal] = splitAmount;
     const deci = decimal
