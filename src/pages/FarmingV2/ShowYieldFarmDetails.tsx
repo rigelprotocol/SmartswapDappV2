@@ -340,6 +340,10 @@ const ShowYieldFarmDetails = ({
     getAllowances();
   }, [account, deposited]);
 
+  useEffect(() => {
+getAllowances();
+  },[])
+
   const allowance = (contract: any) =>
     contract.allowance(account, MASTERCHEFV2ADDRESSES[chainId as number]);
 
@@ -712,8 +716,8 @@ const ShowYieldFarmDetails = ({
               // gasPrice: ethers.utils.parseUnits("20", "gwei"),
             }
           );
-          const { confirmations, status } = await fetchTransactionData(data);
-
+          // const { confirmations, status } = await fetchTransactionData(data);
+          const receipt = await data.wait(3);
           dispatch(
             setOpenModal({
               trxState: TrxState.TransactionSuccessful,
@@ -864,6 +868,7 @@ const ShowYieldFarmDetails = ({
         );
         setApprovalLoading(true);
         const { confirmations, status } = await fetchTransactionData(data);
+        const receipt = await data.wait(3);
         if (status) {
           setApproveValueForOtherToken(true);
           dispatch(

@@ -137,6 +137,15 @@ export function Index() {
     getFarmTokenBalance();
   }, [account, chainId, stateChanged]);
 
+  const refreshData = () => {
+    getFarmData();
+    getTokenStaked();
+    getFarmTokenBalance();
+  };
+
+  useEffect(() => {
+    refreshData();
+  }, []);
   useEffect(() => {
     if (match) setSelected(STAKING);
   }, [match]);
