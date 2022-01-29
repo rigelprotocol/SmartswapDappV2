@@ -211,25 +211,14 @@ export function Index() {
             // ),
           ]);
 
-          const [
-            RGPbalance,
-            poolOneBalance,
-            poolTwoBalance,
-            poolThreeBalance,
+          const [RGPbalance, poolOneBalance, poolTwoBalance, poolThreeBalance] =
+            await Promise.all([
+              RGPToken.balanceOf(account),
+              poolOne.balanceOf(account),
+              poolTwo.balanceOf(account),
+              poolThree.balanceOf(account),
+            ]);
 
-            // poolFourBalance,
-            // poolFiveBalance,
-          ] = await Promise.all([
-            RGPToken.balanceOf(account),
-            poolOne.balanceOf(account),
-            poolTwo.balanceOf(account),
-            poolThree.balanceOf(account),
-
-            // poolFour.balanceOf(account),
-            // poolFive.balanceOf(account),
-          ]);
-
-          console.log({ poolOneBalance }, poolTwoBalance.toString());
           dispatch(
             updateFarmBalances([
               formatBigNumber(RGPbalance),

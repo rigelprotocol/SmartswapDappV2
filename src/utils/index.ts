@@ -58,12 +58,13 @@ export function convertToNumber(hex : string, decimals?: number) {
   };
 
   export const  formatBigNumber = (bigNumber : any) => {
-    const number = Number.parseFloat(ethers.utils.formatEther(bigNumber));
-    if (number % 1 === 0) {
-      return number.toFixed(3);
+    const amount = ethers.utils.formatEther(bigNumber);
+    if (Number(amount)  === 0 || !amount?.includes('.')) {
+      return amount
     }
-    const splitNumber = number.toString().split('.');
-    const [whole, decimal] = splitNumber;
+    console.log(amount)
+    const splitAmount = amount.toString().split('.');
+    const [whole, decimal] = splitAmount;
     const deci = decimal
       .split('')
       .slice(0, 18)

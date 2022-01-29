@@ -23,6 +23,7 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
+import { SupportedChainId } from "../../constants/chains";
 import Switch from "react-switch";
 import { DARK_THEME } from "./index";
 import { addToast } from "../../components/Toast/toastSlice";
@@ -54,6 +55,7 @@ import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
 import { useRGPBalance } from "../../utils/hooks/useBalances";
 import { updateFarmAllowances } from "../../state/farm/actions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
+import { AiOutlineConsoleSql } from "react-icons/ai";
 
 const ShowYieldFarmDetails = ({
   content,
@@ -374,15 +376,25 @@ const ShowYieldFarmDetails = ({
         } else {
           rigelAllowance = pool1Allowance;
         }
-
-        dispatch(
-          updateFarmAllowances([
-            rigelAllowance,
-            pool2Allowance,
-            pool1Allowance,
-            pool3Allowance,
-          ])
-        );
+        if (Number(chainId) === Number(SupportedChainId.BINANCE)) {
+          dispatch(
+            updateFarmAllowances([
+              rigelAllowance,
+              pool2Allowance,
+              pool1Allowance,
+              pool3Allowance,
+            ])
+          );
+        } else {
+          dispatch(
+            updateFarmAllowances([
+              rigelAllowance,
+              pool1Allowance,
+              pool2Allowance,
+              pool3Allowance,
+            ])
+          );
+        }
       }
     } catch (error) {
       console.error(error, "something went wrong");
@@ -712,7 +724,7 @@ const ShowYieldFarmDetails = ({
           //  callRefreshFarm(confirmations, status);
         }
       } catch (e) {
-        console.log(e);
+        console.log("here", e);
         dispatch(
           setOpenModal({
             trxState: TrxState.TransactionFailed,
@@ -724,6 +736,7 @@ const ShowYieldFarmDetails = ({
 
   //Deposit
   const confirmDeposit = async (val: any) => {
+    console.log("deposit", val);
     setDepositValue("Pending Confirmation");
     dispatch(
       setOpenModal({
