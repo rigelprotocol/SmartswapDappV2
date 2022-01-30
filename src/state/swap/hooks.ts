@@ -139,7 +139,7 @@ export function useDerivedSwapInfo(): {
   const bestTrade = amount;
   // console.log(pathArray);
 
-  const getMaxValue = async (currency: Currency, library: Web3Provider | undefined) => {
+  const getMaxValue = async (currency: Currency, library: Web3Provider) => {
     if (currency.isNative) {
       // return Balance === "0.0000" ? "0" :  Balance
       const balance = await library?.getBalance(account as string);
@@ -148,9 +148,9 @@ export function useDerivedSwapInfo(): {
       const token = await getERC20Token(
         currency.address ? currency.address : '', library
       );
-      const [balance, decimals] = await Promise.all([token.balanceOf(account), token.decimals()])
-      const amount = ethers.utils.formatUnits(balance, decimals);
-      return amount === '0.0' ? '0' : amount;
+      const [balance, decimals] = await Promise.all([token.balanceOf(account), token.decimals()]);
+       const amount = parseFloat(ethers.utils.formatUnits(balance.toString(), decimals));
+      return amount === 0 ? '0' : amount.toFixed(4);
     }
   };
 

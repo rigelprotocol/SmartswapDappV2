@@ -138,7 +138,7 @@ const SendToken = () => {
   // const [priceImpact, setPriceImpact] = useState(0);
 
   const handleMaxInput = async () => {
-    const value = await getMaxValue(currencies[Field.INPUT]);
+    const value = await getMaxValue(currencies[Field.INPUT], library);
     const maxAmountInput = maxAmountSpend(value, currencies[Field.INPUT]);
     if (maxAmountInput) {
       onUserInput(Field.INPUT, maxAmountInput);
@@ -845,9 +845,7 @@ const SendToken = () => {
               boxShadow={lightmode ? "base" : "lg"}
               _hover={{ bgColor: buttonBgcolor }}
             >
-              {/*{inputError*/}
-              {/*  ? inputError*/}
-              {/*  : `Loading...`}*/}
+
               {inputError}
             </Button>
           ) : (
