@@ -134,8 +134,8 @@ const TransactionSettings = () => {
   };
 
   return (
-  <Flex alignItems="center" fontWeight="bold" rounded={100}>
-    <Popover>
+  <Flex alignItems="center" fontWeight="bold" rounded={100} >
+    <Popover  >
       <PopoverTrigger>
         <IconButton
         bg="transparent"
@@ -144,7 +144,7 @@ const TransactionSettings = () => {
         _focus={{background: "transparent !important"}}
         />
       </PopoverTrigger>
-      <PopoverContent borderRadius="6px" bg={bgColor} borderColor={borderColor}>
+      <PopoverContent borderRadius="6px" bg={bgColor} borderColor={borderColor} mt="0px">
         <PopoverHeader color={textColor} fontSize="14px" borderBottom="none">Settings</PopoverHeader>
         <PopoverCloseButton
         bg="none"
