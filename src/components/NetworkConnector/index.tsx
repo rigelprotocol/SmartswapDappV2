@@ -156,7 +156,7 @@ function NetworkIndicator() {
               }}
             >
               <Box px={2}>
-                <EthereumIcon />
+                <Img w='30px' src={MATICLOGO} />
               </Box>
               <Box>{CHAIN_INFO[137].label}</Box>
             </Flex>
@@ -176,7 +176,7 @@ function NetworkIndicator() {
               }}
             >
               <Box px={2}>
-                <EthereumIcon />
+                <Img w='30px' src={OASISLOGO} />
               </Box>
               <Box>{CHAIN_INFO[42262].label}</Box>
             </Flex>
