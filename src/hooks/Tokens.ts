@@ -114,7 +114,7 @@ export function useIsUserAddedToken(currency: Currency | undefined | null): bool
 }
 
 export function useToken(tokenAddress?: string): Token | undefined | null {
-  const { chainId } = useActiveWeb3React();
+  const { chainId,library } = useActiveWeb3React();
   const tokens = useAllTokens();
   const [token,setToken] = useState<undefined | Token>();
   useEffect(() => {
@@ -126,7 +126,7 @@ try{
     if (!chainId || !address) setToken(undefined);
     if( address && !tokens[address]){
 
-      const tokenContract =await getERC20Token(address)
+      const tokenContract =await getERC20Token(address,library)
       const name =await tokenContract.name()
       const tokenDecimal =await tokenContract.decimals()
       const tokenSymbol=await tokenContract.symbol()
