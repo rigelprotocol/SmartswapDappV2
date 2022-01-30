@@ -14,3 +14,4 @@ export const updateTotalLiquidity = createAction<{ liquidity: any, apy: any, dep
 export const updateTokenStaked = createAction<{  staked: any, earned: any }[]>('farm/updateTokenStaked');
 export const updateFarmAllowances = createAction<any[]>('farm/updateFarmAllowances');
 export const updateFarmBalances = createAction<any[]>('farm/updateFarmBalances');
+export const updatePoolId = createAction<number[]>('farm/updatePoolId');
