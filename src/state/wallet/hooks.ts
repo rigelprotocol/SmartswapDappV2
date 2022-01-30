@@ -24,7 +24,9 @@ import JSBI from "jsbi";
               Balance === "0.0000" ? setBalance("0") :  setBalance(Balance)
              
             }else if(isAddress(currency?.address)){
+
               const token = await getERC20Token(currency.address ? currency.address : "", library);
+              console.log({token,currency})
             const value = await token.balanceOf(account);
             
             const amount = value ? JSBI.BigInt(value.toString()) : undefined;

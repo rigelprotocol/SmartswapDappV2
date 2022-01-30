@@ -9,7 +9,9 @@ export enum SupportedChainId {
   POLYGON = 137,
   BINANCE = 56,
   BINANCETEST = 97,
-  POLYGONTEST = 80001
+  POLYGONTEST = 80001,
+  OASISTEST = 42261,
+  OASISMAINNET = 42262,
 }
 
 export const ALL_SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
@@ -17,18 +19,18 @@ export const ALL_SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
   SupportedChainId.BINANCE,
   SupportedChainId.POLYGON,
 
-
   SupportedChainId.POLYGONTEST,
   SupportedChainId.BINANCETEST,
   SupportedChainId.ROPSTEN,
   SupportedChainId.RINKEBY,
   SupportedChainId.GOERLI,
   SupportedChainId.KOVAN,
-
-]
+  SupportedChainId.OASISTEST,
+  SupportedChainId.OASISMAINNET,
+];
 
 export const L1_CHAIN_IDS = [
- // SupportedChainId.MAINNET,
+  // SupportedChainId.MAINNET,
   SupportedChainId.ROPSTEN,
   SupportedChainId.RINKEBY,
   SupportedChainId.GOERLI,
@@ -37,73 +39,73 @@ export const L1_CHAIN_IDS = [
   SupportedChainId.POLYGON,
   SupportedChainId.BINANCETEST,
   SupportedChainId.POLYGONTEST,
-] as const
+  SupportedChainId.OASISTEST,
+  SupportedChainId.OASISMAINNET,
+] as const;
 
-export type SupportedL1ChainId = typeof L1_CHAIN_IDS[number]
-
-
-
+export type SupportedL1ChainId = typeof L1_CHAIN_IDS[number];
 
 export interface L1ChainInfo {
-  readonly blockWaitMsBeforeWarning?: number
-  readonly docs: string
-  readonly explorer: string
-  readonly infoLink: string
-  readonly label: string
-  readonly logoUrl?: string
-  readonly rpcUrls?: string[]
+  readonly blockWaitMsBeforeWarning?: number;
+  readonly docs: string;
+  readonly explorer: string;
+  readonly infoLink: string;
+  readonly label: string;
+  readonly logoUrl?: string;
+  readonly rpcUrls?: string[];
   readonly nativeCurrency: {
-    name: string // 'Goerli ETH',
-    symbol: string // 'gorETH',
-    decimals: number //18,
-  }
+    name: string; // 'Goerli ETH',
+    symbol: string; // 'gorETH',
+    decimals: number; //18,
+  };
 }
 export interface L2ChainInfo extends L1ChainInfo {
-  readonly bridge: string
-  readonly logoUrl: string
-  readonly statusPage?: string
+  readonly bridge: string;
+  readonly logoUrl: string;
+  readonly statusPage?: string;
 }
 
-export type ChainInfo = { readonly [chainId: number]: L1ChainInfo  }  &
-  { readonly [chainId in SupportedL1ChainId]: L1ChainInfo }
+export type ChainInfo = { readonly [chainId: number]: L1ChainInfo } & {
+  readonly [chainId in SupportedL1ChainId]: L1ChainInfo;
+};
 
 export const CHAIN_INFO: ChainInfo = {
   [SupportedChainId.ROPSTEN]: {
-    docs: '',
-    explorer: 'https://ropsten.etherscan.io/',
-    infoLink: '',
-    label: 'Ropsten',
-    nativeCurrency: { name: 'Ethereum', symbol: 'ropETH', decimals: 18 },
+    docs: "",
+    explorer: "https://ropsten.etherscan.io/",
+    infoLink: "",
+    label: "Ropsten",
+    nativeCurrency: { name: "Ethereum", symbol: "ropETH", decimals: 18 },
   },
   [SupportedChainId.BINANCE]: {
-    docs: '',
-    explorer: 'https://www.bscscan.com/',
-    infoLink: '',
-    label: 'Binance',
-    nativeCurrency: { name: 'Binance', symbol: 'BNB', decimals: 18 },
+    docs: "",
+    explorer: "https://www.bscscan.com/",
+    infoLink: "",
+    label: "Binance",
+    nativeCurrency: { name: "Binance", symbol: "BNB", decimals: 18 },
   },
   [SupportedChainId.BINANCETEST]: {
-    docs: '',
-    explorer: 'https://testnet.bscscan.com/',
-    infoLink: '',
-    label: 'BSC Testnet',
-    nativeCurrency: { name: 'Binance', symbol: 'tBNB', decimals: 18 },
+    docs: "",
+    explorer: "https://testnet.bscscan.com/",
+    infoLink: "",
+    label: "BSC Testnet",
+    nativeCurrency: { name: "Binance", symbol: "tBNB", decimals: 18 },
   },
   [SupportedChainId.POLYGON]: {
-    docs: '',
-    explorer: 'https://polygonscan.com/',
-    infoLink: '',
-    label: 'Polygon',
-    nativeCurrency: { name: 'Polygon', symbol: 'POL', decimals: 18 },
+    docs: "",
+    explorer: "https://polygonscan.com/",
+    infoLink: "",
+    label: "Polygon",
+    nativeCurrency: { name: "Polygon", symbol: "POL", decimals: 18 },
   },
   [SupportedChainId.POLYGONTEST]: {
-    docs: '',
-    explorer: 'https://mumbai.polygonscan.com/',
-    infoLink: '',
-    label: 'Mumbai Testnet',
-    nativeCurrency: { name: 'Polygon', symbol: 'POL', decimals: 18 },
+    docs: "",
+    explorer: "https://mumbai.polygonscan.com/",
+    infoLink: "",
+    label: "Mumbai Testnet",
+    nativeCurrency: { name: "Polygon", symbol: "POL", decimals: 18 },
   },
-/*
+  /*
   [SupportedChainId.MAINNET]: {
     docs: '',
     explorer: 'https://etherscan.io/',
@@ -113,31 +115,45 @@ export const CHAIN_INFO: ChainInfo = {
   },
   */
   [SupportedChainId.RINKEBY]: {
-    docs: '',
-    explorer: 'https://rinkeby.etherscan.io/',
-    infoLink: '',
-    label: 'Rinkeby',
-    nativeCurrency: { name: 'Ethereum', symbol: 'rinkETH', decimals: 18 },
+    docs: "",
+    explorer: "https://rinkeby.etherscan.io/",
+    infoLink: "",
+    label: "Rinkeby",
+    nativeCurrency: { name: "Ethereum", symbol: "rinkETH", decimals: 18 },
   },
   [SupportedChainId.ROPSTEN]: {
-    docs: '',
-    explorer: 'https://ropsten.etherscan.io/',
-    infoLink: '',
-    label: 'Ropsten',
-    nativeCurrency: { name: 'Ethereum', symbol: 'ropETH', decimals: 18 },
+    docs: "",
+    explorer: "https://ropsten.etherscan.io/",
+    infoLink: "",
+    label: "Ropsten",
+    nativeCurrency: { name: "Ethereum", symbol: "ropETH", decimals: 18 },
   },
   [SupportedChainId.KOVAN]: {
-    docs: '',
-    explorer: 'https://kovan.etherscan.io/',
-    infoLink: '',
-    label: 'Kovan',
-    nativeCurrency: { name: 'Ethereum', symbol: 'kovETH', decimals: 18 },
+    docs: "",
+    explorer: "https://kovan.etherscan.io/",
+    infoLink: "",
+    label: "Kovan",
+    nativeCurrency: { name: "Ethereum", symbol: "kovETH", decimals: 18 },
   },
   [SupportedChainId.GOERLI]: {
-    docs: '',
-    explorer: 'https://goerli.etherscan.io/',
-    infoLink: '',
-    label: 'Görli',
-    nativeCurrency: { name: 'Ethereum', symbol: 'görETH', decimals: 18 },
+    docs: "",
+    explorer: "https://goerli.etherscan.io/",
+    infoLink: "",
+    label: "Görli",
+    nativeCurrency: { name: "Ethereum", symbol: "görETH", decimals: 18 },
   },
-}
+  [SupportedChainId.OASISTEST]: {
+    docs: "",
+    explorer: "https://explorer.emerald.oasis.dev/",
+    infoLink: "",
+    label: "Oasis Emerald Testnet",
+    nativeCurrency: { name: "ROSE", symbol: "ROSE", decimals: 18 },
+  },
+  [SupportedChainId.OASISMAINNET]: {
+    docs: "",
+    explorer: "https://testnet.explorer.emerald.oasis.dev/",
+    infoLink: "",
+    label: "Oasis Emerald Mainnet",
+    nativeCurrency: { name: "ROSE", symbol: "ROSE", decimals: 18 },
+  },
+};
