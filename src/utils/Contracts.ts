@@ -4,6 +4,7 @@ import LiquidityPairAbi from './abis/smartSwapLPToken.json';
 import SmartSwapRouterV2Abi from './abis/SmartSwapRouterV2.json';
 import masterChefV2 from './abis/masterChefV2.json'
 import specialPool from './abis/specialPool.json'
+import specialPool2 from './abis/specialPool2.json'
 import {allowanceAbi, approveAbi} from "../constants";
 import WETHABI from './abis/WETH9.json';
 import SmartSwapLPTokenABI1 from './abis/LPToken1.json'
@@ -106,6 +107,15 @@ export const RGPSpecialPool = async (address: string, library: Web3Provider | un
   return new Contract(
       address,
       specialPool,
+      library?.getSigner()
+  );
+};
+
+// contract for special pool V2
+export const RGPSpecialPool2 = async (address: string, library: Web3Provider | undefined) => {
+  return new Contract(
+      address,
+      specialPool2,
       library?.getSigner()
   );
 };

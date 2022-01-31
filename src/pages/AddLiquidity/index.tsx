@@ -155,7 +155,7 @@ export default function AddLiquidity({
   );
 
   const handleMaxInput = async () => {
-    const value = await getMaxValue(currencies[Field.INPUT]);
+    const value = await getMaxValue(currencies[Field.INPUT], library);
     const maxAmountInput = maxAmountSpend(value, currencies[Field.INPUT]);
     if (maxAmountInput) {
       onUserInput(Field.INPUT, maxAmountInput, pairAvailable);

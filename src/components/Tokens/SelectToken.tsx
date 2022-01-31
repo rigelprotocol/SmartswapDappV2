@@ -3,7 +3,7 @@ import React,{ useState,useCallback,useMemo,useEffect } from "react"
 import {
     ModalOverlay,
     ModalContent,
-    Modal, 
+    Modal,
     ModalCloseButton,
     ModalBody,
     ModalFooter,
@@ -50,7 +50,7 @@ const SelectToken:React.FC<IModal> = ({
     const boxShadow= useColorModeValue('#DEE6ED', '#324D68');
     const textColor = useColorModeValue("#319EF6","#4CAFFF");
     const boxColor = useColorModeValue("#F2F5F8","#213345");
-  
+
     useEffect(()=>{
       setSearchQuery('')
       },[tokenModal]);
@@ -95,14 +95,22 @@ const handleInput = useCallback(
     const input = event.target.value;
        const checksummedInput = isAddress(input);
     setSearchQuery(checksummedInput || input)
-   
+
   },
   [],
 );
 
+const [isSearchingForToken, setIsSearchingForToken] = useState(false);
+useEffect(() =>{
+  if(!searchToken && !(filteredTokenListWithETH?.length > 0)){
+     setIsSearchingForToken(true);
+   }else{
+     setIsSearchingForToken(false);
+   }
+ }, [searchToken, filteredTokenListWithETH]);
 
     return (
-        
+
         <>
         <Modal isOpen={tokenModal} onClose={()=>setTokenModal(false)} isCentered>
         <ModalOverlay />
@@ -126,31 +134,31 @@ const handleInput = useCallback(
                   // onClick={()=>alert(1)}
                   p={'7px'}
                   border='1px solid'
-                  
+
               />
-                 
+
               <Box
               width="100%"
                 fontSize="14px"
                 boxShadow={`0px 1px 0px ${boxShadow}`}
               >
-                  <Box 
+                  <Box
                   width="90%"
                   margin="0 auto"
                   pb="5">
-                  <ModalInput 
+                  <ModalInput
                   placeholder="Search name or paste address"
                   searchQuery={searchQuery}
                   changeInput ={handleInput}
                   />
                     </Box>
-             
+
                 </Box>
                 <ModalBody maxHeight="60vh"
-                  overflowY="scroll" p={0}>     
-                  {searchToken && !searchTokenIsAdded ?
-                  <ImportRow 
-                  token = {searchToken} 
+                  overflowY="scroll" p={0}>
+                  {isSearchingForToken ? <Text textAlign="center" py="7">Searching...</Text> : searchToken && !searchTokenIsAdded ?
+                  <ImportRow
+                  token = {searchToken}
                   openNewTokenModal = {setOpenNewTokenModal}
                   /> : filteredTokenListWithETH?.length > 0 ?
                 filteredTokenListWithETH.map((currency,index)=>{
@@ -161,42 +169,42 @@ const handleInput = useCallback(
                   selectedCurrency ={selectedCurrency}
                   otherSelectedCurrency ={otherSelectedCurrency}
                   />
-                }) : 
+                }) :
                 <Text textAlign="center" py="7">No Result found...</Text>
                   }
                       </ModalBody>
-              
+
                <ModalFooter py="4" bg={boxColor}
                 borderRadius="6px">
                    <Box
-                    w="100%" 
+                    w="100%"
                     textAlign="center">
-                    <Text fontSize="16px" 
-                    color={textColor} 
-                    cursor="pointer" 
+                    <Text fontSize="16px"
+                    color={textColor}
+                    cursor="pointer"
                     onClick={() =>openManageToken()}>
                         Manage Tokens</Text>
                        </Box>
-                   
+
                </ModalFooter>
             </ModalContent>
           </Modal>
-          <Manage 
-          open={displayManageToken} 
+          <Manage
+          open={displayManageToken}
           setDisplayManageToken={setDisplayManageToken}
           setOpenNewTokenModal={setOpenNewTokenModal}
           openNewTokenModal={openNewTokenModal}
           handleCurrencySelect={handleCurrencySelect}
           />
           {searchToken && openNewTokenModal ?
-          <NewToken 
+          <NewToken
           open={openNewTokenModal}
           handleCurrencySelect={handleCurrencySelect}
           setDisplayImportedToken={setOpenNewTokenModal}
           tokens={[searchToken]}
            />: null
           }
-          
+
           </>
     )
 };

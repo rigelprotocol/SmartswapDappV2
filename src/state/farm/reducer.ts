@@ -1,5 +1,10 @@
 import { createReducer } from '@reduxjs/toolkit';
-import {changeFarmingContent,updateTokenStaked, updateTotalLiquidity, updateFarmAllowances, updateFarmBalances} from './actions'
+import {changeFarmingContent,
+  updateTokenStaked,
+  updateTotalLiquidity,
+  updateFarmAllowances,
+  updateFarmBalances,
+updatePoolId} from './actions'
 
 
 export interface farmStateInterface {
@@ -182,6 +187,7 @@ export default createReducer(initialState, (builder) =>
 
   .addCase(updateTotalLiquidity, (state, action) => {
         const totalLiquidity = action.payload;
+
          totalLiquidity.forEach((item, index) => {
           state.contents[index].totalLiquidity = item.liquidity;
           state.contents[index].ARYValue = item.apy;
@@ -203,7 +209,6 @@ export default createReducer(initialState, (builder) =>
 
   .addCase(updateFarmAllowances, (state, action) => {
     const allowances = action.payload;
-    console.log("#######", allowances)
     allowances.forEach((item, index) => {
       state.contents[index].poolAllowance = item;
     });
@@ -215,6 +220,14 @@ export default createReducer(initialState, (builder) =>
           state.contents[index].availableToken = item;
         });
   })
+
+  .addCase(updatePoolId, (state, action) => {
+    const poolIds = action.payload;
+        poolIds.forEach((item, index) => {
+          state.contents[index].pId = item;
+        });
+  })
+
 
 
 
