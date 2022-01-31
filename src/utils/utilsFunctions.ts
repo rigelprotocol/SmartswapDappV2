@@ -94,6 +94,17 @@ export const switchNetwork = async (
     rpcUrls: ["https://bsc-dataseed.binance.org"],
     blockExplorerUrls: ["https://bscscan.com"],
   };
+  const oasisParams = {
+    chainId: "0xa516",
+    chainName: "Emerald Mainnet",
+    nativeCurrency: {
+      name: "ROSE",
+      symbol: "ROSE",
+      decimals: 18,
+    },
+    rpcUrls: ["https://emerald.oasis.dev"],
+    blockExplorerUrls: ["https://explorer.emerald.oasis.dev"],
+  };
   if (chainId === "0x1") {
     library?.send("wallet_switchEthereumChain", [{ chainId }, account]);
   } else if (chainId === "0x3") {
@@ -149,6 +160,27 @@ export const switchNetwork = async (
         try {
           await library?.send("wallet_addEthereumChain", [
             polygonParams,
+            account,
+          ]);
+        } catch (addError) {
+          // handle "add" error
+          console.error(`Add chain error ${addError}`);
+        }
+      }
+      console.error(`Switch chain error ${switchError}`);
+      // handle other "switch" errors
+    }
+  } else if (chainId === "0xa516") {
+    try {
+      await library?.send("wallet_switchEthereumChain", [
+        { chainId: "0xa516" },
+        account,
+      ]);
+    } catch (switchError) {
+      if (switchError.code === 4902) {
+        try {
+          await library?.send("wallet_addEthereumChain", [
+            oasisParams,
             account,
           ]);
         } catch (addError) {

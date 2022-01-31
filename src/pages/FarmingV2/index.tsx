@@ -16,6 +16,7 @@ import {
   useMediaQuery,
   Stack,
   Divider,
+  Link,
 } from "@chakra-ui/react";
 import { useHistory } from "react-router-dom";
 import { useColorModeValue } from "@chakra-ui/react";
@@ -924,20 +925,24 @@ export function Index() {
         </Box>
       )}
 
-      <Flex justifyContent="flex-end">
-        <Button
-          onClick={showProject}
-          background="#4CAFFF"
-          boxShadow="0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)"
-          borderRadius="6px"
-          mx={[5, 10, 15, 20]}
+      <Flex justifyContent='flex-end'>
+        <Link
+          href='https://docs.google.com/forms/d/e/1FAIpQLSdJGAuABrJd6d0WSprUWB140we9hGqa-IwIbonx9ZJhxN2zsg/viewform'
           position={{ base: "relative", md: "absolute" }}
-          padding=" 12px 32px"
-          mt={3}
-          variant="brand"
+          isExternal
         >
-          List your project
-        </Button>
+          <Button
+            background='#4CAFFF'
+            boxShadow='0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)'
+            borderRadius='6px'
+            mx={[5, 10, 15, 20]}
+            padding=' 12px 32px'
+            mt={3}
+            variant='brand'
+          >
+            List your project
+          </Button>
+        </Link>
       </Flex>
       <Tabs
         defaultIndex={match ? STAKING_INDEX : LIQUIDITY_INDEX}
@@ -1425,19 +1430,20 @@ export function Index() {
                     </Text>
                   </Flex>
 
-                  <Button
-                    onClick={() => goToV1(LIQUIDITY_INDEX)}
-                    background="#4CAFFF"
-                    boxShadow="0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)"
-                    borderRadius="6px"
-                    mx={[5, 10, 15, 20]}
-                    position={{ base: "relative", md: "absolute" }}
-                    padding=" 12px 32px"
-                    mt={3}
-                    variant="brand"
-                  >
-                    Go to farming V1
-                  </Button>
+                  <Link href='https://smartswapv1.rigelprotocol.com/farming' isExternal>
+                    <Button
+                      background='#4CAFFF'
+                      boxShadow='0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)'
+                      borderRadius='6px'
+                      mx={[5, 10, 15, 20]}
+                      position={{ base: "relative", md: "absolute" }}
+                      padding=' 12px 32px'
+                      mt={3}
+                      variant='brand'
+                    >
+                        Go to farming V1
+                    </Button>
+                  </Link>
                 </Box>
               </Box>
             </Flex>
