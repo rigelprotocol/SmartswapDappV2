@@ -33,7 +33,6 @@ import { getExplorerLink, ExplorerDataType } from "../../utils/getExplorerLink";
 import {
   MasterChefV2Contract,
   RGPSpecialPool,
-  RGPSpecialPool2,
   smartSwapLPTokenPoolOne,
   smartSwapLPTokenPoolTwo,
   smartSwapLPTokenPoolThree,
@@ -51,7 +50,6 @@ import {
   SMARTSWAPLP_TOKEN5ADDRESSES,
   RGP,
   RGPSPECIALPOOLADDRESSES,
-  RGPSPECIALPOOLADDRESSES2,
 } from "../../utils/addresses";
 import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
 import { useRGPBalance } from "../../utils/hooks/useBalances";
@@ -97,6 +95,7 @@ const ShowYieldFarmDetails = ({
   const { account, chainId, library } = useActiveWeb3React();
   const dispatch = useDispatch();
   const [depositTokenValue, setDepositTokenValue] = useState("");
+  const [referralAddress, setReferralAddress] = useState("");
   const [depositInputHasError, setDepositInputHasError] = useState(false);
   const [depositErrorButtonText, setDepositErrorButtonText] = useState("");
   const [RGPBalance] = useRGPBalance();
@@ -195,28 +194,15 @@ const ShowYieldFarmDetails = ({
       try {
         const rgp = await rigelToken(RGP[chainId as number], library);
         const walletBal = (await rgp.balanceOf(account)) + 400e18;
-        if(content.id === 1){
-          const data = await rgp.approve(
-            RGPSPECIALPOOLADDRESSES[chainId as number],
-            walletBal,
-            {
-              from: account,
-              // gasLimit: 150000,
-              // gasPrice: ethers.utils.parseUnits("20", "gwei"),
-            }
-          );
-        }else if(content.id === 7){
-          const data = await rgp.approve(
-            RGPSPECIALPOOLADDRESSES2[chainId as number],
-            walletBal,
-            {
-              from: account,
-              // gasLimit: 150000,
-              // gasPrice: ethers.utils.parseUnits("20", "gwei"),
-            }
-          );
-        }
-
+        const data = await rgp.approve(
+          RGPSPECIALPOOLADDRESSES[chainId as number],
+          walletBal,
+          {
+            from: account,
+            // gasLimit: 150000,
+            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+          }
+        );
         setApprovalLoading(true);
         const { confirmations, status } = await fetchTransactionData(data);
         getAllowances();
@@ -389,17 +375,12 @@ getAllowances();
             allowance(pool3),
           ]);
         let rigelAllowance;
-        if (RGPSPECIALPOOLADDRESSES[chainId as number] && content.id === 1) {
+        if (RGPSPECIALPOOLADDRESSES[chainId as number]) {
           rigelAllowance = await rigel.allowance(
             account,
             RGPSPECIALPOOLADDRESSES[chainId as number]
           );
-        } else if (RGPSPECIALPOOLADDRESSES2[chainId as number] && content.id === 7) {
-          rigelAllowance = await rigel.allowance(
-            account,
-            RGPSPECIALPOOLADDRESSES2[chainId as number]
-          );
-        }else {
+        } else {
           rigelAllowance = pool1Allowance;
         }
         if (Number(chainId) === Number(SupportedChainId.BINANCE)) {
@@ -632,29 +613,7 @@ getAllowances();
               })
             );
           }
-        } else if (id === 6) {
-          const specialPool = await RGPSpecialPool2(
-            RGPSPECIALPOOLADDRESSES2[chainId as number],
-            library
-          );
-          const specialWithdraw = await specialPool.unStake(6);
-          const { confirmations, status, logs } = await fetchTransactionData(
-            specialWithdraw
-          );
-
-          const amountOfRgbSpecial = convertToNumber(logs[1].data);
-
-          if (confirmations >= 1 && status) {
-            dispatch(
-              setOpenModal({
-                trxState: TrxState.TransactionSuccessful,
-                message: `Successfully Harvested ${convertFromWei(
-                  amountOfRgbSpecial
-                )} RGP `,
-              })
-            );
-          }
-        }else {
+        } else {
           const lpTokens = await MasterChefV2Contract(
             MASTERCHEFV2ADDRESSES[chainId as number],
             library
@@ -796,6 +755,8 @@ getAllowances();
       if (account) {
         if (val === "RGP") {
           await RGPuseStake(depositTokenValue);
+        } else if (val === "RGP" && content.id === 7){
+          await RGP2useStake(depositTokenValue, referralAddress);
         } else if (val === "RGP-BNB" || val === "RGP-USDT") {
           await LPDeposit(2);
         } else if (val === "BNB-BUSD" || val === "RGP-USDC") {
@@ -824,7 +785,7 @@ getAllowances();
   };
 
   const RGPuseStake = async (depositToken: any) => {
-    if (account && content.id === 1) {
+    if (account) {
       const specialPool = await RGPSpecialPool(
         RGPSPECIALPOOLADDRESSES[chainId as number],
         library
@@ -849,7 +810,10 @@ getAllowances();
         })
       );
       // callRefreshFarm(confirmations, status);
-    }else if (account && content.id === 7) {
+    }
+  };
+  const RGP2useStake = async (depositToken: any, submitReferral: any) => {
+    if (account) {
       const specialPool = await RGPSpecialPool2(
         RGPSPECIALPOOLADDRESSES2[chainId as number],
         library
@@ -857,6 +821,7 @@ getAllowances();
 
       const data = await specialPool.stake(
         ethers.utils.parseEther(depositTokenValue.toString()),
+        referralAddress,
         {
           from: account,
           // gasLimit: 200000,
@@ -878,45 +843,10 @@ getAllowances();
   };
   // withdrawal of funds
   const RGPUnstake = async () => {
-    if (account && content.id === 1) {
+    if (account) {
       try {
         const specialPool = await RGPSpecialPool(
           RGPSPECIALPOOLADDRESSES[chainId as number],
-          library
-        );
-        const data = await specialPool.unStake(
-          ethers.utils.parseUnits(unstakeToken, "ether"), // user input from onclick shoild be here...
-          {
-            from: account,
-            // gasLimit: 150000,
-            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
-          }
-        );
-        const { confirmations, status } = await fetchTransactionData(data);
-
-        dispatch(
-          setOpenModal({
-            trxState: TrxState.TransactionSuccessful,
-            message: `Successfully unstaked ${convertFromWei(
-              unstakeToken
-            )} RGP `,
-          })
-        );
-        // dispatch the getTokenStaked action from here when data changes
-        //  callRefreshFarm(confirmations, status);
-      } catch (e) {
-        console.log(e);
-        dispatch(
-          setOpenModal({
-            trxState: TrxState.TransactionFailed,
-            message: `Transaction was not successful`,
-          })
-        );
-      }
-    }else if (account && content.id === 7) {
-      try {
-        const specialPool = await RGPSpecialPool2(
-          RGPSPECIALPOOLADDRESSES2[chainId as number],
           library
         );
         const data = await specialPool.unStake(
@@ -1402,8 +1332,10 @@ getAllowances();
                     opacity='0.5'
                     h='50px'
                     borderRadius='6px'
-                    name='availableToken'
+                    name='referralDetail'
                     border='2px'
+                    value={referralAddress}
+                    onChange={(e) => setReferralAddress(e.target.value)}
                 />
               </InputGroup>
               <Box mt={4}>
