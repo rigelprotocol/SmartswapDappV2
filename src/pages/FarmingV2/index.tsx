@@ -554,7 +554,7 @@ export function Index() {
           ])
         );
       } else {
-        const [specialPool, pool1, pool2, pool3, pool4, pool5] =
+        const [specialPool, pool1, pool2, pool3, pool4, pool5, specialPool2] =
           await Promise.all([
             RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library),
             smartSwapLPTokenPoolOne(
@@ -577,6 +577,7 @@ export function Index() {
               SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
               library
             ),
+            RGPSpecialPool2(RGPSPECIALPOOLADDRESSES2[chainId as number], library),
           ]);
 
         const [
@@ -586,6 +587,7 @@ export function Index() {
           pool3Reserve,
           pool4Reserve,
           pool5Reserve,
+          rgp2TotalStaking,
         ] = await Promise.all([
           await specialPool.totalStaking(),
           pool1.getReserves(),
@@ -593,6 +595,7 @@ export function Index() {
           pool3.getReserves(),
           pool4.getReserves(),
           pool5.getReserves(),
+          await specialPool2.totalStaking(),
         ]);
         const RGPprice: number | any = ethers.utils.formatUnits(
           pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
@@ -602,6 +605,9 @@ export function Index() {
         const BNBprice = getBnbPrice(pool3, pool3Reserve);
         const RGPLiquidity = ethers.utils
           .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * RGPprice)), 21)
+          .toString();
+        const RGP2Liquidity = ethers.utils
+          .formatUnits(rgp2TotalStaking.mul(Math.floor(1000 * RGPprice)), 21)
           .toString();
         const BUSD_RGPLiquidity = ethers.utils
           .formatEther(pool1Reserve[0].mul(2))
@@ -651,6 +657,11 @@ export function Index() {
               deposit: "AXS-BUSD",
               liquidity: AXS_BUSDLiquidity,
               apy: calculateApy(RGPprice, AXS_BUSDLiquidity, 238.3333333),
+            },
+            {
+              deposit: "RGP",
+              liquidity: RGP2Liquidity,
+              apy: calculateApy(RGPprice, RGP2Liquidity, 250),
             },
           ])
         );
@@ -1275,7 +1286,7 @@ export function Index() {
                         key={content.pid}
                         wallet={wallet}
                       />
-                    ) : index !== 0 &&
+                    ) : index !== 0 && index !== 6 &&
                       Number(chainId) !== Number(SupportedChainId.POLYGON) ? (
                       <YieldFarm
                         farmDataLoading={farmDataLoading}
