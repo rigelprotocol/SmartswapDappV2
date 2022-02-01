@@ -234,7 +234,7 @@ setMinNav2(false)
 setMinNav3(!minNav3)
            }}>
               {/* <span><Link to="/swap">Launch DApps<i className="downArrow"></i></Link></span> */}
-              <div className="multi_navbar_ul_div_heading"><a className='subList'>DApps</a></div>
+              <div className="multi_navbar_ul_div_heading"><a className='subList'>Launch DApps</a></div>
              <div style={{marginTop:"-5px"}}><i className="downArrow"></i></div>
   {minNav3 && <ul className="multi_navbar_ul">
              <div className="multi_navbar_ul_div">
@@ -335,11 +335,14 @@ setMinNav3(!minNav3)
 <div className="section__1__center">
   <h1>a SMART way to Swap</h1>
   <p>Direct cross chain swapping without order books, deposits or coin wrapping. High Yield Annual Interest for RGP token holders and Liquidity Providers.</p>
- <Link to="/swap">
+  <Flex justifyContent="center">
+     <Link to="/swap">
  <button className="button">
     Launch DApp
   </button>
  </Link> 
+  </Flex>
+
 </div>
        </section>
 
