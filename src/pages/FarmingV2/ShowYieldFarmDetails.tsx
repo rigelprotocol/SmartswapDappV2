@@ -813,32 +813,36 @@ getAllowances();
     }
   };
   const RGP2useStake = async (depositToken: any, submitReferral: any) => {
-    if (account) {
-      const specialPool = await RGPSpecialPool2(
-        RGPSPECIALPOOLADDRESSES2[chainId as number],
-        library
-      );
+    try{
+      if (account) {
+        const specialPool = await RGPSpecialPool2(
+          RGPSPECIALPOOLADDRESSES2[chainId as number],
+          library
+        );
 
-      const data = await specialPool.stake(
-        ethers.utils.parseEther(depositTokenValue.toString()),
-        referralAddress,
-        {
-          from: account,
-          // gasLimit: 200000,
-          // gasPrice: ethers.utils.parseUnits("20", "gwei"),
-        }
-      );
-      const { confirmations, status } = await fetchTransactionData(data);
+        const data = await specialPool.stake(
+          ethers.utils.parseEther(depositTokenValue.toString()),
+          referralAddress,
+          {
+            from: account,
+            // gasLimit: 200000,
+            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+          }
+        );
+        const { confirmations, status } = await fetchTransactionData(data);
 
-      dispatch(
-        setOpenModal({
-          trxState: TrxState.TransactionSuccessful,
-          message: `Successfully staked ${convertFromWei(
-            depositTokenValue
-          )} RGP `,
-        })
-      );
-      // callRefreshFarm(confirmations, status);
+        dispatch(
+          setOpenModal({
+            trxState: TrxState.TransactionSuccessful,
+            message: `Successfully staked ${convertFromWei(
+              depositTokenValue
+            )} RGP `,
+          })
+        );
+        // callRefreshFarm(confirmations, status);
+      }
+    }catch(error){
+      console.log(error)
     }
   };
   // withdrawal of funds
