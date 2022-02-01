@@ -28,6 +28,7 @@ import "./landingpage.css"
 const Index = () => {
   const [minNav1,setMinNav1] = useState(false)
   const [minNav2,setMinNav2] = useState(false)
+  const [minNav3,setMinNav3] = useState(false)
   const [navBar,setNavBar] = useState(false)
 
   return (
@@ -35,6 +36,7 @@ const Index = () => {
       if(e.target.className !=="subList" && e.target.className !=="downArrow" && e.target.className !=="list"){
       setMinNav1(false)
       setMinNav2(false)
+      setMinNav3(false)
       }
     }}>
        <header className='mainHeader'>
@@ -143,7 +145,7 @@ setMinNav2(!minNav2)
                  target="blank"
                 >
                  <div className="multi_navbar_ul_div_item">
-                   <p className="multi_nav_head">GiftDapp</p>
+                   <p className="multi_nav_head">Gift Dapp</p>
                   <div>
                    <p>Gifts token in a fun way.</p>
                   </div>
@@ -225,11 +227,101 @@ setMinNav2(!minNav2)
            </div>  */}
           </ul>
           <div className="header__nav__button__wrapper">
-           <div className="header__nav__button">
-            <button className="button">
-              <span><Link to="/swap">Launch DApps<i className="downArrow"></i></Link></span>
-              
-            </button>
+           <div className="header__nav__button multi_navbar">
+            <button className="button " onClick={()=>{
+setMinNav1(false)
+setMinNav2(false)
+setMinNav3(!minNav3)
+           }}>
+              {/* <span><Link to="/swap">Launch DApps<i className="downArrow"></i></Link></span> */}
+              <div className="multi_navbar_ul_div_heading"><a className='subList'>DApps</a></div>
+             <div style={{marginTop:"-5px"}}><i className="downArrow"></i></div>
+  {minNav3 && <ul className="multi_navbar_ul">
+             <div className="multi_navbar_ul_div">
+              <div>
+               <li className='list'>
+                <a
+                 href="#"
+                >
+                 <div className="multi_navbar_ul_div_item">
+                   <p className="multi_nav_head">SmartSwap</p>
+                  <div>
+                   <p>Swap tokens directly</p>
+                  </div>
+                 </div>
+                </a>
+               </li>
+               <li className='list'>
+                <a
+                 href="https://gift.rigelprotocol.com/"
+                 target="blank"
+                >
+                 <div className="multi_navbar_ul_div_item">
+                   <p className="multi_nav_head">Gift Dapp</p>
+                  <div>
+                   <p>Gifts token in a fun way.</p>
+                  </div>
+                 </div>
+                </a>
+               </li>
+               <li className='list'>
+               <a
+  data-toggle="tooltip"
+  data-placement="bottom"
+  title="coming soon"
+  href="#" style={{cursor:"not-allowed"}}>
+                {/* <a
+                href="smartbid.html"
+                > */}
+                 <div className="multi_navbar_ul_div_item">
+                   <p className="multi_nav_head">SmartBid</p>
+                  <div>
+                   <p>Bid on tokens.</p>
+                  </div>
+                 </div>
+                </a>
+               </li>
+               <li className='list'>
+               <a
+  data-toggle="tooltip"
+  data-placement="bottom"
+  title="coming soon"
+  href="#" style={{cursor:"not-allowed"}}>
+                {/* <a
+                href="leverage-exchange.html"
+                > */}
+                 <div className="multi_navbar_ul_div_item">
+                   <p className="multi_nav_head">Leverage Exchange</p>
+                  <div>
+                   <p>Trade using decentralized tokens.</p>
+                  </div>
+                 </div>
+                </a>
+               </li>
+               <li className='list'>
+                {/* <a
+                 href="launchpad.html"
+                > */}
+                   <a
+  data-toggle="tooltip"
+  data-placement="bottom"
+  title="coming soon"
+  href="#" style={{cursor:"not-allowed"}}>
+                 <div className="multi_navbar_ul_div_item">
+                   <p className="multi_nav_head">LaunchPad</p>
+                  <div>
+                   <p>Join Project hosted on rigelProtocol</p>
+                  </div>
+                 </div>
+                </a>
+               </li>
+            
+              </div>
+             </div>
+            </ul>}
+            
+            </button> 
+          
            </div>
           </div>
          </nav>
