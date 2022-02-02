@@ -491,6 +491,8 @@ getAllowances();
       if (account) {
         if (val === "RGP") {
           await RGPUnstake();
+        } else if (val === "RGP" && content.id === 7){
+          await RGP2Unstake();
         } else if (val === "RGP-BNB" || val === "RGP-USDT") {
           await tokensWithdrawal(2);
         } else if (val === "RBG-BUSD" || val === "MATIC-RGP") {
@@ -884,7 +886,44 @@ getAllowances();
       }
     }
   };
+  const RGP2Unstake = async () => {
+    if (account) {
+      try {
+        const specialPool = await RGPSpecialPool2(
+          RGPSPECIALPOOLADDRESSES2[chainId as number],
+          library
+        );
+        const data = await specialPool.unStake(
+          ethers.utils.parseUnits(unstakeToken, "ether"), // user input from onclick shoild be here...
+          {
+            from: account,
+            // gasLimit: 150000,
+            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+          }
+        );
+        const { confirmations, status } = await fetchTransactionData(data);
 
+        dispatch(
+          setOpenModal({
+            trxState: TrxState.TransactionSuccessful,
+            message: `Successfully unstaked ${convertFromWei(
+              unstakeToken
+            )} RGP `,
+          })
+        );
+        // dispatch the getTokenStaked action from here when data changes
+        //  callRefreshFarm(confirmations, status);
+      } catch (e) {
+        console.log(e);
+        dispatch(
+          setOpenModal({
+            trxState: TrxState.TransactionFailed,
+            message: `Transaction was not successful`,
+          })
+        );
+      }
+    }
+  };
   const LPApproval = async (contract: any) => {
     if (account) {
       try {
