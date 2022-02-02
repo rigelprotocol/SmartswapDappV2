@@ -38,6 +38,7 @@ import { ethers } from "ethers";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import CurrencyLogo from "../../components/currencyLogo";
 import { isAddress } from "../../utils";
+import TransactionSettings from "../../components/TransactionSettings";
 
 const Remove = () => {
   const [isTabDevice] = useMediaQuery("(min-width: 990px)");
@@ -681,7 +682,7 @@ const Remove = () => {
             </Flex>
             <Flex alignItems='center'>
               <Flex mt={3}>
-                <SettingsIcon />
+                <TransactionSettings />
               </Flex>
               <TimeIcon ml={1} w='22px' h='22px' color={topIcons} />
             </Flex>
