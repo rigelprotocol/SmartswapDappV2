@@ -1,19 +1,17 @@
-import { Web3Provider } from '@ethersproject/providers';
-import { Contract } from '@ethersproject/contracts';
-import detectEthereumProvider from '@metamask/detect-provider';
-import { getAddress } from '@ethersproject/address';
-import ERC20Token from './abis/erc20.json';
-import { SupportedChainSymbols, WrappedSymbols } from './constants/chains';
-import { Fraction } from '@uniswap/sdk-core';
-import { ethers } from 'ethers';
+import { Web3Provider } from "@ethersproject/providers";
+import { Contract } from "@ethersproject/contracts";
+import ERC20Token from "./abis/erc20.json";
+import { SupportedChainSymbols, WrappedSymbols } from "./constants/chains";
+import detectEthereumProvider from "@metamask/detect-provider";
+import { ethers } from "ethers";
 
 export const removeSideTab = (sideBarName: string): void => {
-  localStorage.setItem(sideBarName, 'removed');
+  localStorage.setItem(sideBarName, "removed");
 };
 
 export const checkSideTab = (sideBarName: string): boolean => {
   const isSidebarActive = localStorage.getItem(sideBarName);
-  if (isSidebarActive === 'removed') {
+  if (isSidebarActive === "removed") {
     return true;
   } else {
     return false;
@@ -23,32 +21,39 @@ export const checkSideTab = (sideBarName: string): boolean => {
 export const provider = async () => {
   try {
     let ethProvider = await detectEthereumProvider();
-    if (ethProvider !== window.ethereum && window.ethereum !== 'undefined') {
+    if (ethProvider !== window.ethereum && window.ethereum !== "undefined") {
       ethProvider = window.ethereum;
       return new Web3Provider(ethProvider as any);
     }
     return new Web3Provider(ethProvider as any);
   } catch (e) {
-
-    console.log("provider error",e);
+    console.log("provider error", e);
   }
 };
 
-export const signer = async () => {
+export const signer = async (library: Web3Provider | undefined) => {
   try {
-    const getProvider = await provider();
-    const providerSigner = await getProvider?.getSigner()
-    return providerSigner;
+    return await library?.getSigner();
   } catch (e) {
-
-    console.log("provider error",e);
+    console.log("provider error", e);
   }
 };
 
-export const getERC20Token = async (address: string) => {
-  const Provider = await provider();
-  const token = new Contract(address, ERC20Token, Provider?.getSigner());
+export const getERC20Token = async (
+  address: string,
+  library: Web3Provider | undefined
+) => {
+  const token = new Contract(address, ERC20Token, library?.getSigner());
   return token;
+};
+
+export const getDecimals = async (
+  address: string,
+  library: Web3Provider | undefined
+): Promise<number> => {
+  const token = await getERC20Token(address, library);
+  const decimals = await token.decimals();
+  return decimals;
 };
 
 export const switchNetwork = async (
@@ -57,84 +62,133 @@ export const switchNetwork = async (
   library: Web3Provider
 ) => {
   const polygonParams = {
-    chainId: '0x89',
-    chainName: 'Matic',
+    chainId: "0x89",
+    chainName: "Matic",
     nativeCurrency: {
-      name: 'Matic',
-      symbol: 'MATIC',
+      name: "Matic",
+      symbol: "MATIC",
       decimals: 18,
     },
-    rpcUrls: ['https://polygon-rpc.com'],
-    blockExplorerUrls: ['https://polygonscan.com'],
+    rpcUrls: ["https://polygon-rpc.com"],
+    blockExplorerUrls: ["https://polygonscan.com"],
   };
   const ropstenParams = {
-    chainId: '0x3',
-    chainName: 'Ropsten Test Network',
+    chainId: "0x3",
+    chainName: "Ropsten Test Network",
     nativeCurrency: {
-      name: 'Ethereum',
-      symbol: 'ETH',
+      name: "Ethereum",
+      symbol: "ETH",
       decimals: 18,
     },
-    rpcUrls: ['https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
-    blockExplorerUrls: ['https://ropsten.etherscan.io'],
-  }
-  const binanceParams = {
-    chainId: '0x38',
-    chainName: 'Binance Smart Chain',
-    nativeCurrency: {
-      name: 'Binance Coin',
-      symbol: 'BNB',
-      decimals: 18,
-    },
-    rpcUrls: ['https://bsc-dataseed.binance.org'],
-    blockExplorerUrls: ['https://bscscan.com'],
+    rpcUrls: ["https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"],
+    blockExplorerUrls: ["https://ropsten.etherscan.io"],
   };
-console.log({chainId})
-  if (chainId === '0x1') {
-    library?.send('wallet_switchEthereumChain', [{ chainId }, account]);
-  } else if (chainId === '0x3') {
+  const binanceParams = {
+    chainId: "0x38",
+    chainName: "Binance Smart Chain",
+    nativeCurrency: {
+      name: "Binance Coin",
+      symbol: "BNB",
+      decimals: 18,
+    },
+    rpcUrls: ["https://bsc-dataseed.binance.org"],
+    blockExplorerUrls: ["https://bscscan.com"],
+  };
+  const oasisParams = {
+    chainId: "0xa516",
+    chainName: "Emerald Mainnet",
+    nativeCurrency: {
+      name: "ROSE",
+      symbol: "ROSE",
+      decimals: 18,
+    },
+    rpcUrls: ["https://emerald.oasis.dev"],
+    blockExplorerUrls: ["https://explorer.emerald.oasis.dev"],
+  };
+  if (chainId === "0x1") {
+    library?.send("wallet_switchEthereumChain", [{ chainId }, account]);
+  } else if (chainId === "0x3") {
     try {
-      await library?.send('wallet_switchEthereumChain', [{ chainId: '0x3' }, account]);
-    }catch (switchError) {
+      await library?.send("wallet_switchEthereumChain", [
+        { chainId: "0x3" },
+        account,
+      ]);
+    } catch (switchError) {
       if (switchError.code === 4902) {
-          try {
-            await library?.send('wallet_addEthereumChain', [ropstenParams, account])
-          } catch (addError) {
-            // handle "add" error
-            console.error(`Add chain error ${addError}`)
-          }
+        try {
+          await library?.send("wallet_addEthereumChain", [
+            ropstenParams,
+            account,
+          ]);
+        } catch (addError) {
+          // handle "add" error
+          console.error(`Add chain error ${addError}`);
         }
-        console.error(`Switch chain error ${switchError}`)
+      }
+      console.error(`Switch chain error ${switchError}`);
       // handle other "switch" errors
     }
-  } else if (chainId === '0x38') {
+  } else if (chainId === "0x38") {
     try {
-      await library?.send('wallet_switchEthereumChain', [{ chainId: '0x38' }, account]);
-    }catch (switchError) {
+      await library?.send("wallet_switchEthereumChain", [
+        { chainId: "0x38" },
+        account,
+      ]);
+    } catch (switchError) {
       if (switchError.code === 4902) {
-          try {
-            await library?.send('wallet_addEthereumChain', [binanceParams, account])
-          } catch (addError) {
-            // handle "add" error
-            console.error(`Add chain error ${addError}`)
-          }
+        try {
+          await library?.send("wallet_addEthereumChain", [
+            binanceParams,
+            account,
+          ]);
+        } catch (addError) {
+          // handle "add" error
+          console.error(`Add chain error ${addError}`);
         }
-        console.error(`Switch chain error ${switchError}`)
+      }
+      console.error(`Switch chain error ${switchError}`);
       // handle other "switch" errors
     }
-  } else if (chainId === '0x89') {
+  } else if (chainId === "0x89") {
     try {
-      await library?.send('wallet_switchEthereumChain', [{ chainId: '0x89' }, account]);
-    }catch (switchError) {
+      await library?.send("wallet_switchEthereumChain", [
+        { chainId: "0x89" },
+        account,
+      ]);
+    } catch (switchError) {
       if (switchError.code === 4902) {
-          try {
-            await library?.send('wallet_addEthereumChain', [polygonParams, account])
-          } catch (addError) {
-            // handle "add" error
-            console.error(`Add chain error ${addError}`)
-          }
+        try {
+          await library?.send("wallet_addEthereumChain", [
+            polygonParams,
+            account,
+          ]);
+        } catch (addError) {
+          // handle "add" error
+          console.error(`Add chain error ${addError}`);
         }
-        console.error(`Switch chain error ${switchError}`)
+      }
+      console.error(`Switch chain error ${switchError}`);
+      // handle other "switch" errors
+    }
+  } else if (chainId === "0xa516") {
+    try {
+      await library?.send("wallet_switchEthereumChain", [
+        { chainId: "0xa516" },
+        account,
+      ]);
+    } catch (switchError) {
+      if (switchError.code === 4902) {
+        try {
+          await library?.send("wallet_addEthereumChain", [
+            oasisParams,
+            account,
+          ]);
+        } catch (addError) {
+          // handle "add" error
+          console.error(`Add chain error ${addError}`);
+        }
+      }
+      console.error(`Switch chain error ${switchError}`);
       // handle other "switch" errors
     }
   }
@@ -162,11 +216,17 @@ export const ISNATIVE = (symbol: string, chainId: number): boolean => {
 };
 
 export const formatAmountIn = (amount: any, decimals: number) => {
-  const Decimal = 10 ** decimals;
-  const amountMin = amount * Decimal;
-  return amountMin.toFixed();
+  return ethers.utils.parseUnits(truncate(amount, decimals), decimals);
 };
 
+export function truncate(str: string, maxDecimalDigits: number) {
+  if (str && str.toString()?.includes(".")) {
+    const parts = str.toString().split(".");
+    return parts[0] + "." + parts[1].slice(0, maxDecimalDigits);
+  }
+
+  return str;
+}
 export const getOutPutDataFromEvent = async (
   tokenAddress,
   eventsArray,

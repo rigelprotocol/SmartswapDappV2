@@ -8,7 +8,7 @@ import { ethers } from 'ethers';
 export function isAddress(value: any): string | false {
     try {
         return getAddress(value)
-    } catch {
+    } catch(e) {
         return false
     }
 }
@@ -58,15 +58,15 @@ export function convertToNumber(hex : string, decimals?: number) {
   };
 
   export const  formatBigNumber = (bigNumber : any) => {
-    const number = Number.parseFloat(ethers.utils.formatEther(bigNumber));
-    if (number % 1 === 0) {
-      return number.toFixed(3);
+    const amount = ethers.utils.formatEther(bigNumber);
+    if (Number(amount)  === 0 || !amount?.includes('.')) {
+      return amount
     }
-    const splitNumber = number.toString().split('.');
-    const [whole, decimal] = splitNumber;
+    const splitAmount = amount.toString().split('.');
+    const [whole, decimal] = splitAmount;
     const deci = decimal
       .split('')
-      .slice(0, 3)
+      .slice(0, 18)
       .join('');
     const output = [whole, deci];
     return output.join('.');

@@ -1,8 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import {
   useSwapActionHandlers,
-  useDerivedSwapInfo,
-  useSwapState,
+  useDerivedSwapInfo
 } from '../../../state/swap/hooks';
 import { Field } from '../../../state/swap/actions';
 import Selector from './Selector';

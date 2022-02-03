@@ -122,6 +122,8 @@ function combineMaps(map1: TokenAddressMap,  map2: TokenAddressMap): TokenAddres
     97: {...map1[97], ...map2[97] }, // bsc testnet
     137: {...map1[137], ...map2[137] }, // matic
     80001: {...map1[80001], ...map2[80001] }, // matic testnet
+    42261: {...map1[42261], ...map2[42261] }, // oasis testnet
+    42262: {...map1[42262], ...map2[42262] }, // oasis mainnet
   }
 }
 

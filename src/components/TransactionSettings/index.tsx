@@ -134,8 +134,8 @@ const TransactionSettings = () => {
   };
 
   return (
-  <Flex alignItems="center" fontWeight="bold" rounded={100}>
-    <Popover>
+  <Flex alignItems="center" fontWeight="bold" rounded={100} >
+    <Popover  >
       <PopoverTrigger>
         <IconButton
         bg="transparent"
@@ -144,7 +144,7 @@ const TransactionSettings = () => {
         _focus={{background: "transparent !important"}}
         />
       </PopoverTrigger>
-      <PopoverContent borderRadius="6px" bg={bgColor} borderColor={borderColor}>
+      <PopoverContent borderRadius="6px" bg={bgColor} borderColor={borderColor} mt="0px">
         <PopoverHeader color={textColor} fontSize="14px" borderBottom="none">Settings</PopoverHeader>
         <PopoverCloseButton
         bg="none"
@@ -308,6 +308,8 @@ const TransactionSettings = () => {
               bgColor={buttonBgcolor}
               borderColor={borderColor}
               color={textColorTwo}
+              _hover={{border:`1px solid ${activeButtonColor}`,color:`${activeButtonColor}`, background: `$buttonBgColorTwo`}}
+              _focus={{border:`1px solid ${activeButtonColor}`,color:`${activeButtonColor}`, background: `$buttonBgColorTwo`}}
           >
             {transactionState ?  'Show History Tab' : 'Hide History Tab'}
           </Button>
@@ -318,6 +320,8 @@ const TransactionSettings = () => {
               borderColor={borderColor}
               color={textColorTwo}
               my={3}
+              _hover={{border:`1px solid ${activeButtonColor}`,color:`${activeButtonColor}`, background: `$buttonBgColorTwo`}}
+              _focus={{border:`1px solid ${activeButtonColor}`,color:`${activeButtonColor}`, background: `$buttonBgColorTwo`}}
           >
             {detailsState ?  'Show Details Tab' : 'Hide Details Tab'}
           </Button>

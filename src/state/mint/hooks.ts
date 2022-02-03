@@ -16,7 +16,6 @@ import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
 import { AppDispatch } from '../index';
 import { useNativeBalance } from '../../utils/hooks/useBalances';
 import { useCurrency } from '../../hooks/Tokens';
-import { provider } from '../../utils/utilsFunctions';
 import { getERC20Token } from '../../utils/utilsFunctions';
 import { isAddress } from '../../utils';
 import { ethers } from 'ethers';
@@ -24,6 +23,7 @@ import { parseUnits } from '@ethersproject/units';
 // import {useMint}
 import { useMint } from '../../hooks/useMint';
 import { ZERO_ADDRESS } from '../../constants';
+import {Web3Provider} from "@ethersproject/providers";
 const ZERO = JSBI.BigInt(0);
 
 export function useMintState(): RootState['mint'] {
@@ -55,7 +55,7 @@ export function useMintActionHandlers(): {
    onCurrencySelection: (field: Field, currency: Currency) => void;
   onUserInput: (field: Field, typedValue: string, no: boolean) => void;
 } {
-  const { chainId, account } = useActiveWeb3React();
+  const { chainId, account, library } = useActiveWeb3React();
   const {
     independentField,
     typedValue,
@@ -148,19 +148,18 @@ export function useDerivedMintInfo(): {
 
   const showWrap = wrap;
 
-  const getMaxValue = async (currency: Currency) => {
+  const getMaxValue = async (currency: Currency, library: Web3Provider) => {
     if (currency.isNative) {
       // return Balance === "0.0000" ? "0" :  Balance
-      const Provider = await provider();
-      const balance = await Provider?.getBalance(account as string);
+      const balance = await library?.getBalance(account as string);
       return balance ? JSBI.BigInt(balance.toString()) : undefined;
     } else if (isAddress(currency.address)) {
       const token = await getERC20Token(
-        currency.address ? currency.address : ''
+        currency.address ? currency.address : '', library
       );
-      const balance = await token.balanceOf(account);
-      const amount = ethers.utils.formatEther(balance);
-      return amount === '0.0' ? '0' : parseFloat(amount).toFixed(4);
+      const [balance, decimals] = await Promise.all([token.balanceOf(account), token.decimals()]);
+      const amount = parseFloat(ethers.utils.formatUnits(balance.toString(), decimals));
+      return amount === 0 ? '0' :  amount.toFixed(4);
     }
   };
 

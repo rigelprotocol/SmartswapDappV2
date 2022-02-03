@@ -218,6 +218,55 @@
       "decimals": 18,
       "chainId": 4,
       "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xc778417E063141139Fce010982780140Aa0cD5Ab/logo.png"
+    },
+    {
+      "name": "RigelToken",
+      "address": "0x2d2cd8ED2ec05A55162308332C40C3eF1994F59D",
+      "symbol": "RGP",
+      "decimals": 18,
+      "chainId": 42261,
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xc778417E063141139Fce010982780140Aa0cD5Ab/logo.png"
+    },
+    {
+      "name": "Tether USD",
+      "address": "0xa30b641533D2509089CeF6F097a5BFB62dF7BC8b",
+      "symbol": "USDT",
+      "decimals": 6,
+      "chainId": 42261,
+      "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+    },
+    {
+      "name": "Wrapped ROSE",
+      "address": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
+      "symbol": "WROSE",
+      "decimals": 18,
+      "chainId": 42261,
+      "logoURI": "https://assets.coingecko.com/coins/images/13162/small/rose.png?1605772906"
+    },
+    {
+      "name": "Wrapped ROSE",
+      "address": "0x792296e2a15e6Ceb5f5039DecaE7A1f25b00B0B0",
+      "symbol": "WROSE",
+      "decimals": 18,
+      "chainId": 42262,
+      "logoURI": "https://assets.coingecko.com/coins/images/13162/small/rose.png?1605772906"
+    },
+    {
+      "name": "RigelToken",
+      "address": "0x37BE40c2A0CA040c99069E88348369025B25B78d",
+      "symbol": "RGP",
+      "decimals": 18,
+      "chainId": 42262,
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xc778417E063141139Fce010982780140Aa0cD5Ab/logo.png"
+    }
+    ,
+    {
+      "name": "Tether USD",
+      "address": "0xC584fFD011e16A10fd8329853B9B8DE6E0313AD9",
+      "symbol": "USDT",
+      "decimals": 18,
+      "chainId": 42262,
+      "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
     }
   ]
 }

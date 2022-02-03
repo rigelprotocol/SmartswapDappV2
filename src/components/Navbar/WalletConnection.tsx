@@ -17,10 +17,11 @@ import { useRGPPrice } from '../../utils/hooks/useRGPPrice';
 import StatusIcon from './StatusIcon';
 import RGPModal from "./modals/RGPModal";
 import UnsupportNetwork from './UnsupportNetwork';
+import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 
 export default function WalletConnection() {
   const [isMobileDevice] = useMediaQuery('(max-width: 1200px)');
-  const { account, error, activate, connector } = useWeb3React();
+  const { account, error, connector } = useActiveWeb3React();
   const bg = useColorModeValue('#FFFFFF', '#15202B');
   const bgColor = useColorModeValue('lightBg.100', 'darkBg.100');
   const bgColor2 = useColorModeValue('lightBg.200', 'darkBg.100');
@@ -37,7 +38,7 @@ export default function WalletConnection() {
   const [RGPBalance] = useRGPBalance();
   const [RGPPrice] = useRGPPrice();
   const [showRGP, setShowRGP] = useState(false);
-  const [modalDisplay, setDisplayModal] = useState(false)
+  const [modalDisplay, setDisplayModal] = useState(false);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -108,7 +109,10 @@ export default function WalletConnection() {
     return (
       <>
         <Button
-          onClick={() => setDisplayNetwork(state => !state)}
+          onClick={() => {
+              setDisplayNetwork(state => !state);
+              localStorage.removeItem('walletconnect')
+          }}
           rightIcon={<IoWalletOutline />}
           variant="brand"
         >

@@ -66,7 +66,7 @@ function Toast({ message, URL, remove }: ToastProps) {
                 {message}
               </Text>
               <Link
-                href={`https://${URL}`}
+                href={`${URL}`}
                 isExternal
                 variant={'link'}
                 color={'brand.200'}

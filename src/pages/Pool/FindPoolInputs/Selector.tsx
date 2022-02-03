@@ -2,14 +2,11 @@ import React from 'react';
 import {
   Box,
   Flex,
-  Image,
-  Heading,
   Spacer,
   useColorModeValue,
   Text,
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
-import USDTLOGO from '../../../assets/roundedlogo.svg';
 import { Currency } from '@uniswap/sdk-core';
 import SelectToken from '../../../components/Tokens/SelectToken';
 import CurrencyLogo from '../../../components/currencyLogo';

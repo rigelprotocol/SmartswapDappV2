@@ -36,6 +36,7 @@ const ManageToken: React.FC<IModal> = ({
   const { chainId } = useActiveWeb3React()
   const isAddressValid = searchQuery === '' || isAddress(searchQuery)
 // if they input an address, use it
+console.log(searchQuery)
 const searchToken = useToken(searchQuery)
 
 // all tokens for local list

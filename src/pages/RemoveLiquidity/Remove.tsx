@@ -15,13 +15,8 @@ import {
   useGetLiquidityById,
   useTokenValueToBeRemoved,
 } from '../../utils/hooks/usePools';
-import { Router, useHistory, useParams } from 'react-router';
-import BNBImage from '../../assets/BNB.svg';
-import RGPImage from '../../assets/rgp.svg';
-import ETHImage from '../../assets/eth.svg';
+import { useHistory, useParams } from 'react-router';
 import NullImage from '../../assets/Null-24.svg';
-import BUSDImage from '../../assets/busd.svg';
-import { useWeb3React } from '@web3-react/core';
 import { LiquidityPairInstance, SmartSwapRouter } from '../../utils/Contracts';
 import { SMARTSWAPROUTER } from '../../utils/addresses';
 import { setOpenModal, TrxState } from '../../state/application/reducer';
@@ -31,7 +26,7 @@ import { useDispatch } from 'react-redux';
 import {
   useUserSlippageTolerance,
   useUserTransactionTTL,
-} from '../../state/user/hooks/index';
+} from '../../state/user/hooks';
 import { calculateSlippageAmount } from '../../utils/calculateSlippageAmount';
 import {
   getDeadline,
@@ -40,7 +35,9 @@ import {
   getOutPutDataFromEvent,
 } from '../../utils/utilsFunctions';
 import { ethers } from 'ethers';
-import MATICImage from '../../assets/Matic.svg';
+import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
+import CurrencyLogo from "../../components/currencyLogo";
+import {isAddress} from "../../utils";
 
 const Remove = () => {
   const [isTabDevice] = useMediaQuery('(min-width: 990px)');
@@ -58,6 +55,7 @@ const Remove = () => {
   const WithdrawalButtonColor = useColorModeValue( '#FFFFFF','#FFFFFF');
   const approveButtonBgColor = useColorModeValue('#319EF6', '#4CAFFF');
   const withdrawaButtonBgColor = useColorModeValue('#FFFFFF', '#15202B');
+  const hoverwithdrawaButtonBgColor = useColorModeValue('#15202B', '#7599BD');
   const inActiveApproveButtonBgColor = useColorModeValue('#999999', '#7599BD');
   const inActiveApproveButtonColor = useColorModeValue('#CCCCCC', '#4A739B');
   const approvedButtonColor = useColorModeValue('#3CB1D2', '#1B90B1');
@@ -68,7 +66,7 @@ const Remove = () => {
   const [loading, setLoading] = useState(true);
   const [hasBeenApproved, setHasBeenApproved] = useState(false);
   const [loadData, setLoadData] = useState(false);
-  const { account, chainId } = useWeb3React();
+  const { account, chainId , library} = useActiveWeb3React();
   const [userSlippageTolerance] = useUserSlippageTolerance();
   const [userDeadline] = useUserTransactionTTL();
 
@@ -90,7 +88,6 @@ const Remove = () => {
     const load = async () => {
       const details = await data;
       if (details && !cancel) {
-        console.log({details})
         try {
           setHasBeenApproved(details.approved);
           setPool(details.LiquidityPairData);
@@ -151,14 +148,14 @@ const Remove = () => {
   ) => {
     if (account && valuesToBeRemoved) {
       const smartswaprouter = await SmartSwapRouter(
-        SMARTSWAPROUTER[chainId as number]
+        SMARTSWAPROUTER[chainId as number], library
       );
       const Liquidity = formatAmountIn(valuesToBeRemoved[2], 18);
       const amountAMin = formatAmountIn(valuesToBeRemoved[0], tokenADecimals);
       const amountBMin = formatAmountIn(valuesToBeRemoved[1], tokenBDecimals);
 
-      const formatAmountAMin = ethers.utils.formatEther(AmountAMin)
-      const formatAmountBMin = ethers.utils.formatEther(AmountBMin)
+      const formatAmountAMin = ethers.utils.formatEther(AmountAMin);
+      const formatAmountBMin = ethers.utils.formatEther(AmountBMin);
 
       
 
@@ -181,8 +178,8 @@ const Remove = () => {
           deadLine,
           {
             from: account,
-            gasLimit: 390000,
-            gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+            // gasLimit: 390000,
+            // gasPrice: ethers.utils.parseUnits('10', 'gwei'),
           }
         );
         const { confirmations, events } = await remove.wait(1);
@@ -267,12 +264,12 @@ const Remove = () => {
   ) => {
     if (account && valuesToBeRemoved) {
       const smartswaprouter = await SmartSwapRouter(
-        SMARTSWAPROUTER[chainId as number]
+        SMARTSWAPROUTER[chainId as number], library
       );
       // const liquidity = formatAmountIn(Liquidity, 18);
 
-      const formatAmountAMin = ethers.utils.formatEther(AmountAMin)
-      const formatAmountBMin = ethers.utils.formatEther(AmountBMin)
+      const formatAmountAMin = ethers.utils.formatEther(AmountAMin);
+      const formatAmountBMin = ethers.utils.formatEther(AmountBMin);
 
       // const AmountAMin = formatAmountIn(amountAMin, tokenADecimals);
 
@@ -314,8 +311,8 @@ const Remove = () => {
           deadLine,
           {
             from: account,
-            gasLimit: 390000,
-            gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+            // gasLimit: 390000,
+            // gasPrice: ethers.utils.parseUnits('10', 'gwei'),
           }
         );
         const { confirmations, events } = await remove.wait(1);
@@ -413,7 +410,7 @@ const Remove = () => {
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        const smartSwapLP = await LiquidityPairInstance(pool.pairAddress);
+        const smartSwapLP = await LiquidityPairInstance(pool.pairAddress, library);
         const walletBal = (await smartSwapLP.balanceOf(account)) + 4e18;
         const approveTransaction = await smartSwapLP.approve(
           SMARTSWAPROUTER[chainId as number],
@@ -529,7 +526,7 @@ const Remove = () => {
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        const smartSwapLP = await LiquidityPairInstance(pool.pairAddress);
+        const smartSwapLP = await LiquidityPairInstance(pool.pairAddress, library);
         const approveTransaction = await smartSwapLP.approve(
           SMARTSWAPROUTER[chainId as number],
           0,
@@ -697,32 +694,22 @@ const Remove = () => {
                       mr={isTabDevice && isTabDevice2 ? '' : 2}
                       alignItems="center"
                     >
-                      {pool?.path[0].token === 'RGP' ? (
-                        <Img src={RGPImage} />
-                      ) : pool?.path[0].token === 'BUSD' ? (
-                        <Img src={BUSDImage} />
-                      ) : pool?.path[0].token === 'WETH' ? (
-                        <Img src={ETHImage} />
-                      ) : pool?.path[0].token === 'WBNB' ? (
-                        <Img src={BNBImage} />
-                      ) : pool?.path[0].token === 'WMATIC' ? (
-                        <Img w="24px" h="24px" src={MATICImage} />
-                      ) : (
-                        <Img src={NullImage} />
-                      )}
-                      {pool?.path[1].token === 'RGP' ? (
-                        <Img src={RGPImage} />
-                      ) : pool?.path[1].token === 'BUSD' ? (
-                        <Img src={BUSDImage} />
-                      ) : pool?.path[1].token === 'WETH' ? (
-                        <Img src={ETHImage} />
-                      ) : pool?.path[1].token === 'WBNB' ? (
-                        <Img src={BNBImage} />
-                      ) : pool?.path[1].token === 'WMATIC' ? (
-                        <Img w="24px" h="24px" src={MATICImage} />
-                      ) : (
-                        <Img src={NullImage} />
-                      )}
+                      <CurrencyLogo currency={{...pool.path[0],
+                        chainId,
+                        address:isAddress(pool.path[0].fromPath) ,
+                        isToken: !!isAddress(pool.path[0]?.fromPath),
+                        isNative: !isAddress(pool.path[0]?.fromPath),
+                        symbol: pool.path[0]?.token
+                      }} size={24} squared={true} marginRight={4}/>
+
+                      <CurrencyLogo currency={{...pool.path[1],
+                        chainId,
+                        address:isAddress(pool.path[1].toPath) ,
+                        isToken: !!isAddress(pool.path[1]?.toPath),
+                        isNative: !isAddress(pool.path[1]?.toPath),
+                        symbol: pool.path[1]?.token
+                      }} size={24} squared={true}/>
+
                     </Flex>
                     <Text
                       fontWeight="bold"
@@ -888,21 +875,20 @@ const Remove = () => {
                   p={3}
                   alignItems="center"
                 >
-                  {loading || pool.length === 0 ? (
-                    <Img w="24px" h="24px" mr={2} mb={3} src={NullImage} />
-                  ) : pool?.path[0].token === 'RGP' ? (
-                    <Img w="24px" h="24px" mr={2} mb={3} src={RGPImage} />
-                  ) : pool?.path[0].token === 'BUSD' ? (
-                    <Img w="24px" h="24px" mr={2} mb={3} src={BUSDImage} />
-                  ) : pool?.path[0].token === 'WETH' ? (
-                    <Img w="24px" h="24px" mr={2} mb={3} src={ETHImage} />
-                  ) : pool?.path[0].token === 'WBNB' ? (
-                    <Img w="24px" h="24px" mr={2} mb={3} src={BNBImage} />
-                  ) : pool?.path[0].token === 'WMATIC' ? (
-                    <Img w="24px" h="24px" mr={2} mb={3} src={MATICImage} />
-                  ) : (
-                    <Img w="24px" h="24px" mr={2} mb={3} src={NullImage} />
-                  )}
+                  {
+                    loading || pool.length === 0 ? (
+                        <Img w="24px" h="24px" mr={2} mb={3} src={NullImage} />
+                    ) : (
+                      <CurrencyLogo currency={{...pool.path[0],
+                      chainId,
+                      address:isAddress(pool.path[0].fromPath) ,
+                      isToken: !!isAddress(pool.path[0]?.fromPath),
+                      isNative: !isAddress(pool.path[0]?.fromPath),
+                      symbol: pool.path[0]?.token
+                    }} size={24} squared={true} marginBottom={12} marginRight={8}/>
+                    )
+                  }
+
                   <Flex flexDirection="column">
                     <Text fontWeight="bold" color={pairTextColor}>
                       {valuesToBeRemoved
@@ -932,21 +918,20 @@ const Remove = () => {
                   p={3}
                   alignItems="center"
                 >
-                  {loading || pool.length === 0 ? (
-                    <Img w="24px" h="24px" mr={2} mb={3} src={NullImage} />
-                  ) : pool?.path[1].token === 'RGP' ? (
-                    <Img w="24px" h="24px" mr={2} mb={3} src={RGPImage} />
-                  ) : pool?.path[1].token === 'BUSD' ? (
-                    <Img w="24px" h="24px" mr={2} mb={3} src={BUSDImage} />
-                  ) : pool?.path[1].token === 'WETH' ? (
-                    <Img w="24px" h="24px" mr={2} mb={3} src={ETHImage} />
-                  ) : pool?.path[1].token === 'WBNB' ? (
-                    <Img w="24px" h="24px" mr={2} mb={3} src={BNBImage} />
-                  ) : pool?.path[1].token === 'WMATIC' ? (
-                    <Img w="24px" h="24px" mr={2} mb={3} src={MATICImage} />
-                  ) : (
-                    <Img w="24px" h="24px" mr={2} mb={3} src={NullImage} />
-                  )}
+                  {
+                    loading || pool.length === 0 ? (
+                        <Img w="24px" h="24px" mr={2} mb={3} src={NullImage} />
+                    ) : (
+                        <CurrencyLogo currency={{...pool.path[1],
+                          chainId,
+                          address:isAddress(pool.path[1].toPath) ,
+                          isToken: !!isAddress(pool.path[1]?.toPath),
+                          isNative: !isAddress(pool.path[1]?.toPath),
+                          symbol: pool.path[1]?.token
+                        }} size={24} squared={true} marginBottom={12} marginRight={8}/>
+                    )
+                  }
+
                   <Flex flexDirection="column">
                     <Text fontWeight="bold" color={pairTextColor}>
                       {valuesToBeRemoved
@@ -1035,7 +1020,7 @@ const Remove = () => {
                     : "transparent"
               }
               _active={{ bgColor: withdrawaButtonBgColor }}
-              _hover={{ bgColor: withdrawaButtonBgColor }}
+              _hover={{ bgColor: hoverwithdrawaButtonBgColor }}
               px={14}
               fontSize={isTabDevice && isTabDevice2 ? '12px' : ''}
               onClick={() => RemoveLiquidity()}
