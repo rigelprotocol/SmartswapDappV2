@@ -35,6 +35,7 @@ function DappsDropdown() {
             rightIcon={<ChevronDownIcon />}
             leftIcon={<AiOutlineAppstore />}
             fontSize="14px"
+            data-tut="reactour__DApps"
           >
             DApps
           </MenuButton>
