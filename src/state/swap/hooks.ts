@@ -149,7 +149,7 @@ export function useDerivedSwapInfo(): {
         currency.address ? currency.address : '', library
       );
 
-      const balance = await token.balanceOf(account);
+     // const balance = await token.balanceOf(account);
      // const amount = ethers.utils.formatEther(balance);
       const [balance, decimals] = await Promise.all([token.balanceOf(account), token.decimals()]);
       const amount = ethers.utils.formatUnits(balance.toString(), decimals)       
