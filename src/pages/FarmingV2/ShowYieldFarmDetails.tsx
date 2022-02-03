@@ -33,6 +33,7 @@ import { getExplorerLink, ExplorerDataType } from "../../utils/getExplorerLink";
 import {
   MasterChefV2Contract,
   RGPSpecialPool,
+  RGPSpecialPool2,
   smartSwapLPTokenPoolOne,
   smartSwapLPTokenPoolTwo,
   smartSwapLPTokenPoolThree,
@@ -50,6 +51,7 @@ import {
   SMARTSWAPLP_TOKEN5ADDRESSES,
   RGP,
   RGPSPECIALPOOLADDRESSES,
+  RGPSPECIALPOOLADDRESSES2,
 } from "../../utils/addresses";
 import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
 import { useRGPBalance } from "../../utils/hooks/useBalances";
@@ -97,6 +99,7 @@ const ShowYieldFarmDetails = ({
   const [depositTokenValue, setDepositTokenValue] = useState("");
   const [referralAddress, setReferralAddress] = useState("");
   const [depositInputHasError, setDepositInputHasError] = useState(false);
+  const [refAddressHasError, setRefAddressHasError] = useState(false);
   const [depositErrorButtonText, setDepositErrorButtonText] = useState("");
   const [RGPBalance] = useRGPBalance();
   const [farmingFee, setFarmingFee] = useState("10");
@@ -119,10 +122,36 @@ const ShowYieldFarmDetails = ({
       }
     };
 
+    const specialPoolAllowance = async (contract) => {
+      if (account) {
+        const rgpApproval = await contract.allowance(
+          account,
+          RGPSPECIALPOOLADDRESSES[chainId as number]
+        );
+        return !(rgpApproval.toString() <= 0);
+      }
+    };
+
+    const specialPoolAllowance2 = async (contract) => {
+      if (account) {
+        const rgpApproval = await contract.allowance(
+          account,
+          RGPSPECIALPOOLADDRESSES2[chainId as number]
+        );
+        return !(rgpApproval.toString() <= 0);
+      }
+    };
+
     const checkForApproval = async () => {
       const rgp = await rigelToken(RGP[chainId as number], library);
       const rgpApproval = await poolAllowance(rgp);
-      if (content.deposit === "RGP-BNB" || content.deposit === "RGP-USDT") {
+      if (content.deposit === "RGP" && content.id === 1){
+        const specialPoolApproval = await specialPoolAllowance(rgp);
+        changeApprovalButton(true, specialPoolAllowance);
+      } else if (content.deposit === "RGP" && content.id === 7){
+        const specialPoolApproval2 = await specialPoolAllowance2(rgp);
+        changeApprovalButton(true, specialPoolAllowance2);
+      } else if (content.deposit === "RGP-BNB" || content.deposit === "RGP-USDT") {
         const poolTwo = await smartSwapLPTokenPoolTwo(
           SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
           library
@@ -196,6 +225,31 @@ const ShowYieldFarmDetails = ({
         const walletBal = (await rgp.balanceOf(account)) + 400e18;
         const data = await rgp.approve(
           RGPSPECIALPOOLADDRESSES[chainId as number],
+          walletBal,
+          {
+            from: account,
+            // gasLimit: 150000,
+            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+          }
+        );
+        setApprovalLoading(true);
+        const { confirmations, status } = await fetchTransactionData(data);
+        getAllowances();
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setApprovalLoading(false);
+      }
+    }
+  };
+
+  const RGPSpecialPoolApproval2 = async () => {
+    if (account) {
+      try {
+        const rgp = await rigelToken(RGP[chainId as number], library);
+        const walletBal = (await rgp.balanceOf(account)) + 400e18;
+        const data = await rgp.approve(
+          RGPSPECIALPOOLADDRESSES2[chainId as number],
           walletBal,
           {
             from: account,
@@ -299,8 +353,12 @@ const ShowYieldFarmDetails = ({
         }
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
-      } else if (val === "RGP") {
+      } else if (val === "RGP" && content.id === 1) {
         await RGPSpecialPoolApproval();
+        setApproveValueForOtherToken(true);
+        setApproveValueForRGP(true);
+      } else if (val === "RGP" && content.id === 7){
+        await RGPSpecialPoolApproval2();
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
       }
@@ -434,6 +492,16 @@ getAllowances();
   }, [depositTokenValue]);
 
   useEffect(() => {
+    setRefAddressHasError(false);
+    if (referralAddress !== ""){
+      if (!Web3.utils.isAddress(referralAddress)){
+        setRefAddressHasError(true);
+        setDepositErrorButtonText("Invalid Address")
+      }
+    }
+  }, [referralAddress])
+
+  useEffect(() => {
     setInputHasError(false);
     setErrorButtonText("");
 
@@ -489,7 +557,7 @@ getAllowances();
       );
 
       if (account) {
-        if (val === "RGP") {
+        if (val === "RGP" && content.id === 1) {
           await RGPUnstake();
         } else if (val === "RGP" && content.id === 7){
           await RGP2Unstake();
@@ -1382,7 +1450,7 @@ getAllowances();
                 />
               </InputGroup>
               <Box mt={4}>
-                {depositInputHasError ? (
+                {depositInputHasError || refAddressHasError ? (
                     <>
                       {/* Show Error Button */}
                       <Button
