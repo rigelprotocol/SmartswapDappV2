@@ -21,6 +21,7 @@ import {
   Divider,
   Tooltip,
   Spinner,
+  useMediaQuery,
 } from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import { SupportedChainId } from "../../constants/chains";
@@ -75,6 +76,7 @@ const ShowYieldFarmDetails = ({
     deposit: string;
     poolAllowance: any;
     RGPEarned: string;
+    poolVersion: number | string;
   };
 }) => {
   const mode = useColorModeValue("light", DARK_THEME);
@@ -105,6 +107,8 @@ const ShowYieldFarmDetails = ({
   const [farmingFee, setFarmingFee] = useState("10");
   const [FarmingFeeLoading, setFarmingFeeLoading] = useState(true);
   const [deposited, setDeposited] = useState(false);
+  const [minimumStakeAmount, setMinimumStakeAmount] = useState(0);
+  const [isMobileDevice] = useMediaQuery("(max-width: 767px)");
   const signer = library?.getSigner();
   const closeModal = () => {
     modal2Disclosure.onClose();
@@ -509,6 +513,25 @@ getAllowances();
   //unstateButtton
 
   useEffect(() => {
+    const getMinimumStakeAmount = async () => {
+      if (account) {
+        try {
+          const specialPool = await RGPSpecialPool2(
+            RGPSPECIALPOOLADDRESSES2[chainId as number],
+            library
+          );
+          const minimumAmount = await specialPool.getMinimumStakeAmount();
+          const minStakeAmount = Web3.utils.fromWei(minimumAmount.toString());
+          setMinimumStakeAmount(minStakeAmount);
+        } catch(error){
+          console.log(error)
+        }
+      }
+    }
+    getMinimumStakeAmount();
+  }, [account])
+
+  useEffect(() => {
     setDepositInputHasError(false);
     setDepositErrorButtonText("");
     if (!account) {
@@ -523,6 +546,9 @@ getAllowances();
         setDepositInputHasError(true);
         setDepositErrorButtonText("Invalid Input");
         return;
+      } else if(Number(depositTokenValue) < Number(minimumStakeAmount)){
+        setDepositInputHasError(true);
+        setDepositErrorButtonText(`Minimum stake amount is ${minimumStakeAmount}`);
       }
       if (parseFloat(depositTokenValue) > parseFloat(content.availableToken)) {
         setDepositInputHasError(true);
@@ -1256,7 +1282,7 @@ getAllowances();
               <Text
                 color={mode === DARK_THEME ? "#F1F5F8" : "#333333"}
                 fontSize="20px"
-                marginRight="20px"
+                marginRight="10px"
                 fontWeight="bold"
               >
                 {content.tokensStaked[1]}
@@ -1329,12 +1355,50 @@ getAllowances();
           display="flex"
           justifyContent="space-around"
         >
-          <Box width="60%" margin="0 auto">
+         {isMobileDevice ? (
+           <Box width="60%" margin="0 auto">
+             <Flex my={2}>
+               <Text
+                 fontSize="20px"
+                 color={mode === DARK_THEME ? "#F1F5F8" : "#333333"}
+                 marginRight="10px"
+                 textAlign="center"
+                 fontWeight="bold"
+               >
+                 {content.RGPEarned}
+               </Text>{" "}
+               <Text color={mode === DARK_THEME ? "#DCE5EF" : "#333333"}>
+                 RGP Earned
+               </Text>
+             </Flex>
+             <Button
+               w="95%"
+               h="40px"
+               margin="0 auto"
+               borderRadius="6px"
+               bg={mode === DARK_THEME ? "#4A739B" : "#999999"}
+               color={mode === DARK_THEME ? "#FFFFFF" : "#FFFFFF"}
+               border="0"
+               mb="4"
+               mr="2"
+               cursor="pointer"
+               _hover={{ color: "white" }}
+               disabled={parseFloat(content.RGPEarned) <= 0}
+               onClick={() => {
+                 console.log(content.pId);
+                 harvestTokens(content.pId);
+               }}
+             >
+               Harvest
+             </Button>
+           </Box>
+         ) : (
+          <Box margin="0 auto">
             <Flex my={2}>
               <Text
                 fontSize="20px"
                 color={mode === DARK_THEME ? "#F1F5F8" : "#333333"}
-                marginRight="30px"
+                marginRight="10px"
                 textAlign="center"
                 fontWeight="bold"
               >
@@ -1365,6 +1429,7 @@ getAllowances();
               Harvest
             </Button>
           </Box>
+          )}
           <Box
             my={3}
             display={{ base: "none", md: "block", lg: "block" }}
@@ -1452,7 +1517,7 @@ getAllowances();
           </Flex>
         </Box>
       </Flex>
-      {Number(content.id) === 7 ? (
+      {Number(content.poolVersion) === 2 ? (
         <Modal
             isOpen={modal1Disclosure.isOpen}
             onClose={closeDepositeModal}

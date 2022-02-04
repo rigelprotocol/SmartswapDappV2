@@ -168,6 +168,7 @@ export const initialState: farmStateInterface = {
       farmingFee: 0,
       pId: 6,
       poolAllowance: '',
+      poolVersion: '2',
     },
   ],
 };
