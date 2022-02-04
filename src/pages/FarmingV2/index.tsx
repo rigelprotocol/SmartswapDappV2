@@ -242,7 +242,7 @@ export function Index() {
           );
           dispatch(updatePoolId([0, 1, 2, 3]));
         } else {
-          const [RGPToken, poolOne, poolTwo, poolThree, poolFour, poolFive] =
+          const [RGPToken, poolOne, poolTwo, poolThree, poolFour, poolFive, RGPToken2] =
             await Promise.all([
               rigelToken(RGP[chainId as number], library),
               smartSwapLPTokenPoolOne(
@@ -265,6 +265,7 @@ export function Index() {
                 SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
                 library
               ),
+              rigelToken(RGP[chainId as number], library),
             ]);
 
           const [
@@ -274,6 +275,7 @@ export function Index() {
             poolThreeBalance,
             poolFourBalance,
             poolFiveBalance,
+            RGPbalance2,
           ] = await Promise.all([
             RGPToken.balanceOf(account),
             poolOne.balanceOf(account),
@@ -281,6 +283,7 @@ export function Index() {
             poolThree.balanceOf(account),
             poolFour.balanceOf(account),
             poolFive.balanceOf(account),
+            RGPToken2.balanceOf(account),
           ]);
 
           dispatch(
@@ -291,6 +294,7 @@ export function Index() {
               formatBigNumber(poolThreeBalance),
               formatBigNumber(poolFourBalance),
               formatBigNumber(poolFiveBalance),
+              formatBigNumber(RGPbalance2),
             ])
           );
         }
@@ -692,6 +696,25 @@ export function Index() {
       }
     }
   };
+
+  const specialPoolStakedV2 = async () => {
+    if (account) {
+      try {
+        const specialPool = await RGPSpecialPool2(
+          RGPSPECIALPOOLADDRESSES2[chainId as number],
+          library
+        );
+        const RGPStakedEarnedV2 = await Promise.all([
+          await specialPool.userData(account),
+          await specialPool.calculateRewards(account),
+        ]);
+        return RGPStakedEarnedV2;
+      } catch (error) {
+        return error;
+      }
+    }
+  };
+
   const getTokenStaked = async () => {
     try {
       if (account && Number(chainId) !== Number(SupportedChainId.POLYGON)) {
@@ -724,9 +747,13 @@ export function Index() {
         ]);
 
         const RGPStakedEarned = await specialPoolStaked();
+        const RGPStakedEarnedV2 = await specialPoolStakedV2();
+
         let RGPStaked;
         let RGPEarned;
 
+        let RGPStakedV2;
+        let RGPEarnedV2;
         //console.log("EARRNED", RGPStakedEarned)
 
         if (RGPStakedEarned) {
@@ -737,6 +764,16 @@ export function Index() {
         } else {
           RGPStaked = 0;
           RGPEarned = 0;
+        }
+
+        if (RGPStakedEarnedV2) {
+          const [specialPoolStakedV2, specialPoolEarnedV2] = RGPStakedEarnedV2;
+
+          RGPStakedV2 = formatBigNumber(specialPoolStakedV2.tokenQuantity);
+          RGPEarnedV2 = formatBigNumber(specialPoolEarnedV2);
+        } else {
+          RGPStakedV2 = 0;
+          RGPEarnedV2 = 0;
         }
 
         dispatch(
@@ -762,6 +799,7 @@ export function Index() {
               staked: formatBigNumber(poolFiveStaked.amount),
               earned: formatBigNumber(poolFiveEarned),
             },
+            { staked: RGPStakedV2, earned: RGPEarnedV2, symbol: "RGP" },
           ])
         );
 

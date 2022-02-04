@@ -962,7 +962,7 @@ getAllowances();
             RGPSPECIALPOOLADDRESSES2[chainId as number],
             library
           );
-
+          console.log(specialPool);
           const data = await specialPool.stake(
             ethers.utils.parseEther(depositTokenValue.toString()),
             referralAddress,
@@ -1514,7 +1514,7 @@ getAllowances();
                 </InputRightElement>
               </InputGroup>
               <Text color={modalTextColor2} fontSize='14px' mb={5} mt={3}>
-                RGP Earned: {content.availableToken} {content.deposit}
+                RGP Available: {content.availableToken} {content.deposit}
               </Text>
               <Text color={modalTextColor} fontSize='14px' mb={3}>
                 Referral address
