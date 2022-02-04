@@ -15,10 +15,10 @@ const Swap = () => {
   const bgColor = useColorModeValue("#319EF6", "#4CAFFF");
 
   useEffect(() => {
-    const visits = window.localStorage.getItem('noFirstVisit');
+    const visits = window.localStorage.getItem('fiirstSwapVisit');
     if (!visits) {
       setWelcomeModal(true);
-      // window.localStorage.setItem('noFirstVisit', '1');
+      // window.localStorage.setItem('fiirstSwapVisit', '1');
     }
   }, []);
 

@@ -108,9 +108,12 @@ const Index = () => {
               </Flex>
               <Spacer />
 
-              <Flex h="8" justify="flex-end" className='Wallet'>
+              <Flex h="8" justify="flex-end" >
+
                 {library && library.provider.isMetaMask && <NetworkConnector />}
-                <WalletConnection />
+                <Flex h="8" justify="flex-end" className='Wallet'>
+                  <WalletConnection />
+                </Flex>
                 <SocialMedia />
                 <ColorModeSwitcher />
               </Flex>

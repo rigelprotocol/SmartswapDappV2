@@ -14,6 +14,7 @@ export const tourSteps = [
   {
     target: '.Null',
     title: <TitleBox>Null</TitleBox>,
+    content: "I purposely left this step empty"
   },
   {
     target: '.HeaderDApps',
