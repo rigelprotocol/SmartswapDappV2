@@ -399,22 +399,28 @@ export const usePricePerToken = (
         try {
           const pairinstance = await LiquidityPairInstance(pair, library);
           const reserves = await pairinstance.getReserves();
+          const token0 = await pairinstance.token0();
+          const token1 = await pairinstance.token1();
 
           const [PriceAToB, PriceBToA] = await Promise.all([
             router.quote(
-              ethers.utils.parseUnits("1", 18),
-              reserves[0],
-              reserves[1]
+              ethers.utils.parseUnits("1", CurrencyA.decimals),
+              token0 === currencyAAddress ? reserves[0] : reserves[1],
+              token0 === currencyAAddress ? reserves[1] : reserves[0]
             ),
             router.quote(
-              ethers.utils.parseUnits("1", 18),
-              reserves[1],
-              reserves[0]
+              ethers.utils.parseUnits("1", CurrencyB.decimals),
+              token0 === currencyAAddress ? reserves[1] : reserves[0],
+              token0 === currencyAAddress ? reserves[0] : reserves[1]
             ),
           ]);
 
-          setPriceAToB(ethers.utils.formatUnits(PriceAToB.toString(), 18));
-          setPriceBToA(ethers.utils.formatUnits(PriceBToA.toString(), 18));
+          setPriceAToB(
+            ethers.utils.formatUnits(PriceAToB.toString(), CurrencyB.decimals)
+          );
+          setPriceBToA(
+            ethers.utils.formatUnits(PriceBToA.toString(), CurrencyA.decimals)
+          );
         } catch (err) {
           setPriceAToB(undefined);
           setPriceBToA(undefined);
