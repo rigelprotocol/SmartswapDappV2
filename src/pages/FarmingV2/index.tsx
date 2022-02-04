@@ -751,6 +751,8 @@ export function Index() {
 
         let RGPStaked;
         let RGPEarned;
+        let RGP2Staked;
+        let RGP2Earned;
 
         let RGPStakedV2;
         let RGPEarnedV2;
