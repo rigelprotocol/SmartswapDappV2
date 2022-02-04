@@ -18,7 +18,7 @@ const Swap = () => {
     const visits = window.localStorage.getItem('fiirstSwapVisit');
     if (!visits) {
       setWelcomeModal(true);
-      // window.localStorage.setItem('fiirstSwapVisit', '1');
+      window.localStorage.setItem('fiirstSwapVisit', '1');
     }
   }, []);
 
