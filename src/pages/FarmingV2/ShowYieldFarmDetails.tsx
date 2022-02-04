@@ -22,7 +22,7 @@ import {
   Tooltip,
   Spinner,
 } from "@chakra-ui/react";
-import { QuestionOutlineIcon } from "@chakra-ui/icons";
+import { QuestionOutlineIcon, SearchIcon } from "@chakra-ui/icons";
 import { SupportedChainId } from "../../constants/chains";
 import Switch from "react-switch";
 import { DARK_THEME } from "./index";
@@ -393,8 +393,8 @@ getAllowances();
           dispatch(
             updateFarmAllowances([
               rigelAllowance,
-              pool1Allowance,
               pool2Allowance,
+              pool1Allowance,
               pool3Allowance,
             ])
           );
@@ -469,7 +469,9 @@ getAllowances();
     }
   };
   const enoughApproval = (allowance: any, balance: any) => {
+    console.log({allowance,balance},allowance.toString())
     if (allowance && balance) {
+      // console.log(allowance.gt(ethers.utils.parseEther(balance)),ethers.utils.parseEther(balance),allowance.toString())
       return allowance.gt(ethers.utils.parseEther(balance));
     }
     return true;
@@ -615,12 +617,13 @@ getAllowances();
             MASTERCHEFV2ADDRESSES[chainId as number],
             library
           );
+          console.log({lpTokens})
           const withdraw = await lpTokens.withdraw(id, 0);
           const { confirmations, status, logs } = await fetchTransactionData(
             withdraw
           );
           const amountOfRgb = convertToNumber(logs[1].data);
-
+console.log({withdraw,amountOfRgb})
           const { hash } = withdraw;
 
           if (confirmations >= 1 && status) {
@@ -663,9 +666,10 @@ getAllowances();
   // deposit for the Liquidity Provider tokens for all pools
   const LPDeposit = async (pid: any) => {
     if (account) {
+      console.log({staked:content.tokensStaked[1]},typeof content.tokensStaked[1])
       try {
-        if (parseFloat(content.tokensStaked[1]) == 0) {
-          if (parseInt(RGPBalance) < parseInt(farmingFee)) {
+        if (parseFloat(content.tokensStaked[1]) == 0 ) {         
+          if (parseFloat(RGPBalance) < parseFloat(farmingFee)) {
             alert({
               title: "Insufficient Balance",
               body: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
@@ -1032,10 +1036,13 @@ getAllowances();
                 marginRight="20px"
                 fontWeight="bold"
               >
-                {content.tokensStaked[1]}
+                 <Tooltip hasArrow label={content.tokensStaked[1]} bg='gray.300' color='black'>
+               {parseFloat(content.tokensStaked[1]).toFixed(4)}
+                </Tooltip>
+                
               </Text>
               <Text
-                fontSize="16px"
+              mt="1"
                 color={mode === DARK_THEME ? "#DCE5EF" : "#333333"}
               >
                 {content.deposit} Tokens Staked
@@ -1102,7 +1109,7 @@ getAllowances();
           display="flex"
           justifyContent="space-around"
         >
-          <Box width="60%" margin="0 auto">
+          <Box width="65%" margin="0 auto" >
             <Flex my={2}>
               <Text
                 fontSize="20px"
@@ -1111,9 +1118,11 @@ getAllowances();
                 textAlign="center"
                 fontWeight="bold"
               >
-                {content.RGPEarned}
+                <Tooltip hasArrow label={content.RGPEarned} bg='gray.300' color='black'>
+                {parseFloat(content.RGPEarned).toFixed(4)}
+                </Tooltip>
               </Text>{" "}
-              <Text color={mode === DARK_THEME ? "#DCE5EF" : "#333333"}>
+              <Text color={mode === DARK_THEME ? "#DCE5EF" : "#333333"} mt="1">
                 RGP Earned
               </Text>
             </Flex>
