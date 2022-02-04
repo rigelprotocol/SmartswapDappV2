@@ -532,6 +532,16 @@ getAllowances();
   }, [depositTokenValue]);
 
   useEffect(() => {
+    setRefAddressHasError(false);
+    if (referralAddress !== ""){
+      if (!Web3.utils.isAddress(referralAddress)){
+        setRefAddressHasError(true);
+        setDepositErrorButtonText("Invalid Address")
+      }
+    }
+  }, [referralAddress])
+
+  useEffect(() => {
     setInputHasError(false);
     setErrorButtonText("");
 
@@ -908,44 +918,14 @@ getAllowances();
 
   const RGPuseStake = async (depositToken: any) => {
     if (account) {
-      const specialPool = await RGPSpecialPool(
-        RGPSPECIALPOOLADDRESSES[chainId as number],
-        library
-      );
-
-      const data = await specialPool.stake(
-        ethers.utils.parseEther(depositTokenValue.toString()),
-        {
-          from: account,
-          // gasLimit: 200000,
-          // gasPrice: ethers.utils.parseUnits("20", "gwei"),
-        }
-      );
-      const { confirmations, status } = await fetchTransactionData(data);
-
-      dispatch(
-        setOpenModal({
-          trxState: TrxState.TransactionSuccessful,
-          message: `Successfully staked ${convertFromWei(
-            depositTokenValue
-          )} RGP `,
-        })
-      );
-      // callRefreshFarm(confirmations, status);
-    }
-  };
-
-  const RGPuseStakeV2 = async (depositToken: any, submitReferral: any) => {
-    try{
-      if (account) {
-        const specialPool = await RGPSpecialPool2(
-          RGPSPECIALPOOLADDRESSES2[chainId as number],
+      try {
+        const specialPool = await RGPSpecialPool(
+          RGPSPECIALPOOLADDRESSES[chainId as number],
           library
         );
 
         const data = await specialPool.stake(
           ethers.utils.parseEther(depositTokenValue.toString()),
-          referralAddress,
           {
             from: account,
             // gasLimit: 200000,
@@ -963,10 +943,56 @@ getAllowances();
           })
         );
         // callRefreshFarm(confirmations, status);
+      } catch(error){
+        console.log(error);
+        dispatch(
+          setOpenModal({
+            message: `Transaction failed`,
+            trxState: TrxState.TransactionFailed,
+          })
+        );
       }
-    }catch(error){
-      console.log(error)
     }
+  };
+
+  const RGPuseStakeV2 = async (depositToken: any, submitReferral: any) => {
+      if (account) {
+        try{
+          const specialPool = await RGPSpecialPool2(
+            RGPSPECIALPOOLADDRESSES2[chainId as number],
+            library
+          );
+
+          const data = await specialPool.stake(
+            ethers.utils.parseEther(depositTokenValue.toString()),
+            referralAddress,
+            {
+              from: account,
+              // gasLimit: 200000,
+              // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+            }
+          );
+          const { confirmations, status } = await fetchTransactionData(data);
+
+          dispatch(
+            setOpenModal({
+              trxState: TrxState.TransactionSuccessful,
+              message: `Successfully staked ${convertFromWei(
+                depositTokenValue
+              )} RGP `,
+            })
+          );
+          // callRefreshFarm(confirmations, status);
+        }catch(error){
+          console.log(error);
+          dispatch(
+            setOpenModal({
+              message: `Transaction failed`,
+              trxState: TrxState.TransactionFailed,
+            })
+          );
+        }
+      }
   };
 
   // withdrawal of funds
