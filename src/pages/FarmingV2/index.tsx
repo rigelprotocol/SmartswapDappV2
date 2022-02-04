@@ -325,7 +325,7 @@ export function Index() {
       //  console.log(pool1Reserve, pool2Reserve, pool3Reserve, pool4Reserve, pool5Reserve)
 
       if (Number(chainId) === Number(SupportedChainId.POLYGONTEST)) {
-        const [specialPool, pool1, pool2, pool3, pool4, pool5] =
+        const [specialPool, pool1, pool2, pool3, pool4, pool5, specialPoolV2] =
           await Promise.all([
             RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library),
             smartSwapLPTokenPoolOne(
@@ -348,6 +348,7 @@ export function Index() {
               SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
               library
             ),
+            RGPSpecialPool2(RGPSPECIALPOOLADDRESSES2[chainId as number], library),
           ]);
 
         const [
@@ -357,6 +358,7 @@ export function Index() {
           pool3Reserve,
           pool4Reserve,
           pool5Reserve,
+          rgpV2TotalStaking,
         ] = await Promise.all([
           await specialPool.totalStaking(),
           pool1.getReserves(),
@@ -364,6 +366,7 @@ export function Index() {
           pool3.getReserves(),
           pool4.getReserves(),
           pool5.getReserves(),
+          await specialPoolV2.totalStaking(),
         ]);
         const MRGPprice: number | any = ethers.utils.formatUnits(
           pool3Reserve[1].mul(1000).div(pool3Reserve[0]),
@@ -380,6 +383,10 @@ export function Index() {
         };
         const MaticPrice = getMaticPrice();
         const MRGPLiquidity = ethers.utils
+          .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * MRGPprice)), 21)
+          .toString();
+
+        const MRGPV2Liquidity = ethers.utils
           .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * MRGPprice)), 21)
           .toString();
 
@@ -437,6 +444,11 @@ export function Index() {
               deposit: await deposit(pool5.token0, pool5.token1),
               liquidity: WMATIC_USDCLiquidity,
               apy: calculateApy(MRGPprice, WMATIC_USDCLiquidity, 334.875),
+            },
+            {
+              deposit: "RGP",
+              liquidity: MRGPV2Liquidity,
+              apy: calculateApy(MRGPprice, MRGPV2Liquidity, 250),
             },
           ])
         );
@@ -554,7 +566,7 @@ export function Index() {
           ])
         );
       } else {
-        const [specialPool, pool1, pool2, pool3, pool4, pool5] =
+        const [specialPool, pool1, pool2, pool3, pool4, pool5, specialPoolV2] =
           await Promise.all([
             RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library),
             smartSwapLPTokenPoolOne(
@@ -577,6 +589,7 @@ export function Index() {
               SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
               library
             ),
+            RGPSpecialPool2(RGPSPECIALPOOLADDRESSES2[chainId as number], library),
           ]);
 
         const [
@@ -586,6 +599,7 @@ export function Index() {
           pool3Reserve,
           pool4Reserve,
           pool5Reserve,
+          rgpV2TotalStaking,
         ] = await Promise.all([
           await specialPool.totalStaking(),
           pool1.getReserves(),
@@ -593,6 +607,7 @@ export function Index() {
           pool3.getReserves(),
           pool4.getReserves(),
           pool5.getReserves(),
+          await specialPoolV2.totalStaking(),
         ]);
         const RGPprice: number | any = ethers.utils.formatUnits(
           pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
@@ -602,6 +617,9 @@ export function Index() {
         const BNBprice = getBnbPrice(pool3, pool3Reserve);
         const RGPLiquidity = ethers.utils
           .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * RGPprice)), 21)
+          .toString();
+        const RGPV2Liquidity = ethers.utils
+          .formatUnits(rgpV2TotalStaking.mul(Math.floor(1000 * RGPprice)), 21)
           .toString();
         const BUSD_RGPLiquidity = ethers.utils
           .formatEther(pool1Reserve[0].mul(2))
@@ -652,6 +670,11 @@ export function Index() {
               liquidity: AXS_BUSDLiquidity,
               apy: calculateApy(RGPprice, AXS_BUSDLiquidity, 238.3333333),
             },
+            {
+              deposit: "RGP",
+              liquidity: RGPV2Liquidity,
+              apy: calculateApy(RGPprice, RGPV2Liquidity, 250),
+            },
           ])
         );
       }
@@ -681,6 +704,25 @@ export function Index() {
       }
     }
   };
+
+  const specialPoolV2Staked = async () => {
+    if (account) {
+      try {
+        const specialPool = await RGPSpecialPool2(
+          RGPSPECIALPOOLADDRESSES2[chainId as number],
+          library
+        );
+        const RGP2StakedEarned = await Promise.all([
+          await specialPool.userData(account),
+          await specialPool.calculateRewards(account),
+        ]);
+        return RGP2StakedEarned;
+      } catch (error) {
+        return error;
+      }
+    }
+  };
+
   const getTokenStaked = async () => {
     try {
       if (account && Number(chainId) !== Number(SupportedChainId.POLYGON)) {
@@ -713,8 +755,12 @@ export function Index() {
         ]);
 
         const RGPStakedEarned = await specialPoolStaked();
+        const RGP2StakedEarned = await specialPool2Staked();
+
         let RGPStaked;
         let RGPEarned;
+        let RGP2Staked;
+        let RGP2Earned;
 
         //console.log("EARRNED", RGPStakedEarned)
 
@@ -726,6 +772,16 @@ export function Index() {
         } else {
           RGPStaked = 0;
           RGPEarned = 0;
+        }
+
+        if(RGP2StakedEarned){
+          const [specialPool2Staked, specialPool2Earned] = RGP2StakedEarned;
+
+          RGP2Staked = formatBigNumber(specialPool2Staked.tokenQuantity);
+          RGP2Earned = formatBigNumber(specialPool2Earned);
+        }else{
+          RGP2Staked = 0;
+          RGP2Earned = 0;
         }
 
         dispatch(
@@ -751,6 +807,7 @@ export function Index() {
               staked: formatBigNumber(poolFiveStaked.amount),
               earned: formatBigNumber(poolFiveEarned),
             },
+            { staked: RGP2Staked, earned: RGP2Earned, symbol: "RGP" }
           ])
         );
 
