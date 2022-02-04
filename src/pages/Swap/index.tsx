@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Flex, useMediaQuery } from '@chakra-ui/react';
+import { Box, Flex, useColorModeValue, useMediaQuery } from '@chakra-ui/react';
 import ShowDetails from './components/details/ShowDetails';
 import SendToken from './components/sendToken/index';
 import History from './components/history/History';
 import BridgeCard from './components/bridgeCard';
 import WelcomeModal from '../../components/Onboarding/WelcomeModal';
+import Joyride from 'react-joyride'
+import { tourSteps } from '../../components/Onboarding/Steps';
 
 const Swap = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
   const [welcomeModal, setWelcomeModal] = useState(false);
+  const [run, setRun] = useState(false)
+  const bgColor = useColorModeValue("#319EF6", "#4CAFFF");
 
   useEffect(() => {
     const visits = window.localStorage.getItem('noFirstVisit');
@@ -18,11 +22,29 @@ const Swap = () => {
     }
   }, []);
 
-
+  function strartWelcomeRide() {
+    setRun(true)
+  }
 
   return (
     <>
-      <WelcomeModal openModal={welcomeModal} closeModal={() => setWelcomeModal((state) => !state)} />
+      <Joyride
+        steps={tourSteps}
+        run={run}
+        continuous={true}
+        scrollToFirstStep={true}
+        showSkipButton={true}
+        styles={{
+          options: {
+            arrowColor: bgColor,
+            backgroundColor: bgColor,
+            textColor: '#FFFFFF',
+            primaryColor: bgColor
+          }
+        }}
+
+      />
+      <WelcomeModal startToure={strartWelcomeRide} openModal={welcomeModal} closeModal={() => setWelcomeModal((state) => !state)} />
       <Box fontSize="xl">
         <Flex
           minH="100vh"

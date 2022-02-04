@@ -47,7 +47,7 @@ const Index = () => {
   return (
     <>
       {location === "/" ? null :
-        <Flex px={6} py={2} boxShadow="sm">
+        <Flex px={6} py={2} boxShadow="sm" >
           {isMobileDevice ? (
             <>
               <Flex w="100%" justifyContent="space-between" h="10">
@@ -96,18 +96,19 @@ const Index = () => {
                   align="center"
                   justify="space-around"
                   fontSize="14px"
+                  className='HeaderRide'
                 >
                   <SwapDropdown />
                   <Nav label="Liquidity" to="/pool" />
                   <Nav label="Farming" to="/farming-v2" />
-                  <Link href="#" >
+                  <Link href="#">
                     Analytics
                   </Link>
                 </Flex>
               </Flex>
               <Spacer />
 
-              <Flex h="8" justify="flex-end">
+              <Flex h="8" justify="flex-end" className='Wallet'>
                 {library && library.provider.isMetaMask && <NetworkConnector />}
                 <WalletConnection />
                 <SocialMedia />

@@ -11,21 +11,20 @@ import {
     Button,
 
     Image,
-    useDisclosure,
 } from "@chakra-ui/react"
 import logo from '../../assets/logoRGP.png'
-import { useTour } from '@reactour/tour'
+
 
 export type IModal = {
     openModal: boolean,
     closeModal: Function
-    // openTour: () => void
+    startToure: Function
 }
 
 const WelcomeModal: React.FC<IModal> = ({
     openModal,
     closeModal,
-    //   openTour
+    startToure
 }) => {
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const secondarybgColor = useColorModeValue("#EBF6FE", "#EAF6FF");
@@ -34,11 +33,11 @@ const WelcomeModal: React.FC<IModal> = ({
     const brandButtonColor = useColorModeValue("#319EF6", "#4CAFFF");
     const buttonColor = useColorModeValue("#319EF6", "#4CAFFF")
 
-    const { setIsOpen } = useTour()
 
-    function startToure() {
+
+    function startToure1() {
         closeModal(false)
-        setIsOpen(true)
+        startToure()
     }
 
     return (
@@ -96,7 +95,7 @@ const WelcomeModal: React.FC<IModal> = ({
                             background={brandButtonColor}
                             color="#FFFFFF"
                             cursor="pointer"
-                            onClick={startToure}
+                            onClick={startToure1}
 
                         >
                             Take this short tour
