@@ -145,7 +145,13 @@ const ShowYieldFarmDetails = ({
     const checkForApproval = async () => {
       const rgp = await rigelToken(RGP[chainId as number], library);
       const rgpApproval = await poolAllowance(rgp);
-      if (content.deposit === "RGP-BNB" || content.deposit === "RGP-USDT") {
+      if (content.deposit === "RGP" && Number(content.id) === 1){
+          const specialPoolV1Approval = await specialPoolV1Allowance(rgp);
+          changeApprovalButton(true, specialPoolV1Approval);
+      } else if (content.deposit === "RGP" && Number(content.id) === 7){
+          const specialPoolV2Approval = await specialPoolV2Allowance(rgp);
+          changeApprovalButton(true, specialPoolV2Approval);
+      } else if (content.deposit === "RGP-BNB" || content.deposit === "RGP-USDT") {
         const poolTwo = await smartSwapLPTokenPoolTwo(
           SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
           library
@@ -212,9 +218,15 @@ const ShowYieldFarmDetails = ({
     checkForApproval();
   }, [wallet, content]);
 
-  const RGPSpecialPoolApproval = async () => {
+  const RGPSpecialPoolV1Approval = async () => {
     if (account) {
       try {
+        dispatch(
+          setOpenModal({
+            message: `Approving RGP`,
+            trxState: TrxState.WaitingForConfirmation,
+          })
+        );
         const rgp = await rigelToken(RGP[chainId as number], library);
         const walletBal = (await rgp.balanceOf(account)) + 400e18;
         const data = await rgp.approve(
@@ -228,12 +240,71 @@ const ShowYieldFarmDetails = ({
         );
         setApprovalLoading(true);
         const { confirmations, status } = await fetchTransactionData(data);
+        if (confirmations >= 3) {
+          setApproveValueForRGP(true);
+          dispatch(
+            setOpenModal({
+              trxState: TrxState.TransactionSuccessful,
+              message: `Successful RGP Approval`,
+            })
+          );
+        }
         getAllowances();
       } catch (error) {
         console.error(error);
-      } finally {
-        setApprovalLoading(false);
+        dispatch(
+          setOpenModal({
+            message: `Transaction failed`,
+            trxState: TrxState.TransactionFailed,
+          })
+        );
       }
+      setApprovalLoading(false);
+    }
+  };
+
+  const RGPSpecialPoolV2Approval = async () => {
+    if (account) {
+      try {
+        dispatch(
+          setOpenModal({
+            message: `Approving RGP`,
+            trxState: TrxState.WaitingForConfirmation,
+          })
+        );
+        const rgp = await rigelToken(RGP[chainId as number], library);
+        const walletBal = (await rgp.balanceOf(account)) + 400e18;
+        const data = await rgp.approve(
+          RGPSPECIALPOOLADDRESSES2[chainId as number],
+          walletBal,
+          {
+            from: account,
+            // gasLimit: 150000,
+            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+          }
+        );
+        setApprovalLoading(true);
+        const { confirmations, status } = await fetchTransactionData(data);
+        if (confirmations >= 3) {
+          setApproveValueForRGP(true);
+          dispatch(
+            setOpenModal({
+              trxState: TrxState.TransactionSuccessful,
+              message: `Successful RGP Approval`,
+            })
+          );
+        }
+        getAllowances();
+      } catch (error) {
+        console.error(error);
+        dispatch(
+          setOpenModal({
+            message: `Transaction failed`,
+            trxState: TrxState.TransactionFailed,
+          })
+        );
+      }
+      setApprovalLoading(false);
     }
   };
 
@@ -322,13 +393,17 @@ const ShowYieldFarmDetails = ({
         }
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
-      } else if (val === "RGP") {
-        await RGPSpecialPoolApproval();
+      } else if (val === "RGP" && Number(content.id) === 1) {
+        await RGPSpecialPoolV1Approval();
+        setApproveValueForOtherToken(true);
+        setApproveValueForRGP(true);
+      } else if (val === "RGP" && Number(content.id) === 7) {
+        await RGPSpecialPoolV2Approval();
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
       }
     } else if (ethers.utils.formatEther(checkAllow).toString() == 0.0) {
-      await RGPSpecialPoolApproval();
+      await RGPSpecialPoolV1Approval();
     }
   };
 
@@ -512,8 +587,10 @@ getAllowances();
       );
 
       if (account) {
-        if (val === "RGP") {
+        if (val === "RGP" && Number(content.id) === 1) {
           await RGPUnstake();
+        } else if (val === "RGP" && Number(content.id) === 7){
+          await RGPUnstakeV2();
         } else if (val === "RGP-BNB" || val === "RGP-USDT") {
           await tokensWithdrawal(2);
         } else if (val === "RBG-BUSD" || val === "MATIC-RGP") {
@@ -617,6 +694,28 @@ getAllowances();
         if (id === 0) {
           const specialPool = await RGPSpecialPool(
             RGPSPECIALPOOLADDRESSES[chainId as number],
+            library
+          );
+          const specialWithdraw = await specialPool.unStake(0);
+          const { confirmations, status, logs } = await fetchTransactionData(
+            specialWithdraw
+          );
+
+          const amountOfRgbSpecial = convertToNumber(logs[1].data);
+
+          if (confirmations >= 1 && status) {
+            dispatch(
+              setOpenModal({
+                trxState: TrxState.TransactionSuccessful,
+                message: `Successfully Harvested ${convertFromWei(
+                  amountOfRgbSpecial
+                )} RGP `,
+              })
+            );
+          }
+        } else if (id === 6) {
+          const specialPool = await RGPSpecialPool2(
+            RGPSPECIALPOOLADDRESSES2[chainId as number],
             library
           );
           const specialWithdraw = await specialPool.unStake(0);
@@ -776,9 +875,11 @@ getAllowances();
     );
     try {
       if (account) {
-        if (val === "RGP") {
+        if (val === "RGP" && Number(content.id) === 1) {
           await RGPuseStake(depositTokenValue);
-        } else if (val === "RGP-BNB" || val === "RGP-USDT") {
+        } else if(val === "RGP" && Number(content.id) === 7){
+          await RGPuseStakeV2(depositTokenValue, referralAddress);
+        }else if (val === "RGP-BNB" || val === "RGP-USDT") {
           await LPDeposit(2);
         } else if (val === "BNB-BUSD" || val === "RGP-USDC") {
           await LPDeposit(3);
@@ -833,12 +934,86 @@ getAllowances();
       // callRefreshFarm(confirmations, status);
     }
   };
+
+  const RGPuseStakeV2 = async (depositToken: any, submitReferral: any) => {
+    try{
+      if (account) {
+        const specialPool = await RGPSpecialPool2(
+          RGPSPECIALPOOLADDRESSES2[chainId as number],
+          library
+        );
+
+        const data = await specialPool.stake(
+          ethers.utils.parseEther(depositTokenValue.toString()),
+          referralAddress,
+          {
+            from: account,
+            // gasLimit: 200000,
+            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+          }
+        );
+        const { confirmations, status } = await fetchTransactionData(data);
+
+        dispatch(
+          setOpenModal({
+            trxState: TrxState.TransactionSuccessful,
+            message: `Successfully staked ${convertFromWei(
+              depositTokenValue
+            )} RGP `,
+          })
+        );
+        // callRefreshFarm(confirmations, status);
+      }
+    }catch(error){
+      console.log(error)
+    }
+  };
+
   // withdrawal of funds
   const RGPUnstake = async () => {
     if (account) {
       try {
         const specialPool = await RGPSpecialPool(
           RGPSPECIALPOOLADDRESSES[chainId as number],
+          library
+        );
+        const data = await specialPool.unStake(
+          ethers.utils.parseUnits(unstakeToken, "ether"), // user input from onclick shoild be here...
+          {
+            from: account,
+            // gasLimit: 150000,
+            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+          }
+        );
+        const { confirmations, status } = await fetchTransactionData(data);
+
+        dispatch(
+          setOpenModal({
+            trxState: TrxState.TransactionSuccessful,
+            message: `Successfully unstaked ${convertFromWei(
+              unstakeToken
+            )} RGP `,
+          })
+        );
+        // dispatch the getTokenStaked action from here when data changes
+        //  callRefreshFarm(confirmations, status);
+      } catch (e) {
+        console.log(e);
+        dispatch(
+          setOpenModal({
+            trxState: TrxState.TransactionFailed,
+            message: `Transaction was not successful`,
+          })
+        );
+      }
+    }
+  };
+
+  const RGPUnstakeV2 = async () => {
+    if (account) {
+      try {
+        const specialPool = await RGPSpecialPool2(
+          RGPSPECIALPOOLADDRESSES2[chainId as number],
           library
         );
         const data = await specialPool.unStake(
