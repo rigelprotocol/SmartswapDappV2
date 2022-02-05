@@ -4,7 +4,6 @@ import ReactDOM from "react-dom";
 import App from "./pages/App";
 import Providers from "./Providers";
 import ListsUpdater from "./state/lists/updater"
-
 function Updaters() {
   return (
     <>
@@ -16,9 +15,10 @@ function Updaters() {
 ReactDOM.render(
   <React.StrictMode>
     <Providers>
-    <Updaters/> 
+      <Updaters />
       <ColorModeScript />
       {/**/}
+
       <App />
     </Providers>
   </React.StrictMode>,
