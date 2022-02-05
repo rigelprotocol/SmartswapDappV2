@@ -271,7 +271,7 @@
     {
       "name": "PlaceWar Governance Token",
       "address": "0xfb3c88d1f12e5538dc3c2d02ad2853cb53526fa6",
-      "symbol": "PTK",
+      "symbol": "PLACE",
       "decimals": 18,
       "chainId": 97,
       "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13420.png"
@@ -287,7 +287,7 @@
     {
       "name": "PlaceWar Governance Token",
       "address": "0x07728696eE70A28c9C032926577AF1D524Df30f9",
-      "symbol": "PTK",
+      "symbol": "PLACE",
       "decimals": 18,
       "chainId": 56,
       "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13420.png"
