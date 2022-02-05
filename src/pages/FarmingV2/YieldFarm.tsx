@@ -5,7 +5,6 @@ import { useColorModeValue } from "@chakra-ui/react";
 import { RGPIcon } from "./Icon";
 import { LIGHT_THEME, DARK_THEME } from "./index";
 import { useWeb3React } from "@web3-react/core";
-import { useFarms } from "../../state/farm/hooks";
 
 const YieldFarm = ({content, farmDataLoading, wallet}: {
   content: {

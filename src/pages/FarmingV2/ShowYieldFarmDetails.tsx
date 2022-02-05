@@ -55,7 +55,6 @@ import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
 import { useRGPBalance } from "../../utils/hooks/useBalances";
 import { updateFarmAllowances } from "../../state/farm/actions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
-import { AiOutlineConsoleSql } from "react-icons/ai";
 
 const ShowYieldFarmDetails = ({
   content,
@@ -111,10 +110,13 @@ const ShowYieldFarmDetails = ({
           account,
           MASTERCHEFV2ADDRESSES[chainId as number]
         );
-        console.log(rgpApproval, "rgpApproval");
         return !(rgpApproval.toString() <= 0);
       }
     };
+
+    if (!account) {
+      setFarmingFeeLoading(false)
+    }
 
     const checkForApproval = async () => {
       const rgp = await rigelToken(RGP[chainId as number], library);
@@ -181,10 +183,15 @@ const ShowYieldFarmDetails = ({
         setApproveValueForOtherToken(false);
       }
     }
+
     setApproveValueForRGP(false);
     setApproveValueForOtherToken(false);
-    checkForApproval();
-  }, [wallet, content]);
+
+    if (account) {
+      checkForApproval();
+    }
+
+  }, [wallet, content, account]);
 
   const RGPSpecialPoolApproval = async () => {
     if (account) {
@@ -211,7 +218,8 @@ const ShowYieldFarmDetails = ({
     }
   };
 
-  const setApprove = (val) => {
+  const setApprove = (val: string) => {
+    console.log(content.deposit);
     if (approveValueForOtherToken && approveValueForRGP) {
       modal2Disclosure.onOpen();
     } else {
@@ -219,9 +227,9 @@ const ShowYieldFarmDetails = ({
     }
   };
 
-  const checkUser = async (val) => {
+  const checkUser = async (val: string) => {
     if (account) {
-      if (val === "RGP-BNB" || val === "RGP-USDT") {
+      if (val === "RGP-BNB" || val === "RGP-USDT" ||  val === "USDT-RGP") {
         const poolTwo = await smartSwapLPTokenPoolTwo(
           SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
           library
@@ -251,7 +259,7 @@ const ShowYieldFarmDetails = ({
         }
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
-      } else if (val === "RGP-BUSD" || val === "MATIC-RGP") {
+      } else if (val === "RGP-BUSD" || val === "MATIC-RGP" || val === "RGP-MATIC") {
         const poolOne = await smartSwapLPTokenPoolOne(
           SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
           library
@@ -340,68 +348,65 @@ const ShowYieldFarmDetails = ({
     getAllowances();
   }, [account, deposited]);
 
-  useEffect(() => {
-getAllowances();
-  },[])
-
   const allowance = (contract: any) =>
     contract.allowance(account, MASTERCHEFV2ADDRESSES[chainId as number]);
 
   const getAllowances = async () => {
-    try {
-      const [rigel, pool1, pool2, pool3] = await Promise.all([
-        rigelToken(RGP[chainId as number], library),
-        smartSwapLPTokenPoolOne(
-          SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
-          library
-        ),
-        smartSwapLPTokenPoolTwo(
-          SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
-          library
-        ),
-        smartSwapLPTokenPoolThree(
-          SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
-          library
-        ),
-      ]);
-      if (account) {
+    if (account) {
+      try {
+        const [rigel, pool1, pool2, pool3] = await Promise.all([
+          rigelToken(RGP[chainId as number], library),
+          smartSwapLPTokenPoolOne(
+              SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
+              library
+          ),
+          smartSwapLPTokenPoolTwo(
+              SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
+              library
+          ),
+          smartSwapLPTokenPoolThree(
+              SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
+              library
+          ),
+        ]);
+
         const [pool1Allowance, pool2Allowance, pool3Allowance] =
-          await Promise.all([
-            allowance(pool1),
-            allowance(pool2),
-            allowance(pool3),
-          ]);
+            await Promise.all([
+              allowance(pool1),
+              allowance(pool2),
+              allowance(pool3),
+            ]);
         let rigelAllowance;
         if (RGPSPECIALPOOLADDRESSES[chainId as number]) {
           rigelAllowance = await rigel.allowance(
-            account,
-            RGPSPECIALPOOLADDRESSES[chainId as number]
+              account,
+              RGPSPECIALPOOLADDRESSES[chainId as number]
           );
         } else {
           rigelAllowance = pool1Allowance;
         }
         if (Number(chainId) === Number(SupportedChainId.BINANCE)) {
           dispatch(
-            updateFarmAllowances([
-              rigelAllowance,
-              pool2Allowance,
-              pool1Allowance,
-              pool3Allowance,
-            ])
+              updateFarmAllowances([
+                rigelAllowance,
+                pool2Allowance,
+                pool1Allowance,
+                pool3Allowance,
+              ])
           );
         } else {
           dispatch(
-            updateFarmAllowances([
-              rigelAllowance,
-              pool1Allowance,
-              pool2Allowance,
-              pool3Allowance,
-            ])
+              updateFarmAllowances([
+                rigelAllowance,
+                pool1Allowance,
+                pool2Allowance,
+                pool3Allowance,
+              ])
           );
         }
+      } catch (error) {
+        console.error(error, "something went wrong");
       }
-    } catch (error) {
-      console.error(error, "something went wrong");
     }
   };
 
@@ -1131,7 +1136,6 @@ getAllowances();
               _hover={{ color: "white" }}
               disabled={parseFloat(content.RGPEarned) <= 0}
               onClick={() => {
-                console.log(content.pId);
                 harvestTokens(content.pId);
               }}
             >
@@ -1154,33 +1158,33 @@ getAllowances();
           justifyContent="space-around"
         >
           <Box>
-            {true && (
-              <Flex marginTop="10px">
-                <Text fontSize="24px" marginTop="15px" fontWeight="bold">
-                  {FarmingFeeLoading ? (
-                    <Spinner speed="0.65s" color="#999999" />
-                  ) : (
-                    farmingFee
-                  )}
-                </Text>
-                <Flex flexDirection={["column", "column", "column"]}>
-                  <Text
-                    fontSize="16px"
-                    color={mode === DARK_THEME ? "#999999" : "#999999"}
-                    textAlign="right"
-                    marginLeft="30px"
-                  >
-                    Minimum
-                  </Text>{" "}
-                  <Text
-                    fontSize="16px"
-                    color={mode === DARK_THEME ? "#999999" : "#999999"}
-                    marginLeft="30px"
-                  >
-                    Farming Fee
-                  </Text>{" "}
+            {(
+                <Flex marginTop="10px">
+                  <Text fontSize="24px" marginTop="15px" fontWeight="bold">
+                    {FarmingFeeLoading ? (
+                        <Spinner speed="0.65s" color="#999999"/>
+                    ) : (
+                        farmingFee
+                    )}
+                  </Text>
+                  <Flex flexDirection={["column", "column", "column"]}>
+                    <Text
+                        fontSize="16px"
+                        color={mode === DARK_THEME ? "#999999" : "#999999"}
+                        textAlign="right"
+                        marginLeft="30px"
+                    >
+                      Minimum
+                    </Text>{" "}
+                    <Text
+                        fontSize="16px"
+                        color={mode === DARK_THEME ? "#999999" : "#999999"}
+                        marginLeft="30px"
+                    >
+                      Farming Fee
+                    </Text>{" "}
+                  </Flex>
                 </Flex>
-              </Flex>
             )}
           </Box>
 
