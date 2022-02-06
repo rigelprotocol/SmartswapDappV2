@@ -1,69 +1,61 @@
 /** @format */
 
-import React, { useState, useEffect } from "react";
-import { Box, Flex, Text } from "@chakra-ui/layout";
+import React, {useEffect, useState} from "react";
+import {Box, Flex, Text} from "@chakra-ui/layout";
 import {
   Alert,
   AlertDescription,
-  CloseButton,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
-  Select,
   Button,
-  useMediaQuery,
-  Stack,
+  CloseButton,
   Divider,
   Link,
+  Select,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  useColorModeValue,
+  useMediaQuery,
 } from "@chakra-ui/react";
-import { useHistory } from "react-router-dom";
-import { useColorModeValue } from "@chakra-ui/react";
+import {useHistory, useRouteMatch} from "react-router-dom";
 import YieldFarm from "./YieldFarm";
-// import { contents } from './mock'
-import { AlertSvg } from "./Icon";
-import { useRouteMatch } from "react-router-dom";
+import {AlertSvg} from "./Icon";
 
-import { useDispatch, useSelector } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import bigNumber from "bignumber.js";
-import { ethers } from "ethers";
-import {
-  updateTokenStaked,
-  updateTotalLiquidity,
-  updateFarmBalances,
-  updatePoolId,
-} from "../../state/farm/actions";
-import { useFarms } from "../../state/farm/hooks";
+import {ethers} from "ethers";
+import {updateFarmBalances, updatePoolId, updateTokenStaked, updateTotalLiquidity,} from "../../state/farm/actions";
+import {useFarms} from "../../state/farm/hooks";
 import {
   MasterChefV2Contract,
+  RGPSpecialPool,
+  RGPSpecialPool2,
+  rigelToken,
   smartSwapLPTokenPoolOne,
   smartSwapLPTokenPoolThree,
   smartSwapLPTokenPoolTwo,
+  smartSwapLPTokenV2,
   smartSwapLPTokenV2PoolFive,
   smartSwapLPTokenV2PoolFour,
-  RGPSpecialPool,
-  RGPSpecialPool2,
-  smartSwapLPTokenV2,
-  rigelToken,
 } from "../../utils/Contracts";
 import {
+  MASTERCHEFV2ADDRESSES,
+  RGP,
   RGPADDRESSES,
   RGPSPECIALPOOLADDRESSES,
   RGPSPECIALPOOLADDRESSES2,
-  MASTERCHEFV2ADDRESSES,
   SMARTSWAPLP_TOKEN1ADDRESSES,
   SMARTSWAPLP_TOKEN2ADDRESSES,
   SMARTSWAPLP_TOKEN3ADDRESSES,
   SMARTSWAPLP_TOKEN4ADDRESSES,
   SMARTSWAPLP_TOKEN5ADDRESSES,
-  RGP,
 } from "../../utils/addresses";
-import { formatBigNumber } from "../../utils";
-import { RootState } from "../../state";
-import { SupportedChainId } from "../../constants/chains";
-import { useNativeBalance } from "../../utils/hooks/useBalances";
-import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
+import {formatBigNumber} from "../../utils";
+import {RootState} from "../../state";
+import {SupportedChainId} from "../../constants/chains";
+import {useNativeBalance} from "../../utils/hooks/useBalances";
+import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 
 export const BIG_TEN = new bigNumber(10);
 
@@ -149,6 +141,8 @@ export function Index() {
   useEffect(() => {
     refreshData();
   }, []);
+
+
   useEffect(() => {
     if (match) setSelected(STAKING);
   }, [match]);
@@ -384,13 +378,13 @@ export function Index() {
         };
         const MaticPrice = getMaticPrice();
         const MRGPLiquidity = ethers.utils
-          .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * MRGPprice)), 21)
+          .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * MRGPprice)), 18)
           .toString();
 
         const RGP_WMATICLiquidity = ethers.utils
           .formatUnits(
             pool1Reserve[0].mul(Math.floor(MaticPrice * 1000 * 2)),
-            21
+            18
           )
           .toString();
 
@@ -444,7 +438,8 @@ export function Index() {
             },
           ])
         );
-      } else if (Number(chainId) === Number(SupportedChainId.POLYGON)) {
+      }
+      else if (Number(chainId) === Number(SupportedChainId.POLYGON || SupportedChainId.POLYGONTEST)) {
         const [pool1, pool2, pool3] = await Promise.all([
           // RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
           smartSwapLPTokenPoolOne(

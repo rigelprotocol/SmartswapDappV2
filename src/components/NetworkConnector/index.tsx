@@ -40,25 +40,27 @@ function NetworkIndicator() {
         bgColor={buttonBgColor}
         onClick={onOpen}
         mr={2}
+        className="Network"
+
       >
         <Flex alignItems='center'>
           <Box mr={2}>
             {info.label == "Binance" ? (
               <BinanceIcon />
             ) : // <EthereumIcon />
-            info.label == "BSC Testnet" ? (
-              <BinanceIcon />
-            ) : info.label == "Polygon" ? (
-              <Img w='30px' src={MATICLOGO} />
-            ) : info.label == "Mumbai Testnet" ? (
-              <Img w='30px' src={MATICLOGO} />
-            ) : info.label == "Oasis Emerald Testnet" ? (
-              <Img w='30px' src={OASISLOGO} />
-            ) : info.label == "Oasis Emerald Mainnet" ? (
-              <Img w='30px' src={OASISLOGO} />
-            ) : (
-              <EthereumIcon />
-            )}
+              info.label == "BSC Testnet" ? (
+                <BinanceIcon />
+              ) : info.label == "Polygon" ? (
+                <Img w='30px' src={MATICLOGO} />
+              ) : info.label == "Mumbai Testnet" ? (
+                <Img w='30px' src={MATICLOGO} />
+              ) : info.label == "Oasis Emerald Testnet" ? (
+                <Img w='30px' src={OASISLOGO} />
+              ) : info.label == "Oasis Emerald Mainnet" ? (
+                <Img w='30px' src={OASISLOGO} />
+              ) : (
+                <EthereumIcon />
+              )}
           </Box>
           <Text textColor={textColor} fontSize='14px'>
             {info.label}

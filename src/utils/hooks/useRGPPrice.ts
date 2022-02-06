@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { useWeb3React } from '@web3-react/core';
+import { useEffect, useState } from 'react';
+import {useActiveWeb3React} from "./useActiveWeb3React";
 import { ethers } from 'ethers';
-import { smartSwapLPTokenPoolOne } from "../../utils/Contracts";
-import { SMARTSWAPLP_TOKEN1ADDRESSES } from "../../utils/addresses";
+import { smartSwapLPTokenPoolOne } from "../Contracts";
+import { SMARTSWAPLP_TOKEN1ADDRESSES } from "../addresses";
 
 export const useRGPPrice = () => {
-  const { chainId } = useWeb3React();
-  const [RGPPrice, setRGPPrice] = useState<string>(0);
+  const { chainId , library} = useActiveWeb3React();
+  const [RGPPrice, setRGPPrice] = useState<string | number>(0);
 
   useEffect(() => {
     const getRGPprice = async () => {
       try {
-        const RGPBUSDToken = await smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number]);
+        const RGPBUSDToken = await smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number], library);
         const reserves = await RGPBUSDToken.getReserves();
         setRGPPrice(ethers.utils.formatUnits(reserves[0].mul(10000).div(reserves[1]), 4));
       } catch (error) {
@@ -20,6 +20,6 @@ export const useRGPPrice = () => {
       }
     };
     getRGPprice();
-  }, [chainId]);
+  }, [chainId, library]);
   return [RGPPrice];
-}
+};
