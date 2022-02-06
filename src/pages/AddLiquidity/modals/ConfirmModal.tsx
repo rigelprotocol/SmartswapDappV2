@@ -54,6 +54,7 @@ const ConfirmModal: React.FC<IModal> = ({
   const bgColor = useColorModeValue('#F2F5F8', '#213345');
   const lightTextColor = useColorModeValue('#666', '#DCE6EF');
   const heavyTextColor = useColorModeValue('#333', '#F1F5F8');
+  const heavyTextColor2 = useColorModeValue('#333', '#333');
   const [userSlippageTolerance] = useUserSlippageTolerance();
 
   return (
@@ -98,7 +99,7 @@ const ConfirmModal: React.FC<IModal> = ({
               >
                 You will receive
               </Text>
-              <Heading as="h2" margin="6px 0">
+              <Heading as="h2" margin="6px 0" color={heavyTextColor2}>
                 {pairAvailable
                   ? parseFloat(amount).toFixed(6)
                   : `${from}/${to}`}
