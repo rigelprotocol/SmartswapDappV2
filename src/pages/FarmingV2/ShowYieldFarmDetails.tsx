@@ -147,7 +147,7 @@ const ShowYieldFarmDetails = ({
         return !(rgpApproval.toString() <= 0);
       }
     };
-    
+
     const checkForApproval = async () => {
       const rgp = await rigelToken(RGP[chainId as number], library);
       const rgpApproval = await poolAllowance(rgp);
@@ -1304,11 +1304,12 @@ const ShowYieldFarmDetails = ({
                 w="45%"
                 h="40px"
                 borderRadius="6px"
-                bg={mode === DARK_THEME ? "#319EF6" : "#319EF6"}
+                bg={mode === DARK_THEME ? "#4CAFFF" : "#319EF6"}
                 color={mode === DARK_THEME ? "#FFFFFF" : "#FFFFFF"}
                 border="0"
                 mb="4"
                 mr="6"
+                disabled={(approveValueForRGP && approveValueForOtherToken) && (parseFloat(content.tokensStaked[1]) <= 0)}
                 padding="10px 40px"
                 cursor="pointer"
                 onClick={() => setApprove(content.deposit)}
