@@ -21,6 +21,7 @@ import {
   Divider,
   Tooltip,
   Spinner,
+  useMediaQuery,
 } from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import { SupportedChainId } from "../../constants/chains";
@@ -33,6 +34,7 @@ import { getExplorerLink, ExplorerDataType } from "../../utils/getExplorerLink";
 import {
   MasterChefV2Contract,
   RGPSpecialPool,
+  RGPSpecialPool2,
   smartSwapLPTokenPoolOne,
   smartSwapLPTokenPoolTwo,
   smartSwapLPTokenPoolThree,
@@ -50,6 +52,7 @@ import {
   SMARTSWAPLP_TOKEN5ADDRESSES,
   RGP,
   RGPSPECIALPOOLADDRESSES,
+  RGPSPECIALPOOLADDRESSES2,
 } from "../../utils/addresses";
 import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
 import { useRGPBalance } from "../../utils/hooks/useBalances";
@@ -72,10 +75,13 @@ const ShowYieldFarmDetails = ({
     deposit: string;
     poolAllowance: any;
     RGPEarned: string;
+    poolVersion: number | string;
   };
 }) => {
   const mode = useColorModeValue("light", DARK_THEME);
   const bgColor = useColorModeValue("#FFF", "#15202B");
+  const modalTextColor = useColorModeValue('#333333', '#F1F5F8');
+  const modalTextColor2 = useColorModeValue('#666666', '#DCE6EF')
 
   const [checked, setChecked] = useState(true);
   const modal2Disclosure = useDisclosure();
@@ -92,12 +98,16 @@ const ShowYieldFarmDetails = ({
   const { account, chainId, library } = useActiveWeb3React();
   const dispatch = useDispatch();
   const [depositTokenValue, setDepositTokenValue] = useState("");
+  const [referralAddress, setReferralAddress] = useState("");
   const [depositInputHasError, setDepositInputHasError] = useState(false);
+  const [refAddressHasError, setRefAddressHasError] = useState(false);
   const [depositErrorButtonText, setDepositErrorButtonText] = useState("");
   const [RGPBalance] = useRGPBalance();
   const [farmingFee, setFarmingFee] = useState("10");
   const [FarmingFeeLoading, setFarmingFeeLoading] = useState(true);
   const [deposited, setDeposited] = useState(false);
+  const [minimumStakeAmount, setMinimumStakeAmount] = useState(0);
+  const [isMobileDevice] = useMediaQuery("(max-width: 767px)");
   const signer = library?.getSigner();
   const closeModal = () => {
     modal2Disclosure.onClose();
@@ -118,10 +128,36 @@ const ShowYieldFarmDetails = ({
       setFarmingFeeLoading(false)
     }
 
+    const specialPoolV1Allowance = async (contract) => {
+      if (account) {
+        const rgpApproval = await contract.allowance(
+          account,
+          RGPSPECIALPOOLADDRESSES[chainId as number]
+        );
+        return !(rgpApproval.toString() <= 0);
+      }
+    };
+
+    const specialPoolV2Allowance = async (contract) => {
+      if (account) {
+        const rgpApproval = await contract.allowance(
+          account,
+          RGPSPECIALPOOLADDRESSES2[chainId as number]
+        );
+        return !(rgpApproval.toString() <= 0);
+      }
+    };
+
     const checkForApproval = async () => {
       const rgp = await rigelToken(RGP[chainId as number], library);
       const rgpApproval = await poolAllowance(rgp);
-      if (content.deposit === "RGP-BNB" || content.deposit === "RGP-USDT") {
+      if (content.deposit === "RGP" && Number(content.id) === 1){
+          const specialPoolV1Approval = await specialPoolV1Allowance(rgp);
+          changeApprovalButton(true, specialPoolV1Approval);
+      } else if (content.deposit === "RGP" && Number(content.id) === 7){
+          const specialPoolV2Approval = await specialPoolV2Allowance(rgp);
+          changeApprovalButton(true, specialPoolV2Approval);
+      } else if (content.deposit === "RGP-BNB" || content.deposit === "RGP-USDT") {
         const poolTwo = await smartSwapLPTokenPoolTwo(
           SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
           library
@@ -193,9 +229,15 @@ const ShowYieldFarmDetails = ({
 
   }, [wallet, content, account]);
 
-  const RGPSpecialPoolApproval = async () => {
+  const RGPSpecialPoolV1Approval = async () => {
     if (account) {
       try {
+        dispatch(
+          setOpenModal({
+            message: `Approving RGP`,
+            trxState: TrxState.WaitingForConfirmation,
+          })
+        );
         const rgp = await rigelToken(RGP[chainId as number], library);
         const walletBal = (await rgp.balanceOf(account)) + 400e18;
         const data = await rgp.approve(
@@ -209,12 +251,71 @@ const ShowYieldFarmDetails = ({
         );
         setApprovalLoading(true);
         const { confirmations, status } = await fetchTransactionData(data);
+        if (confirmations >= 3) {
+          setApproveValueForRGP(true);
+          dispatch(
+            setOpenModal({
+              trxState: TrxState.TransactionSuccessful,
+              message: `Successful RGP Approval`,
+            })
+          );
+        }
         getAllowances();
       } catch (error) {
         console.error(error);
-      } finally {
-        setApprovalLoading(false);
+        dispatch(
+          setOpenModal({
+            message: `Transaction failed`,
+            trxState: TrxState.TransactionFailed,
+          })
+        );
       }
+      setApprovalLoading(false);
+    }
+  };
+
+  const RGPSpecialPoolV2Approval = async () => {
+    if (account) {
+      try {
+        dispatch(
+          setOpenModal({
+            message: `Approving RGP`,
+            trxState: TrxState.WaitingForConfirmation,
+          })
+        );
+        const rgp = await rigelToken(RGP[chainId as number], library);
+        const walletBal = (await rgp.balanceOf(account)) + 400e18;
+        const data = await rgp.approve(
+          RGPSPECIALPOOLADDRESSES2[chainId as number],
+          walletBal,
+          {
+            from: account,
+            // gasLimit: 150000,
+            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+          }
+        );
+        setApprovalLoading(true);
+        const { confirmations, status } = await fetchTransactionData(data);
+        if (confirmations >= 3) {
+          setApproveValueForRGP(true);
+          dispatch(
+            setOpenModal({
+              trxState: TrxState.TransactionSuccessful,
+              message: `Successful RGP Approval`,
+            })
+          );
+        }
+        getAllowances();
+      } catch (error) {
+        console.error(error);
+        dispatch(
+          setOpenModal({
+            message: `Transaction failed`,
+            trxState: TrxState.TransactionFailed,
+          })
+        );
+      }
+      setApprovalLoading(false);
     }
   };
 
@@ -304,13 +405,17 @@ const ShowYieldFarmDetails = ({
         }
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
-      } else if (val === "RGP") {
-        await RGPSpecialPoolApproval();
+      } else if (val === "RGP" && Number(content.id) === 1) {
+        await RGPSpecialPoolV1Approval();
+        setApproveValueForOtherToken(true);
+        setApproveValueForRGP(true);
+      } else if (val === "RGP" && Number(content.id) === 7) {
+        await RGPSpecialPoolV2Approval();
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
       }
     } else if (ethers.utils.formatEther(checkAllow).toString() == 0.0) {
-      await RGPSpecialPoolApproval();
+      await RGPSpecialPoolV1Approval();
     }
   };
 
@@ -413,6 +518,25 @@ const ShowYieldFarmDetails = ({
   //unstateButtton
 
   useEffect(() => {
+    const getMinimumStakeAmount = async () => {
+      if (account) {
+        try {
+          const specialPool = await RGPSpecialPool2(
+            RGPSPECIALPOOLADDRESSES2[chainId as number],
+            library
+          );
+          const minimumAmount = await specialPool.getMinimumStakeAmount();
+          const minStakeAmount = Web3.utils.fromWei(minimumAmount.toString());
+          setMinimumStakeAmount(minStakeAmount);
+        } catch(error){
+          console.log(error)
+        }
+      }
+    }
+    getMinimumStakeAmount();
+  }, [account])
+
+  useEffect(() => {
     setDepositInputHasError(false);
     setDepositErrorButtonText("");
     if (!account) {
@@ -427,6 +551,9 @@ const ShowYieldFarmDetails = ({
         setDepositInputHasError(true);
         setDepositErrorButtonText("Invalid Input");
         return;
+      } else if((Number(content.poolVersion) === 2) && Number(depositTokenValue) < Number(minimumStakeAmount)){
+        setDepositInputHasError(true);
+        setDepositErrorButtonText(`Minimum stake amount is ${minimumStakeAmount}`);
       }
       if (parseFloat(depositTokenValue) > parseFloat(content.availableToken)) {
         setDepositInputHasError(true);
@@ -434,6 +561,16 @@ const ShowYieldFarmDetails = ({
       }
     }
   }, [depositTokenValue]);
+
+  useEffect(() => {
+    setRefAddressHasError(false);
+    if (referralAddress !== ""){
+      if (!Web3.utils.isAddress(referralAddress)){
+        setRefAddressHasError(true);
+        setDepositErrorButtonText("Invalid Address")
+      }
+    }
+  }, [referralAddress])
 
   useEffect(() => {
     setInputHasError(false);
@@ -491,8 +628,10 @@ const ShowYieldFarmDetails = ({
       );
 
       if (account) {
-        if (val === "RGP") {
+        if (val === "RGP" && Number(content.id) === 1) {
           await RGPUnstake();
+        } else if (val === "RGP" && Number(content.id) === 7){
+          await RGPUnstakeV2();
         } else if (val === "RGP-BNB" || val === "RGP-USDT") {
           await tokensWithdrawal(2);
         } else if (val === "RBG-BUSD" || val === "MATIC-RGP") {
@@ -596,6 +735,28 @@ const ShowYieldFarmDetails = ({
         if (id === 0) {
           const specialPool = await RGPSpecialPool(
             RGPSPECIALPOOLADDRESSES[chainId as number],
+            library
+          );
+          const specialWithdraw = await specialPool.unStake(0);
+          const { confirmations, status, logs } = await fetchTransactionData(
+            specialWithdraw
+          );
+
+          const amountOfRgbSpecial = convertToNumber(logs[1].data);
+
+          if (confirmations >= 1 && status) {
+            dispatch(
+              setOpenModal({
+                trxState: TrxState.TransactionSuccessful,
+                message: `Successfully Harvested ${convertFromWei(
+                  amountOfRgbSpecial
+                )} RGP `,
+              })
+            );
+          }
+        } else if (id === 6) {
+          const specialPool = await RGPSpecialPool2(
+            RGPSPECIALPOOLADDRESSES2[chainId as number],
             library
           );
           const specialWithdraw = await specialPool.unStake(0);
@@ -755,9 +916,11 @@ const ShowYieldFarmDetails = ({
     );
     try {
       if (account) {
-        if (val === "RGP") {
+        if (val === "RGP" && Number(content.id) === 1) {
           await RGPuseStake(depositTokenValue);
-        } else if (val === "RGP-BNB" || val === "RGP-USDT") {
+        } else if(val === "RGP" && Number(content.id) === 7){
+          await RGPuseStakeV2(depositTokenValue, referralAddress);
+        }else if (val === "RGP-BNB" || val === "RGP-USDT") {
           await LPDeposit(2);
         } else if (val === "BNB-BUSD" || val === "RGP-USDC") {
           await LPDeposit(3);
@@ -786,32 +949,82 @@ const ShowYieldFarmDetails = ({
 
   const RGPuseStake = async (depositToken: any) => {
     if (account) {
-      const specialPool = await RGPSpecialPool(
-        RGPSPECIALPOOLADDRESSES[chainId as number],
-        library
-      );
+      try {
+        const specialPool = await RGPSpecialPool(
+          RGPSPECIALPOOLADDRESSES[chainId as number],
+          library
+        );
 
-      const data = await specialPool.stake(
-        ethers.utils.parseEther(depositTokenValue.toString()),
-        {
-          from: account,
-          // gasLimit: 200000,
-          // gasPrice: ethers.utils.parseUnits("20", "gwei"),
-        }
-      );
-      const { confirmations, status } = await fetchTransactionData(data);
+        const data = await specialPool.stake(
+          ethers.utils.parseEther(depositTokenValue.toString()),
+          {
+            from: account,
+            // gasLimit: 200000,
+            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+          }
+        );
+        const { confirmations, status } = await fetchTransactionData(data);
 
-      dispatch(
-        setOpenModal({
-          trxState: TrxState.TransactionSuccessful,
-          message: `Successfully staked ${convertFromWei(
-            depositTokenValue
-          )} RGP `,
-        })
-      );
-      // callRefreshFarm(confirmations, status);
+        dispatch(
+          setOpenModal({
+            trxState: TrxState.TransactionSuccessful,
+            message: `Successfully staked ${
+              depositTokenValue
+            } RGP `,
+          })
+        );
+        // callRefreshFarm(confirmations, status);
+      } catch(error){
+        console.log(error);
+        dispatch(
+          setOpenModal({
+            message: `Transaction failed`,
+            trxState: TrxState.TransactionFailed,
+          })
+        );
+      }
     }
   };
+
+  const RGPuseStakeV2 = async (depositToken: any, submitReferral: any) => {
+      if (account) {
+        try{
+          const specialPool = await RGPSpecialPool2(
+            RGPSPECIALPOOLADDRESSES2[chainId as number],
+            library
+          );
+          const data = await specialPool.stake(
+            ethers.utils.parseEther(depositTokenValue.toString()),
+            referralAddress,
+            {
+              from: account,
+              // gasLimit: 200000,
+              // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+            }
+          );
+          const { confirmations, status } = await fetchTransactionData(data);
+
+          dispatch(
+            setOpenModal({
+              trxState: TrxState.TransactionSuccessful,
+              message: `Successfully staked ${
+                depositTokenValue
+              } RGP `,
+            })
+          );
+          // callRefreshFarm(confirmations, status);
+        }catch(error){
+          console.log(error);
+          dispatch(
+            setOpenModal({
+              message: `Transaction failed`,
+              trxState: TrxState.TransactionFailed,
+            })
+          );
+        }
+      }
+  };
+
   // withdrawal of funds
   const RGPUnstake = async () => {
     if (account) {
@@ -821,7 +1034,7 @@ const ShowYieldFarmDetails = ({
           library
         );
         const data = await specialPool.unStake(
-          ethers.utils.parseUnits(unstakeToken, "ether"), // user input from onclick shoild be here...
+          ethers.utils.parseEther(unstakeToken.toString()), // user input from onclick shoild be here...
           {
             from: account,
             // gasLimit: 150000,
@@ -833,15 +1046,54 @@ const ShowYieldFarmDetails = ({
         dispatch(
           setOpenModal({
             trxState: TrxState.TransactionSuccessful,
-            message: `Successfully unstaked ${convertFromWei(
+            message: `Successfully unstaked ${
               unstakeToken
-            )} RGP `,
+            } RGP `,
           })
         );
         // dispatch the getTokenStaked action from here when data changes
         //  callRefreshFarm(confirmations, status);
       } catch (e) {
         console.log(e);
+        dispatch(
+          setOpenModal({
+            trxState: TrxState.TransactionFailed,
+            message: `Transaction was not successful`,
+          })
+        );
+      }
+    }
+  };
+
+  const RGPUnstakeV2 = async () => {
+    if (account) {
+      try {
+        const specialPool = await RGPSpecialPool2(
+          RGPSPECIALPOOLADDRESSES2[chainId as number],
+          library
+        );
+        const data = await specialPool.unStake(
+          ethers.utils.parseEther(unstakeToken.toString()), // user input from onclick shoild be here...
+          {
+            from: account,
+            // gasLimit: 150000,
+            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+          }
+        );
+        const { confirmations, status } = await fetchTransactionData(data);
+
+        dispatch(
+          setOpenModal({
+            trxState: TrxState.TransactionSuccessful,
+            message: `Successfully unstaked ${
+              unstakeToken
+            } RGP `,
+          })
+        );
+        // dispatch the getTokenStaked action from here when data changes
+        //  callRefreshFarm(confirmations, status);
+      } catch (e) {
+        console.log(`This - ${e}`);
         dispatch(
           setOpenModal({
             trxState: TrxState.TransactionFailed,
@@ -1034,7 +1286,7 @@ const ShowYieldFarmDetails = ({
               <Text
                 color={mode === DARK_THEME ? "#F1F5F8" : "#333333"}
                 fontSize="20px"
-                marginRight="20px"
+                marginRight="10px"
                 fontWeight="bold"
               >
                 {content.tokensStaked[1]}
@@ -1052,11 +1304,12 @@ const ShowYieldFarmDetails = ({
                 w="45%"
                 h="40px"
                 borderRadius="6px"
-                bg={mode === DARK_THEME ? "#319EF6" : "#319EF6"}
+                bg={mode === DARK_THEME ? "#4CAFFF" : "#319EF6"}
                 color={mode === DARK_THEME ? "#FFFFFF" : "#FFFFFF"}
                 border="0"
                 mb="4"
                 mr="6"
+                disabled={(approveValueForRGP && approveValueForOtherToken) && (parseFloat(content.tokensStaked[1]) <= 0)}
                 padding="10px 40px"
                 cursor="pointer"
                 onClick={() => setApprove(content.deposit)}
@@ -1107,12 +1360,50 @@ const ShowYieldFarmDetails = ({
           display="flex"
           justifyContent="space-around"
         >
-          <Box width="60%" margin="0 auto">
+         {isMobileDevice ? (
+           <Box width="60%" margin="0 auto">
+             <Flex my={2}>
+               <Text
+                 fontSize="20px"
+                 color={mode === DARK_THEME ? "#F1F5F8" : "#333333"}
+                 marginRight="10px"
+                 textAlign="center"
+                 fontWeight="bold"
+               >
+                 {content.RGPEarned}
+               </Text>{" "}
+               <Text color={mode === DARK_THEME ? "#DCE5EF" : "#333333"}>
+                 RGP Earned
+               </Text>
+             </Flex>
+             <Button
+               w="95%"
+               h="40px"
+               margin="0 auto"
+               borderRadius="6px"
+               bg={mode === DARK_THEME ? "#4A739B" : "#999999"}
+               color={mode === DARK_THEME ? "#FFFFFF" : "#FFFFFF"}
+               border="0"
+               mb="4"
+               mr="2"
+               cursor="pointer"
+               _hover={{ color: "white" }}
+               disabled={parseFloat(content.RGPEarned) <= 0}
+               onClick={() => {
+                 console.log(content.pId);
+                 harvestTokens(content.pId);
+               }}
+             >
+               Harvest
+             </Button>
+           </Box>
+         ) : (
+          <Box margin="0 auto">
             <Flex my={2}>
               <Text
                 fontSize="20px"
                 color={mode === DARK_THEME ? "#F1F5F8" : "#333333"}
-                marginRight="30px"
+                marginRight="10px"
                 textAlign="center"
                 fontWeight="bold"
               >
@@ -1142,6 +1433,7 @@ const ShowYieldFarmDetails = ({
               Harvest
             </Button>
           </Box>
+          )}
           <Box
             my={3}
             display={{ base: "none", md: "block", lg: "block" }}
@@ -1229,155 +1521,310 @@ const ShowYieldFarmDetails = ({
           </Flex>
         </Box>
       </Flex>
-      <Modal
-        isOpen={modal1Disclosure.isOpen}
-        onClose={closeDepositeModal}
-        isCentered
-      >
-        <ModalOverlay />
-        <ModalContent
-          width="95vw"
-          borderRadius="6px"
-          paddingBottom="20px"
-          bgColor={bgColor}
-          minHeight="40vh"
+      {Number(content.poolVersion) === 2 ? (
+        <Modal
+            isOpen={modal1Disclosure.isOpen}
+            onClose={closeDepositeModal}
+            isCentered
         >
-          <ModalHeader fontSize="18px" fontWeight="regular" align="center">
-            Deposit {content.deposit} Tokens
-          </ModalHeader>
+          <ModalOverlay />
+          <ModalContent
+              width='95vw'
+              borderRadius='6px'
+              paddingBottom='20px'
+              bgColor={bgColor}
+              minHeight='40vh'
+          >
+            <ModalHeader fontSize='20px' fontWeight='regular' color={modalTextColor}>
+              Deposit
+            </ModalHeader>
 
-          <ModalCloseButton
-            bg="none"
-            size={"sm"}
-            mt={3}
-            mr={3}
-            cursor="pointer"
-            _focus={{ outline: "none" }}
-            p={"7px"}
-            border={"1px solid"}
-          />
-          <ModalBody py={2}>
-            <Text color="gray.400" align="right" mb={3}>
-              {content.availableToken} {content.deposit} Available
-            </Text>
-            <InputGroup size="md">
-              <Input
-                placeholder="0"
-                opacity="0.5"
-                h="50px"
-                borderRadius="0px"
-                name="availableToken"
-                value={depositTokenValue}
-                onChange={(e) => setDepositTokenValue(e.target.value)}
-                border="2px"
-              />
-              <InputRightElement marginRight="15px">
-                <Button
-                  color="rgba(64, 186, 213, 1)"
-                  border="none"
-                  borderRadius="0px"
-                  fontSize="13px"
-                  p="1"
-                  mt="10px"
-                  height="20px"
-                  cursor="pointer"
-                  _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
-                  onClick={() => showMaxValue(content.deposit, "deposit")}
-                >
-                  MAX
-                </Button>
-              </InputRightElement>
-            </InputGroup>
-            <Box mt={4}>
-              {depositInputHasError ? (
-                <>
-                  {/* Show Error Button */}
+            <ModalCloseButton
+                bg='none'
+                size={"sm"}
+                mt={3}
+                mr={3}
+                cursor='pointer'
+                _focus={{ outline: "none" }}
+                p={"7px"}
+                border={"1px solid"}
+            />
+            <ModalBody py={2}>
+              <Text color={modalTextColor} mb={3} fontSize='14px' fontWeight='regular'>
+                Enter Amount
+              </Text>
+              <InputGroup size='md'>
+                <Input
+                    placeholder='Enter RGP amount to stake'
+                    opacity='0.5'
+                    h='50px'
+                    borderRadius='6px'
+                    name='availableToken'
+                    value={depositTokenValue}
+                    onChange={(e) => setDepositTokenValue(e.target.value)}
+                    border='2px'
+                />
+                <InputRightElement marginRight='15px'>
                   <Button
-                    my="2"
-                    variant="brand"
-                    mx="auto"
-                    color={
-                      unstakeButtonValue === "Confirm" ||
-                      unstakeButtonValue === "Confirmed"
-                        ? "rgba(190, 190, 190, 1)"
-                        : "#40BAD5"
-                    }
-                    width="100%"
-                    background={
-                      unstakeButtonValue === "Confirm" ||
-                      unstakeButtonValue === "Confirmed"
-                        ? "rgba(64, 186, 213, 0.15)"
-                        : "#444159"
-                    }
-                    disabled={unstakeButtonValue !== "Confirm"}
-                    cursor="pointer"
-                    border="none"
-                    borderRadius="0px"
-                    padding="10px"
-                    height="50px"
-                    fontSize="16px"
-                    _hover={
-                      unstakeButtonValue === "Confirm" ||
-                      unstakeButtonValue === "Confirmed"
-                        ? { background: "rgba(64, 186, 213, 0.15)" }
-                        : { background: "#444159" }
-                    }
-                    onClick={() => {}}
+                      color='rgba(64, 186, 213, 1)'
+                      border='none'
+                      borderRadius='0px'
+                      fontSize='13px'
+                      p='1'
+                      mt='10px'
+                      height='20px'
+                      cursor='pointer'
+                      background='none'
+                      _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
+                      onClick={() => showMaxValue(content.deposit, "deposit")}
                   >
-                    {depositErrorButtonText}
+                    MAX
                   </Button>
-                </>
-              ) : (
-                <>
-                  {enoughApproval(
-                    content.poolAllowance,
-                    content.availableToken
-                  ) ? (
-                    <Button
-                      my="2"
-                      mx="auto"
-                      variant="brand"
-                      width="100%"
-                      disabled={depositValue !== "Confirm" || !account}
-                      cursor="pointer"
-                      border="none"
-                      borderRadius="0px"
-                      padding="10px"
-                      height="50px"
-                      fontSize="16px"
-                      _hover={
-                        depositValue === "Confirm"
-                          ? { background: "rgba(64, 186, 213, 0.15)" }
-                          : { background: "#444159" }
-                      }
-                      onClick={() => confirmDeposit(content.deposit)}
-                    >
-                      {depositValue}
-                    </Button>
-                  ) : (
-                    approvalButton(content.deposit)
-                  )}
+                </InputRightElement>
+              </InputGroup>
+              <Text color={modalTextColor2} fontSize='14px' mb={5} mt={3}>
+                RGP Available: {content.availableToken} {content.deposit}
+              </Text>
+              <Text color={modalTextColor} fontSize='14px' mb={3}>
+                Referral address
+              </Text>
+              <InputGroup size='md'>
+                <Input
+                    placeholder='Enter referral address here'
+                    opacity='0.5'
+                    h='50px'
+                    borderRadius='6px'
+                    name='referralDetail'
+                    border='2px'
+                    value={referralAddress}
+                    onChange={(e) => setReferralAddress(e.target.value)}
+                />
+              </InputGroup>
+              <Box mt={4}>
+                {depositInputHasError || refAddressHasError ? (
+                    <>
+                      {/* Show Error Button */}
+                      <Button
+                          my='2'
+                          variant='brand'
+                          mx='auto'
+                          color={
+                            depositValue === "Confirm" ||
+                            depositValue === "Confirmed"
+                                ? "rgba(190, 190, 190, 1)"
+                                : "#40BAD5"
+                          }
+                          width='100%'
+                          background={
+                            depositValue === "Confirm" ||
+                            depositValue === "Confirmed"
+                                ? "rgba(64, 186, 213, 0.15)"
+                                : "#444159"
+                          }
+                          disabled={depositValue !== "Confirm" || !account || !referralAddress}
+                          cursor='pointer'
+                          border='none'
+                          borderRadius='0px'
+                          padding='10px'
+                          height='50px'
+                          fontSize='16px'
+                          _hover={
+                            depositValue === "Confirm" ||
+                            depositValue === "Confirmed"
+                                ? { background: "rgba(64, 186, 213, 0.15)" }
+                                : { background: "#444159" }
+                          }
+                          onClick={() => {}}
+                      >
+                        {depositErrorButtonText}
+                      </Button>
+                    </>
+                ) : (
+                    <>
+                      {enoughApproval(
+                          content.poolAllowance,
+                          content.availableToken
+                      ) ? (
+                          <Button
+                              my='2'
+                              mx='auto'
+                              variant='brand'
+                              width='100%'
+                              disabled={depositValue !== "Confirm" || !account || !referralAddress}
+                              cursor='pointer'
+                              border='none'
+                              borderRadius='0px'
+                              padding='10px'
+                              height='50px'
+                              fontSize='16px'
+                              _hover={
+                                depositValue === "Confirm"
+                                    ? { background: "rgba(64, 186, 213, 0.15)" }
+                                    : { background: "#444159" }
+                              }
+                              onClick={() => confirmDeposit(content.deposit)}
+                          >
+                            {depositValue}
+                          </Button>
+                      ) : (
+                          approvalButton(content.deposit)
+                      )}
+                    </>
+                )}
+              </Box>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      ) : (
+        <Modal
+            isOpen={modal1Disclosure.isOpen}
+            onClose={closeDepositeModal}
+            isCentered
+        >
+          <ModalOverlay />
+          <ModalContent
+              width='95vw'
+              borderRadius='6px'
+              paddingBottom='20px'
+              bgColor={bgColor}
+              minHeight='40vh'
+          >
+            <ModalHeader fontSize='18px' fontWeight='regular' align='center'>
+              Deposit {content.deposit} Tokens
+            </ModalHeader>
+
+            <ModalCloseButton
+                bg='none'
+                size={"sm"}
+                mt={3}
+                mr={3}
+                cursor='pointer'
+                _focus={{ outline: "none" }}
+                p={"7px"}
+                border={"1px solid"}
+            />
+            <ModalBody py={2}>
+              <Text color='gray.400' align='right' mb={3}>
+                {content.availableToken} {content.deposit} Available
+              </Text>
+              <InputGroup size='md'>
+                <Input
+                    placeholder='0'
+                    opacity='0.5'
+                    h='50px'
+                    borderRadius='0px'
+                    name='availableToken'
+                    value={depositTokenValue}
+                    onChange={(e) => setDepositTokenValue(e.target.value)}
+                    border='2px'
+                />
+                <InputRightElement marginRight='15px'>
                   <Button
-                    my="2"
-                    mx="auto"
-                    variant="brand"
-                    width="100%"
-                    cursor="pointer"
-                    border="none"
-                    borderRadius="0px"
-                    padding="10px"
-                    height="50px"
-                    fontSize="16px"
-                    onClick={closeDepositeModal}
+                      color='rgba(64, 186, 213, 1)'
+                      border='none'
+                      borderRadius='0px'
+                      fontSize='13px'
+                      p='1'
+                      mt='10px'
+                      height='20px'
+                      cursor='pointer'
+                      _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
+                      onClick={() => showMaxValue(content.deposit, "deposit")}
                   >
-                    Cancel
+                    MAX
                   </Button>
-                </>
-              )}
-            </Box>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+                </InputRightElement>
+              </InputGroup>
+              <Box mt={4}>
+                {depositInputHasError ? (
+                    <>
+                      {/* Show Error Button */}
+                      <Button
+                          my='2'
+                          variant='brand'
+                          mx='auto'
+                          color={
+                            depositValue === "Confirm" ||
+                            depositValue === "Confirmed"
+                                ? "rgba(190, 190, 190, 1)"
+                                : "#40BAD5"
+                          }
+                          width='100%'
+                          background={
+                            depositValue === "Confirm" ||
+                            depositValue === "Confirmed"
+                                ? "rgba(64, 186, 213, 0.15)"
+                                : "#444159"
+                          }
+                          disabled={depositValue !== "Confirm" || !account}
+                          cursor='pointer'
+                          border='none'
+                          borderRadius='0px'
+                          padding='10px'
+                          height='50px'
+                          fontSize='16px'
+                          _hover={
+                            depositValue === "Confirm"
+                                ? { background: "rgba(64, 186, 213, 0.15)" }
+                                : { background: "#444159" }
+                          }
+                          onClick={() => {}}
+                      >
+                        {depositErrorButtonText}
+                      </Button>
+                    </>
+                ) : (
+                    <>
+                      {enoughApproval(
+                          content.poolAllowance,
+                          content.availableToken
+                      ) ? (
+                          <Button
+                              my='2'
+                              mx='auto'
+                              variant='brand'
+                              width='100%'
+                              disabled={depositValue !== "Confirm" || !account}
+                              cursor='pointer'
+                              border='none'
+                              borderRadius='0px'
+                              padding='10px'
+                              height='50px'
+                              fontSize='16px'
+                              _hover={
+                                depositValue === "Confirm"
+                                    ? { background: "rgba(64, 186, 213, 0.15)" }
+                                    : { background: "#444159" }
+                              }
+                              onClick={() => confirmDeposit(content.deposit)}
+                          >
+                            {depositValue}
+                          </Button>
+                      ) : (
+                          approvalButton(content.deposit)
+                      )}
+                      <Button
+                          my='2'
+                          mx='auto'
+                          variant='brand'
+                          width='100%'
+                          cursor='pointer'
+                          border='none'
+                          borderRadius='0px'
+                          padding='10px'
+                          height='50px'
+                          fontSize='16px'
+                          onClick={closeDepositeModal}
+                      >
+                        Cancel
+                      </Button>
+                    </>
+                )}
+              </Box>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      )}
 
       <Modal isCentered isOpen={modal2Disclosure.isOpen} onClose={closeModal}>
         <ModalOverlay />

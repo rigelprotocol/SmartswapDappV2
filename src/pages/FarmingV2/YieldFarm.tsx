@@ -19,6 +19,7 @@ const YieldFarm = ({content, farmDataLoading, wallet}: {
     deposit: string;
     poolAllowance: any;
     RGPEarned: string;
+    poolVersion: number | string;
   };
   farmDataLoading: boolean;
   wallet: any;
