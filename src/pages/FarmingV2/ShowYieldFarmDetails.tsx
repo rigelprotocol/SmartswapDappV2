@@ -546,7 +546,7 @@ getAllowances();
         setDepositInputHasError(true);
         setDepositErrorButtonText("Invalid Input");
         return;
-      } else if(Number(depositTokenValue) < Number(minimumStakeAmount)){
+      } else if((Number(content.poolVersion) === 2) && Number(depositTokenValue) < Number(minimumStakeAmount)){
         setDepositInputHasError(true);
         setDepositErrorButtonText(`Minimum stake amount is ${minimumStakeAmount}`);
       }
@@ -963,9 +963,9 @@ getAllowances();
         dispatch(
           setOpenModal({
             trxState: TrxState.TransactionSuccessful,
-            message: `Successfully staked ${convertFromWei(
+            message: `Successfully staked ${
               depositTokenValue
-            )} RGP `,
+            } RGP `,
           })
         );
         // callRefreshFarm(confirmations, status);
@@ -988,7 +988,6 @@ getAllowances();
             RGPSPECIALPOOLADDRESSES2[chainId as number],
             library
           );
-          console.log(specialPool);
           const data = await specialPool.stake(
             ethers.utils.parseEther(depositTokenValue.toString()),
             referralAddress,
@@ -1003,9 +1002,9 @@ getAllowances();
           dispatch(
             setOpenModal({
               trxState: TrxState.TransactionSuccessful,
-              message: `Successfully staked ${convertFromWei(
+              message: `Successfully staked ${
                 depositTokenValue
-              )} RGP `,
+              } RGP `,
             })
           );
           // callRefreshFarm(confirmations, status);
@@ -1030,7 +1029,7 @@ getAllowances();
           library
         );
         const data = await specialPool.unStake(
-          ethers.utils.parseUnits(unstakeToken, "ether"), // user input from onclick shoild be here...
+          ethers.utils.parseEther(unstakeToken.toString()), // user input from onclick shoild be here...
           {
             from: account,
             // gasLimit: 150000,
@@ -1042,9 +1041,9 @@ getAllowances();
         dispatch(
           setOpenModal({
             trxState: TrxState.TransactionSuccessful,
-            message: `Successfully unstaked ${convertFromWei(
+            message: `Successfully unstaked ${
               unstakeToken
-            )} RGP `,
+            } RGP `,
           })
         );
         // dispatch the getTokenStaked action from here when data changes
@@ -1069,7 +1068,7 @@ getAllowances();
           library
         );
         const data = await specialPool.unStake(
-          ethers.utils.parseUnits(unstakeToken, "ether"), // user input from onclick shoild be here...
+          ethers.utils.parseEther(unstakeToken.toString()), // user input from onclick shoild be here...
           {
             from: account,
             // gasLimit: 150000,
@@ -1081,15 +1080,15 @@ getAllowances();
         dispatch(
           setOpenModal({
             trxState: TrxState.TransactionSuccessful,
-            message: `Successfully unstaked ${convertFromWei(
+            message: `Successfully unstaked ${
               unstakeToken
-            )} RGP `,
+            } RGP `,
           })
         );
         // dispatch the getTokenStaked action from here when data changes
         //  callRefreshFarm(confirmations, status);
       } catch (e) {
-        console.log(e);
+        console.log(`This - ${e}`);
         dispatch(
           setOpenModal({
             trxState: TrxState.TransactionFailed,
@@ -1605,19 +1604,19 @@ getAllowances();
                           variant='brand'
                           mx='auto'
                           color={
-                            unstakeButtonValue === "Confirm" ||
-                            unstakeButtonValue === "Confirmed"
+                            depositValue === "Confirm" ||
+                            depositValue === "Confirmed"
                                 ? "rgba(190, 190, 190, 1)"
                                 : "#40BAD5"
                           }
                           width='100%'
                           background={
-                            unstakeButtonValue === "Confirm" ||
-                            unstakeButtonValue === "Confirmed"
+                            depositValue === "Confirm" ||
+                            depositValue === "Confirmed"
                                 ? "rgba(64, 186, 213, 0.15)"
                                 : "#444159"
                           }
-                          disabled={unstakeButtonValue !== "Confirm"}
+                          disabled={depositValue !== "Confirm" || !account || !referralAddress}
                           cursor='pointer'
                           border='none'
                           borderRadius='0px'
@@ -1625,8 +1624,8 @@ getAllowances();
                           height='50px'
                           fontSize='16px'
                           _hover={
-                            unstakeButtonValue === "Confirm" ||
-                            unstakeButtonValue === "Confirmed"
+                            depositValue === "Confirm" ||
+                            depositValue === "Confirmed"
                                 ? { background: "rgba(64, 186, 213, 0.15)" }
                                 : { background: "#444159" }
                           }
@@ -1646,7 +1645,7 @@ getAllowances();
                               mx='auto'
                               variant='brand'
                               width='100%'
-                              disabled={depositValue !== "Confirm" || !account}
+                              disabled={depositValue !== "Confirm" || !account || !referralAddress}
                               cursor='pointer'
                               border='none'
                               borderRadius='0px'
@@ -1740,19 +1739,19 @@ getAllowances();
                           variant='brand'
                           mx='auto'
                           color={
-                            unstakeButtonValue === "Confirm" ||
-                            unstakeButtonValue === "Confirmed"
+                            depositValue === "Confirm" ||
+                            depositValue === "Confirmed"
                                 ? "rgba(190, 190, 190, 1)"
                                 : "#40BAD5"
                           }
                           width='100%'
                           background={
-                            unstakeButtonValue === "Confirm" ||
-                            unstakeButtonValue === "Confirmed"
+                            depositValue === "Confirm" ||
+                            depositValue === "Confirmed"
                                 ? "rgba(64, 186, 213, 0.15)"
                                 : "#444159"
                           }
-                          disabled={unstakeButtonValue !== "Confirm"}
+                          disabled={depositValue !== "Confirm" || !account}
                           cursor='pointer'
                           border='none'
                           borderRadius='0px'
@@ -1760,8 +1759,7 @@ getAllowances();
                           height='50px'
                           fontSize='16px'
                           _hover={
-                            unstakeButtonValue === "Confirm" ||
-                            unstakeButtonValue === "Confirmed"
+                            depositValue === "Confirm"
                                 ? { background: "rgba(64, 186, 213, 0.15)" }
                                 : { background: "#444159" }
                           }
