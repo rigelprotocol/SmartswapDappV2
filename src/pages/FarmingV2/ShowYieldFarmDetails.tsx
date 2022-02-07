@@ -453,13 +453,6 @@ const ShowYieldFarmDetails = ({
     getAllowances();
   }, [account, deposited]);
 
-<<<<<<< HEAD
-  useEffect(() => {
-    getAllowances();
-  }, [])
-
-=======
->>>>>>> develop
   const allowance = (contract: any) =>
     contract.allowance(account, MASTERCHEFV2ADDRESSES[chainId as number]);
 
