@@ -106,15 +106,8 @@ const ShowYieldFarmDetails = ({
   const [farmingFee, setFarmingFee] = useState("10");
   const [FarmingFeeLoading, setFarmingFeeLoading] = useState(true);
   const [deposited, setDeposited] = useState(false);
-<<<<<<< HEAD
-<<<<<<< HEAD
   const [minimumStakeAmount, setMinimumStakeAmount] = useState(0);
   const [isMobileDevice] = useMediaQuery("(max-width: 767px)");
-=======
-  const [unstakeButtonStatus, setUnstakeButtonStatus] = useState(false);
->>>>>>> a6bd7ec (fix unstake button)
-=======
->>>>>>> 3d45d12 (resolve conflict)
   const signer = library?.getSigner();
   const closeModal = () => {
     modal2Disclosure.onClose();
@@ -178,6 +171,7 @@ const ShowYieldFarmDetails = ({
       } else if (
         content.deposit === "RGP-BUSD" ||
         content.deposit === "MATIC-RGP" ||
+        content.deposit === "RGP-MATIC" ||
         content.deposit === "RGP-ROSE"
       ) {
         const poolOne = await smartSwapLPTokenPoolOne(
@@ -379,7 +373,7 @@ const ShowYieldFarmDetails = ({
         val === "RGP-BUSD" ||
         val === "MATIC-RGP" ||
         val === "RGP-MATIC" ||
-        val === "RGP-ROSE"
+        val == "RGP-ROSE"
       ) {
         const poolOne = await smartSwapLPTokenPoolOne(
           SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
@@ -588,8 +582,6 @@ const ShowYieldFarmDetails = ({
   }, [depositTokenValue]);
 
   useEffect(() => {
-<<<<<<< HEAD
-<<<<<<< HEAD
     setRefAddressHasError(false);
     if (referralAddress !== "") {
       if (!Web3.utils.isAddress(referralAddress)) {
@@ -598,18 +590,8 @@ const ShowYieldFarmDetails = ({
       }
     }
   }, [referralAddress]);
-=======
-    if (parseFloat(content.tokensStaked[1]) <= 0) {
-      setUnstakeButtonStatus(false);
-    } else {
-      setUnstakeButtonStatus(true);
-    }
-  }, [content]);
->>>>>>> a6bd7ec (fix unstake button)
 
   useEffect(() => {
-=======
->>>>>>> 3d45d12 (resolve conflict)
     setInputHasError(false);
     setErrorButtonText("");
 
@@ -1201,6 +1183,7 @@ const ShowYieldFarmDetails = ({
     switch (LPToken) {
       case "RGP-BUSD":
       case "MATIC-RGP":
+      case "RGP-ROSE":
         const poolOne = await smartSwapLPTokenPoolOne(
           SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
           library
@@ -1217,6 +1200,7 @@ const ShowYieldFarmDetails = ({
         break;
       case "BNB-BUSD":
       case "RGP-USDC":
+      case "ROSE-USDT":
         const poolThree = await smartSwapLPTokenPoolThree(
           SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
           library
@@ -1308,8 +1292,6 @@ const ShowYieldFarmDetails = ({
     </Button>
   );
 
-  // disabled={(approveValueForRGP && approveValueForOtherToken) && (parseFloat(content.tokensStaked[1]) <= 0)}
-
   return (
     <>
       <Flex
@@ -1364,13 +1346,6 @@ const ShowYieldFarmDetails = ({
                 padding='10px 40px'
                 cursor='pointer'
                 onClick={() => setApprove(content.deposit)}
-                disabled={
-                  approveValueForRGP &&
-
-                  approveValueForOtherToken &&
-                  parseFloat(content.tokensStaked[1]) <= 0
-
-                }
               >
                 {approveValueForRGP && approveValueForOtherToken
                   ? "Unstake"
