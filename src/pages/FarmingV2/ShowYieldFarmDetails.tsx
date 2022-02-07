@@ -1366,7 +1366,10 @@ const ShowYieldFarmDetails = ({
                 onClick={() => setApprove(content.deposit)}
                 disabled={
                   approveValueForRGP &&
-                  approveValueForOtherToken 
+
+                  approveValueForOtherToken &&
+                  parseFloat(content.tokensStaked[1]) <= 0
+
                 }
               >
                 {approveValueForRGP && approveValueForOtherToken
@@ -1393,7 +1396,7 @@ const ShowYieldFarmDetails = ({
                 mr='6'
                 padding='10px 40px'
                 cursor='pointer'
-                disabled={!approveValueForRGP}
+                disabled={!approveValueForRGP || !approveValueForOtherToken}
                 onClick={openDepositeModal}
               >
                 Deposit
