@@ -107,11 +107,14 @@ const ShowYieldFarmDetails = ({
   const [FarmingFeeLoading, setFarmingFeeLoading] = useState(true);
   const [deposited, setDeposited] = useState(false);
 <<<<<<< HEAD
+<<<<<<< HEAD
   const [minimumStakeAmount, setMinimumStakeAmount] = useState(0);
   const [isMobileDevice] = useMediaQuery("(max-width: 767px)");
 =======
   const [unstakeButtonStatus, setUnstakeButtonStatus] = useState(false);
 >>>>>>> a6bd7ec (fix unstake button)
+=======
+>>>>>>> 3d45d12 (resolve conflict)
   const signer = library?.getSigner();
   const closeModal = () => {
     modal2Disclosure.onClose();
@@ -375,6 +378,7 @@ const ShowYieldFarmDetails = ({
       } else if (
         val === "RGP-BUSD" ||
         val === "MATIC-RGP" ||
+        val === "RGP-MATIC" ||
         val === "RGP-ROSE"
       ) {
         const poolOne = await smartSwapLPTokenPoolOne(
@@ -585,6 +589,7 @@ const ShowYieldFarmDetails = ({
 
   useEffect(() => {
 <<<<<<< HEAD
+<<<<<<< HEAD
     setRefAddressHasError(false);
     if (referralAddress !== "") {
       if (!Web3.utils.isAddress(referralAddress)) {
@@ -603,6 +608,8 @@ const ShowYieldFarmDetails = ({
 >>>>>>> a6bd7ec (fix unstake button)
 
   useEffect(() => {
+=======
+>>>>>>> 3d45d12 (resolve conflict)
     setInputHasError(false);
     setErrorButtonText("");
 
@@ -1386,7 +1393,7 @@ const ShowYieldFarmDetails = ({
                 mr='6'
                 padding='10px 40px'
                 cursor='pointer'
-                disabled={!approveValueForRGP || !approveValueForOtherToken}
+                disabled={!approveValueForRGP}
                 onClick={openDepositeModal}
               >
                 Deposit
