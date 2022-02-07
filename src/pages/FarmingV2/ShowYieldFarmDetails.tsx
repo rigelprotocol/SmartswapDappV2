@@ -26,7 +26,7 @@ import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import { SupportedChainId } from "../../constants/chains";
 import Switch from "react-switch";
 import { DARK_THEME } from "./index";
-import { addToast } from "../../components/Toast/toastSlice";
+import { errorToast, addToast } from "../../components/Toast/toastSlice";
 import { useDispatch } from "react-redux";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { getExplorerLink, ExplorerDataType } from "../../utils/getExplorerLink";
@@ -55,7 +55,6 @@ import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
 import { useRGPBalance } from "../../utils/hooks/useBalances";
 import { updateFarmAllowances } from "../../state/farm/actions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
-import { AiOutlineConsoleSql } from "react-icons/ai";
 
 const ShowYieldFarmDetails = ({
   content,
@@ -341,8 +340,8 @@ const ShowYieldFarmDetails = ({
   }, [account, deposited]);
 
   useEffect(() => {
-getAllowances();
-  },[])
+    getAllowances();
+  }, [])
 
   const allowance = (contract: any) =>
     contract.allowance(account, MASTERCHEFV2ADDRESSES[chainId as number]);
@@ -664,13 +663,21 @@ getAllowances();
   const LPDeposit = async (pid: any) => {
     if (account) {
       try {
+        console.log({ RGPBalance, farmingFee })
         if (parseFloat(content.tokensStaked[1]) == 0) {
-          if (parseInt(RGPBalance) < parseInt(farmingFee)) {
-            alert({
-              title: "Insufficient Balance",
-              body: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
-              type: "error",
-            });
+
+          if (parseFloat(RGPBalance) < parseFloat(farmingFee)) {
+            // alert({
+            //   title: "Insufficient Balance",
+            //   body: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
+            //   type: "error",
+            // });
+            dispatch(
+              errorToast({
+                message: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
+                error: true
+              })
+            );
           } else {
             const lpTokens = await MasterChefV2Contract(
               MASTERCHEFV2ADDRESSES[chainId as number],
@@ -1294,14 +1301,14 @@ getAllowances();
                     mx="auto"
                     color={
                       unstakeButtonValue === "Confirm" ||
-                      unstakeButtonValue === "Confirmed"
+                        unstakeButtonValue === "Confirmed"
                         ? "rgba(190, 190, 190, 1)"
                         : "#40BAD5"
                     }
                     width="100%"
                     background={
                       unstakeButtonValue === "Confirm" ||
-                      unstakeButtonValue === "Confirmed"
+                        unstakeButtonValue === "Confirmed"
                         ? "rgba(64, 186, 213, 0.15)"
                         : "#444159"
                     }
@@ -1314,11 +1321,11 @@ getAllowances();
                     fontSize="16px"
                     _hover={
                       unstakeButtonValue === "Confirm" ||
-                      unstakeButtonValue === "Confirmed"
+                        unstakeButtonValue === "Confirmed"
                         ? { background: "rgba(64, 186, 213, 0.15)" }
                         : { background: "#444159" }
                     }
-                    onClick={() => {}}
+                    onClick={() => { }}
                   >
                     {depositErrorButtonText}
                   </Button>
@@ -1442,14 +1449,14 @@ getAllowances();
                     mx="auto"
                     color={
                       unstakeButtonValue === "Confirm" ||
-                      unstakeButtonValue === "Confirmed"
+                        unstakeButtonValue === "Confirmed"
                         ? "rgba(190, 190, 190, 1)"
                         : "#40BAD5"
                     }
                     width="100%"
                     background={
                       unstakeButtonValue === "Confirm" ||
-                      unstakeButtonValue === "Confirmed"
+                        unstakeButtonValue === "Confirmed"
                         ? "rgba(64, 186, 213, 0.15)"
                         : "#444159"
                     }
@@ -1462,11 +1469,11 @@ getAllowances();
                     fontSize="16px"
                     _hover={
                       unstakeButtonValue === "Confirm" ||
-                      unstakeButtonValue === "Confirmed"
+                        unstakeButtonValue === "Confirmed"
                         ? { background: "rgba(64, 186, 213, 0.15)" }
                         : { background: "#444159" }
                     }
-                    onClick={() => {}}
+                    onClick={() => { }}
                   >
                     {errorButtonText}
                   </Button>
@@ -1491,7 +1498,7 @@ getAllowances();
                     fontSize="16px"
                     _hover={
                       unstakeButtonValue === "Confirm" ||
-                      unstakeButtonValue === "Confirmed"
+                        unstakeButtonValue === "Confirmed"
                         ? { background: "rgba(64, 186, 213, 0.15)" }
                         : { background: "#444159" }
                     }
