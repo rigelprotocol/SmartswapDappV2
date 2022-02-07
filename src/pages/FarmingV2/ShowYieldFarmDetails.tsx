@@ -106,8 +106,12 @@ const ShowYieldFarmDetails = ({
   const [farmingFee, setFarmingFee] = useState("10");
   const [FarmingFeeLoading, setFarmingFeeLoading] = useState(true);
   const [deposited, setDeposited] = useState(false);
+<<<<<<< HEAD
   const [minimumStakeAmount, setMinimumStakeAmount] = useState(0);
   const [isMobileDevice] = useMediaQuery("(max-width: 767px)");
+=======
+  const [unstakeButtonStatus, setUnstakeButtonStatus] = useState(false);
+>>>>>>> a6bd7ec (fix unstake button)
   const signer = library?.getSigner();
   const closeModal = () => {
     modal2Disclosure.onClose();
@@ -580,6 +584,7 @@ const ShowYieldFarmDetails = ({
   }, [depositTokenValue]);
 
   useEffect(() => {
+<<<<<<< HEAD
     setRefAddressHasError(false);
     if (referralAddress !== "") {
       if (!Web3.utils.isAddress(referralAddress)) {
@@ -588,6 +593,14 @@ const ShowYieldFarmDetails = ({
       }
     }
   }, [referralAddress]);
+=======
+    if (parseFloat(content.tokensStaked[1]) <= 0) {
+      setUnstakeButtonStatus(false);
+    } else {
+      setUnstakeButtonStatus(true);
+    }
+  }, [content]);
+>>>>>>> a6bd7ec (fix unstake button)
 
   useEffect(() => {
     setInputHasError(false);
@@ -1344,6 +1357,10 @@ const ShowYieldFarmDetails = ({
                 padding='10px 40px'
                 cursor='pointer'
                 onClick={() => setApprove(content.deposit)}
+                disabled={
+                  approveValueForRGP &&
+                  approveValueForOtherToken 
+                }
               >
                 {approveValueForRGP && approveValueForOtherToken
                   ? "Unstake"
