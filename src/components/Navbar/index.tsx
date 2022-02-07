@@ -46,80 +46,84 @@ const Index = () => {
   const { library } = useActiveWeb3React();
   return (
     <>
-    {location==="/" ? null : 
-      <Flex px={6} py={2} boxShadow="sm">
-      {isMobileDevice ? (
-        <>
-          <Flex w="100%" justifyContent="space-between" h="10">
-            <Box mr={6}>
-              <NavLink to='/'> <Img src={Logo} /></NavLink>
+      {location === "/" ? null :
+        <Flex px={6} py={2} boxShadow="sm" >
+          {isMobileDevice ? (
+            <>
+              <Flex w="100%" justifyContent="space-between" h="10">
+                <Box mr={6}>
+                  <NavLink to='/'> <Img src={Logo} /></NavLink>
 
-            </Box>
-            <MobileNavDrawer />
-          </Flex>
-          <Flex
-            h="70px"
-            zIndex="2"
-            position="fixed"
-            left={0}
-            bottom={0}
-            justify="space-between"
-            alignItems="center"
-            borderTop="1px"
-            borderColor={mobileNavBorderColor}
-            w="100%"
-            bgColor={mobileNavColor}
-            mr={4}
-          >
-            <Flex ml={4}>
-              <WalletConnection />
-            </Flex>
-            <Flex mr={4}>
-              {library && library.provider.isMetaMask && <NetworkConnector />}
-              <ColorModeSwitcher />
-              <SocialMedia />
-            </Flex>
-          </Flex>
-        </>
-      ) : (
-        <>
-          <Flex h="10">
-            <Box mr={4}>
-              <NavLink to='/'> <Img src={Logo} /> </NavLink>
-            </Box>
-            <DappsDropdown />
+                </Box>
+                <MobileNavDrawer />
+              </Flex>
+              <Flex
+                h="70px"
+                zIndex="2"
+                position="fixed"
+                left={0}
+                bottom={0}
+                justify="space-between"
+                alignItems="center"
+                borderTop="1px"
+                borderColor={mobileNavBorderColor}
+                w="100%"
+                bgColor={mobileNavColor}
+                mr={4}
+              >
+                <Flex ml={4}>
+                  <WalletConnection />
+                </Flex>
+                <Flex mr={4}>
+                  {library && library.provider.isMetaMask && <NetworkConnector />}
+                  <ColorModeSwitcher />
+                  <SocialMedia />
+                </Flex>
+              </Flex>
+            </>
+          ) : (
+            <>
+              <Flex h="10">
+                <Box mr={4}>
+                  <NavLink to='/'> <Img src={Logo} /> </NavLink>
+                </Box>
+                <DappsDropdown />
 
-            <Flex
-              mr="4px"
-              w="400px"
-              h="10"
-              align="center"
-              justify="space-around"
-              fontSize="14px"
-            >
-              <SwapDropdown />
-              <Nav label="Liquidity" to="/pool" />
-              <Nav label="Farming" to="/farming-v2" />
-              <Link href="#">
-                Analytics
-              </Link>
-            </Flex>
-          </Flex>
-          <Spacer />
+                <Flex
+                  mr="4px"
+                  w="400px"
+                  h="10"
+                  align="center"
+                  justify="space-around"
+                  fontSize="14px"
+                  className='HeaderRide'
+                >
+                  <SwapDropdown />
+                  <Nav label="Liquidity" to="/pool" />
+                  <Nav label="Farming" to="/farming-v2" />
+                  <Link href="#">
+                    Analytics
+                  </Link>
+                </Flex>
+              </Flex>
+              <Spacer />
 
-          <Flex h="8" justify="flex-end">
-            {library && library.provider.isMetaMask && <NetworkConnector />}
-            <WalletConnection />
-            <SocialMedia />
-            <ColorModeSwitcher />
-          </Flex>
-        </>
-      )}
-    </Flex>
-    }
+              <Flex h="8" justify="flex-end" >
+
+                {library && library.provider.isMetaMask && <NetworkConnector />}
+                <Flex h="8" justify="flex-end" className='Wallet'>
+                  <WalletConnection />
+                </Flex>
+                <SocialMedia />
+                <ColorModeSwitcher />
+              </Flex>
+            </>
+          )}
+        </Flex>
+      }
     </>
-    
-    
+
+
   );
 };
 

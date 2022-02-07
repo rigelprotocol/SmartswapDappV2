@@ -47,7 +47,7 @@ export const MASTERCHEFV2ADDRESSES: { [key: string]: string } = {
   "56": "0xe1eccccb46755a38d218bf7fdcd6f26c2cd7671f",
   "97": "0x1f5dabb92aba96928d12e405d66275e20c53d846",
   "137": "0x2614118C1f32C8B183E060507cCA2f23FA786428",
-  "80001": "0x2d2cd8ed2ec05a55162308332c40c3ef1994f59d",
+  "80001": "0x4B3B531bbbf7821A6f3019f82B461da760a184Ae",
 };
 
 export const RGPSPECIALPOOLADDRESSES: { [key: string]: string } = {
@@ -58,6 +58,16 @@ export const RGPSPECIALPOOLADDRESSES: { [key: string]: string } = {
   "137": "0x60715e85cba9892addc49830cf0655cf5fb09c3a",
   "80001": "0x60715e85cba9892addc49830cf0655cf5fb09c3a",
 };
+
+export const RGPSPECIALPOOLADDRESSES2: { [key: string]: string } = {
+  "1": "0x",
+  "3": "0x",
+  "56": "0x100514759dcd6e2ccbb9eb87481b96de28c4b77f",
+  "97": "0x21228b8a9490e21dda803a0e5a07671c981d0eaf",
+  "137": "0x",
+  "80001": "0x60715e85cba9892addc49830cf0655cf5fb09c3a",
+};
+
 export const SMARTSWAPLP_TOKEN1ADDRESSES: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",

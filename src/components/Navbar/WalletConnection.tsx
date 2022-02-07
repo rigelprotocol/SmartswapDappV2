@@ -17,7 +17,7 @@ import { useRGPPrice } from '../../utils/hooks/useRGPPrice';
 import StatusIcon from './StatusIcon';
 import RGPModal from "./modals/RGPModal";
 import UnsupportNetwork from './UnsupportNetwork';
-import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
+import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 
 export default function WalletConnection() {
   const [isMobileDevice] = useMediaQuery('(max-width: 1200px)');
@@ -30,7 +30,6 @@ export default function WalletConnection() {
     '0px 1px 7px -2px rgba(24, 39, 75, 0.06), 0px 2px 2px rgba(24, 39, 75, 0.06)',
     '0px 2px 4px -2px rgba(178, 193, 230, 0.12), 0px 4px 4px -2px rgba(178, 193, 230, 0.08)'
   );
-  const buttonBorder = useColorModeValue('gray.200', 'gray.100');
 
   const [Balance, Symbol] = useNativeBalance();
   const [displayWallet, setDisplayWallet] = useState(false);
@@ -39,9 +38,6 @@ export default function WalletConnection() {
   const [RGPPrice] = useRGPPrice();
   const [showRGP, setShowRGP] = useState(false);
   const [modalDisplay, setDisplayModal] = useState(false);
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
 
   if (account) {
     return (
@@ -52,10 +48,11 @@ export default function WalletConnection() {
           bg={bgColor}
           onClick={() => setShowRGP(true)}
           fontSize="14px"
+
         >
           {RGPBalance} {RGPBalance ? 'RGP' : '0.0000 RGP'}
         </Button>
-        <RGPModal showRGP={showRGP} setShowRGP={setShowRGP} RGPBalance={RGPBalance} RGPPrice={RGPPrice}/>
+        <RGPModal showRGP={showRGP} setShowRGP={setShowRGP} RGPBalance={RGPBalance} RGPPrice={RGPPrice} />
         <Flex
           ml={2}
           w={isMobileDevice ? '160px' : 'max-content'}
@@ -71,12 +68,14 @@ export default function WalletConnection() {
             justify="center"
             bg={bgColor2}
             px={2}
+
           >
             <Text fontWeight={'bold'} fontSize="14px">
               {Balance} {Symbol}
             </Text>
           </Flex>
           <Button
+
             onClick={() => setDisplayWallet((state) => !state)}
             variant={'ghost'}
             fontSize="14px"
@@ -95,6 +94,7 @@ export default function WalletConnection() {
   } else if (error) {
     return (
       <>{error.name === "UnsupportedChainIdError" ? <> <Button
+
         bg="red.300" rightIcon={<IoWalletOutline />} variant="brand"
 
         onClick={() => setDisplayModal(state => !state)}
@@ -109,9 +109,10 @@ export default function WalletConnection() {
     return (
       <>
         <Button
+          data-tut="reactour__WalletConnect"
           onClick={() => {
-              setDisplayNetwork(state => !state);
-              localStorage.removeItem('walletconnect')
+            setDisplayNetwork(state => !state);
+            localStorage.removeItem('walletconnect')
           }}
           rightIcon={<IoWalletOutline />}
           variant="brand"

@@ -1,25 +1,25 @@
-import React, {useState, useCallback} from 'react';
+import React, { useState, useCallback } from 'react';
 import { Box, useColorModeValue } from '@chakra-ui/react';
 import InputSelector from './InputSelector';
 import { Field } from '../../../../state/swap/actions';
-import {Currency} from "@uniswap/sdk-core";
+import { Currency } from "@uniswap/sdk-core";
 
 
 interface ToProps {
-    onUserOutput: (value: string) => void,
-    onCurrencySelection: Function,
-    currency: Currency | undefined ,
-    otherCurrency: Currency | undefined,
-    value: string
+  onUserOutput: (value: string) => void,
+  onCurrencySelection: Function,
+  currency: Currency | undefined,
+  otherCurrency: Currency | undefined,
+  value: string
 }
 
 
 const To: React.FC<ToProps> = ({
-    onCurrencySelection,
-    currency,
-    otherCurrency,
-    onUserOutput,
-    value
+  onCurrencySelection,
+  currency,
+  otherCurrency,
+  onUserOutput,
+  value
 
 }) => {
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
@@ -27,9 +27,9 @@ const To: React.FC<ToProps> = ({
 
   const handleInputSelect = useCallback(
     (outputCurrency) => {
-      
-    onCurrencySelection(Field.OUTPUT, outputCurrency);
-      setTokenModal((state) =>!state)
+
+      onCurrencySelection(Field.OUTPUT, outputCurrency);
+      setTokenModal((state) => !state)
     },
     [onCurrencySelection],
     // [],
@@ -45,16 +45,19 @@ const To: React.FC<ToProps> = ({
         borderRadius="6px"
         border="1px"
         borderColor={borderColor}
+        className='SelectToken'
       >
         <InputSelector
-        onCurrencySelect={handleInputSelect}
-        currency={currency}
-        otherCurrency={otherCurrency}
-        tokenModal={tokenModal}
-        setToken={()=>setTokenModal((state) =>!state)}
-        onUserInput={onUserOutput}
-        value={value}
-        max={false}/>
+
+          onCurrencySelect={handleInputSelect}
+          currency={currency}
+          otherCurrency={otherCurrency}
+          tokenModal={tokenModal}
+          setToken={() => setTokenModal((state) => !state)}
+          onUserInput={onUserOutput}
+          value={value}
+          max={false} />
+
       </Box>
     </>
   );
