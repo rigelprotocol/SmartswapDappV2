@@ -42,9 +42,12 @@ function Toast({ message, URL, remove, error }: ToastProps) {
   });
 
   useEffect(() => {
-    setTimeout(() => {
-      remove();
-    }, 6000);
+    if (!error) {
+      setTimeout(() => {
+        remove();
+      }, 6000);
+    }
+
   }, []);
 
   return (
