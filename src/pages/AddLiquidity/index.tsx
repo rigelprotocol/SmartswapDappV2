@@ -110,9 +110,9 @@ export default function AddLiquidity({
     const visits = window.localStorage.getItem('continueLiquidtyVisit');
     if (!visits) {
       window.localStorage.setItem('continueLiquidtyVisit', '1');
-
+      startWelcomeRide()
     }
-    startWelcomeRide()
+
   }, []);
 
 

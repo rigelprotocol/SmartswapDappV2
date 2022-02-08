@@ -23,7 +23,7 @@ const Index = () => {
   const [liquidities, setLiquidities] = useState<any[] | undefined>([]);
   const [liquidityLength, setLiquidityLength] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [welcomeModal, setWelcomeModal] = useState(true); //false
+  const [welcomeModal, setWelcomeModal] = useState(false); //false
   const [run, setRun] = useState(false)
   const bgColor = useColorModeValue("#319EF6", "#4CAFFF");
 
