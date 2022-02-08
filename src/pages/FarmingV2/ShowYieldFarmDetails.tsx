@@ -27,7 +27,7 @@ import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import { SupportedChainId } from "../../constants/chains";
 import Switch from "react-switch";
 import { DARK_THEME } from "./index";
-import { errorToast, addToast } from "../../components/Toast/toastSlice";
+import { addToast } from "../../components/Toast/toastSlice";
 import { useDispatch } from "react-redux";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { getExplorerLink, ExplorerDataType } from "../../utils/getExplorerLink";
@@ -840,7 +840,7 @@ const ShowYieldFarmDetails = ({
             //   type: "error",
             // });
             dispatch(
-              errorToast({
+              addToast({
                 message: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
                 error: true
               })

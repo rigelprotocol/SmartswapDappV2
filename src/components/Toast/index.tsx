@@ -99,7 +99,7 @@ function Toast({ message, URL, remove, error }: ToastProps) {
         border={'1px solid'}
         borderColor={buttonBorder}
       />
-      <animated.div className={'progress'} style={faderStyle} />
+      {!error && <animated.div className={'progress'} style={faderStyle} />}
     </Box>
   );
 }
@@ -115,7 +115,7 @@ export const Notify = () => {
           message={toastDetails.message}
           URL={toastDetails.URL}
           remove={() => dispatch(removeToast())}
-          error={toastDetails?.error}
+          error={toastDetails.error ?? false}
         />
       )}
     </Box>

@@ -19,11 +19,7 @@ const toastSlice = createSlice({
         addToast: (state, action: PayloadAction<ToastState>) => {
             state.message = action.payload.message;
             state.URL = action.payload.URL;
-        },
-        errorToast: (state, action: PayloadAction<ToastState>) => {
-            console.log(action.payload)
-            state.message = action.payload.message;
-            state.error = action.payload.error;
+            state.error = action.payload?.error ?? false
         },
         removeToast: (state) => {
             state.message = '';
@@ -32,6 +28,6 @@ const toastSlice = createSlice({
     }
 });
 
-export const { addToast, removeToast, errorToast } = toastSlice.actions;
+export const { addToast, removeToast } = toastSlice.actions;
 
 export default toastSlice.reducer;
