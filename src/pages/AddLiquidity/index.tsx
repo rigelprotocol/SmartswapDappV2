@@ -19,6 +19,8 @@ import { useDerivedMintInfo, useMintState } from "../../state/mint/hooks";
 import { useWeb3React } from "@web3-react/core";
 import OutputCurrecy from "./AddLquidityInputs/OutputCurrecy";
 import InputCurrency from "./AddLquidityInputs/InputCurrency";
+import Joyride from 'react-joyride';
+import { tourSteps } from '../../components/Onboarding/AddLiquidityStep';
 import { useMintActionHandlers } from "../../state/mint/hooks";
 import {
   useIsPoolsAvailable,
@@ -48,7 +50,7 @@ import { useUserTransactionTTL } from '../../state/user/hooks';
 import { Currency } from '@uniswap/sdk';
 import { SmartSwapRouter } from '../../utils/Contracts';
 import { ethers } from 'ethers';
-import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
+import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 
 
 export default function AddLiquidity({
@@ -67,7 +69,9 @@ export default function AddLiquidity({
   const approveButtonColor = useColorModeValue('#FFFFFF', '#F1F5F8');
 
   const { independentField, typedValue, otherTypedValue } = useMintState();
-
+  const [loading, setLoading] = useState(false);
+  const [run, setRun] = useState(false)
+  const bgColorRide = useColorModeValue("#319EF6", "#4CAFFF");
   const { onCurrencySelection, onUserInput, onCurrencyFor } =
     useMintActionHandlers();
   const { currencies, getMaxValue, bestTrade, parsedAmount, showWrap } =
@@ -91,8 +95,6 @@ export default function AddLiquidity({
   const [userSlippageTolerance] = useUserSlippageTolerance();
   const [userDeadline] = useUserTransactionTTL();
 
-  console.log("P1", currencyIdA);
-  console.log("P2", currencyIdB);
 
   useEffect(() => {
     if (currencyIdA && currencyIdB) {
@@ -100,6 +102,19 @@ export default function AddLiquidity({
       onCurrencyFor(currencyIdB, Field.OUTPUT);
     }
   }, [currencyIdB, currencyIdA]);
+
+  function startWelcomeRide() {
+    setRun(true)
+  }
+  useEffect(() => {
+    const visits = window.localStorage.getItem('continueLiquidtyVisit');
+    if (!visits) {
+      window.localStorage.setItem('continueLiquidtyVisit', '1');
+
+    }
+    startWelcomeRide()
+  }, []);
+
 
   const { priceAToB, priceBToA } = usePricePerToken(
     currencies[Field.INPUT],
@@ -110,15 +125,15 @@ export default function AddLiquidity({
     () =>
       showWrap
         ? {
-            [Field.INPUT]: typedValue,
-            [Field.OUTPUT]: typedValue,
-          }
+          [Field.INPUT]: typedValue,
+          [Field.OUTPUT]: typedValue,
+        }
         : {
-            [Field.INPUT]:
-              independentField === Field.INPUT ? parsedAmount : bestTrade,
-            [Field.OUTPUT]:
-              independentField === Field.OUTPUT ? parsedAmount : bestTrade,
-          },
+          [Field.INPUT]:
+            independentField === Field.INPUT ? parsedAmount : bestTrade,
+          [Field.OUTPUT]:
+            independentField === Field.OUTPUT ? parsedAmount : bestTrade,
+        },
     [independentField, parsedAmount, showWrap, bestTrade, typedValue]
   );
 
@@ -127,8 +142,8 @@ export default function AddLiquidity({
     [dependentField]: !pairAvailable
       ? otherTypedValue
       : showWrap
-      ? parsedAmounts[independentField] ?? ""
-      : parsedAmounts[dependentField] ?? "",
+        ? parsedAmounts[independentField] ?? ""
+        : parsedAmounts[dependentField] ?? "",
   };
   const { priceAperB, priceBperA } = usePriceForNewPool(
     formattedAmounts[Field.INPUT],
@@ -245,9 +260,8 @@ export default function AddLiquidity({
       try {
         dispatch(
           setOpenModal({
-            message: `Supplying ${parseFloat(amountA).toFixed(6)} ${
-              currencyA.symbol
-            } and ${parseFloat(amountB).toFixed(6)} ${currencyB.symbol}`,
+            message: `Supplying ${parseFloat(amountA).toFixed(6)} ${currencyA.symbol
+              } and ${parseFloat(amountB).toFixed(6)} ${currencyB.symbol}`,
             trxState: TrxState.WaitingForConfirmation,
           })
         );
@@ -285,22 +299,22 @@ export default function AddLiquidity({
           currencyA.isNative ? AmountBMin : AmountAMin,
           currencyA.isNative
             ? calculateSlippageAmount(
-                AmountBMin,
-                pairAvailable ? userSlippageTolerance : 0
-              )
+              AmountBMin,
+              pairAvailable ? userSlippageTolerance : 0
+            )
             : calculateSlippageAmount(
-                AmountAMin,
-                pairAvailable ? userSlippageTolerance : 0
-              ),
+              AmountAMin,
+              pairAvailable ? userSlippageTolerance : 0
+            ),
           currencyA.isNative
             ? calculateSlippageAmount(
-                AmountAMin,
-                pairAvailable ? userSlippageTolerance : 0
-              )
+              AmountAMin,
+              pairAvailable ? userSlippageTolerance : 0
+            )
             : calculateSlippageAmount(
-                AmountBMin,
-                pairAvailable ? userSlippageTolerance : 0
-              ),
+              AmountBMin,
+              pairAvailable ? userSlippageTolerance : 0
+            ),
           account,
           deadLine,
           {
@@ -380,9 +394,8 @@ export default function AddLiquidity({
       try {
         dispatch(
           setOpenModal({
-            message: `Supplying ${parseFloat(amountA).toFixed(6)} ${
-              currencyA.symbol
-            } and ${parseFloat(amountB).toFixed(6)} ${currencyB.symbol}`,
+            message: `Supplying ${parseFloat(amountA).toFixed(6)} ${currencyA.symbol
+              } and ${parseFloat(amountB).toFixed(6)} ${currencyB.symbol}`,
             trxState: TrxState.WaitingForConfirmation,
           })
         );
@@ -502,16 +515,32 @@ export default function AddLiquidity({
   };
 
   const [isLoadingValue, setIsLoadingValue] = useState(false);
-  useEffect(() =>{
-    if (formattedAmounts[Field.INPUT] && !formattedAmounts[Field.OUTPUT]){
+  useEffect(() => {
+    if (formattedAmounts[Field.INPUT] && !formattedAmounts[Field.OUTPUT]) {
       setIsLoadingValue(true);
-    }else{
+    } else {
       setIsLoadingValue(false);
     }
   }, [formattedAmounts[Field.OUTPUT], formattedAmounts[Field.INPUT]]);
 
   return (
     <Center m={8}>
+      <Joyride
+        steps={tourSteps}
+        run={run}
+        continuous={true}
+        scrollToFirstStep={true}
+        showSkipButton={true}
+        styles={{
+          options: {
+            arrowColor: bgColorRide,
+            backgroundColor: bgColorRide,
+            textColor: '#FFFFFF',
+            primaryColor: bgColorRide
+          }
+        }}
+
+      />
       <Box
         maxW='496px'
         borderWidth='1px'
@@ -552,6 +581,7 @@ export default function AddLiquidity({
           pt={2}
           pb={2}
           borderColor={genBorder}
+          className="AddLiquidity"
         >
           <InputCurrency
             onUserInput={handleTypeInput}
@@ -584,6 +614,7 @@ export default function AddLiquidity({
           pt={2}
           pb={2}
           borderColor={genBorder}
+          className="AddLiquidity2"
         >
           <OutputCurrecy
             onCurrencySelection={onCurrencySelection}
@@ -611,8 +642,8 @@ export default function AddLiquidity({
                 {priceBToA && pairAvailable
                   ? parseFloat(priceBToA).toFixed(6)
                   : !pairAvailable && priceBperA
-                  ? priceBperA
-                  : "-"}
+                    ? priceBperA
+                    : "-"}
               </Text>
               <Text color={topIcons}>
                 {currencies[Field.INPUT]?.symbol} per{" "}
@@ -625,8 +656,8 @@ export default function AddLiquidity({
                 {priceAToB && pairAvailable
                   ? parseFloat(priceAToB).toFixed(6)
                   : priceAperB && !pairAvailable
-                  ? priceAperB
-                  : "-"}
+                    ? priceAperB
+                    : "-"}
               </Text>
               <Text color={topIcons}>
                 {currencies[Field.OUTPUT]?.symbol} per{" "}
@@ -637,14 +668,14 @@ export default function AddLiquidity({
             <VStack>
               <Text color={textColorOne}>
                 {!pairAvailable &&
-                formattedAmounts[Field.INPUT] &&
-                formattedAmounts[Field.OUTPUT]
+                  formattedAmounts[Field.INPUT] &&
+                  formattedAmounts[Field.OUTPUT]
                   ? "100%"
                   : poolShare &&
                     formattedAmounts[Field.INPUT] &&
                     formattedAmounts[Field.OUTPUT]
-                  ? `${parseFloat(poolShare).toFixed(6)}% `
-                  : "-"}
+                    ? `${parseFloat(poolShare).toFixed(6)}% `
+                    : "-"}
               </Text>
               <Text color={topIcons}>Share of Pool</Text>
             </VStack>
@@ -662,15 +693,15 @@ export default function AddLiquidity({
           _active={{ bgColor: "none" }}
           display={
             formattedAmounts[Field.INPUT] &&
-            formattedAmounts[Field.OUTPUT] &&
-            !hasTokenABeenApproved
+              formattedAmounts[Field.OUTPUT] &&
+              !hasTokenABeenApproved
               ? undefined
               : parseFloat(formattedAmounts[Field.INPUT]) >
-                  parseFloat(balanceA) ||
+                parseFloat(balanceA) ||
                 parseFloat(formattedAmounts[Field.OUTPUT]) >
-                  parseFloat(balanceB)
-              ? "none"
-              : "none"
+                parseFloat(balanceB)
+                ? "none"
+                : "none"
           }
           onClick={() =>
             approveTokens(
@@ -693,15 +724,15 @@ export default function AddLiquidity({
           _active={{ bgColor: "none" }}
           display={
             formattedAmounts[Field.INPUT] &&
-            formattedAmounts[Field.OUTPUT] &&
-            !hasTokenBBeenApproved
+              formattedAmounts[Field.OUTPUT] &&
+              !hasTokenBBeenApproved
               ? undefined
               : parseFloat(formattedAmounts[Field.INPUT]) >
-                  parseFloat(balanceA) ||
+                parseFloat(balanceA) ||
                 parseFloat(formattedAmounts[Field.OUTPUT]) >
-                  parseFloat(balanceB)
-              ? "none"
-              : "none"
+                parseFloat(balanceB)
+                ? "none"
+                : "none"
           }
           onClick={() =>
             approveTokens(
@@ -712,7 +743,7 @@ export default function AddLiquidity({
         >
           {`Approve ${currencies[Field.OUTPUT]?.symbol}`}
         </Button>
-        { isLoadingValue ? (
+        {isLoadingValue ? (
           <Button
             size="lg"
             height="48px"
@@ -720,6 +751,7 @@ export default function AddLiquidity({
             border="2px"
             borderColor={genBorder}
             color={btnTextColor}
+            className="AddLiquidity3"
             w="100%"
             _hover={{ bgColor: 'none' }}
             _active={{ bgColor: 'none' }}
@@ -733,6 +765,7 @@ export default function AddLiquidity({
             height="48px"
             width="200px"
             border="2px"
+            className="AddLiquidity3"
             borderColor={genBorder}
             color={btnTextColor}
             w="100%"
@@ -765,33 +798,33 @@ export default function AddLiquidity({
           }
           border={
             formattedAmounts[Field.INPUT] &&
-            formattedAmounts[Field.OUTPUT] &&
-            hasTokenABeenApproved &&
-            hasTokenBBeenApproved
+              formattedAmounts[Field.OUTPUT] &&
+              hasTokenABeenApproved &&
+              hasTokenBBeenApproved
               ? ""
               : "2px"
           }
           borderColor={
             formattedAmounts[Field.INPUT] &&
-            formattedAmounts[Field.OUTPUT] &&
-            hasTokenABeenApproved &&
-            hasTokenBBeenApproved
+              formattedAmounts[Field.OUTPUT] &&
+              hasTokenABeenApproved &&
+              hasTokenBBeenApproved
               ? ""
               : genBorder
           }
           bgColor={
             formattedAmounts[Field.INPUT] &&
-            formattedAmounts[Field.OUTPUT] &&
-            hasTokenABeenApproved &&
-            hasTokenBBeenApproved
+              formattedAmounts[Field.OUTPUT] &&
+              hasTokenABeenApproved &&
+              hasTokenBBeenApproved
               ? approveButtonBgColor
               : ""
           }
           color={
             formattedAmounts[Field.OUTPUT] &&
-            formattedAmounts[Field.INPUT] &&
-            hasTokenABeenApproved &&
-            hasTokenBBeenApproved
+              formattedAmounts[Field.INPUT] &&
+              hasTokenABeenApproved &&
+              hasTokenBBeenApproved
               ? approveButtonColor
               : btnTextColor
           }
@@ -804,12 +837,11 @@ export default function AddLiquidity({
           }}
         >
           {parseFloat(formattedAmounts[Field.INPUT]) > parseFloat(balanceA) ||
-          parseFloat(formattedAmounts[Field.OUTPUT]) > parseFloat(balanceB)
-            ? ` Insufficient ${
-                parseFloat(formattedAmounts[Field.INPUT]) > parseFloat(balanceA)
-                  ? currencies[Field.INPUT]?.symbol
-                  : currencies[Field.OUTPUT]?.symbol
-              } balance`
+            parseFloat(formattedAmounts[Field.OUTPUT]) > parseFloat(balanceB)
+            ? ` Insufficient ${parseFloat(formattedAmounts[Field.INPUT]) > parseFloat(balanceA)
+              ? currencies[Field.INPUT]?.symbol
+              : currencies[Field.OUTPUT]?.symbol
+            } balance`
             : "Confirm Liquidity Add"}
         </Button>
         <ConfirmModal

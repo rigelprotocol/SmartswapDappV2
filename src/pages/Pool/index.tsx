@@ -13,6 +13,9 @@ import { useColorModeValue } from '@chakra-ui/react';
 import { useGetUserLiquidities } from '../../utils/hooks/usePools';
 import { Link } from 'react-router-dom';
 import TransactionSettings from '../../components/TransactionSettings';
+import Joyride from 'react-joyride';
+import { tourSteps } from '../../components/Onboarding/LiquiditySteps';
+import WelcomeModal from '../../components/Onboarding/WelcomeModal';
 
 const Index = () => {
   const mode = useColorModeValue('light', 'dark');
@@ -20,6 +23,9 @@ const Index = () => {
   const [liquidities, setLiquidities] = useState<any[] | undefined>([]);
   const [liquidityLength, setLiquidityLength] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [welcomeModal, setWelcomeModal] = useState(true); //false
+  const [run, setRun] = useState(false)
+  const bgColor = useColorModeValue("#319EF6", "#4CAFFF");
 
   useEffect(() => {
     let cancel = false;
@@ -40,9 +46,37 @@ const Index = () => {
       cancel = true;
     };
   }, [factory]);
+  useEffect(() => {
+    const visits = window.localStorage.getItem('firstLiquidtyVisit');
+    if (!visits) {
+      setWelcomeModal(true);
+      window.localStorage.setItem('firstLiquidtyVisit', '1');
+    }
+  }, []);
+
+  function startWelcomeRide() {
+    setRun(true)
+  }
 
   return (
     <>
+      <Joyride
+        steps={tourSteps}
+        run={run}
+        continuous={true}
+        scrollToFirstStep={true}
+        showSkipButton={true}
+        styles={{
+          options: {
+            arrowColor: bgColor,
+            backgroundColor: bgColor,
+            textColor: '#FFFFFF',
+            primaryColor: bgColor
+          }
+        }}
+
+      />
+      <WelcomeModal startToure={startWelcomeRide} openModal={welcomeModal} closeModal={() => setWelcomeModal((state) => !state)} welcomeText="With liquidity, you have the option of earning more by depositing tokens to join liquidity pools and receive LP tokens." />
       <Flex
         mx={5}
         justifyContent="center"
@@ -50,7 +84,7 @@ const Index = () => {
         flexDirection="column"
         minHeight="70vh"
         rounded="lg"
-        mb={["110px","110px","4"]}
+        mb={["110px", "110px", "4"]}
       >
         <Box
           minHeight="100%"
@@ -69,6 +103,7 @@ const Index = () => {
                 <Text
                   fontSize="16px"
                   color={mode === 'dark' ? '#F1F5F8' : 'rgba(51, 51, 51, 1)'}
+                  className="Liquidity"
                 >
                   Liquidity
                 </Text>
@@ -99,6 +134,7 @@ const Index = () => {
                   d="block"
                   w={['100%', '100%', '100%', '100%']}
                   marginTop={['20px', '0px', '20px', '0px']}
+                  className="AddLiquidity"
                   h="50px"
                   my={4}
                   border="none"
@@ -131,13 +167,14 @@ const Index = () => {
                   borderRadius="6px"
                   bg="transparent"
                   border=" 2px solid #319EF6"
+                  className='CreatePair'
                 >
                   Create a pair
                 </Button>
               </Link>
             </Flex>
 
-            <Flex justifyContent="center" mx={5} my={4}>
+            <Flex justifyContent="center" mx={5} my={4} className="importPools">
               <Text
                 fontSize="sm"
                 color={mode === 'dark' ? '#DCE5EF' : '#666666'}
@@ -145,7 +182,7 @@ const Index = () => {
                 Dont see a pool you joined?
               </Text>
               <Text fontSize="sm" color="blue.300" ml={3} cursor="pointer">
-              <Link to="/find"> Import it  </Link>
+                <Link to="/find"> Import it  </Link>
               </Text>
             </Flex>
           </Box>
@@ -155,6 +192,7 @@ const Index = () => {
             borderRadius="6px"
             my={4}
             w="100%"
+            className='LiquidityPosition'
           >
             <Flex
               mx={5}
