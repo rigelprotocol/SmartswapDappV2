@@ -33,6 +33,7 @@ import {
   isNative,
   formatAmountIn,
   getOutPutDataFromEvent,
+  getDecimals,
 } from "../../utils/utilsFunctions";
 import { ethers } from "ethers";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
@@ -152,12 +153,15 @@ const Remove = () => {
         SMARTSWAPROUTER[chainId as number],
         library
       );
-      const Liquidity = formatAmountIn(valuesToBeRemoved[2], 18);
-      const amountAMin = formatAmountIn(valuesToBeRemoved[0], tokenADecimals);
-      const amountBMin = formatAmountIn(valuesToBeRemoved[1], tokenBDecimals);
+      // const Liquidity = formatAmountIn(valuesToBeRemoved[2], 18);
+      // const amountAMin = formatAmountIn(valuesToBeRemoved[0], tokenADecimals);
+      // const amountBMin = formatAmountIn(valuesToBeRemoved[1], tokenBDecimals);
 
-      const formatAmountAMin = ethers.utils.formatEther(AmountAMin);
-      const formatAmountBMin = ethers.utils.formatEther(AmountBMin);
+      const decimalA = await getDecimals(params.currencyIdA, library);
+      const decimalB = await getDecimals(params.currencyIdB, library);
+
+      const formatAmountAMin = ethers.utils.formatUnits(AmountAMin, decimalA);
+      const formatAmountBMin = ethers.utils.formatUnits(AmountBMin, decimalB);
 
       const deadLine = getDeadline(userDeadline);
       try {
@@ -283,9 +287,11 @@ const Remove = () => {
         library
       );
       // const liquidity = formatAmountIn(Liquidity, 18);
+      const decimalA = await getDecimals(params.currencyIdA, library);
+      const decimalB = await getDecimals(params.currencyIdB, library);
 
-      const formatAmountAMin = ethers.utils.formatEther(AmountAMin);
-      const formatAmountBMin = ethers.utils.formatEther(AmountBMin);
+      const formatAmountAMin = ethers.utils.formatUnits(AmountAMin, decimalA);
+      const formatAmountBMin = ethers.utils.formatUnits(AmountBMin, decimalB);
 
       // const AmountAMin = formatAmountIn(amountAMin, tokenADecimals);
 
