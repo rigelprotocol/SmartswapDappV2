@@ -99,20 +99,10 @@ export const useMint = (
               tokenOneAddress === token0 ? reserves[1] : reserves[0]
             );
 
-            const dependentAddress =
-              tokenOneAddress ===
-              getNativeAddress(
-                independentFieldId[independentFieldString].currencyId
-              )
-                ? tokenTwoAddress
-                : tokenOneAddress;
-
-            const decimals = await getDecimals(
-              dependentAddress as string,
-              library
+            const output = formatAmount(
+              outputAmount.toString(),
+              currencyB.decimals
             );
-
-            const output = formatAmount(outputAmount.toString(), decimals);
 
             setAmount(output);
           } else {

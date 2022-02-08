@@ -1,7 +1,7 @@
 /** @format */
 
-import React, {useEffect, useState} from "react";
-import {Box, Flex, Text} from "@chakra-ui/layout";
+import React, { useEffect, useState } from "react";
+import { Box, Flex, Text } from "@chakra-ui/layout";
 import {
   Alert,
   AlertDescription,
@@ -18,15 +18,20 @@ import {
   useColorModeValue,
   useMediaQuery,
 } from "@chakra-ui/react";
-import {useHistory, useRouteMatch} from "react-router-dom";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import YieldFarm from "./YieldFarm";
-import {AlertSvg} from "./Icon";
+import { AlertSvg } from "./Icon";
 
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import bigNumber from "bignumber.js";
-import {ethers} from "ethers";
-import {updateFarmBalances, updatePoolId, updateTokenStaked, updateTotalLiquidity,} from "../../state/farm/actions";
-import {useFarms} from "../../state/farm/hooks";
+import { ethers } from "ethers";
+import {
+  updateFarmBalances,
+  updatePoolId,
+  updateTokenStaked,
+  updateTotalLiquidity,
+} from "../../state/farm/actions";
+import { useFarms } from "../../state/farm/hooks";
 import {
   MasterChefV2Contract,
   RGPSpecialPool,
@@ -51,11 +56,11 @@ import {
   SMARTSWAPLP_TOKEN4ADDRESSES,
   SMARTSWAPLP_TOKEN5ADDRESSES,
 } from "../../utils/addresses";
-import {formatBigNumber} from "../../utils";
-import {RootState} from "../../state";
-import {SupportedChainId} from "../../constants/chains";
-import {useNativeBalance} from "../../utils/hooks/useBalances";
-import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
+import { formatBigNumber } from "../../utils";
+import { RootState } from "../../state";
+import { SupportedChainId } from "../../constants/chains";
+import { useNativeBalance } from "../../utils/hooks/useBalances";
+import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 
 export const BIG_TEN = new bigNumber(10);
 
@@ -111,6 +116,16 @@ export function Index() {
   let match = useRouteMatch("/farming-V2/staking-RGP");
   const FarmData = useFarms();
 
+  console.log("Farm data", FarmData);
+
+  console.log(chainId);
+
+  console.log(
+    FarmData.contents.map((content, index) => {
+      console.log(index !== 0 && index < 4);
+    })
+  );
+
   const [Balance, Symbol] = useNativeBalance();
   const wallet = {
     balance: Balance,
@@ -141,7 +156,6 @@ export function Index() {
   useEffect(() => {
     refreshData();
   }, []);
-
 
   useEffect(() => {
     if (match) setSelected(STAKING);
@@ -181,8 +195,9 @@ export function Index() {
   const showProject = () => {
     changeVersion(
       "https://docs.google.com/forms/d/e/1FAIpQLSdJGAuABrJd6d0WSprUWB140we9hGqa-IwIbonx9ZJhxN2zsg/viewform",
-      true);
-  }
+      true
+    );
+  };
 
   const handleAlert = () => {
     setShowAlert(false);
@@ -235,32 +250,83 @@ export function Index() {
             ])
           );
           dispatch(updatePoolId([0, 1, 2, 3]));
-        } else {
-          const [RGPToken, poolOne, poolTwo, poolThree, poolFour, poolFive, RGPToken2] =
+        } else if (Number(chainId) === Number(SupportedChainId.OASISTEST)) {
+          const [RGPToken, poolOne, poolTwo, poolThree] = await Promise.all([
+            rigelToken(RGP[chainId as number], library),
+            smartSwapLPTokenPoolOne(
+              SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
+              library
+            ),
+            smartSwapLPTokenPoolTwo(
+              SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
+              library
+            ),
+            smartSwapLPTokenPoolThree(
+              SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
+              library
+            ),
+            // smartSwapLPTokenV2PoolFour(
+            //   SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number],
+            //   library
+            // ),
+            // smartSwapLPTokenV2PoolFive(
+            //   SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
+            //   library
+            // ),
+          ]);
+
+          const [RGPbalance, poolOneBalance, poolTwoBalance, poolThreeBalance] =
             await Promise.all([
-              rigelToken(RGP[chainId as number], library),
-              smartSwapLPTokenPoolOne(
-                SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
-                library
-              ),
-              smartSwapLPTokenPoolTwo(
-                SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
-                library
-              ),
-              smartSwapLPTokenPoolThree(
-                SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
-                library
-              ),
-              smartSwapLPTokenV2PoolFour(
-                SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number],
-                library
-              ),
-              smartSwapLPTokenV2PoolFive(
-                SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
-                library
-              ),
-              rigelToken(RGP[chainId as number], library),
+              RGPToken.balanceOf(account),
+              poolOne.balanceOf(account),
+              poolTwo.balanceOf(account),
+              poolThree.balanceOf(account),
             ]);
+
+          dispatch(
+            updateFarmBalances([
+              formatBigNumber(RGPbalance),
+              formatBigNumber(poolOneBalance),
+              formatBigNumber(poolTwoBalance),
+              formatBigNumber(poolThreeBalance),
+              // formatBigNumber(poolFourBalance),
+              // formatBigNumber(poolFiveBalance),
+            ])
+          );
+          dispatch(updatePoolId([0, 1, 2, 3]));
+        } else {
+          const [
+            RGPToken,
+            poolOne,
+            poolTwo,
+            poolThree,
+            poolFour,
+            poolFive,
+            RGPToken2,
+          ] = await Promise.all([
+            rigelToken(RGP[chainId as number], library),
+            smartSwapLPTokenPoolOne(
+              SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
+              library
+            ),
+            smartSwapLPTokenPoolTwo(
+              SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
+              library
+            ),
+            smartSwapLPTokenPoolThree(
+              SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
+              library
+            ),
+            smartSwapLPTokenV2PoolFour(
+              SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number],
+              library
+            ),
+            smartSwapLPTokenV2PoolFive(
+              SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
+              library
+            ),
+            rigelToken(RGP[chainId as number], library),
+          ]);
 
           const [
             RGPbalance,
@@ -311,6 +377,9 @@ export function Index() {
         ).symbol();
         if (sym0 === "WMATIC") sym0 = "MATIC";
         if (sym1 === "WMATIC") sym1 = "MATIC";
+        if (sym0 === "WROSE") sym0 = "ROSE";
+        if (sym1 === "WROSE") sym1 = "ROSE";
+
         return `${sym0}-${sym1}`;
       };
 
@@ -438,8 +507,10 @@ export function Index() {
             },
           ])
         );
-      }
-      else if (Number(chainId) === Number(SupportedChainId.POLYGON || SupportedChainId.POLYGONTEST)) {
+      } else if (
+        Number(chainId) ===
+        Number(SupportedChainId.POLYGON || SupportedChainId.POLYGONTEST)
+      ) {
         const [pool1, pool2, pool3] = await Promise.all([
           // RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
           smartSwapLPTokenPoolOne(
@@ -454,12 +525,6 @@ export function Index() {
             SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
             library
           ),
-          // smartSwapLPTokenV2PoolFour(
-          //   SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number], library
-          // ),
-          // smartSwapLPTokenV2PoolFive(
-          //   SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number], library
-          // ),
         ]);
 
         const [
@@ -501,22 +566,6 @@ export function Index() {
         const USDC_RGPLiq = totalRGP3 * rgpPrice * 2;
         // const USDT_RGPLiquidity = ethers.utils.formatUnits(
         console.log({ rgpPrice });
-        //   pool2Reserve[1].div(1000).mul(2),
-        //   3
-        // );
-
-        // const RGP_USDCLiquidity = ethers.utils.formatUnits(
-        //   pool3Reserve[0].div(1000).mul(2),
-        //   3
-        // );
-
-        // const USDT_WMATICLiquidity = ethers.utils
-        //   .formatEther(pool4Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
-        //   .toString();
-
-        // const WMATIC_USDCLiquidity = ethers.utils
-        //   .formatEther(pool5Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
-        //   .toString();
 
         dispatch(
           updateTotalLiquidity([
@@ -540,16 +589,88 @@ export function Index() {
               liquidity: USDC_RGPLiq,
               apy: calculateApy(rgpPrice, USDC_RGPLiq, 1050),
             },
-            // {
-            //   deposit: "USDT - MATIC", // await deposit(pool4.token0, pool4.token1),
-            //   liquidity: 0, //USDT_WMATICLiquidity,
-            //   apy: "0" // calculateApy(MRGPprice, USDT_WMATICLiquidity, 334.875),
-            // },
-            // {
-            //   deposit: "MATIC - USDC", // await deposit(pool5.token0, pool5.token1),
-            //   liquidity: 0, //WMATIC_USDCLiquidity,
-            //   apy: "0" // calculateApy(MRGPprice, WMATIC_USDCLiquidity, 334.875),
-            // },
+          ])
+        );
+      } else if (Number(chainId) === Number(SupportedChainId.OASISTEST)) {
+        console.log("got here");
+        const [pool1, pool2, pool3] = await Promise.all([
+          // RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
+          smartSwapLPTokenPoolOne(
+            SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
+            library
+          ),
+          smartSwapLPTokenPoolTwo(
+            SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
+            library
+          ),
+          smartSwapLPTokenPoolThree(
+            SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
+            library
+          ),
+        ]);
+
+        const [
+          // rgpTotalStaking,
+          pool1Reserve,
+          pool2Reserve,
+          pool3Reserve,
+          // pool4Reserve,
+          // pool5Reserve,
+        ] = await Promise.all([
+          // await specialPool.totalStaking(),
+          pool1.getReserves(),
+          pool2.getReserves(),
+          pool3.getReserves(),
+          // pool4.getReserves(),
+          // pool5.getReserves(),
+        ]);
+
+        const totalUSDT2: number | any = ethers.utils.formatUnits(
+          pool2Reserve[1],
+          6
+        );
+        const totalRGP2: number | any = ethers.utils.formatUnits(
+          pool2Reserve[0],
+          18
+        );
+        const totalRGP1: number | any = ethers.utils.formatUnits(
+          pool1Reserve[0],
+          18
+        );
+        const totalUSDT3: number | any = ethers.utils.formatUnits(
+          pool3Reserve[1],
+          6
+        );
+        const rgpPrice = totalUSDT2 / totalRGP2;
+        const RGP_USDTLiq = totalUSDT2 * 2;
+        console.log(RGP_USDTLiq);
+        const RGP_WROSELiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
+        const USDT_WROSELiquidity = totalUSDT3 * 2;
+        // const USDT_RGPLiquidity = ethers.utils.formatUnits(
+        console.log({ rgpPrice });
+
+        dispatch(
+          updateTotalLiquidity([
+            {
+              deposit: "RGP",
+              liquidity: "0",
+              apy: "0",
+            },
+            {
+              deposit: await deposit(pool1.token0, pool1.token1),
+              liquidity: RGP_WROSELiquidity,
+              apy: calculateApy(rgpPrice, RGP_WROSELiquidity, 1200),
+            },
+            {
+              deposit: await deposit(pool2.token0, pool2.token1),
+              liquidity: RGP_USDTLiq,
+              apy: calculateApy(rgpPrice, RGP_USDTLiq, 700),
+            },
+            {
+              deposit: await deposit(pool3.token0, pool3.token1), //await deposit(pool3.token0, pool3.token1),
+              liquidity: USDT_WROSELiquidity,
+              apy: calculateApy(rgpPrice, USDT_WROSELiquidity, 100),
+            },
           ])
         );
       } else {
@@ -576,7 +697,10 @@ export function Index() {
               SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
               library
             ),
-            RGPSpecialPool2(RGPSPECIALPOOLADDRESSES2[chainId as number], library),
+            RGPSpecialPool2(
+              RGPSPECIALPOOLADDRESSES2[chainId as number],
+              library
+            ),
           ]);
 
         const [
@@ -594,7 +718,7 @@ export function Index() {
           pool3.getReserves(),
           pool4.getReserves(),
           pool5.getReserves(),
-          await specialPool2.totalStaking()
+          await specialPool2.totalStaking(),
         ]);
         const RGPprice: number | any = ethers.utils.formatUnits(
           pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
@@ -712,7 +836,113 @@ export function Index() {
 
   const getTokenStaked = async () => {
     try {
-      if (account && Number(chainId) !== Number(SupportedChainId.POLYGON)) {
+      if (account && Number(chainId) === Number(SupportedChainId.POLYGON)) {
+        const masterChefV2 = await MasterChefV2Contract(
+          MASTERCHEFV2ADDRESSES[chainId as number],
+          library
+        );
+        const [
+          poolOneEarned,
+          poolTwoEarned,
+          poolThreeEarned,
+          // poolFourEarned,
+          // poolFiveEarned,
+          poolOneStaked,
+          poolTwoStaked,
+          poolThreeStaked,
+          // poolFourStaked,
+          // poolFiveStaked,
+        ] = await Promise.all([
+          masterChefV2.pendingRigel(1, account),
+          masterChefV2.pendingRigel(2, account),
+          masterChefV2.pendingRigel(3, account),
+          // masterChefV2.pendingRigel(4, account),
+          // masterChefV2.pendingRigel(5, account),
+          masterChefV2.userInfo(1, account),
+          masterChefV2.userInfo(2, account),
+          masterChefV2.userInfo(3, account),
+          // masterChefV2.userInfo(4, account),
+          // masterChefV2.userInfo(5, account),
+        ]);
+
+        dispatch(
+          updateTokenStaked([
+            { staked: 0, earned: 0 },
+            {
+              staked: formatBigNumber(poolOneStaked.amount),
+              earned: formatBigNumber(poolOneEarned),
+            },
+            {
+              staked: formatBigNumber(poolTwoStaked.amount),
+              earned: formatBigNumber(poolTwoEarned),
+            },
+            {
+              staked: formatBigNumber(poolThreeStaked.amount),
+              earned: formatBigNumber(poolThreeEarned),
+            },
+          ])
+        );
+
+        setInitialLoad(false);
+      } else if (
+        account &&
+        Number(chainId) === Number(SupportedChainId.OASISTEST)
+      ) {
+        console.log("got into oasis");
+        const masterChefV2 = await MasterChefV2Contract(
+          MASTERCHEFV2ADDRESSES[chainId as number],
+          library
+        );
+        const [
+          poolOneEarned,
+          poolTwoEarned,
+          poolThreeEarned,
+          // poolFourEarned,
+          // poolFiveEarned,
+          poolOneStaked,
+          poolTwoStaked,
+          poolThreeStaked,
+          // poolFourStaked,
+          // poolFiveStaked,
+        ] = await Promise.all([
+          masterChefV2.pendingRigel(1, account),
+          masterChefV2.pendingRigel(2, account),
+          masterChefV2.pendingRigel(3, account),
+          // masterChefV2.pendingRigel(4, account),
+          // masterChefV2.pendingRigel(5, account),
+          masterChefV2.userInfo(1, account),
+          masterChefV2.userInfo(2, account),
+          masterChefV2.userInfo(3, account),
+          // masterChefV2.userInfo(4, account),
+          // masterChefV2.userInfo(5, account),
+        ]);
+
+        console.log("poolOneStaked", poolOneStaked);
+
+        dispatch(
+          updateTokenStaked([
+            { staked: 0, earned: 0 },
+            {
+              staked: formatBigNumber(poolOneStaked.amount),
+              earned: formatBigNumber(poolOneEarned),
+            },
+            {
+              staked: formatBigNumber(poolTwoStaked.amount),
+              earned: formatBigNumber(poolTwoEarned),
+            },
+            {
+              staked: formatBigNumber(poolThreeStaked.amount),
+              earned: formatBigNumber(poolThreeEarned),
+            },
+          ])
+        );
+
+        setInitialLoad(false);
+      } else if (
+        account &&
+        Number(chainId) !== Number(SupportedChainId.POLYGON)
+      ) {
+        console.log("got into first one2");
         const masterChefV2 = await MasterChefV2Contract(
           MASTERCHEFV2ADDRESSES[chainId as number],
           library
@@ -802,80 +1032,6 @@ export function Index() {
 
         setInitialLoad(false);
       }
-      if (account && Number(chainId) === Number(SupportedChainId.POLYGON)) {
-        const masterChefV2 = await MasterChefV2Contract(
-          MASTERCHEFV2ADDRESSES[chainId as number],
-          library
-        );
-        const [
-          poolOneEarned,
-          poolTwoEarned,
-          poolThreeEarned,
-          // poolFourEarned,
-          // poolFiveEarned,
-          poolOneStaked,
-          poolTwoStaked,
-          poolThreeStaked,
-          // poolFourStaked,
-          // poolFiveStaked,
-        ] = await Promise.all([
-          masterChefV2.pendingRigel(1, account),
-          masterChefV2.pendingRigel(2, account),
-          masterChefV2.pendingRigel(3, account),
-          // masterChefV2.pendingRigel(4, account),
-          // masterChefV2.pendingRigel(5, account),
-          masterChefV2.userInfo(1, account),
-          masterChefV2.userInfo(2, account),
-          masterChefV2.userInfo(3, account),
-          // masterChefV2.userInfo(4, account),
-          // masterChefV2.userInfo(5, account),
-        ]);
-
-        //console.log("poolFourStaked", poolFourStaked)
-        // const RGPStakedEarned = await specialPoolStaked();
-        // let RGPStaked;
-        // let RGPEarned;
-
-        // console.log("EARRNED", RGPStakedEarned)
-
-        // if (RGPStakedEarned) {
-        // const [specialPoolStaked, specialPoolEarned] = await RGPStakedEarned;
-
-        // RGPStaked = formatBigNumber(specialPoolStaked.tokenQuantity);
-        // RGPEarned = formatBigNumber(specialPoolEarned);
-        // } else {
-        // RGPStaked = 0;
-        // RGPEarned = 0;
-        // }
-
-        dispatch(
-          updateTokenStaked([
-            { staked: 0, earned: 0 },
-            {
-              staked: formatBigNumber(poolOneStaked.amount),
-              earned: formatBigNumber(poolOneEarned),
-            },
-            {
-              staked: formatBigNumber(poolTwoStaked.amount),
-              earned: formatBigNumber(poolTwoEarned),
-            },
-            {
-              staked: formatBigNumber(poolThreeStaked.amount),
-              earned: formatBigNumber(poolThreeEarned),
-            },
-            // {
-            //   staked: formatBigNumber(poolFourStaked.amount),
-            //   earned: formatBigNumber(poolFourEarned),
-            // },
-            // {
-            //   staked: formatBigNumber(poolFiveStaked.amount),
-            //   earned: formatBigNumber(poolFiveEarned),
-            // },
-          ])
-        );
-
-        setInitialLoad(false);
-      }
     } catch (error) {
       console.error(error, "getTokenStaked =>Farming v2");
     }
@@ -938,33 +1094,33 @@ export function Index() {
       {(chainId && library) || !showAlert ? null : (
         <Box mx={[5, 10, 15, 20]} my={4}>
           <Alert
-            color="#FFFFFF"
+            color='#FFFFFF'
             background={mode === DARK_THEME ? "#319EF6" : "#319EF6"}
-            borderRadius="8px"
+            borderRadius='8px'
           >
             <AlertSvg />
             <AlertDescription
-              fontFamily="Inter"
+              fontFamily='Inter'
               fontSize={{ base: "16px", md: "18px", lg: "20px" }}
-              fontWeight="500"
-              lineHeight="24px"
-              letterSpacing="0em"
-              textAlign="left"
-              padding="10px"
+              fontWeight='500'
+              lineHeight='24px'
+              letterSpacing='0em'
+              textAlign='left'
+              padding='10px'
             >
               This is the V2 Farm. You should migrate your stakings from V1
               Farm.
             </AlertDescription>
 
             <CloseButton
-              position="absolute"
-              margin="2px"
-              height="14px"
-              width="14px"
-              background="#319EF6"
-              color="#fff"
-              right="20px"
-              textAign="center"
+              position='absolute'
+              margin='2px'
+              height='14px'
+              width='14px'
+              background='#319EF6'
+              color='#fff'
+              right='20px'
+              textAign='center'
               onClick={handleAlert}
             />
           </Alert>
@@ -995,23 +1151,22 @@ export function Index() {
         index={tabIndex}
         onChange={handleTabsChange}
         // isManual
-        variant="enclosed"
+        variant='enclosed'
         mx={[5, 10, 15, 20]}
         my={4}
         isFitted={isMobileDevice ? true : false}
       >
-
         <TabList borderBottom={0}>
           <Tab
             isDisabled={switchTab}
-            display="flex"
-            flex-direction="row"
-            justify-content="center"
-            align-items="center"
+            display='flex'
+            flex-direction='row'
+            justify-content='center'
+            align-items='center'
             flexWrap={isMobileDevice ? "wrap" : undefined}
-            padding="4px 12px"
-            border="1px solid #DEE5ED !important"
-            borderRadius="10px 0px 0px 10px"
+            padding='4px 12px'
+            border='1px solid #DEE5ED !important'
+            borderRadius='10px 0px 0px 10px'
             background={
               mode === LIGHT_THEME && selected === STAKING
                 ? "#FFFFFF !important"
@@ -1053,7 +1208,7 @@ export function Index() {
                   : "#333333"
               }
               fontSize={isMobileDevice ? "14px" : undefined}
-              mt="2"
+              mt='2'
             >
               Liquidity Pools
             </Text>
@@ -1083,16 +1238,16 @@ export function Index() {
                 }
                 onChange={handleLiquidityTab}
                 background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
-                cursor="pointer"
-                border=" 1px solid #008DFF"
-                box-sizing="border-box"
-                borderRadius="50px"
+                cursor='pointer'
+                border=' 1px solid #008DFF'
+                box-sizing='border-box'
+                borderRadius='50px'
                 /* Inside auto layout */
                 width={isMobileDevice ? undefined : "fit-content"}
-                flex="none"
-                order="1"
-                flex-grow="0"
-                margin="10px 16px"
+                flex='none'
+                order='1'
+                flex-grow='0'
+                margin='10px 16px'
               >
                 <option value={0}>V2</option>
                 <option value={3}>V1</option>
@@ -1103,14 +1258,14 @@ export function Index() {
             isDisabled={
               !switchTab || Number(chainId) === Number(SupportedChainId.POLYGON)
             }
-            display="flex"
-            flex-direction="row"
-            justify-content="center"
-            align-items="center"
+            display='flex'
+            flex-direction='row'
+            justify-content='center'
+            align-items='center'
             flexWrap={isMobileDevice ? "wrap" : undefined}
-            padding="4px 12px"
-            borderRadius="0px 0px 0px 0px"
-            border="1px solid #DEE5ED"
+            padding='4px 12px'
+            borderRadius='0px 0px 0px 0px'
+            border='1px solid #DEE5ED'
             background={
               mode === LIGHT_THEME && selected === LIQUIDITY
                 ? "#FFFFFF !important"
@@ -1163,7 +1318,7 @@ export function Index() {
                     ? "#F2F5F8 !important"
                     : "#F2F5F8 !important"
                 }
-                cursor="pointer"
+                cursor='pointer'
                 color={
                   mode === LIGHT_THEME && selected === LIQUIDITY
                     ? "#333333"
@@ -1179,15 +1334,15 @@ export function Index() {
                 background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
                 /* Dark Mode / Blue / 1 */
 
-                border=" 1px solid #008DFF"
-                box-sizing="border-box"
-                borderRadius="50px"
+                border=' 1px solid #008DFF'
+                box-sizing='border-box'
+                borderRadius='50px'
                 /* Inside auto layout */
                 width={isMobileDevice ? undefined : "fit-content"}
-                flex="none"
-                order="1"
-                flex-grow="0"
-                margin="10px 16px"
+                flex='none'
+                order='1'
+                flex-grow='0'
+                margin='10px 16px'
               >
                 <option value={1}>V1</option>
                 <option value={5}>V2</option>
@@ -1196,8 +1351,8 @@ export function Index() {
           </Tab>
           <Tab
             isDisabled={true}
-            borderRadius="0px 10px 10px 0px"
-            border="1px solid #DEE5ED"
+            borderRadius='0px 10px 10px 0px'
+            border='1px solid #DEE5ED'
             background={
               mode === LIGHT_THEME && selected === LIQUIDITY
                 ? "#FFFFFF !important"
@@ -1239,18 +1394,18 @@ export function Index() {
             <Text>Other Farms</Text>
           </Tab>
         </TabList>
-        <Divider my="4" />
-        <TabPanels padding="0px">
-          <TabPanel padding="0px">
+        <Divider my='4' />
+        <TabPanels padding='0px'>
+          <TabPanel padding='0px'>
             <Flex
-              justifyContent="center"
-              alignItems="center"
-              rounded="lg"
+              justifyContent='center'
+              alignItems='center'
+              rounded='lg'
               mb={4}
             >
               <Box
-                bg="#120136"
-                minHeight="89vh"
+                bg='#120136'
+                minHeight='89vh'
                 w={["100%", "100%", "100%"]}
                 background={
                   mode === LIGHT_THEME && selected === STAKING
@@ -1263,12 +1418,12 @@ export function Index() {
                     ? "#FFFFFF !important"
                     : "#FFFFFF !important"
                 }
-                rounded="lg"
+                rounded='lg'
               >
-                <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">
+                <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
                   <Flex
-                    alignItems="center"
-                    justifyContent="space-between"
+                    alignItems='center'
+                    justifyContent='space-between'
                     px={4}
                     py={4}
                     background={
@@ -1294,7 +1449,7 @@ export function Index() {
                         : "#333333"
                     }
                     w={["100%", "100%", "100%"]}
-                    align="left"
+                    align='left'
                     border={
                       mode === LIGHT_THEME
                         ? "1px solid #DEE5ED !important"
@@ -1311,190 +1466,61 @@ export function Index() {
                     <Text />
                   </Flex>
 
-                  {FarmData.contents.map((content: any, index: number) =>
-                    Number(chainId) === Number(SupportedChainId.POLYGON) &&
-                    index !== 0 &&
-                    index < 4 ? (
-                      <YieldFarm
-                        farmDataLoading={farmDataLoading}
-                        content={content}
-                        key={content.pid}
-                        wallet={wallet}
-                      />
-                    ) : index !== 0 && index !== 6 &&
-                      Number(chainId) !== Number(SupportedChainId.POLYGON) ? (
-                      <YieldFarm
-                        farmDataLoading={farmDataLoading}
-                        content={content}
-                        key={content.pid}
-                        wallet={wallet}
-                      />
-                    ) : null
-                  )}
-                </Box>
-              </Box>
-            </Flex>
-          </TabPanel>
-          <TabPanel padding="0px">
-            <Flex
-              justifyContent="center"
-              alignItems="center"
-              rounded="lg"
-              mb={4}
-            >
-              <Box
-                bg="#120136"
-                minHeight="89vh"
-                w={["100%", "100%", "100%"]}
-                background={
-                  mode === LIGHT_THEME
-                    ? "#FFFFFF !important"
-                    : mode === DARK_THEME
-                    ? "#15202B !important"
-                    : "#FFFFFF !important"
-                }
-                rounded="lg"
-              >
-                <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">
-                  <Flex
-                    alignItems="center"
-                    justifyContent="space-between"
-                    px={4}
-                    py={4}
-                    background={
-                      mode === DARK_THEME
-                        ? "#213345"
-                        : mode === LIGHT_THEME
-                        ? "#F2F5F8"
-                        : "#F2F5F8 !important"
-                    }
-                    color={
-                      mode === LIGHT_THEME
-                        ? "#333333"
-                        : mode === DARK_THEME
-                        ? "#F1F5F8"
-                        : "#333333"
-                    }
-                    w={["100%", "100%", "100%"]}
-                    align="left"
-                    border={
-                      mode === LIGHT_THEME
-                        ? "1px solid #DEE5ED !important"
-                        : mode === DARK_THEME
-                        ? "1px solid #324D68 !important"
-                        : "1px solid #324D68"
-                    }
-                    display={{ base: "none", md: "flex", lg: "flex" }}
-                  >
-                    <Text>Deposit</Text>
-                    <Text>Earn</Text>
-                    <Text>APY</Text>
-                    <Text>Total Liquidity</Text>
-                    <Text />
-                  </Flex>
-                  {FarmData.contents.map((content: any, index: number) =>
-                    index === 0 ? (
-                      <YieldFarm
-                        farmDataLoading={farmDataLoading}
-                        content={content}
-                        key={content.pid}
-                        wallet={wallet}
-                      />
-                    ) : null
-                  )}
-                </Box>
-              </Box>
-            </Flex>
-          </TabPanel>
-          <TabPanel padding="0px"></TabPanel>
-          <TabPanel padding="0px">
-            <Flex
-              justifyContent="center"
-              alignItems="center"
-              rounded="lg"
-              mb={4}
-            >
-              <Box
-                bg="#120136"
-                minHeight="89vh"
-                w={["100%", "100%", "100%"]}
-                background={
-                  mode === LIGHT_THEME && selected === STAKING
-                    ? "#FFFFFF !important"
-                    : mode === DARK_THEME && selected === LIQUIDITY
-                    ? "#15202B !important"
-                    : mode === DARK_THEME && selected === STAKING
-                    ? "#15202B !important"
-                    : mode === LIGHT_THEME && selected === LIQUIDITY
-                    ? "#FFFFFF !important"
-                    : "#FFFFFF !important"
-                }
-                rounded="lg"
-              >
-                <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">
-                  <Flex
-                    alignItems="center"
-                    justifyContent="space-between"
-                    px={4}
-                    py={4}
-                    background={
-                      mode === LIGHT_THEME && selected === LIQUIDITY
-                        ? "#F2F5F8  !important"
-                        : mode === DARK_THEME && selected === LIQUIDITY
-                        ? "#213345"
-                        : mode === DARK_THEME && selected === STAKING
-                        ? "#213345"
-                        : mode === LIGHT_THEME && selected === STAKING
-                        ? "#F2F5F8"
-                        : "#F2F5F8 !important"
-                    }
-                    color={
-                      mode === LIGHT_THEME && selected === LIQUIDITY
-                        ? "#333333"
-                        : mode === DARK_THEME && selected === STAKING
-                        ? "#F1F5F8"
-                        : mode === DARK_THEME && selected === LIQUIDITY
-                        ? "#F1F5F8"
-                        : mode === LIGHT_THEME && selected === STAKING
-                        ? "#333333"
-                        : "#333333"
-                    }
-                    w={["100%", "100%", "100%"]}
-                    align="left"
-                    border={
-                      mode === LIGHT_THEME
-                        ? "1px solid #DEE5ED !important"
-                        : mode === DARK_THEME
-                        ? "1px solid #324D68 !important"
-                        : "1px solid #324D68"
-                    }
-                    display={{ base: "none", md: "flex", lg: "flex" }}
-                  >
-                    <Text>
-                      Please Migrate your LP token farming from farming V1 to
-                      this V2
-                    </Text>
-                  </Flex>
+                  {/* {/* // ) : index !== 0 &&
+                    //   Number(chainId) !== Number(SupportedChainId.POLYGON) ? (
+                    //   <YieldFarm
+                    //     farmDataLoading={farmDataLoading}
+                    //     content={content}
+                    //     key={content.pid}
+                    //     wallet={wallet}
+                    //   />
+                    // ) */}
 
-                  <Link href='https://smartswapv1.rigelprotocol.com/farming' isExternal>
-                    <Button
-                      background='#4CAFFF'
-                      boxShadow='0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)'
-                      borderRadius='6px'
-                      mx={[5, 10, 15, 20]}
-                      position={{ base: "relative", md: "absolute" }}
-                      padding=' 12px 32px'
-                      mt={3}
-                      variant='brand'
-                    >
-                        Go to farming V1
-                    </Button>
-                  </Link>
+                  {Number(chainId) === Number(SupportedChainId.OASISTEST)
+                    ? FarmData.contents.map((content: any, index: number) =>
+                        Number(chainId) ===
+                          Number(SupportedChainId.OASISTEST) &&
+                        index !== 0 &&
+                        index < 4 ? (
+                          <YieldFarm
+                            farmDataLoading={farmDataLoading}
+                            content={content}
+                            key={content.pid}
+                            wallet={wallet}
+                          />
+                        ) : null
+                      )
+                    : Number(chainId) === Number(SupportedChainId.POLYGON)
+                    ? FarmData.contents.map((content: any, index: number) =>
+                        Number(chainId) === Number(SupportedChainId.POLYGON) &&
+                        index !== 0 &&
+                        index < 4 ? (
+                          <YieldFarm
+                            farmDataLoading={farmDataLoading}
+                            content={content}
+                            key={content.pid}
+                            wallet={wallet}
+                          />
+                        ) : null
+                      )
+                    : Number(chainId) !== Number(SupportedChainId.POLYGON)
+                    ? FarmData.contents.map((content: any, index: number) =>
+                        Number(chainId) !== Number(SupportedChainId.POLYGON) &&
+                        index !== 0 ? (
+                          <YieldFarm
+                            farmDataLoading={farmDataLoading}
+                            content={content}
+                            key={content.pid}
+                            wallet={wallet}
+                          />
+                        ) : null
+                      )
+                    : null}
                 </Box>
               </Box>
             </Flex>
           </TabPanel>
-          <TabPanel padding='0px'></TabPanel>
+
           <TabPanel padding='0px'>
             <Flex
               justifyContent='center'
@@ -1553,7 +1579,7 @@ export function Index() {
                     <Text />
                   </Flex>
                   {FarmData.contents.map((content: any, index: number) =>
-                    index === 6 ? (
+                    index === 0 ? (
                       <YieldFarm
                         farmDataLoading={farmDataLoading}
                         content={content}
@@ -1566,6 +1592,98 @@ export function Index() {
               </Box>
             </Flex>
           </TabPanel>
+          <TabPanel padding='0px'></TabPanel>
+          <TabPanel padding='0px'>
+            <Flex
+              justifyContent='center'
+              alignItems='center'
+              rounded='lg'
+              mb={4}
+            >
+              <Box
+                bg='#120136'
+                minHeight='89vh'
+                w={["100%", "100%", "100%"]}
+                background={
+                  mode === LIGHT_THEME && selected === STAKING
+                    ? "#FFFFFF !important"
+                    : mode === DARK_THEME && selected === LIQUIDITY
+                    ? "#15202B !important"
+                    : mode === DARK_THEME && selected === STAKING
+                    ? "#15202B !important"
+                    : mode === LIGHT_THEME && selected === LIQUIDITY
+                    ? "#FFFFFF !important"
+                    : "#FFFFFF !important"
+                }
+                rounded='lg'
+              >
+                <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
+                  <Flex
+                    alignItems='center'
+                    justifyContent='space-between'
+                    px={4}
+                    py={4}
+                    background={
+                      mode === LIGHT_THEME && selected === LIQUIDITY
+                        ? "#F2F5F8  !important"
+                        : mode === DARK_THEME && selected === LIQUIDITY
+                        ? "#213345"
+                        : mode === DARK_THEME && selected === STAKING
+                        ? "#213345"
+                        : mode === LIGHT_THEME && selected === STAKING
+                        ? "#F2F5F8"
+                        : "#F2F5F8 !important"
+                    }
+                    color={
+                      mode === LIGHT_THEME && selected === LIQUIDITY
+                        ? "#333333"
+                        : mode === DARK_THEME && selected === STAKING
+                        ? "#F1F5F8"
+                        : mode === DARK_THEME && selected === LIQUIDITY
+                        ? "#F1F5F8"
+                        : mode === LIGHT_THEME && selected === STAKING
+                        ? "#333333"
+                        : "#333333"
+                    }
+                    w={["100%", "100%", "100%"]}
+                    align='left'
+                    border={
+                      mode === LIGHT_THEME
+                        ? "1px solid #DEE5ED !important"
+                        : mode === DARK_THEME
+                        ? "1px solid #324D68 !important"
+                        : "1px solid #324D68"
+                    }
+                    display={{ base: "none", md: "flex", lg: "flex" }}
+                  >
+                    <Text>
+                      Please Migrate your LP token farming from farming V1 to
+                      this V2
+                    </Text>
+                  </Flex>
+
+                  <Link
+                    href='https://smartswapv1.rigelprotocol.com/farming'
+                    isExternal
+                  >
+                    <Button
+                      background='#4CAFFF'
+                      boxShadow='0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)'
+                      borderRadius='6px'
+                      mx={[5, 10, 15, 20]}
+                      position={{ base: "relative", md: "absolute" }}
+                      padding=' 12px 32px'
+                      mt={3}
+                      variant='brand'
+                    >
+                      Go to farming V1
+                    </Button>
+                  </Link>
+                </Box>
+              </Box>
+            </Flex>
+          </TabPanel>
+          <TabPanel padding='0px'></TabPanel>
         </TabPanels>
       </Tabs>
     </Box>

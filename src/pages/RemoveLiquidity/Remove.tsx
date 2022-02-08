@@ -214,6 +214,8 @@ const Remove = () => {
                   ? "BNB"
                   : pool?.path[0].token === "WETH"
                   ? "ETH"
+                  : pool?.path[0].token === "WROSE"
+                  ? "ROSE"
                   : pool?.path[0].token
               }
             /
@@ -222,6 +224,8 @@ const Remove = () => {
                 ? "BNB"
                 : pool?.path[1].token === "WETH"
                 ? "ETH"
+                : pool?.path[1].token === "WROSE"
+                ? "ROSE"
                 : pool?.path[1].token
             } LP token Removal`,
               trxState: TrxState.TransactionSuccessful,
@@ -244,6 +248,8 @@ const Remove = () => {
                 ? "BNB"
                 : pool?.path[0].token === "WETH"
                 ? "ETH"
+                : pool?.path[0].token === "WROSE"
+                ? "ROSE"
                 : pool?.path[0].token
             }
           /
@@ -252,6 +258,8 @@ const Remove = () => {
               ? "BNB"
               : pool?.path[1].token === "WETH"
               ? "ETH"
+              : pool?.path[1].token === "WROSE"
+              ? "ROSE"
               : pool?.path[1].token
           } LP token Removal`,
             trxState: TrxState.TransactionFailed,
@@ -293,6 +301,8 @@ const Remove = () => {
                 ? "BNB"
                 : pool?.path[0].token === "WETH"
                 ? "ETH"
+                : pool?.path[0].token === "WROSE"
+                ? "ROSE"
                 : pool?.path[0].token
             }
            and ${parseFloat(formatAmountBMin).toFixed(6)}
@@ -301,6 +311,8 @@ const Remove = () => {
               ? "BNB"
               : pool?.path[1].token === "WETH"
               ? "ETH"
+              : pool?.path[1].token === "WROSE"
+              ? "ROSE"
               : pool?.path[1].token
           } `,
             trxState: TrxState.WaitingForConfirmation,
@@ -359,6 +371,8 @@ const Remove = () => {
                   ? "BNB"
                   : pool?.path[0].token === "WETH"
                   ? "ETH"
+                  : pool?.path[0].token === "WROSE"
+                  ? "ROSE"
                   : pool?.path[0].token
               }
             and ${outPutValueForTokenB}
@@ -367,6 +381,8 @@ const Remove = () => {
                 ? "BNB"
                 : pool?.path[1].token === "WETH"
                 ? "ETH"
+                : pool?.path[1].token === "WROSE"
+                ? "ROSE"
                 : pool?.path[1].token
             } `,
               URL: explorerLink,
@@ -382,6 +398,8 @@ const Remove = () => {
                 ? "BNB"
                 : pool?.path[0].token === "WETH"
                 ? "ETH"
+                : pool?.path[0].token === "WROSE"
+                ? "ROSE"
                 : pool?.path[0].token
             }
           /
@@ -390,6 +408,8 @@ const Remove = () => {
               ? "BNB"
               : pool?.path[1].token === "WETH"
               ? "ETH"
+              : pool?.path[1].token === "WROSE"
+              ? "ROSE"
               : pool?.path[1].token
           } LP token Removal`,
             trxState: TrxState.TransactionFailed,
@@ -411,6 +431,8 @@ const Remove = () => {
                 ? "ETH"
                 : pool?.path[0].token === "WMATIC"
                 ? "MATIC"
+                : pool?.path[0].token === "WROSE"
+                ? "ROSE"
                 : pool?.path[0].token
             }
           /
@@ -421,6 +443,8 @@ const Remove = () => {
               ? "ETH"
               : pool?.path[1].token === "WMATIC"
               ? "MATIC"
+              : pool?.path[1].token === "WROSE"
+              ? "ROSE"
               : pool?.path[1].token
           } LP token Approval`,
             trxState: TrxState.WaitingForConfirmation,
@@ -456,6 +480,8 @@ const Remove = () => {
                   ? "ETH"
                   : pool?.path[0].token === "WMATIC"
                   ? "MATIC"
+                  : pool?.path[0].token === "WROSE"
+                  ? "ROSE"
                   : pool?.path[0].token
               }
             /
@@ -466,6 +492,8 @@ const Remove = () => {
                 ? "ETH"
                 : pool?.path[1].token === "WMATIC"
                 ? "MATIC"
+                : pool?.path[1].token === "WROSE"
+                ? "ROSE"
                 : pool?.path[1].token
             } LP token Approval`,
               trxState: TrxState.TransactionSuccessful,
@@ -480,6 +508,8 @@ const Remove = () => {
                   ? "ETH"
                   : pool?.path[0].token === "WMATIC"
                   ? "MATIC"
+                  : pool?.path[0].token === "WROSE"
+                  ? "ROSE"
                   : pool?.path[0].token
               }
             /
@@ -490,6 +520,8 @@ const Remove = () => {
                 ? "ETH"
                 : pool?.path[1].token === "WMATIC"
                 ? "MATIC"
+                : pool?.path[1].token === "WROSE"
+                ? "ROSE"
                 : pool?.path[1].token
             } LP token`,
               URL: explorerLink,
@@ -507,6 +539,8 @@ const Remove = () => {
                 ? "ETH"
                 : pool?.path[0].token === "WMATIC"
                 ? "MATIC"
+                : pool?.path[0].token === "WROSE"
+                ? "ROSE"
                 : pool?.path[0].token
             }
           /
@@ -517,6 +551,8 @@ const Remove = () => {
               ? "ETH"
               : pool?.path[1].token === "WMATIC"
               ? "MATIC"
+              : pool?.path[1].token === "WROSE"
+              ? "ROSE"
               : pool?.path[1].token
           } LP token Approval`,
             trxState: TrxState.TransactionFailed,
@@ -538,6 +574,8 @@ const Remove = () => {
                 ? "ETH"
                 : pool?.path[0].token === "WMATIC"
                 ? "MATIC"
+                : pool?.path[0].token === "WROSE"
+                ? "ROSE"
                 : pool?.path[0].token
             }
           /
@@ -548,6 +586,8 @@ const Remove = () => {
               ? "ETH"
               : pool?.path[1].token === "WMATIC"
               ? "MATIC"
+              : pool?.path[1].token === "WROSE"
+              ? "ROSE"
               : pool?.path[1].token
           } LP token`,
             trxState: TrxState.WaitingForConfirmation,
@@ -582,6 +622,8 @@ const Remove = () => {
                   ? "ETH"
                   : pool?.path[0].token === "WMATIC"
                   ? "MATIC"
+                  : pool?.path[0].token === "WROSE"
+                  ? "ROSE"
                   : pool?.path[0].token
               }
             /
@@ -592,6 +634,8 @@ const Remove = () => {
                 ? "ETH"
                 : pool?.path[1].token === "WMATIC"
                 ? "MATIC"
+                : pool?.path[1].token === "WROSE"
+                ? "ROSE"
                 : pool?.path[1].token
             } LP token`,
               trxState: TrxState.TransactionSuccessful,
@@ -606,6 +650,8 @@ const Remove = () => {
                   ? "ETH"
                   : pool?.path[0].token === "WMATIC"
                   ? "MATIC"
+                  : pool?.path[0].token === "WROSE"
+                  ? "ROSE"
                   : pool?.path[0].token
               }
             /
@@ -616,6 +662,8 @@ const Remove = () => {
                 ? "ETH"
                 : pool?.path[1].token === "WMATIC"
                 ? "MATIC"
+                : pool?.path[1].token === "WROSE"
+                ? "ROSE"
                 : pool?.path[1].token
             } LP token`,
               URL: explorerLink,
@@ -633,6 +681,8 @@ const Remove = () => {
                 ? "ETH"
                 : pool?.path[0].token === "WMATIC"
                 ? "MATIC"
+                : pool?.path[0].token === "WROSE"
+                ? "ROSE"
                 : pool?.path[0].token
             }
           /
@@ -643,6 +693,8 @@ const Remove = () => {
               ? "ETH"
               : pool?.path[1].token === "WMATIC"
               ? "MATIC"
+              : pool?.path[1].token === "WROSE"
+              ? "ROSE"
               : pool?.path[1].token
           } LP token`,
             trxState: TrxState.TransactionFailed,
@@ -769,6 +821,8 @@ const Remove = () => {
                         ? "ETH"
                         : pool?.path[0].token === "WMATIC"
                         ? "MATIC"
+                        : pool?.path[0].token === "WROSE"
+                        ? "ROSE"
                         : pool?.path[0].token}{" "}
                       /{" "}
                       {pool?.path[1].token === "WBNB"
@@ -777,6 +831,8 @@ const Remove = () => {
                         ? "ETH"
                         : pool?.path[1].token === "WMATIC"
                         ? "MATIC"
+                        : pool?.path[1].token === "WROSE"
+                        ? "ROSE"
                         : pool?.path[1].token}
                     </Text>
                   </Flex>
@@ -820,6 +876,8 @@ const Remove = () => {
                           ? "ETH"
                           : pool?.path[0].token === "WMATIC"
                           ? "MATIC"
+                          : pool?.path[0].token === "WROSE"
+                          ? "ROSE"
                           : pool?.path[0].token}
                         :
                       </Text>
@@ -838,6 +896,8 @@ const Remove = () => {
                           ? "ETH"
                           : pool?.path[1].token === "WMATIC"
                           ? "MATIC"
+                          : pool?.path[1].token === "WROSE"
+                          ? "ROSE"
                           : pool?.path[1].token}
                         :
                       </Text>
@@ -954,6 +1014,8 @@ const Remove = () => {
                         ? "ETH"
                         : pool?.path[0].token === "WMATIC"
                         ? "MATIC"
+                        : pool?.path[0].token === "WROSE"
+                        ? "ROSE"
                         : pool?.path[0].token}
                     </Text>
                   </Flex>
@@ -1002,6 +1064,8 @@ const Remove = () => {
                         ? "ETH"
                         : pool?.path[1].token === "WMATIC"
                         ? "MATIC"
+                        : pool?.path[1].token === "WROSE"
+                        ? "ROSE"
                         : pool?.path[1].token}
                     </Text>
                   </Flex>
