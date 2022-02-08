@@ -18,13 +18,15 @@ import logo from '../../assets/logoRGP.png'
 export type IModal = {
     openModal: boolean,
     closeModal: Function
-    startToure: Function
+    startToure: Function,
+    welcomeText: string
 }
 
 const WelcomeModal: React.FC<IModal> = ({
     openModal,
     closeModal,
-    startToure
+    startToure,
+    welcomeText
 }) => {
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const secondarybgColor = useColorModeValue("#EBF6FE", "#EAF6FF");
@@ -77,7 +79,7 @@ const WelcomeModal: React.FC<IModal> = ({
                     </Flex>
                     <Flex justifyContent="space-between" alignContent="center" flexDirection="column" alignItems="center" py="4">
                         <Text color={textColor} textAlign="center" fontSize="16px" mx={8}>
-                            We would like to get you introduced to this platform and help you find your way around it. If you’d love that, then take this short tour.
+                            {welcomeText}
                         </Text>
 
                     </Flex>

@@ -27,7 +27,7 @@ import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import { SupportedChainId } from "../../constants/chains";
 import Switch from "react-switch";
 import { DARK_THEME } from "./index";
-import { addToast } from "../../components/Toast/toastSlice";
+import { errorToast, addToast } from "../../components/Toast/toastSlice";
 import { useDispatch } from "react-redux";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { getExplorerLink, ExplorerDataType } from "../../utils/getExplorerLink";
@@ -857,13 +857,21 @@ const ShowYieldFarmDetails = ({
   const LPDeposit = async (pid: any) => {
     if (account) {
       try {
+        console.log({ RGPBalance, farmingFee })
         if (parseFloat(content.tokensStaked[1]) == 0) {
-          if (parseInt(RGPBalance) < parseInt(farmingFee)) {
-            alert({
-              title: "Insufficient Balance",
-              body: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
-              type: "error",
-            });
+
+          if (parseFloat(RGPBalance) < parseFloat(farmingFee)) {
+            // alert({
+            //   title: "Insufficient Balance",
+            //   body: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
+            //   type: "error",
+            // });
+            dispatch(
+              errorToast({
+                message: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
+                error: true
+              })
+            );
           } else {
             const lpTokens = await MasterChefV2Contract(
               MASTERCHEFV2ADDRESSES[chainId as number],
@@ -1511,7 +1519,7 @@ const ShowYieldFarmDetails = ({
                 </Flex>
               </Flex>
             }
-          </Box>
+          </Box >
 
           <Box
             my={3}
@@ -1520,7 +1528,7 @@ const ShowYieldFarmDetails = ({
           >
             <Divider orientation='vertical' height='84px' />
           </Box>
-        </Box>
+        </Box >
         <Box
           flexBasis='15%'
           width='100%'
@@ -1553,7 +1561,7 @@ const ShowYieldFarmDetails = ({
             </Flex>
           </Flex>
         </Box>
-      </Flex>
+      </Flex >
       {Number(content.poolVersion) === 2 ? (
         <Modal
           isOpen={modal1Disclosure.isOpen}
@@ -1652,14 +1660,14 @@ const ShowYieldFarmDetails = ({
                       mx='auto'
                       color={
                         depositValue === "Confirm" ||
-                        depositValue === "Confirmed"
+                          depositValue === "Confirmed"
                           ? "rgba(190, 190, 190, 1)"
                           : "#40BAD5"
                       }
                       width='100%'
                       background={
                         depositValue === "Confirm" ||
-                        depositValue === "Confirmed"
+                          depositValue === "Confirmed"
                           ? "rgba(64, 186, 213, 0.15)"
                           : "#444159"
                       }
@@ -1676,11 +1684,11 @@ const ShowYieldFarmDetails = ({
                       fontSize='16px'
                       _hover={
                         depositValue === "Confirm" ||
-                        depositValue === "Confirmed"
+                          depositValue === "Confirmed"
                           ? { background: "rgba(64, 186, 213, 0.15)" }
                           : { background: "#444159" }
                       }
-                      onClick={() => {}}
+                      onClick={() => { }}
                     >
                       {depositErrorButtonText}
                     </Button>
@@ -1795,14 +1803,14 @@ const ShowYieldFarmDetails = ({
                       mx='auto'
                       color={
                         depositValue === "Confirm" ||
-                        depositValue === "Confirmed"
+                          depositValue === "Confirmed"
                           ? "rgba(190, 190, 190, 1)"
                           : "#40BAD5"
                       }
                       width='100%'
                       background={
                         depositValue === "Confirm" ||
-                        depositValue === "Confirmed"
+                          depositValue === "Confirmed"
                           ? "rgba(64, 186, 213, 0.15)"
                           : "#444159"
                       }
@@ -1818,7 +1826,7 @@ const ShowYieldFarmDetails = ({
                           ? { background: "rgba(64, 186, 213, 0.15)" }
                           : { background: "#444159" }
                       }
-                      onClick={() => {}}
+                      onClick={() => { }}
                     >
                       {depositErrorButtonText}
                     </Button>
@@ -1943,14 +1951,14 @@ const ShowYieldFarmDetails = ({
                     mx='auto'
                     color={
                       unstakeButtonValue === "Confirm" ||
-                      unstakeButtonValue === "Confirmed"
+                        unstakeButtonValue === "Confirmed"
                         ? "rgba(190, 190, 190, 1)"
                         : "#40BAD5"
                     }
                     width='100%'
                     background={
                       unstakeButtonValue === "Confirm" ||
-                      unstakeButtonValue === "Confirmed"
+                        unstakeButtonValue === "Confirmed"
                         ? "rgba(64, 186, 213, 0.15)"
                         : "#444159"
                     }
@@ -1963,11 +1971,11 @@ const ShowYieldFarmDetails = ({
                     fontSize='16px'
                     _hover={
                       unstakeButtonValue === "Confirm" ||
-                      unstakeButtonValue === "Confirmed"
+                        unstakeButtonValue === "Confirmed"
                         ? { background: "rgba(64, 186, 213, 0.15)" }
                         : { background: "#444159" }
                     }
-                    onClick={() => {}}
+                    onClick={() => { }}
                   >
                     {errorButtonText}
                   </Button>
@@ -1992,7 +2000,7 @@ const ShowYieldFarmDetails = ({
                     fontSize='16px'
                     _hover={
                       unstakeButtonValue === "Confirm" ||
-                      unstakeButtonValue === "Confirmed"
+                        unstakeButtonValue === "Confirmed"
                         ? { background: "rgba(64, 186, 213, 0.15)" }
                         : { background: "#444159" }
                     }
