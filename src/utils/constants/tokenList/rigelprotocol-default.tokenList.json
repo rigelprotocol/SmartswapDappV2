@@ -267,6 +267,38 @@
       "decimals": 18,
       "chainId": 42262,
       "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+    },
+    {
+      "name": "PlaceWar Governance Token",
+      "address": "0xb718b10be3215a729b65f350d020a9f2f14024a4",
+      "symbol": "PLACE",
+      "decimals": 18,
+      "chainId": 97,
+      "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13420.png"
+    },
+    {
+      "name": "Mouse Haunt Token",
+      "address": "0x4431b43775fe287807ca5a199ee1aa88b9d14f4b",
+      "symbol": "MHT",
+      "decimals": 18,
+      "chainId": 97,
+      "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/15043.png"
+    },
+    {
+      "name": "PlaceWar Governance Token",
+      "address": "0x07728696eE70A28c9C032926577AF1D524Df30f9",
+      "symbol": "PLACE",
+      "decimals": 18,
+      "chainId": 56,
+      "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13420.png"
+    },
+    {
+      "name": "Mouse Haunt Token",
+      "address": "0x5Cb2C3Ed882E37DA610f9eF5b0FA25514d7bc85B",
+      "symbol": "MHT",
+      "decimals": 18,
+      "chainId": 56,
+      "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/15043.png"
     }
   ]
 }

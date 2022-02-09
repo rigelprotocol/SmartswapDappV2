@@ -11,9 +11,9 @@ import {
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { GetAddressTokenBalance } from '../../../../state/wallet/hooks';
 import SelectToken from "../../../../components/Tokens/SelectToken"
-import {Currency} from "@uniswap/sdk-core"
+import { Currency } from "@uniswap/sdk-core"
 import CurrencyLogo from "../../../../components/currencyLogo"
-import {escapeRegExp} from "../../../../utils";
+import { escapeRegExp } from "../../../../utils";
 
 
 type InputSelectorProps = {
@@ -21,7 +21,7 @@ type InputSelectorProps = {
   onCurrencySelect: (currency: Currency | null | undefined) => void,
   currency?: Currency | null,
   otherCurrency?: Currency | null,
-  tokenModal:boolean,
+  tokenModal: boolean,
   setToken: React.Dispatch<React.SetStateAction<boolean>>,
   onMax?: () => void,
   onUserInput: (value: string) => void,
@@ -29,7 +29,7 @@ type InputSelectorProps = {
 };
 
 const InputSelector = ({
-   max,
+  max,
   onCurrencySelect,
   currency,
   tokenModal,
@@ -38,7 +38,7 @@ const InputSelector = ({
   onMax,
   onUserInput,
   value
- }: InputSelectorProps) => {
+}: InputSelectorProps) => {
   const inputColor = useColorModeValue('#333333', '#F1F5F8');
   const balanceColor = useColorModeValue('#666666', '#DCE5EF');
   const maxColor = useColorModeValue('#319ef6', '#4CAFFF');
@@ -46,14 +46,14 @@ const InputSelector = ({
   const tokenListTriggerColor = useColorModeValue('', '#DCE5EF');
   const tokenListTrgiggerBgColor = useColorModeValue('', '#213345');
 
-    const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`);
+  const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`);
 
-    const enforcer = (nextUserInput: string) => {
-        if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
-            onUserInput(nextUserInput)
-        }
-    };
-  
+  const enforcer = (nextUserInput: string) => {
+    if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
+      onUserInput(nextUserInput)
+    }
+  };
+
   const [balance] = GetAddressTokenBalance(currency ?? undefined);
   return (
     <>
@@ -68,7 +68,7 @@ const InputSelector = ({
           placeholder="0.0"
           value={value}
           onChange={(event) => {
-              enforcer(event.target.value.replace(/,/g, '.'))
+            enforcer(event.target.value.replace(/,/g, '.'))
           }}
           focusBorderColor="none"
         />
@@ -80,25 +80,27 @@ const InputSelector = ({
               rightIcon={<ChevronDownIcon />}
               mr={3}
               bgColor={tokenListTrgiggerBgColor}
-              onClick={()=>setToken(tokenModal)}
+              onClick={() => setToken(tokenModal)}
+
+              data-tut="reactour__selectToken"
             >
               <Box mr="3">
-                 <CurrencyLogo currency={currency ?? undefined} size={24} squared={true}/>
+                <CurrencyLogo currency={currency ?? undefined} size={24} squared={true} />
               </Box>
-             
-            {(currency && currency.symbol && currency.symbol.length > 20
-                      ? currency.symbol.slice(0, 4) +
-                        '...' +
-                        currency.symbol.slice(currency.symbol.length - 5, currency.symbol.length)
-                      : currency?.symbol) || <Text color={tokenListTriggerColor}>Select a token</Text>}
-              
+
+              {(currency && currency.symbol && currency.symbol.length > 20
+                ? currency.symbol.slice(0, 4) +
+                '...' +
+                currency.symbol.slice(currency.symbol.length - 5, currency.symbol.length)
+                : currency?.symbol) || <Text color={tokenListTriggerColor}>Select a token</Text>}
+
             </Button>
           </Menu>
         </Flex>
       </Flex>
       <Flex mt={3} alignItems="center">
         <Text ml={4} color={balanceColor} fontSize="14px">
-          Balance: {balance.currency?.isToken ? balance.toSignificant(6): balance} {currency?.symbol}
+          Balance: {balance.currency?.isToken ? balance.toSignificant(6) : balance} {currency?.symbol}
         </Text>
         {max ? (
           <Text
@@ -119,12 +121,13 @@ const InputSelector = ({
           <></>
         )}
       </Flex>
-      <SelectToken 
-      onCurrencySelect={onCurrencySelect}
-      tokenModal={tokenModal} 
-      setTokenModal={setToken} 
-      selectedCurrency={currency}
-      otherSelectedCurrency={otherCurrency}
+      <SelectToken
+        onCurrencySelect={onCurrencySelect}
+        tokenModal={tokenModal}
+        setTokenModal={setToken}
+        selectedCurrency={currency}
+        otherSelectedCurrency={otherCurrency}
+
       />
     </>
   );

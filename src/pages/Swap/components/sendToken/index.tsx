@@ -48,7 +48,6 @@ import { SupportedChainId } from "../../../../constants/chains";
 import { SMARTSWAPFACTORYADDRESSES } from "../../../../utils/addresses";
 import { useCalculatePriceImpact } from "../../../../hooks/usePriceImpact";
 import { getERC20Token } from "../../../../utils/utilsFunctions";
-import BigNumber from "bignumber.js";
 
 const SendToken = () => {
   const history = useHistory();
@@ -138,7 +137,7 @@ const SendToken = () => {
   // const [priceImpact, setPriceImpact] = useState(0);
 
   const handleMaxInput = async () => {
-    const value = await getMaxValue(currencies[Field.INPUT]);
+    const value = await getMaxValue(currencies[Field.INPUT], library);
     const maxAmountInput = maxAmountSpend(value, currencies[Field.INPUT]);
     if (maxAmountInput) {
       onUserInput(Field.INPUT, maxAmountInput);
@@ -307,6 +306,7 @@ const SendToken = () => {
     const dl = getDeadline(deadline);
     const from = currencies[Field.INPUT]?.wrapped.address;
     const to = currencies[Field.OUTPUT]?.wrapped.address;
+    console.log("output", outputToken().toString());
     try {
       setSendingTrx(true);
       dispatch(
@@ -322,7 +322,7 @@ const SendToken = () => {
 
       const sendTransaction = await route.swapExactTokensForTokens(
         parsedAmount,
-        outputToken,
+        outputToken(),
         // [from, to],
         pathArray,
         account,
@@ -340,7 +340,7 @@ const SendToken = () => {
       const inputAmount = await getInPutDataFromEvent(
         from,
         receipt.events,
-        outputToken
+        outputToken()
       );
       if (
         typeof sendTransaction.hash !== "undefined" &&
@@ -363,7 +363,7 @@ const SendToken = () => {
           addToast({
             message: `Swap ${inputAmount} ${
               currencies[Field.INPUT]?.symbol
-            } for ${outputToken} ${currencies[Field.OUTPUT]?.symbol}`,
+            } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
@@ -395,9 +395,11 @@ const SendToken = () => {
       setSendingTrx(true);
       dispatch(
         setOpenModal({
-          message: `Swapping ${formattedAmounts[Field.INPUT]} BNB for ${
-            formattedAmounts[Field.OUTPUT]
-          } ${currencies[Field.OUTPUT]?.symbol}`,
+          message: `Swapping ${formattedAmounts[Field.INPUT]} ${
+            currencies[Field.INPUT]?.symbol
+          } for ${formattedAmounts[Field.OUTPUT]} ${
+            currencies[Field.OUTPUT]?.symbol
+          }`,
           trxState: TrxState.WaitingForConfirmation,
         })
       );
@@ -481,7 +483,9 @@ const SendToken = () => {
         setOpenModal({
           message: `Swapping ${formattedAmounts[Field.INPUT]} ${
             currencies[Field.INPUT]?.symbol
-          } for ${formattedAmounts[Field.OUTPUT]} BNB`,
+          } for ${formattedAmounts[Field.OUTPUT]} ${
+            currencies[Field.OUTPUT]?.symbol
+          }`,
           trxState: TrxState.WaitingForConfirmation,
         })
       );
@@ -550,7 +554,9 @@ const SendToken = () => {
     setSendingTrx(true);
     dispatch(
       setOpenModal({
-        message: `Swapping ${typedValue} BNB for ${typedValue} WBNB`,
+        message: `Swapping ${typedValue} ${
+          currencies[Field.INPUT]?.symbol
+        } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
         trxState: TrxState.WaitingForConfirmation,
       })
     );
@@ -605,7 +611,9 @@ const SendToken = () => {
     setSendingTrx(true);
     dispatch(
       setOpenModal({
-        message: `Swapping ${typedValue} WBNB for ${typedValue} BNB`,
+        message: `Swapping ${typedValue} ${
+          currencies[Field.INPUT]?.symbol
+        } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
         trxState: TrxState.WaitingForConfirmation,
       })
     );
@@ -754,7 +762,7 @@ const SendToken = () => {
   }, [formattedAmounts[Field.OUTPUT]]);
 
   return (
-    <div>
+    <div className='Swap'>
       <NewToken
         open={importTokensNotInDefault.length > 0 && !dismissTokenWarning}
         tokens={importTokensNotInDefault}
@@ -788,7 +796,7 @@ const SendToken = () => {
           onUserOutput={handleTypeOutput}
         />
 
-        <Flex alignItems='center'>
+        <Flex alignItems='center' className='SwapToken'>
           {insufficientBalance || inputError ? (
             <Button
               w='100%'
@@ -845,9 +853,6 @@ const SendToken = () => {
               boxShadow={lightmode ? "base" : "lg"}
               _hover={{ bgColor: buttonBgcolor }}
             >
-              {/*{inputError*/}
-              {/*  ? inputError*/}
-              {/*  : `Loading...`}*/}
               {inputError}
             </Button>
           ) : (

@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Currency } from '@uniswap/sdk-core';
 import { useNativeBalance } from '../../utils/hooks/useBalances';
 import { getERC20Token } from '../../utils/utilsFunctions';
-import { isAddress } from '../../utils';
+import { isAddress, ParseFloat } from '../../utils';
 import { ethers } from 'ethers';
 import { SupportedChainSymbols } from '../../utils/constants/chains';
 import { useSwap } from '../../hooks/useSwap';
@@ -139,7 +139,7 @@ export function useDerivedSwapInfo(): {
   const bestTrade = amount;
   // console.log(pathArray);
 
-  const getMaxValue = async (currency: Currency, library: Web3Provider | undefined) => {
+  const getMaxValue = async (currency: Currency, library: Web3Provider) => {
     if (currency.isNative) {
       // return Balance === "0.0000" ? "0" :  Balance
       const balance = await library?.getBalance(account as string);
@@ -148,12 +148,17 @@ export function useDerivedSwapInfo(): {
       const token = await getERC20Token(
         currency.address ? currency.address : '', library
       );
-      const [balance, decimals] = await Promise.all([token.balanceOf(account), token.decimals()])
-      const amount = ethers.utils.formatUnits(balance, decimals);
-      return amount === '0.0' ? '0' : amount;
+
+     // const balance = await token.balanceOf(account);
+     // const amount = ethers.utils.formatEther(balance);
+      const [balance, decimals] = await Promise.all([token.balanceOf(account), token.decimals()]);
+      const amount = ethers.utils.formatUnits(balance.toString(), decimals)       
+      return amount === '0.0' ? '0' :  ParseFloat(amount, 4) ;
+
     }
   };
-
+  
+ 
   let inputError: string | undefined;
   if (!account) {
     inputError = 'Connect Wallet';

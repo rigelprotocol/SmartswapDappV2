@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   ModalOverlay,
   ModalContent,
@@ -12,10 +12,10 @@ import {
   Text,
   Button,
   Image,
-} from '@chakra-ui/react';
-import { InfoOutlineIcon, ArrowDownIcon } from '@chakra-ui/icons';
-import RGPImage from './../../../assets/tokens/RGP.svg';
-import USDTImage from './../../../assets/tokens/USDT.svg';
+} from "@chakra-ui/react";
+import { InfoOutlineIcon, ArrowDownIcon } from "@chakra-ui/icons";
+import RGPImage from "./../../../assets/tokens/RGP.svg";
+import USDTImage from "./../../../assets/tokens/USDT.svg";
 
 export type IModal = {
   title: string;
@@ -54,11 +54,11 @@ const ConfirmModal: React.FC<IModal> = ({
   handleSwap,
   pathSymbol,
 }) => {
-  const bgColor = useColorModeValue('#FFF', '#15202B');
-  const lightTextColor = useColorModeValue('#666666', '#DCE6EF');
-  const heavyTextColor = useColorModeValue('#333333', '#F1F5F8');
-  const borderColor = useColorModeValue('#DEE6ED', '#324D68');
-  const boxColor = useColorModeValue('#F2F5F8', '#213345');
+  const bgColor = useColorModeValue("#FFF", "#15202B");
+  const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
+  const heavyTextColor = useColorModeValue("#333333", "#F1F5F8");
+  const borderColor = useColorModeValue("#DEE6ED", "#324D68");
+  const boxColor = useColorModeValue("#F2F5F8", "#213345");
   const { onClose } = useDisclosure();
 
   const amountIn = Number(minRecieved).toFixed(4);
@@ -70,58 +70,58 @@ const ConfirmModal: React.FC<IModal> = ({
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} isCentered>
         <ModalOverlay />
         <ModalContent
-          width="95vw"
-          borderRadius="6px"
-          paddingBottom="20px"
+          width='95vw'
+          borderRadius='6px'
+          paddingBottom='20px'
           bgColor={bgColor}
-          minHeight="40vh"
+          minHeight='40vh'
         >
-          <ModalHeader fontSize="18px" fontWeight="regular">
+          <ModalHeader fontSize='18px' fontWeight='regular'>
             {title}
           </ModalHeader>
           <ModalCloseButton
-            bg="none"
-            size={'sm'}
+            bg='none'
+            size={"sm"}
             mt={3}
             mr={3}
-            cursor="pointer"
-            _focus={{ outline: 'none' }}
+            cursor='pointer'
+            _focus={{ outline: "none" }}
             onClick={onClose}
-            p={'7px'}
-            border={'1px solid'}
+            p={"7px"}
+            border={"1px solid"}
           />
-          <Box width="90%" margin="0 auto" fontSize="14px">
+          <Box width='90%' margin='0 auto' fontSize='14px'>
             <Box
               bgColor={boxColor}
               border={`1px solid ${borderColor}`}
-              borderRadius="6px"
-              padding="10px"
-              fontWeight="normal"
-              fontSize="24px"
+              borderRadius='6px'
+              padding='10px'
+              fontWeight='normal'
+              fontSize='24px'
             >
-              <Text fontSize="16px" color={lightTextColor}>
+              <Text fontSize='16px' color={lightTextColor}>
                 From
               </Text>
-              <Flex justifyContent="space-between" mt="2">
+              <Flex justifyContent='space-between' mt='2'>
                 <Flex>
-                  <Image src={inputLogo || RGPImage} boxSize={'24px'} mr="2" />{' '}
+                  <Image src={inputLogo || RGPImage} boxSize={"24px"} mr='2' />{" "}
                   <Text>{from}</Text>
                 </Flex>
                 <Text color={heavyTextColor}>{fromDeposited}</Text>
               </Flex>
             </Box>
-            <Box display="flex" justifyContent="center" my="-4">
+            <Box display='flex' justifyContent='center' my='-4'>
               <Box
-                display="flex"
-                flexDirection="row"
-                justifyContent="center"
-                alignItems="center"
-                width="40px"
-                height="40px"
+                display='flex'
+                flexDirection='row'
+                justifyContent='center'
+                alignItems='center'
+                width='40px'
+                height='40px'
                 bgColor={boxColor}
                 border={`3px solid ${borderColor}`}
-                boxSizing="border-box"
-                borderRadius="12px"
+                boxSizing='border-box'
+                borderRadius='12px'
               >
                 <ArrowDownIcon w={5} h={10} />
               </Box>
@@ -130,70 +130,74 @@ const ConfirmModal: React.FC<IModal> = ({
             <Box
               bgColor={boxColor}
               border={`1px solid ${borderColor}`}
-              borderRadius="6px"
-              padding="10px"
-              fontWeight="normal"
-              fontSize="24px"
+              borderRadius='6px'
+              padding='10px'
+              fontWeight='normal'
+              fontSize='24px'
             >
-              <Text fontSize="16px" color={lightTextColor}>
+              <Text fontSize='16px' color={lightTextColor}>
                 To
               </Text>
-              <Flex justifyContent="space-between" mt="2">
+              <Flex justifyContent='space-between' mt='2'>
                 <Flex>
                   <Image
-                    boxSize={'24px'}
+                    boxSize={"24px"}
                     src={outputLogo || USDTImage}
-                    mr="2"
-                  />{' '}
+                    mr='2'
+                  />{" "}
                   <Text>{to}</Text>
                 </Flex>
                 <Text color={heavyTextColor}>{toDeposited}</Text>
               </Flex>
             </Box>
-            <Box my="5">
-              <Flex justifyContent="space-between" fontSize="14px">
+            <Box my='5'>
+              <Flex justifyContent='space-between' fontSize='14px'>
                 <Text color={lightTextColor}>Price</Text>
-                <Text color={heavyTextColor} fontWeight="bold">
+                <Text color={heavyTextColor} fontWeight='bold'>
                   1 {from} = {tokenPrice} {to}
                 </Text>
               </Flex>
             </Box>
             <Box
               border={`1px solid ${borderColor}`}
-              borderRadius="6px"
-              padding="10px"
-              fontWeight="normal"
+              borderRadius='6px'
+              padding='10px'
+              fontWeight='normal'
               background={boxColor}
-              fontSize="14px"
-              margin="15px 0"
+              fontSize='14px'
+              margin='15px 0'
             >
-              <Flex justifyContent="space-between">
+              <Flex justifyContent='space-between'>
                 <Box color={lightTextColor}>
                   Minimum received <InfoOutlineIcon />
                 </Box>
                 <Text color={heavyTextColor}>{minRecieved}</Text>
               </Flex>
-              <Flex justifyContent="space-between" my="4">
+              <Flex justifyContent='space-between' my='4'>
                 <Box color={lightTextColor}>
                   Route <InfoOutlineIcon />
                 </Box>
-                <Text color={heavyTextColor} fontWeight="500">
+                <Text color={heavyTextColor} fontWeight='500'>
                   {pathSymbol}
                 </Text>
               </Flex>
-              <Flex justifyContent="space-between">
+              <Flex justifyContent='space-between'>
                 <Box color={lightTextColor}>
                   Allowed Slippage <InfoOutlineIcon />
                 </Box>
                 <Text color={heavyTextColor}>{slippage}%</Text>
               </Flex>
-              <Flex justifyContent="space-between" my="4">
+              <Flex justifyContent='space-between' my='4'>
                 <Box color={lightTextColor}>
                   Price Impact <InfoOutlineIcon />
                 </Box>
-                <Text color={heavyTextColor}>{priceImpact}%</Text>
+                <Text
+                  color={(priceImpact as number) < -5 ? "red" : heavyTextColor}
+                >
+                  {priceImpact}%
+                </Text>
               </Flex>
-              <Flex justifyContent="space-between">
+              <Flex justifyContent='space-between'>
                 <Box color={lightTextColor}>
                   Liquidity Provider Fee <InfoOutlineIcon />
                 </Box>
@@ -202,24 +206,30 @@ const ConfirmModal: React.FC<IModal> = ({
                 </Text>
               </Flex>
             </Box>
-            <Text mb="2" color={lightTextColor}>
-              Output is estimated. You will receive at least{' '}
-              <Text as="span" color={heavyTextColor}>
+            <Text mb='2' color={lightTextColor}>
+              Output is estimated. You will receive at least{" "}
+              <Text as='span' color={heavyTextColor}>
                 {amountIn} {to}
-              </Text>{' '}
+              </Text>{" "}
               or the transaction will revert.
             </Text>
             <Button
-              variant="brand"
+              bgColor={(priceImpact as number) < -5 ? "#FF4243" : undefined}
+              _hover={{
+                bgColor: (priceImpact as number) < -5 ? "none" : undefined,
+              }}
+              variant='brand'
               isFullWidth
-              padding="24px 0"
-              boxShadow="none"
+              padding='24px 0'
+              boxShadow='none'
               onClick={() => {
                 handleSwap();
                 setShowModal(!showModal);
               }}
             >
-              Confirm Swap
+              {(priceImpact as number) < -5
+                ? "Price Impact too high, Swap Anyway"
+                : "Confirm Swap"}
             </Button>
           </Box>
         </ModalContent>

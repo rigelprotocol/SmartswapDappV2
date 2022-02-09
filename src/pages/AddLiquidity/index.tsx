@@ -19,6 +19,8 @@ import { useDerivedMintInfo, useMintState } from "../../state/mint/hooks";
 import { useWeb3React } from "@web3-react/core";
 import OutputCurrecy from "./AddLquidityInputs/OutputCurrecy";
 import InputCurrency from "./AddLquidityInputs/InputCurrency";
+import Joyride from "react-joyride";
+import { tourSteps } from "../../components/Onboarding/AddLiquidityStep";
 import { useMintActionHandlers } from "../../state/mint/hooks";
 import {
   useIsPoolsAvailable,
@@ -35,21 +37,21 @@ import {
   getDeadline,
   formatAmountIn,
   getOutPutDataFromEvent,
-} from '../../utils/utilsFunctions';
-import { SMARTSWAPROUTER } from '../../utils/addresses';
-import { setOpenModal, TrxState } from '../../state/application/reducer';
-import { useDispatch } from 'react-redux';
-import { getExplorerLink, ExplorerDataType } from '../../utils/getExplorerLink';
-import { addToast } from '../../components/Toast/toastSlice';
-import { calculateSlippageAmount } from '../../utils/calculateSlippageAmount';
-import ConfirmModal from './modals/ConfirmModal';
-import { useUserSlippageTolerance } from '../../state/user/hooks';
-import { useUserTransactionTTL } from '../../state/user/hooks';
-import { Currency } from '@uniswap/sdk';
-import { SmartSwapRouter } from '../../utils/Contracts';
-import { ethers } from 'ethers';
-import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
-
+} from "../../utils/utilsFunctions";
+import { SMARTSWAPROUTER, WNATIVEADDRESSES } from "../../utils/addresses";
+import { setOpenModal, TrxState } from "../../state/application/reducer";
+import { useDispatch } from "react-redux";
+import { getExplorerLink, ExplorerDataType } from "../../utils/getExplorerLink";
+import { addToast } from "../../components/Toast/toastSlice";
+import { calculateSlippageAmount } from "../../utils/calculateSlippageAmount";
+import ConfirmModal from "./modals/ConfirmModal";
+import { useUserSlippageTolerance } from "../../state/user/hooks";
+import { useUserTransactionTTL } from "../../state/user/hooks";
+import { Currency } from "@uniswap/sdk";
+import { SmartSwapRouter } from "../../utils/Contracts";
+import { ethers } from "ethers";
+import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
+import { SupportedChainSymbols } from "../../utils/constants/chains";
 
 export default function AddLiquidity({
   match: {
@@ -57,17 +59,19 @@ export default function AddLiquidity({
   },
   history,
 }: RouteComponentProps<{ currencyIdA?: string; currencyIdB?: string }>) {
-  const infoBg = useColorModeValue('#EBF6FE', '#EAF6FF');
-  const genBorder = useColorModeValue('#DEE6ED', '#324D68');
-  const bgColor = useColorModeValue('#F2F5F8', '#213345');
-  const topIcons = useColorModeValue('#666666', '#DCE6EF');
-  const textColorOne = useColorModeValue('#333333', '#F1F5F8');
-  const btnTextColor = useColorModeValue('#999999', '#7599BD');
-  const approveButtonBgColor = useColorModeValue('#319EF6', '#4CAFFF');
-  const approveButtonColor = useColorModeValue('#FFFFFF', '#F1F5F8');
+  const infoBg = useColorModeValue("#EBF6FE", "#EAF6FF");
+  const genBorder = useColorModeValue("#DEE6ED", "#324D68");
+  const bgColor = useColorModeValue("#F2F5F8", "#213345");
+  const topIcons = useColorModeValue("#666666", "#DCE6EF");
+  const textColorOne = useColorModeValue("#333333", "#F1F5F8");
+  const btnTextColor = useColorModeValue("#999999", "#7599BD");
+  const approveButtonBgColor = useColorModeValue("#319EF6", "#4CAFFF");
+  const approveButtonColor = useColorModeValue("#FFFFFF", "#F1F5F8");
 
   const { independentField, typedValue, otherTypedValue } = useMintState();
-
+  const [loading, setLoading] = useState(false);
+  const [run, setRun] = useState(false);
+  const bgColorRide = useColorModeValue("#319EF6", "#4CAFFF");
   const { onCurrencySelection, onUserInput, onCurrencyFor } =
     useMintActionHandlers();
   const { currencies, getMaxValue, bestTrade, parsedAmount, showWrap } =
@@ -91,15 +95,23 @@ export default function AddLiquidity({
   const [userSlippageTolerance] = useUserSlippageTolerance();
   const [userDeadline] = useUserTransactionTTL();
 
-  console.log("P1", currencyIdA);
-  console.log("P2", currencyIdB);
-
   useEffect(() => {
     if (currencyIdA && currencyIdB) {
       onCurrencyFor(currencyIdA, Field.INPUT);
       onCurrencyFor(currencyIdB, Field.OUTPUT);
     }
   }, [currencyIdB, currencyIdA]);
+
+  function startWelcomeRide() {
+    setRun(true);
+  }
+  useEffect(() => {
+    const visits = window.localStorage.getItem("continueLiquidtyVisit");
+    if (!visits) {
+      window.localStorage.setItem("continueLiquidtyVisit", "1");
+      startWelcomeRide();
+    }
+  }, []);
 
   const { priceAToB, priceBToA } = usePricePerToken(
     currencies[Field.INPUT],
@@ -155,7 +167,7 @@ export default function AddLiquidity({
   );
 
   const handleMaxInput = async () => {
-    const value = await getMaxValue(currencies[Field.INPUT]);
+    const value = await getMaxValue(currencies[Field.INPUT], library);
     const maxAmountInput = maxAmountSpend(value, currencies[Field.INPUT]);
     if (maxAmountInput) {
       onUserInput(Field.INPUT, maxAmountInput, pairAvailable);
@@ -227,7 +239,6 @@ export default function AddLiquidity({
     }
   };
 
-
   const addLiquidityETH = async (
     amountA: string,
     amountB: string,
@@ -236,7 +247,8 @@ export default function AddLiquidity({
   ) => {
     if (account) {
       const smartswaprouter = await SmartSwapRouter(
-        SMARTSWAPROUTER[chainId as number], library
+        SMARTSWAPROUTER[chainId as number],
+        library
       );
       const deadLine = getDeadline(userDeadline);
       const AmountAMin = formatAmountIn(amountA, currencyA.decimals);
@@ -371,7 +383,8 @@ export default function AddLiquidity({
   ) => {
     if (account) {
       const smartswaprouter = await SmartSwapRouter(
-        SMARTSWAPROUTER[chainId as number], library
+        SMARTSWAPROUTER[chainId as number],
+        library
       );
       const deadLine = getDeadline(userDeadline);
       const AmountAMin = formatAmountIn(amountA, currencyA.decimals);
@@ -502,16 +515,31 @@ export default function AddLiquidity({
   };
 
   const [isLoadingValue, setIsLoadingValue] = useState(false);
-  useEffect(() =>{
-    if (formattedAmounts[Field.INPUT] && !formattedAmounts[Field.OUTPUT]){
+  useEffect(() => {
+    if (formattedAmounts[Field.INPUT] && !formattedAmounts[Field.OUTPUT]) {
       setIsLoadingValue(true);
-    }else{
+    } else {
       setIsLoadingValue(false);
     }
   }, [formattedAmounts[Field.OUTPUT], formattedAmounts[Field.INPUT]]);
 
   return (
     <Center m={8}>
+      <Joyride
+        steps={tourSteps}
+        run={run}
+        continuous={true}
+        scrollToFirstStep={true}
+        showSkipButton={true}
+        styles={{
+          options: {
+            arrowColor: bgColorRide,
+            backgroundColor: bgColorRide,
+            textColor: "#FFFFFF",
+            primaryColor: bgColorRide,
+          },
+        }}
+      />
       <Box
         maxW='496px'
         borderWidth='1px'
@@ -552,6 +580,7 @@ export default function AddLiquidity({
           pt={2}
           pb={2}
           borderColor={genBorder}
+          className='AddLiquidity'
         >
           <InputCurrency
             onUserInput={handleTypeInput}
@@ -584,6 +613,7 @@ export default function AddLiquidity({
           pt={2}
           pb={2}
           borderColor={genBorder}
+          className='AddLiquidity2'
         >
           <OutputCurrecy
             onCurrencySelection={onCurrencySelection}
@@ -712,35 +742,37 @@ export default function AddLiquidity({
         >
           {`Approve ${currencies[Field.OUTPUT]?.symbol}`}
         </Button>
-        { isLoadingValue ? (
+        {isLoadingValue ? (
           <Button
-            size="lg"
-            height="48px"
-            width="200px"
-            border="2px"
+            size='lg'
+            height='48px'
+            width='200px'
+            border='2px'
             borderColor={genBorder}
             color={btnTextColor}
-            w="100%"
-            _hover={{ bgColor: 'none' }}
-            _active={{ bgColor: 'none' }}
+            className='AddLiquidity3'
+            w='100%'
+            _hover={{ bgColor: "none" }}
+            _active={{ bgColor: "none" }}
             disabled={true}
           >
             Loading...
           </Button>
         ) : (
           <Button
-            size="lg"
-            height="48px"
-            width="200px"
-            border="2px"
+            size='lg'
+            height='48px'
+            width='200px'
+            border='2px'
+            className='AddLiquidity3'
             borderColor={genBorder}
             color={btnTextColor}
-            w="100%"
-            _hover={{ bgColor: 'none' }}
-            _active={{ bgColor: 'none' }}
+            w='100%'
+            _hover={{ bgColor: "none" }}
+            _active={{ bgColor: "none" }}
             display={
               formattedAmounts[Field.INPUT] && formattedAmounts[Field.OUTPUT]
-                ? 'none'
+                ? "none"
                 : undefined
             }
           >

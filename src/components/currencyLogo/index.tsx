@@ -18,7 +18,7 @@ function getCurrencySymbol(currency) {
       return 'bnb'
     }
     try{
-     return currency.symbol.toLowerCase() 
+     return currency.symbol.toLowerCase()
     }catch(e){
       return ""
     }
@@ -61,6 +61,8 @@ const LOGO = SupportedChainLogo
     size?: string | number
     className?: string
     squared?: boolean,
+    marginBottom? : number,
+    marginRight? : number
   }
   const unknown = 'https://raw.githubusercontent.com/sushiswap/icons/master/token/unknown.png'
   // const unknown = NULL24LOGO
@@ -71,6 +73,8 @@ const LOGO = SupportedChainLogo
     size = '24px',
     className = '',
     squared,
+      marginBottom,
+      marginRight,
     ...rest
   }) => {
     const uriLocations = useHttpLocations(
@@ -101,7 +105,10 @@ const LOGO = SupportedChainLogo
       return []
     }, [currency, uriLocations])
   
-    return <Logo srcs={srcs} width={size} height={size} alt={currency?.symbol} squared={squared} {...rest}  />
+    return <Logo srcs={srcs} width={size} height={size}
+                 alt={currency?.symbol} squared={squared}
+                 {...rest} mb={marginBottom} mr={marginRight}
+    />
   }
   
   export default CurrencyLogo
