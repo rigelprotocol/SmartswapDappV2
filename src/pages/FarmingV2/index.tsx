@@ -42,7 +42,7 @@ import {
   smartSwapLPTokenPoolTwo,
   smartSwapLPTokenV2,
   smartSwapLPTokenV2PoolFive,
-  smartSwapLPTokenV2PoolFour,
+  smartSwapLPTokenV2PoolFour, smartSwapLPTokenV2PoolSeven, smartSwapLPTokenV2PoolSix,
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
@@ -55,6 +55,8 @@ import {
   SMARTSWAPLP_TOKEN3ADDRESSES,
   SMARTSWAPLP_TOKEN4ADDRESSES,
   SMARTSWAPLP_TOKEN5ADDRESSES,
+    SMARTSWAPLP_TOKEN6ADDRESSES,
+    SMARTSWAPLP_TOKEN7ADDRESSES
 } from "../../utils/addresses";
 import { formatBigNumber } from "../../utils";
 import { RootState } from "../../state";
@@ -116,15 +118,15 @@ export function Index() {
   let match = useRouteMatch("/farming-V2/staking-RGP");
   const FarmData = useFarms();
 
-  console.log("Farm data", FarmData);
-
-  console.log(chainId);
-
-  console.log(
-    FarmData.contents.map((content, index) => {
-      console.log(index !== 0 && index < 4);
-    })
-  );
+  // console.log("Farm data", FarmData);
+  //
+  // console.log(chainId);
+  //
+  // console.log(
+  //   FarmData.contents.map((content, index) => {
+  //     console.log(index !== 0 && index < 4);
+  //   })
+  // );
 
   const [Balance, Symbol] = useNativeBalance();
   const wallet = {
@@ -302,6 +304,8 @@ export function Index() {
             poolThree,
             poolFour,
             poolFive,
+              poolSix,
+              poolSeven,
             RGPToken2,
           ] = await Promise.all([
             rigelToken(RGP[chainId as number], library),
@@ -325,6 +329,14 @@ export function Index() {
               SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
               library
             ),
+            smartSwapLPTokenV2PoolSix(
+                SMARTSWAPLP_TOKEN6ADDRESSES[chainId as number],
+                library
+            ),
+            smartSwapLPTokenV2PoolSeven(
+                SMARTSWAPLP_TOKEN7ADDRESSES[chainId as number],
+                library
+            ),
             rigelToken(RGP[chainId as number], library),
           ]);
 
@@ -335,6 +347,8 @@ export function Index() {
             poolThreeBalance,
             poolFourBalance,
             poolFiveBalance,
+              poolSixBalance,
+              poolSevenBalance,
             RGPbalance2,
           ] = await Promise.all([
             RGPToken.balanceOf(account),
@@ -343,6 +357,8 @@ export function Index() {
             poolThree.balanceOf(account),
             poolFour.balanceOf(account),
             poolFive.balanceOf(account),
+            poolSix.balanceOf(account),
+            poolSeven.balanceOf(account),
             RGPToken2.balanceOf(account),
           ]);
 
@@ -354,6 +370,8 @@ export function Index() {
               formatBigNumber(poolThreeBalance),
               formatBigNumber(poolFourBalance),
               formatBigNumber(poolFiveBalance),
+              formatBigNumber(poolSixBalance),
+              formatBigNumber(poolSevenBalance),
               formatBigNumber(RGPbalance2),
             ])
           );
@@ -674,7 +692,7 @@ export function Index() {
           ])
         );
       } else {
-        const [specialPool, pool1, pool2, pool3, pool4, pool5, specialPool2] =
+        const [specialPool, pool1, pool2, pool3, pool4, pool5, pool6, pool7, specialPool2] =
           await Promise.all([
             RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library),
             smartSwapLPTokenPoolOne(
@@ -697,6 +715,14 @@ export function Index() {
               SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
               library
             ),
+            smartSwapLPTokenV2PoolSix(
+                SMARTSWAPLP_TOKEN6ADDRESSES[chainId as number],
+                library
+            ),
+            smartSwapLPTokenV2PoolSeven(
+                SMARTSWAPLP_TOKEN7ADDRESSES[chainId as number],
+                library
+            ),
             RGPSpecialPool2(
               RGPSPECIALPOOLADDRESSES2[chainId as number],
               library
@@ -710,6 +736,8 @@ export function Index() {
           pool3Reserve,
           pool4Reserve,
           pool5Reserve,
+            pool6Reserve,
+            pool7Reserve,
           rgpTotalStakingV2,
         ] = await Promise.all([
           await specialPool.totalStaking(),
@@ -718,6 +746,8 @@ export function Index() {
           pool3.getReserves(),
           pool4.getReserves(),
           pool5.getReserves(),
+          pool6.getReserves(),
+          pool7.getReserves(),
           await specialPool2.totalStaking(),
         ]);
         const RGPprice: number | any = ethers.utils.formatUnits(
@@ -748,6 +778,18 @@ export function Index() {
             21
           )
           .toString();
+        const PLACE_RGPLiquidity = ethers.utils
+            .formatUnits(
+                pool6Reserve[1].mul(Math.floor(Number(RGPprice) * 1000 * 2)),
+                21
+            ).toString();
+
+        const MHT_RGPLiquidity = ethers.utils
+            .formatUnits(
+                pool7Reserve[1].mul(Math.floor(Number(RGPprice) * 1000 * 2)),
+                21
+            )
+            .toString();
 
         dispatch(
           updateTotalLiquidity([
@@ -780,6 +822,16 @@ export function Index() {
               deposit: "AXS-BUSD",
               liquidity: AXS_BUSDLiquidity,
               apy: calculateApy(RGPprice, AXS_BUSDLiquidity, 238.3333333),
+            },
+            {
+              deposit: "PLACE-RGP",
+              liquidity: PLACE_RGPLiquidity,
+              apy: calculateApy(RGPprice, PLACE_RGPLiquidity, 340.48),
+            },
+            {
+              deposit: "MHT-RGP",
+              liquidity: MHT_RGPLiquidity,
+              apy: calculateApy(RGPprice, MHT_RGPLiquidity, 340.48),
             },
             {
               deposit: "RGP",
@@ -953,22 +1005,30 @@ export function Index() {
           poolThreeEarned,
           poolFourEarned,
           poolFiveEarned,
+            poolSixEarned,
+            poolSevenEarned,
           poolOneStaked,
           poolTwoStaked,
           poolThreeStaked,
           poolFourStaked,
           poolFiveStaked,
+            poolSixStaked,
+            poolSevenStaked,
         ] = await Promise.all([
           masterChefV2.pendingRigel(1, account),
           masterChefV2.pendingRigel(2, account),
           masterChefV2.pendingRigel(3, account),
           masterChefV2.pendingRigel(4, account),
           masterChefV2.pendingRigel(5, account),
+          masterChefV2.pendingRigel(6, account),
+          masterChefV2.pendingRigel(7, account),
           masterChefV2.userInfo(1, account),
           masterChefV2.userInfo(2, account),
           masterChefV2.userInfo(3, account),
           masterChefV2.userInfo(4, account),
           masterChefV2.userInfo(5, account),
+          masterChefV2.userInfo(6, account),
+          masterChefV2.userInfo(7, account),
         ]);
 
         const RGPStakedEarned = await specialPoolStaked();
@@ -1025,6 +1085,14 @@ export function Index() {
             {
               staked: formatBigNumber(poolFiveStaked.amount),
               earned: formatBigNumber(poolFiveEarned),
+            },
+            {
+              staked: formatBigNumber(poolSixStaked.amount),
+              earned: formatBigNumber(poolSixEarned),
+            },
+            {
+              staked: formatBigNumber(poolSevenStaked.amount),
+              earned: formatBigNumber(poolSevenEarned),
             },
             { staked: RGPStakedV2, earned: RGPEarnedV2, symbol: "RGP" },
           ])
@@ -1506,7 +1574,7 @@ export function Index() {
                     : Number(chainId) !== Number(SupportedChainId.POLYGON)
                     ? FarmData.contents.map((content: any, index: number) =>
                         Number(chainId) !== Number(SupportedChainId.POLYGON) &&
-                        index !== 0 ? (
+                        index !== 0 && index !== 8 ? (
                           <YieldFarm
                             farmDataLoading={farmDataLoading}
                             content={content}
@@ -1684,6 +1752,78 @@ export function Index() {
             </Flex>
           </TabPanel>
           <TabPanel padding='0px'></TabPanel>
+          <TabPanel padding='0px'>
+            <Flex
+                justifyContent='center'
+                alignItems='center'
+                rounded='lg'
+                mb={4}
+            >
+              <Box
+                  bg='#120136'
+                  minHeight='89vh'
+                  w={["100%", "100%", "100%"]}
+                  background={
+                    mode === LIGHT_THEME
+                        ? "#FFFFFF !important"
+                        : mode === DARK_THEME
+                        ? "#15202B !important"
+                        : "#FFFFFF !important"
+                  }
+                  rounded='lg'
+              >
+                <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
+                  <Flex
+                      alignItems='center'
+                      justifyContent='space-between'
+                      px={4}
+                      py={4}
+                      background={
+                        mode === DARK_THEME
+                            ? "#213345"
+                            : mode === LIGHT_THEME
+                            ? "#F2F5F8"
+                            : "#F2F5F8 !important"
+                      }
+                      color={
+                        mode === LIGHT_THEME
+                            ? "#333333"
+                            : mode === DARK_THEME
+                            ? "#F1F5F8"
+                            : "#333333"
+                      }
+                      w={["100%", "100%", "100%"]}
+                      align='left'
+                      border={
+                        mode === LIGHT_THEME
+                            ? "1px solid #DEE5ED !important"
+                            : mode === DARK_THEME
+                            ? "1px solid #324D68 !important"
+                            : "1px solid #324D68"
+                      }
+                      display={{ base: "none", md: "flex", lg: "flex" }}
+                  >
+                    <Text>Deposit</Text>
+                    <Text>Earn</Text>
+                    <Text>APY</Text>
+                    <Text>Total Liquidity</Text>
+                    <Text />
+                  </Flex>
+                  {FarmData.contents.map((content: any, index: number) =>
+                      index === 8 ? (
+                          <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content={content}
+                              key={content.pid}
+                              wallet={wallet}
+                          />
+                      ) : null
+                  )}
+                </Box>
+              </Box>
+            </Flex>
+          </TabPanel>
+
         </TabPanels>
       </Tabs>
     </Box>
