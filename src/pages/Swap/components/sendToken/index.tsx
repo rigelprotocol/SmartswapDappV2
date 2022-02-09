@@ -363,7 +363,7 @@ const SendToken = () => {
           addToast({
             message: `Swap ${inputAmount} ${
               currencies[Field.INPUT]?.symbol
-            } for ${outputToken} ${currencies[Field.OUTPUT]?.symbol}`,
+            } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
