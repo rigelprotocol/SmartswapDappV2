@@ -22,6 +22,7 @@ import {
   Tooltip,
   Spinner,
   useMediaQuery,
+  Checkbox,
 } from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import { SupportedChainId } from "../../constants/chains";
@@ -112,10 +113,20 @@ const ShowYieldFarmDetails = ({
   const [deposited, setDeposited] = useState(false);
   const [minimumStakeAmount, setMinimumStakeAmount] = useState(0);
   const [isMobileDevice] = useMediaQuery("(max-width: 767px)");
+  const [showReferralField, setShowReferralField] = useState(true);
   const signer = library?.getSigner();
   const closeModal = () => {
     modal2Disclosure.onClose();
   };
+  const handleSetReferralField = () => {
+    if(showReferralField === true){
+      setShowReferralField(false);
+      setReferralAddress('0x0000000000000000000000000000000000000000');
+    }else{
+      setShowReferralField(true);
+      setReferralAddress('');
+    }
+  }
 
   useEffect(() => {
     const poolAllowance = async (contract) => {
@@ -1706,21 +1717,24 @@ const ShowYieldFarmDetails = ({
               <Text color={modalTextColor2} fontSize='14px' mb={5} mt={3}>
                 RGP Available: {content.availableToken} {content.deposit}
               </Text>
-              <Text color={modalTextColor} fontSize='14px' mb={3}>
-                Referral address
-              </Text>
-              <InputGroup size='md'>
-                <Input
-                  placeholder='Enter referral address here'
-                  opacity='0.5'
-                  h='50px'
-                  borderRadius='6px'
-                  name='referralDetail'
-                  border='2px'
-                  value={referralAddress}
-                  onChange={(e) => setReferralAddress(e.target.value)}
-                />
-              </InputGroup>
+              <Box display={showReferralField ? "block" : "none"}>
+                <Text color={modalTextColor} fontSize='14px' mb={3}>
+                  Referral address
+                </Text>
+                <InputGroup size='md'>
+                  <Input
+                    placeholder='Enter referral address here'
+                    opacity='0.5'
+                    h='50px'
+                    borderRadius='6px'
+                    name='referralDetail'
+                    border='2px'
+                    value={referralAddress}
+                    onChange={(e) => setReferralAddress(e.target.value)}
+                  />
+                </InputGroup>
+              </Box>
+              <Checkbox mt={3} onChange={handleSetReferralField}>No Referral?</Checkbox>
               <Box mt={4}>
                 {depositInputHasError || refAddressHasError ? (
                   <>
@@ -1745,7 +1759,8 @@ const ShowYieldFarmDetails = ({
                       disabled={
                         depositValue !== "Confirm" ||
                         !account ||
-                        !referralAddress
+                        !depositTokenValue ||
+                        (setShowReferralField && referralAddress==="")
                       }
                       cursor='pointer'
                       border='none'
@@ -1778,7 +1793,8 @@ const ShowYieldFarmDetails = ({
                         disabled={
                           depositValue !== "Confirm" ||
                           !account ||
-                          !referralAddress
+                          !depositTokenValue ||
+                          (setShowReferralField && referralAddress==="")
                         }
                         cursor='pointer'
                         border='none'
