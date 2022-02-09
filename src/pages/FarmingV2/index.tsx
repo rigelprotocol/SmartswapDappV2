@@ -1574,7 +1574,7 @@ export function Index() {
                     : Number(chainId) !== Number(SupportedChainId.POLYGON)
                     ? FarmData.contents.map((content: any, index: number) =>
                         Number(chainId) !== Number(SupportedChainId.POLYGON) &&
-                        index !== 0 ? (
+                        index !== 0 && index !== 8 ? (
                           <YieldFarm
                             farmDataLoading={farmDataLoading}
                             content={content}
@@ -1752,6 +1752,78 @@ export function Index() {
             </Flex>
           </TabPanel>
           <TabPanel padding='0px'></TabPanel>
+          <TabPanel padding='0px'>
+            <Flex
+                justifyContent='center'
+                alignItems='center'
+                rounded='lg'
+                mb={4}
+            >
+              <Box
+                  bg='#120136'
+                  minHeight='89vh'
+                  w={["100%", "100%", "100%"]}
+                  background={
+                    mode === LIGHT_THEME
+                        ? "#FFFFFF !important"
+                        : mode === DARK_THEME
+                        ? "#15202B !important"
+                        : "#FFFFFF !important"
+                  }
+                  rounded='lg'
+              >
+                <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
+                  <Flex
+                      alignItems='center'
+                      justifyContent='space-between'
+                      px={4}
+                      py={4}
+                      background={
+                        mode === DARK_THEME
+                            ? "#213345"
+                            : mode === LIGHT_THEME
+                            ? "#F2F5F8"
+                            : "#F2F5F8 !important"
+                      }
+                      color={
+                        mode === LIGHT_THEME
+                            ? "#333333"
+                            : mode === DARK_THEME
+                            ? "#F1F5F8"
+                            : "#333333"
+                      }
+                      w={["100%", "100%", "100%"]}
+                      align='left'
+                      border={
+                        mode === LIGHT_THEME
+                            ? "1px solid #DEE5ED !important"
+                            : mode === DARK_THEME
+                            ? "1px solid #324D68 !important"
+                            : "1px solid #324D68"
+                      }
+                      display={{ base: "none", md: "flex", lg: "flex" }}
+                  >
+                    <Text>Deposit</Text>
+                    <Text>Earn</Text>
+                    <Text>APY</Text>
+                    <Text>Total Liquidity</Text>
+                    <Text />
+                  </Flex>
+                  {FarmData.contents.map((content: any, index: number) =>
+                      index === 8 ? (
+                          <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content={content}
+                              key={content.pid}
+                              wallet={wallet}
+                          />
+                      ) : null
+                  )}
+                </Box>
+              </Box>
+            </Flex>
+          </TabPanel>
+
         </TabPanels>
       </Tabs>
     </Box>
