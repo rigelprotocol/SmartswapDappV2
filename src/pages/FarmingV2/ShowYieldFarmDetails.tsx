@@ -1355,6 +1355,7 @@ const ShowYieldFarmDetails = ({
   };
 
   const [run, setRun] = useState(false);
+  const bgColor2 = useColorModeValue("#319EF6", "#4CAFFF");
 
   useEffect(() => {
     const visits = window.localStorage.getItem('firstYieldVisit');
@@ -1395,10 +1396,10 @@ const ShowYieldFarmDetails = ({
           showSkipButton={true}
           styles={{
             options: {
-              arrowColor: bgColor,
-              backgroundColor: bgColor,
+              arrowColor: bgColor2,
+              backgroundColor: bgColor2,
               textColor: '#FFFFFF',
-              primaryColor: bgColor
+              primaryColor: bgColor2
             }
           }}
       />
