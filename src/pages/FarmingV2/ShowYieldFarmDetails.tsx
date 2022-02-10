@@ -46,14 +46,13 @@ import {
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
-  RGPADDRESSES,
   SMARTSWAPLP_TOKEN1ADDRESSES,
   SMARTSWAPLP_TOKEN2ADDRESSES,
   SMARTSWAPLP_TOKEN3ADDRESSES,
   SMARTSWAPLP_TOKEN4ADDRESSES,
   SMARTSWAPLP_TOKEN5ADDRESSES,
-    SMARTSWAPLP_TOKEN6ADDRESSES,
-    SMARTSWAPLP_TOKEN7ADDRESSES,
+  SMARTSWAPLP_TOKEN6ADDRESSES,
+  SMARTSWAPLP_TOKEN7ADDRESSES,
   RGP,
   RGPSPECIALPOOLADDRESSES,
   RGPSPECIALPOOLADDRESSES2,
@@ -62,6 +61,10 @@ import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
 import { useRGPBalance } from "../../utils/hooks/useBalances";
 import { updateFarmAllowances } from "../../state/farm/actions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
+import Joyride from "react-joyride";
+import {steps} from "../../components/Onboarding/YieldSteps";
+import {Web3Provider} from "@ethersproject/providers";
+import {Contract} from '@ethersproject/contracts';
 
 const ShowYieldFarmDetails = ({
   content,
@@ -69,6 +72,7 @@ const ShowYieldFarmDetails = ({
 }: {
   content: {
     pid: number | string;
+    id: string;
     totalLiquidity: string;
     earn: string;
     img: string;
@@ -80,7 +84,7 @@ const ShowYieldFarmDetails = ({
     poolAllowance: any;
     RGPEarned: string;
     poolVersion: number | string;
-  };
+  }, wallet : any;
 }) => {
   const mode = useColorModeValue("light", DARK_THEME);
   const bgColor = useColorModeValue("#FFF", "#15202B");
@@ -110,7 +114,7 @@ const ShowYieldFarmDetails = ({
   const [farmingFee, setFarmingFee] = useState("10");
   const [FarmingFeeLoading, setFarmingFeeLoading] = useState(true);
   const [deposited, setDeposited] = useState(false);
-  const [minimumStakeAmount, setMinimumStakeAmount] = useState(0);
+  const [minimumStakeAmount, setMinimumStakeAmount] = useState<string | number>(0);
   const [isMobileDevice] = useMediaQuery("(max-width: 767px)");
   const signer = library?.getSigner();
   const closeModal = () => {
@@ -118,7 +122,7 @@ const ShowYieldFarmDetails = ({
   };
 
   useEffect(() => {
-    const poolAllowance = async (contract) => {
+    const poolAllowance = async (contract: Contract) => {
       if (account) {
         const rgpApproval = await contract.allowance(
           account,
@@ -132,7 +136,7 @@ const ShowYieldFarmDetails = ({
       setFarmingFeeLoading(false);
     }
 
-    const specialPoolV1Allowance = async (contract) => {
+    const specialPoolV1Allowance = async (contract: Contract) => {
       if (account) {
         const rgpApproval = await contract.allowance(
           account,
@@ -142,7 +146,7 @@ const ShowYieldFarmDetails = ({
       }
     };
 
-    const specialPoolV2Allowance = async (contract) => {
+    const specialPoolV2Allowance = async (contract: Contract) => {
       if (account) {
         const rgpApproval = await contract.allowance(
           account,
@@ -170,7 +174,6 @@ const ShowYieldFarmDetails = ({
           library
         );
         const approvalForRGPBNB = await poolAllowance(poolTwo);
-        console.log(approvalForRGPBNB, "approval-usdt");
         changeApprovalButton(approvalForRGPBNB, rgpApproval);
       } else if (
         content.deposit === "RGP-BUSD" ||
@@ -520,7 +523,7 @@ const ShowYieldFarmDetails = ({
     getAllowances();
   }, [account, deposited]);
 
-  const allowance = (contract: any) =>
+  const allowance = (contract: Contract) =>
     contract.allowance(account, MASTERCHEFV2ADDRESSES[chainId as number]);
 
   const getAllowances = async () => {
@@ -910,7 +913,7 @@ const ShowYieldFarmDetails = ({
   const LPDeposit = async (pid: any) => {
     if (account) {
       try {
-        console.log({ RGPBalance, farmingFee })
+        console.log({ RGPBalance, farmingFee });
         if (parseFloat(content.tokensStaked[1]) == 0) {
 
           if (parseFloat(RGPBalance) < parseFloat(farmingFee)) {
@@ -1351,6 +1354,16 @@ const ShowYieldFarmDetails = ({
     }
   };
 
+  const [run, setRun] = useState(false);
+
+  useEffect(() => {
+    const visits = window.localStorage.getItem('firstYieldVisit');
+    if (!visits) {
+      setRun(true);
+      window.localStorage.setItem('firstYieldVisit', '1');
+    }
+  }, []);
+
   const approvalButton = (LPToken: any) => (
     <Button
       my='2'
@@ -1373,6 +1386,23 @@ const ShowYieldFarmDetails = ({
 
   return (
     <>
+
+      <Joyride
+          steps={steps}
+          run={run}
+          continuous={true}
+          scrollToFirstStep={true}
+          showSkipButton={true}
+          styles={{
+            options: {
+              arrowColor: bgColor,
+              backgroundColor: bgColor,
+              textColor: '#FFFFFF',
+              primaryColor: bgColor
+            }
+          }}
+      />
+
       <Flex
         flexDirection={["column", "column", "row"]}
         color={mode === DARK_THEME ? "#F1F5F8" : "#333333"}
@@ -1425,6 +1455,7 @@ const ShowYieldFarmDetails = ({
                 padding='10px 40px'
                 cursor='pointer'
                 onClick={() => setApprove(content.deposit)}
+                className={approveValueForRGP && approveValueForOtherToken ? 'unstake' : 'approve'}
               >
                 {approveValueForRGP && approveValueForOtherToken
                   ? "Unstake"
@@ -1440,11 +1471,6 @@ const ShowYieldFarmDetails = ({
                     : "#4A739B"
                 }
                 color={mode === DARK_THEME ? "#FFFFFF" : "#FFFFFF"}
-                // {
-                //   bg={mode === DARK_THEME ? "#4A739B" : "#999999"}
-                //   color={mode === DARK_THEME ? "#FFFFFF" : "#FFFFFF"}
-
-                // }
                 border='0'
                 mb='4'
                 mr='6'
@@ -1452,6 +1478,7 @@ const ShowYieldFarmDetails = ({
                 cursor='pointer'
                 disabled={!approveValueForRGP || !approveValueForOtherToken}
                 onClick={openDepositeModal}
+                className={'deposit'}
               >
                 Deposit
               </Button>
@@ -1502,9 +1529,9 @@ const ShowYieldFarmDetails = ({
                 _hover={{ color: "white" }}
                 disabled={parseFloat(content.RGPEarned) <= 0}
                 onClick={() => {
-                  console.log(content.pId);
                   harvestTokens(content.pId);
                 }}
+                className={'harvest'}
               >
                 Harvest
               </Button>
@@ -1541,6 +1568,7 @@ const ShowYieldFarmDetails = ({
                 onClick={() => {
                   harvestTokens(content.pId);
                 }}
+                className={'harvest'}
               >
                 Harvest
               </Button>

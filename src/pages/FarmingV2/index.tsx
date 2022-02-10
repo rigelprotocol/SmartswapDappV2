@@ -47,7 +47,6 @@ import {
 import {
   MASTERCHEFV2ADDRESSES,
   RGP,
-  RGPADDRESSES,
   RGPSPECIALPOOLADDRESSES,
   RGPSPECIALPOOLADDRESSES2,
   SMARTSWAPLP_TOKEN1ADDRESSES,
@@ -63,6 +62,9 @@ import { RootState } from "../../state";
 import { SupportedChainId } from "../../constants/chains";
 import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
+import Joyride from "react-joyride";
+import {steps} from "../../components/Onboarding/FarmingSteps";
+import WelcomeModal from "../../components/Onboarding/WelcomeModal";
 
 export const BIG_TEN = new bigNumber(10);
 
@@ -1157,8 +1159,45 @@ export function Index() {
     return AXS_BUSDLiquidity;
   };
 
+  const [welcomeModal, setWelcomeModal] = useState(false);
+  const [run, setRun] = useState(false);
+  const bgColor = useColorModeValue("#319EF6", "#4CAFFF");
+
+  useEffect(() => {
+    const visits = window.localStorage.getItem('firstFarmVisit');
+    if (!visits) {
+      setWelcomeModal(true);
+      window.localStorage.setItem('firstFarmVisit', '1');
+    }
+  }, []);
+
+  function strartWelcomeRide() {
+    setRun(true)
+  }
+
   return (
     <Box>
+
+      <Joyride
+          steps={steps}
+          run={run}
+          continuous={true}
+          scrollToFirstStep={true}
+          showSkipButton={true}
+          styles={{
+            options: {
+              arrowColor: bgColor,
+              backgroundColor: bgColor,
+              textColor: '#FFFFFF',
+              primaryColor: bgColor
+            }
+          }}
+      />
+      <WelcomeModal startToure={strartWelcomeRide} openModal={welcomeModal}
+                    closeModal={() => setWelcomeModal((state) => !state)}
+                    textHeader={'Welcome to SmartSwap Farming'}
+                    welcomeText="With farming, you can maximize the rate of return on capital and generate rewards on your cryptocurrency holdings." />
+
       {(chainId && library) || !showAlert ? null : (
         <Box mx={[5, 10, 15, 20]} my={4}>
           <Alert
@@ -1209,6 +1248,7 @@ export function Index() {
             padding=' 12px 32px'
             mt={3}
             variant='brand'
+            className={'list'}
           >
             List your project
           </Button>
@@ -1277,6 +1317,7 @@ export function Index() {
               }
               fontSize={isMobileDevice ? "14px" : undefined}
               mt='2'
+              className={'liquidity'}
             >
               Liquidity Pools
             </Text>
@@ -1372,7 +1413,7 @@ export function Index() {
             // minWidth={{ base: "none", md: "200px", lg: "200px" }}
             onClick={() => handleSelect(STAKING)}
           >
-            <Text>Staking</Text>
+            <Text className={'staking'}>Staking</Text>
             {Number(chainId) === Number(SupportedChainId.POLYGON) ? null : (
               <Select
                 borderColor={
@@ -1459,7 +1500,7 @@ export function Index() {
             // minWidth={{ base: "none", md: "200px", lg: "200px" }}
             // onClick={() => handleSelect(OTHER_FARMS)}
           >
-            <Text>Other Farms</Text>
+            <Text className={'other'}>Other Farms</Text>
           </Tab>
         </TabList>
         <Divider my='4' />
