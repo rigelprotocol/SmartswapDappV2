@@ -22,6 +22,10 @@ export function shortenAddress(address: string, chars = 4): string {
     return `${parsed.substring(0, chars + 2)}...${parsed.substring(42 - chars)}`
 }
 
+export function shortenCode(code: string, chars = 4): string {
+    return `${code.substring(0, chars + 2)}...${code.substring(42 - chars)}`
+}
+
 export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
@@ -72,7 +76,7 @@ export function convertToNumber(hex : string, decimals?: number) {
     return output.join('.');
   };
 
-  //converts floating number to a given decimal place without rounding up or down eg 
+  //converts floating number to a given decimal place without rounding up or down eg
   // let f_number =  0.99899002; ParseFloat(f_number, 4) = 0.9989
 
   export function ParseFloat(str : string | number, val : number) {

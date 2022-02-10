@@ -64,6 +64,10 @@ export default function App() {
               {/* <Route path="*">
                 <Redirect to="/swap" />
               </Route> */}
+              <Route
+                path="/farming-V2/staking-RGP/ref="
+                component={FarmingV2}
+              />
             </Switch>
           </ErrorBoundary>
         </HashRouter>

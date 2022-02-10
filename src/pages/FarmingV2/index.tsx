@@ -17,7 +17,11 @@ import {
   Tabs,
   useColorModeValue,
   useMediaQuery,
+  Tooltip,
+  IconButton,
+  useClipboard,
 } from "@chakra-ui/react";
+import { CopyIcon } from "../../theme/components/Icons";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import YieldFarm from "./YieldFarm";
 import { AlertSvg } from "./Icon";
@@ -63,6 +67,11 @@ import { RootState } from "../../state";
 import { SupportedChainId } from "../../constants/chains";
 import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
+import CryptoJS from 'crypto-js';
+import sha256 from 'crypto-js/sha256';
+import aes from 'crypto-js/aes';
+import { shortenCode } from "../../utils";
+import { usePathname } from "../../hooks/usePathname";
 
 export const BIG_TEN = new bigNumber(10);
 
@@ -90,6 +99,11 @@ export function Index() {
   const [liquidityIndex, setLiquidityIndex] = useState(0);
   const [stakingIndex, setStakingIndex] = useState(1);
   const [isMobileDevice] = useMediaQuery("(max-width: 750px)");
+  const [referralCode, setReferralCode] = useState("");
+  const [referralLink, setReferralLink] = useState("");
+  const { hasCopied, onCopy } = useClipboard(referralLink);
+  const pathName = usePathname();
+  const hostName = window.location.href;
 
   const handleTabsChange = (index: number) => {
     const useIndex =
@@ -100,15 +114,18 @@ export function Index() {
   const goToV1 = (index: number) => {
     setTabIndex(index);
   };
-
   const handleStakingTab = (event: { target: { value: string } }) => {
     setStakingIndex(parseInt(event.target.value, 10));
     setTabIndex(parseInt(event.target.value, 10));
+    console.log(`Staking index - ${stakingIndex} & Tab index - ${tabIndex}`);
+    console.log(`pathname - ${pathName}`);
+    console.log(`Host name - ${hostName}`);
   };
 
   const handleLiquidityTab = (event: { target: { value: string } }) => {
     setLiquidityIndex(parseInt(event.target.value, 10));
     setTabIndex(parseInt(event.target.value, 10));
+    console.log(`Liquidity index - ${liquidityIndex} & Tab index - ${tabIndex}`);
   };
 
   //const { data: farmsLP } = useFarms()
@@ -204,6 +221,19 @@ export function Index() {
   const handleAlert = () => {
     setShowAlert(false);
   };
+
+  useEffect(() => {
+    const handleReferralCode = () =>{
+      const encryptedReferralCode = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(account)).toString();
+      setReferralCode(encryptedReferralCode);
+      const refLink = `${hostName}/ref=${referralCode}`;
+      setReferralLink(refLink);
+      console.log(`RefCode - ${refLink}`);
+      const decryptedReferralCode = CryptoJS.enc.Base64.parse(encryptedReferralCode).toString(CryptoJS.enc.Utf8);
+      console.log(`Decrypted - ${decryptedReferralCode}`);
+    }
+    handleReferralCode()
+  }, [account])
 
   const getFarmTokenBalance = async () => {
     if (account) {
@@ -1159,7 +1189,55 @@ export function Index() {
 
   return (
     <Box>
-      {(chainId && library) || !showAlert ? null : (
+      {!showAlert || (tabIndex === 0) || (tabIndex === 3) ? null
+        : (tabIndex === 5) && (stakingIndex === 5) ?
+        (
+          <Box mx={[5, 10, 15, 20]} my={4}>
+            <Alert
+              color='#FFFFFF'
+              background={mode === DARK_THEME ? "#319EF6" : "#319EF6"}
+              borderRadius='8px'
+            >
+              <AlertSvg />
+              <AlertDescription
+                fontFamily='Inter'
+                fontSize={{ base: "14px", md: "16px", lg: "18px" }}
+                fontWeight='500'
+                lineHeight='24px'
+                letterSpacing='0em'
+                textAlign='left'
+                padding='10px'
+              >
+                  {
+                    (chainId && library) ?
+                    <Box>
+                      <Flex>
+                        Your referral link is {hostName}/ref={shortenCode(referralCode)}
+                        <Tooltip hasArrow label={hasCopied ? "Copied!" : "Copy"} bg="gray.300" color="black">
+                          <IconButton onClick={onCopy} aria-label="Copy referral code" icon={<CopyIcon />} colorScheme="ghost" pl={4}/>
+                        </Tooltip>
+                        Copy link
+                      </Flex>
+                    </Box>
+                    : `Connect your wallet to get a referral link`
+                  }
+              </AlertDescription>
+
+              <CloseButton
+                position='absolute'
+                margin='2px'
+                height='14px'
+                width='14px'
+                background='#319EF6'
+                color='#fff'
+                right='20px'
+                textAign='center'
+                onClick={handleAlert}
+              />
+            </Alert>
+          </Box>
+        )
+        : (
         <Box mx={[5, 10, 15, 20]} my={4}>
           <Alert
             color='#FFFFFF'
@@ -1176,8 +1254,9 @@ export function Index() {
               textAlign='left'
               padding='10px'
             >
-              This is the V2 Farm. You should migrate your stakings from V1
-              Farm.
+            {
+              `This is the V2 Farm. You should migrate your stakings from V1 Farm.`
+            }
             </AlertDescription>
 
             <CloseButton
