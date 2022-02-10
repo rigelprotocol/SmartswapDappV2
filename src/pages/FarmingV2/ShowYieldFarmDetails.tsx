@@ -114,6 +114,7 @@ const ShowYieldFarmDetails = ({
   const [minimumStakeAmount, setMinimumStakeAmount] = useState(0);
   const [isMobileDevice] = useMediaQuery("(max-width: 767px)");
   const [showReferralField, setShowReferralField] = useState(true);
+  const [isReferrerCheck, setIsReferrerCheck] = useState(false);
   const signer = library?.getSigner();
   const closeModal = () => {
     modal2Disclosure.onClose();
@@ -122,9 +123,11 @@ const ShowYieldFarmDetails = ({
     if(showReferralField === true){
       setShowReferralField(false);
       setReferralAddress('0x0000000000000000000000000000000000000000');
+      setIsReferrerCheck(true);
     }else{
       setShowReferralField(true);
       setReferralAddress('');
+      setIsReferrerCheck(false);
     }
   }
 
@@ -1719,7 +1722,7 @@ const ShowYieldFarmDetails = ({
               </Text>
               <Box display={showReferralField ? "block" : "none"}>
                 <Text color={modalTextColor} fontSize='14px' mb={3}>
-                  Referral address
+                  Referrer address
                 </Text>
                 <InputGroup size='md'>
                   <Input
@@ -1734,7 +1737,7 @@ const ShowYieldFarmDetails = ({
                   />
                 </InputGroup>
               </Box>
-              <Checkbox mt={3} onChange={handleSetReferralField}>No Referral?</Checkbox>
+              <Checkbox mt={3} onChange={handleSetReferralField} isChecked={isReferrerCheck}>No Referrer?</Checkbox>
               <Box mt={4}>
                 {depositInputHasError || refAddressHasError ? (
                   <>

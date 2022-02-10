@@ -74,7 +74,6 @@ import { shortenCode } from "../../utils";
 import { usePathname } from "../../hooks/usePathname";
 
 export const BIG_TEN = new bigNumber(10);
-
 export const LIQUIDITY = "liquidity";
 export const STAKING = "staking";
 export const OTHER_FARMS = "other farms";
@@ -104,6 +103,7 @@ export function Index() {
   const { hasCopied, onCopy } = useClipboard(referralLink);
   const pathName = usePathname();
   const hostName = window.location.href;
+  const pathHistory = history.pathName;
 
   const handleTabsChange = (index: number) => {
     const useIndex =
@@ -117,15 +117,11 @@ export function Index() {
   const handleStakingTab = (event: { target: { value: string } }) => {
     setStakingIndex(parseInt(event.target.value, 10));
     setTabIndex(parseInt(event.target.value, 10));
-    console.log(`Staking index - ${stakingIndex} & Tab index - ${tabIndex}`);
-    console.log(`pathname - ${pathName}`);
-    console.log(`Host name - ${hostName}`);
   };
 
   const handleLiquidityTab = (event: { target: { value: string } }) => {
     setLiquidityIndex(parseInt(event.target.value, 10));
     setTabIndex(parseInt(event.target.value, 10));
-    console.log(`Liquidity index - ${liquidityIndex} & Tab index - ${tabIndex}`);
   };
 
   //const { data: farmsLP } = useFarms()
@@ -228,9 +224,7 @@ export function Index() {
       setReferralCode(encryptedReferralCode);
       const refLink = `${hostName}/ref=${referralCode}`;
       setReferralLink(refLink);
-      console.log(`RefCode - ${refLink}`);
       const decryptedReferralCode = CryptoJS.enc.Base64.parse(encryptedReferralCode).toString(CryptoJS.enc.Utf8);
-      console.log(`Decrypted - ${decryptedReferralCode}`);
     }
     handleReferralCode()
   }, [account])
@@ -1201,23 +1195,21 @@ export function Index() {
               <AlertSvg />
               <AlertDescription
                 fontFamily='Inter'
-                fontSize={{ base: "14px", md: "16px", lg: "18px" }}
+                fontSize={{ base: "12px", md: "14px", lg: "16px" }}
                 fontWeight='500'
                 lineHeight='24px'
                 letterSpacing='0em'
                 textAlign='left'
-                padding='10px'
+                padding='8px'
               >
                   {
                     (chainId && library) ?
-                    <Box>
-                      <Flex>
-                        Your referral link is {hostName}/ref={shortenCode(referralCode)}
-                        <Tooltip hasArrow label={hasCopied ? "Copied!" : "Copy"} bg="gray.300" color="black">
-                          <IconButton onClick={onCopy} aria-label="Copy referral code" icon={<CopyIcon />} colorScheme="ghost" pl={4}/>
-                        </Tooltip>
-                        Copy link
-                      </Flex>
+                    <Box display="flex">
+                      Your referral link is {hostName}/ref={shortenCode(referralCode)}
+                      <Tooltip hasArrow label={hasCopied ? "Copied!" : "Copy"} bg="gray.300" color="black">
+                        <IconButton onClick={onCopy} aria-label="Copy referral code" icon={<CopyIcon />} colorScheme="ghost" pl={3}/>
+                      </Tooltip>
+                      <Text>Copy link</Text>
                     </Box>
                     : `Connect your wallet to get a referral link`
                   }
