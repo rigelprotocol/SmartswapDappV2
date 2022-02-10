@@ -121,15 +121,15 @@ const SendToken = () => {
     () =>
       showWrap
         ? {
-            [Field.INPUT]: typedValue,
-            [Field.OUTPUT]: typedValue,
-          }
+          [Field.INPUT]: typedValue,
+          [Field.OUTPUT]: typedValue,
+        }
         : {
-            [Field.INPUT]:
-              independentField === Field.INPUT ? parsedAmount : bestTrade,
-            [Field.OUTPUT]:
-              independentField === Field.OUTPUT ? parsedAmount : bestTrade,
-          },
+          [Field.INPUT]:
+            independentField === Field.INPUT ? parsedAmount : bestTrade,
+          [Field.OUTPUT]:
+            independentField === Field.OUTPUT ? parsedAmount : bestTrade,
+        },
     [independentField, parsedAmount, showWrap, bestTrade]
   );
 
@@ -306,16 +306,14 @@ const SendToken = () => {
     const dl = getDeadline(deadline);
     const from = currencies[Field.INPUT]?.wrapped.address;
     const to = currencies[Field.OUTPUT]?.wrapped.address;
-    console.log("output", outputToken().toString());
+    console.log({ from, to, account, chainId });
     try {
       setSendingTrx(true);
       dispatch(
         setOpenModal({
-          message: `Swapping ${formattedAmounts[Field.INPUT]} ${
-            currencies[Field.INPUT]?.symbol
-          } for ${formattedAmounts[Field.OUTPUT]} ${
-            currencies[Field.OUTPUT]?.symbol
-          }`,
+          message: `Swapping ${formattedAmounts[Field.INPUT]} ${currencies[Field.INPUT]?.symbol
+            } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol
+            }`,
           trxState: TrxState.WaitingForConfirmation,
         })
       );
@@ -361,9 +359,8 @@ const SendToken = () => {
         );
         dispatch(
           addToast({
-            message: `Swap ${inputAmount} ${
-              currencies[Field.INPUT]?.symbol
-            } for ${outputToken} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${inputAmount} ${currencies[Field.INPUT]?.symbol
+              } for ${outputToken} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
@@ -395,11 +392,9 @@ const SendToken = () => {
       setSendingTrx(true);
       dispatch(
         setOpenModal({
-          message: `Swapping ${formattedAmounts[Field.INPUT]} ${
-            currencies[Field.INPUT]?.symbol
-          } for ${formattedAmounts[Field.OUTPUT]} ${
-            currencies[Field.OUTPUT]?.symbol
-          }`,
+          message: `Swapping ${formattedAmounts[Field.INPUT]} ${currencies[Field.INPUT]?.symbol
+            } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol
+            }`,
           trxState: TrxState.WaitingForConfirmation,
         })
       );
@@ -445,11 +440,9 @@ const SendToken = () => {
         );
         dispatch(
           addToast({
-            message: `Swap ${inputAmountForDisplay} ${
-              currencies[Field.INPUT]?.symbol
-            } for ${outputAmountForDisplay} ${
-              currencies[Field.OUTPUT]?.symbol
-            }`,
+            message: `Swap ${inputAmountForDisplay} ${currencies[Field.INPUT]?.symbol
+              } for ${outputAmountForDisplay} ${currencies[Field.OUTPUT]?.symbol
+              }`,
             URL: explorerLink,
           })
         );
@@ -481,11 +474,9 @@ const SendToken = () => {
       setSendingTrx(true);
       dispatch(
         setOpenModal({
-          message: `Swapping ${formattedAmounts[Field.INPUT]} ${
-            currencies[Field.INPUT]?.symbol
-          } for ${formattedAmounts[Field.OUTPUT]} ${
-            currencies[Field.OUTPUT]?.symbol
-          }`,
+          message: `Swapping ${formattedAmounts[Field.INPUT]} ${currencies[Field.INPUT]?.symbol
+            } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol
+            }`,
           trxState: TrxState.WaitingForConfirmation,
         })
       );
@@ -520,17 +511,15 @@ const SendToken = () => {
         );
         dispatch(
           setOpenModal({
-            message: `Swap tokens for ${
-              currencies[Field.OUTPUT]?.symbol
-            } Successful.`,
+            message: `Swap tokens for ${currencies[Field.OUTPUT]?.symbol
+              } Successful.`,
             trxState: TrxState.TransactionSuccessful,
           })
         );
         dispatch(
           addToast({
-            message: `Swap ${inputAmount} ${
-              currencies[Field.INPUT]?.symbol
-            } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${inputAmount} ${currencies[Field.INPUT]?.symbol
+              } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
@@ -554,9 +543,8 @@ const SendToken = () => {
     setSendingTrx(true);
     dispatch(
       setOpenModal({
-        message: `Swapping ${typedValue} ${
-          currencies[Field.INPUT]?.symbol
-        } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
+        message: `Swapping ${typedValue} ${currencies[Field.INPUT]?.symbol
+          } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
         trxState: TrxState.WaitingForConfirmation,
       })
     );
@@ -585,9 +573,8 @@ const SendToken = () => {
         );
         dispatch(
           addToast({
-            message: `Swap ${typedValue} ${
-              currencies[Field.INPUT]?.symbol
-            } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${typedValue} ${currencies[Field.INPUT]?.symbol
+              } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
@@ -611,9 +598,8 @@ const SendToken = () => {
     setSendingTrx(true);
     dispatch(
       setOpenModal({
-        message: `Swapping ${typedValue} ${
-          currencies[Field.INPUT]?.symbol
-        } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
+        message: `Swapping ${typedValue} ${currencies[Field.INPUT]?.symbol
+          } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
         trxState: TrxState.WaitingForConfirmation,
       })
     );
@@ -640,9 +626,8 @@ const SendToken = () => {
         );
         dispatch(
           addToast({
-            message: `Swap ${typedValue} ${
-              currencies[Field.INPUT]?.symbol
-            } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${typedValue} ${currencies[Field.INPUT]?.symbol
+              } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
