@@ -17,7 +17,7 @@ export const steps = [
     {
         target: '.liquidity',
         title: <TitleBox>Liquidity Pools</TitleBox>,
-        content: <ContentBox>Here, you provide liquidity when you depositing tokens and earn interest rates on your capital.</ContentBox>,
+        content: <ContentBox>Here, you provide liquidity when you deposit tokens and earn interest rates on your capital.</ContentBox>,
         placement: "bottom",
         locale: {
             next: <NextBtn />,
@@ -62,7 +62,7 @@ export const steps = [
     {
         target: '.list',
         title: <TitleBox>List your project</TitleBox>,
-        content: <ContentBox>All details about wallet shows up here once you have connected it. You can connect your wallet by clicking here.</ContentBox>,
+        content: <ContentBox>You click here to list your Project on SmartSwap Farm.</ContentBox>,
         locale: {
             next: <NextBtn />,
             back: <BackBtn />,

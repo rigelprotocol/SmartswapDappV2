@@ -47,7 +47,7 @@ export const steps = [
     {
         target: '.deposit',
         title: <TitleBox>Liquidity Pools (3 of 3)</TitleBox>,
-        content: <ContentBox>You click here to deposit your token to the the liquidity pool.</ContentBox>,
+        content: <ContentBox>You click here to deposit your tokens on the liquidity pool.</ContentBox>,
         placement: "bottom",
         locale: {
             next: <NextBtn />,
