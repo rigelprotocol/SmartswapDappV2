@@ -107,22 +107,11 @@ export function Index() {
     setTabIndex(parseInt(event.target.value, 10));
   };
 
-  //const { data: farmsLP } = useFarms()
-  // const [farms, setFarms] = useState(contents);
   const { account, chainId, library } = useActiveWeb3React();
   const dispatch = useDispatch();
   let match = useRouteMatch("/farming-V2/staking-RGP");
   const FarmData = useFarms();
 
-  // console.log("Farm data", FarmData);
-  //
-  // console.log(chainId);
-  //
-  // console.log(
-  //   FarmData.contents.map((content, index) => {
-  //     console.log(index !== 0 && index < 4);
-  //   })
-  // );
 
   const [Balance, Symbol] = useNativeBalance();
   const wallet = {
@@ -262,15 +251,7 @@ export function Index() {
             smartSwapLPTokenPoolThree(
               SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
               library
-            ),
-            // smartSwapLPTokenV2PoolFour(
-            //   SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number],
-            //   library
-            // ),
-            // smartSwapLPTokenV2PoolFive(
-            //   SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
-            //   library
-            // ),
+            )
           ]);
 
           const [RGPbalance, poolOneBalance, poolTwoBalance, poolThreeBalance] =
@@ -287,8 +268,6 @@ export function Index() {
               formatBigNumber(poolOneBalance),
               formatBigNumber(poolTwoBalance),
               formatBigNumber(poolThreeBalance),
-              // formatBigNumber(poolFourBalance),
-              // formatBigNumber(poolFiveBalance),
             ])
           );
           dispatch(updatePoolId([0, 1, 2, 3]));
@@ -463,13 +442,10 @@ export function Index() {
         //     18
         //   )
         //   .toString();
-        // console.log(ethers.utils.formatEther(pool1Reserve[0]).toString(), MaticPrice);
-        // console.log(RGP_WMATICLiquidity);
-        //
+
         // const USDT_RGPLiquidity = ethers.utils
         //   .formatEther(pool2Reserve[0].mul(Number(MRGPprice) * 1000 * 2))
         //   .toString();
-        // console.log(ethers.utils.formatEther(pool2Reserve[0]).toString(), MRGPprice);
         //
         // const RGP_USDCLiquidity = ethers.utils
         //   .formatEther(pool3Reserve[1].mul(Number(MRGPprice) * 1000 * 2))
@@ -487,12 +463,10 @@ export function Index() {
             pool2Reserve[0],
             18
         );
-        console.log(totalUSDT2);
         const totalRGP2: number | any = ethers.utils.formatUnits(
             pool2Reserve[1],
             18
         );
-        console.log(totalRGP2);
         const totalRGP1: number | any = ethers.utils.formatUnits(
             pool1Reserve[0],
             18
@@ -501,9 +475,7 @@ export function Index() {
             pool3Reserve[0],
             18
         );
-        console.log(ethers.utils.formatUnits(pool3Reserve[0].toString()));
 
-        console.log(totalUSDT2, totalRGP2);
         const rgpPrice = totalUSDT2 / totalRGP2;
 
         const RGPprice: number | any = ethers.utils.formatUnits(
@@ -512,12 +484,9 @@ export function Index() {
         );
 
         const RGP_USDTLiq = totalUSDT2 * 2;
-        console.log(RGP_USDTLiq);
         const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
         const USDC_RGPLiq = totalRGP3 * rgpPrice * 2;
-        console.log(RGP_WMATICLiquidity);
 
-        console.log({ rgpPrice });
 
         dispatch(
           updateTotalLiquidity([
@@ -606,12 +575,10 @@ export function Index() {
           18
         );
         const rgpPrice = totalUSDT2 / totalRGP2;
-        const RGP_USDTLiq = totalUSDT2 * 2;
-        console.log(RGP_USDTLiq);
+        const RGP_USDTLiquidity = totalUSDT2 * 2;
+
         const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
         const USDC_RGPLiq = totalRGP3 * rgpPrice * 2;
-        // const USDT_RGPLiquidity = ethers.utils.formatUnits(
-        console.log({ rgpPrice });
 
         dispatch(
           updateTotalLiquidity([
@@ -627,8 +594,8 @@ export function Index() {
             },
             {
               deposit: await deposit(pool2.token0, pool2.token1),
-              liquidity: RGP_USDTLiq,
-              apy: calculateApy(rgpPrice, RGP_USDTLiq, 1050),
+              liquidity: RGP_USDTLiquidity,
+              apy: calculateApy(rgpPrice, RGP_USDTLiquidity, 1050),
             },
             {
               deposit: "RGP-USDC", //await deposit(pool3.token0, pool3.token1),
@@ -638,7 +605,6 @@ export function Index() {
           ])
         );
       } else if (Number(chainId) === Number(SupportedChainId.OASISTEST)) {
-        console.log("got here");
         const [pool1, pool2, pool3] = await Promise.all([
           // RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
           smartSwapLPTokenPoolOne(
@@ -689,11 +655,9 @@ export function Index() {
         );
         const rgpPrice = totalUSDT2 / totalRGP2;
         const RGP_USDTLiq = totalUSDT2 * 2;
-        console.log(RGP_USDTLiq);
+
         const RGP_WROSELiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
         const USDT_WROSELiquidity = totalUSDT3 * 2;
-        // const USDT_RGPLiquidity = ethers.utils.formatUnits(
-        console.log({ rgpPrice });
 
         dispatch(
           updateTotalLiquidity([
@@ -968,7 +932,6 @@ export function Index() {
         account &&
         Number(chainId) === Number(SupportedChainId.OASISTEST)
       ) {
-        console.log("got into oasis");
         const masterChefV2 = await MasterChefV2Contract(
           MASTERCHEFV2ADDRESSES[chainId as number],
           library
@@ -997,8 +960,6 @@ export function Index() {
           // masterChefV2.userInfo(5, account),
         ]);
 
-        console.log("poolOneStaked", poolOneStaked);
-
         dispatch(
           updateTokenStaked([
             { staked: 0, earned: 0 },
@@ -1022,7 +983,6 @@ export function Index() {
         account &&
         Number(chainId) !== Number(SupportedChainId.POLYGON)
       ) {
-        console.log("got into first one2");
         const masterChefV2 = await MasterChefV2Contract(
           MASTERCHEFV2ADDRESSES[chainId as number],
           library
@@ -1069,7 +1029,6 @@ export function Index() {
 
         let RGPStakedV2;
         let RGPEarnedV2;
-        //console.log("EARRNED", RGPStakedEarned)
 
         if (RGPStakedEarned) {
           const [specialPoolStaked, specialPoolEarned] = RGPStakedEarned;
