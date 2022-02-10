@@ -1,7 +1,7 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
-import { Box, Flex, Text } from "@chakra-ui/layout";
+import React, {useEffect, useState} from "react";
+import {Box, Flex, Text} from "@chakra-ui/layout";
 import {
   Alert,
   AlertDescription,
@@ -18,20 +18,15 @@ import {
   useColorModeValue,
   useMediaQuery,
 } from "@chakra-ui/react";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import {useHistory, useRouteMatch} from "react-router-dom";
 import YieldFarm from "./YieldFarm";
-import { AlertSvg } from "./Icon";
+import {AlertSvg} from "./Icon";
 
-import { useDispatch, useSelector } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import bigNumber from "bignumber.js";
-import { ethers } from "ethers";
-import {
-  updateFarmBalances,
-  updatePoolId,
-  updateTokenStaked,
-  updateTotalLiquidity,
-} from "../../state/farm/actions";
-import { useFarms } from "../../state/farm/hooks";
+import {ethers} from "ethers";
+import {updateFarmBalances, updatePoolId, updateTokenStaked, updateTotalLiquidity,} from "../../state/farm/actions";
+import {useFarms} from "../../state/farm/hooks";
 import {
   MasterChefV2Contract,
   RGPSpecialPool,
@@ -42,12 +37,13 @@ import {
   smartSwapLPTokenPoolTwo,
   smartSwapLPTokenV2,
   smartSwapLPTokenV2PoolFive,
-  smartSwapLPTokenV2PoolFour, smartSwapLPTokenV2PoolSeven, smartSwapLPTokenV2PoolSix,
+  smartSwapLPTokenV2PoolFour,
+  smartSwapLPTokenV2PoolSeven,
+  smartSwapLPTokenV2PoolSix,
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
   RGP,
-  RGPADDRESSES,
   RGPSPECIALPOOLADDRESSES,
   RGPSPECIALPOOLADDRESSES2,
   SMARTSWAPLP_TOKEN1ADDRESSES,
@@ -55,14 +51,14 @@ import {
   SMARTSWAPLP_TOKEN3ADDRESSES,
   SMARTSWAPLP_TOKEN4ADDRESSES,
   SMARTSWAPLP_TOKEN5ADDRESSES,
-    SMARTSWAPLP_TOKEN6ADDRESSES,
-    SMARTSWAPLP_TOKEN7ADDRESSES
+  SMARTSWAPLP_TOKEN6ADDRESSES,
+  SMARTSWAPLP_TOKEN7ADDRESSES
 } from "../../utils/addresses";
-import { formatBigNumber } from "../../utils";
-import { RootState } from "../../state";
-import { SupportedChainId } from "../../constants/chains";
-import { useNativeBalance } from "../../utils/hooks/useBalances";
-import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
+import {formatBigNumber} from "../../utils";
+import {RootState} from "../../state";
+import {SupportedChainId} from "../../constants/chains";
+import {useNativeBalance} from "../../utils/hooks/useBalances";
+import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 
 export const BIG_TEN = new bigNumber(10);
 
@@ -401,14 +397,6 @@ export function Index() {
         return `${sym0}-${sym1}`;
       };
 
-      //maticRGP
-      //  console.log(pool1Reserve, pool2Reserve, pool3Reserve, pool4Reserve, pool5Reserve)
-
-      // if (Number(chainId) === Number(SupportedChainId.POLYGONTEST)) {
-
-      //maticRGP
-      //  console.log(pool1Reserve, pool2Reserve, pool3Reserve, pool4Reserve, pool5Reserve)
-
       if (Number(chainId) === Number(SupportedChainId.POLYGONTEST)) {
         const [specialPool, pool1, pool2, pool3, pool4, pool5] =
           await Promise.all([
@@ -450,84 +438,124 @@ export function Index() {
           pool4.getReserves(),
           pool5.getReserves(),
         ]);
+
         const MRGPprice: number | any = ethers.utils.formatUnits(
           pool3Reserve[1].mul(1000).div(pool3Reserve[0]),
           3
         );
-        const getMaticPrice = (): number => {
-          let MaticPrice;
-          MaticPrice = ethers.utils.formatUnits(
-            pool5Reserve[0].mul(1000).div(pool5Reserve[1]),
-            3
-          );
-
-          return Number(MaticPrice);
-        };
-        const MaticPrice = getMaticPrice();
+        // const getMaticPrice = (): number => {
+        //   let MaticPrice;
+        //   MaticPrice = ethers.utils.formatUnits(
+        //     pool5Reserve[0].mul(1000).div(pool5Reserve[1]),
+        //     3
+        //   );
+        //
+        //   return Number(MaticPrice);
+        // };
+        // const MaticPrice = getMaticPrice();
         const MRGPLiquidity = ethers.utils
           .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * MRGPprice)), 18)
           .toString();
+        //
+        // const RGP_WMATICLiquidity = ethers.utils
+        //   .formatUnits(
+        //     pool1Reserve[0].mul(Math.floor(MaticPrice * 1000 * 2)),
+        //     18
+        //   )
+        //   .toString();
+        // console.log(ethers.utils.formatEther(pool1Reserve[0]).toString(), MaticPrice);
+        // console.log(RGP_WMATICLiquidity);
+        //
+        // const USDT_RGPLiquidity = ethers.utils
+        //   .formatEther(pool2Reserve[0].mul(Number(MRGPprice) * 1000 * 2))
+        //   .toString();
+        // console.log(ethers.utils.formatEther(pool2Reserve[0]).toString(), MRGPprice);
+        //
+        // const RGP_USDCLiquidity = ethers.utils
+        //   .formatEther(pool3Reserve[1].mul(Number(MRGPprice) * 1000 * 2))
+        //   .toString();
+        //
+        // const USDT_WMATICLiquidity = ethers.utils
+        //   .formatEther(pool4Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
+        //   .toString();
+        //
+        // const WMATIC_USDCLiquidity = ethers.utils
+        //   .formatEther(pool5Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
+        //   .toString();
 
-        const RGP_WMATICLiquidity = ethers.utils
-          .formatUnits(
-            pool1Reserve[0].mul(Math.floor(MaticPrice * 1000 * 2)),
+        const totalUSDT2: number | any = ethers.utils.formatUnits(
+            pool2Reserve[0],
             18
-          )
-          .toString();
+        );
+        console.log(totalUSDT2);
+        const totalRGP2: number | any = ethers.utils.formatUnits(
+            pool2Reserve[1],
+            18
+        );
+        console.log(totalRGP2);
+        const totalRGP1: number | any = ethers.utils.formatUnits(
+            pool1Reserve[0],
+            18
+        );
+        const totalRGP3: number | any = ethers.utils.formatUnits(
+            pool3Reserve[0],
+            18
+        );
+        console.log(ethers.utils.formatUnits(pool3Reserve[0].toString()));
 
-        const USDT_RGPLiquidity = ethers.utils
-          .formatEther(pool2Reserve[0].mul(Number(MRGPprice) * 1000 * 2))
-          .toString();
+        console.log(totalUSDT2, totalRGP2);
+        const rgpPrice = totalUSDT2 / totalRGP2;
 
-        const RGP_USDCLiquidity = ethers.utils
-          .formatEther(pool3Reserve[1].mul(Number(MRGPprice) * 1000 * 2))
-          .toString();
+        const RGPprice: number | any = ethers.utils.formatUnits(
+            pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
+            3
+        );
 
-        const USDT_WMATICLiquidity = ethers.utils
-          .formatEther(pool4Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
-          .toString();
+        const RGP_USDTLiq = totalUSDT2 * 2;
+        console.log(RGP_USDTLiq);
+        const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
+        const USDC_RGPLiq = totalRGP3 * rgpPrice * 2;
+        console.log(RGP_WMATICLiquidity);
 
-        const WMATIC_USDCLiquidity = ethers.utils
-          .formatEther(pool5Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
-          .toString();
+        console.log({ rgpPrice });
 
         dispatch(
           updateTotalLiquidity([
             {
               deposit: "RGP",
-              liquidity: MRGPLiquidity,
-              apy: calculateApy(MRGPprice, MRGPLiquidity, 250),
+              liquidity: '0', //MRGPLiquidity,
+              apy: '0', //calculateApy(MRGPprice, MRGPLiquidity, 250),
             },
             {
               deposit: await deposit(pool1.token0, pool1.token1),
               liquidity: RGP_WMATICLiquidity,
-              apy: calculateApy(MRGPprice, RGP_WMATICLiquidity, 1116.25),
+              apy: calculateApy(rgpPrice, RGP_WMATICLiquidity, 1500),
             },
             {
               deposit: await deposit(pool2.token0, pool2.token1),
-              liquidity: USDT_RGPLiquidity,
-              apy: calculateApy(MRGPprice, USDT_RGPLiquidity, 781.375),
+              liquidity: RGP_USDTLiq,
+              apy: calculateApy(rgpPrice, RGP_USDTLiq, 1050),
             },
             {
               deposit: await deposit(pool3.token0, pool3.token1),
-              liquidity: RGP_USDCLiquidity,
-              apy: calculateApy(MRGPprice, RGP_USDCLiquidity, 781.375),
+              liquidity: USDC_RGPLiq,
+              apy: calculateApy(rgpPrice, USDC_RGPLiq, 1050),
             },
-            {
-              deposit: await deposit(pool4.token0, pool4.token1),
-              liquidity: USDT_WMATICLiquidity,
-              apy: calculateApy(MRGPprice, USDT_WMATICLiquidity, 334.875),
-            },
-            {
-              deposit: await deposit(pool5.token0, pool5.token1),
-              liquidity: WMATIC_USDCLiquidity,
-              apy: calculateApy(MRGPprice, WMATIC_USDCLiquidity, 334.875),
-            },
+            // {
+            //   deposit: await deposit(pool4.token0, pool4.token1),
+            //   liquidity: USDT_WMATICLiquidity,
+            //   apy: calculateApy(MRGPprice, USDT_WMATICLiquidity, 334.875),
+            // },
+            // {
+            //   deposit: await deposit(pool5.token0, pool5.token1),
+            //   liquidity: WMATIC_USDCLiquidity,
+            //   apy: calculateApy(MRGPprice, WMATIC_USDCLiquidity, 334.875),
+            // },
           ])
         );
       } else if (
         Number(chainId) ===
-        Number(SupportedChainId.POLYGON || SupportedChainId.POLYGONTEST)
+        Number(SupportedChainId.POLYGON)
       ) {
         const [pool1, pool2, pool3] = await Promise.all([
           // RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
@@ -1558,9 +1586,8 @@ export function Index() {
                           />
                         ) : null
                       )
-                    : Number(chainId) === Number(SupportedChainId.POLYGON)
+                    : Number(chainId) === Number(SupportedChainId.POLYGON) || Number(chainId) === Number(SupportedChainId.POLYGONTEST)
                     ? FarmData.contents.map((content: any, index: number) =>
-                        Number(chainId) === Number(SupportedChainId.POLYGON) &&
                         index !== 0 &&
                         index < 4 ? (
                           <YieldFarm
