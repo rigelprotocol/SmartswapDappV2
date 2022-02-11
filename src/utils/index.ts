@@ -71,3 +71,12 @@ export function convertToNumber(hex : string, decimals?: number) {
     const output = [whole, deci];
     return output.join('.');
   };
+
+  //converts floating number to a given decimal place without rounding up or down eg 
+  // let f_number =  0.99899002; ParseFloat(f_number, 4) = 0.9989
+
+  export function ParseFloat(str : string | number, val : number) {
+    str = str.toString();
+    str = str.slice(0, (str.indexOf(".")) + val + 1);
+    return str;
+  }

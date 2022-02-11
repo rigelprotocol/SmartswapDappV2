@@ -4,8 +4,8 @@ import {
   Text,
   Flex,
   useColorModeValue
- }
- from '@chakra-ui/react';
+}
+  from '@chakra-ui/react';
 import { TimeIcon } from '@chakra-ui/icons';
 import TransactionSettings from '../../../../components/TransactionSettings';
 
@@ -16,7 +16,7 @@ const SwapSettings = () => {
   return (
     <Box w="100%">
       <Flex mt="3" alignItems="center" justifyContent="space-between">
-        <Text fontWeight="400" fontSize="16px" color={textColor}>
+        <Text fontWeight="400" fontSize="16px" color={textColor} className='Swap' >
           Swap
         </Text>
         <Flex alignItems="center" fontWeight="bold" rounded={100} bg="#">

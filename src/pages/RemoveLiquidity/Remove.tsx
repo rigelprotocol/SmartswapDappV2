@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Flex,
   Box,
@@ -8,65 +8,67 @@ import {
   Button,
   useMediaQuery,
   Img,
-} from '@chakra-ui/react';
-import { ArrowBackIcon, TimeIcon } from '@chakra-ui/icons';
-import { SettingsIcon } from '../../theme/components/Icons';
+} from "@chakra-ui/react";
+import { ArrowBackIcon, TimeIcon } from "@chakra-ui/icons";
+import { SettingsIcon } from "../../theme/components/Icons";
 import {
   useGetLiquidityById,
   useTokenValueToBeRemoved,
-} from '../../utils/hooks/usePools';
-import { useHistory, useParams } from 'react-router';
-import NullImage from '../../assets/Null-24.svg';
-import { LiquidityPairInstance, SmartSwapRouter } from '../../utils/Contracts';
-import { SMARTSWAPROUTER } from '../../utils/addresses';
-import { setOpenModal, TrxState } from '../../state/application/reducer';
-import { addToast } from '../../components/Toast/toastSlice';
-import { getExplorerLink, ExplorerDataType } from '../../utils/getExplorerLink';
-import { useDispatch } from 'react-redux';
+} from "../../utils/hooks/usePools";
+import { useHistory, useParams } from "react-router";
+import NullImage from "../../assets/Null-24.svg";
+import { LiquidityPairInstance, SmartSwapRouter } from "../../utils/Contracts";
+import { SMARTSWAPROUTER } from "../../utils/addresses";
+import { setOpenModal, TrxState } from "../../state/application/reducer";
+import { addToast } from "../../components/Toast/toastSlice";
+import { getExplorerLink, ExplorerDataType } from "../../utils/getExplorerLink";
+import { useDispatch } from "react-redux";
 import {
   useUserSlippageTolerance,
   useUserTransactionTTL,
-} from '../../state/user/hooks';
-import { calculateSlippageAmount } from '../../utils/calculateSlippageAmount';
+} from "../../state/user/hooks";
+import { calculateSlippageAmount } from "../../utils/calculateSlippageAmount";
 import {
   getDeadline,
   isNative,
   formatAmountIn,
   getOutPutDataFromEvent,
-} from '../../utils/utilsFunctions';
-import { ethers } from 'ethers';
-import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
+  getDecimals,
+} from "../../utils/utilsFunctions";
+import { ethers } from "ethers";
+import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import CurrencyLogo from "../../components/currencyLogo";
-import {isAddress} from "../../utils";
+import { isAddress } from "../../utils";
+import TransactionSettings from "../../components/TransactionSettings";
 
 const Remove = () => {
-  const [isTabDevice] = useMediaQuery('(min-width: 990px)');
-  const [isTabDevice2] = useMediaQuery('(max-width: 1200px)');
+  const [isTabDevice] = useMediaQuery("(min-width: 990px)");
+  const [isTabDevice2] = useMediaQuery("(max-width: 1200px)");
 
-  const borderColor = useColorModeValue('#DEE5ED', '#324D68');
-  const topIcons = useColorModeValue('#666666', '#DCE6EF');
-  const titleColor = useColorModeValue('#666666', '#DCE5EF');
-  const positionBgColor = useColorModeValue('#F2F5F8', '#213345');
-  const positiontextColor = useColorModeValue('#666666', '#DCE5EF');
-  const pairTextColor = useColorModeValue('#333333', '#F1F5F8');
-  const pairinformationBgColor = useColorModeValue('#FFFFFF', '#15202B');
-  const pairinformationBorderColor = useColorModeValue('#DEE5ED', '#324D68');
-  const approveButtonColor = useColorModeValue('#FFFFFF', '#FFFFFF');
-  const WithdrawalButtonColor = useColorModeValue( '#FFFFFF','#FFFFFF');
-  const approveButtonBgColor = useColorModeValue('#319EF6', '#4CAFFF');
-  const withdrawaButtonBgColor = useColorModeValue('#FFFFFF', '#15202B');
-  const hoverwithdrawaButtonBgColor = useColorModeValue('#15202B', '#7599BD');
-  const inActiveApproveButtonBgColor = useColorModeValue('#999999', '#7599BD');
-  const inActiveApproveButtonColor = useColorModeValue('#CCCCCC', '#4A739B');
-  const approvedButtonColor = useColorModeValue('#3CB1D2', '#1B90B1');
-  const approvedButtonBgColor = useColorModeValue('#FFFFFF', '#15202B');
-  const approvedButtonBorderColor = useColorModeValue('#3CB1D2', '#1B90B1');
-  const [inputValue, setInputValue] = useState('');
+  const borderColor = useColorModeValue("#DEE5ED", "#324D68");
+  const topIcons = useColorModeValue("#666666", "#DCE6EF");
+  const titleColor = useColorModeValue("#666666", "#DCE5EF");
+  const positionBgColor = useColorModeValue("#F2F5F8", "#213345");
+  const positiontextColor = useColorModeValue("#666666", "#DCE5EF");
+  const pairTextColor = useColorModeValue("#333333", "#F1F5F8");
+  const pairinformationBgColor = useColorModeValue("#FFFFFF", "#15202B");
+  const pairinformationBorderColor = useColorModeValue("#DEE5ED", "#324D68");
+  const approveButtonColor = useColorModeValue("#FFFFFF", "#FFFFFF");
+  const WithdrawalButtonColor = useColorModeValue("#FFFFFF", "#FFFFFF");
+  const approveButtonBgColor = useColorModeValue("#319EF6", "#4CAFFF");
+  const withdrawaButtonBgColor = useColorModeValue("#FFFFFF", "#15202B");
+  const hoverwithdrawaButtonBgColor = useColorModeValue("#15202B", "#7599BD");
+  const inActiveApproveButtonBgColor = useColorModeValue("#999999", "#7599BD");
+  const inActiveApproveButtonColor = useColorModeValue("#CCCCCC", "#4A739B");
+  const approvedButtonColor = useColorModeValue("#3CB1D2", "#1B90B1");
+  const approvedButtonBgColor = useColorModeValue("#FFFFFF", "#15202B");
+  const approvedButtonBorderColor = useColorModeValue("#3CB1D2", "#1B90B1");
+  const [inputValue, setInputValue] = useState("");
   const [pool, setPool] = useState<any>();
   const [loading, setLoading] = useState(true);
   const [hasBeenApproved, setHasBeenApproved] = useState(false);
   const [loadData, setLoadData] = useState(false);
-  const { account, chainId , library} = useActiveWeb3React();
+  const { account, chainId, library } = useActiveWeb3React();
   const [userSlippageTolerance] = useUserSlippageTolerance();
   const [userDeadline] = useUserTransactionTTL();
 
@@ -148,23 +150,28 @@ const Remove = () => {
   ) => {
     if (account && valuesToBeRemoved) {
       const smartswaprouter = await SmartSwapRouter(
-        SMARTSWAPROUTER[chainId as number], library
+        SMARTSWAPROUTER[chainId as number],
+        library
       );
-      const Liquidity = formatAmountIn(valuesToBeRemoved[2], 18);
-      const amountAMin = formatAmountIn(valuesToBeRemoved[0], tokenADecimals);
-      const amountBMin = formatAmountIn(valuesToBeRemoved[1], tokenBDecimals);
+      // const Liquidity = formatAmountIn(valuesToBeRemoved[2], 18);
+      // const amountAMin = formatAmountIn(valuesToBeRemoved[0], tokenADecimals);
+      // const amountBMin = formatAmountIn(valuesToBeRemoved[1], tokenBDecimals);
 
-      const formatAmountAMin = ethers.utils.formatEther(AmountAMin);
-      const formatAmountBMin = ethers.utils.formatEther(AmountBMin);
+      const decimalA = await getDecimals(params.currencyIdA, library);
+      const decimalB = await getDecimals(params.currencyIdB, library);
 
-      
+      const formatAmountAMin = ethers.utils.formatUnits(AmountAMin, decimalA);
+      const formatAmountBMin = ethers.utils.formatUnits(AmountBMin, decimalB);
 
       const deadLine = getDeadline(userDeadline);
       try {
         dispatch(
           setOpenModal({
-            message: `Removing ${parseFloat(formatAmountAMin).toFixed(6)} ${pool?.path[0].token
-              } and ${parseFloat(formatAmountBMin).toFixed(6)} ${pool?.path[1].token} `,
+            message: `Removing ${parseFloat(formatAmountAMin).toFixed(6)} ${
+              pool?.path[0].token
+            } and ${parseFloat(formatAmountBMin).toFixed(6)} ${
+              pool?.path[1].token
+            } `,
             trxState: TrxState.WaitingForConfirmation,
           })
         );
@@ -198,7 +205,7 @@ const Remove = () => {
         const { hash } = remove;
         if (confirmations >= 1) {
           setLoadData(true);
-          setInputValue('');
+          setInputValue("");
           const explorerLink = getExplorerLink(
             chainId as number,
             hash,
@@ -206,19 +213,25 @@ const Remove = () => {
           );
           dispatch(
             setOpenModal({
-              message: `${pool?.path[0].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[0].token === 'WETH'
-                  ? 'ETH'
+              message: `${
+                pool?.path[0].token === "WBNB"
+                  ? "BNB"
+                  : pool?.path[0].token === "WETH"
+                  ? "ETH"
+                  : pool?.path[0].token === "WROSE"
+                  ? "ROSE"
                   : pool?.path[0].token
-                }
+              }
             /
-            ${pool?.path[1].token === 'WBNB'
-                  ? 'BNB'
-                  : pool?.path[1].token === 'WETH'
-                    ? 'ETH'
-                    : pool?.path[1].token
-                } LP token Removal`,
+            ${
+              pool?.path[1].token === "WBNB"
+                ? "BNB"
+                : pool?.path[1].token === "WETH"
+                ? "ETH"
+                : pool?.path[1].token === "WROSE"
+                ? "ROSE"
+                : pool?.path[1].token
+            } LP token Removal`,
               trxState: TrxState.TransactionSuccessful,
             })
           );
@@ -234,19 +247,25 @@ const Remove = () => {
         console.log(err);
         dispatch(
           setOpenModal({
-            message: `${pool?.path[0].token === 'WBNB'
-              ? 'BNB'
-              : pool?.path[0].token === 'WETH'
-                ? 'ETH'
+            message: `${
+              pool?.path[0].token === "WBNB"
+                ? "BNB"
+                : pool?.path[0].token === "WETH"
+                ? "ETH"
+                : pool?.path[0].token === "WROSE"
+                ? "ROSE"
                 : pool?.path[0].token
-              }
+            }
           /
-          ${pool?.path[1].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[1].token === 'WETH'
-                  ? 'ETH'
-                  : pool?.path[1].token
-              } LP token Removal`,
+          ${
+            pool?.path[1].token === "WBNB"
+              ? "BNB"
+              : pool?.path[1].token === "WETH"
+              ? "ETH"
+              : pool?.path[1].token === "WROSE"
+              ? "ROSE"
+              : pool?.path[1].token
+          } LP token Removal`,
             trxState: TrxState.TransactionFailed,
           })
         );
@@ -264,12 +283,15 @@ const Remove = () => {
   ) => {
     if (account && valuesToBeRemoved) {
       const smartswaprouter = await SmartSwapRouter(
-        SMARTSWAPROUTER[chainId as number], library
+        SMARTSWAPROUTER[chainId as number],
+        library
       );
       // const liquidity = formatAmountIn(Liquidity, 18);
+      const decimalA = await getDecimals(params.currencyIdA, library);
+      const decimalB = await getDecimals(params.currencyIdB, library);
 
-      const formatAmountAMin = ethers.utils.formatEther(AmountAMin);
-      const formatAmountBMin = ethers.utils.formatEther(AmountBMin);
+      const formatAmountAMin = ethers.utils.formatUnits(AmountAMin, decimalA);
+      const formatAmountBMin = ethers.utils.formatUnits(AmountBMin, decimalB);
 
       // const AmountAMin = formatAmountIn(amountAMin, tokenADecimals);
 
@@ -280,19 +302,25 @@ const Remove = () => {
       try {
         dispatch(
           setOpenModal({
-            message: ` Removing ${parseFloat(formatAmountAMin).toFixed(6)} ${pool?.path[0].token === 'WBNB'
-              ? 'BNB'
-              : pool?.path[0].token === 'WETH'
-                ? 'ETH'
+            message: ` Removing ${parseFloat(formatAmountAMin).toFixed(6)} ${
+              pool?.path[0].token === "WBNB"
+                ? "BNB"
+                : pool?.path[0].token === "WETH"
+                ? "ETH"
+                : pool?.path[0].token === "WROSE"
+                ? "ROSE"
                 : pool?.path[0].token
-              }
+            }
            and ${parseFloat(formatAmountBMin).toFixed(6)}
-          ${pool?.path[1].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[1].token === 'WETH'
-                  ? 'ETH'
-                  : pool?.path[1].token
-              } `,
+          ${
+            pool?.path[1].token === "WBNB"
+              ? "BNB"
+              : pool?.path[1].token === "WETH"
+              ? "ETH"
+              : pool?.path[1].token === "WROSE"
+              ? "ROSE"
+              : pool?.path[1].token
+          } `,
             trxState: TrxState.WaitingForConfirmation,
           })
         );
@@ -330,7 +358,7 @@ const Remove = () => {
         const { hash } = remove;
         if (confirmations >= 1) {
           setLoadData(true);
-          setInputValue('');
+          setInputValue("");
           const explorerLink = getExplorerLink(
             chainId as number,
             hash,
@@ -344,19 +372,25 @@ const Remove = () => {
           );
           dispatch(
             addToast({
-              message: `Remove ${outPutValueForTokenA} ${pool?.path[0].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[0].token === 'WETH'
-                  ? 'ETH'
+              message: `Remove ${outPutValueForTokenA} ${
+                pool?.path[0].token === "WBNB"
+                  ? "BNB"
+                  : pool?.path[0].token === "WETH"
+                  ? "ETH"
+                  : pool?.path[0].token === "WROSE"
+                  ? "ROSE"
                   : pool?.path[0].token
-                }
+              }
             and ${outPutValueForTokenB}
-            ${pool?.path[1].token === 'WBNB'
-                  ? 'BNB'
-                  : pool?.path[1].token === 'WETH'
-                    ? 'ETH'
-                    : pool?.path[1].token
-                } `,
+            ${
+              pool?.path[1].token === "WBNB"
+                ? "BNB"
+                : pool?.path[1].token === "WETH"
+                ? "ETH"
+                : pool?.path[1].token === "WROSE"
+                ? "ROSE"
+                : pool?.path[1].token
+            } `,
               URL: explorerLink,
             })
           );
@@ -365,19 +399,25 @@ const Remove = () => {
         console.log(err);
         dispatch(
           setOpenModal({
-            message: `${pool?.path[0].token === 'WBNB'
-              ? 'BNB'
-              : pool?.path[0].token === 'WETH'
-                ? 'ETH'
+            message: `${
+              pool?.path[0].token === "WBNB"
+                ? "BNB"
+                : pool?.path[0].token === "WETH"
+                ? "ETH"
+                : pool?.path[0].token === "WROSE"
+                ? "ROSE"
                 : pool?.path[0].token
-              }
+            }
           /
-          ${pool?.path[1].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[1].token === 'WETH'
-                  ? 'ETH'
-                  : pool?.path[1].token
-              } LP token Removal`,
+          ${
+            pool?.path[1].token === "WBNB"
+              ? "BNB"
+              : pool?.path[1].token === "WETH"
+              ? "ETH"
+              : pool?.path[1].token === "WROSE"
+              ? "ROSE"
+              : pool?.path[1].token
+          } LP token Removal`,
             trxState: TrxState.TransactionFailed,
           })
         );
@@ -390,27 +430,36 @@ const Remove = () => {
       try {
         dispatch(
           setOpenModal({
-            message: `${pool?.path[0].token === 'WBNB'
-              ? 'BNB'
-              : pool?.path[0].token === 'WETH'
-                ? 'ETH'
-                : pool?.path[0].token === 'WMATIC'
-                  ? 'MATIC'
-                  : pool?.path[0].token
-              }
+            message: `${
+              pool?.path[0].token === "WBNB"
+                ? "BNB"
+                : pool?.path[0].token === "WETH"
+                ? "ETH"
+                : pool?.path[0].token === "WMATIC"
+                ? "MATIC"
+                : pool?.path[0].token === "WROSE"
+                ? "ROSE"
+                : pool?.path[0].token
+            }
           /
-          ${pool?.path[1].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[1].token === 'WETH'
-                  ? 'ETH'
-                  : pool?.path[1].token === 'WMATIC'
-                    ? 'MATIC'
-                    : pool?.path[1].token
-              } LP token Approval`,
+          ${
+            pool?.path[1].token === "WBNB"
+              ? "BNB"
+              : pool?.path[1].token === "WETH"
+              ? "ETH"
+              : pool?.path[1].token === "WMATIC"
+              ? "MATIC"
+              : pool?.path[1].token === "WROSE"
+              ? "ROSE"
+              : pool?.path[1].token
+          } LP token Approval`,
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        const smartSwapLP = await LiquidityPairInstance(pool.pairAddress, library);
+        const smartSwapLP = await LiquidityPairInstance(
+          pool.pairAddress,
+          library
+        );
         const walletBal = (await smartSwapLP.balanceOf(account)) + 4e18;
         const approveTransaction = await smartSwapLP.approve(
           SMARTSWAPROUTER[chainId as number],
@@ -430,45 +479,57 @@ const Remove = () => {
           );
           dispatch(
             setOpenModal({
-              message: `${pool?.path[0].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[0].token === 'WETH'
-                  ? 'ETH'
-                  : pool?.path[0].token === 'WMATIC'
-                    ? 'MATIC'
-                    : pool?.path[0].token
-                }
+              message: `${
+                pool?.path[0].token === "WBNB"
+                  ? "BNB"
+                  : pool?.path[0].token === "WETH"
+                  ? "ETH"
+                  : pool?.path[0].token === "WMATIC"
+                  ? "MATIC"
+                  : pool?.path[0].token === "WROSE"
+                  ? "ROSE"
+                  : pool?.path[0].token
+              }
             /
-            ${pool?.path[1].token === 'WBNB'
-                  ? 'BNB'
-                  : pool?.path[1].token === 'WETH'
-                    ? 'ETH'
-                    : pool?.path[1].token === 'WMATIC'
-                      ? 'MATIC'
-                      : pool?.path[1].token
-                } LP token Approval`,
+            ${
+              pool?.path[1].token === "WBNB"
+                ? "BNB"
+                : pool?.path[1].token === "WETH"
+                ? "ETH"
+                : pool?.path[1].token === "WMATIC"
+                ? "MATIC"
+                : pool?.path[1].token === "WROSE"
+                ? "ROSE"
+                : pool?.path[1].token
+            } LP token Approval`,
               trxState: TrxState.TransactionSuccessful,
             })
           );
           dispatch(
             addToast({
-              message: `Approve ${pool?.path[0].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[0].token === 'WETH'
-                  ? 'ETH'
-                  : pool?.path[0].token === 'WMATIC'
-                    ? 'MATIC'
-                    : pool?.path[0].token
-                }
+              message: `Approve ${
+                pool?.path[0].token === "WBNB"
+                  ? "BNB"
+                  : pool?.path[0].token === "WETH"
+                  ? "ETH"
+                  : pool?.path[0].token === "WMATIC"
+                  ? "MATIC"
+                  : pool?.path[0].token === "WROSE"
+                  ? "ROSE"
+                  : pool?.path[0].token
+              }
             /
-            ${pool?.path[1].token === 'WBNB'
-                  ? 'BNB'
-                  : pool?.path[1].token === 'WETH'
-                    ? 'ETH'
-                    : pool?.path[1].token === 'WMATIC'
-                      ? 'MATIC'
-                      : pool?.path[1].token
-                } LP token`,
+            ${
+              pool?.path[1].token === "WBNB"
+                ? "BNB"
+                : pool?.path[1].token === "WETH"
+                ? "ETH"
+                : pool?.path[1].token === "WMATIC"
+                ? "MATIC"
+                : pool?.path[1].token === "WROSE"
+                ? "ROSE"
+                : pool?.path[1].token
+            } LP token`,
               URL: explorerLink,
             })
           );
@@ -477,23 +538,29 @@ const Remove = () => {
         console.log(e);
         dispatch(
           setOpenModal({
-            message: `${pool?.path[0].token === 'WBNB'
-              ? 'BNB'
-              : pool?.path[0].token === 'WETH'
-                ? 'ETH'
-                : pool?.path[0].token === 'WMATIC'
-                  ? 'MATIC'
-                  : pool?.path[0].token
-              }
+            message: `${
+              pool?.path[0].token === "WBNB"
+                ? "BNB"
+                : pool?.path[0].token === "WETH"
+                ? "ETH"
+                : pool?.path[0].token === "WMATIC"
+                ? "MATIC"
+                : pool?.path[0].token === "WROSE"
+                ? "ROSE"
+                : pool?.path[0].token
+            }
           /
-          ${pool?.path[1].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[1].token === 'WETH'
-                  ? 'ETH'
-                  : pool?.path[1].token === 'WMATIC'
-                    ? 'MATIC'
-                    : pool?.path[1].token
-              } LP token Approval`,
+          ${
+            pool?.path[1].token === "WBNB"
+              ? "BNB"
+              : pool?.path[1].token === "WETH"
+              ? "ETH"
+              : pool?.path[1].token === "WMATIC"
+              ? "MATIC"
+              : pool?.path[1].token === "WROSE"
+              ? "ROSE"
+              : pool?.path[1].token
+          } LP token Approval`,
             trxState: TrxState.TransactionFailed,
           })
         );
@@ -506,27 +573,36 @@ const Remove = () => {
       try {
         dispatch(
           setOpenModal({
-            message: `Removing approval for ${pool?.path[0].token === 'WBNB'
-              ? 'BNB'
-              : pool?.path[0].token === 'WETH'
-                ? 'ETH'
-                : pool?.path[0].token === 'WMATIC'
-                  ? 'MATIC'
-                  : pool?.path[0].token
-              }
+            message: `Removing approval for ${
+              pool?.path[0].token === "WBNB"
+                ? "BNB"
+                : pool?.path[0].token === "WETH"
+                ? "ETH"
+                : pool?.path[0].token === "WMATIC"
+                ? "MATIC"
+                : pool?.path[0].token === "WROSE"
+                ? "ROSE"
+                : pool?.path[0].token
+            }
           /
-          ${pool?.path[1].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[1].token === 'WETH'
-                  ? 'ETH'
-                  : pool?.path[1].token === 'WMATIC'
-                    ? 'MATIC'
-                    : pool?.path[1].token
-              } LP token`,
+          ${
+            pool?.path[1].token === "WBNB"
+              ? "BNB"
+              : pool?.path[1].token === "WETH"
+              ? "ETH"
+              : pool?.path[1].token === "WMATIC"
+              ? "MATIC"
+              : pool?.path[1].token === "WROSE"
+              ? "ROSE"
+              : pool?.path[1].token
+          } LP token`,
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        const smartSwapLP = await LiquidityPairInstance(pool.pairAddress, library);
+        const smartSwapLP = await LiquidityPairInstance(
+          pool.pairAddress,
+          library
+        );
         const approveTransaction = await smartSwapLP.approve(
           SMARTSWAPROUTER[chainId as number],
           0,
@@ -545,45 +621,57 @@ const Remove = () => {
           );
           dispatch(
             setOpenModal({
-              message: `Removing approval for ${pool?.path[0].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[0].token === 'WETH'
-                  ? 'ETH'
-                  : pool?.path[0].token === 'WMATIC'
-                    ? 'MATIC'
-                    : pool?.path[0].token
-                }
+              message: `Removing approval for ${
+                pool?.path[0].token === "WBNB"
+                  ? "BNB"
+                  : pool?.path[0].token === "WETH"
+                  ? "ETH"
+                  : pool?.path[0].token === "WMATIC"
+                  ? "MATIC"
+                  : pool?.path[0].token === "WROSE"
+                  ? "ROSE"
+                  : pool?.path[0].token
+              }
             /
-            ${pool?.path[1].token === 'WBNB'
-                  ? 'BNB'
-                  : pool?.path[1].token === 'WETH'
-                    ? 'ETH'
-                    : pool?.path[1].token === 'WMATIC'
-                      ? 'MATIC'
-                      : pool?.path[1].token
-                } LP token`,
+            ${
+              pool?.path[1].token === "WBNB"
+                ? "BNB"
+                : pool?.path[1].token === "WETH"
+                ? "ETH"
+                : pool?.path[1].token === "WMATIC"
+                ? "MATIC"
+                : pool?.path[1].token === "WROSE"
+                ? "ROSE"
+                : pool?.path[1].token
+            } LP token`,
               trxState: TrxState.TransactionSuccessful,
             })
           );
           dispatch(
             addToast({
-              message: `UnApprove ${pool?.path[0].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[0].token === 'WETH'
-                  ? 'ETH'
-                  : pool?.path[0].token === 'WMATIC'
-                    ? 'MATIC'
-                    : pool?.path[0].token
-                }
+              message: `UnApprove ${
+                pool?.path[0].token === "WBNB"
+                  ? "BNB"
+                  : pool?.path[0].token === "WETH"
+                  ? "ETH"
+                  : pool?.path[0].token === "WMATIC"
+                  ? "MATIC"
+                  : pool?.path[0].token === "WROSE"
+                  ? "ROSE"
+                  : pool?.path[0].token
+              }
             /
-            ${pool?.path[1].token === 'WBNB'
-                  ? 'BNB'
-                  : pool?.path[1].token === 'WETH'
-                    ? 'ETH'
-                    : pool?.path[1].token === 'WMATIC'
-                      ? 'MATIC'
-                      : pool?.path[1].token
-                } LP token`,
+            ${
+              pool?.path[1].token === "WBNB"
+                ? "BNB"
+                : pool?.path[1].token === "WETH"
+                ? "ETH"
+                : pool?.path[1].token === "WMATIC"
+                ? "MATIC"
+                : pool?.path[1].token === "WROSE"
+                ? "ROSE"
+                : pool?.path[1].token
+            } LP token`,
               URL: explorerLink,
             })
           );
@@ -592,23 +680,29 @@ const Remove = () => {
         console.log(e);
         dispatch(
           setOpenModal({
-            message: `Removing approval for ${pool?.path[0].token === 'WBNB'
-              ? 'BNB'
-              : pool?.path[0].token === 'WETH'
-                ? 'ETH'
-                : pool?.path[0].token === 'WMATIC'
-                  ? 'MATIC'
-                  : pool?.path[0].token
-              }
+            message: `Removing approval for ${
+              pool?.path[0].token === "WBNB"
+                ? "BNB"
+                : pool?.path[0].token === "WETH"
+                ? "ETH"
+                : pool?.path[0].token === "WMATIC"
+                ? "MATIC"
+                : pool?.path[0].token === "WROSE"
+                ? "ROSE"
+                : pool?.path[0].token
+            }
           /
-          ${pool?.path[1].token === 'WBNB'
-                ? 'BNB'
-                : pool?.path[1].token === 'WETH'
-                  ? 'ETH'
-                  : pool?.path[1].token === 'WMATIC'
-                    ? 'MATIC'
-                    : pool?.path[1].token
-              } LP token`,
+          ${
+            pool?.path[1].token === "WBNB"
+              ? "BNB"
+              : pool?.path[1].token === "WETH"
+              ? "ETH"
+              : pool?.path[1].token === "WMATIC"
+              ? "MATIC"
+              : pool?.path[1].token === "WROSE"
+              ? "ROSE"
+              : pool?.path[1].token
+          } LP token`,
             trxState: TrxState.TransactionFailed,
           })
         );
@@ -617,189 +711,207 @@ const Remove = () => {
   };
 
   return (
-    <Flex minH="100vh" mt={10} justifyContent="center">
+    <Flex minH='100vh' mt={10} justifyContent='center'>
       <Box
-        h={isTabDevice && isTabDevice2 ? '620px' : '630px'}
+        h={isTabDevice && isTabDevice2 ? "620px" : "630px"}
         mx={4}
-        w={['100%', '100%', '45%', '29.5%']}
-        border="1px"
+        w={["100%", "100%", "45%", "29.5%"]}
+        border='1px'
         borderColor={borderColor}
-        borderRadius="6px"
+        borderRadius='6px'
         py={2}
         px={4}
       >
-        <Flex flexDirection="column">
-          <Flex justifyContent="space-between" alignItems="center">
-            <Flex alignItems="center">
+        <Flex flexDirection='column'>
+          <Flex justifyContent='space-between' alignItems='center'>
+            <Flex alignItems='center'>
               <ArrowBackIcon
                 w={6}
                 h={6}
-                fontWeight="thin"
+                fontWeight='thin'
                 color={topIcons}
-                cursor="pointer"
+                cursor='pointer'
                 mr={3}
                 onClick={() => history.goBack()}
               />
-              <Text color={titleColor} fontSize="18px">
+              <Text color={titleColor} fontSize='18px'>
                 Back to Liquidity Positions
               </Text>
             </Flex>
-            <Flex alignItems="center">
+            <Flex alignItems='center'>
               <Flex mt={3}>
-                <SettingsIcon />
+                <TransactionSettings />
               </Flex>
-              <TimeIcon ml={1} w="22px" h="22px" color={topIcons} />
+              <TimeIcon ml={1} w='22px' h='22px' color={topIcons} />
             </Flex>
           </Flex>
           <Box
             bgColor={positionBgColor}
-            mt="3"
-            border="1px"
-            borderRadius="6px"
+            mt='3'
+            border='1px'
+            borderRadius='6px'
             borderColor={borderColor}
-            h={'220px'}
+            h={"220px"}
           >
             {loading ? (
               <Flex
-                w="100%"
-                h="100%"
-                justifyContent="center"
-                alignItems="center"
+                w='100%'
+                h='100%'
+                justifyContent='center'
+                alignItems='center'
               >
-                <Text color={positiontextColor} textAlign="center">
+                <Text color={positiontextColor} textAlign='center'>
                   Loading...
                 </Text>
               </Flex>
             ) : pool.length === 0 ? (
               <Flex
-                w="100%"
-                h="100%"
-                justifyContent="center"
-                alignItems="center"
+                w='100%'
+                h='100%'
+                justifyContent='center'
+                alignItems='center'
               >
-                <Text color={positiontextColor} textAlign="center">
+                <Text color={positiontextColor} textAlign='center'>
                   Liquidity not found
                 </Text>
               </Flex>
             ) : (
-              <Flex p={3} flexDirection="column">
-                <Flex justifyContent="flex-start">
-                  <Text color={positiontextColor} fontWeight="bold">
+              <Flex p={3} flexDirection='column'>
+                <Flex justifyContent='flex-start'>
+                  <Text color={positiontextColor} fontWeight='bold'>
                     Your Position
                   </Text>
                 </Flex>
-                <Flex mt={2} justifyContent="space-between">
-                  <Flex alignItems="center">
+                <Flex mt={2} justifyContent='space-between'>
+                  <Flex alignItems='center'>
                     <Flex
-                      mr={isTabDevice && isTabDevice2 ? '' : 2}
-                      alignItems="center"
+                      mr={isTabDevice && isTabDevice2 ? "" : 2}
+                      alignItems='center'
                     >
-                      <CurrencyLogo currency={{...pool.path[0],
-                        chainId,
-                        address:isAddress(pool.path[0].fromPath) ,
-                        isToken: !!isAddress(pool.path[0]?.fromPath),
-                        isNative: !isAddress(pool.path[0]?.fromPath),
-                        symbol: pool.path[0]?.token
-                      }} size={24} squared={true} marginRight={4}/>
+                      <CurrencyLogo
+                        currency={{
+                          ...pool.path[0],
+                          chainId,
+                          address: isAddress(pool.path[0].fromPath),
+                          isToken: !!isAddress(pool.path[0]?.fromPath),
+                          isNative: !isAddress(pool.path[0]?.fromPath),
+                          symbol: pool.path[0]?.token,
+                        }}
+                        size={24}
+                        squared={true}
+                        marginRight={4}
+                      />
 
-                      <CurrencyLogo currency={{...pool.path[1],
-                        chainId,
-                        address:isAddress(pool.path[1].toPath) ,
-                        isToken: !!isAddress(pool.path[1]?.toPath),
-                        isNative: !isAddress(pool.path[1]?.toPath),
-                        symbol: pool.path[1]?.token
-                      }} size={24} squared={true}/>
-
+                      <CurrencyLogo
+                        currency={{
+                          ...pool.path[1],
+                          chainId,
+                          address: isAddress(pool.path[1].toPath),
+                          isToken: !!isAddress(pool.path[1]?.toPath),
+                          isNative: !isAddress(pool.path[1]?.toPath),
+                          symbol: pool.path[1]?.token,
+                        }}
+                        size={24}
+                        squared={true}
+                      />
                     </Flex>
                     <Text
-                      fontWeight="bold"
-                      mr={isTabDevice && isTabDevice2 ? 4 : ''}
-                      ml={isTabDevice && isTabDevice2 ? 4 : ''}
+                      fontWeight='bold'
+                      mr={isTabDevice && isTabDevice2 ? 4 : ""}
+                      ml={isTabDevice && isTabDevice2 ? 4 : ""}
                       color={pairTextColor}
                     >
-                      {pool?.path[0].token === 'WBNB'
-                        ? 'BNB'
-                        : pool?.path[0].token === 'WETH'
-                          ? 'ETH'
-                          : pool?.path[0].token === 'WMATIC'
-                            ? 'MATIC'
-                            : pool?.path[0].token}{' '}
-                      /{' '}
-                      {pool?.path[1].token === 'WBNB'
-                        ? 'BNB'
-                        : pool?.path[1].token === 'WETH'
-                          ? 'ETH'
-                          : pool?.path[1].token === 'WMATIC'
-                            ? 'MATIC'
-                            : pool?.path[1].token}
+                      {pool?.path[0].token === "WBNB"
+                        ? "BNB"
+                        : pool?.path[0].token === "WETH"
+                        ? "ETH"
+                        : pool?.path[0].token === "WMATIC"
+                        ? "MATIC"
+                        : pool?.path[0].token === "WROSE"
+                        ? "ROSE"
+                        : pool?.path[0].token}{" "}
+                      /{" "}
+                      {pool?.path[1].token === "WBNB"
+                        ? "BNB"
+                        : pool?.path[1].token === "WETH"
+                        ? "ETH"
+                        : pool?.path[1].token === "WMATIC"
+                        ? "MATIC"
+                        : pool?.path[1].token === "WROSE"
+                        ? "ROSE"
+                        : pool?.path[1].token}
                     </Text>
                   </Flex>
-                  <Flex alignItems="center">
+                  <Flex alignItems='center'>
                     <Text
                       mr={isTabDevice && isTabDevice2 ? 4 : 2}
-                      fontWeight="bold"
+                      fontWeight='bold'
                       color={pairTextColor}
                     >
                       {parseFloat(pool?.poolToken).toFixed(7)}
                     </Text>
-                    <Text fontSize="12px" color={titleColor}>
+                    <Text fontSize='12px' color={titleColor}>
                       Pool Tokens
                     </Text>
                   </Flex>
                 </Flex>
                 <Box
                   mt={4}
-                  border="1px"
+                  border='1px'
                   borderColor={pairinformationBorderColor}
                   bgColor={pairinformationBgColor}
-                  borderRadius="6px"
-                  p="3"
-                  h="120px"
+                  borderRadius='6px'
+                  p='3'
+                  h='120px'
                 >
                   <Flex
                     color={pairTextColor}
-                    fontSize="14px"
-                    flexDirection="column"
+                    fontSize='14px'
+                    flexDirection='column'
                   >
                     <Flex
-                      justifyContent="space-between"
-                      alignItems="center"
+                      justifyContent='space-between'
+                      alignItems='center'
                       mb={3}
                     >
                       <Text>
-                        Pooled{' '}
-                        {pool?.path[0].token === 'WBNB'
-                          ? 'BNB'
-                          : pool?.path[0].token === 'WETH'
-                            ? 'ETH'
-                            : pool?.path[0].token === 'WMATIC'
-                              ? 'MATIC'
-                              : pool?.path[0].token}
+                        Pooled{" "}
+                        {pool?.path[0].token === "WBNB"
+                          ? "BNB"
+                          : pool?.path[0].token === "WETH"
+                          ? "ETH"
+                          : pool?.path[0].token === "WMATIC"
+                          ? "MATIC"
+                          : pool?.path[0].token === "WROSE"
+                          ? "ROSE"
+                          : pool?.path[0].token}
                         :
                       </Text>
                       <Text>{pool?.pooledToken0}</Text>
                     </Flex>
                     <Flex
-                      justifyContent="space-between"
-                      alignItems="center"
+                      justifyContent='space-between'
+                      alignItems='center'
                       mb={3}
                     >
                       <Text>
-                        Pooled{' '}
-                        {pool?.path[1].token === 'WBNB'
-                          ? 'BNB'
-                          : pool?.path[1].token === 'WETH'
-                            ? 'ETH'
-                            : pool?.path[1].token === 'WMATIC'
-                              ? 'MATIC'
-                              : pool?.path[1].token}
+                        Pooled{" "}
+                        {pool?.path[1].token === "WBNB"
+                          ? "BNB"
+                          : pool?.path[1].token === "WETH"
+                          ? "ETH"
+                          : pool?.path[1].token === "WMATIC"
+                          ? "MATIC"
+                          : pool?.path[1].token === "WROSE"
+                          ? "ROSE"
+                          : pool?.path[1].token}
                         :
                       </Text>
                       <Text>{pool?.pooledToken1}</Text>
                     </Flex>
                     <Flex
-                      justifyContent="space-between"
-                      alignItems="center"
+                      justifyContent='space-between'
+                      alignItems='center'
                       mb={3}
                     >
                       <Text>Your pool share:</Text>
@@ -813,36 +925,35 @@ const Remove = () => {
           <Box
             mt={3}
             bgColor={pairinformationBgColor}
-            border="1px"
+            border='1px'
             borderColor={pairinformationBorderColor}
-            borderRadius="6px"
-            h="95px"
-            p="3"
+            borderRadius='6px'
+            h='95px'
+            p='3'
           >
-            <Flex flexDirection="column">
-              <Flex mb={2} justifyContent="flex-start">
-                <Text color={positiontextColor} fontSize="14px">
+            <Flex flexDirection='column'>
+              <Flex mb={2} justifyContent='flex-start'>
+                <Text color={positiontextColor} fontSize='14px'>
                   Amount to be removed
                 </Text>
               </Flex>
-              <Flex justifyContent="space-between" alignItems="center">
+              <Flex justifyContent='space-between' alignItems='center'>
                 <Input
-
-                  focusBorderColor="none"
-                  fontSize="24px"
-                  p="0"
-                  border="none"
+                  focusBorderColor='none'
+                  fontSize='24px'
+                  p='0'
+                  border='none'
                   value={inputValue}
-                  placeholder="0.00"
+                  placeholder='0.00'
                   onChange={(e) => {
                     let input = e.target.value;
                     let regex = /(^100([.]0{1,2})?)$|(^\d{1,2}([.]\d{1,2})?)$/;
-                    if (e.target.value === '' || regex.test(input)) {
+                    if (e.target.value === "" || regex.test(input)) {
                       setInputValue(input);
                     }
                   }}
                 />
-                <Text color={pairTextColor} fontWeight="bold" fontSize="24px">
+                <Text color={pairTextColor} fontWeight='bold' fontSize='24px'>
                   %
                 </Text>
               </Flex>
@@ -852,181 +963,196 @@ const Remove = () => {
             mt={3}
             mb={3}
             bgColor={pairinformationBgColor}
-            border="1px"
+            border='1px'
             borderColor={pairinformationBorderColor}
-            borderRadius="6px"
-            h="140px"
-            p="3"
+            borderRadius='6px'
+            h='140px'
+            p='3'
           >
-            <Flex flexDirection="column">
-              <Flex mb={2} justifyContent="flex-start">
-                <Text color={positiontextColor} fontSize="14px">
+            <Flex flexDirection='column'>
+              <Flex mb={2} justifyContent='flex-start'>
+                <Text color={positiontextColor} fontSize='14px'>
                   Amount to be received
                 </Text>
               </Flex>
-              <Flex justifyContent="space-between">
+              <Flex justifyContent='space-between'>
                 <Flex
-                  w="46%"
-                  border="1px"
+                  w='46%'
+                  border='1px'
                   borderColor={pairinformationBorderColor}
-                  borderRadius="6px"
-                  h="76px"
+                  borderRadius='6px'
+                  h='76px'
                   bgColor={positionBgColor}
                   p={3}
-                  alignItems="center"
+                  alignItems='center'
                 >
-                  {
-                    loading || pool.length === 0 ? (
-                        <Img w="24px" h="24px" mr={2} mb={3} src={NullImage} />
-                    ) : (
-                      <CurrencyLogo currency={{...pool.path[0],
-                      chainId,
-                      address:isAddress(pool.path[0].fromPath) ,
-                      isToken: !!isAddress(pool.path[0]?.fromPath),
-                      isNative: !isAddress(pool.path[0]?.fromPath),
-                      symbol: pool.path[0]?.token
-                    }} size={24} squared={true} marginBottom={12} marginRight={8}/>
-                    )
-                  }
+                  {loading || pool.length === 0 ? (
+                    <Img w='24px' h='24px' mr={2} mb={3} src={NullImage} />
+                  ) : (
+                    <CurrencyLogo
+                      currency={{
+                        ...pool.path[0],
+                        chainId,
+                        address: isAddress(pool.path[0].fromPath),
+                        isToken: !!isAddress(pool.path[0]?.fromPath),
+                        isNative: !isAddress(pool.path[0]?.fromPath),
+                        symbol: pool.path[0]?.token,
+                      }}
+                      size={24}
+                      squared={true}
+                      marginBottom={12}
+                      marginRight={8}
+                    />
+                  )}
 
-                  <Flex flexDirection="column">
-                    <Text fontWeight="bold" color={pairTextColor}>
+                  <Flex flexDirection='column'>
+                    <Text fontWeight='bold' color={pairTextColor}>
                       {valuesToBeRemoved
                         ? valuesToBeRemoved[0].toFixed(6)
-                        : '-'}
+                        : "-"}
                     </Text>
-                    <Text color={titleColor} fontSize="12px">
+                    <Text color={titleColor} fontSize='12px'>
                       {loading || pool.length === 0
-                        ? ''
-                        : pool?.path[0].token === 'WBNB'
-                          ? 'BNB'
-                          : pool?.path[0].token === 'WETH'
-                            ? 'ETH'
-                            : pool?.path[0].token === 'WMATIC'
-                              ? 'MATIC'
-                              : pool?.path[0].token}
+                        ? ""
+                        : pool?.path[0].token === "WBNB"
+                        ? "BNB"
+                        : pool?.path[0].token === "WETH"
+                        ? "ETH"
+                        : pool?.path[0].token === "WMATIC"
+                        ? "MATIC"
+                        : pool?.path[0].token === "WROSE"
+                        ? "ROSE"
+                        : pool?.path[0].token}
                     </Text>
                   </Flex>
                 </Flex>
                 <Flex
-                  w="46%"
-                  border="1px"
+                  w='46%'
+                  border='1px'
                   borderColor={pairinformationBorderColor}
-                  borderRadius="6px"
-                  h="76px"
+                  borderRadius='6px'
+                  h='76px'
                   bgColor={positionBgColor}
                   p={3}
-                  alignItems="center"
+                  alignItems='center'
                 >
-                  {
-                    loading || pool.length === 0 ? (
-                        <Img w="24px" h="24px" mr={2} mb={3} src={NullImage} />
-                    ) : (
-                        <CurrencyLogo currency={{...pool.path[1],
-                          chainId,
-                          address:isAddress(pool.path[1].toPath) ,
-                          isToken: !!isAddress(pool.path[1]?.toPath),
-                          isNative: !isAddress(pool.path[1]?.toPath),
-                          symbol: pool.path[1]?.token
-                        }} size={24} squared={true} marginBottom={12} marginRight={8}/>
-                    )
-                  }
+                  {loading || pool.length === 0 ? (
+                    <Img w='24px' h='24px' mr={2} mb={3} src={NullImage} />
+                  ) : (
+                    <CurrencyLogo
+                      currency={{
+                        ...pool.path[1],
+                        chainId,
+                        address: isAddress(pool.path[1].toPath),
+                        isToken: !!isAddress(pool.path[1]?.toPath),
+                        isNative: !isAddress(pool.path[1]?.toPath),
+                        symbol: pool.path[1]?.token,
+                      }}
+                      size={24}
+                      squared={true}
+                      marginBottom={12}
+                      marginRight={8}
+                    />
+                  )}
 
-                  <Flex flexDirection="column">
-                    <Text fontWeight="bold" color={pairTextColor}>
+                  <Flex flexDirection='column'>
+                    <Text fontWeight='bold' color={pairTextColor}>
                       {valuesToBeRemoved
                         ? valuesToBeRemoved[1].toFixed(6)
-                        : '-'}
+                        : "-"}
                     </Text>
-                    <Text color={titleColor} fontSize="12px">
+                    <Text color={titleColor} fontSize='12px'>
                       {loading || pool.length === 0
-                        ? ''
-                        : pool?.path[1].token === 'WBNB'
-                          ? 'BNB'
-                          : pool?.path[1].token === 'WETH'
-                            ? 'ETH'
-                            : pool?.path[1].token === 'WMATIC'
-                              ? 'MATIC'
-                              : pool?.path[1].token}
+                        ? ""
+                        : pool?.path[1].token === "WBNB"
+                        ? "BNB"
+                        : pool?.path[1].token === "WETH"
+                        ? "ETH"
+                        : pool?.path[1].token === "WMATIC"
+                        ? "MATIC"
+                        : pool?.path[1].token === "WROSE"
+                        ? "ROSE"
+                        : pool?.path[1].token}
                     </Text>
                   </Flex>
                 </Flex>
               </Flex>
             </Flex>
           </Box>
-          <Flex justifyContent="space-between">
+          <Flex justifyContent='space-between'>
             <Button
-              h="45px"
+              h='45px'
               color={
                 hasBeenApproved && inputValue
                   ? approvedButtonColor
                   : inputValue
-                    ? approveButtonColor
-                    : inActiveApproveButtonColor
+                  ? approveButtonColor
+                  : inActiveApproveButtonColor
               }
               bgColor={
                 hasBeenApproved && inputValue
                   ? "transparent"
                   : inputValue
-                    ? approveButtonBgColor
-                    : inActiveApproveButtonBgColor
+                  ? approveButtonBgColor
+                  : inActiveApproveButtonBgColor
               }
               _active={{
                 bgColor:
                   hasBeenApproved && inputValue
                     ? approvedButtonBgColor
                     : inputValue
-                      ? approveButtonBgColor
-                      : inActiveApproveButtonBgColor,
+                    ? approveButtonBgColor
+                    : inActiveApproveButtonBgColor,
               }}
               _hover={{
-                bgColor:
-                  hasBeenApproved 
-                    ? approvedButtonBgColor
-                    : inputValue
-                      ? approveButtonBgColor
-                      : inActiveApproveButtonBgColor,
+                bgColor: hasBeenApproved
+                  ? approvedButtonBgColor
+                  : inputValue
+                  ? approveButtonBgColor
+                  : inActiveApproveButtonBgColor,
               }}
-              borderRadius="6px"
-              w="46%"
-              fontSize={isTabDevice && isTabDevice2 ? '12px' : ''}
-              border={hasBeenApproved && inputValue ? '1px' : ''}
+              borderRadius='6px'
+              w='46%'
+              fontSize={isTabDevice && isTabDevice2 ? "12px" : ""}
+              border={hasBeenApproved && inputValue ? "1px" : ""}
               borderColor={approvedButtonBorderColor}
-              disabled={inputValue === ''}
+              disabled={inputValue === ""}
               onClick={
                 hasBeenApproved && inputValue
                   ? () => {
-                    removeApproval();
-                  }
+                      removeApproval();
+                    }
                   : !hasBeenApproved && inputValue
-                    ? () => {
+                  ? () => {
                       approveLPTokens();
                     }
-                    : undefined
+                  : undefined
               }
             >
-              {hasBeenApproved && inputValue ? 'Approved' : 'Approve'}
+              {hasBeenApproved && inputValue ? "Approved" : "Approve"}
             </Button>
             <Button
-              h="45px"
-              w="46%"
-              borderRadius="6px"
+              h='45px'
+              w='46%'
+              borderRadius='6px'
               color={WithdrawalButtonColor}
               bgColor={
                 hasBeenApproved
                   ? approveButtonBgColor
                   : inputValue && hasBeenApproved
-                    ? approveButtonBgColor
-                    : "transparent"
+                  ? approveButtonBgColor
+                  : "transparent"
               }
               _active={{ bgColor: withdrawaButtonBgColor }}
               _hover={{ bgColor: hoverwithdrawaButtonBgColor }}
               px={14}
-              fontSize={isTabDevice && isTabDevice2 ? '12px' : ''}
+              fontSize={isTabDevice && isTabDevice2 ? "12px" : ""}
               onClick={() => RemoveLiquidity()}
-              disabled={!hasBeenApproved || inputValue === ''}
+              disabled={!hasBeenApproved || inputValue === ""}
             >
-              <Text>{inputValue === "" ? "Enter an amount" : "Confirm Withdrawal"}</Text>
+              <Text>
+                {inputValue === "" ? "Enter an amount" : "Confirm Withdrawal"}
+              </Text>
             </Button>
           </Flex>
         </Flex>

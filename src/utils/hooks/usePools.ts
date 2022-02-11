@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { useWeb3React } from "@web3-react/core";
+import { useState, useEffect, useMemo } from "react";
 import {
   smartFactory,
   LiquidityPairInstance,
@@ -8,10 +7,11 @@ import {
 import { SMARTSWAPFACTORYADDRESSES, SMARTSWAPROUTER } from "../addresses";
 import { getERC20Token } from "../utilsFunctions";
 import { ethers } from "ethers";
-import { Currency, Fraction, Percent } from "@uniswap/sdk-core";
+import { Currency, Fraction } from "@uniswap/sdk-core";
 import { WNATIVEADDRESSES } from "../addresses";
 import JSBI from "jsbi";
 import { useActiveWeb3React } from "./useActiveWeb3React";
+import { Web3Provider} from '@ethersproject/providers'
 
 export const useGetUserLiquidities = async () => {
   const { account, chainId, library } = useActiveWeb3React();
@@ -51,7 +51,7 @@ export const useGetUserLiquidities = async () => {
       }
     };
     loadUserPairs();
-  }, [chainId, account]);
+  }, [chainId, account, library]);
 
   return { liquidities, liquidityLength, Loading };
 };
@@ -399,22 +399,28 @@ export const usePricePerToken = (
         try {
           const pairinstance = await LiquidityPairInstance(pair, library);
           const reserves = await pairinstance.getReserves();
+          const token0 = await pairinstance.token0();
+          const token1 = await pairinstance.token1();
 
           const [PriceAToB, PriceBToA] = await Promise.all([
             router.quote(
-              ethers.utils.parseUnits("1", 18),
-              reserves[0],
-              reserves[1]
+              ethers.utils.parseUnits("1", CurrencyA.decimals),
+              token0 === currencyAAddress ? reserves[0] : reserves[1],
+              token0 === currencyAAddress ? reserves[1] : reserves[0]
             ),
             router.quote(
-              ethers.utils.parseUnits("1", 18),
-              reserves[1],
-              reserves[0]
+              ethers.utils.parseUnits("1", CurrencyB.decimals),
+              token0 === currencyAAddress ? reserves[1] : reserves[0],
+              token0 === currencyAAddress ? reserves[0] : reserves[1]
             ),
           ]);
 
-          setPriceAToB(ethers.utils.formatUnits(PriceAToB.toString(), 18));
-          setPriceBToA(ethers.utils.formatUnits(PriceBToA.toString(), 18));
+          setPriceAToB(
+            ethers.utils.formatUnits(PriceAToB.toString(), CurrencyB.decimals)
+          );
+          setPriceBToA(
+            ethers.utils.formatUnits(PriceBToA.toString(), CurrencyA.decimals)
+          );
         } catch (err) {
           setPriceAToB(undefined);
           setPriceBToA(undefined);
