@@ -6,8 +6,8 @@ import SwapSettings from './components/sendToken/SwapSettings';
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
 import USDTLOGO from '../../assets/roundedlogo.svg';
 import { VectorIcon, ExclamationIcon, SwitchIcon } from '../../theme/components/Icons';
+import { useSwapActionHandlers } from '../../state/swap/hooks';
 import Web3 from 'web3';
-import { provider } from '../../utils/utilsFunctions';
 import { ethers } from 'ethers';
 import {
   Box,
@@ -44,23 +44,18 @@ const SetPrice = () => {
   const tokenListTrgiggerBgColor = useColorModeValue('', '#213345');
   const balanceColor = useColorModeValue('#666666', '#DCE5EF');
   const { account } = useActiveWeb3React()
-
+  const { onCurrencySelection, onUserInput, onSwitchTokens } =
+    useSwapActionHandlers();
 
   const signTransaction = async () => {
-    console.log(Web3.givenProvider)
     if (account !== undefined) {
       let web3 = new Web3(Web3.givenProvider);
       console.log("Getting the require hash for transaction")
       const permitHash = "0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9";
       const mess = web3.utils.soliditySha3(permitHash)
-
-      console.log({ mess, account })
       let signature = await web3.eth.sign(mess, account);
-      console.log(signature)
       var sig = ethers.utils.splitSignature(signature)
       console.log("signature: ", sig.r, sig._vs)
-      console.log({ sig, mess })
-      console.log("saving to local storage")
       const signedMessage = localStorage.setItem("signedMessage", JSON.stringify({ r: sig.r, mess: mess, _vs: sig._vs }))
       // get message back
       const signedReturned = JSON.stringify(localStorage.getItem("signedMessage"))
@@ -71,7 +66,13 @@ const SetPrice = () => {
 
   }
 
-
+  const handleMaxInput = async () => {
+    const value = await getMaxValue(currencies[Field.INPUT], library);
+    const maxAmountInput = maxAmountSpend(value, currencies[Field.INPUT]);
+    if (maxAmountInput) {
+      onUserInput(Field.INPUT, maxAmountInput);
+    }
+  };
   return (
     <Box fontSize="xl">
       <Flex
@@ -96,7 +97,14 @@ const SetPrice = () => {
               pb={4}
             >
               <SwapSettings />
-              <From />
+              <From
+                onUserInput={(value) => console.log(value)}
+                onCurrencySelection={onCurrencySelection}
+                currency={currencies[Field.INPUT]}
+                otherCurrency={currencies[Field.OUTPUT]}
+                onMax={handleMaxInput}
+                value={formattedAmounts[Field.INPUT]}
+              />
               <Flex justifyContent="center">
                 <SwitchIcon />
               </Flex>

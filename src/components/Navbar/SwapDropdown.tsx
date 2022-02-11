@@ -39,7 +39,7 @@ function SwapDropdown() {
           <Nav label="Straight Swap" to="/swap" />
         </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
-          <Nav label="Auto-Time" to="#" />
+          <Nav label="Auto-Time" to="/auto-time" />
         </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
           <Nav label="Set Price" to="#" />
