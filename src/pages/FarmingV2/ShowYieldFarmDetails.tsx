@@ -828,7 +828,7 @@ const ShowYieldFarmDetails = ({
           if (currentRgPBal < content.RGPEarned) {
             dispatch(
               setOpenModal({
-                message: `Insufficient RGP ! do you wish to procceed with this Transaction`,
+                message: `Insufficient RGP !, do you wish to procceed with this Transaction...?`,
                 trxState: TrxState.WaitingForConfirmation,
               }))
           }
@@ -860,7 +860,7 @@ const ShowYieldFarmDetails = ({
           if (currentRgPBal < content.RGPEarned) {
             dispatch(
               setOpenModal({
-                message: `Insufficient RGP ! do you wish to procceed with this Transaction`,
+                message: `Insufficient RGP !, do you wish to procceed with this Transaction...?`,
                 trxState: TrxState.WaitingForConfirmation,
               }))
           }
@@ -894,7 +894,7 @@ const ShowYieldFarmDetails = ({
           if (currentRgPBal < content.RGPEarned) {
             dispatch(
               setOpenModal({
-                message: `Insufficient RGP ! do you wish to procceed with this Transaction`,
+                message: `Insufficient RGP !, do you wish to procceed with this Transaction...?`,
                 trxState: TrxState.WaitingForConfirmation,
               }))
           }
