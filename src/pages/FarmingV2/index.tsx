@@ -1205,7 +1205,7 @@ export function Index() {
                   {
                     (chainId && library) ?
                     <Box display="flex">
-                      Your referral link is {hostName}/ref={shortenCode(referralCode)}
+                      Your referral link is {referralLink}
                       <Tooltip hasArrow label={hasCopied ? "Copied!" : "Copy"} bg="gray.300" color="black">
                         <IconButton onClick={onCopy} aria-label="Copy referral code" icon={<CopyIcon />} colorScheme="ghost" pl={3}/>
                       </Tooltip>
