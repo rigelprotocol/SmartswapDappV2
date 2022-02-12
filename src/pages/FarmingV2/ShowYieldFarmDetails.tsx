@@ -62,6 +62,7 @@ import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
 import { useRGPBalance } from "../../utils/hooks/useBalances";
 import { updateFarmAllowances } from "../../state/farm/actions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
+import { getERC20Token } from "../../utils/utilsFunctions";
 
 const ShowYieldFarmDetails = ({
   content,
@@ -805,16 +806,35 @@ const ShowYieldFarmDetails = ({
     }
   };
 
+
+
+  async function checkRgpBallance(address: string | number) {
+    const RGPToken = await getERC20Token(RGPADDRESSES[chainId as number], library);
+    const balance = await RGPToken.balanceOf(address);
+    return ethers.utils.formatUnits(balance, RGPToken.decimal)
+  }
+
   const harvestTokens = async (id: string | number) => {
     if (account) {
+
       try {
         dispatch(
           setOpenModal({
-            message: `Harvesting Tokens`,
+            message: `Harvesting RGP ${content.RGPEarned} Tokens`,
             trxState: TrxState.WaitingForConfirmation,
           })
         );
         if (id === 0) {
+          const currentRgPBal = await checkRgpBallance(RGPSPECIALPOOLADDRESSES[chainId as number])
+
+          if (currentRgPBal < content.RGPEarned) {
+            dispatch(
+              setOpenModal({
+                message: `Insufficient RGP !, do you wish to procceed with this Transaction...?`,
+                trxState: TrxState.WaitingForConfirmation,
+              }))
+          }
+
           const specialPool = await RGPSpecialPool(
             RGPSPECIALPOOLADDRESSES[chainId as number],
             library
@@ -837,6 +857,16 @@ const ShowYieldFarmDetails = ({
             );
           }
         } else if (id === 8) {
+          const currentRgPBal = await checkRgpBallance(RGPSPECIALPOOLADDRESSES2[chainId as number])
+
+          if (currentRgPBal < content.RGPEarned) {
+            dispatch(
+              setOpenModal({
+                message: `Insufficient RGP !, do you wish to procceed with this Transaction...?`,
+                trxState: TrxState.WaitingForConfirmation,
+              }))
+          }
+
           const specialPool = await RGPSpecialPool2(
             RGPSPECIALPOOLADDRESSES2[chainId as number],
             library
@@ -859,6 +889,19 @@ const ShowYieldFarmDetails = ({
             );
           }
         } else {
+
+
+          const currentRgPBal = await checkRgpBallance(MASTERCHEFV2ADDRESSES[chainId as number])
+
+          if (currentRgPBal < content.RGPEarned) {
+            dispatch(
+              setOpenModal({
+                message: `Insufficient RGP !, do you wish to procceed with this Transaction...?`,
+                trxState: TrxState.WaitingForConfirmation,
+              }))
+          }
+
+
           const lpTokens = await MasterChefV2Contract(
             MASTERCHEFV2ADDRESSES[chainId as number],
             library
@@ -896,6 +939,8 @@ const ShowYieldFarmDetails = ({
               URL: explorerLink,
             })
           );
+
+
         }
       } catch (e) {
         console.log(e);
