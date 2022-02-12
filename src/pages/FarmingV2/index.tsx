@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Box, Flex, Text } from "@chakra-ui/layout";
 import {
   Alert,
@@ -68,10 +68,8 @@ import { SupportedChainId } from "../../constants/chains";
 import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import CryptoJS from 'crypto-js';
-import sha256 from 'crypto-js/sha256';
-import aes from 'crypto-js/aes';
 import { shortenCode } from "../../utils";
-import { usePathname } from "../../hooks/usePathname";
+import { useLocation } from 'react-router-dom';
 
 export const BIG_TEN = new bigNumber(10);
 export const LIQUIDITY = "liquidity";
@@ -99,11 +97,11 @@ export function Index() {
   const [stakingIndex, setStakingIndex] = useState(1);
   const [isMobileDevice] = useMediaQuery("(max-width: 750px)");
   const [referralCode, setReferralCode] = useState("");
+  const [refAddress, setRefAddress] = useState("");
   const [referralLink, setReferralLink] = useState("");
-  const { hasCopied, onCopy } = useClipboard(referralLink);
-  const pathName = usePathname();
-  const hostName = window.location.href;
-  const pathHistory = history.pathName;
+  const hostName = window.location.href.split('?')[0];
+  const { hasCopied, onCopy } = useClipboard(`${hostName}?ref=${referralCode}`);
+  const [URLRefCode, setURLRefCode] = useState("");
 
   const handleTabsChange = (index: number) => {
     const useIndex =
@@ -117,6 +115,8 @@ export function Index() {
   const handleStakingTab = (event: { target: { value: string } }) => {
     setStakingIndex(parseInt(event.target.value, 10));
     setTabIndex(parseInt(event.target.value, 10));
+    console.log(`Staking index - ${stakingIndex}`);
+    console.log(`Tab index - ${tabIndex}`);
   };
 
   const handleLiquidityTab = (event: { target: { value: string } }) => {
@@ -222,11 +222,29 @@ export function Index() {
     const handleReferralCode = () =>{
       const encryptedReferralCode = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(account)).toString();
       setReferralCode(encryptedReferralCode);
-      const refLink = `${hostName}/ref=${referralCode}`;
+      const refLink = `${hostName}?ref=${referralCode}`;
       setReferralLink(refLink);
-      const decryptedReferralCode = CryptoJS.enc.Base64.parse(encryptedReferralCode).toString(CryptoJS.enc.Utf8);
     }
     handleReferralCode()
+  }, [account])
+
+  function useURLQuery() {
+    const { search } = useLocation();
+    return React.useMemo(() => new URLSearchParams(search), [search]);
+  }
+  const query = useURLQuery();
+
+  useEffect(() => {
+    const handleURLRefCode = () =>{
+      try{
+        const queryRef = query.get("ref");
+        const decryptedReferralCode = CryptoJS.enc.Base64.parse(queryRef).toString(CryptoJS.enc.Utf8);
+        setRefAddress(decryptedReferralCode);
+      }catch(error){
+        console.log(error)
+      }
+    }
+    handleURLRefCode();
   }, [account])
 
   const getFarmTokenBalance = async () => {
@@ -1205,9 +1223,9 @@ export function Index() {
                   {
                     (chainId && library) ?
                     <Box display="flex">
-                      Your referral link is {referralLink}
+                      Your referral link is {hostName}?ref={shortenCode(referralCode)}
                       <Tooltip hasArrow label={hasCopied ? "Copied!" : "Copy"} bg="gray.300" color="black">
-                        <IconButton onClick={onCopy} aria-label="Copy referral code" icon={<CopyIcon />} colorScheme="ghost" pl={3}/>
+                        <IconButton onClick={onCopy} aria-label="Copy referral link" icon={<CopyIcon />} colorScheme="ghost" pl={3}/>
                       </Tooltip>
                       <Text>Copy link</Text>
                     </Box>
@@ -1887,6 +1905,7 @@ export function Index() {
                               content={content}
                               key={content.pid}
                               wallet={wallet}
+                              URLReferrerAddress={refAddress}
                           />
                       ) : null
                   )}

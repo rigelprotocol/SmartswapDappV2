@@ -6,7 +6,7 @@ import { RGPIcon } from "./Icon";
 import { LIGHT_THEME, DARK_THEME } from "./index";
 import { useWeb3React } from "@web3-react/core";
 
-const YieldFarm = ({content, farmDataLoading, wallet}: {
+const YieldFarm = ({content, farmDataLoading, wallet, URLReferrerAddress}: {
   content: {
     pid: number;
     totalLiquidity: string;
@@ -23,6 +23,7 @@ const YieldFarm = ({content, farmDataLoading, wallet}: {
   };
   farmDataLoading: boolean;
   wallet: any;
+  URLReferrerAddress: string;
 }) => {
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
   const { account, chainId, library } = useWeb3React();
@@ -227,7 +228,7 @@ const YieldFarm = ({content, farmDataLoading, wallet}: {
           </Box>
         </Flex>
         {showYieldfarm && (
-            <ShowYieldFarmDetails content={content} wallet={wallet} />
+            <ShowYieldFarmDetails content={content} wallet={wallet} URLReferrerAddress={URLReferrerAddress}/>
         )}
       </>
   );

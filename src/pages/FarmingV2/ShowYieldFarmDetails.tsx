@@ -67,6 +67,7 @@ import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 const ShowYieldFarmDetails = ({
   content,
   wallet,
+  URLReferrerAddress,
 }: {
   content: {
     pid: number | string;
@@ -103,7 +104,7 @@ const ShowYieldFarmDetails = ({
   const { account, chainId, library } = useActiveWeb3React();
   const dispatch = useDispatch();
   const [depositTokenValue, setDepositTokenValue] = useState("");
-  const [referralAddress, setReferralAddress] = useState("");
+  const [referrerAddress, setReferrerAddress] = useState(URLReferrerAddress);
   const [depositInputHasError, setDepositInputHasError] = useState(false);
   const [refAddressHasError, setRefAddressHasError] = useState(false);
   const [depositErrorButtonText, setDepositErrorButtonText] = useState("");
@@ -113,20 +114,20 @@ const ShowYieldFarmDetails = ({
   const [deposited, setDeposited] = useState(false);
   const [minimumStakeAmount, setMinimumStakeAmount] = useState(0);
   const [isMobileDevice] = useMediaQuery("(max-width: 767px)");
-  const [showReferralField, setShowReferralField] = useState(true);
+  const [showReferrerField, setShowReferrerField] = useState(true);
   const [isReferrerCheck, setIsReferrerCheck] = useState(false);
   const signer = library?.getSigner();
   const closeModal = () => {
     modal2Disclosure.onClose();
   };
   const handleSetReferralField = () => {
-    if(showReferralField === true){
-      setShowReferralField(false);
-      setReferralAddress('0x0000000000000000000000000000000000000000');
+    if(showReferrerField === true){
+      setShowReferrerField(false);
+      setReferrerAddress('0x0000000000000000000000000000000000000000');
       setIsReferrerCheck(true);
     }else{
-      setShowReferralField(true);
-      setReferralAddress('');
+      setShowReferrerField(true);
+      setReferrerAddress('');
       setIsReferrerCheck(false);
     }
   }
@@ -650,13 +651,13 @@ const ShowYieldFarmDetails = ({
 
   useEffect(() => {
     setRefAddressHasError(false);
-    if (referralAddress !== "") {
-      if (!Web3.utils.isAddress(referralAddress)) {
+    if (referrerAddress !== "") {
+      if (!Web3.utils.isAddress(referrerAddress)) {
         setRefAddressHasError(true);
         setDepositErrorButtonText("Invalid Address");
       }
     }
-  }, [referralAddress]);
+  }, [referrerAddress]);
 
   useEffect(() => {
     setInputHasError(false);
@@ -692,7 +693,7 @@ const ShowYieldFarmDetails = ({
       }
     } catch (e) {
       console.log(
-        "sorry there is a few error, you are most likely not logged in. Please login to ypur metamask extensition and try again."
+        "sorry there is a few error, you are most likely not logged in. Please login to your metamask extensition and try again."
       );
     }
   };
@@ -1021,7 +1022,7 @@ const ShowYieldFarmDetails = ({
         if (val === "RGP" && Number(content.id) === 1) {
           await RGPuseStake(depositTokenValue);
         } else if (val === "RGP" && Number(content.id) === 9) {
-          await RGPuseStakeV2(depositTokenValue, referralAddress);
+          await RGPuseStakeV2(depositTokenValue, referrerAddress);
         } else if (val === "RGP-BNB" || val === "RGP-USDT") {
           await LPDeposit(2);
         } else if (
@@ -1107,7 +1108,7 @@ const ShowYieldFarmDetails = ({
         );
         const data = await specialPool.stake(
           ethers.utils.parseEther(depositTokenValue.toString()),
-          referralAddress,
+          referrerAddress,
           {
             from: account,
             // gasLimit: 200000,
@@ -1720,20 +1721,20 @@ const ShowYieldFarmDetails = ({
               <Text color={modalTextColor2} fontSize='14px' mb={5} mt={3}>
                 RGP Available: {content.availableToken} {content.deposit}
               </Text>
-              <Box display={showReferralField ? "block" : "none"}>
+              <Box display={showReferrerField ? "block" : "none"}>
                 <Text color={modalTextColor} fontSize='14px' mb={3}>
                   Referrer address
                 </Text>
                 <InputGroup size='md'>
                   <Input
-                    placeholder='Enter referral address here'
+                    placeholder="Enter referrer's address here"
                     opacity='0.5'
                     h='50px'
                     borderRadius='6px'
                     name='referralDetail'
                     border='2px'
-                    value={referralAddress}
-                    onChange={(e) => setReferralAddress(e.target.value)}
+                    value={referrerAddress}
+                    onChange={(e) => setReferrerAddress(e.target.value)}
                   />
                 </InputGroup>
               </Box>
@@ -1763,7 +1764,7 @@ const ShowYieldFarmDetails = ({
                         depositValue !== "Confirm" ||
                         !account ||
                         !depositTokenValue ||
-                        (setShowReferralField && referralAddress==="")
+                        (setShowReferrerField && referrerAddress==="")
                       }
                       cursor='pointer'
                       border='none'
@@ -1797,7 +1798,7 @@ const ShowYieldFarmDetails = ({
                           depositValue !== "Confirm" ||
                           !account ||
                           !depositTokenValue ||
-                          (setShowReferralField && referralAddress==="")
+                          (setShowReferrerField && referrerAddress==="")
                         }
                         cursor='pointer'
                         border='none'
