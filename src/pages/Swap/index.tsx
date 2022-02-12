@@ -44,7 +44,11 @@ const Swap = () => {
         }}
 
       />
-      <WelcomeModal startToure={strartWelcomeRide} openModal={welcomeModal} closeModal={() => setWelcomeModal((state) => !state)} welcomeText="We would like to get you introduced to this platform and help you find your way around it. If you’d love that, then take this short tour." />
+      <WelcomeModal startToure={strartWelcomeRide} openModal={welcomeModal}
+                    closeModal={() => setWelcomeModal((state) => !state)}
+                    textHeader={'Welcome to RigelProtocol SmartSwap'}
+                    welcomeText="We would like to get you introduced to this platform and help you find your way around it.
+                     If you’d love that, then take this short tour." />
       <Box fontSize="xl">
         <Flex
           minH="100vh"
