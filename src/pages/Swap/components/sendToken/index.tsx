@@ -97,6 +97,7 @@ const SendToken = () => {
 
   const { onCurrencySelection, onUserInput, onSwitchTokens } =
     useSwapActionHandlers();
+  console.log(onCurrencySelection)
   const {
     currencies,
     getMaxValue,

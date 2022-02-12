@@ -5,7 +5,7 @@ import { Field } from '../../../../state/swap/actions';
 import { Currency } from "@uniswap/sdk-core";
 
 interface FromProps {
-  onUserInput: (value: string) => void,
+  onUserInput: string,
   onCurrencySelection: Function,
   currency: Currency | undefined,
   otherCurrency: Currency | undefined,

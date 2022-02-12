@@ -1,6 +1,6 @@
 import { AppDispatch, RootState } from '../index';
 import { useCallback, useEffect, useState } from 'react';
-import { Field, selectCurrency, typeInput, replaceSwapState, switchCurrencies } from './actions';
+import { Field, selectCurrency, typeInput, replaceAutoTimeState, switchCurrencies } from './actions';
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
 import { ParsedQs } from 'qs';
 import { useCurrency } from '../../hooks/Tokens';
@@ -38,11 +38,11 @@ export function tryParseAmount<T extends Currency>(
     return undefined;
 }
 
-export function useSwapState(): RootState['swap'] {
-    return useSelector<RootState, RootState['swap']>((state) => state.swap);
+export function useAutoTimeState(): RootState['autotime'] {
+    return useSelector<RootState, RootState['autotime']>((state) => state.autotime);
 }
 
-export function useSwapActionHandlers(): {
+export function useAutoTimeActionHandlers(): {
     onCurrencySelection: (field: Field, currency: Currency) => void;
     onUserInput: (field: Field, typedValue: string) => void;
     onSwitchTokens: () => void
@@ -54,7 +54,7 @@ export function useSwapActionHandlers(): {
         [Field.INPUT]: { currencyId: inputCurrencyId },
         [Field.OUTPUT]: { currencyId: outputCurrencyId },
         recipient,
-    } = useSwapState();
+    } = useAutoTimeState();
 
     const [Balance, Symbol] = useNativeBalance();
 
@@ -95,7 +95,7 @@ export function useSwapActionHandlers(): {
     };
 }
 
-export function useDerivedSwapInfo(): {
+export function useDerivedAutoTimeInfo(): {
     currencies: { [field in Field]?: Currency };
     getMaxValue: any;
     bestTrade: string | undefined;
@@ -113,7 +113,7 @@ export function useDerivedSwapInfo(): {
         [Field.INPUT]: { currencyId: inputCurrencyId },
         [Field.OUTPUT]: { currencyId: outputCurrencyId },
         recipient,
-    } = useSwapState();
+    } = useAutoTimeState();
     const inputCurrency = useCurrency(inputCurrencyId);
     const outputCurrency = useCurrency(outputCurrencyId);
 
@@ -213,72 +213,71 @@ function validatedRecipient(recipient: any): string | null {
     return null;
 }
 
-function parseCurrencyFromURLParameter(urlParam: any, symbol = ''): string {
-    if (typeof urlParam === 'string') {
-        const valid = isAddress(urlParam);
-        if (valid) return valid;
-        if (valid === false) return symbol;
-    }
-    return urlParam ?? '';
-}
-function queryParametersToSwapState(parsedQs: any, chainId: number) {
-    let inputCurrency = parseCurrencyFromURLParameter(parsedQs.inputCurrency);
-    let outputCurrency = parseCurrencyFromURLParameter(parsedQs.outputCurrency);
-    const symbol = SupportedChainSymbols[chainId ?? 56];
-    if (inputCurrency === '' && outputCurrency === '') {
-        inputCurrency = symbol;
-        outputCurrency = '';
-    } else if (inputCurrency === '') {
-        inputCurrency = outputCurrency === symbol ? '' : symbol;
-    } else if (outputCurrency === '' || inputCurrency === outputCurrency) {
-        outputCurrency = inputCurrency === symbol ? '' : symbol;
-    }
-    const recipient = validatedRecipient(parsedQs.recipient);
+// function parseCurrencyFromURLParameter(urlParam: any, symbol = ''): string {
+//     if (typeof urlParam === 'string') {
+//         const valid = isAddress(urlParam);
+//         if (valid) return valid;
+//         if (valid === false) return symbol;
+//     }
+//     return urlParam ?? '';
+// }
+// function queryParametersToSwapState(parsedQs: any, chainId: number) {
+//     let inputCurrency = parseCurrencyFromURLParameter(parsedQs.inputCurrency);
+//     let outputCurrency = parseCurrencyFromURLParameter(parsedQs.outputCurrency);
+//     const symbol = SupportedChainSymbols[chainId ?? 56];
+//     if (inputCurrency === '' && outputCurrency === '') {
+//         inputCurrency = symbol;
+//         outputCurrency = '';
+//     } else if (inputCurrency === '') {
+//         inputCurrency = outputCurrency === symbol ? '' : symbol;
+//     } else if (outputCurrency === '' || inputCurrency === outputCurrency) {
+//         outputCurrency = inputCurrency === symbol ? '' : symbol;
+//     }
+//     const recipient = validatedRecipient(parsedQs.recipient);
 
-    return {
-        [Field.INPUT]: {
-            currencyId: inputCurrency,
-        },
-        [Field.OUTPUT]: {
-            currencyId: outputCurrency,
-        },
-        typedValue: parseTokenAmountURLParameter(parsedQs.exactAmount),
-        independentField: parseIndependentFieldURLParameter(parsedQs.exactField),
-        recipient,
-    };
-}
+//     return {
+//         [Field.INPUT]: {
+//             currencyId: inputCurrency,
+//         },
+//         [Field.OUTPUT]: {
+//             currencyId: outputCurrency,
+//         },
+//         typedValue: parseTokenAmountURLParameter(parsedQs.exactAmount),
+//         independentField: parseIndependentFieldURLParameter(parsedQs.exactField),
+//         recipient,
+//     };
+// }
 
-// updates the swap state to use the defaults for a given network
-export function useDefaultsFromURLSearch() {
-    const { chainId, account } = useActiveWeb3React();
-    const [, Symbol] = useNativeBalance();
-    const dispatch = useDispatch<AppDispatch>();
-    const parsedQs = useParsedQueryString();
-    const [result, setResult] = useState<
-        | {
-            inputCurrencyId: string | undefined;
-            outputCurrencyId: string | undefined;
-        }
-        | undefined
-    >();
+// // updates the swap state to use the defaults for a given network
+// export function useDefaultsFromURLSearch() {
+//     const { chainId, account } = useActiveWeb3React();
+//     const [, Symbol] = useNativeBalance();
+//     const dispatch = useDispatch<AppDispatch>();
+//     const parsedQs = useParsedQueryString();
+//     const [result, setResult] = useState<
+//         | {
+//             inputCurrencyId: string | undefined;
+//             outputCurrencyId: string | undefined;
+//         }
+//         | undefined
+//     >();
 
-    useEffect(() => {
-        if (!chainId) return;
-        const parsed = queryParametersToSwapState(parsedQs, chainId);
-        dispatch(
-            replaceSwapState({
-                typedValue: parsed.typedValue,
-                field: parsed.independentField,
-                inputCurrencyId: parsed[Field.INPUT].currencyId,
-                outputCurrencyId: parsed[Field.OUTPUT].currencyId,
-                recipient: null,
-            })
-        );
-        setResult({
-            inputCurrencyId: parsed[Field.INPUT].currencyId,
-            outputCurrencyId: parsed[Field.OUTPUT].currencyId,
-        });
-    }, [dispatch, chainId, account]);
-    return result;
-}
-git add
+//     useEffect(() => {
+//         if (!chainId) return;
+//         const parsed = queryParametersToSwapState(parsedQs, chainId);
+//         dispatch(
+//             replaceSwapState({
+//                 typedValue: parsed.typedValue,
+//                 field: parsed.independentField,
+//                 inputCurrencyId: parsed[Field.INPUT].currencyId,
+//                 outputCurrencyId: parsed[Field.OUTPUT].currencyId,
+//                 recipient: null,
+//             })
+//         );
+//         setResult({
+//             inputCurrencyId: parsed[Field.INPUT].currencyId,
+//             outputCurrencyId: parsed[Field.OUTPUT].currencyId,
+//         });
+//     }, [dispatch, chainId, account]);
+//     return result;
+// }
