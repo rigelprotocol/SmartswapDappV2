@@ -187,8 +187,24 @@ const SetPrice = () => {
     } else return
 
   }
-  const sendTransactionToDatabase = () => {
-
+  const sendTransactionToDatabase = async () => {
+    const response = await fetch('http://localhost:4000/auto/add', {
+      method: "POST",
+      mode: "cors",
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'same-origin', // include, *same-origin, omit
+      headers: {
+        'Content-Type': 'application/json'
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: JSON.stringify({
+        address: account,
+        network: "binance chain",
+        frequency: 9
+      })
+    })
+    const res = await response.json()
+    console.log(res)
   }
 
   const handleMaxInput = async () => {
