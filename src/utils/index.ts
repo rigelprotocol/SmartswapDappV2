@@ -76,7 +76,7 @@ export function convertToNumber(hex : string, decimals?: number) {
   // let f_number =  0.99899002; ParseFloat(f_number, 4) = 0.9989
 
   export function ParseFloat(str : string | number, val : number) {
-    str = str.toString();
-    str = str.slice(0, (str.indexOf(".")) + val + 1);
-    return str;
+   const value = str.toString();
+   if(!value.includes('.')) return value;
+   return  value.slice(0, (value.indexOf(".")) + val + 1);
   }
