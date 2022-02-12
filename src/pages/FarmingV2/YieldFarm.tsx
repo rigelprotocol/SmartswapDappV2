@@ -9,6 +9,7 @@ import { useWeb3React } from "@web3-react/core";
 const YieldFarm = ({content, farmDataLoading, wallet}: {
   content: {
     pid: number;
+    id: string,
     totalLiquidity: string;
     earn: string;
     img: string;
@@ -25,10 +26,9 @@ const YieldFarm = ({content, farmDataLoading, wallet}: {
   wallet: any;
 }) => {
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
-  const { account, chainId, library } = useWeb3React();
+  const { chainId, library } = useWeb3React();
 
   const active = chainId && library;
-  const loadingTotalLiquidity = false;
   const [showYieldfarm, setShowYieldFarm] = useState(false);
 
   const formatAmount = (value: any) => parseFloat(value).toLocaleString();
@@ -175,6 +175,7 @@ const YieldFarm = ({content, farmDataLoading, wallet}: {
                     mb="4"
                     _hover={{ color: "#423a85" }}
                     onClick={() => setShowYieldFarm(!showYieldfarm)}
+                    className={'unlock'}
                 >
                   Unlock
                 </Button>
@@ -220,6 +221,7 @@ const YieldFarm = ({content, farmDataLoading, wallet}: {
                     mb="4"
                     _hover={{ color: "#423a85" }}
                     onClick={() => setShowYieldFarm(!showYieldfarm)}
+                    className={'unlock'}
                 >
                   Unlock
                 </Button>
