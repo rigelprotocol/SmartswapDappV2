@@ -200,7 +200,9 @@ const SetPrice = () => {
       body: JSON.stringify({
         address: account,
         network: "binance chain",
-        frequency: 9
+        frequency: 9,
+        toAddress: currencies[Field.INPUT].wrapped.address,
+        fromAddress: RGPADDRESSES[chainId as number]
       })
     })
     const res = await response.json()
