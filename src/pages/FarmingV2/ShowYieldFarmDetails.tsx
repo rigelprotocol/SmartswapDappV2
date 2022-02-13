@@ -866,10 +866,17 @@ const ShowYieldFarmDetails = ({
             //   body: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
             //   type: "error",
             // });
+            // dispatch(
+            //   addToast({
+            //     message: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
+            //     error: true
+            //   })
+            // );
+            // throw new Error()
             dispatch(
-              addToast({
-                message: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
-                error: true
+              setOpenModal({
+                trxState: TrxState.TransactionFailed,
+                message: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`
               })
             );
           } else {

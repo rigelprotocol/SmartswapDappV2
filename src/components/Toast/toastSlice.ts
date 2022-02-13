@@ -3,13 +3,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface ToastState {
     message: string,
     URL?: string,
-    error?: boolean,
 }
 
 const initialState: ToastState = {
     message: '',
     URL: '',
-    error: false
 };
 
 const toastSlice = createSlice({
@@ -19,11 +17,9 @@ const toastSlice = createSlice({
         addToast: (state, action: PayloadAction<ToastState>) => {
             state.message = action.payload.message;
             state.URL = action.payload.URL;
-            state.error = action.payload?.error ?? false
         },
         removeToast: (state) => {
             state.message = '';
-            state.error = false
         }
     }
 });
