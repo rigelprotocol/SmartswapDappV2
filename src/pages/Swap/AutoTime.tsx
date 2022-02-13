@@ -209,13 +209,13 @@ const SetPrice = () => {
     let data
     if (currencies[Field.INPUT]?.isNative) {
       data = await smartSwapV2Contract.setPeriodToSwapETHForTokens(
-        Web3.utils.toWei('1', 'ether'),
         currencies[Field.OUTPUT]?.wrapped.address,
         account,
         time,
         signedReturned.mess,
         signedReturned.r,
-        signedReturned._vs
+        signedReturned._vs,
+        { value: Web3.utils.toWei('1', 'ether') }
       )
     } else if (currencies[Field.OUTPUT]?.isNative) {
       data = await smartSwapV2Contract.setPeriodToSwapTokensForETH(
@@ -261,8 +261,8 @@ const SetPrice = () => {
         address: account,
         network: "binance chain",
         frequency: 2,
-        fromAddress: currencies[Field.INPUT]?.wrapped.address,
-        toAddress: currencies[Field.OUTPUT]?.wrapped.address,
+        fromAddress: currencies[Field.INPUT]?.isNative ? "" : currencies[Field.INPUT]?.wrapped.address,
+        toAddress: currencies[Field.OUTPUT]?.isNative ? "" : currencies[Field.OUTPUT]?.wrapped.address,
         signature: signedReturned
       })
     })
