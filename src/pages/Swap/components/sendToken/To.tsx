@@ -10,7 +10,8 @@ interface ToProps {
   onCurrencySelection: Function,
   currency: Currency | undefined,
   otherCurrency: Currency | undefined,
-  value: string
+  value: string,
+  display?: boolean
 }
 
 
@@ -19,7 +20,8 @@ const To: React.FC<ToProps> = ({
   currency,
   otherCurrency,
   onUserOutput,
-  value
+  value,
+  display
 
 }) => {
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
@@ -43,12 +45,13 @@ const To: React.FC<ToProps> = ({
         mb={4}
         mt={4}
         borderRadius="6px"
-        border="1px"
+        border={!display ? "1px" : "0px"}
         borderColor={borderColor}
         className='SelectToken'
+
       >
         <InputSelector
-
+          display={display}
           onCurrencySelect={handleInputSelect}
           currency={currency}
           otherCurrency={otherCurrency}

@@ -308,6 +308,7 @@ const SendToken = () => {
     const from = currencies[Field.INPUT]?.wrapped.address;
     const to = currencies[Field.OUTPUT]?.wrapped.address;
     console.log({ from, to, account, chainId });
+    console.log({ route })
     try {
       setSendingTrx(true);
       dispatch(

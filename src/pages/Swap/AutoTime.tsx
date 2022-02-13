@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import ShowDetails from './components/details/ShowDetails';
 import History from './components/history/History';
 import From from './components/sendToken/From';
+import To from './components/sendToken/To';
 import SwapSettings from './components/sendToken/SwapSettings';
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
 import USDTLOGO from '../../assets/roundedlogo.svg';
@@ -31,9 +32,9 @@ import {
 import {
   ChevronDownIcon
 } from "@chakra-ui/icons";
-import { useDispatch, useSelector } from "react-redux";
-import { ApproveCheck, ApprovalRouter } from '../../utils/Contracts';
-import { SMARTSWAPROUTER, RGPADDRESSES } from '../../utils/addresses';
+import { useDispatch } from "react-redux";
+import { ApproveCheck, ApprovalRouter, autoSwapV2 } from '../../utils/Contracts';
+import { SMARTSWAPROUTER, RGPADDRESSES, AUTOSWAPV2ADDRESSES } from '../../utils/addresses';
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 
 
@@ -63,6 +64,12 @@ const SetPrice = () => {
   const [RGPApproval, setRGPApproval] = useState(false)
   const [approval, setApproval] = useState([])
 
+  const handleTypeInput = useCallback(
+    (value: string) => {
+      onUserInput(Field.INPUT, value);
+    },
+    [onUserInput]
+  );
   const signTransaction = async () => {
     if (account !== undefined) {
       try {
@@ -75,8 +82,6 @@ const SetPrice = () => {
         console.log("signature: ", sig.r, sig._vs)
         const signedMessage = localStorage.setItem("signedMessage", JSON.stringify({ r: sig.r, mess: mess, _vs: sig._vs }))
         // get message back
-        const signedReturned = JSON.stringify(localStorage.getItem("signedMessage"))
-        console.log(currencies[Field.INPUT])
         // if (currencies[Field.INPUT]) {
         setTransactionSigned(true)
         // }
@@ -154,8 +159,8 @@ const SetPrice = () => {
         }
         console.log(arrow)
         if (approval[0] === currencies[Field.INPUT]?.name) {
-          console.log(currencies[Field.INPUT], currencies[Field.INPUT].tokenInfo?.name)
-          const address = currencies[Field.INPUT].wrapped.address;
+          console.log(currencies[Field.INPUT], currencies[Field.INPUT]?.tokenInfo.name)
+          const address = currencies[Field.INPUT]?.wrapped.address;
           const swapApproval = await ApprovalRouter(address, library);
           const token = await getERC20Token(address, library);
           const walletBal = (await token.balanceOf(account)) + 4e18;
@@ -188,6 +193,36 @@ const SetPrice = () => {
 
   }
   const sendTransactionToDatabase = async () => {
+    const smartSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
+    const signedReturned = JSON.parse(localStorage.getItem("signedMessage"))
+    dispatch(
+      setOpenModal({
+        message: "SIgning initial transaction",
+        trxState: TrxState.WaitingForConfirmation,
+      })
+    );
+    const amount = Web3.utils.toWei('10', 'ether');
+    const time = Date.now();
+    console.log("Get current time: ", time)
+    console.log({ smartSwapV2Contract })
+    const data = await smartSwapV2Contract.callPeriodToSwapExactToken(
+      currencies[Field.INPUT]?.wrapped.address,
+      currencies[Field.OUTPUT]?.wrapped.address,
+      account,
+      amount,
+      time,
+      signedReturned.mess,
+      signedReturned.r,
+      signedReturned._vs
+    )
+
+
+    dispatch(
+      setOpenModal({
+        message: "Storing Transaction",
+        trxState: TrxState.WaitingForConfirmation,
+      })
+    );
     const response = await fetch('http://localhost:4000/auto/add', {
       method: "POST",
       mode: "cors",
@@ -200,22 +235,16 @@ const SetPrice = () => {
       body: JSON.stringify({
         address: account,
         network: "binance chain",
-        frequency: 9,
-        toAddress: currencies[Field.INPUT].wrapped.address,
-        fromAddress: RGPADDRESSES[chainId as number]
+        frequency: 2,
+        fromAddress: currencies[Field.INPUT]?.wrapped.address,
+        toAddress: currencies[Field.OUTPUT]?.wrapped.address,
+        signature: signedReturned
       })
     })
     const res = await response.json()
     console.log(res)
   }
 
-  const handleMaxInput = async () => {
-    const value = await getMaxValue(currencies[Field.INPUT], library);
-    const maxAmountInput = maxAmountSpend(value, currencies[Field.INPUT]);
-    if (maxAmountInput) {
-      onUserInput(Field.INPUT, maxAmountInput);
-    }
-  };
 
   const checkApproval = async (tokenAddress: string) => {
     if (currencies[Field.INPUT]?.isNative) {
@@ -267,11 +296,10 @@ const SetPrice = () => {
             >
               <SwapSettings />
               <From
-                onUserInput={(value) => console.log(value)}
+                onUserInput={handleTypeInput}
                 onCurrencySelection={onCurrencySelection}
                 currency={currencies[Field.INPUT]}
                 otherCurrency={currencies[Field.OUTPUT]}
-                onMax={handleMaxInput}
                 value={"0"}
               />
               <Flex justifyContent="center">
@@ -280,7 +308,7 @@ const SetPrice = () => {
               <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" p={3} mt={4}>
 
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={5}>
-                  <Text color={balanceColor} fontSize="14px">
+                  {/* <Text color={balanceColor} fontSize="14px">
                     Balance: 2.2332 USDT
                   </Text>
                   <Menu>
@@ -294,7 +322,25 @@ const SetPrice = () => {
                       <Image mr={3} h="24px" w="24px" src={USDTLOGO} />
                       <Text color={tokenListTriggerColor}>USDT</Text>
                     </Button>
-                  </Menu>
+                  </Menu> */
+                    <To
+                      onUserInput={(value) => console.log(value)}
+                      onCurrencySelection={onCurrencySelection}
+                      currency={currencies[Field.OUTPUT]}
+                      otherCurrency={currencies[Field.INPUT]}
+                      value={"0"}
+                      display={true}
+                    />
+                  }
+                  <To
+                    onUserInput={(value) => console.log(value)}
+                    onCurrencySelection={onCurrencySelection}
+                    currency={currencies[Field.OUTPUT]}
+                    otherCurrency={currencies[Field.INPUT]}
+                    value={"0"}
+
+                    display={true}
+                  />
                 </Box>
 
                 <Box display="flex" pt={4} pb={4} pr={4} pl={4} borderColor={borderTwo} borderWidth="2px" borderRadius="2px" bg={buttonBgcolor}>
@@ -408,22 +454,22 @@ const SetPrice = () => {
             >
               <SwapSettings />
               <From
-                onUserInput={(value) => console.log(value)}
+                onUserInput={handleTypeInput}
                 onCurrencySelection={onCurrencySelection}
                 currency={currencies[Field.INPUT]}
                 otherCurrency={currencies[Field.OUTPUT]}
-                onMax={handleMaxInput}
-                value={"0"} />
+                value={"0"}
+              />
               <Flex justifyContent="center">
                 <SwitchIcon />
               </Flex>
               <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" p={3} mt={4}>
 
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={5}>
-                  <Text color={balanceColor} fontSize="14px">
+                  {/* <Text color={balanceColor} fontSize="14px">
                     Balance: 2.2332 USDT
-                  </Text>
-                  <Menu>
+                  </Text> */}
+                  {/* <Menu>
                     <Button
                       border="0px"
                       h="40px"
@@ -434,7 +480,15 @@ const SetPrice = () => {
                       <Image mr={3} h="24px" w="24px" src={USDTLOGO} />
                       <Text color={tokenListTriggerColor}>USDT</Text>
                     </Button>
-                  </Menu>
+                  </Menu> */}
+                  <To
+                    onUserInput={(value) => console.log(value)}
+                    onCurrencySelection={onCurrencySelection}
+                    currency={currencies[Field.OUTPUT]}
+                    otherCurrency={currencies[Field.INPUT]}
+                    value={"0"}
+                    display={false}
+                  />
                 </Box>
 
                 <Box display="flex" pt={4} pb={4} pr={4} pl={4} borderColor={borderTwo} borderWidth="2px" borderRadius="2px" bg={buttonBgcolor}>
@@ -553,7 +607,7 @@ const SetPrice = () => {
                     boxShadow={lightmode ? 'base' : 'lg'}
                     _hover={{ bgColor: buttonBgcolor }}
                   >
-                    Approve {approval.length > 0 && approval[0]} {approval.length > 1 && `and ${currencies[Field.INPUT].tokenInfo.name}`}
+                    Approve {approval.length > 0 && approval[0]} {approval.length > 1 && `and ${currencies[Field.INPUT]?.tokenInfo.name}`}
                   </Button> : <Button
                     w="100%"
                     borderRadius="6px"

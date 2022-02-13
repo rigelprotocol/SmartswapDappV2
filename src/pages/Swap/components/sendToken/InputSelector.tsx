@@ -18,6 +18,7 @@ import { escapeRegExp } from "../../../../utils";
 
 type InputSelectorProps = {
   max: Boolean,
+  display?: Boolean,
   onCurrencySelect: (currency: Currency | null | undefined) => void,
   currency?: Currency | null,
   otherCurrency?: Currency | null,
@@ -30,6 +31,7 @@ type InputSelectorProps = {
 
 const InputSelector = ({
   max,
+  display,
   onCurrencySelect,
   currency,
   tokenModal,
@@ -58,12 +60,13 @@ const InputSelector = ({
   return (
     <>
       <Flex alignItems="center" mt={3} justifyContent="space-between">
-        <Input
+        {!display && <Input
           fontSize="2xl"
           type="text"
           min="0"
           border="none"
           color={inputColor}
+
           isRequired
           placeholder="0.0"
           value={value}
@@ -71,7 +74,7 @@ const InputSelector = ({
             enforcer(event.target.value.replace(/,/g, '.'))
           }}
           focusBorderColor="none"
-        />
+        />}
         <Flex>
           <Menu>
             <Button
@@ -98,7 +101,7 @@ const InputSelector = ({
           </Menu>
         </Flex>
       </Flex>
-      <Flex mt={3} alignItems="center">
+      <Flex mt={3} alignItems="center" justifyContent={!display ? "left" : "right"}>
         <Text ml={4} color={balanceColor} fontSize="14px">
           Balance: {balance.currency?.isToken ? balance.toSignificant(6) : balance} {currency?.symbol}
         </Text>
