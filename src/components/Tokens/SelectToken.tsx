@@ -131,7 +131,6 @@ useEffect(() =>{
                   mr={3}
                   cursor="pointer"
                   _focus={{ outline: 'none' }}
-                  // onClick={()=>alert(1)}
                   p={'7px'}
                   border='1px solid'
 

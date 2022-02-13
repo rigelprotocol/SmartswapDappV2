@@ -131,7 +131,24 @@ export const SMARTSWAPLP_TOKEN5ADDRESSES: { [key: string]: string } = {
   "137": "0x7f14147c97efdc682ec4dda8b557dfc0b495517f",
   "80001": "0x7f14147C97EfDc682eC4dDA8B557DFC0b495517F",
 };
-//RGP addresses
+
+export const SMARTSWAPLP_TOKEN6ADDRESSES: { [key: string]: string } = {
+  '1': '0x',
+  '3': '0x',
+  '56': '0x9BbFDaaC4fBa085E5368fD334B1769646ff6b961',
+  '97': '0x5906a2f01a2fC5d6147f233970531797aD03F624',
+  '137': '0x',
+  '80001': '',
+};
+
+export const SMARTSWAPLP_TOKEN7ADDRESSES: { [key: string]: string } = {
+  '1': '0x',
+  '3': '0x',
+  '56': '0x481d0811D07CCF76680e737D9C1273c2bDC52E2A',
+  '97': '0xE25E2907749df9B21C23196469ff40C597c4914D',
+  '137': '0x',
+  '80001': '',
+};
 export const RGP: { [key: string]: string } = {
   "1": "0x",
   "3": "0x80278a0Cf536e568A76425B67Fb3931Dca21535c",

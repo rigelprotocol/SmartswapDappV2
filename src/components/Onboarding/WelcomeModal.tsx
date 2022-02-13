@@ -1,15 +1,13 @@
-import React, { useState } from "react"
+import React  from "react"
 import {
     ModalOverlay,
     ModalContent,
     Modal,
-
     useColorModeValue,
     Box,
     Flex,
     Text,
     Button,
-
     Image,
 } from "@chakra-ui/react"
 import logo from '../../assets/logoRGP.png'
@@ -18,25 +16,29 @@ import logo from '../../assets/logoRGP.png'
 export type IModal = {
     openModal: boolean,
     closeModal: Function
-    startToure: Function
+    startToure: Function,
+    welcomeText: string,
+    textHeader: string
 }
 
 const WelcomeModal: React.FC<IModal> = ({
     openModal,
     closeModal,
-    startToure
+    startToure,
+    welcomeText,
+    textHeader
 }) => {
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const secondarybgColor = useColorModeValue("#EBF6FE", "#EAF6FF");
     const textColor = useColorModeValue("#333333", "#F1F5F8");
 
     const brandButtonColor = useColorModeValue("#319EF6", "#4CAFFF");
-    const buttonColor = useColorModeValue("#319EF6", "#4CAFFF")
+    const buttonColor = useColorModeValue("#319EF6", "#4CAFFF");
 
 
 
-    function startToure1() {
-        closeModal(false)
+    function startTour1() {
+        closeModal(false);
         startToure()
     }
 
@@ -70,14 +72,14 @@ const WelcomeModal: React.FC<IModal> = ({
                     </Box>
                     <Flex justifyContent="space-between" alignContent='center' flexDirection="column" alignItems="center" py="4">
                         <Text color={textColor} margin="6px 0" fontSize="20px">
-                            Welcome to RigelProtocol SmartSwap!
+                            {textHeader}
                         </Text>
 
 
                     </Flex>
                     <Flex justifyContent="space-between" alignContent="center" flexDirection="column" alignItems="center" py="4">
                         <Text color={textColor} textAlign="center" fontSize="16px" mx={8}>
-                            We would like to get you introduced to this platform and help you find your way around it. If you’d love that, then take this short tour.
+                            {welcomeText}
                         </Text>
 
                     </Flex>
@@ -95,7 +97,7 @@ const WelcomeModal: React.FC<IModal> = ({
                             background={brandButtonColor}
                             color="#FFFFFF"
                             cursor="pointer"
-                            onClick={startToure1}
+                            onClick={startTour1}
 
                         >
                             Take this short tour
