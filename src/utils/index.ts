@@ -23,7 +23,7 @@ export function shortenAddress(address: string, chars = 4): string {
 }
 
 export function shortenCode(code: string, chars = 4): string {
-    return `${code.substring(0, chars + 2)}...${code.substring(42 - chars)}`
+    return `${code.substring(0, chars + 2)}...${code.substring(56 - chars)}`
 }
 
 export function escapeRegExp(string: string): string {

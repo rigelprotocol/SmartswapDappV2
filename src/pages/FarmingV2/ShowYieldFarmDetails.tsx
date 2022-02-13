@@ -127,13 +127,17 @@ const ShowYieldFarmDetails = ({
     modal2Disclosure.onClose();
   };
   const handleSetReferralField = () => {
-    if(showReferrerField === true){
+    if(showReferrerField === true && URLReferrerAddress === ''){
       setShowReferrerField(false);
       setReferrerAddress('0x0000000000000000000000000000000000000000');
       setIsReferrerCheck(true);
-    }else{
+    } else if(showReferrerField === true && URLReferrerAddress !== ''){
+      setShowReferrerField(false);
+      setReferrerAddress(URLReferrerAddress);
+      setIsReferrerCheck(true);
+    }else if (showReferrerField === false && referrerAddress !== ''){
       setShowReferrerField(true);
-      setReferrerAddress('');
+      setReferrerAddress(referrerAddress);
       setIsReferrerCheck(false);
     }
   }
@@ -1815,6 +1819,7 @@ const ShowYieldFarmDetails = ({
                     borderRadius='6px'
                     name='referralDetail'
                     border='2px'
+                    disabled={URLReferrerAddress !== ''}
                     value={referrerAddress}
                     onChange={(e) => setReferrerAddress(e.target.value)}
                   />
