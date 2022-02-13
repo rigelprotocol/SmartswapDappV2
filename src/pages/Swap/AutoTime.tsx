@@ -195,9 +195,10 @@ const SetPrice = () => {
   const sendTransactionToDatabase = async () => {
     const smartSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
     const signedReturned = JSON.parse(localStorage.getItem("signedMessage"))
+    console.log(currencies[Field.INPUT])
     dispatch(
       setOpenModal({
-        message: "SIgning initial transaction",
+        message: `Signing initial transaction between ${currencies[Field.INPUT]?.symbol} and ${currencies[Field.OUTPUT]?.symbol}`,
         trxState: TrxState.WaitingForConfirmation,
       })
     );
@@ -205,17 +206,41 @@ const SetPrice = () => {
     const time = Date.now();
     console.log("Get current time: ", time)
     console.log({ smartSwapV2Contract })
-    const data = await smartSwapV2Contract.callPeriodToSwapExactToken(
-      currencies[Field.INPUT]?.wrapped.address,
-      currencies[Field.OUTPUT]?.wrapped.address,
-      account,
-      amount,
-      time,
-      signedReturned.mess,
-      signedReturned.r,
-      signedReturned._vs
-    )
+    let data
+    if (currencies[Field.INPUT]?.isNative) {
+      data = await smartSwapV2Contract.setPeriodToSwapETHForTokens(
+        Web3.utils.toWei('1', 'ether'),
+        currencies[Field.OUTPUT]?.wrapped.address,
+        account,
+        time,
+        signedReturned.mess,
+        signedReturned.r,
+        signedReturned._vs
+      )
+    } else if (currencies[Field.OUTPUT]?.isNative) {
+      data = await smartSwapV2Contract.setPeriodToSwapTokensForETH(
+        currencies[Field.INPUT]?.wrapped.address,
+        account,
+        Web3.utils.toWei('1', 'ether'),
+        time,
+        signedReturned.mess,
+        signedReturned.r,
+        signedReturned._vs
+      )
+    } else {
+      data = await smartSwapV2Contract.callPeriodToSwapExactTokens(
+        currencies[Field.INPUT]?.wrapped.address,
+        currencies[Field.OUTPUT]?.wrapped.address,
+        account,
+        amount,
+        time,
+        signedReturned.mess,
+        signedReturned.r,
+        signedReturned._vs
+      )
+    }
 
+    console.log(data)
 
     dispatch(
       setOpenModal({
