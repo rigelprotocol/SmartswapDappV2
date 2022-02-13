@@ -6,7 +6,7 @@ import History from './components/history/History';
 import BridgeCard from './components/bridgeCard';
 import WelcomeModal from '../../components/Onboarding/WelcomeModal';
 import Joyride from 'react-joyride'
-import { tourSteps } from '../../components/Onboarding/Steps';
+import { tourSteps } from '../../components/Onboarding/SwapSteps';
 
 const Swap = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
@@ -44,7 +44,11 @@ const Swap = () => {
         }}
 
       />
-      <WelcomeModal startToure={strartWelcomeRide} openModal={welcomeModal} closeModal={() => setWelcomeModal((state) => !state)} />
+      <WelcomeModal startToure={strartWelcomeRide} openModal={welcomeModal}
+                    closeModal={() => setWelcomeModal((state) => !state)}
+                    textHeader={'Welcome to RigelProtocol SmartSwap'}
+                    welcomeText="We would like to get you introduced to this platform and help you find your way around it.
+                     If you’d love that, then take this short tour." />
       <Box fontSize="xl">
         <Flex
           minH="100vh"
