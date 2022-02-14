@@ -59,6 +59,7 @@ const SetPrice = () => {
   const { onCurrencySelection, onUserInput, onSwitchTokens } = useAutoTimeActionHandlers();
 
   const [transactionSigned, setTransactionSigned] = useState(false)
+  const [signedTransaction, setSignedTransaction] = useState({})
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
   const [otherTokenApproval, setOtherTokenApproval] = useState(false)
   const [RGPApproval, setRGPApproval] = useState(false)
@@ -76,10 +77,16 @@ const SetPrice = () => {
         let web3 = new Web3(Web3.givenProvider);
         console.log("Getting the require hash for transaction")
         const permitHash = "0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9";
+
         const mess = web3.utils.soliditySha3(permitHash)
+
         let signature = await web3.eth.sign(mess, account);
+
         var sig = ethers.utils.splitSignature(signature)
-        console.log("signature: ", sig.r, sig._vs)
+
+        setSignedTransaction({ ...sig, mess })
+
+        console.log({ signedTransaction })
         const signedMessage = localStorage.setItem("signedMessage", JSON.stringify({ r: sig.r, mess: mess, _vs: sig._vs }))
         // get message back
         // if (currencies[Field.INPUT]) {
@@ -241,33 +248,33 @@ const SetPrice = () => {
     }
 
     console.log(data)
-
+    console.log({ signedTransaction })
     dispatch(
       setOpenModal({
         message: "Storing Transaction",
         trxState: TrxState.WaitingForConfirmation,
       })
     );
-    const response = await fetch('http://localhost:4000/auto/add', {
-      method: "POST",
-      mode: "cors",
-      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: 'same-origin', // include, *same-origin, omit
-      headers: {
-        'Content-Type': 'application/json'
-        // 'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: JSON.stringify({
-        address: account,
-        network: "binance chain",
-        frequency: 2,
-        fromAddress: currencies[Field.INPUT]?.isNative ? "" : currencies[Field.INPUT]?.wrapped.address,
-        toAddress: currencies[Field.OUTPUT]?.isNative ? "" : currencies[Field.OUTPUT]?.wrapped.address,
-        signature: signedReturned
-      })
-    })
-    const res = await response.json()
-    console.log(res)
+    // const response = await fetch('http://localhost:4000/auto/add', {
+    //   method: "POST",
+    //   mode: "cors",
+    //   cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    //   credentials: 'same-origin', // include, *same-origin, omit
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //     // 'Content-Type': 'application/x-www-form-urlencoded',
+    //   },
+    //   body: JSON.stringify({
+    //     address: account,
+    //     network: "binance chain",
+    //     frequency: 2,
+    //     fromAddress: currencies[Field.INPUT]?.isNative ? "" : currencies[Field.INPUT]?.wrapped.address,
+    //     toAddress: currencies[Field.OUTPUT]?.isNative ? "" : currencies[Field.OUTPUT]?.wrapped.address,
+    //     signature: signedReturned
+    //   })
+    // })
+    // const res = await response.json()
+    // console.log(res)
   }
 
 
