@@ -707,7 +707,7 @@ const ShowYieldFarmDetails = ({
         } else if (val === "RGP-BNB" || val === "RGP-USDT") {
           await tokensWithdrawal(2);
         } else if (
-          val === "RBG-BUSD" ||
+          val === "RGP-BUSD" ||
           val === "MATIC-RGP" ||
           val === "RGP-ROSE"
         ) {
