@@ -339,7 +339,7 @@ const SendToken = () => {
         }
       );
       const { hash } = sendTransaction;
-      const { confirmations, status } = await sendTransaction.wait(3);
+      const { confirmations, status } = await sendTransaction.wait(1);
       const receipt = await sendTransaction.wait();
       const outputAmount = await getOutPutDataFromEvent(
         to,
@@ -424,7 +424,7 @@ const SendToken = () => {
         }
       );
       const { hash } = sendTransaction;
-      const { confirmations, status } = await sendTransaction.wait(3);
+      const { confirmations, status } = await sendTransaction.wait(1);
       const receipt = await sendTransaction.wait();
 
       const outputAmountForDisplay = await getOutPutDataFromEvent(
@@ -441,7 +441,7 @@ const SendToken = () => {
 
       if (
         typeof sendTransaction.hash !== "undefined" &&
-        confirmations >= 3 &&
+        confirmations >= 1 &&
         status
       ) {
         setSendingTrx(false);
@@ -510,7 +510,7 @@ const SendToken = () => {
         account,
         dl
       );
-      const { confirmations, status } = await sendTransaction.wait(3);
+      const { confirmations, status } = await sendTransaction.wait(1);
       const { hash } = sendTransaction;
       const receipt = await sendTransaction.wait();
       const outputAmount = await getOutPutDataFromEvent(
@@ -527,7 +527,7 @@ const SendToken = () => {
 
       if (
         typeof sendTransaction.hash !== "undefined" &&
-        confirmations >= 3 &&
+        confirmations >= 1 &&
         status
       ) {
         setSendingTrx(false);
@@ -582,11 +582,11 @@ const SendToken = () => {
       const sendTransaction = await weth.deposit({
         value: parsedAmount,
       });
-      const { confirmations, status } = await sendTransaction.wait(3);
+      const { confirmations, status } = await sendTransaction.wait(1);
       const { hash } = sendTransaction;
       if (
         typeof sendTransaction.hash !== "undefined" &&
-        confirmations >= 3 &&
+        confirmations >= 1 &&
         status
       ) {
         setSendingTrx(false);
@@ -641,7 +641,7 @@ const SendToken = () => {
       const { hash } = sendTransaction;
       if (
         typeof sendTransaction.hash !== "undefined" &&
-        confirmations >= 3 &&
+        confirmations >= 1 &&
         status
       ) {
         setSendingTrx(false);

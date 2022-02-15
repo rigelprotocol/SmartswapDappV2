@@ -46,8 +46,9 @@ export const getOutPutDataFromEvent = async (
   });
 
   if (duplicateArray.length != 0) {
+    console.log("duplicate data", duplicateArray[0].data.toString());
     const convertedInput = (
-      parseInt(duplicateArray[0].data, decimal) /
+      parseInt(duplicateArray[0].data, 16) /
       10 ** seconddecimal
     ).toFixed(7);
     return convertedInput;
@@ -71,7 +72,7 @@ export const getInPutDataFromEvent = (
 
   if (duplicateArray.length !== 0) {
     const convertedInput =
-      parseInt(duplicateArray[0].data, decimal) / 10 ** seconddecimal;
+      parseInt(duplicateArray[0].data, 16) / 10 ** seconddecimal;
 
     if (parseFloat(convertedInput) !== parseFloat(fromAmount)) {
       return convertedInput.toFixed(7);
