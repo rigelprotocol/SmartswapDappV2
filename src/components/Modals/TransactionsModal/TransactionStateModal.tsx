@@ -108,7 +108,7 @@ const TransactionStateModal: React.FC = () => {
                                         py={3}
                                         fontSize="14px"
                                         fontWeight="normal"
-                                        color="red">
+                                        color={errorBgColour}>
                                         {modalDetails?.message}
 
                                     </Text>
