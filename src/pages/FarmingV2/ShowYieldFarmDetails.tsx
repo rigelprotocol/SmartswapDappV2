@@ -42,7 +42,8 @@ import {
   smartSwapLPTokenV2PoolFive,
   rigelToken,
   smartSwapLPTokenV2PoolSix,
-  smartSwapLPTokenV2PoolSeven
+  smartSwapLPTokenV2PoolSeven,
+  smartSwapLPTokenV2PoolEight, smartSwapLPTokenV2PoolNine
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
@@ -53,7 +54,10 @@ import {
   SMARTSWAPLP_TOKEN5ADDRESSES,
   SMARTSWAPLP_TOKEN6ADDRESSES,
   SMARTSWAPLP_TOKEN7ADDRESSES,
+  SMARTSWAPLP_TOKEN8ADDRESSES,
+  SMARTSWAPLP_TOKEN9ADDRESSES,
   RGP,
+  RGPADDRESSES,
   RGPSPECIALPOOLADDRESSES,
   RGPSPECIALPOOLADDRESSES2,
 } from "../../utils/addresses";
@@ -164,7 +168,7 @@ const ShowYieldFarmDetails = ({
       if (content.deposit === "RGP" && Number(content.id) === 1) {
         const specialPoolV1Approval = await specialPoolV1Allowance(rgp);
         changeApprovalButton(true, specialPoolV1Approval);
-      } else if (content.deposit === "RGP" && Number(content.id) === 9) {
+      } else if (content.deposit === "RGP" && Number(content.id) === 11) {
         const specialPoolV2Approval = await specialPoolV2Allowance(rgp);
         changeApprovalButton(true, specialPoolV2Approval);
       } else if (
@@ -231,6 +235,20 @@ const ShowYieldFarmDetails = ({
         );
         const approveForMHTRGP = await poolAllowance(poolSeven);
         changeApprovalButton(approveForMHTRGP, rgpApproval);
+      } else if (content.deposit === "RGP-SHIB") {
+        const poolEight = await smartSwapLPTokenV2PoolEight(
+            SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
+            library
+        );
+        const approveForRGPSHIB = await poolAllowance(poolEight);
+        changeApprovalButton(approveForRGPSHIB, rgpApproval);
+      } else if (content.deposit === "RGP-MBOX") {
+        const poolNine = await smartSwapLPTokenV2PoolNine(
+            SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+            library
+        );
+        const approveForRGPMBOX = await poolAllowance(poolNine);
+        changeApprovalButton(approveForRGPMBOX, rgpApproval);
       }
     };
 
@@ -473,15 +491,43 @@ const ShowYieldFarmDetails = ({
         }
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
-        console.log(approveValueForRGP);
-        console.log(approveValueForOtherToken);
+      } else if (val === "RGP-SHIB") {
+        const poolEight = await smartSwapLPTokenV2PoolEight(
+            SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
+            library
+        );
+        if (!approveValueForOtherToken && !approveValueForRGP) {
+          await RGPApproval();
+          await LPApproval(poolEight);
+        } else if (!approveValueForRGP) {
+          await RGPApproval();
+        } else {
+          await LPApproval(poolEight);
+        }
+        setApproveValueForOtherToken(true);
+        setApproveValueForRGP(true);
+      } else if (val === "RGP-MBOX") {
+        const poolNine = await smartSwapLPTokenV2PoolNine(
+            SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+            library
+        );
+        if (!approveValueForOtherToken && !approveValueForRGP) {
+          await RGPApproval();
+          await LPApproval(poolEight);
+        } else if (!approveValueForRGP) {
+          await RGPApproval();
+        } else {
+          await LPApproval(poolEight);
+        }
+        setApproveValueForOtherToken(true);
+        setApproveValueForRGP(true);
       }
 
       else if (val === "RGP" && Number(content.id) === 1) {
         await RGPSpecialPoolV1Approval();
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
-      } else if (val === "RGP" && Number(content.id) === 9) {
+      } else if (val === "RGP" && Number(content.id) === 11) {
         await RGPSpecialPoolV2Approval();
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
@@ -688,7 +734,6 @@ const ShowYieldFarmDetails = ({
     }
   };
   const enoughApproval = (allowance: any, balance: any) => {
-    console.log({ allowance, balance }, allowance.toString())
     if (allowance && balance) {
       // console.log(allowance.gt(ethers.utils.parseEther(balance)),ethers.utils.parseEther(balance),allowance.toString())
       return allowance.gt(ethers.utils.parseEther(balance));
@@ -709,7 +754,7 @@ const ShowYieldFarmDetails = ({
       if (account) {
         if (val === "RGP" && Number(content.id) === 1) {
           await RGPUnstake();
-        } else if (val === "RGP" && Number(content.id) === 9) {
+        } else if (val === "RGP" && Number(content.id) === 11) {
           await RGPUnstakeV2();
         } else if (val === "RGP-BNB" || val === "RGP-USDT") {
           await tokensWithdrawal(2);
@@ -729,6 +774,14 @@ const ShowYieldFarmDetails = ({
           await tokensWithdrawal(4);
         } else if (val === "AXS-BUSD") {
           await tokensWithdrawal(5);
+        } else if (val === "PLACE-RGP") {
+          await tokensWithdrawal(6);
+        } else if (val === "MHT-RGP") {
+          await tokensWithdrawal(7);
+        } else if (val === "RGP-SHIB") {
+          await tokensWithdrawal(8);
+        } else if (val === "RGP-MBOX") {
+          await tokensWithdrawal(9);
         }
       }
     } catch (err) {
@@ -829,12 +882,12 @@ const ShowYieldFarmDetails = ({
           })
         );
         if (id === 0) {
-          const currentRgPBal = await checkRgpBallance(RGPSPECIALPOOLADDRESSES[chainId as number])
+          const currentRgPBal = await checkRgpBallance(RGPSPECIALPOOLADDRESSES[chainId as number]);
 
           if (currentRgPBal < content.RGPEarned) {
             dispatch(
               setOpenModal({
-                message: `Insufficient RGP !, do you wish to procceed with this Transaction...?`,
+                message: `Insufficient RGP! Do you wish to proceed with this Transaction ?`,
                 trxState: TrxState.WaitingForConfirmation,
               }))
           }
@@ -860,13 +913,13 @@ const ShowYieldFarmDetails = ({
               })
             );
           }
-        } else if (id === 8) {
-          const currentRgPBal = await checkRgpBallance(RGPSPECIALPOOLADDRESSES2[chainId as number])
+        } else if (id === 10) {
+          const currentRgPBal = await checkRgpBallance(RGPSPECIALPOOLADDRESSES2[chainId as number]);
 
           if (currentRgPBal < content.RGPEarned) {
             dispatch(
               setOpenModal({
-                message: `Insufficient RGP !, do you wish to procceed with this Transaction...?`,
+                message: `Insufficient RGP! Do you wish to proceed with this Transaction...?`,
                 trxState: TrxState.WaitingForConfirmation,
               }))
           }
@@ -894,8 +947,7 @@ const ShowYieldFarmDetails = ({
           }
         } else {
 
-
-          const currentRgPBal = await checkRgpBallance(MASTERCHEFV2ADDRESSES[chainId as number])
+          const currentRgPBal = await checkRgpBallance(MASTERCHEFV2ADDRESSES[chainId as number]);
 
           if (currentRgPBal < content.RGPEarned) {
             dispatch(
@@ -910,13 +962,13 @@ const ShowYieldFarmDetails = ({
             MASTERCHEFV2ADDRESSES[chainId as number],
             library
           );
-          console.log({ lpTokens })
+          console.log({ lpTokens });
           const withdraw = await lpTokens.withdraw(id, 0);
           const { confirmations, status, logs } = await fetchTransactionData(
             withdraw
           );
           const amountOfRgb = convertToNumber(logs[1].data);
-          console.log({ withdraw, amountOfRgb })
+          console.log({ withdraw, amountOfRgb });
           const { hash } = withdraw;
 
           if (confirmations >= 1 && status) {
@@ -1059,7 +1111,7 @@ const ShowYieldFarmDetails = ({
       if (account) {
         if (val === "RGP" && Number(content.id) === 1) {
           await RGPuseStake(depositTokenValue);
-        } else if (val === "RGP" && Number(content.id) === 9) {
+        } else if (val === "RGP" && Number(content.id) === 11) {
           await RGPuseStakeV2(depositTokenValue, referralAddress);
         } else if (val === "RGP-BNB" || val === "RGP-USDT") {
           await LPDeposit(2);
@@ -1083,6 +1135,10 @@ const ShowYieldFarmDetails = ({
           await LPDeposit(6);
         } else if (val === "MHT-RGP") {
           await LPDeposit(7);
+        } else if (val === "RGP-SHIB") {
+          await LPDeposit(8);
+        } else if (val === "RGP-MBOX") {
+          await LPDeposit(9);
         }
       }
     } catch (err) {
@@ -1352,6 +1408,20 @@ const ShowYieldFarmDetails = ({
           library
         );
         LPApproval(poolSeven);
+        break;
+      case "RGP-SHIB":
+        const poolEight = await smartSwapLPTokenV2PoolEight(
+            SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
+            library
+        );
+        LPApproval(poolEight);
+        break;
+      case "RGP-MBOX":
+        const poolNine = await smartSwapLPTokenV2PoolNine(
+            SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+            library
+        );
+        LPApproval(poolNine);
         break;
       default:
         RGPApproval();
