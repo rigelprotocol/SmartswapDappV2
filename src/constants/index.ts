@@ -57,9 +57,12 @@ export const getOutPutDataFromEvent = async (
 export const getInPutDataFromEvent = (
   tokenAddress: string | undefined,
   eventsArray: any[],
-  fromAmount: string | undefined
+  fromAmount: string | undefined,
+  decimals?: number
 ) => {
   const duplicateArray: any[] = [];
+  const decimal = decimals ? decimals : 16;
+  const seconddecimal = decimals ? decimals : 18;
   eventsArray.map((event) => {
     if (event.address.toLowerCase() === tokenAddress?.toLowerCase()) {
       duplicateArray.push(event);
@@ -67,7 +70,8 @@ export const getInPutDataFromEvent = (
   });
 
   if (duplicateArray.length !== 0) {
-    const convertedInput = parseInt(duplicateArray[0].data, 16) / 10 ** 18;
+    const convertedInput =
+      parseInt(duplicateArray[0].data, decimal) / 10 ** seconddecimal;
 
     if (parseFloat(convertedInput) !== parseFloat(fromAmount)) {
       return convertedInput.toFixed(7);

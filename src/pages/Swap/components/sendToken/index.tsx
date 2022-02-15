@@ -341,11 +341,16 @@ const SendToken = () => {
       const { hash } = sendTransaction;
       const { confirmations, status } = await sendTransaction.wait(3);
       const receipt = await sendTransaction.wait();
-      const outputAmount = await getOutPutDataFromEvent(to, receipt.events);
+      const outputAmount = await getOutPutDataFromEvent(
+        to,
+        receipt.events,
+        currencies[Field.OUTPUT]?.decimals
+      );
       const inputAmount = await getInPutDataFromEvent(
         from,
         receipt.events,
-        outputToken()
+        outputToken(),
+        currencies[Field.INPUT]?.decimals
       );
       if (
         typeof sendTransaction.hash !== "undefined" &&
@@ -430,7 +435,8 @@ const SendToken = () => {
       const inputAmountForDisplay = await getInPutDataFromEvent(
         from,
         receipt.events,
-        parsedAmount
+        parsedAmount,
+        currencies[Field.INPUT]?.decimals
       );
 
       if (
@@ -515,7 +521,8 @@ const SendToken = () => {
       const inputAmount = await getInPutDataFromEvent(
         from,
         receipt.events,
-        parsedAmount
+        parsedAmount,
+        currencies[Field.INPUT]?.decimals
       );
 
       if (
