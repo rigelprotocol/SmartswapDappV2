@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Flex,
   Input,
@@ -18,7 +18,6 @@ import { escapeRegExp } from "../../../../utils";
 
 type InputSelectorProps = {
   max: Boolean,
-  display?: Boolean,
   onCurrencySelect: (currency: Currency | null | undefined) => void,
   currency?: Currency | null,
   otherCurrency?: Currency | null,
@@ -31,7 +30,6 @@ type InputSelectorProps = {
 
 const InputSelector = ({
   max,
-  display,
   onCurrencySelect,
   currency,
   tokenModal,
@@ -47,9 +45,7 @@ const InputSelector = ({
   const maxBgColor = useColorModeValue('#EBF6FE', '#EAF6FF');
   const tokenListTriggerColor = useColorModeValue('', '#DCE5EF');
   const tokenListTrgiggerBgColor = useColorModeValue('', '#213345');
-
   const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`);
-
   const enforcer = (nextUserInput: string) => {
     if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
       onUserInput(nextUserInput)
@@ -60,7 +56,7 @@ const InputSelector = ({
   return (
     <>
       <Flex alignItems="center" mt={3} justifyContent="space-between">
-        {!display && <Input
+        <Input
           fontSize="2xl"
           type="text"
           min="0"
@@ -74,7 +70,7 @@ const InputSelector = ({
             enforcer(event.target.value.replace(/,/g, '.'))
           }}
           focusBorderColor="none"
-        />}
+        />
         <Flex>
           <Menu>
             <Button
@@ -101,7 +97,7 @@ const InputSelector = ({
           </Menu>
         </Flex>
       </Flex>
-      <Flex mt={3} alignItems="center" justifyContent={!display ? "left" : "right"}>
+      <Flex mt={3} alignItems="center" justifyContent="left">
         <Text ml={4} color={balanceColor} fontSize="14px">
           Balance: {balance.currency?.isToken ? balance.toSignificant(6) : balance} {currency?.symbol}
         </Text>

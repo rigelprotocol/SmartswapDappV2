@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import ShowDetails from './components/details/ShowDetails';
 import History from './components/history/History';
 import From from './components/sendToken/From';
@@ -7,10 +7,11 @@ import SwapSettings from './components/sendToken/SwapSettings';
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
 import USDTLOGO from '../../assets/roundedlogo.svg';
 import { VectorIcon, ExclamationIcon, SwitchIcon } from '../../theme/components/Icons';
-import { useAutoTimeActionHandlers, useDerivedAutoTimeInfo } from '../../state/auto-time/hooks';
+import { useAutoTimeActionHandlers, useDerivedAutoTimeInfo, useAutoTimeState } from '../../state/auto-time/hooks';
 import { getERC20Token } from '../../utils/utilsFunctions';
 import { Field } from '../../state/auto-time/actions';
 import Web3 from 'web3';
+import { RGP } from '../../utils/addresses';
 import { ethers } from 'ethers';
 import {
   Box,
@@ -33,8 +34,8 @@ import {
   ChevronDownIcon
 } from "@chakra-ui/icons";
 import { useDispatch } from "react-redux";
-import { ApproveCheck, ApprovalRouter, autoSwapV2 } from '../../utils/Contracts';
-import { SMARTSWAPROUTER, RGPADDRESSES, AUTOSWAPV2ADDRESSES } from '../../utils/addresses';
+import { autoSwapV2, rigelToken } from '../../utils/Contracts';
+import { RGPADDRESSES, AUTOSWAPV2ADDRESSES } from '../../utils/addresses';
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 
 
@@ -56,14 +57,12 @@ const SetPrice = () => {
 
 
   const { account, library, chainId } = useActiveWeb3React()
-  const { onCurrencySelection, onUserInput, onSwitchTokens } = useAutoTimeActionHandlers();
-
-  const [transactionSigned, setTransactionSigned] = useState(false)
+  const { onCurrencySelection, onUserInput } = useAutoTimeActionHandlers();
+  const { independentField, typedValue } = useAutoTimeState();
   const [signedTransaction, setSignedTransaction] = useState({})
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
-  const [otherTokenApproval, setOtherTokenApproval] = useState(false)
-  const [RGPApproval, setRGPApproval] = useState(false)
-  const [approval, setApproval] = useState([])
+  const [transactionSigned, setTransactionSigned] = useState(false)
+  const [approval, setApproval] = useState<String[] | undefined>([])
 
   const handleTypeInput = useCallback(
     (value: string) => {
@@ -71,6 +70,33 @@ const SetPrice = () => {
     },
     [onUserInput]
   );
+  const {
+    currencies,
+    getMaxValue,
+  } = useDerivedAutoTimeInfo();
+  useEffect(async () => {
+    await checkForApproval()
+  }, [currencies[Field.INPUT]])
+
+  const checkForApproval = async () => {
+    // check approval for RGP and the other token
+    const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number])
+    const tokenBalance = await checkApproval(currencies[Field.INPUT]?.wrapped.address)
+    console.log({ RGPBalance, tokenBalance }, parseFloat(RGPBalance), parseFloat(tokenBalance))
+    if (parseFloat(RGPBalance) > 0 && parseFloat(tokenBalance) > 0) {
+      setHasBeenApproved(true)
+    } else if (parseFloat(RGPBalance) <= 0 && parseFloat(tokenBalance) <= 0) {
+      setHasBeenApproved(false)
+      setApproval(["RGP", currencies[Field.INPUT]?.wrapped.name])
+    } else if (parseFloat(tokenBalance) <= 0) {
+      setHasBeenApproved(false)
+      setApproval([currencies[Field.INPUT].wrapped.name])
+    } else if (parseFloat(RGPBalance) <= 0) {
+      setHasBeenApproved(false)
+      setApproval(["RGP"])
+    }
+  }
+
   const signTransaction = async () => {
     if (account !== undefined) {
       try {
@@ -85,29 +111,9 @@ const SetPrice = () => {
         var sig = ethers.utils.splitSignature(signature)
 
         setSignedTransaction({ ...sig, mess })
-
-        console.log({ signedTransaction })
-        const signedMessage = localStorage.setItem("signedMessage", JSON.stringify({ r: sig.r, mess: mess, _vs: sig._vs }))
-        // get message back
-        // if (currencies[Field.INPUT]) {
         setTransactionSigned(true)
         // }
-        // check approval for RGP and the other token
-        const RGPBalance = await checkApproval(RGPADDRESSES[chainId as number])
-        const tokenBalance = await checkApproval(currencies[Field.INPUT].wrapped.address)
-        console.log({ RGPBalance, tokenBalance })
-        if (parseFloat(RGPBalance) > 0 && parseFloat(tokenBalance) > 0) {
-          setHasBeenApproved(true)
-        } else if (parseFloat(RGPBalance) <= 0 && parseFloat(tokenBalance) <= 0) {
-          setHasBeenApproved(false)
-          setApproval(["RGP", currencies[Field.INPUT].wrapped.name])
-        } else if (parseFloat(tokenBalance) <= 0) {
-          setHasBeenApproved(false)
-          setApproval([currencies[Field.INPUT].wrapped.name])
-        } else {
-          setHasBeenApproved(false)
-          setApproval(["RGP"])
-        }
+        await checkForApproval()
       } catch (e) {
         alert("e error")
       }
@@ -117,10 +123,10 @@ const SetPrice = () => {
     }
 
   }
-  const {
-    currencies,
-    getMaxValue,
-  } = useDerivedAutoTimeInfo();
+
+
+
+
 
   const approveOneOrTwoTokens = async () => {
     if (currencies[Field.INPUT]?.isNative) {
@@ -139,40 +145,28 @@ const SetPrice = () => {
         let arrow = arr
         if (arr[0] === "RGP") {
           const address = RGPADDRESSES[chainId as number];
-          const swapApproval = await ApprovalRouter(address, library);
+          const rgp = await rigelToken(RGP[chainId as number], library);
           const token = await getERC20Token(address, library);
+
           const walletBal = (await token.balanceOf(account)) + 4e18;
-          const approveTransaction = await swapApproval.approve(
-            SMARTSWAPROUTER[chainId as number],
+          const approveTransaction = await rgp.approve(
+            AUTOSWAPV2ADDRESSES[chainId as number],
             walletBal,
             {
               from: account,
             }
           );
-          const { confirmations } = await approveTransaction.wait(1);
-          // const { hash } = approveTransaction;
-          if (confirmations >= 1) {
-            setRGPApproval(true);
-            dispatch(
-              setOpenModal({
-                message: `Approval Successful.`,
-                trxState: TrxState.TransactionSuccessful,
-              })
-            );
-          }
+
           arr.length > 1 ? setApproval([arr[1]]) : setApproval([])
         } else {
-          setRGPApproval(true)
+          // setRGPApproval(true)
         }
-        console.log(arrow)
         if (approval[0] === currencies[Field.INPUT]?.name) {
-          console.log(currencies[Field.INPUT], currencies[Field.INPUT]?.tokenInfo.name)
           const address = currencies[Field.INPUT]?.wrapped.address;
-          const swapApproval = await ApprovalRouter(address, library);
           const token = await getERC20Token(address, library);
           const walletBal = (await token.balanceOf(account)) + 4e18;
-          const approveTransaction = await swapApproval.approve(
-            SMARTSWAPROUTER[chainId as number],
+          const approveTransaction = await token.approve(
+            AUTOSWAPV2ADDRESSES[chainId as number],
             walletBal,
             {
               from: account,
@@ -181,7 +175,6 @@ const SetPrice = () => {
           const { confirmations } = await approveTransaction.wait(1);
           const { hash } = approveTransaction;
           if (confirmations >= 1) {
-            setOtherTokenApproval(true);
             dispatch(
               setOpenModal({
                 message: `Approval Successful.`,
@@ -191,8 +184,14 @@ const SetPrice = () => {
           }
           setApproval([])
         } else {
-          setOtherTokenApproval(true)
+          // setOtherTokenApproval(true)
         }
+        dispatch(
+          setOpenModal({
+            message: `Approval Successful.`,
+            trxState: TrxState.TransactionSuccessful,
+          })
+        );
       } catch (e) {
         console.log(e)
       }
@@ -201,15 +200,12 @@ const SetPrice = () => {
   }
   const sendTransactionToDatabase = async () => {
     const smartSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
-    const signedReturned = JSON.parse(localStorage.getItem("signedMessage"))
-    console.log(currencies[Field.INPUT])
     dispatch(
       setOpenModal({
         message: `Signing initial transaction between ${currencies[Field.INPUT]?.symbol} and ${currencies[Field.OUTPUT]?.symbol}`,
         trxState: TrxState.WaitingForConfirmation,
       })
     );
-    const amount = Web3.utils.toWei('10', 'ether');
     const time = Date.now();
     console.log("Get current time: ", time)
     console.log({ smartSwapV2Contract })
@@ -219,31 +215,31 @@ const SetPrice = () => {
         currencies[Field.OUTPUT]?.wrapped.address,
         account,
         time,
-        signedReturned.mess,
-        signedReturned.r,
-        signedReturned._vs,
-        { value: Web3.utils.toWei('1', 'ether') }
+        signedTransaction?.mess,
+        signedTransaction?.r,
+        signedTransaction?._vs,
+        { value: Web3.utils.toWei(typedValue, 'ether') }
       )
     } else if (currencies[Field.OUTPUT]?.isNative) {
       data = await smartSwapV2Contract.setPeriodToSwapTokensForETH(
         currencies[Field.INPUT]?.wrapped.address,
         account,
-        Web3.utils.toWei('1', 'ether'),
         time,
-        signedReturned.mess,
-        signedReturned.r,
-        signedReturned._vs
+        signedTransaction?.mess,
+        signedTransaction?.r,
+        signedTransaction?._vs,
+        { value: Web3.utils.toWei(typedValue, 'ether') }
       )
     } else {
       data = await smartSwapV2Contract.callPeriodToSwapExactTokens(
         currencies[Field.INPUT]?.wrapped.address,
         currencies[Field.OUTPUT]?.wrapped.address,
         account,
-        amount,
         time,
-        signedReturned.mess,
-        signedReturned.r,
-        signedReturned._vs
+        signedTransaction?.mess,
+        signedTransaction?.r,
+        signedTransaction?._vs,
+        { value: Web3.utils.toWei(typedValue, 'ether') }
       )
     }
 
@@ -255,26 +251,26 @@ const SetPrice = () => {
         trxState: TrxState.WaitingForConfirmation,
       })
     );
-    // const response = await fetch('http://localhost:4000/auto/add', {
-    //   method: "POST",
-    //   mode: "cors",
-    //   cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-    //   credentials: 'same-origin', // include, *same-origin, omit
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //     // 'Content-Type': 'application/x-www-form-urlencoded',
-    //   },
-    //   body: JSON.stringify({
-    //     address: account,
-    //     network: "binance chain",
-    //     frequency: 2,
-    //     fromAddress: currencies[Field.INPUT]?.isNative ? "" : currencies[Field.INPUT]?.wrapped.address,
-    //     toAddress: currencies[Field.OUTPUT]?.isNative ? "" : currencies[Field.OUTPUT]?.wrapped.address,
-    //     signature: signedReturned
-    //   })
-    // })
-    // const res = await response.json()
-    // console.log(res)
+    const response = await fetch('http://localhost:4000/auto/add', {
+      method: "POST",
+      mode: "cors",
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'same-origin', // include, *same-origin, omit
+      headers: {
+        'Content-Type': 'application/json'
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: JSON.stringify({
+        address: account,
+        chainID: chainId,
+        frequency: 2,
+        fromAddress: currencies[Field.INPUT]?.isNative ? "" : currencies[Field.INPUT]?.wrapped.address,
+        toAddress: currencies[Field.OUTPUT]?.isNative ? "" : currencies[Field.OUTPUT]?.wrapped.address,
+        signature: signedTransaction
+      })
+    })
+    const res = await response.json()
+    console.log(res)
   }
 
 
@@ -283,13 +279,10 @@ const SetPrice = () => {
       return setHasBeenApproved(true);
     }
     try {
-      const status = await ApproveCheck(
-        tokenAddress,
-        library
-      )
+      const status = await getERC20Token(tokenAddress, library);
       const check = await status.allowance(
         account,
-        SMARTSWAPROUTER[chainId as number],
+        AUTOSWAPV2ADDRESSES[chainId as number],
         {
           from: account,
         }
@@ -298,7 +291,27 @@ const SetPrice = () => {
       const approveBalance = ethers.utils.formatEther(check).toString();
       return approveBalance
     } catch (e) {
-      alert("no currency")
+      console.log(e)
+    }
+
+  }
+  const checkApprovalForRGP = async (tokenAddress: string) => {
+
+    try {
+      const status = await rigelToken(tokenAddress, library);
+      console.log({ status }, RGP[chainId as number])
+      const check = await status.allowance(
+        account,
+        AUTOSWAPV2ADDRESSES[chainId as number],
+        {
+          from: account,
+        }
+      )
+
+      const approveBalance = ethers.utils.formatEther(check).toString();
+      return approveBalance
+    } catch (e) {
+      console.log(e)
     }
 
   }
@@ -332,7 +345,7 @@ const SetPrice = () => {
                 onCurrencySelection={onCurrencySelection}
                 currency={currencies[Field.INPUT]}
                 otherCurrency={currencies[Field.OUTPUT]}
-                value={"0"}
+                value={typedValue}
               />
               <Flex justifyContent="center">
                 <SwitchIcon />
@@ -490,7 +503,7 @@ const SetPrice = () => {
                 onCurrencySelection={onCurrencySelection}
                 currency={currencies[Field.INPUT]}
                 otherCurrency={currencies[Field.OUTPUT]}
-                value={"0"}
+                value={typedValue}
               />
               <Flex justifyContent="center">
                 <SwitchIcon />
