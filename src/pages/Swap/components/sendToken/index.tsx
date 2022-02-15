@@ -421,9 +421,11 @@ const SendToken = () => {
       const { hash } = sendTransaction;
       const { confirmations, status } = await sendTransaction.wait(3);
       const receipt = await sendTransaction.wait();
+
       const outputAmountForDisplay = await getOutPutDataFromEvent(
         to,
-        receipt.events
+        receipt.events,
+        currencies[Field.OUTPUT]?.decimals
       );
       const inputAmountForDisplay = await getInPutDataFromEvent(
         from,
@@ -505,7 +507,11 @@ const SendToken = () => {
       const { confirmations, status } = await sendTransaction.wait(3);
       const { hash } = sendTransaction;
       const receipt = await sendTransaction.wait();
-      const outputAmount = await getOutPutDataFromEvent(to, receipt.events);
+      const outputAmount = await getOutPutDataFromEvent(
+        to,
+        receipt.events,
+        currencies[Field.OUTPUT]?.decimals
+      );
       const inputAmount = await getInPutDataFromEvent(
         from,
         receipt.events,
