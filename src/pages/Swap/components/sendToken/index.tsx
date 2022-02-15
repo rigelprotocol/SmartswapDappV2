@@ -39,7 +39,7 @@ import {
   getOutPutDataFromEvent,
   ZERO_ADDRESS,
 } from "../../../../constants";
-import { Token } from "@uniswap/sdk-core";
+import { Currency, Token } from "@uniswap/sdk-core";
 import { useAllTokens } from "../../../../hooks/Tokens";
 import { ethers } from "ethers";
 import { GetAddressTokenBalance } from "../../../../state/wallet/hooks";
@@ -171,14 +171,18 @@ const SendToken = () => {
     [allowedSlippage, bestTrade]
   );
 
-  const minimum = minimumAmountToReceive().toFixed(16);
+  const minimum = minimumAmountToReceive().toFixed(
+    currencies[Field.OUTPUT]?.decimals
+  );
 
   const LPFee = (0.003 * Number(formattedAmounts[Field.INPUT])).toFixed(4);
 
   const receivedAmount = Number(formattedAmounts[Field.OUTPUT]).toFixed(4);
   const fromAmount = Number(formattedAmounts[Field.INPUT]);
 
-  const parsedOutput = ethers.utils.parseEther(minimum.toString()).toString();
+  const parsedOutput = (decimal: number) => {
+    return ethers.utils.parseUnits(minimum.toString(), decimal).toString();
+  };
   const [hasBeenApproved, setHasBeenApproved] = useState(false);
   const [insufficientBalance, setInsufficientBalance] = useState(false);
 
@@ -226,7 +230,8 @@ const SendToken = () => {
   const { priceImpact } = useCalculatePriceImpact(
     pathArray,
     parseFloat(receivedAmount),
-    fromAmount
+    fromAmount,
+    currencies[Field.OUTPUT] as Currency
   );
 
   const approveSwap = async () => {
@@ -404,7 +409,7 @@ const SendToken = () => {
         })
       );
       const sendTransaction = await route.swapETHForExactTokens(
-        parsedOutput,
+        parsedOutput(currencies[Field.OUTPUT]?.decimals as number),
         // [from, to],
         pathArray,
         account,
@@ -491,7 +496,7 @@ const SendToken = () => {
       );
       const sendTransaction = await route.swapExactTokensForETH(
         parsedAmount,
-        parsedOutput,
+        parsedOutput(currencies[Field.OUTPUT]?.decimals as number),
         // [from, to],
         pathArray,
         account,
@@ -697,6 +702,27 @@ const SendToken = () => {
       } else if (currencies[Field.INPUT]?.symbol === "BNB") {
         await swapDefaultForOtherTokens();
       } else if (currencies[Field.OUTPUT]?.symbol === "BNB") {
+        await swapOtherTokensForDefault();
+      } else {
+        await swapDifferentTokens();
+      }
+    } else if (
+      chainId === SupportedChainId.OASISTEST ||
+      chainId === SupportedChainId.OASISMAINNET
+    ) {
+      if (
+        currencies[Field.INPUT]?.symbol === "ROSE" &&
+        currencies[Field.OUTPUT]?.symbol === "WROSE"
+      ) {
+        await deposit();
+      } else if (
+        currencies[Field.INPUT]?.symbol === "WROSE" &&
+        currencies[Field.OUTPUT]?.symbol === "ROSE"
+      ) {
+        await withdraw();
+      } else if (currencies[Field.INPUT]?.symbol === "ROSE") {
+        await swapDefaultForOtherTokens();
+      } else if (currencies[Field.OUTPUT]?.symbol === "ROSE") {
         await swapOtherTokensForDefault();
       } else {
         await swapDifferentTokens();
