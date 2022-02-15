@@ -299,6 +299,38 @@
       "decimals": 18,
       "chainId": 56,
       "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/15043.png"
+    },
+    {
+      "name": "SHIBA INU",
+      "address": "0x2859e4544c4bb03966803b044a93563bd2d0dd4d",
+      "symbol": "SHIB",
+      "decimals": 18,
+      "chainId": 56,
+      "logoURI": "https://bscscan.com/token/images/shibatoken_32.png"
+    },
+    {
+      "name": "SHIBA INU",
+      "address": "0x30deec86644b16c3f61d8dd5571e88179289445b",
+      "symbol": "SHIB",
+      "decimals": 18,
+      "chainId": 97,
+      "logoURI": "https://bscscan.com/token/images/shibatoken_32.png"
+    },
+    {
+      "name": "Mobox",
+      "address": "0x3203c9e46ca618c8c1ce5dc67e7e9d75f5da2377",
+      "symbol": "MBOX",
+      "decimals": 18,
+      "chainId": 56,
+      "logoURI": "https://bscscan.com/token/images/mobox_32.png"
+    },
+    {
+      "name": "Mobox",
+      "address": "0x46be9c07d1100f7a1259d20398a40deb43e3527c",
+      "symbol": "MBOX",
+      "decimals": 18,
+      "chainId": 97,
+      "logoURI": "https://bscscan.com/token/images/mobox_32.png"
     }
   ]
 }
