@@ -513,11 +513,11 @@ const ShowYieldFarmDetails = ({
         );
         if (!approveValueForOtherToken && !approveValueForRGP) {
           await RGPApproval();
-          await LPApproval(poolEight);
+          await LPApproval(poolNine);
         } else if (!approveValueForRGP) {
           await RGPApproval();
         } else {
-          await LPApproval(poolEight);
+          await LPApproval(poolNine);
         }
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
