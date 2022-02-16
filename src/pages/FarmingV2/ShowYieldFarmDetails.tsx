@@ -27,7 +27,7 @@ import { QuestionOutlineIcon, SearchIcon } from "@chakra-ui/icons";
 import { SupportedChainId } from "../../constants/chains";
 import Switch from "react-switch";
 import { DARK_THEME } from "./index";
-import { errorToast, addToast } from "../../components/Toast/toastSlice";
+import { addToast } from "../../components/Toast/toastSlice";
 import { useDispatch } from "react-redux";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { getExplorerLink, ExplorerDataType } from "../../utils/getExplorerLink";
@@ -1024,10 +1024,17 @@ const ShowYieldFarmDetails = ({
             //   body: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
             //   type: "error",
             // });
+            // dispatch(
+            //   addToast({
+            //     message: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
+            //     error: true
+            //   })
+            // );
+            // throw new Error()
             dispatch(
-              errorToast({
-                message: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
-                error: true
+              setOpenModal({
+                trxState: TrxState.TransactionFailed,
+                message: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`
               })
             );
           } else {
