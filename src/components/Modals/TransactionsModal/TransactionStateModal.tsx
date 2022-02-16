@@ -25,10 +25,11 @@ const TransactionStateModal: React.FC = () => {
     const closeButtonBgColour = useColorModeValue("#319EF6", "#008DFF");
     const successBgColour = useColorModeValue("#22BB33", "#75F083");
     const errorBgColour = useColorModeValue("#CC334F", "#FF3358");
-    
+
     const [modalOpen, setModalOpen] = useState(false)
     const dispatch = useDispatch();
     const modalDetails = useSelector((state: RootState) => state.application.modal);
+    console.log({ modalDetails })
     const setOpen = modalDetails === null ? false : true
 
     function handleCloseModal() {
@@ -92,16 +93,27 @@ const TransactionStateModal: React.FC = () => {
                                 {modalDetails?.message}
                             </Text> :
                             modalDetails?.trxState === TrxState.TransactionFailed ?
-                                <Text
-                                    py={3}
-                                    fontSize="14px"
-                                    fontWeight="normal"
-                                    color="#008DFF">
-                                    <a href="#" target="_blank">
-                                        Retry
-                                    </a>
+                                <>
+                                    <Text
+                                        py={3}
+                                        fontSize="14px"
+                                        fontWeight="normal"
+                                        color="#008DFF">
+                                        <a href="#" target="_blank">
+                                            Retry
+                                        </a>
 
-                                </Text> : modalDetails?.trxState === TrxState.TransactionSuccessful ? <Text
+                                    </Text>
+                                    <Text
+                                        py={3}
+                                        fontSize="14px"
+                                        fontWeight="normal"
+                                        color={errorBgColour}>
+                                        {modalDetails?.message}
+
+                                    </Text>
+                                </>
+                                : modalDetails?.trxState === TrxState.TransactionSuccessful ? <Text
                                     py={3}
                                     fontSize="14px"
                                     fontWeight="normal"

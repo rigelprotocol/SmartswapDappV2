@@ -1,7 +1,7 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
-import { Box, Flex, Text } from "@chakra-ui/layout";
+import React, {useEffect, useState} from "react";
+import {Box, Flex, Text} from "@chakra-ui/layout";
 import {
   Alert,
   AlertDescription,
@@ -18,20 +18,15 @@ import {
   useColorModeValue,
   useMediaQuery,
 } from "@chakra-ui/react";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import {useHistory, useRouteMatch} from "react-router-dom";
 import YieldFarm from "./YieldFarm";
-import { AlertSvg } from "./Icon";
+import {AlertSvg} from "./Icon";
 
-import { useDispatch, useSelector } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import bigNumber from "bignumber.js";
-import { ethers } from "ethers";
-import {
-  updateFarmBalances,
-  updatePoolId,
-  updateTokenStaked,
-  updateTotalLiquidity,
-} from "../../state/farm/actions";
-import { useFarms } from "../../state/farm/hooks";
+import {ethers} from "ethers";
+import {updateFarmBalances, updatePoolId, updateTokenStaked, updateTotalLiquidity,} from "../../state/farm/actions";
+import {useFarms} from "../../state/farm/hooks";
 import {
   MasterChefV2Contract,
   RGPSpecialPool,
@@ -42,12 +37,14 @@ import {
   smartSwapLPTokenPoolTwo,
   smartSwapLPTokenV2,
   smartSwapLPTokenV2PoolFive,
-  smartSwapLPTokenV2PoolFour, smartSwapLPTokenV2PoolSeven, smartSwapLPTokenV2PoolSix,
+  smartSwapLPTokenV2PoolFour,
+  smartSwapLPTokenV2PoolSeven,
+  smartSwapLPTokenV2PoolSix,
+    smartSwapLPTokenV2PoolEight, smartSwapLPTokenV2PoolNine
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
   RGP,
-  RGPADDRESSES,
   RGPSPECIALPOOLADDRESSES,
   RGPSPECIALPOOLADDRESSES2,
   SMARTSWAPLP_TOKEN1ADDRESSES,
@@ -55,14 +52,19 @@ import {
   SMARTSWAPLP_TOKEN3ADDRESSES,
   SMARTSWAPLP_TOKEN4ADDRESSES,
   SMARTSWAPLP_TOKEN5ADDRESSES,
-    SMARTSWAPLP_TOKEN6ADDRESSES,
-    SMARTSWAPLP_TOKEN7ADDRESSES
+  SMARTSWAPLP_TOKEN6ADDRESSES,
+  SMARTSWAPLP_TOKEN7ADDRESSES,
+    SMARTSWAPLP_TOKEN8ADDRESSES, SMARTSWAPLP_TOKEN9ADDRESSES
 } from "../../utils/addresses";
 import { formatBigNumber } from "../../utils";
 import { RootState } from "../../state";
 import { SupportedChainId } from "../../constants/chains";
 import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
+import Joyride from "react-joyride";
+import {steps} from "../../components/Onboarding/FarmingSteps";
+import WelcomeModal from "../../components/Onboarding/WelcomeModal";
+
 
 export const BIG_TEN = new bigNumber(10);
 
@@ -111,22 +113,11 @@ export function Index() {
     setTabIndex(parseInt(event.target.value, 10));
   };
 
-  //const { data: farmsLP } = useFarms()
-  // const [farms, setFarms] = useState(contents);
   const { account, chainId, library } = useActiveWeb3React();
   const dispatch = useDispatch();
   let match = useRouteMatch("/farming-V2/staking-RGP");
   const FarmData = useFarms();
 
-  // console.log("Farm data", FarmData);
-  //
-  // console.log(chainId);
-  //
-  // console.log(
-  //   FarmData.contents.map((content, index) => {
-  //     console.log(index !== 0 && index < 4);
-  //   })
-  // );
 
   const [Balance, Symbol] = useNativeBalance();
   const wallet = {
@@ -266,15 +257,7 @@ export function Index() {
             smartSwapLPTokenPoolThree(
               SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
               library
-            ),
-            // smartSwapLPTokenV2PoolFour(
-            //   SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number],
-            //   library
-            // ),
-            // smartSwapLPTokenV2PoolFive(
-            //   SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
-            //   library
-            // ),
+            )
           ]);
 
           const [RGPbalance, poolOneBalance, poolTwoBalance, poolThreeBalance] =
@@ -291,8 +274,6 @@ export function Index() {
               formatBigNumber(poolOneBalance),
               formatBigNumber(poolTwoBalance),
               formatBigNumber(poolThreeBalance),
-              // formatBigNumber(poolFourBalance),
-              // formatBigNumber(poolFiveBalance),
             ])
           );
           dispatch(updatePoolId([0, 1, 2, 3]));
@@ -306,6 +287,8 @@ export function Index() {
             poolFive,
               poolSix,
               poolSeven,
+              poolEight,
+              poolNine,
             RGPToken2,
           ] = await Promise.all([
             rigelToken(RGP[chainId as number], library),
@@ -337,6 +320,14 @@ export function Index() {
                 SMARTSWAPLP_TOKEN7ADDRESSES[chainId as number],
                 library
             ),
+            smartSwapLPTokenV2PoolEight(
+                SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
+                library
+            ),
+            smartSwapLPTokenV2PoolNine(
+                SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+                library
+            ),
             rigelToken(RGP[chainId as number], library),
           ]);
 
@@ -347,8 +338,10 @@ export function Index() {
             poolThreeBalance,
             poolFourBalance,
             poolFiveBalance,
-              poolSixBalance,
-              poolSevenBalance,
+            poolSixBalance,
+            poolSevenBalance,
+            poolEightBalance,
+            poolNineBalance,
             RGPbalance2,
           ] = await Promise.all([
             RGPToken.balanceOf(account),
@@ -359,6 +352,8 @@ export function Index() {
             poolFive.balanceOf(account),
             poolSix.balanceOf(account),
             poolSeven.balanceOf(account),
+            poolEight.balanceOf(account),
+            poolNine.balanceOf(account),
             RGPToken2.balanceOf(account),
           ]);
 
@@ -372,6 +367,8 @@ export function Index() {
               formatBigNumber(poolFiveBalance),
               formatBigNumber(poolSixBalance),
               formatBigNumber(poolSevenBalance),
+              formatBigNumber(poolEightBalance),
+              formatBigNumber(poolNineBalance),
               formatBigNumber(RGPbalance2),
             ])
           );
@@ -400,14 +397,6 @@ export function Index() {
 
         return `${sym0}-${sym1}`;
       };
-
-      //maticRGP
-      //  console.log(pool1Reserve, pool2Reserve, pool3Reserve, pool4Reserve, pool5Reserve)
-
-      // if (Number(chainId) === Number(SupportedChainId.POLYGONTEST)) {
-
-      //maticRGP
-      //  console.log(pool1Reserve, pool2Reserve, pool3Reserve, pool4Reserve, pool5Reserve)
 
       if (Number(chainId) === Number(SupportedChainId.POLYGONTEST)) {
         const [specialPool, pool1, pool2, pool3, pool4, pool5] =
@@ -450,84 +439,114 @@ export function Index() {
           pool4.getReserves(),
           pool5.getReserves(),
         ]);
+
         const MRGPprice: number | any = ethers.utils.formatUnits(
           pool3Reserve[1].mul(1000).div(pool3Reserve[0]),
           3
         );
-        const getMaticPrice = (): number => {
-          let MaticPrice;
-          MaticPrice = ethers.utils.formatUnits(
-            pool5Reserve[0].mul(1000).div(pool5Reserve[1]),
-            3
-          );
-
-          return Number(MaticPrice);
-        };
-        const MaticPrice = getMaticPrice();
+        // const getMaticPrice = (): number => {
+        //   let MaticPrice;
+        //   MaticPrice = ethers.utils.formatUnits(
+        //     pool5Reserve[0].mul(1000).div(pool5Reserve[1]),
+        //     3
+        //   );
+        //
+        //   return Number(MaticPrice);
+        // };
+        // const MaticPrice = getMaticPrice();
         const MRGPLiquidity = ethers.utils
           .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * MRGPprice)), 18)
           .toString();
+        //
+        // const RGP_WMATICLiquidity = ethers.utils
+        //   .formatUnits(
+        //     pool1Reserve[0].mul(Math.floor(MaticPrice * 1000 * 2)),
+        //     18
+        //   )
+        //   .toString();
 
-        const RGP_WMATICLiquidity = ethers.utils
-          .formatUnits(
-            pool1Reserve[0].mul(Math.floor(MaticPrice * 1000 * 2)),
+        // const USDT_RGPLiquidity = ethers.utils
+        //   .formatEther(pool2Reserve[0].mul(Number(MRGPprice) * 1000 * 2))
+        //   .toString();
+        //
+        // const RGP_USDCLiquidity = ethers.utils
+        //   .formatEther(pool3Reserve[1].mul(Number(MRGPprice) * 1000 * 2))
+        //   .toString();
+        //
+        // const USDT_WMATICLiquidity = ethers.utils
+        //   .formatEther(pool4Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
+        //   .toString();
+        //
+        // const WMATIC_USDCLiquidity = ethers.utils
+        //   .formatEther(pool5Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
+        //   .toString();
+
+        const totalUSDT2: number | any = ethers.utils.formatUnits(
+            pool2Reserve[0],
             18
-          )
-          .toString();
+        );
+        const totalRGP2: number | any = ethers.utils.formatUnits(
+            pool2Reserve[1],
+            18
+        );
+        const totalRGP1: number | any = ethers.utils.formatUnits(
+            pool1Reserve[0],
+            18
+        );
+        const totalRGP3: number | any = ethers.utils.formatUnits(
+            pool3Reserve[0],
+            18
+        );
 
-        const USDT_RGPLiquidity = ethers.utils
-          .formatEther(pool2Reserve[0].mul(Number(MRGPprice) * 1000 * 2))
-          .toString();
+        const rgpPrice = totalUSDT2 / totalRGP2;
 
-        const RGP_USDCLiquidity = ethers.utils
-          .formatEther(pool3Reserve[1].mul(Number(MRGPprice) * 1000 * 2))
-          .toString();
+        const RGPprice: number | any = ethers.utils.formatUnits(
+            pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
+            3
+        );
 
-        const USDT_WMATICLiquidity = ethers.utils
-          .formatEther(pool4Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
-          .toString();
+        const RGP_USDTLiq = totalUSDT2 * 2;
+        const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
+        const USDC_RGPLiq = totalRGP3 * rgpPrice * 2;
 
-        const WMATIC_USDCLiquidity = ethers.utils
-          .formatEther(pool5Reserve[1].mul(Number(MaticPrice) * 1000 * 2))
-          .toString();
 
         dispatch(
           updateTotalLiquidity([
             {
               deposit: "RGP",
-              liquidity: MRGPLiquidity,
-              apy: calculateApy(MRGPprice, MRGPLiquidity, 250),
+              liquidity: '0', //MRGPLiquidity,
+              apy: '0', //calculateApy(MRGPprice, MRGPLiquidity, 250),
             },
             {
               deposit: await deposit(pool1.token0, pool1.token1),
               liquidity: RGP_WMATICLiquidity,
-              apy: calculateApy(MRGPprice, RGP_WMATICLiquidity, 1116.25),
+              apy: calculateApy(rgpPrice, RGP_WMATICLiquidity, 1500),
             },
             {
               deposit: await deposit(pool2.token0, pool2.token1),
-              liquidity: USDT_RGPLiquidity,
-              apy: calculateApy(MRGPprice, USDT_RGPLiquidity, 781.375),
+              liquidity: RGP_USDTLiq,
+              apy: calculateApy(rgpPrice, RGP_USDTLiq, 1050),
             },
             {
               deposit: await deposit(pool3.token0, pool3.token1),
-              liquidity: RGP_USDCLiquidity,
-              apy: calculateApy(MRGPprice, RGP_USDCLiquidity, 781.375),
+              liquidity: USDC_RGPLiq,
+              apy: calculateApy(rgpPrice, USDC_RGPLiq, 1050),
             },
-            {
-              deposit: await deposit(pool4.token0, pool4.token1),
-              liquidity: USDT_WMATICLiquidity,
-              apy: calculateApy(MRGPprice, USDT_WMATICLiquidity, 334.875),
-            },
-            {
-              deposit: await deposit(pool5.token0, pool5.token1),
-              liquidity: WMATIC_USDCLiquidity,
-              apy: calculateApy(MRGPprice, WMATIC_USDCLiquidity, 334.875),
-            },
+            // {
+            //   deposit: await deposit(pool4.token0, pool4.token1),
+            //   liquidity: USDT_WMATICLiquidity,
+            //   apy: calculateApy(MRGPprice, USDT_WMATICLiquidity, 334.875),
+            // },
+            // {
+            //   deposit: await deposit(pool5.token0, pool5.token1),
+            //   liquidity: WMATIC_USDCLiquidity,
+            //   apy: calculateApy(MRGPprice, WMATIC_USDCLiquidity, 334.875),
+            // },
           ])
         );
       } else if (
         Number(chainId) ===
-        Number(SupportedChainId.POLYGON || SupportedChainId.POLYGONTEST)
+        Number(SupportedChainId.POLYGON)
       ) {
         const [pool1, pool2, pool3] = await Promise.all([
           // RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
@@ -578,12 +597,10 @@ export function Index() {
           18
         );
         const rgpPrice = totalUSDT2 / totalRGP2;
-        const RGP_USDTLiq = totalUSDT2 * 2;
-        console.log(RGP_USDTLiq);
+        const RGP_USDTLiquidity = totalUSDT2 * 2;
+
         const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
         const USDC_RGPLiq = totalRGP3 * rgpPrice * 2;
-        // const USDT_RGPLiquidity = ethers.utils.formatUnits(
-        console.log({ rgpPrice });
 
         dispatch(
           updateTotalLiquidity([
@@ -599,8 +616,8 @@ export function Index() {
             },
             {
               deposit: await deposit(pool2.token0, pool2.token1),
-              liquidity: RGP_USDTLiq,
-              apy: calculateApy(rgpPrice, RGP_USDTLiq, 1050),
+              liquidity: RGP_USDTLiquidity,
+              apy: calculateApy(rgpPrice, RGP_USDTLiquidity, 1050),
             },
             {
               deposit: "RGP-USDC", //await deposit(pool3.token0, pool3.token1),
@@ -610,7 +627,6 @@ export function Index() {
           ])
         );
       } else if (Number(chainId) === Number(SupportedChainId.OASISTEST)) {
-        console.log("got here");
         const [pool1, pool2, pool3] = await Promise.all([
           // RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
           smartSwapLPTokenPoolOne(
@@ -661,11 +677,9 @@ export function Index() {
         );
         const rgpPrice = totalUSDT2 / totalRGP2;
         const RGP_USDTLiq = totalUSDT2 * 2;
-        console.log(RGP_USDTLiq);
+
         const RGP_WROSELiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
         const USDT_WROSELiquidity = totalUSDT3 * 2;
-        // const USDT_RGPLiquidity = ethers.utils.formatUnits(
-        console.log({ rgpPrice });
 
         dispatch(
           updateTotalLiquidity([
@@ -692,7 +706,7 @@ export function Index() {
           ])
         );
       } else {
-        const [specialPool, pool1, pool2, pool3, pool4, pool5, pool6, pool7, specialPool2] =
+        const [specialPool, pool1, pool2, pool3, pool4, pool5, pool6, pool7, pool8, pool9, specialPool2] =
           await Promise.all([
             RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library),
             smartSwapLPTokenPoolOne(
@@ -723,6 +737,14 @@ export function Index() {
                 SMARTSWAPLP_TOKEN7ADDRESSES[chainId as number],
                 library
             ),
+            smartSwapLPTokenV2PoolEight(
+                SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
+                library
+            ),
+            smartSwapLPTokenV2PoolNine(
+                SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+                library
+            ),
             RGPSpecialPool2(
               RGPSPECIALPOOLADDRESSES2[chainId as number],
               library
@@ -738,6 +760,8 @@ export function Index() {
           pool5Reserve,
             pool6Reserve,
             pool7Reserve,
+          pool8Reserve,
+          pool9Reserve,
           rgpTotalStakingV2,
         ] = await Promise.all([
           await specialPool.totalStaking(),
@@ -748,6 +772,8 @@ export function Index() {
           pool5.getReserves(),
           pool6.getReserves(),
           pool7.getReserves(),
+          pool8.getReserves(),
+          pool9.getReserves(),
           await specialPool2.totalStaking(),
         ]);
         const RGPprice: number | any = ethers.utils.formatUnits(
@@ -787,6 +813,20 @@ export function Index() {
         const MHT_RGPLiquidity = ethers.utils
             .formatUnits(
                 pool7Reserve[1].mul(Math.floor(Number(RGPprice) * 1000 * 2)),
+                21
+            )
+            .toString();
+
+        const RGP_SHIBLiquidity = ethers.utils
+            .formatUnits(
+                pool8Reserve[1].mul(Math.floor(Number(RGPprice) * 1000 * 2)),
+                21
+            )
+            .toString();
+
+        const RGP_MBOXLiquidity = ethers.utils
+            .formatUnits(
+                pool9Reserve[1].mul(Math.floor(Number(RGPprice) * 1000 * 2)),
                 21
             )
             .toString();
@@ -832,6 +872,16 @@ export function Index() {
               deposit: "MHT-RGP",
               liquidity: MHT_RGPLiquidity,
               apy: calculateApy(RGPprice, MHT_RGPLiquidity, 340.48),
+            },
+            {
+              deposit: "RGP-SHIB",
+              liquidity: RGP_SHIBLiquidity,
+              apy: calculateApy(RGPprice, RGP_SHIBLiquidity, 340.48),
+            },
+            {
+              deposit: "RGP-MBOX",
+              liquidity: RGP_MBOXLiquidity,
+              apy: calculateApy(RGPprice, RGP_MBOXLiquidity, 340.48),
             },
             {
               deposit: "RGP",
@@ -940,7 +990,6 @@ export function Index() {
         account &&
         Number(chainId) === Number(SupportedChainId.OASISTEST)
       ) {
-        console.log("got into oasis");
         const masterChefV2 = await MasterChefV2Contract(
           MASTERCHEFV2ADDRESSES[chainId as number],
           library
@@ -969,8 +1018,6 @@ export function Index() {
           // masterChefV2.userInfo(5, account),
         ]);
 
-        console.log("poolOneStaked", poolOneStaked);
-
         dispatch(
           updateTokenStaked([
             { staked: 0, earned: 0 },
@@ -994,7 +1041,6 @@ export function Index() {
         account &&
         Number(chainId) !== Number(SupportedChainId.POLYGON)
       ) {
-        console.log("got into first one2");
         const masterChefV2 = await MasterChefV2Contract(
           MASTERCHEFV2ADDRESSES[chainId as number],
           library
@@ -1005,15 +1051,19 @@ export function Index() {
           poolThreeEarned,
           poolFourEarned,
           poolFiveEarned,
-            poolSixEarned,
-            poolSevenEarned,
+          poolSixEarned,
+          poolSevenEarned,
+          poolEightEarned,
+          poolNineEarned,
           poolOneStaked,
           poolTwoStaked,
           poolThreeStaked,
           poolFourStaked,
           poolFiveStaked,
-            poolSixStaked,
-            poolSevenStaked,
+          poolSixStaked,
+          poolSevenStaked,
+          poolEightStaked,
+          poolNineStaked,
         ] = await Promise.all([
           masterChefV2.pendingRigel(1, account),
           masterChefV2.pendingRigel(2, account),
@@ -1022,6 +1072,8 @@ export function Index() {
           masterChefV2.pendingRigel(5, account),
           masterChefV2.pendingRigel(6, account),
           masterChefV2.pendingRigel(7, account),
+          masterChefV2.pendingRigel(8, account),
+          masterChefV2.pendingRigel(9, account),
           masterChefV2.userInfo(1, account),
           masterChefV2.userInfo(2, account),
           masterChefV2.userInfo(3, account),
@@ -1029,6 +1081,8 @@ export function Index() {
           masterChefV2.userInfo(5, account),
           masterChefV2.userInfo(6, account),
           masterChefV2.userInfo(7, account),
+          masterChefV2.userInfo(8, account),
+          masterChefV2.userInfo(9, account),
         ]);
 
         const RGPStakedEarned = await specialPoolStaked();
@@ -1041,7 +1095,6 @@ export function Index() {
 
         let RGPStakedV2;
         let RGPEarnedV2;
-        //console.log("EARRNED", RGPStakedEarned)
 
         if (RGPStakedEarned) {
           const [specialPoolStaked, specialPoolEarned] = RGPStakedEarned;
@@ -1093,6 +1146,14 @@ export function Index() {
             {
               staked: formatBigNumber(poolSevenStaked.amount),
               earned: formatBigNumber(poolSevenEarned),
+            },
+            {
+              staked: formatBigNumber(poolEightStaked.amount),
+              earned: formatBigNumber(poolEightEarned),
+            },
+            {
+              staked: formatBigNumber(poolNineStaked.amount),
+              earned: formatBigNumber(poolNineEarned),
             },
             { staked: RGPStakedV2, earned: RGPEarnedV2, symbol: "RGP" },
           ])
@@ -1157,8 +1218,45 @@ export function Index() {
     return AXS_BUSDLiquidity;
   };
 
+  const [welcomeModal, setWelcomeModal] = useState(false);
+  const [run, setRun] = useState(false);
+  const bgColor = useColorModeValue("#319EF6", "#4CAFFF");
+
+  useEffect(() => {
+    const visits = window.localStorage.getItem('firstFarmVisit');
+    if (!visits) {
+      setWelcomeModal(true);
+      window.localStorage.setItem('firstFarmVisit', '1');
+    }
+  }, []);
+
+  function strartWelcomeRide() {
+    setRun(true)
+  }
+
   return (
     <Box>
+
+      <Joyride
+          steps={steps}
+          run={run}
+          continuous={true}
+          scrollToFirstStep={true}
+          showSkipButton={true}
+          styles={{
+            options: {
+              arrowColor: bgColor,
+              backgroundColor: bgColor,
+              textColor: '#FFFFFF',
+              primaryColor: bgColor
+            }
+          }}
+      />
+      <WelcomeModal startToure={strartWelcomeRide} openModal={welcomeModal}
+                    closeModal={() => setWelcomeModal((state) => !state)}
+                    textHeader={'Welcome to SmartSwap Farming'}
+                    welcomeText="With farming, you can maximize the rate of return on capital and generate rewards on your cryptocurrency holdings." />
+
       {(chainId && library) || !showAlert ? null : (
         <Box mx={[5, 10, 15, 20]} my={4}>
           <Alert
@@ -1209,6 +1307,7 @@ export function Index() {
             padding=' 12px 32px'
             mt={3}
             variant='brand'
+            className={'list'}
           >
             List your project
           </Button>
@@ -1277,6 +1376,7 @@ export function Index() {
               }
               fontSize={isMobileDevice ? "14px" : undefined}
               mt='2'
+              className={'liquidity'}
             >
               Liquidity Pools
             </Text>
@@ -1372,7 +1472,7 @@ export function Index() {
             // minWidth={{ base: "none", md: "200px", lg: "200px" }}
             onClick={() => handleSelect(STAKING)}
           >
-            <Text>Staking</Text>
+            <Text className={'staking'}>Staking</Text>
             {Number(chainId) === Number(SupportedChainId.POLYGON) ? null : (
               <Select
                 borderColor={
@@ -1459,7 +1559,7 @@ export function Index() {
             // minWidth={{ base: "none", md: "200px", lg: "200px" }}
             // onClick={() => handleSelect(OTHER_FARMS)}
           >
-            <Text>Other Farms</Text>
+            <Text className={'other'}>Other Farms</Text>
           </Tab>
         </TabList>
         <Divider my='4' />
@@ -1558,9 +1658,8 @@ export function Index() {
                           />
                         ) : null
                       )
-                    : Number(chainId) === Number(SupportedChainId.POLYGON)
+                    : Number(chainId) === Number(SupportedChainId.POLYGON) || Number(chainId) === Number(SupportedChainId.POLYGONTEST)
                     ? FarmData.contents.map((content: any, index: number) =>
-                        Number(chainId) === Number(SupportedChainId.POLYGON) &&
                         index !== 0 &&
                         index < 4 ? (
                           <YieldFarm
@@ -1574,7 +1673,7 @@ export function Index() {
                     : Number(chainId) !== Number(SupportedChainId.POLYGON)
                     ? FarmData.contents.map((content: any, index: number) =>
                         Number(chainId) !== Number(SupportedChainId.POLYGON) &&
-                        index !== 0 && index !== 8 ? (
+                        index !== 0 && index !== 10 ? (
                           <YieldFarm
                             farmDataLoading={farmDataLoading}
                             content={content}
@@ -1810,7 +1909,7 @@ export function Index() {
                     <Text />
                   </Flex>
                   {FarmData.contents.map((content: any, index: number) =>
-                      index === 8 ? (
+                      index === 10 ? (
                           <YieldFarm
                               farmDataLoading={farmDataLoading}
                               content={content}

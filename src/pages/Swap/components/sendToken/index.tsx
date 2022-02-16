@@ -39,7 +39,7 @@ import {
   getOutPutDataFromEvent,
   ZERO_ADDRESS,
 } from "../../../../constants";
-import { Token } from "@uniswap/sdk-core";
+import { Currency, Token } from "@uniswap/sdk-core";
 import { useAllTokens } from "../../../../hooks/Tokens";
 import { ethers } from "ethers";
 import { GetAddressTokenBalance } from "../../../../state/wallet/hooks";
@@ -171,14 +171,18 @@ const SendToken = () => {
     [allowedSlippage, bestTrade]
   );
 
-  const minimum = minimumAmountToReceive().toFixed(16);
+  const minimum = minimumAmountToReceive().toFixed(
+    currencies[Field.OUTPUT]?.decimals
+  );
 
   const LPFee = (0.003 * Number(formattedAmounts[Field.INPUT])).toFixed(4);
 
   const receivedAmount = Number(formattedAmounts[Field.OUTPUT]).toFixed(4);
   const fromAmount = Number(formattedAmounts[Field.INPUT]);
 
-  const parsedOutput = ethers.utils.parseEther(minimum.toString()).toString();
+  const parsedOutput = (decimal: number) => {
+    return ethers.utils.parseUnits(minimum.toString(), decimal).toString();
+  };
   const [hasBeenApproved, setHasBeenApproved] = useState(false);
   const [insufficientBalance, setInsufficientBalance] = useState(false);
 
@@ -226,7 +230,8 @@ const SendToken = () => {
   const { priceImpact } = useCalculatePriceImpact(
     pathArray,
     parseFloat(receivedAmount),
-    fromAmount
+    fromAmount,
+    currencies[Field.OUTPUT] as Currency
   );
 
   const approveSwap = async () => {
@@ -334,13 +339,18 @@ const SendToken = () => {
         }
       );
       const { hash } = sendTransaction;
-      const { confirmations, status } = await sendTransaction.wait(3);
+      const { confirmations, status } = await sendTransaction.wait(1);
       const receipt = await sendTransaction.wait();
-      const outputAmount = await getOutPutDataFromEvent(to, receipt.events);
+      const outputAmount = await getOutPutDataFromEvent(
+        to,
+        receipt.events,
+        currencies[Field.OUTPUT]?.decimals
+      );
       const inputAmount = await getInPutDataFromEvent(
         from,
         receipt.events,
-        outputToken()
+        outputToken(),
+        currencies[Field.INPUT]?.decimals
       );
       if (
         typeof sendTransaction.hash !== "undefined" &&
@@ -404,7 +414,7 @@ const SendToken = () => {
         })
       );
       const sendTransaction = await route.swapETHForExactTokens(
-        parsedOutput,
+        parsedOutput(currencies[Field.OUTPUT]?.decimals as number),
         // [from, to],
         pathArray,
         account,
@@ -414,21 +424,24 @@ const SendToken = () => {
         }
       );
       const { hash } = sendTransaction;
-      const { confirmations, status } = await sendTransaction.wait(3);
+      const { confirmations, status } = await sendTransaction.wait(1);
       const receipt = await sendTransaction.wait();
+
       const outputAmountForDisplay = await getOutPutDataFromEvent(
         to,
-        receipt.events
+        receipt.events,
+        currencies[Field.OUTPUT]?.decimals
       );
       const inputAmountForDisplay = await getInPutDataFromEvent(
         from,
         receipt.events,
-        parsedAmount
+        parsedAmount,
+        currencies[Field.INPUT]?.decimals
       );
 
       if (
         typeof sendTransaction.hash !== "undefined" &&
-        confirmations >= 3 &&
+        confirmations >= 1 &&
         status
       ) {
         setSendingTrx(false);
@@ -491,25 +504,30 @@ const SendToken = () => {
       );
       const sendTransaction = await route.swapExactTokensForETH(
         parsedAmount,
-        parsedOutput,
+        parsedOutput(currencies[Field.OUTPUT]?.decimals as number),
         // [from, to],
         pathArray,
         account,
         dl
       );
-      const { confirmations, status } = await sendTransaction.wait(3);
+      const { confirmations, status } = await sendTransaction.wait(1);
       const { hash } = sendTransaction;
       const receipt = await sendTransaction.wait();
-      const outputAmount = await getOutPutDataFromEvent(to, receipt.events);
+      const outputAmount = await getOutPutDataFromEvent(
+        to,
+        receipt.events,
+        currencies[Field.OUTPUT]?.decimals
+      );
       const inputAmount = await getInPutDataFromEvent(
         from,
         receipt.events,
-        parsedAmount
+        parsedAmount,
+        currencies[Field.INPUT]?.decimals
       );
 
       if (
         typeof sendTransaction.hash !== "undefined" &&
-        confirmations >= 3 &&
+        confirmations >= 1 &&
         status
       ) {
         setSendingTrx(false);
@@ -564,11 +582,11 @@ const SendToken = () => {
       const sendTransaction = await weth.deposit({
         value: parsedAmount,
       });
-      const { confirmations, status } = await sendTransaction.wait(3);
+      const { confirmations, status } = await sendTransaction.wait(1);
       const { hash } = sendTransaction;
       if (
         typeof sendTransaction.hash !== "undefined" &&
-        confirmations >= 3 &&
+        confirmations >= 1 &&
         status
       ) {
         setSendingTrx(false);
@@ -623,7 +641,7 @@ const SendToken = () => {
       const { hash } = sendTransaction;
       if (
         typeof sendTransaction.hash !== "undefined" &&
-        confirmations >= 3 &&
+        confirmations >= 1 &&
         status
       ) {
         setSendingTrx(false);
@@ -701,6 +719,27 @@ const SendToken = () => {
       } else {
         await swapDifferentTokens();
       }
+    } else if (
+      chainId === SupportedChainId.OASISTEST ||
+      chainId === SupportedChainId.OASISMAINNET
+    ) {
+      if (
+        currencies[Field.INPUT]?.symbol === "ROSE" &&
+        currencies[Field.OUTPUT]?.symbol === "WROSE"
+      ) {
+        await deposit();
+      } else if (
+        currencies[Field.INPUT]?.symbol === "WROSE" &&
+        currencies[Field.OUTPUT]?.symbol === "ROSE"
+      ) {
+        await withdraw();
+      } else if (currencies[Field.INPUT]?.symbol === "ROSE") {
+        await swapDefaultForOtherTokens();
+      } else if (currencies[Field.OUTPUT]?.symbol === "ROSE") {
+        await swapOtherTokensForDefault();
+      } else {
+        await swapDifferentTokens();
+      }
     }
   };
 
@@ -727,30 +766,30 @@ const SendToken = () => {
   //   await checkLiquidityPair();
   // }, [fromAddress, toAddress, path]);
 
-  const calculatePriceImpact = async () => {
-    if (routeAddress.length === 2) {
-      try {
-        const SwapRouter = await SmartSwapRouter(
-          SMARTSWAPROUTER[(chainId as number) ?? 56],
-          library
-        );
-        const price = await SwapRouter.getAmountsOut(
-          "1000000000000000000",
-          routeAddress
-        );
-        const marketPrice = ethers.utils.formatEther(price[1].toString());
-        const swapPrice = receivedAmount / fromAmount;
-        const priceDifference = swapPrice - marketPrice;
-        const priceImpact = (priceDifference / marketPrice) * 100;
-        setPriceImpact(parseFloat(priceImpact).toFixed(2));
-      } catch (e) {
-        setPriceImpact(0);
-      }
-    }
-  };
-  useEffect(async () => {
-    calculatePriceImpact();
-  }, [fromAmount, receivedAmount, chainId]);
+  // const calculatePriceImpact = async () => {
+  //   if (routeAddress.length === 2) {
+  //     try {
+  //       const SwapRouter = await SmartSwapRouter(
+  //         SMARTSWAPROUTER[(chainId as number) ?? 56],
+  //         library
+  //       );
+  //       const price = await SwapRouter.getAmountsOut(
+  //         "1000000000000000000",
+  //         routeAddress
+  //       );
+  //       const marketPrice = ethers.utils.formatEther(price[1].toString());
+  //       const swapPrice = receivedAmount / fromAmount;
+  //       const priceDifference = swapPrice - marketPrice;
+  //       const priceImpact = (priceDifference / marketPrice) * 100;
+  //       setPriceImpact(parseFloat(priceImpact).toFixed(2));
+  //     } catch (e) {
+  //       setPriceImpact(0);
+  //     }
+  //   }
+  // };
+  // useEffect(async () => {
+  //   calculatePriceImpact();
+  // }, [fromAmount, receivedAmount, chainId]);
 
   const [isLoadingValue, setIsLoadingValue] = useState(false);
   useEffect(() => {

@@ -20,15 +20,10 @@ import { getNativeAddress } from "../utils/hooks/usePools";
 import { getDecimals } from "../utils/utilsFunctions";
 
 const formatAmount = (number: string, decimals: number) => {
-  // const numb = ethers.BigNumber.from(number).toString();
-  // let res = ethers.utils.formatEther(num);
-  // res = (+res).toString();
-  // return res;
   return ethers.utils.formatUnits(number, decimals);
 };
-const formatWithDecimals = (amount: string, decimals: number) => {
-  return ethers.utils.formatUnits(amount, decimals);
-};
+
+
 export const useSwap = (
   currencyA: Currency,
   currencyB: Currency,
@@ -97,8 +92,8 @@ export const useSwap = (
               tokenTwoAddress,
             ]);
 
+            const output = formatAmount(amountOut[1], currencyB.decimals);
 
-            const output = formatWithDecimals(amountOut[1], currencyB.decimals);
             setPath([tokenOneAddress as string, tokenTwoAddress as string]);
             setPathSymbol(`${currencyA.symbol} - ${currencyB.symbol}`);
             setAmount(output);
@@ -164,7 +159,10 @@ export const useSwap = (
                   [USDT[chainId as number], CurrencyB]
                 );
 
-                const output = formatAmount(secondAmount[1], currencyB.decimals);
+                const output = formatAmount(
+                  secondAmount[1],
+                  currencyB.decimals
+                );
                 setPath([
                   CurrencyA as string,
                   USDT[chainId as number],
@@ -193,7 +191,10 @@ export const useSwap = (
                   firstAmount[1].toString(),
                   [RGPADDRESSES[chainId as number], CurrencyB]
                 );
-                const output = formatAmount(secondAmount[1], currencyB.decimals);
+                const output = formatAmount(
+                  secondAmount[1],
+                  currencyB.decimals
+                );
                 setPath([
                   CurrencyA as string,
                   RGPADDRESSES[chainId as number],
@@ -222,7 +223,10 @@ export const useSwap = (
                   firstAmount[1].toString(),
                   [WNATIVEADDRESSES[chainId as number], CurrencyB]
                 );
-                const output = formatAmount(secondAmount[1], currencyB.decimals);
+                const output = formatAmount(
+                  secondAmount[1],
+                  currencyB.decimals
+                );
                 setPath([
                   CurrencyA as string,
                   WNATIVEADDRESSES[chainId as number],
@@ -253,7 +257,10 @@ export const useSwap = (
                   firstAmount[1].toString(),
                   [BUSD[chainId as number], CurrencyB]
                 );
-                const output = formatAmount(secondAmount[1], currencyB.decimals);
+                const output = formatAmount(
+                  secondAmount[1],
+                  currencyB.decimals
+                );
 
                 setPath([
                   CurrencyA as string,
@@ -372,5 +379,3 @@ export const useSwap = (
 
   return [address, wrap, amount, pathArray, pathSymbol];
 };
-
-//const formattedInput = ethers.utils.parseEther(amountIn);
