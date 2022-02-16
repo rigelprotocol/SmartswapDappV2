@@ -40,6 +40,7 @@ import {
   smartSwapLPTokenV2PoolFour,
   smartSwapLPTokenV2PoolSeven,
   smartSwapLPTokenV2PoolSix,
+    smartSwapLPTokenV2PoolEight, smartSwapLPTokenV2PoolNine
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
@@ -52,7 +53,8 @@ import {
   SMARTSWAPLP_TOKEN4ADDRESSES,
   SMARTSWAPLP_TOKEN5ADDRESSES,
   SMARTSWAPLP_TOKEN6ADDRESSES,
-  SMARTSWAPLP_TOKEN7ADDRESSES
+  SMARTSWAPLP_TOKEN7ADDRESSES,
+    SMARTSWAPLP_TOKEN8ADDRESSES, SMARTSWAPLP_TOKEN9ADDRESSES
 } from "../../utils/addresses";
 import { formatBigNumber } from "../../utils";
 import { RootState } from "../../state";
@@ -285,6 +287,8 @@ export function Index() {
             poolFive,
               poolSix,
               poolSeven,
+              poolEight,
+              poolNine,
             RGPToken2,
           ] = await Promise.all([
             rigelToken(RGP[chainId as number], library),
@@ -316,6 +320,14 @@ export function Index() {
                 SMARTSWAPLP_TOKEN7ADDRESSES[chainId as number],
                 library
             ),
+            smartSwapLPTokenV2PoolEight(
+                SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
+                library
+            ),
+            smartSwapLPTokenV2PoolNine(
+                SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+                library
+            ),
             rigelToken(RGP[chainId as number], library),
           ]);
 
@@ -326,8 +338,10 @@ export function Index() {
             poolThreeBalance,
             poolFourBalance,
             poolFiveBalance,
-              poolSixBalance,
-              poolSevenBalance,
+            poolSixBalance,
+            poolSevenBalance,
+            poolEightBalance,
+            poolNineBalance,
             RGPbalance2,
           ] = await Promise.all([
             RGPToken.balanceOf(account),
@@ -338,6 +352,8 @@ export function Index() {
             poolFive.balanceOf(account),
             poolSix.balanceOf(account),
             poolSeven.balanceOf(account),
+            poolEight.balanceOf(account),
+            poolNine.balanceOf(account),
             RGPToken2.balanceOf(account),
           ]);
 
@@ -351,6 +367,8 @@ export function Index() {
               formatBigNumber(poolFiveBalance),
               formatBigNumber(poolSixBalance),
               formatBigNumber(poolSevenBalance),
+              formatBigNumber(poolEightBalance),
+              formatBigNumber(poolNineBalance),
               formatBigNumber(RGPbalance2),
             ])
           );
@@ -688,7 +706,7 @@ export function Index() {
           ])
         );
       } else {
-        const [specialPool, pool1, pool2, pool3, pool4, pool5, pool6, pool7, specialPool2] =
+        const [specialPool, pool1, pool2, pool3, pool4, pool5, pool6, pool7, pool8, pool9, specialPool2] =
           await Promise.all([
             RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library),
             smartSwapLPTokenPoolOne(
@@ -719,6 +737,14 @@ export function Index() {
                 SMARTSWAPLP_TOKEN7ADDRESSES[chainId as number],
                 library
             ),
+            smartSwapLPTokenV2PoolEight(
+                SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
+                library
+            ),
+            smartSwapLPTokenV2PoolNine(
+                SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+                library
+            ),
             RGPSpecialPool2(
               RGPSPECIALPOOLADDRESSES2[chainId as number],
               library
@@ -734,6 +760,8 @@ export function Index() {
           pool5Reserve,
             pool6Reserve,
             pool7Reserve,
+          pool8Reserve,
+          pool9Reserve,
           rgpTotalStakingV2,
         ] = await Promise.all([
           await specialPool.totalStaking(),
@@ -744,6 +772,8 @@ export function Index() {
           pool5.getReserves(),
           pool6.getReserves(),
           pool7.getReserves(),
+          pool8.getReserves(),
+          pool9.getReserves(),
           await specialPool2.totalStaking(),
         ]);
         const RGPprice: number | any = ethers.utils.formatUnits(
@@ -783,6 +813,20 @@ export function Index() {
         const MHT_RGPLiquidity = ethers.utils
             .formatUnits(
                 pool7Reserve[1].mul(Math.floor(Number(RGPprice) * 1000 * 2)),
+                21
+            )
+            .toString();
+
+        const RGP_SHIBLiquidity = ethers.utils
+            .formatUnits(
+                pool8Reserve[1].mul(Math.floor(Number(RGPprice) * 1000 * 2)),
+                21
+            )
+            .toString();
+
+        const RGP_MBOXLiquidity = ethers.utils
+            .formatUnits(
+                pool9Reserve[1].mul(Math.floor(Number(RGPprice) * 1000 * 2)),
                 21
             )
             .toString();
@@ -828,6 +872,16 @@ export function Index() {
               deposit: "MHT-RGP",
               liquidity: MHT_RGPLiquidity,
               apy: calculateApy(RGPprice, MHT_RGPLiquidity, 340.48),
+            },
+            {
+              deposit: "RGP-SHIB",
+              liquidity: RGP_SHIBLiquidity,
+              apy: calculateApy(RGPprice, RGP_SHIBLiquidity, 340.48),
+            },
+            {
+              deposit: "RGP-MBOX",
+              liquidity: RGP_MBOXLiquidity,
+              apy: calculateApy(RGPprice, RGP_MBOXLiquidity, 340.48),
             },
             {
               deposit: "RGP",
@@ -997,15 +1051,19 @@ export function Index() {
           poolThreeEarned,
           poolFourEarned,
           poolFiveEarned,
-            poolSixEarned,
-            poolSevenEarned,
+          poolSixEarned,
+          poolSevenEarned,
+          poolEightEarned,
+          poolNineEarned,
           poolOneStaked,
           poolTwoStaked,
           poolThreeStaked,
           poolFourStaked,
           poolFiveStaked,
-            poolSixStaked,
-            poolSevenStaked,
+          poolSixStaked,
+          poolSevenStaked,
+          poolEightStaked,
+          poolNineStaked,
         ] = await Promise.all([
           masterChefV2.pendingRigel(1, account),
           masterChefV2.pendingRigel(2, account),
@@ -1014,6 +1072,8 @@ export function Index() {
           masterChefV2.pendingRigel(5, account),
           masterChefV2.pendingRigel(6, account),
           masterChefV2.pendingRigel(7, account),
+          masterChefV2.pendingRigel(8, account),
+          masterChefV2.pendingRigel(9, account),
           masterChefV2.userInfo(1, account),
           masterChefV2.userInfo(2, account),
           masterChefV2.userInfo(3, account),
@@ -1021,6 +1081,8 @@ export function Index() {
           masterChefV2.userInfo(5, account),
           masterChefV2.userInfo(6, account),
           masterChefV2.userInfo(7, account),
+          masterChefV2.userInfo(8, account),
+          masterChefV2.userInfo(9, account),
         ]);
 
         const RGPStakedEarned = await specialPoolStaked();
@@ -1084,6 +1146,14 @@ export function Index() {
             {
               staked: formatBigNumber(poolSevenStaked.amount),
               earned: formatBigNumber(poolSevenEarned),
+            },
+            {
+              staked: formatBigNumber(poolEightStaked.amount),
+              earned: formatBigNumber(poolEightEarned),
+            },
+            {
+              staked: formatBigNumber(poolNineStaked.amount),
+              earned: formatBigNumber(poolNineEarned),
             },
             { staked: RGPStakedV2, earned: RGPEarnedV2, symbol: "RGP" },
           ])
@@ -1603,7 +1673,7 @@ export function Index() {
                     : Number(chainId) !== Number(SupportedChainId.POLYGON)
                     ? FarmData.contents.map((content: any, index: number) =>
                         Number(chainId) !== Number(SupportedChainId.POLYGON) &&
-                        index !== 0 && index !== 8 ? (
+                        index !== 0 && index !== 10 ? (
                           <YieldFarm
                             farmDataLoading={farmDataLoading}
                             content={content}
@@ -1839,7 +1909,7 @@ export function Index() {
                     <Text />
                   </Flex>
                   {FarmData.contents.map((content: any, index: number) =>
-                      index === 8 ? (
+                      index === 10 ? (
                           <YieldFarm
                               farmDataLoading={farmDataLoading}
                               content={content}
