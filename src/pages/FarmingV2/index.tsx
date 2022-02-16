@@ -44,6 +44,7 @@ import {
   smartSwapLPTokenV2PoolFour,
   smartSwapLPTokenV2PoolSeven,
   smartSwapLPTokenV2PoolSix,
+    smartSwapLPTokenV2PoolEight, smartSwapLPTokenV2PoolNine
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
@@ -56,7 +57,8 @@ import {
   SMARTSWAPLP_TOKEN4ADDRESSES,
   SMARTSWAPLP_TOKEN5ADDRESSES,
   SMARTSWAPLP_TOKEN6ADDRESSES,
-  SMARTSWAPLP_TOKEN7ADDRESSES
+  SMARTSWAPLP_TOKEN7ADDRESSES,
+    SMARTSWAPLP_TOKEN8ADDRESSES, SMARTSWAPLP_TOKEN9ADDRESSES
 } from "../../utils/addresses";
 import { formatBigNumber } from "../../utils";
 import { RootState } from "../../state";
@@ -90,7 +92,7 @@ export function Index() {
   const [showAlert, setShowAlert] = useState(true);
   const [farmDataLoading, setfarmDataLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(false);
-  const [switchTab, setSwitchTab] = useState(false);
+  const [switchTab, setSwitchTab] = useState(true);
   const [tabIndex, setTabIndex] = useState(0);
   const [liquidityIndex, setLiquidityIndex] = useState(0);
   const [stakingIndex, setStakingIndex] = useState(1);
@@ -181,7 +183,7 @@ export function Index() {
       setSelected(STAKING);
       changeVersion("/farming-v2/staking-RGP");
     } else {
-      setSwitchTab(false);
+      setSwitchTab(true);
     }
   };
 
@@ -326,6 +328,8 @@ export function Index() {
             poolFive,
               poolSix,
               poolSeven,
+              poolEight,
+              poolNine,
             RGPToken2,
           ] = await Promise.all([
             rigelToken(RGP[chainId as number], library),
@@ -357,6 +361,14 @@ export function Index() {
                 SMARTSWAPLP_TOKEN7ADDRESSES[chainId as number],
                 library
             ),
+            smartSwapLPTokenV2PoolEight(
+                SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
+                library
+            ),
+            smartSwapLPTokenV2PoolNine(
+                SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+                library
+            ),
             rigelToken(RGP[chainId as number], library),
           ]);
 
@@ -367,8 +379,10 @@ export function Index() {
             poolThreeBalance,
             poolFourBalance,
             poolFiveBalance,
-              poolSixBalance,
-              poolSevenBalance,
+            poolSixBalance,
+            poolSevenBalance,
+            poolEightBalance,
+            poolNineBalance,
             RGPbalance2,
           ] = await Promise.all([
             RGPToken.balanceOf(account),
@@ -379,6 +393,8 @@ export function Index() {
             poolFive.balanceOf(account),
             poolSix.balanceOf(account),
             poolSeven.balanceOf(account),
+            poolEight.balanceOf(account),
+            poolNine.balanceOf(account),
             RGPToken2.balanceOf(account),
           ]);
 
@@ -392,6 +408,8 @@ export function Index() {
               formatBigNumber(poolFiveBalance),
               formatBigNumber(poolSixBalance),
               formatBigNumber(poolSevenBalance),
+              formatBigNumber(poolEightBalance),
+              formatBigNumber(poolNineBalance),
               formatBigNumber(RGPbalance2),
             ])
           );
@@ -729,7 +747,7 @@ export function Index() {
           ])
         );
       } else {
-        const [specialPool, pool1, pool2, pool3, pool4, pool5, pool6, pool7, specialPool2] =
+        const [specialPool, pool1, pool2, pool3, pool4, pool5, pool6, pool7, pool8, pool9, specialPool2] =
           await Promise.all([
             RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library),
             smartSwapLPTokenPoolOne(
@@ -760,6 +778,14 @@ export function Index() {
                 SMARTSWAPLP_TOKEN7ADDRESSES[chainId as number],
                 library
             ),
+            smartSwapLPTokenV2PoolEight(
+                SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
+                library
+            ),
+            smartSwapLPTokenV2PoolNine(
+                SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+                library
+            ),
             RGPSpecialPool2(
               RGPSPECIALPOOLADDRESSES2[chainId as number],
               library
@@ -775,6 +801,8 @@ export function Index() {
           pool5Reserve,
             pool6Reserve,
             pool7Reserve,
+          pool8Reserve,
+          pool9Reserve,
           rgpTotalStakingV2,
         ] = await Promise.all([
           await specialPool.totalStaking(),
@@ -785,6 +813,8 @@ export function Index() {
           pool5.getReserves(),
           pool6.getReserves(),
           pool7.getReserves(),
+          pool8.getReserves(),
+          pool9.getReserves(),
           await specialPool2.totalStaking(),
         ]);
         const RGPprice: number | any = ethers.utils.formatUnits(
@@ -828,12 +858,26 @@ export function Index() {
             )
             .toString();
 
+        const RGP_SHIBLiquidity = ethers.utils
+            .formatUnits(
+                pool8Reserve[1].mul(Math.floor(Number(RGPprice) * 1000 * 2)),
+                21
+            )
+            .toString();
+
+        const RGP_MBOXLiquidity = ethers.utils
+            .formatUnits(
+                pool9Reserve[1].mul(Math.floor(Number(RGPprice) * 1000 * 2)),
+                21
+            )
+            .toString();
+
         dispatch(
           updateTotalLiquidity([
             {
               deposit: "RGP",
               liquidity: RGPLiquidity,
-              apy: calculateApy(RGPprice, RGPLiquidity, 250),
+              apy: 8.756,
             },
             {
               deposit: "RGP-BNB",
@@ -871,9 +915,19 @@ export function Index() {
               apy: calculateApy(RGPprice, MHT_RGPLiquidity, 340.48),
             },
             {
+              deposit: "RGP-SHIB",
+              liquidity: RGP_SHIBLiquidity,
+              apy: calculateApy(RGPprice, RGP_SHIBLiquidity, 340.48),
+            },
+            {
+              deposit: "RGP-MBOX",
+              liquidity: RGP_MBOXLiquidity,
+              apy: calculateApy(RGPprice, RGP_MBOXLiquidity, 340.48),
+            },
+            {
               deposit: "RGP",
               liquidity: RGPLiquidityV2,
-              apy: calculateApy(RGPprice, RGPLiquidityV2, 250),
+              apy: 8.756,
             },
           ])
         );
@@ -1038,15 +1092,19 @@ export function Index() {
           poolThreeEarned,
           poolFourEarned,
           poolFiveEarned,
-            poolSixEarned,
-            poolSevenEarned,
+          poolSixEarned,
+          poolSevenEarned,
+          poolEightEarned,
+          poolNineEarned,
           poolOneStaked,
           poolTwoStaked,
           poolThreeStaked,
           poolFourStaked,
           poolFiveStaked,
-            poolSixStaked,
-            poolSevenStaked,
+          poolSixStaked,
+          poolSevenStaked,
+          poolEightStaked,
+          poolNineStaked,
         ] = await Promise.all([
           masterChefV2.pendingRigel(1, account),
           masterChefV2.pendingRigel(2, account),
@@ -1055,6 +1113,8 @@ export function Index() {
           masterChefV2.pendingRigel(5, account),
           masterChefV2.pendingRigel(6, account),
           masterChefV2.pendingRigel(7, account),
+          masterChefV2.pendingRigel(8, account),
+          masterChefV2.pendingRigel(9, account),
           masterChefV2.userInfo(1, account),
           masterChefV2.userInfo(2, account),
           masterChefV2.userInfo(3, account),
@@ -1062,6 +1122,8 @@ export function Index() {
           masterChefV2.userInfo(5, account),
           masterChefV2.userInfo(6, account),
           masterChefV2.userInfo(7, account),
+          masterChefV2.userInfo(8, account),
+          masterChefV2.userInfo(9, account),
         ]);
 
         const RGPStakedEarned = await specialPoolStaked();
@@ -1125,6 +1187,14 @@ export function Index() {
             {
               staked: formatBigNumber(poolSevenStaked.amount),
               earned: formatBigNumber(poolSevenEarned),
+            },
+            {
+              staked: formatBigNumber(poolEightStaked.amount),
+              earned: formatBigNumber(poolEightEarned),
+            },
+            {
+              staked: formatBigNumber(poolNineStaked.amount),
+              earned: formatBigNumber(poolNineEarned),
             },
             { staked: RGPStakedV2, earned: RGPEarnedV2, symbol: "RGP" },
           ])
@@ -1228,8 +1298,8 @@ export function Index() {
                     textHeader={'Welcome to SmartSwap Farming'}
                     welcomeText="With farming, you can maximize the rate of return on capital and generate rewards on your cryptocurrency holdings." />
 
-      {!showAlert || (tabIndex === 0) || (tabIndex === 3) ? null
-        : (tabIndex === 5) && (stakingIndex === 5) ?
+      {!showAlert || (tabIndex === 0) || (tabIndex === 2) ? null
+        : (tabIndex === 1) && (stakingIndex === 1) ?
         (
           <Box mx={[5, 10, 15, 20]} my={4}>
             <Alert
@@ -1363,6 +1433,17 @@ export function Index() {
                 ? "#DEE5ED !important"
                 : "#DEE5ED !important"
             }
+            color={
+              mode === LIGHT_THEME && selected === LIQUIDITY
+                ? "#333333"
+                : mode === DARK_THEME && selected === LIQUIDITY
+                ? "#F1F5F8"
+                : mode === DARK_THEME && selected === STAKING
+                ? "#F1F5F8"
+                : mode === LIGHT_THEME && selected === STAKING
+                ? "#333333"
+                : "#333333"
+            }
             // px={5}
             // py={4}
             // minWidth={{ base: "none", md: "200px", lg: "200px" }}
@@ -1381,19 +1462,6 @@ export function Index() {
             }
           >
             <Text
-              color={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#333333"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#F1F5F8"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#F1F5F8"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#333333"
-                  : "#333333"
-              }
-              fontSize={isMobileDevice ? "14px" : undefined}
-              mt='2'
               className={'liquidity'}
             >
               Liquidity Pools
@@ -1436,7 +1504,7 @@ export function Index() {
                 margin='10px 16px'
               >
                 <option value={0}>V2</option>
-                <option value={3}>V1</option>
+                <option value={2}>V1</option>
               </Select>
             )}
           </Tab>
@@ -1530,8 +1598,8 @@ export function Index() {
                 flex-grow='0'
                 margin='10px 16px'
               >
-                <option value={1}>V1</option>
-                <option value={5}>V2</option>
+                <option value={1}>V2</option>
+                <option value={3}>V1</option>
               </Select>
             )}
           </Tab>
@@ -1691,7 +1759,7 @@ export function Index() {
                     : Number(chainId) !== Number(SupportedChainId.POLYGON)
                     ? FarmData.contents.map((content: any, index: number) =>
                         Number(chainId) !== Number(SupportedChainId.POLYGON) &&
-                        index !== 0 && index !== 8 ? (
+                        index !== 0 && index !== 10 ? (
                           <YieldFarm
                             farmDataLoading={farmDataLoading}
                             content={content}
@@ -1708,54 +1776,54 @@ export function Index() {
 
           <TabPanel padding='0px'>
             <Flex
-              justifyContent='center'
-              alignItems='center'
-              rounded='lg'
-              mb={4}
+                justifyContent='center'
+                alignItems='center'
+                rounded='lg'
+                mb={4}
             >
               <Box
-                bg='#120136'
-                minHeight='89vh'
-                w={["100%", "100%", "100%"]}
-                background={
-                  mode === LIGHT_THEME
-                    ? "#FFFFFF !important"
-                    : mode === DARK_THEME
-                    ? "#15202B !important"
-                    : "#FFFFFF !important"
-                }
-                rounded='lg'
+                  bg='#120136'
+                  minHeight='89vh'
+                  w={["100%", "100%", "100%"]}
+                  background={
+                    mode === LIGHT_THEME
+                        ? "#FFFFFF !important"
+                        : mode === DARK_THEME
+                        ? "#15202B !important"
+                        : "#FFFFFF !important"
+                  }
+                  rounded='lg'
               >
                 <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
                   <Flex
-                    alignItems='center'
-                    justifyContent='space-between'
-                    px={4}
-                    py={4}
-                    background={
-                      mode === DARK_THEME
-                        ? "#213345"
-                        : mode === LIGHT_THEME
-                        ? "#F2F5F8"
-                        : "#F2F5F8 !important"
-                    }
-                    color={
-                      mode === LIGHT_THEME
-                        ? "#333333"
-                        : mode === DARK_THEME
-                        ? "#F1F5F8"
-                        : "#333333"
-                    }
-                    w={["100%", "100%", "100%"]}
-                    align='left'
-                    border={
-                      mode === LIGHT_THEME
-                        ? "1px solid #DEE5ED !important"
-                        : mode === DARK_THEME
-                        ? "1px solid #324D68 !important"
-                        : "1px solid #324D68"
-                    }
-                    display={{ base: "none", md: "flex", lg: "flex" }}
+                      alignItems='center'
+                      justifyContent='space-between'
+                      px={4}
+                      py={4}
+                      background={
+                        mode === DARK_THEME
+                            ? "#213345"
+                            : mode === LIGHT_THEME
+                            ? "#F2F5F8"
+                            : "#F2F5F8 !important"
+                      }
+                      color={
+                        mode === LIGHT_THEME
+                            ? "#333333"
+                            : mode === DARK_THEME
+                            ? "#F1F5F8"
+                            : "#333333"
+                      }
+                      w={["100%", "100%", "100%"]}
+                      align='left'
+                      border={
+                        mode === LIGHT_THEME
+                            ? "1px solid #DEE5ED !important"
+                            : mode === DARK_THEME
+                            ? "1px solid #324D68 !important"
+                            : "1px solid #324D68"
+                      }
+                      display={{ base: "none", md: "flex", lg: "flex" }}
                   >
                     <Text>Deposit</Text>
                     <Text>Earn</Text>
@@ -1764,20 +1832,21 @@ export function Index() {
                     <Text />
                   </Flex>
                   {FarmData.contents.map((content: any, index: number) =>
-                    index === 0 ? (
-                      <YieldFarm
-                        farmDataLoading={farmDataLoading}
-                        content={content}
-                        key={content.pid}
-                        wallet={wallet}
-                      />
-                    ) : null
+                      index === 10 ? (
+                          <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content={content}
+                              key={content.pid}
+                              wallet={wallet}
+                              URLReferrerAddress={refAddress}
+                          />
+                      ) : null
                   )}
                 </Box>
               </Box>
             </Flex>
           </TabPanel>
-          <TabPanel padding='0px'></TabPanel>
+
           <TabPanel padding='0px'>
             <Flex
               justifyContent='center'
@@ -1868,57 +1937,56 @@ export function Index() {
               </Box>
             </Flex>
           </TabPanel>
-          <TabPanel padding='0px'></TabPanel>
           <TabPanel padding='0px'>
             <Flex
-                justifyContent='center'
-                alignItems='center'
-                rounded='lg'
-                mb={4}
+              justifyContent='center'
+              alignItems='center'
+              rounded='lg'
+              mb={4}
             >
               <Box
-                  bg='#120136'
-                  minHeight='89vh'
-                  w={["100%", "100%", "100%"]}
-                  background={
-                    mode === LIGHT_THEME
-                        ? "#FFFFFF !important"
-                        : mode === DARK_THEME
-                        ? "#15202B !important"
-                        : "#FFFFFF !important"
-                  }
-                  rounded='lg'
+                bg='#120136'
+                minHeight='89vh'
+                w={["100%", "100%", "100%"]}
+                background={
+                  mode === LIGHT_THEME
+                    ? "#FFFFFF !important"
+                    : mode === DARK_THEME
+                    ? "#15202B !important"
+                    : "#FFFFFF !important"
+                }
+                rounded='lg'
               >
                 <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
                   <Flex
-                      alignItems='center'
-                      justifyContent='space-between'
-                      px={4}
-                      py={4}
-                      background={
-                        mode === DARK_THEME
-                            ? "#213345"
-                            : mode === LIGHT_THEME
-                            ? "#F2F5F8"
-                            : "#F2F5F8 !important"
-                      }
-                      color={
-                        mode === LIGHT_THEME
-                            ? "#333333"
-                            : mode === DARK_THEME
-                            ? "#F1F5F8"
-                            : "#333333"
-                      }
-                      w={["100%", "100%", "100%"]}
-                      align='left'
-                      border={
-                        mode === LIGHT_THEME
-                            ? "1px solid #DEE5ED !important"
-                            : mode === DARK_THEME
-                            ? "1px solid #324D68 !important"
-                            : "1px solid #324D68"
-                      }
-                      display={{ base: "none", md: "flex", lg: "flex" }}
+                    alignItems='center'
+                    justifyContent='space-between'
+                    px={4}
+                    py={4}
+                    background={
+                      mode === DARK_THEME
+                        ? "#213345"
+                        : mode === LIGHT_THEME
+                        ? "#F2F5F8"
+                        : "#F2F5F8 !important"
+                    }
+                    color={
+                      mode === LIGHT_THEME
+                        ? "#333333"
+                        : mode === DARK_THEME
+                        ? "#F1F5F8"
+                        : "#333333"
+                    }
+                    w={["100%", "100%", "100%"]}
+                    align='left'
+                    border={
+                      mode === LIGHT_THEME
+                        ? "1px solid #DEE5ED !important"
+                        : mode === DARK_THEME
+                        ? "1px solid #324D68 !important"
+                        : "1px solid #324D68"
+                    }
+                    display={{ base: "none", md: "flex", lg: "flex" }}
                   >
                     <Text>Deposit</Text>
                     <Text>Earn</Text>
@@ -1927,15 +1995,14 @@ export function Index() {
                     <Text />
                   </Flex>
                   {FarmData.contents.map((content: any, index: number) =>
-                      index === 8 ? (
-                          <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                              URLReferrerAddress={refAddress}
-                          />
-                      ) : null
+                    index === 0 ? (
+                      <YieldFarm
+                        farmDataLoading={farmDataLoading}
+                        content={content}
+                        key={content.pid}
+                        wallet={wallet}
+                      />
+                    ) : null
                   )}
                 </Box>
               </Box>
