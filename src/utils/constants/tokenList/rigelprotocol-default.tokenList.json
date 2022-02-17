@@ -331,6 +331,38 @@
       "decimals": 18,
       "chainId": 97,
       "logoURI": "https://bscscan.com/token/images/mobox_32.png"
+    },
+    {
+      "name": "Metafluence",
+      "address": "0xa78775bba7a542F291e5ef7f13C6204E704A90Ba",
+      "symbol": "METO",
+      "decimals": 18,
+      "chainId": 56,
+      "logoURI": "https://bscscan.com/token/images/metafluence_32.png"
+    },
+    {
+      "name": "Metafluence",
+      "address": "0x9677dBccA4D654f225fdC13acc332e96704B2Bcf",
+      "symbol": "METO",
+      "decimals": 18,
+      "chainId": 97,
+      "logoURI": "https://bscscan.com/token/images/metafluence_32.png"
+    },
+    {
+      "name": "Revolve Games",
+      "address": "0xA9B86F17C25647EFA7aa983AeFE4D55d9eea45B5",
+      "symbol": "RPG",
+      "decimals": 18,
+      "chainId": 97,
+      "logoURI": "https://bscscan.com/token/images/revolvegames_32.png"
+    },
+    {
+      "name": "Revolve Games",
+      "address": "0x01E0d17a533E5930A349C2BB71304F04F20AB12B",
+      "symbol": "RPG",
+      "decimals": 18,
+      "chainId": 56,
+      "logoURI": "https://bscscan.com/token/images/revolvegames_32.png"
     }
   ]
 }
