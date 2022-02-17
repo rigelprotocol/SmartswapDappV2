@@ -48,21 +48,7 @@ export const getTokenSymbol = (symbol: string) => {
     return tokenIcon.logoURI
 };
 
-export const tokenList = async (addressName: string) => {
-    const token = await getERC20Token(addressName, library);
-    const name = token.name();
-    const symbol = token.symbol();
-    const { address } = token;
-    const decimals = token.decimals();
-    const standardToken = await Promise.all([name, symbol, address, decimals]);
-    const resolveToken = {
-        name: standardToken[0],
-        symbol: standardToken[1],
-        address: standardToken[2],
-        decimals: standardToken[3]
-    };
-    return address !== '0x' ? resolveToken : null;
-};
+
 
 
 const useAccountHistory = () => {
