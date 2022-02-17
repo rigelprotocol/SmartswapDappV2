@@ -145,7 +145,7 @@ const ShowYieldFarmDetails = ({
       setIsReferrerCheck(false);
     }
   }
-  
+
   useEffect(() => {
     const poolAllowance = async (contract: Contract) => {
       if (account) {

@@ -114,20 +114,33 @@ export function Index() {
     setTabIndex(index);
   };
   const handleStakingTab = (event: { target: { value: string } }) => {
-    setStakingIndex(parseInt(event.target.value, 10));
-    setTabIndex(parseInt(event.target.value, 10));
+    if(parseInt(event.target.value, 10) === 1){
+      setStakingIndex(1);
+      setTabIndex(1);
+      history.push("/farming-v2/staking-RGPv2")
+    } else if(parseInt(event.target.value, 10) === 3){
+      setStakingIndex(3);
+      setTabIndex(3);
+      history.push("/farming-v2/staking-RGPv1")
+    }
   };
 
   const handleLiquidityTab = (event: { target: { value: string } }) => {
-    setLiquidityIndex(parseInt(event.target.value, 10));
-    setTabIndex(parseInt(event.target.value, 10));
+    if(parseInt(event.target.value, 10) === 0){
+      setLiquidityIndex(0);
+      setTabIndex(0);
+    } else if(parseInt(event.target.value, 10) === 2){
+      setLiquidityIndex(2);
+      setTabIndex(2);
+    }
   };
 
   const { account, chainId, library } = useActiveWeb3React();
   const dispatch = useDispatch();
-  let match = useRouteMatch("/farming-V2/staking-RGP");
+  let match = useRouteMatch("/farming-V2/staking-RGPv2");
   const FarmData = useFarms();
-  
+
+
   const [Balance, Symbol] = useNativeBalance();
   const wallet = {
     balance: Balance,
@@ -161,7 +174,8 @@ export function Index() {
 
   useEffect(() => {
     if (match) {
-      setSelected(STAKING)
+      setSelected(STAKING);
+      setTabIndex(1)
     }
   }, [match]);
 
@@ -178,9 +192,16 @@ export function Index() {
       setSelected(LIQUIDITY);
       changeVersion("/farming-v2");
     } else if (value === STAKING) {
-      setSwitchTab(!switchTab);
-      setSelected(STAKING);
-      changeVersion("/farming-v2/staking-RGP");
+        setSwitchTab(!switchTab);
+        setSelected(STAKING);
+      if(tabIndex === 1){
+        setStakingIndex(1)
+        changeVersion("/farming-v2/staking-RGPv2");
+      } else{
+        setStakingIndex(3)
+        changeVersion("/farming-v2/staking-RGPv1");
+      }
+
     } else {
       setSwitchTab(true);
     }
