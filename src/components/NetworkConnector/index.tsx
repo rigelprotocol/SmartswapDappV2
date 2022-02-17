@@ -8,7 +8,7 @@ import {
   ModalContent,
   ModalOverlay,
   useDisclosure,
-  Img,
+  Img, Tooltip
 } from "@chakra-ui/react";
 import React from "react";
 import { BinanceIcon, EthereumIcon } from "./Icons";
@@ -27,6 +27,17 @@ function NetworkIndicator() {
   const textColor = useColorModeValue("#319EF6", "#4CAFFF");
 
   const info = chainId ? CHAIN_INFO[chainId] : undefined;
+
+  const networkConnected = window.localStorage.getItem('connectv2');
+  console.log(networkConnected);
+  const wallet: boolean = networkConnected === 'injected';
+
+  const changeNetwork = (network: string) => {
+    onClose();
+    if (wallet) {
+      switchNetwork(network, account as string, library)
+    }
+  };
 
   if (!chainId || !info || !library) {
     return null;
@@ -112,15 +123,25 @@ function NetworkIndicator() {
               px={3}
               mb={3}
               cursor='pointer'
-              onClick={() => {
-                onClose();
-                switchNetwork("0x3", account as string, library);
-              }}
+              textAlign={'left'}
+              onClick={() => changeNetwork('0x3')}
+              background={!wallet && '#999999'}
+              opacity={!wallet && 0.4}
             >
-              <Box px={2}>
-                <EthereumIcon />
-              </Box>
-              <Box>{CHAIN_INFO[3]?.label}</Box>
+              <Tooltip
+                  hasArrow
+                  label="Not Supported by this Wallet."
+                  aria-label="A tooltip"
+                  placement="top"
+                  isDisabled={wallet}
+              >
+                <Flex>
+                  <Box px={2}>
+                    <EthereumIcon />
+                  </Box>
+                  <Box>{CHAIN_INFO[3]?.label}</Box>
+                </Flex>
+              </Tooltip>
             </Flex>
             <Flex
               backgroundColor={mode === "dark" ? "#15202B" : "#FFFFFF"}
@@ -132,10 +153,7 @@ function NetworkIndicator() {
               px={3}
               mb={3}
               cursor='pointer'
-              onClick={() => {
-                onClose();
-                switchNetwork("0x38", account as string, library);
-              }}
+              onClick={() => changeNetwork('0x38')}
             >
               <Box px={2}>
                 <BinanceIcon />
@@ -152,15 +170,24 @@ function NetworkIndicator() {
               py={4}
               mb={4}
               cursor='pointer'
-              onClick={() => {
-                onClose();
-                switchNetwork("0x89", account as string, library);
-              }}
+              onClick={() => changeNetwork('0x89')}
+              background={!wallet && '#999999'}
+              opacity={!wallet && 0.4}
             >
-              <Box px={2}>
-                <Img w='30px' src={MATICLOGO} />
-              </Box>
-              <Box>{CHAIN_INFO[137].label}</Box>
+              <Tooltip
+                  hasArrow
+                  label="Not Supported by this Wallet."
+                  aria-label="A tooltip"
+                  placement="top"
+                  isDisabled={wallet}
+              >
+                <Flex>
+                  <Box px={2}>
+                    <Img w='30px' src={MATICLOGO} />
+                  </Box>
+                  <Box>{CHAIN_INFO[137].label}</Box>
+                </Flex>
+              </Tooltip>
             </Flex>
             <Flex
               backgroundColor={mode === 'dark' ? '#15202B' : '#FFFFFF'}
@@ -172,15 +199,24 @@ function NetworkIndicator() {
               py={4}
               mb={4}
               cursor="pointer"
-              onClick={() => {
-                onClose();
-                switchNetwork('0xa516', account as string, library);
-              }}
+              onClick={() => changeNetwork('0xa516')}
+              background={!wallet && '#999999'}
+              opacity={!wallet && 0.4}
             >
-              <Box px={2}>
-                <Img w='30px' src={OASISLOGO} />
-              </Box>
-              <Box>{CHAIN_INFO[42262].label}</Box>
+              <Tooltip
+                  hasArrow
+                  label="Not Supported by this Wallet."
+                  aria-label="A tooltip"
+                  placement="top"
+                  isDisabled={wallet}
+              >
+                <Flex>
+                  <Box px={2}>
+                    <Img w='30px' src={OASISLOGO} />
+                  </Box>
+                  <Box>{CHAIN_INFO[42262].label}</Box>
+                </Flex>
+              </Tooltip>
             </Flex>
           </Flex>
         </ModalContent>
