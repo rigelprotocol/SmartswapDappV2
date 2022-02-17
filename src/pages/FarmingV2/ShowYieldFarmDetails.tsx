@@ -1138,7 +1138,7 @@ const ShowYieldFarmDetails = ({
         if (val === "RGP" && Number(content.id) === 1) {
           await RGPuseStake(depositTokenValue);
         } else if (val === "RGP" && Number(content.id) === 11) {
-          await RGPuseStakeV2(depositTokenValue, referralAddress);
+          await RGPuseStakeV2(depositTokenValue, referrerAddress);
         } else if (val === "RGP-BNB" || val === "RGP-USDT") {
           await LPDeposit(2);
         } else if (
