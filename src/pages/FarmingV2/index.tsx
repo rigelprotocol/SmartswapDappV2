@@ -229,7 +229,8 @@ export function Index() {
       try{
         const queryRef = query.get("ref");
         const decryptedReferralCode = CryptoJS.enc.Base64.parse(queryRef).toString(CryptoJS.enc.Utf8);
-        setRefAddress(decryptedReferralCode);
+        decryptedReferralCode === account ? setRefAddress('0x0000000000000000000000000000000000000000')
+        : setRefAddress(decryptedReferralCode)
       }catch(error){
         console.log(error)
       }
