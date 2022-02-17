@@ -66,9 +66,9 @@ import { useRGPBalance } from "../../utils/hooks/useBalances";
 import { updateFarmAllowances } from "../../state/farm/actions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import Joyride from "react-joyride";
-import {steps} from "../../components/Onboarding/YieldSteps";
-import {Web3Provider} from "@ethersproject/providers";
-import {Contract} from '@ethersproject/contracts';
+import { steps } from "../../components/Onboarding/YieldSteps";
+import { Web3Provider } from "@ethersproject/providers";
+import { Contract } from '@ethersproject/contracts';
 import { getERC20Token } from "../../utils/utilsFunctions";
 
 
@@ -90,7 +90,7 @@ const ShowYieldFarmDetails = ({
     poolAllowance: any;
     RGPEarned: string;
     poolVersion: number | string;
-  }, wallet : any;
+  }, wallet: any;
 }) => {
   const mode = useColorModeValue("light", DARK_THEME);
   const bgColor = useColorModeValue("#FFF", "#15202B");
@@ -237,15 +237,15 @@ const ShowYieldFarmDetails = ({
         changeApprovalButton(approveForMHTRGP, rgpApproval);
       } else if (content.deposit === "RGP-SHIB") {
         const poolEight = await smartSwapLPTokenV2PoolEight(
-            SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
-            library
+          SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
+          library
         );
         const approveForRGPSHIB = await poolAllowance(poolEight);
         changeApprovalButton(approveForRGPSHIB, rgpApproval);
       } else if (content.deposit === "RGP-MBOX") {
         const poolNine = await smartSwapLPTokenV2PoolNine(
-            SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
-            library
+          SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+          library
         );
         const approveForRGPMBOX = await poolAllowance(poolNine);
         changeApprovalButton(approveForRGPMBOX, rgpApproval);
@@ -493,8 +493,8 @@ const ShowYieldFarmDetails = ({
         setApproveValueForRGP(true);
       } else if (val === "RGP-SHIB") {
         const poolEight = await smartSwapLPTokenV2PoolEight(
-            SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
-            library
+          SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
+          library
         );
         if (!approveValueForOtherToken && !approveValueForRGP) {
           await RGPApproval();
@@ -508,8 +508,8 @@ const ShowYieldFarmDetails = ({
         setApproveValueForRGP(true);
       } else if (val === "RGP-MBOX") {
         const poolNine = await smartSwapLPTokenV2PoolNine(
-            SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
-            library
+          SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+          library
         );
         if (!approveValueForOtherToken && !approveValueForRGP) {
           await RGPApproval();
@@ -868,7 +868,7 @@ const ShowYieldFarmDetails = ({
   async function checkRgpBallance(address: string | number) {
     const RGPToken = await getERC20Token(RGPADDRESSES[chainId as number], library);
     const balance = await RGPToken.balanceOf(address);
-    return ethers.utils.formatUnits(balance, RGPToken.decimal)
+    return Number(ethers.utils.formatUnits(balance, RGPToken.decimal))
   }
 
   const harvestTokens = async (id: string | number) => {
@@ -884,7 +884,7 @@ const ShowYieldFarmDetails = ({
         if (id === 0) {
           const currentRgPBal = await checkRgpBallance(RGPSPECIALPOOLADDRESSES[chainId as number]);
 
-          if (currentRgPBal < content.RGPEarned) {
+          if (currentRgPBal < Number(content.RGPEarned)) {
             dispatch(
               setOpenModal({
                 message: `Insufficient RGP! Do you wish to proceed with this Transaction ?`,
@@ -916,7 +916,7 @@ const ShowYieldFarmDetails = ({
         } else if (id === 10) {
           const currentRgPBal = await checkRgpBallance(RGPSPECIALPOOLADDRESSES2[chainId as number]);
 
-          if (currentRgPBal < content.RGPEarned) {
+          if (currentRgPBal < Number(content.RGPEarned)) {
             dispatch(
               setOpenModal({
                 message: `Insufficient RGP! Do you wish to proceed with this Transaction...?`,
@@ -949,7 +949,7 @@ const ShowYieldFarmDetails = ({
 
           const currentRgPBal = await checkRgpBallance(MASTERCHEFV2ADDRESSES[chainId as number]);
 
-          if (currentRgPBal < content.RGPEarned) {
+          if (currentRgPBal < Number(content.RGPEarned)) {
             dispatch(
               setOpenModal({
                 message: `Insufficient RGP !, do you wish to procceed with this Transaction...?`,
@@ -1418,15 +1418,15 @@ const ShowYieldFarmDetails = ({
         break;
       case "RGP-SHIB":
         const poolEight = await smartSwapLPTokenV2PoolEight(
-            SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
-            library
+          SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
+          library
         );
         LPApproval(poolEight);
         break;
       case "RGP-MBOX":
         const poolNine = await smartSwapLPTokenV2PoolNine(
-            SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
-            library
+          SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+          library
         );
         LPApproval(poolNine);
         break;
@@ -1516,19 +1516,19 @@ const ShowYieldFarmDetails = ({
     <>
 
       <Joyride
-          steps={steps}
-          run={run}
-          continuous={true}
-          scrollToFirstStep={true}
-          showSkipButton={true}
-          styles={{
-            options: {
-              arrowColor: bgColor2,
-              backgroundColor: bgColor2,
-              textColor: '#FFFFFF',
-              primaryColor: bgColor2
-            }
-          }}
+        steps={steps}
+        run={run}
+        continuous={true}
+        scrollToFirstStep={true}
+        showSkipButton={true}
+        styles={{
+          options: {
+            arrowColor: bgColor2,
+            backgroundColor: bgColor2,
+            textColor: '#FFFFFF',
+            primaryColor: bgColor2
+          }
+        }}
       />
 
       <Flex
