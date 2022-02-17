@@ -1,14 +1,15 @@
-import  {useEffect, useState} from 'react';
-import {useWeb3React} from '@web3-react/core';
+import { useEffect, useState } from 'react';
+import { useWeb3React } from '@web3-react/core';
 import SmartSwapRouter02 from '../abis/swapAbiForDecoder.json';
-import {timeConverter, getTokenSymbol, tokenList, formatAmount} from "./useAccountHistory";
-import {SMARTSWAPROUTER} from "../addresses";
+import { timeConverter, getTokenSymbol, formatAmount } from "./useAccountHistory";
+import { SMARTSWAPROUTER } from "../addresses";
+import { getERC20Token } from '../utilsFunctions';
 
 
 const abiDecoder = require('abi-decoder');
 
 const useMarketHistory = () => {
-    const { account, chainId } = useWeb3React();
+    const { account, chainId, library } = useWeb3React();
     const [loadMarketData, setLoadMarketData] = useState(false);
     const [marketHistoryData, setMarketHistoryData] = useState({} as any);
 
@@ -21,6 +22,25 @@ const useMarketHistory = () => {
         return abiDecoder.decodeMethod(input);
     };
 
+    const tokenList = async (addressName: string) => {
+        const token = await getERC20Token(addressName, library);
+        const name = token.name();
+        const symbol = token.symbol();
+        const { address } = token;
+        const decimals = token.decimals();
+        const standardToken = await Promise.all([name, symbol, address, decimals]);
+        const resolveToken = {
+            name: standardToken[0],
+            symbol: standardToken[1],
+            address: standardToken[2],
+            decimals: standardToken[3]
+        };
+        return address !== '0x' ? resolveToken : null;
+    };
+
+
+
+
     useEffect(() => {
         const getMarketData = async () => {
             if (account) {
@@ -28,7 +48,7 @@ const useMarketHistory = () => {
                 try {
 
                     const uri = `https://api${testNetwork ? '-testnet.bscscan.com' : '.bscscan.com'
-                    }/api?module=account&action=txlist&address=${contractAddress}&startblock=0
+                        }/api?module=account&action=txlist&address=${contractAddress}&startblock=0
                         &endblock=latest&sort=desc&apikey=AATZWFQ47VX3Y1DN7M97BJ5FEJR6MGRQSD`;
 
                     const data = await fetch(uri);
@@ -108,7 +128,7 @@ const useMarketHistory = () => {
         };
         getMarketData();
     }, [chainId, account, contractAddress]);
-    return {marketHistoryData, loadMarketData};
+    return { marketHistoryData, loadMarketData };
 
 };
 

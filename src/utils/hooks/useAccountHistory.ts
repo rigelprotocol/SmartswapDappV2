@@ -1,15 +1,15 @@
-import {useEffect, useState} from 'react';
-import {useWeb3React} from '@web3-react/core';
+import { useEffect, useState } from 'react';
+import { useWeb3React } from '@web3-react/core';
 import mainToken from '../../utils/main-token.json';
 import TokenLogo from '../../assets/Null-24.svg';
-import {getERC20Token} from "../utilsFunctions";
-import {ethers} from 'ethers';
+import { getERC20Token } from "../utilsFunctions";
+import { ethers } from 'ethers';
 import SmartSwapRouter02 from '../abis/swapAbiForDecoder.json';
-import {SMARTSWAPROUTER} from "../addresses";
+import { SMARTSWAPROUTER } from "../addresses";
 
 const abiDecoder = require('abi-decoder');
 
-export function timeConverter(UNIX_timestamp: any){
+export function timeConverter(UNIX_timestamp: any) {
     const a = new Date(UNIX_timestamp * 1000);
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const year = a.getFullYear();
@@ -48,27 +48,29 @@ export const getTokenSymbol = (symbol: string) => {
     return tokenIcon.logoURI
 };
 
-export const tokenList = async (addressName: string) => {
-    const token = await getERC20Token(addressName);
-    const name = token.name();
-    const symbol = token.symbol();
-    const { address } = token;
-    const decimals = token.decimals();
-    const standardToken = await Promise.all([name, symbol, address, decimals]);
-    const resolveToken = {
-        name: standardToken[0],
-        symbol: standardToken[1],
-        address: standardToken[2],
-        decimals: standardToken[3]
-    };
-    return address !== '0x' ? resolveToken : null;
-};
+
 
 
 const useAccountHistory = () => {
-    const { account, chainId } = useWeb3React();
+    const { account, chainId, library } = useWeb3React();
     const [loading, setLoading] = useState(false);
     const [historyData, setHistoryData] = useState({} as any);
+
+    const tokenList = async (addressName: string) => {
+        const token = await getERC20Token(addressName, library);
+        const name = token.name();
+        const symbol = token.symbol();
+        const { address } = token;
+        const decimals = token.decimals();
+        const standardToken = await Promise.all([name, symbol, address, decimals]);
+        const resolveToken = {
+            name: standardToken[0],
+            symbol: standardToken[1],
+            address: standardToken[2],
+            decimals: standardToken[3]
+        };
+        return address !== '0x' ? resolveToken : null;
+    };
 
 
 
@@ -89,12 +91,13 @@ const useAccountHistory = () => {
 
                 try {
                     const uri = `https://api${testNetwork ? '-testnet.bscscan.com' : '.bscscan.com'
-                    }/api?module=account&action=txlist&address=${account}&startblock=0
+                        }/api?module=account&action=txlist&address=${account}&startblock=0
                         &endblock=latest&sort=desc&apikey=AATZWFQ47VX3Y1DN7M97BJ5FEJR6MGRQSD`;
 
                     const data = await fetch(uri);
                     const jsondata = await data.json();
 
+                    console.log("first Test : ", jsondata)
                     const SwapTrx = jsondata.result.filter((item: any) => item.to === contractAddress);
 
 
@@ -127,8 +130,11 @@ const useAccountHistory = () => {
                         time: timeConverter(data.timestamp)
                     }));
 
+
+
+                    console.log("dataToUse Test : ", userData)
                     const swapDataForWallet = await Promise.all(
-                        userData.map( async ( data: DataIncoming) => ({
+                        userData.map(async (data: DataIncoming) => ({
                             tokenIn: await tokenList(data.tokenIn),
                             tokenOut: await tokenList(data.tokenOut),
                             amountIn: data.inputAmount,
@@ -149,6 +155,8 @@ const useAccountHistory = () => {
                         time: data.time,
                     }));
 
+
+                    console.log("dataToUse000 : ", userSwapHistory)
                     setHistoryData(userSwapHistory);
                     setLoading(false);
 
@@ -165,7 +173,7 @@ const useAccountHistory = () => {
         loadAccountHistory();
     }, [chainId, account]);
 
-    return {historyData, loading}
+    return { historyData, loading }
 };
 
 export default useAccountHistory;

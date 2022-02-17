@@ -452,5 +452,33 @@
     "chainId": 56,
     "address": "0x2222227e22102fe3322098e4cbfe18cfebd57c95",
     "logoURI": "https://bscscan.com/token/images/alienworlds_32.png"
+  },
+  {
+    "symbol": "MHT",
+    "available": true,
+    "imported": false,
+    "name": "Mount Haunt Token",
+    "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/15043.png"
+  },
+  {
+    "symbol": "PLACE",
+    "available": true,
+    "imported": false,
+    "name": "placeWar Governance Token",
+    "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13420.png"
+  },
+  {
+    "symbol": "SHIB",
+    "available": true,
+    "imported": false,
+    "name": "SHIBA INU",
+    "logoURI": "https://bscscan.com/token/images/shibatoken_32.png"
+  },
+  {
+    "symbol": "MBOX",
+    "available": true,
+    "imported": false,
+    "name": "MBOX",
+    "logoURI": "https://bscscan.com/token/images/mobox_32.png"
   }
 ]
