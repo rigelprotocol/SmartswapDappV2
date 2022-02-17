@@ -116,8 +116,6 @@ export function Index() {
   const handleStakingTab = (event: { target: { value: string } }) => {
     setStakingIndex(parseInt(event.target.value, 10));
     setTabIndex(parseInt(event.target.value, 10));
-    console.log(`Staking index - ${stakingIndex}`);
-    console.log(`Tab index - ${tabIndex}`);
   };
 
   const handleLiquidityTab = (event: { target: { value: string } }) => {
@@ -129,8 +127,7 @@ export function Index() {
   const dispatch = useDispatch();
   let match = useRouteMatch("/farming-V2/staking-RGP");
   const FarmData = useFarms();
-
-
+  
   const [Balance, Symbol] = useNativeBalance();
   const wallet = {
     balance: Balance,
@@ -163,7 +160,9 @@ export function Index() {
   }, []);
 
   useEffect(() => {
-    if (match) setSelected(STAKING);
+    if (match) {
+      setSelected(STAKING)
+    }
   }, [match]);
 
   const changeVersion = (version: string, external?: boolean) => {
