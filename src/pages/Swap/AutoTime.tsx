@@ -72,7 +72,7 @@ const SetPrice = () => {
   );
   const {
     currencies,
-    getMaxValue,
+    inputError
   } = useDerivedAutoTimeInfo();
   useEffect(async () => {
     await checkForApproval()
@@ -81,7 +81,7 @@ const SetPrice = () => {
   const checkForApproval = async () => {
     // check approval for RGP and the other token
     const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number])
-    const tokenBalance = await checkApproval(currencies[Field.INPUT]?.wrapped.address)
+    const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
     console.log({ RGPBalance, tokenBalance }, parseFloat(RGPBalance), parseFloat(tokenBalance))
     if (parseFloat(RGPBalance) > 0 && parseFloat(tokenBalance) > 0) {
       setHasBeenApproved(true)
@@ -608,7 +608,7 @@ const SetPrice = () => {
                 </VStack>
               </Box>
               <Box mt={5}>
-                {account === undefined ?
+                {inputError ?
                   <Button
                     w="100%"
                     borderRadius="6px"
@@ -622,7 +622,7 @@ const SetPrice = () => {
                     boxShadow={lightmode ? 'base' : 'lg'}
                     _hover={{ bgColor: buttonBgcolor }}
                   >
-                    Connect Wallet
+                    {inputError}
                   </Button> : !transactionSigned ? <Button
                     w="100%"
                     borderRadius="6px"
