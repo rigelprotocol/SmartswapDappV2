@@ -62,9 +62,9 @@ import { useRGPBalance } from "../../utils/hooks/useBalances";
 import { updateFarmAllowances } from "../../state/farm/actions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import Joyride from "react-joyride";
-import {steps} from "../../components/Onboarding/YieldSteps";
-import {Web3Provider} from "@ethersproject/providers";
-import {Contract} from '@ethersproject/contracts';
+import { steps } from "../../components/Onboarding/YieldSteps";
+import { Web3Provider } from "@ethersproject/providers";
+import { Contract } from '@ethersproject/contracts';
 import { getERC20Token } from "../../utils/utilsFunctions";
 
 
@@ -86,7 +86,7 @@ const ShowYieldFarmDetails = ({
     poolAllowance: any;
     RGPEarned: string;
     poolVersion: number | string;
-  }, wallet : any;
+  }, wallet: any;
 }) => {
   const mode = useColorModeValue("light", DARK_THEME);
   const bgColor = useColorModeValue("#FFF", "#15202B");
@@ -188,7 +188,6 @@ const ShowYieldFarmDetails = ({
           library
         );
         const approvalForRGPBUSD = await poolAllowance(poolOne);
-        console.log(approvalForRGPBUSD, "approval-matic");
         changeApprovalButton(approvalForRGPBUSD, rgpApproval);
       } else if (content.deposit === "RGP") {
         changeApprovalButton(true, rgpApproval);
@@ -1439,19 +1438,19 @@ const ShowYieldFarmDetails = ({
     <>
 
       <Joyride
-          steps={steps}
-          run={run}
-          continuous={true}
-          scrollToFirstStep={true}
-          showSkipButton={true}
-          styles={{
-            options: {
-              arrowColor: bgColor2,
-              backgroundColor: bgColor2,
-              textColor: '#FFFFFF',
-              primaryColor: bgColor2
-            }
-          }}
+        steps={steps}
+        run={run}
+        continuous={true}
+        scrollToFirstStep={true}
+        showSkipButton={true}
+        styles={{
+          options: {
+            arrowColor: bgColor2,
+            backgroundColor: bgColor2,
+            textColor: '#FFFFFF',
+            primaryColor: bgColor2
+          }
+        }}
       />
 
       <Flex

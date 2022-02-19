@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import ShowDetails from './components/details/ShowDetails';
 import History from './components/history/History';
 import From from './components/sendToken/From';
@@ -28,7 +28,8 @@ import {
   InputRightAddon,
   MenuButton,
   useColorModeValue,
-  useMediaQuery
+  useMediaQuery,
+  Select
 } from '@chakra-ui/react';
 import {
   ChevronDownIcon
@@ -37,6 +38,7 @@ import { useDispatch } from "react-redux";
 import { autoSwapV2, rigelToken } from '../../utils/Contracts';
 import { RGPADDRESSES, AUTOSWAPV2ADDRESSES } from '../../utils/addresses';
 import { setOpenModal, TrxState } from "../../state/application/reducer";
+import { changeFrequencyTodays } from '../../utils/utilsFunctions';
 
 
 const SetPrice = () => {
@@ -53,15 +55,14 @@ const SetPrice = () => {
   const tokenListTriggerColor = useColorModeValue('', '#DCE5EF');
   const tokenListTrgiggerBgColor = useColorModeValue('', '#213345');
   const balanceColor = useColorModeValue('#666666', '#DCE5EF');
-
-
-
   const { account, library, chainId } = useActiveWeb3React()
   const { onCurrencySelection, onUserInput } = useAutoTimeActionHandlers();
   const { independentField, typedValue } = useAutoTimeState();
   const [signedTransaction, setSignedTransaction] = useState({})
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
   const [transactionSigned, setTransactionSigned] = useState(false)
+  const [selectedFrequency, setSelectedFrequency] = useState("daily")
+  const [percentageChange, setPercentageChange] = useState<Number>(0)
   const [approval, setApproval] = useState<String[] | undefined>([])
 
   const handleTypeInput = useCallback(
@@ -70,9 +71,18 @@ const SetPrice = () => {
     },
     [onUserInput]
   );
+  const handleTypeOutput = useCallback(
+    (value: string) => {
+      onUserInput(Field.OUTPUT, value);
+    },
+    [onUserInput]
+  );
   const {
     currencies,
-    inputError
+    inputError,
+    showWrap,
+    bestTrade,
+    parsedAmount,
   } = useDerivedAutoTimeInfo();
   useEffect(async () => {
     await checkForApproval()
@@ -82,7 +92,6 @@ const SetPrice = () => {
     // check approval for RGP and the other token
     const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number])
     const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
-    console.log({ RGPBalance, tokenBalance }, parseFloat(RGPBalance), parseFloat(tokenBalance))
     if (parseFloat(RGPBalance) > 0 && parseFloat(tokenBalance) > 0) {
       setHasBeenApproved(true)
     } else if (parseFloat(RGPBalance) <= 0 && parseFloat(tokenBalance) <= 0) {
@@ -97,11 +106,36 @@ const SetPrice = () => {
     }
   }
 
+  const parsedAmounts = useMemo(
+    () =>
+      showWrap
+        ? {
+          [Field.INPUT]: typedValue,
+          [Field.OUTPUT]: typedValue,
+        }
+        : {
+          [Field.INPUT]:
+            independentField === Field.INPUT ? parsedAmount : bestTrade,
+          [Field.OUTPUT]:
+            independentField === Field.OUTPUT ? parsedAmount : bestTrade,
+        },
+    [independentField, parsedAmount, showWrap, bestTrade]
+  );
+
+  const dependentField: Field =
+    independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
+  const formattedAmounts = {
+    [independentField]: typedValue,
+    [dependentField]: showWrap
+      ? parsedAmounts[independentField] ?? "" //?.toExact() ?? ''
+      : parsedAmounts[dependentField] ?? "", //?.toSignificant(6) ?? '',
+  };
+
+
   const signTransaction = async () => {
     if (account !== undefined) {
       try {
         let web3 = new Web3(Web3.givenProvider);
-        console.log("Getting the require hash for transaction")
         const permitHash = "0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9";
 
         const mess = web3.utils.soliditySha3(permitHash)
@@ -113,7 +147,15 @@ const SetPrice = () => {
         setSignedTransaction({ ...sig, mess })
         setTransactionSigned(true)
         // }
-        await checkForApproval()
+        console.log(web3.utils.toHex(sig.v.toString()))
+        let accounts = web3.eth.accounts.recover({
+          messageHash: mess,
+          v: web3.utils.toHex(sig.v.toString()),
+          r: sig.r,
+          s: sig.s
+        })
+        console.log({ accounts, ...sig, mess })
+        // await checkForApproval()
       } catch (e) {
         alert("e error")
       }
@@ -207,8 +249,6 @@ const SetPrice = () => {
       })
     );
     const time = Date.now();
-    console.log("Get current time: ", time)
-    console.log({ smartSwapV2Contract })
     let data
     if (currencies[Field.INPUT]?.isNative) {
       data = await smartSwapV2Contract.setPeriodToSwapETHForTokens(
@@ -221,56 +261,76 @@ const SetPrice = () => {
         { value: Web3.utils.toWei(typedValue, 'ether') }
       )
     } else if (currencies[Field.OUTPUT]?.isNative) {
-      data = await smartSwapV2Contract.setPeriodToSwapTokensForETH(
+      data = await smartSwapV2Contract.setPeriodToswapTokensForETH(
         currencies[Field.INPUT]?.wrapped.address,
         account,
+        Web3.utils.toWei(typedValue, 'ether'),
         time,
         signedTransaction?.mess,
         signedTransaction?.r,
-        signedTransaction?._vs,
-        { value: Web3.utils.toWei(typedValue, 'ether') }
+        signedTransaction?._vs
       )
     } else {
       data = await smartSwapV2Contract.callPeriodToSwapExactTokens(
         currencies[Field.INPUT]?.wrapped.address,
         currencies[Field.OUTPUT]?.wrapped.address,
         account,
+        Web3.utils.toWei(typedValue, 'ether'),
         time,
         signedTransaction?.mess,
         signedTransaction?.r,
-        signedTransaction?._vs,
-        { value: Web3.utils.toWei(typedValue, 'ether') }
+        signedTransaction?._vs
       )
     }
 
-    console.log(data)
-    console.log({ signedTransaction })
-    dispatch(
-      setOpenModal({
-        message: "Storing Transaction",
-        trxState: TrxState.WaitingForConfirmation,
+    const fetchTransactionData = async (sendTransaction: any) => {
+      const { confirmations, status, logs } = await sendTransaction.wait(1);
+
+      return { confirmations, status, logs };
+    };
+    const { confirmations, status, logs } = await fetchTransactionData(data)
+    if (confirmations >= 1 && status) {
+      dispatch(
+        setOpenModal({
+          message: "Storing Transaction",
+          trxState: TrxState.WaitingForConfirmation,
+        })
+      );
+      const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)
+      const response = await fetch('http://localhost:4000/auto/add', {
+        method: "POST",
+        mode: "cors",
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: JSON.stringify({
+          address: account,
+          chainID: chainId,
+          frequency: selectedFrequency,
+          frequencyNumber: changeFrequencyToday.days,
+          presentDate: changeFrequencyToday.today,
+          fromAddress: currencies[Field.INPUT]?.isNative ? "" : currencies[Field.INPUT]?.wrapped.address,
+          toAddress: currencies[Field.OUTPUT]?.isNative ? "" : currencies[Field.OUTPUT]?.wrapped.address,
+          signature: signedTransaction,
+          percentageChange,
+          fromPrice: typedValue,
+          currentToPrice: formattedAmounts[Field.OUTPUT]
+
+        })
       })
-    );
-    const response = await fetch('http://localhost:4000/auto/add', {
-      method: "POST",
-      mode: "cors",
-      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: 'same-origin', // include, *same-origin, omit
-      headers: {
-        'Content-Type': 'application/json'
-        // 'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: JSON.stringify({
-        address: account,
-        chainID: chainId,
-        frequency: 2,
-        fromAddress: currencies[Field.INPUT]?.isNative ? "" : currencies[Field.INPUT]?.wrapped.address,
-        toAddress: currencies[Field.OUTPUT]?.isNative ? "" : currencies[Field.OUTPUT]?.wrapped.address,
-        signature: signedTransaction
-      })
-    })
-    const res = await response.json()
-    console.log(res)
+      const res = await response.json()
+      console.log(res)
+      dispatch(
+        setOpenModal({
+          message: "Successfully stored Transaction",
+          trxState: TrxState.TransactionSuccessful,
+        })
+      );
+    }
+
   }
 
 
@@ -299,7 +359,6 @@ const SetPrice = () => {
 
     try {
       const status = await rigelToken(tokenAddress, library);
-      console.log({ status }, RGP[chainId as number])
       const check = await status.allowance(
         account,
         AUTOSWAPV2ADDRESSES[chainId as number],
@@ -369,20 +428,20 @@ const SetPrice = () => {
                     </Button>
                   </Menu> */
                     <To
-                      onUserInput={(value) => console.log(value)}
+                      onUserOutput={handleTypeOutput}
                       onCurrencySelection={onCurrencySelection}
                       currency={currencies[Field.OUTPUT]}
                       otherCurrency={currencies[Field.INPUT]}
-                      value={"0"}
+                      value={formattedAmounts[Field.OUTPUT]}
                       display={true}
                     />
                   }
                   <To
-                    onUserInput={(value) => console.log(value)}
+                    onUserOutput={handleTypeOutput}
                     onCurrencySelection={onCurrencySelection}
                     currency={currencies[Field.OUTPUT]}
                     otherCurrency={currencies[Field.INPUT]}
-                    value={"0"}
+                    value={formattedAmounts[Field.OUTPUT]}
 
                     display={true}
                   />
@@ -440,7 +499,7 @@ const SetPrice = () => {
                     <ExclamationIcon />
                   </Flex>
                   <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
-                    <Input placeholder="0" w="60px" />
+                    <Input placeholder="0" w="60px" value={percentageChange} />
                     <InputRightAddon children="%" fontSize="16px" />
                   </InputGroup>
                 </VStack>
@@ -527,12 +586,11 @@ const SetPrice = () => {
                     </Button>
                   </Menu> */}
                   <To
-                    onUserInput={(value) => console.log(value)}
+                    onUserOutput={handleTypeOutput}
                     onCurrencySelection={onCurrencySelection}
                     currency={currencies[Field.OUTPUT]}
                     otherCurrency={currencies[Field.INPUT]}
-                    value={"0"}
-                    display={false}
+                    display={true}
                   />
                 </Box>
 
@@ -543,7 +601,7 @@ const SetPrice = () => {
                   <Spacer />
                   <VStack>
                     <Text fontSize="24px" color={textColorOne}>
-                      2.5566
+                      {isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT]).toFixed(2)}
                     </Text>
                     <Text fontSize="14px" color={color}>
                       -2.56
@@ -588,7 +646,14 @@ const SetPrice = () => {
                     <ExclamationIcon />
                   </Flex>
                   <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
-                    <Input placeholder="0" w="60px" />
+                    <Input placeholder="0" w="60px" value={percentageChange} type="number" onChange={e => {
+                      if (parseFloat(e.target.value) > 100) {
+                        setPercentageChange("100")
+                      } else {
+                        setPercentageChange(e.target.value)
+                      }
+
+                    }} />
                     <InputRightAddon children="%" fontSize="16px" />
                   </InputGroup>
                 </VStack>
@@ -600,11 +665,16 @@ const SetPrice = () => {
                     </Text>
                     <ExclamationIcon />
                   </Flex>
-                  <Menu>
+                  {/* <Menu>
                     <MenuButton as={Button} rightIcon={<ChevronDownIcon />} size="md" bg={bgColor} fontSize="16px" color={textColorOne} borderColor={borderColor} borderWidth="1px">
                       Week
                     </MenuButton>
-                  </Menu>
+                  </Menu> */}
+                  <Select onChange={(e) => setSelectedFrequency(e.target.value)}>
+                    <option value='daily'>Daily</option>
+                    <option value='weekly'>Weekly</option>
+                    <option value='monthly'>Monthly</option>
+                  </Select>
                 </VStack>
               </Box>
               <Box mt={5}>

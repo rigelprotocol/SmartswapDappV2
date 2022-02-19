@@ -18,6 +18,24 @@ export const checkSideTab = (sideBarName: string): boolean => {
   }
 };
 
+export const changeFrequencyTodays = (frequency: string): { days: number, today: number } => {
+  let days = 1
+  let date = new Date()
+  let today = date.getDay()
+  if (frequency === "daily") {
+    return { days, today }
+  } else if (frequency === "weekly") {
+    days = 7
+    // today = date.get
+    return { days, today }
+  } else if (frequency === "monthly") {
+    days = 30
+    today = date.getMonth()
+    return { days, today }
+  }
+  return { days, today }
+}
+
 export const provider = async () => {
   try {
     let ethProvider = await detectEthereumProvider();

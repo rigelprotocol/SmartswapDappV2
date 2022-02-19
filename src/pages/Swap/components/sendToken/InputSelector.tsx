@@ -25,7 +25,8 @@ type InputSelectorProps = {
   setToken: React.Dispatch<React.SetStateAction<boolean>>,
   onMax?: () => void,
   onUserInput: (value: string) => void,
-  value: string | undefined
+  value: string | undefined,
+  display?: boolean
 };
 
 const InputSelector = ({
@@ -37,6 +38,7 @@ const InputSelector = ({
   setToken,
   onMax,
   onUserInput,
+  display,
   value
 }: InputSelectorProps) => {
   const inputColor = useColorModeValue('#333333', '#F1F5F8');
@@ -55,8 +57,8 @@ const InputSelector = ({
   const [balance] = GetAddressTokenBalance(currency ?? undefined);
   return (
     <>
-      <Flex alignItems="center" mt={3} justifyContent="space-between">
-        <Input
+      <Flex alignItems="center" mt={3} justifyContent="space-between" width="100%">
+        {!display && <Input
           fontSize="2xl"
           type="text"
           min="0"
@@ -70,7 +72,14 @@ const InputSelector = ({
             enforcer(event.target.value.replace(/,/g, '.'))
           }}
           focusBorderColor="none"
-        />
+        />}
+        {display &&
+          <Box>
+            <Text ml={display ? "0" : 4} mr={display && "70px"} color={balanceColor} fontSize="14px">
+              Balance: {balance.currency?.isToken ? balance.toSignificant(6) : balance} {currency?.symbol}
+            </Text>
+          </Box>
+        }
         <Flex>
           <Menu>
             <Button
@@ -97,7 +106,7 @@ const InputSelector = ({
           </Menu>
         </Flex>
       </Flex>
-      <Flex mt={3} alignItems="center" justifyContent="left">
+      {!display && <Flex mt={3} alignItems="center" justifyContent="left">
         <Text ml={4} color={balanceColor} fontSize="14px">
           Balance: {balance.currency?.isToken ? balance.toSignificant(6) : balance} {currency?.symbol}
         </Text>
@@ -119,7 +128,7 @@ const InputSelector = ({
         ) : (
           <></>
         )}
-      </Flex>
+      </Flex>}
       <SelectToken
         onCurrencySelect={onCurrencySelect}
         tokenModal={tokenModal}

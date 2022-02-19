@@ -137,8 +137,6 @@ export function useDerivedAutoTimeInfo(): {
 
     const showWrap = wrap;
     const bestTrade = amount;
-    // console.log(pathArray);
-
     const getMaxValue = async (currency: Currency, library: Web3Provider) => {
         if (currency.isNative) {
             // return Balance === "0.0000" ? "0" :  Balance

@@ -21,7 +21,6 @@ const toastSlice = createSlice({
             state.URL = action.payload.URL;
         },
         errorToast: (state, action: PayloadAction<ToastState>) => {
-            console.log(action.payload)
             state.message = action.payload.message;
             state.error = action.payload.error;
         },

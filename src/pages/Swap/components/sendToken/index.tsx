@@ -97,7 +97,6 @@ const SendToken = () => {
 
   const { onCurrencySelection, onUserInput, onSwitchTokens } =
     useSwapActionHandlers();
-  console.log(onCurrencySelection)
   const {
     currencies,
     getMaxValue,
@@ -235,7 +234,6 @@ const SendToken = () => {
       return setHasBeenApproved(true);
     }
     try {
-      console.log(parsedAmount);
       dispatch(
         setOpenModal({
           message: `Approve Tokens for Swap`,
@@ -307,8 +305,6 @@ const SendToken = () => {
     const dl = getDeadline(deadline);
     const from = currencies[Field.INPUT]?.wrapped.address;
     const to = currencies[Field.OUTPUT]?.wrapped.address;
-    console.log({ from, to, account, chainId });
-    console.log({ route })
     // try {
     setSendingTrx(true);
     dispatch(
