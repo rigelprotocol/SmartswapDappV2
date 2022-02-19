@@ -22,6 +22,7 @@ import {
   Tooltip,
   Spinner,
   useMediaQuery,
+  Checkbox,
 } from "@chakra-ui/react";
 import { QuestionOutlineIcon, SearchIcon } from "@chakra-ui/icons";
 import { SupportedChainId } from "../../constants/chains";
@@ -75,6 +76,7 @@ import { getERC20Token } from "../../utils/utilsFunctions";
 const ShowYieldFarmDetails = ({
   content,
   wallet,
+  URLReferrerAddress,
 }: {
   content: {
     pid: number | string;
@@ -112,7 +114,7 @@ const ShowYieldFarmDetails = ({
   const { account, chainId, library } = useActiveWeb3React();
   const dispatch = useDispatch();
   const [depositTokenValue, setDepositTokenValue] = useState("");
-  const [referralAddress, setReferralAddress] = useState("");
+  const [referrerAddress, setReferrerAddress] = useState(URLReferrerAddress);
   const [depositInputHasError, setDepositInputHasError] = useState(false);
   const [refAddressHasError, setRefAddressHasError] = useState(false);
   const [depositErrorButtonText, setDepositErrorButtonText] = useState("");
@@ -122,10 +124,27 @@ const ShowYieldFarmDetails = ({
   const [deposited, setDeposited] = useState(false);
   const [minimumStakeAmount, setMinimumStakeAmount] = useState<string | number>(0);
   const [isMobileDevice] = useMediaQuery("(max-width: 767px)");
+  const [showReferrerField, setShowReferrerField] = useState(true);
+  const [isReferrerCheck, setIsReferrerCheck] = useState(false);
   const signer = library?.getSigner();
   const closeModal = () => {
     modal2Disclosure.onClose();
   };
+  const handleSetReferralField = () => {
+    if(showReferrerField === true && URLReferrerAddress === ''){
+      setShowReferrerField(false);
+      setReferrerAddress('0x0000000000000000000000000000000000000000');
+      setIsReferrerCheck(true);
+    } else if(showReferrerField === true && URLReferrerAddress !== ''){
+      setShowReferrerField(false);
+      setReferrerAddress(URLReferrerAddress);
+      setIsReferrerCheck(true);
+    }else if (showReferrerField === false && referrerAddress !== ''){
+      setShowReferrerField(true);
+      setReferrerAddress(referrerAddress);
+      setIsReferrerCheck(false);
+    }
+  }
 
   useEffect(() => {
     const poolAllowance = async (contract: Contract) => {
@@ -730,13 +749,13 @@ const ShowYieldFarmDetails = ({
 
   useEffect(() => {
     setRefAddressHasError(false);
-    if (referralAddress !== "") {
-      if (!Web3.utils.isAddress(referralAddress)) {
+    if (referrerAddress !== "") {
+      if (!Web3.utils.isAddress(referrerAddress)) {
         setRefAddressHasError(true);
         setDepositErrorButtonText("Invalid Address");
       }
     }
-  }, [referralAddress]);
+  }, [referrerAddress]);
 
   useEffect(() => {
     setInputHasError(false);
@@ -772,7 +791,7 @@ const ShowYieldFarmDetails = ({
       }
     } catch (e) {
       console.log(
-        "sorry there is a few error, you are most likely not logged in. Please login to ypur metamask extensition and try again."
+        "sorry there is a few error, you are most likely not logged in. Please login to your metamask extensition and try again."
       );
     }
   };
@@ -1162,7 +1181,7 @@ const ShowYieldFarmDetails = ({
         if (val === "RGP" && Number(content.id) === 1) {
           await RGPuseStake(depositTokenValue);
         } else if (val === "RGP" && Number(content.id) === 11) {
-          await RGPuseStakeV2(depositTokenValue, referralAddress);
+          await RGPuseStakeV2(depositTokenValue, referrerAddress);
         } else if (val === "RGP-BNB" || val === "RGP-USDT") {
           await LPDeposit(2);
         } else if (
@@ -1252,7 +1271,7 @@ const ShowYieldFarmDetails = ({
         );
         const data = await specialPool.stake(
           ethers.utils.parseEther(depositTokenValue.toString()),
-          referralAddress,
+          referrerAddress,
           {
             from: account,
             // gasLimit: 200000,
@@ -1908,21 +1927,25 @@ const ShowYieldFarmDetails = ({
               <Text color={modalTextColor2} fontSize='14px' mb={5} mt={3}>
                 RGP Available: {content.availableToken} {content.deposit}
               </Text>
-              <Text color={modalTextColor} fontSize='14px' mb={3}>
-                Referral address
-              </Text>
-              <InputGroup size='md'>
-                <Input
-                  placeholder='Enter referral address here'
-                  opacity='0.5'
-                  h='50px'
-                  borderRadius='6px'
-                  name='referralDetail'
-                  border='2px'
-                  value={referralAddress}
-                  onChange={(e) => setReferralAddress(e.target.value)}
-                />
-              </InputGroup>
+              <Box display={showReferrerField ? "block" : "none"}>
+                <Text color={modalTextColor} fontSize='14px' mb={3}>
+                  Referrer address
+                </Text>
+                <InputGroup size='md'>
+                  <Input
+                    placeholder="Enter referrer's address here"
+                    opacity='0.5'
+                    h='50px'
+                    borderRadius='6px'
+                    name='referralDetail'
+                    border='2px'
+                    disabled={URLReferrerAddress !== ''}
+                    value={referrerAddress}
+                    onChange={(e) => setReferrerAddress(e.target.value)}
+                  />
+                </InputGroup>
+              </Box>
+              <Checkbox mt={3} onChange={handleSetReferralField} isChecked={isReferrerCheck} isDisabled={URLReferrerAddress !== ''}>No Referrer?</Checkbox>
               <Box mt={4}>
                 {depositInputHasError || refAddressHasError ? (
                   <>
@@ -1947,7 +1970,8 @@ const ShowYieldFarmDetails = ({
                       disabled={
                         depositValue !== "Confirm" ||
                         !account ||
-                        !referralAddress
+                        !depositTokenValue ||
+                        (setShowReferrerField && referrerAddress==="")
                       }
                       cursor='pointer'
                       border='none'
@@ -1980,7 +2004,8 @@ const ShowYieldFarmDetails = ({
                         disabled={
                           depositValue !== "Confirm" ||
                           !account ||
-                          !referralAddress
+                          !depositTokenValue ||
+                          (setShowReferrerField && referrerAddress==="")
                         }
                         cursor='pointer'
                         border='none'

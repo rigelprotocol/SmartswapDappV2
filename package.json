@@ -36,6 +36,7 @@
     "abi-decoder": "^2.4.0",
     "bignumber.js": "^9.0.1",
     "cids": "^1.1.9",
+    "crypto-js": "^4.1.1",
     "ethers": "^5.5.1",
     "framer-motion": "^4.0.0",
     "jsbi": "^4.0.0",
