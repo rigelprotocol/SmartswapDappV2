@@ -577,7 +577,7 @@ const ShowYieldFarmDetails = ({
   const getAllowances = async () => {
     if (account) {
       try {
-        const [rigel, pool1, pool2, pool3] = await Promise.all([
+        const [rigel, pool1, pool2, pool3, pool4, pool5, pool6, pool7, pool8, pool9] = await Promise.all([
           rigelToken(RGP[chainId as number], library),
           smartSwapLPTokenPoolOne(
             SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
@@ -591,13 +591,44 @@ const ShowYieldFarmDetails = ({
             SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
             library
           ),
+          smartSwapLPTokenV2PoolFour(
+              SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number],
+              library
+          ),
+          smartSwapLPTokenV2PoolFive(
+              SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
+              library
+          ),
+          smartSwapLPTokenV2PoolSix(
+              SMARTSWAPLP_TOKEN6ADDRESSES[chainId as number],
+              library
+          ),
+          smartSwapLPTokenV2PoolSeven(
+              SMARTSWAPLP_TOKEN7ADDRESSES[chainId as number],
+              library
+          ),
+          smartSwapLPTokenV2PoolEight(
+              SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
+              library
+          ),
+          smartSwapLPTokenV2PoolNine(
+              SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+              library
+          ),
         ]);
 
-        const [pool1Allowance, pool2Allowance, pool3Allowance] =
+        const [pool1Allowance, pool2Allowance, pool3Allowance, pool4Allowance, pool5Allowance,
+          pool6Allowance, pool7Allowance, pool8Allowance, pool9Allowance] =
           await Promise.all([
             allowance(pool1),
             allowance(pool2),
             allowance(pool3),
+            allowance(pool4),
+            allowance(pool5),
+            allowance(pool6),
+            allowance(pool7),
+            allowance(pool8),
+            allowance(pool9),
           ]);
         let rigelAllowance;
         if (RGPSPECIALPOOLADDRESSES[chainId as number]) {
@@ -615,6 +646,12 @@ const ShowYieldFarmDetails = ({
               pool2Allowance,
               pool1Allowance,
               pool3Allowance,
+              pool4Allowance,
+              pool5Allowance,
+              pool6Allowance,
+              pool7Allowance,
+              pool8Allowance,
+              pool9Allowance,
             ])
           );
         } else {
@@ -624,6 +661,12 @@ const ShowYieldFarmDetails = ({
               pool2Allowance,
               pool1Allowance,
               pool3Allowance,
+              pool4Allowance,
+              pool5Allowance,
+              pool6Allowance,
+              pool7Allowance,
+              pool8Allowance,
+              pool9Allowance,
             ])
           );
         }
@@ -735,7 +778,7 @@ const ShowYieldFarmDetails = ({
   };
   const enoughApproval = (allowance: any, balance: any) => {
     if (allowance && balance) {
-      // console.log(allowance.gt(ethers.utils.parseEther(balance)),ethers.utils.parseEther(balance),allowance.toString())
+       //console.log(allowance.gt(ethers.utils.parseEther(balance)),ethers.utils.parseEther(balance),allowance.toString());
       return allowance.gt(ethers.utils.parseEther(balance));
     }
     return true;
