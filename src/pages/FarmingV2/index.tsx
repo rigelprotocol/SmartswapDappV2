@@ -347,10 +347,10 @@ export function Index() {
             poolThree,
             poolFour,
             poolFive,
-              poolSix,
-              poolSeven,
-              poolEight,
-              poolNine,
+            poolSix,
+            poolSeven,
+            poolEight,
+            poolNine,
             RGPToken2,
           ] = await Promise.all([
             rigelToken(RGP[chainId as number], library),
@@ -574,11 +574,6 @@ export function Index() {
 
         dispatch(
           updateTotalLiquidity([
-            {
-              deposit: "RGP",
-              liquidity: '0', //MRGPLiquidity,
-              apy: '0', //calculateApy(MRGPprice, MRGPLiquidity, 250),
-            },
             {
               deposit: await deposit(pool1.token0, pool1.token1),
               liquidity: RGP_WMATICLiquidity,
@@ -820,8 +815,8 @@ export function Index() {
           pool3Reserve,
           pool4Reserve,
           pool5Reserve,
-            pool6Reserve,
-            pool7Reserve,
+          pool6Reserve,
+          pool7Reserve,
           pool8Reserve,
           pool9Reserve,
           rgpTotalStakingV2,
@@ -1487,7 +1482,7 @@ export function Index() {
             >
               Liquidity Pools
             </Text>
-            {Number(chainId) === Number(SupportedChainId.POLYGON) ? null : (
+            {Number(chainId) === Number(SupportedChainId.POLYGON) || Number(chainId) === Number(SupportedChainId.POLYGONTEST) ? null : (
               <Select
                 borderColor={
                   mode === LIGHT_THEME && selected === LIQUIDITY
@@ -1530,9 +1525,6 @@ export function Index() {
             )}
           </Tab>
           <Tab
-            isDisabled={
-              !switchTab || Number(chainId) === Number(SupportedChainId.POLYGON)
-            }
             display='flex'
             flex-direction='row'
             justify-content='center'
@@ -1580,7 +1572,7 @@ export function Index() {
             onClick={() => handleSelect(STAKING)}
           >
             <Text className={'staking'}>Staking</Text>
-            {Number(chainId) === Number(SupportedChainId.POLYGON) ? null : (
+            {Number(chainId) === Number(SupportedChainId.POLYGON) || Number(chainId) === Number(SupportedChainId.POLYGONTEST) ? null : (
               <Select
                 borderColor={
                   mode === LIGHT_THEME && selected === LIQUIDITY

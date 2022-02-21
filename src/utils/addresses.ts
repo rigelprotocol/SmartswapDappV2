@@ -78,10 +78,10 @@ export const RGPSPECIALPOOLADDRESSES: { [key: string]: string } = {
 export const RGPSPECIALPOOLADDRESSES2: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
-  "56": "0x100514759dcd6e2ccbb9eb87481b96de28c4b77f",
-  "97": "0x21228b8a9490e21dda803a0e5a07671c981d0eaf",
-  "137": "0x",
-  "80001": "0x60715e85cba9892addc49830cf0655cf5fb09c3a",
+  "56": "0x156e5e65e78ACf76743B46F816AbB8a10aF81909",
+  "97": "0x345b7cA0fEFc9ebB861Aa1d446a09199e34B0222",
+  "137": "0xA095Ce797E042aF73193c0Db7EA262D9982D6565",
+  "80001": "0x9F5efefFEd282d395a8c185b9Fa5ea2fE380b2D7",
 };
 
 export const SMARTSWAPLP_TOKEN1ADDRESSES: { [key: string]: string } = {
