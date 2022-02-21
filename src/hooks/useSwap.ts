@@ -1,5 +1,5 @@
 import { Currency } from "@uniswap/sdk-core";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useActiveWeb3React } from "../utils/hooks/useActiveWeb3React";
 import { smartFactory, SmartSwapRouter } from "../utils/Contracts";
 import {
@@ -23,11 +23,11 @@ const formatAmount = (number: string, decimals: number) => {
   return ethers.utils.formatUnits(number, decimals);
 };
 
-
 export const useSwap = (
   currencyA: Currency,
   currencyB: Currency,
-  amountIn?: string
+  amountIn?: string,
+  isExactIn?: string
 ) => {
   const { chainId, library } = useActiveWeb3React();
   const [address, setAddress] = useState<string>();
@@ -37,12 +37,19 @@ export const useSwap = (
   const [pathArray, setPath] = useState<string[] | undefined>(undefined);
   const [pathSymbol, setPathSymbol] = useState("");
 
+  // console.log("currency A -->", currencyA);
+  // console.log("currency B -->", currencyB);
+
   const independentFieldString = useSelector<RootState, string>(
-    (state) => state.mint.independentField
+    (state) => state.swap.independentField
   );
 
-  const independentFieldId = useSelector<RootState, string>(
-    (state) => state.mint
+  const Id1 = useSelector<RootState, string>(
+    (state) => state.swap.INPUT.currencyId
+  );
+
+  const Id2 = useSelector<RootState, string>(
+    (state) => state.swap.OUTPUT.currencyId
   );
 
   let nativeAddress;
@@ -58,8 +65,10 @@ export const useSwap = (
   const [tokenA, tokenB] = chainId
     ? [currencyA?.wrapped, currencyB?.wrapped]
     : [undefined, undefined];
+
   const tokenOneAddress = tokenA?.address || nativeAddress?.address;
   const tokenTwoAddress = tokenB?.address || nativeAddress?.address;
+
   const wrappable: boolean = tokenOneAddress == tokenTwoAddress;
   let validSmartAddress: string;
   if (SMARTSWAPFACTORYADDRESSES[chainId as number] !== "0x") {
@@ -87,12 +96,20 @@ export const useSwap = (
               SMARTSWAPROUTER[chainId as number],
               library
             );
+            console.log("currencyOne -->", Id1);
+            console.log("currencyTwo -->", Id2);
+            console.log("tokenOne -->", tokenOneAddress);
+
+            console.log("tokenTwo -->", tokenTwoAddress);
+            console.log("amountIn", amountIn);
+
             const amountOut = await SwapRouter.getAmountsOut(amountIn, [
-              tokenOneAddress,
-              tokenTwoAddress,
+              tokenA?.address,
+              tokenB?.address,
             ]);
 
             const output = formatAmount(amountOut[1], currencyB.decimals);
+            console.log(output);
 
             setPath([tokenOneAddress as string, tokenTwoAddress as string]);
             setPathSymbol(`${currencyA.symbol} - ${currencyB.symbol}`);
@@ -375,6 +392,9 @@ export const useSwap = (
     wrap,
     tokenOneAddress,
     tokenTwoAddress,
+    tokenA,
+    tokenB,
+    independentFieldString,
   ]);
 
   return [address, wrap, amount, pathArray, pathSymbol];
