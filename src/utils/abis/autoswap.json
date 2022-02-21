@@ -225,8 +225,13 @@
             },
             {
                 "internalType": "bytes32",
-                "name": "vs",
+                "name": "s",
                 "type": "bytes32"
+            },
+            {
+                "internalType": "uint8",
+                "name": "v",
+                "type": "uint8"
             }
         ],
         "name": "callPeriodToSwapExactTokens",
@@ -345,6 +350,19 @@
     {
         "inputs": [
             {
+                "internalType": "address",
+                "name": "addr",
+                "type": "address"
+            }
+        ],
+        "name": "grantAccess",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
@@ -410,26 +428,50 @@
         "inputs": [
             {
                 "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "permit",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
                 "name": "caller",
                 "type": "address"
             },
             {
                 "internalType": "bytes32",
-                "name": "hash",
+                "name": "_hash",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "uint8",
+                "name": "_v",
+                "type": "uint8"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "_r",
                 "type": "bytes32"
             },
             {
                 "internalType": "bytes32",
-                "name": "r",
-                "type": "bytes32"
-            },
-            {
-                "internalType": "bytes32",
-                "name": "vs",
+                "name": "_s",
                 "type": "bytes32"
             }
         ],
-        "name": "recover_r_vs",
+        "name": "recover_With_rsv",
         "outputs": [
             {
                 "internalType": "address",
@@ -482,8 +524,13 @@
             },
             {
                 "internalType": "bytes32",
-                "name": "vs",
+                "name": "s",
                 "type": "bytes32"
+            },
+            {
+                "internalType": "uint8",
+                "name": "v",
+                "type": "uint8"
             }
         ],
         "name": "setPeriodToSwapETHForTokens",
@@ -525,8 +572,13 @@
             },
             {
                 "internalType": "bytes32",
-                "name": "vs",
+                "name": "s",
                 "type": "bytes32"
+            },
+            {
+                "internalType": "uint8",
+                "name": "v",
+                "type": "uint8"
             }
         ],
         "name": "setPeriodToswapTokensForETH",
@@ -558,6 +610,26 @@
                 "internalType": "address",
                 "name": "_user",
                 "type": "address"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "_hash",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "r",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "s",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "uint8",
+                "name": "v",
+                "type": "uint8"
             }
         ],
         "name": "swapTokens",

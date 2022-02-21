@@ -36,7 +36,7 @@ import {
 } from "@chakra-ui/icons";
 import { useDispatch } from "react-redux";
 import { autoSwapV2, rigelToken } from '../../utils/Contracts';
-import { RGPADDRESSES, AUTOSWAPV2ADDRESSES } from '../../utils/addresses';
+import { RGPADDRESSES, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES } from '../../utils/addresses';
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { changeFrequencyTodays } from '../../utils/utilsFunctions';
 
@@ -257,7 +257,8 @@ const SetPrice = () => {
         time,
         signedTransaction?.mess,
         signedTransaction?.r,
-        signedTransaction?._vs,
+        signedTransaction?.s,
+        signedTransaction?.v,
         { value: Web3.utils.toWei(typedValue, 'ether') }
       )
     } else if (currencies[Field.OUTPUT]?.isNative) {
@@ -268,7 +269,8 @@ const SetPrice = () => {
         time,
         signedTransaction?.mess,
         signedTransaction?.r,
-        signedTransaction?._vs
+        signedTransaction?.s,
+        signedTransaction?.v,
       )
     } else {
       data = await smartSwapV2Contract.callPeriodToSwapExactTokens(
@@ -279,7 +281,8 @@ const SetPrice = () => {
         time,
         signedTransaction?.mess,
         signedTransaction?.r,
-        signedTransaction?._vs
+        signedTransaction?.s,
+        signedTransaction?.v,
       )
     }
 
@@ -297,6 +300,20 @@ const SetPrice = () => {
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)
+      console.log({
+        address: account,
+        chainID: chainId,
+        frequency: selectedFrequency,
+        frequencyNumber: changeFrequencyToday.days,
+        presentDate: changeFrequencyToday.today,
+        fromAddress: currencies[Field.INPUT]?.isNative ? WNATIVEADDRESSES[chainId as number] : currencies[Field.INPUT]?.wrapped.address,
+        toAddress: currencies[Field.OUTPUT]?.isNative ? WNATIVEADDRESSES[chainId as number] : currencies[Field.OUTPUT]?.wrapped.address,
+        signature: signedTransaction,
+        percentageChange,
+        toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped.decimals,
+        fromPrice: typedValue,
+        currentToPrice: formattedAmounts[Field.OUTPUT]
+      })
       const response = await fetch('http://localhost:4000/auto/add', {
         method: "POST",
         mode: "cors",
@@ -312,10 +329,11 @@ const SetPrice = () => {
           frequency: selectedFrequency,
           frequencyNumber: changeFrequencyToday.days,
           presentDate: changeFrequencyToday.today,
-          fromAddress: currencies[Field.INPUT]?.isNative ? "" : currencies[Field.INPUT]?.wrapped.address,
-          toAddress: currencies[Field.OUTPUT]?.isNative ? "" : currencies[Field.OUTPUT]?.wrapped.address,
+          fromAddress: currencies[Field.INPUT]?.isNative ? WNATIVEADDRESSES[chainId as number] : currencies[Field.INPUT]?.wrapped.address,
+          toAddress: currencies[Field.OUTPUT]?.isNative ? WNATIVEADDRESSES[chainId as number] : currencies[Field.OUTPUT]?.wrapped.address,
           signature: signedTransaction,
           percentageChange,
+          toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped.decimals,
           fromPrice: typedValue,
           currentToPrice: formattedAmounts[Field.OUTPUT]
 
