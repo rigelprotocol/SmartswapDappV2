@@ -67,9 +67,9 @@ import { useRGPBalance } from "../../utils/hooks/useBalances";
 import { updateFarmAllowances } from "../../state/farm/actions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import Joyride from "react-joyride";
-import {steps} from "../../components/Onboarding/YieldSteps";
-import {Web3Provider} from "@ethersproject/providers";
-import {Contract} from '@ethersproject/contracts';
+import { steps } from "../../components/Onboarding/YieldSteps";
+import { Web3Provider } from "@ethersproject/providers";
+import { Contract } from '@ethersproject/contracts';
 import { getERC20Token } from "../../utils/utilsFunctions";
 
 
@@ -92,7 +92,7 @@ const ShowYieldFarmDetails = ({
     poolAllowance: any;
     RGPEarned: string;
     poolVersion: number | string;
-  }, wallet : any;
+  }, wallet: any;
 }) => {
   const mode = useColorModeValue("light", DARK_THEME);
   const bgColor = useColorModeValue("#FFF", "#15202B");
@@ -131,15 +131,15 @@ const ShowYieldFarmDetails = ({
     modal2Disclosure.onClose();
   };
   const handleSetReferralField = () => {
-    if(showReferrerField === true && URLReferrerAddress === ''){
+    if (showReferrerField === true && URLReferrerAddress === '') {
       setShowReferrerField(false);
       setReferrerAddress('0x0000000000000000000000000000000000000000');
       setIsReferrerCheck(true);
-    } else if(showReferrerField === true && URLReferrerAddress !== ''){
+    } else if (showReferrerField === true && URLReferrerAddress !== '') {
       setShowReferrerField(false);
       setReferrerAddress(URLReferrerAddress);
       setIsReferrerCheck(true);
-    }else if (showReferrerField === false && referrerAddress !== ''){
+    } else if (showReferrerField === false && referrerAddress !== '') {
       setShowReferrerField(true);
       setReferrerAddress(referrerAddress);
       setIsReferrerCheck(false);
@@ -256,15 +256,15 @@ const ShowYieldFarmDetails = ({
         changeApprovalButton(approveForMHTRGP, rgpApproval);
       } else if (content.deposit === "RGP-SHIB") {
         const poolEight = await smartSwapLPTokenV2PoolEight(
-            SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
-            library
+          SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
+          library
         );
         const approveForRGPSHIB = await poolAllowance(poolEight);
         changeApprovalButton(approveForRGPSHIB, rgpApproval);
       } else if (content.deposit === "RGP-MBOX") {
         const poolNine = await smartSwapLPTokenV2PoolNine(
-            SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
-            library
+          SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+          library
         );
         const approveForRGPMBOX = await poolAllowance(poolNine);
         changeApprovalButton(approveForRGPMBOX, rgpApproval);
@@ -512,8 +512,8 @@ const ShowYieldFarmDetails = ({
         setApproveValueForRGP(true);
       } else if (val === "RGP-SHIB") {
         const poolEight = await smartSwapLPTokenV2PoolEight(
-            SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
-            library
+          SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
+          library
         );
         if (!approveValueForOtherToken && !approveValueForRGP) {
           await RGPApproval();
@@ -527,8 +527,8 @@ const ShowYieldFarmDetails = ({
         setApproveValueForRGP(true);
       } else if (val === "RGP-MBOX") {
         const poolNine = await smartSwapLPTokenV2PoolNine(
-            SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
-            library
+          SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+          library
         );
         if (!approveValueForOtherToken && !approveValueForRGP) {
           await RGPApproval();
@@ -611,28 +611,28 @@ const ShowYieldFarmDetails = ({
             library
           ),
           smartSwapLPTokenV2PoolFour(
-              SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number],
-              library
+            SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number],
+            library
           ),
           smartSwapLPTokenV2PoolFive(
-              SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
-              library
+            SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
+            library
           ),
           smartSwapLPTokenV2PoolSix(
-              SMARTSWAPLP_TOKEN6ADDRESSES[chainId as number],
-              library
+            SMARTSWAPLP_TOKEN6ADDRESSES[chainId as number],
+            library
           ),
           smartSwapLPTokenV2PoolSeven(
-              SMARTSWAPLP_TOKEN7ADDRESSES[chainId as number],
-              library
+            SMARTSWAPLP_TOKEN7ADDRESSES[chainId as number],
+            library
           ),
           smartSwapLPTokenV2PoolEight(
-              SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
-              library
+            SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
+            library
           ),
           smartSwapLPTokenV2PoolNine(
-              SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
-              library
+            SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+            library
           ),
         ]);
 
@@ -797,7 +797,7 @@ const ShowYieldFarmDetails = ({
   };
   const enoughApproval = (allowance: any, balance: any) => {
     if (allowance && balance) {
-       //console.log(allowance.gt(ethers.utils.parseEther(balance)),ethers.utils.parseEther(balance),allowance.toString());
+      //console.log(allowance.gt(ethers.utils.parseEther(balance)),ethers.utils.parseEther(balance),allowance.toString());
       return allowance.gt(ethers.utils.parseEther(balance));
     }
     return true;
@@ -927,11 +927,6 @@ const ShowYieldFarmDetails = ({
 
 
 
-  async function checkRgpBallance(address: string | number) {
-    const RGPToken = await getERC20Token(RGPADDRESSES[chainId as number], library);
-    const balance = await RGPToken.balanceOf(address);
-    return ethers.utils.formatUnits(balance, RGPToken.decimal)
-  }
 
   const harvestTokens = async (id: string | number) => {
     if (account) {
@@ -944,15 +939,6 @@ const ShowYieldFarmDetails = ({
           })
         );
         if (id === 0) {
-          const currentRgPBal = await checkRgpBallance(RGPSPECIALPOOLADDRESSES[chainId as number]);
-
-          if (currentRgPBal < content.RGPEarned) {
-            dispatch(
-              setOpenModal({
-                message: `Insufficient RGP! Do you wish to proceed with this Transaction ?`,
-                trxState: TrxState.WaitingForConfirmation,
-              }))
-          }
 
           const specialPool = await RGPSpecialPool(
             RGPSPECIALPOOLADDRESSES[chainId as number],
@@ -976,15 +962,6 @@ const ShowYieldFarmDetails = ({
             );
           }
         } else if (id === 10) {
-          const currentRgPBal = await checkRgpBallance(RGPSPECIALPOOLADDRESSES2[chainId as number]);
-
-          if (currentRgPBal < content.RGPEarned) {
-            dispatch(
-              setOpenModal({
-                message: `Insufficient RGP! Do you wish to proceed with this Transaction...?`,
-                trxState: TrxState.WaitingForConfirmation,
-              }))
-          }
 
           const specialPool = await RGPSpecialPool2(
             RGPSPECIALPOOLADDRESSES2[chainId as number],
@@ -1008,16 +985,6 @@ const ShowYieldFarmDetails = ({
             );
           }
         } else {
-
-          const currentRgPBal = await checkRgpBallance(MASTERCHEFV2ADDRESSES[chainId as number]);
-
-          if (currentRgPBal < content.RGPEarned) {
-            dispatch(
-              setOpenModal({
-                message: `Insufficient RGP !, do you wish to procceed with this Transaction...?`,
-                trxState: TrxState.WaitingForConfirmation,
-              }))
-          }
 
 
           const lpTokens = await MasterChefV2Contract(
@@ -1480,15 +1447,15 @@ const ShowYieldFarmDetails = ({
         break;
       case "RGP-SHIB":
         const poolEight = await smartSwapLPTokenV2PoolEight(
-            SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
-            library
+          SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
+          library
         );
         LPApproval(poolEight);
         break;
       case "RGP-MBOX":
         const poolNine = await smartSwapLPTokenV2PoolNine(
-            SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
-            library
+          SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+          library
         );
         LPApproval(poolNine);
         break;
@@ -1578,19 +1545,19 @@ const ShowYieldFarmDetails = ({
     <>
 
       <Joyride
-          steps={steps}
-          run={run}
-          continuous={true}
-          scrollToFirstStep={true}
-          showSkipButton={true}
-          styles={{
-            options: {
-              arrowColor: bgColor2,
-              backgroundColor: bgColor2,
-              textColor: '#FFFFFF',
-              primaryColor: bgColor2
-            }
-          }}
+        steps={steps}
+        run={run}
+        continuous={true}
+        scrollToFirstStep={true}
+        showSkipButton={true}
+        styles={{
+          options: {
+            arrowColor: bgColor2,
+            backgroundColor: bgColor2,
+            textColor: '#FFFFFF',
+            primaryColor: bgColor2
+          }
+        }}
       />
 
       <Flex
@@ -1971,7 +1938,7 @@ const ShowYieldFarmDetails = ({
                         depositValue !== "Confirm" ||
                         !account ||
                         !depositTokenValue ||
-                        (setShowReferrerField && referrerAddress==="")
+                        (setShowReferrerField && referrerAddress === "")
                       }
                       cursor='pointer'
                       border='none'
@@ -2005,7 +1972,7 @@ const ShowYieldFarmDetails = ({
                           depositValue !== "Confirm" ||
                           !account ||
                           !depositTokenValue ||
-                          (setShowReferrerField && referrerAddress==="")
+                          (setShowReferrerField && referrerAddress === "")
                         }
                         cursor='pointer'
                         border='none'
