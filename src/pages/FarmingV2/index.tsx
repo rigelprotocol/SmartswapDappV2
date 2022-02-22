@@ -261,8 +261,8 @@ export function Index() {
   const getFarmTokenBalance = async () => {
     if (account) {
       try {
-        if (Number(chainId) === Number(SupportedChainId.POLYGON)) {
-          const [RGPToken, poolOne, poolTwo, poolThree] = await Promise.all([
+        if (Number(chainId) === Number(SupportedChainId.POLYGON) || Number(chainId) === Number(SupportedChainId.POLYGONTEST)) {
+          const [RGPToken, poolOne, poolTwo, poolThree, RGPToken2] = await Promise.all([
             rigelToken(RGP[chainId as number], library),
             smartSwapLPTokenPoolOne(
               SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
@@ -276,6 +276,7 @@ export function Index() {
               SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
               library
             ),
+            rigelToken(RGP[chainId as number], library),
             // smartSwapLPTokenV2PoolFour(
             //   SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number],
             //   library
@@ -286,12 +287,13 @@ export function Index() {
             // ),
           ]);
 
-          const [RGPbalance, poolOneBalance, poolTwoBalance, poolThreeBalance] =
+          const [RGPbalance, poolOneBalance, poolTwoBalance, poolThreeBalance, RGPbalance2] =
             await Promise.all([
               RGPToken.balanceOf(account),
               poolOne.balanceOf(account),
               poolTwo.balanceOf(account),
               poolThree.balanceOf(account),
+              RGPToken2.balanceOf(account),
             ]);
 
           dispatch(
@@ -300,6 +302,13 @@ export function Index() {
               formatBigNumber(poolOneBalance),
               formatBigNumber(poolTwoBalance),
               formatBigNumber(poolThreeBalance),
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              formatBigNumber(RGPbalance2),
               // formatBigNumber(poolFourBalance),
               // formatBigNumber(poolFiveBalance),
             ])
@@ -590,38 +599,38 @@ export function Index() {
             },
             {
               deposit: '',
-              liquidity: '', //MRGPLiquidity,
-              apy: '0', //calculateApy(MRGPprice, MRGPLiquidity, 250),
+              liquidity: '',
+              apy: '0',
             },
             {
               deposit: '',
-              liquidity: '0', //MRGPLiquidity,
-              apy: '0', //calculateApy(MRGPprice, MRGPLiquidity, 250),
+              liquidity: '0',
+              apy: '0',
             },
             {
               deposit: '',
-              liquidity: '0', //MRGPLiquidity,
-              apy: '0', //calculateApy(MRGPprice, MRGPLiquidity, 250),
+              liquidity: '0',
+              apy: '0',
             },
             {
               deposit: '',
-              liquidity: '0', //MRGPLiquidity,
-              apy: '0', //calculateApy(MRGPprice, MRGPLiquidity, 250),
+              liquidity: '0',
+              apy: '0',
             },
             {
               deposit: '',
-              liquidity: '0', //MRGPLiquidity,
-              apy: '0', //calculateApy(MRGPprice, MRGPLiquidity, 250),
+              liquidity: '0',
+              apy: '0',
             },
             {
               deposit: '',
-              liquidity: '0', //MRGPLiquidity,
-              apy: '0', //calculateApy(MRGPprice, MRGPLiquidity, 250),
+              liquidity: '0',
+              apy: '0',
             },
             {
               deposit: "RGP",
               liquidity: MRGPLiquidityV2,
-              apy: calculateApy(MRGPprice, MRGPLiquidityV2, 250),
+              apy: 8.756,
             },
             // {
             //   deposit: await deposit(pool4.token0, pool4.token1),
@@ -635,12 +644,9 @@ export function Index() {
             // },
           ])
         );
-      } else if (
-        Number(chainId) ===
-        Number(SupportedChainId.POLYGON)
-      ) {
-        const [pool1, pool2, pool3, specialPool2] = await Promise.all([
-          // RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
+      } else if(Number(chainId) === Number(SupportedChainId.POLYGON)) {
+        const [specialPool, pool1, pool2, pool3, specialPool2] = await Promise.all([
+          RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library),
           smartSwapLPTokenPoolOne(
             SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
             library
@@ -653,7 +659,7 @@ export function Index() {
             SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
             library
           ),
-          RGPSpecialPool2(RGPSPECIALPOOLADDRESSES2[chainId as number])
+          RGPSpecialPool2(RGPSPECIALPOOLADDRESSES2[chainId as number], library)
         ]);
 
         const [
@@ -661,6 +667,7 @@ export function Index() {
           pool1Reserve,
           pool2Reserve,
           pool3Reserve,
+          rgpTotalStakingV2,
           // pool4Reserve,
           // pool5Reserve,
         ] = await Promise.all([
@@ -668,9 +675,18 @@ export function Index() {
           pool1.getReserves(),
           pool2.getReserves(),
           pool3.getReserves(),
+          await specialPool2.totalStaking(),
           // pool4.getReserves(),
           // pool5.getReserves(),
         ]);
+
+        const MRGPprice: number | any = ethers.utils.formatUnits(
+          pool3Reserve[1].mul(1000).div(pool3Reserve[0]),
+          3
+        );
+        const MRGPLiquidityV2 = ethers.utils
+          .formatUnits(rgpTotalStakingV2.mul(Math.floor(1000 * MRGPprice)), 18)
+          .toString();
 
         const totalUSDT2: number | any = ethers.utils.formatUnits(
           pool2Reserve[1],
@@ -715,6 +731,41 @@ export function Index() {
               deposit: "RGP-USDC", //await deposit(pool3.token0, pool3.token1),
               liquidity: USDC_RGPLiq,
               apy: calculateApy(rgpPrice, USDC_RGPLiq, 1050),
+            },
+            {
+              deposit: "",
+              liquidity: "0",
+              apy: "0",
+            },
+            {
+              deposit: "",
+              liquidity: "0",
+              apy: "0",
+            },
+            {
+              deposit: "",
+              liquidity: "0",
+              apy: "0",
+            },
+            {
+              deposit: "",
+              liquidity: "0",
+              apy: "0",
+            },
+            {
+              deposit: "",
+              liquidity: "0",
+              apy: "0",
+            },
+            {
+              deposit: "",
+              liquidity: "0",
+              apy: "0",
+            },
+            {
+              deposit: "RGP",
+              liquidity: MRGPLiquidityV2,
+              apy: "8.756",
             },
           ])
         );
@@ -1030,7 +1081,7 @@ export function Index() {
 
   const getTokenStaked = async () => {
     try {
-      if (account && Number(chainId) === Number(SupportedChainId.POLYGON)) {
+      if (account && (Number(chainId) === Number(SupportedChainId.POLYGON) || Number(chainId) === Number(SupportedChainId.POLYGONTEST))) {
         const masterChefV2 = await MasterChefV2Contract(
           MASTERCHEFV2ADDRESSES[chainId as number],
           library
@@ -1059,9 +1110,24 @@ export function Index() {
           // masterChefV2.userInfo(5, account),
         ]);
 
+        const RGPStakedEarnedV2 = await specialPoolStakedV2();
+
+        let RGPStakedV2;
+        let RGPEarnedV2;
+
+        if (RGPStakedEarnedV2) {
+          const [specialPoolStakedV2, specialPoolEarnedV2] = RGPStakedEarnedV2;
+
+          RGPStakedV2 = formatBigNumber(specialPoolStakedV2.tokenQuantity);
+          RGPEarnedV2 = formatBigNumber(specialPoolEarnedV2);
+        } else {
+          RGPStakedV2 = 0;
+          RGPEarnedV2 = 0;
+        }
+
         dispatch(
           updateTokenStaked([
-            { staked: 0, earned: 0 },
+            { staked: 0, earned: 0, symbol: "RGP" },
             {
               staked: formatBigNumber(poolOneStaked.amount),
               earned: formatBigNumber(poolOneEarned),
@@ -1074,6 +1140,13 @@ export function Index() {
               staked: formatBigNumber(poolThreeStaked.amount),
               earned: formatBigNumber(poolThreeEarned),
             },
+            { staked: 0, earned: 0 },
+            { staked: 0, earned: 0 },
+            { staked: 0, earned: 0 },
+            { staked: 0, earned: 0 },
+            { staked: 0, earned: 0 },
+            { staked: 0, earned: 0 },
+            { staked: RGPStakedV2, earned: RGPEarnedV2, symbol: "RGP" },
           ])
         );
 
