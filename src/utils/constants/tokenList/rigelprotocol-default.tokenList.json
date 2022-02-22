@@ -8,21 +8,21 @@
   },
   "tags": {},
   "logoURI": "https://assets.coingecko.com/coins/images/15837/small/A_qRYvB2_400x400.png",
-  "keywords": ["rigel", "default","protocol"],
+  "keywords": ["rigel", "default", "protocol"],
   "tokens": [
     {
       "symbol": "RGP",
       "name": "Rigel Protocol",
-      "chainId":56,
-      "decimals":18,
+      "chainId": 56,
+      "decimals": 18,
       "logoURI": "https://bscscan.com/token/images/rigelprotocol_32.png",
       "address": "0xFA262F303Aa244f9CC66f312F0755d89C3793192"
     },
     {
       "symbol": "RGP",
       "name": "Rigel Protocol",
-      "chainId":137,
-      "decimals":18,
+      "chainId": 137,
+      "decimals": 18,
       "logoURI": "https://bscscan.com/token/images/rigelprotocol_32.png",
       "address": "0x4AF5ff1A60a6eF6C7c8f9C4E304cD9051fCa3Ec0"
     },
@@ -42,11 +42,11 @@
       "decimals": 18,
       "logoURI": "https://pancakeswap.finance/images/tokens/0xe9e7cea3dedca5984780bafc599bd69add087d56.png"
     },
-     {
+    {
       "name": "Axie Infinity Shard",
       "symbol": "AXS",
-      "chainId":56,
-      "decimals":18,
+      "chainId": 56,
+      "decimals": 18,
       "logoURI": "https://www.bscscan.com/token/images/axieinfinity_32.png",
       "address": "0x715D400F88C167884bbCc41C5FeA407ed4D2f8A0"
     },
@@ -245,7 +245,7 @@
     },
     {
       "name": "Wrapped ROSE",
-      "address": "0x792296e2a15e6Ceb5f5039DecaE7A1f25b00B0B0",
+      "address": "0x21C718C22D52d0F3a789b752D4c2fD5908a8A733",
       "symbol": "WROSE",
       "decimals": 18,
       "chainId": 42262,
@@ -253,18 +253,17 @@
     },
     {
       "name": "RigelToken",
-      "address": "0x37BE40c2A0CA040c99069E88348369025B25B78d",
+      "address": "0x4AF5ff1A60a6eF6C7c8f9C4E304cD9051fCa3Ec0",
       "symbol": "RGP",
       "decimals": 18,
       "chainId": 42262,
       "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xc778417E063141139Fce010982780140Aa0cD5Ab/logo.png"
-    }
-    ,
+    },
     {
       "name": "Tether USD",
-      "address": "0xC584fFD011e16A10fd8329853B9B8DE6E0313AD9",
+      "address": "0xdC19A122e268128B5eE20366299fc7b5b199C8e3",
       "symbol": "USDT",
-      "decimals": 18,
+      "decimals": 6,
       "chainId": 42262,
       "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
     },
@@ -331,6 +330,38 @@
       "decimals": 18,
       "chainId": 97,
       "logoURI": "https://bscscan.com/token/images/mobox_32.png"
+    },
+    {
+      "name": "Metafluence",
+      "address": "0xa78775bba7a542F291e5ef7f13C6204E704A90Ba",
+      "symbol": "METO",
+      "decimals": 18,
+      "chainId": 56,
+      "logoURI": "https://bscscan.com/token/images/metafluence_32.png"
+    },
+    {
+      "name": "Metafluence",
+      "address": "0x9677dBccA4D654f225fdC13acc332e96704B2Bcf",
+      "symbol": "METO",
+      "decimals": 18,
+      "chainId": 97,
+      "logoURI": "https://bscscan.com/token/images/metafluence_32.png"
+    },
+    {
+      "name": "Revolve Games",
+      "address": "0xA9B86F17C25647EFA7aa983AeFE4D55d9eea45B5",
+      "symbol": "RPG",
+      "decimals": 18,
+      "chainId": 97,
+      "logoURI": "https://bscscan.com/token/images/revolvegames_32.png"
+    },
+    {
+      "name": "Revolve Games",
+      "address": "0x01E0d17a533E5930A349C2BB71304F04F20AB12B",
+      "symbol": "RPG",
+      "decimals": 18,
+      "chainId": 56,
+      "logoURI": "https://bscscan.com/token/images/revolvegames_32.png"
     }
   ]
 }

@@ -35,6 +35,7 @@ export const SupportedChainLogo: { [key: string]: string } = {
   "137": MATICLOGO,
   "80001": MATICLOGO,
   "42261": OASISLOGO,
+  "42262": OASISLOGO,
 };
 
 export const WrappedSymbols: { [key: string]: string } = {
@@ -45,5 +46,6 @@ export const WrappedSymbols: { [key: string]: string } = {
   "97": "WBNB",
   "80001": "WMATIC",
   "137": "WMATIC",
-  "42261": "wROSE",
+  "42261": "WROSE",
+  "42262": "WROSE",
 };
