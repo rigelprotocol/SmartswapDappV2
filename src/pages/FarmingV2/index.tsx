@@ -461,7 +461,7 @@ export function Index() {
       };
 
       if (Number(chainId) === Number(SupportedChainId.POLYGONTEST)) {
-        const [specialPool, pool1, pool2, pool3, pool4, pool5] =
+        const [specialPool, pool1, pool2, pool3, specialPool2] =
           await Promise.all([
             RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library),
             smartSwapLPTokenPoolOne(
@@ -476,14 +476,7 @@ export function Index() {
               SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
               library
             ),
-            smartSwapLPTokenV2PoolFour(
-              SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number],
-              library
-            ),
-            smartSwapLPTokenV2PoolFive(
-              SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
-              library
-            ),
+            RGPSpecialPool2(RGPSPECIALPOOLADDRESSES2[chainId as number], library),
           ]);
 
         const [
@@ -491,15 +484,13 @@ export function Index() {
           pool1Reserve,
           pool2Reserve,
           pool3Reserve,
-          pool4Reserve,
-          pool5Reserve,
+          rgpTotalStakingV2,
         ] = await Promise.all([
           await specialPool.totalStaking(),
           pool1.getReserves(),
           pool2.getReserves(),
           pool3.getReserves(),
-          pool4.getReserves(),
-          pool5.getReserves(),
+          await specialPool2.totalStaking(),
         ]);
 
         const MRGPprice: number | any = ethers.utils.formatUnits(
@@ -518,6 +509,9 @@ export function Index() {
         // const MaticPrice = getMaticPrice();
         const MRGPLiquidity = ethers.utils
           .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * MRGPprice)), 18)
+          .toString();
+        const MRGPLiquidityV2 = ethers.utils
+          .formatUnits(rgpTotalStakingV2.mul(Math.floor(1000 * MRGPprice)), 18)
           .toString();
         //
         // const RGP_WMATICLiquidity = ethers.utils
@@ -575,6 +569,11 @@ export function Index() {
         dispatch(
           updateTotalLiquidity([
             {
+              deposit: "RGP",
+              liquidity: '0', //MRGPLiquidity,
+              apy: '0', //calculateApy(MRGPprice, MRGPLiquidity, 250),
+            },
+            {
               deposit: await deposit(pool1.token0, pool1.token1),
               liquidity: RGP_WMATICLiquidity,
               apy: calculateApy(rgpPrice, RGP_WMATICLiquidity, 1500),
@@ -588,6 +587,41 @@ export function Index() {
               deposit: await deposit(pool3.token0, pool3.token1),
               liquidity: USDC_RGPLiq,
               apy: calculateApy(rgpPrice, USDC_RGPLiq, 1050),
+            },
+            {
+              deposit: '',
+              liquidity: '', //MRGPLiquidity,
+              apy: '0', //calculateApy(MRGPprice, MRGPLiquidity, 250),
+            },
+            {
+              deposit: '',
+              liquidity: '0', //MRGPLiquidity,
+              apy: '0', //calculateApy(MRGPprice, MRGPLiquidity, 250),
+            },
+            {
+              deposit: '',
+              liquidity: '0', //MRGPLiquidity,
+              apy: '0', //calculateApy(MRGPprice, MRGPLiquidity, 250),
+            },
+            {
+              deposit: '',
+              liquidity: '0', //MRGPLiquidity,
+              apy: '0', //calculateApy(MRGPprice, MRGPLiquidity, 250),
+            },
+            {
+              deposit: '',
+              liquidity: '0', //MRGPLiquidity,
+              apy: '0', //calculateApy(MRGPprice, MRGPLiquidity, 250),
+            },
+            {
+              deposit: '',
+              liquidity: '0', //MRGPLiquidity,
+              apy: '0', //calculateApy(MRGPprice, MRGPLiquidity, 250),
+            },
+            {
+              deposit: "RGP",
+              liquidity: MRGPLiquidityV2,
+              apy: calculateApy(MRGPprice, MRGPLiquidityV2, 250),
             },
             // {
             //   deposit: await deposit(pool4.token0, pool4.token1),
@@ -605,7 +639,7 @@ export function Index() {
         Number(chainId) ===
         Number(SupportedChainId.POLYGON)
       ) {
-        const [pool1, pool2, pool3] = await Promise.all([
+        const [pool1, pool2, pool3, specialPool2] = await Promise.all([
           // RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
           smartSwapLPTokenPoolOne(
             SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
@@ -619,6 +653,7 @@ export function Index() {
             SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
             library
           ),
+          RGPSpecialPool2(RGPSPECIALPOOLADDRESSES2[chainId as number])
         ]);
 
         const [
