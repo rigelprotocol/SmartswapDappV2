@@ -75,7 +75,7 @@ const InputSelector = ({
         />}
         {display &&
           <Box>
-            <Text ml={display ? "0" : 4} mr={display && "70px"} color={balanceColor} fontSize="14px">
+            <Text ml={display ? "0" : 4} color={balanceColor} fontSize="14px">
               Balance: {balance.currency?.isToken ? balance.toSignificant(6) : balance} {currency?.symbol}
             </Text>
           </Box>
@@ -86,7 +86,7 @@ const InputSelector = ({
               border="0px"
               h="40px"
               rightIcon={<ChevronDownIcon />}
-              mr={3}
+              mr={display ? "0" : 3}
               bgColor={tokenListTrgiggerBgColor}
               onClick={() => setToken(tokenModal)}
 

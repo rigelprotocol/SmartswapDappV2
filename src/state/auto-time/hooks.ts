@@ -95,6 +95,27 @@ export function useAutoTimeActionHandlers(): {
     };
 }
 
+export type dataBaseObject = {
+    address: string,
+    chainID: string,
+    frequency: string,
+    frequencyNumber: number,
+    presentDate: number,
+    fromAddress: string,
+    toAddress: string,
+    signature: {
+        mess: string,
+        r: string,
+        s: string,
+        v: string,
+        _vs: string
+    },
+    percentageChange: string,
+    toNumberOfDecimals: number,
+    fromPrice: string,
+    currentToPrice: string
+}
+
 export function useDerivedAutoTimeInfo(): {
     currencies: { [field in Field]?: Currency };
     getMaxValue: any;

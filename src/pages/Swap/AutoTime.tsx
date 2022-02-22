@@ -13,6 +13,7 @@ import { Field } from '../../state/auto-time/actions';
 import Web3 from 'web3';
 import { RGP } from '../../utils/addresses';
 import { ethers } from 'ethers';
+import { getExplorerLink, ExplorerDataType } from '../../utils/getExplorerLink';
 import {
   Box,
   Flex,
@@ -52,18 +53,25 @@ const SetPrice = () => {
   const color = useColorModeValue('#999999', '#7599BD');
   const lightmode = useColorModeValue(true, false);
   const borderTwo = useColorModeValue('#319EF6', '#4CAFFF');
-  const tokenListTriggerColor = useColorModeValue('', '#DCE5EF');
-  const tokenListTrgiggerBgColor = useColorModeValue('', '#213345');
-  const balanceColor = useColorModeValue('#666666', '#DCE5EF');
   const { account, library, chainId } = useActiveWeb3React()
   const { onCurrencySelection, onUserInput } = useAutoTimeActionHandlers();
   const { independentField, typedValue } = useAutoTimeState();
-  const [signedTransaction, setSignedTransaction] = useState({})
+  const [signedTransaction, setSignedTransaction] = useState<{ r: string, s: string, _vs: string, mess: string, v: string, recoveryParam: string }>({
+    r: "",
+    s: "",
+    _vs: "",
+    mess: "",
+    v: "",
+    recoveryParam: ""
+  }
+  )
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
   const [transactionSigned, setTransactionSigned] = useState(false)
+  const [sendingTransaction, setSendingTransaction] = useState(false)
   const [selectedFrequency, setSelectedFrequency] = useState("daily")
-  const [percentageChange, setPercentageChange] = useState<Number>(0)
-  const [approval, setApproval] = useState<String[] | undefined>([])
+  const [successfullyTransaction, setSuccessfullyTransaction] = useState<String[] | []>([])
+  const [percentageChange, setPercentageChange] = useState<string>("0")
+  const [approval, setApproval] = useState<String[]>([])
 
   const handleTypeInput = useCallback(
     (value: string) => {
@@ -87,6 +95,22 @@ const SetPrice = () => {
   useEffect(async () => {
     await checkForApproval()
   }, [currencies[Field.INPUT]])
+
+  useEffect(() => {
+    if (chainId === 97 && account)
+      getDataFromDataBase()
+  }, [chainId, account])
+
+  const getDataFromDataBase = async () => {
+    try {
+      let result = await fetch(`http://localhost:4000/auto/data/${account}`)
+      const data = await result.json()
+      setSuccessfullyTransaction([...data.transactionHash])
+    } catch (e) {
+      console.log(e)
+    }
+
+  }
 
   const checkForApproval = async () => {
     // check approval for RGP and the other token
@@ -146,29 +170,39 @@ const SetPrice = () => {
 
         setSignedTransaction({ ...sig, mess })
         setTransactionSigned(true)
-        // }
-        console.log(web3.utils.toHex(sig.v.toString()))
+
         let accounts = web3.eth.accounts.recover({
           messageHash: mess,
           v: web3.utils.toHex(sig.v.toString()),
           r: sig.r,
           s: sig.s
         })
-        console.log({ accounts, ...sig, mess })
         // await checkForApproval()
       } catch (e) {
-        alert("e error")
+        dispatch(
+          setOpenModal({
+            message: "Signing wallet failed",
+            trxState: TrxState.TransactionFailed,
+          })
+        );
       }
 
     } else {
-      alert("connect wallet")
+      dispatch(
+        setOpenModal({
+          message: "connect wallet",
+          trxState: TrxState.TransactionFailed,
+        })
+      );
     }
 
   }
 
 
 
-
+  const viewTransactionHistory = () => {
+    alert("we need a modal showing history")
+  }
 
   const approveOneOrTwoTokens = async () => {
     if (currencies[Field.INPUT]?.isNative) {
@@ -184,7 +218,6 @@ const SetPrice = () => {
           })
         );
         let arr = approval
-        let arrow = arr
         if (arr[0] === "RGP") {
           const address = RGPADDRESSES[chainId as number];
           const rgp = await rigelToken(RGP[chainId as number], library);
@@ -215,7 +248,6 @@ const SetPrice = () => {
             }
           );
           const { confirmations } = await approveTransaction.wait(1);
-          const { hash } = approveTransaction;
           if (confirmations >= 1) {
             dispatch(
               setOpenModal({
@@ -292,6 +324,7 @@ const SetPrice = () => {
       return { confirmations, status, logs };
     };
     const { confirmations, status, logs } = await fetchTransactionData(data)
+    let orderID = await smartSwapV2Contract.orderCount()
     if (confirmations >= 1 && status) {
       dispatch(
         setOpenModal({
@@ -300,20 +333,7 @@ const SetPrice = () => {
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)
-      console.log({
-        address: account,
-        chainID: chainId,
-        frequency: selectedFrequency,
-        frequencyNumber: changeFrequencyToday.days,
-        presentDate: changeFrequencyToday.today,
-        fromAddress: currencies[Field.INPUT]?.isNative ? WNATIVEADDRESSES[chainId as number] : currencies[Field.INPUT]?.wrapped.address,
-        toAddress: currencies[Field.OUTPUT]?.isNative ? WNATIVEADDRESSES[chainId as number] : currencies[Field.OUTPUT]?.wrapped.address,
-        signature: signedTransaction,
-        percentageChange,
-        toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped.decimals,
-        fromPrice: typedValue,
-        currentToPrice: formattedAmounts[Field.OUTPUT]
-      })
+      console.log({ changeFrequencyToday })
       const response = await fetch('http://localhost:4000/auto/add', {
         method: "POST",
         mode: "cors",
@@ -335,7 +355,8 @@ const SetPrice = () => {
           percentageChange,
           toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped.decimals,
           fromPrice: typedValue,
-          currentToPrice: formattedAmounts[Field.OUTPUT]
+          currentToPrice: formattedAmounts[Field.OUTPUT],
+          orderID: orderID.toString()
 
         })
       })
@@ -347,6 +368,8 @@ const SetPrice = () => {
           trxState: TrxState.TransactionSuccessful,
         })
       );
+      setApproval([])
+      setSendingTransaction(true)
     }
 
   }
@@ -429,31 +452,7 @@ const SetPrice = () => {
               </Flex>
               <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" p={3} mt={4}>
 
-                <Box display="flex" justifyContent="space-between" alignItems="center" mb={5}>
-                  {/* <Text color={balanceColor} fontSize="14px">
-                    Balance: 2.2332 USDT
-                  </Text>
-                  <Menu>
-                    <Button
-                      border="0px"
-                      h="40px"
-                      w="120px"
-                      rightIcon={<ChevronDownIcon />}
-                      bgColor={tokenListTrgiggerBgColor}
-                    >
-                      <Image mr={3} h="24px" w="24px" src={USDTLOGO} />
-                      <Text color={tokenListTriggerColor}>USDT</Text>
-                    </Button>
-                  </Menu> */
-                    <To
-                      onUserOutput={handleTypeOutput}
-                      onCurrencySelection={onCurrencySelection}
-                      currency={currencies[Field.OUTPUT]}
-                      otherCurrency={currencies[Field.INPUT]}
-                      value={formattedAmounts[Field.OUTPUT]}
-                      display={true}
-                    />
-                  }
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={5} width="100%">
                   <To
                     onUserOutput={handleTypeOutput}
                     onCurrencySelection={onCurrencySelection}
@@ -471,10 +470,10 @@ const SetPrice = () => {
                   </Text>
                   <Spacer />
                   <VStack>
-                    <Text fontSize="24px" color={textColorOne}>
-                      2.5566
+                    <Text fontSize="24px" color={textColorOne} isTruncated width="160px" textAlign="right">
+                      {isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT])}
                     </Text>
-                    <Text fontSize="14px" color={color}>
+                    <Text fontSize="14px" color={color} textAlign="right">
                       -2.56
                     </Text>
                   </VStack>
@@ -563,6 +562,12 @@ const SetPrice = () => {
           <>
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
               <ShowDetails />
+
+              {account && successfullyTransaction.length > 0 && successfullyTransaction.map(transaction => {
+                return <Text fontSize="13px" mb="10px"><a href={getExplorerLink(chainId as number, transaction, ExplorerDataType.TRANSACTION)} target="_blank">{transaction}</a></Text>
+              })
+
+              }
             </Box>
 
             <Box
@@ -613,15 +618,15 @@ const SetPrice = () => {
                 </Box>
 
                 <Box display="flex" pt={4} pb={4} pr={4} pl={4} borderColor={borderTwo} borderWidth="2px" borderRadius="2px" bg={buttonBgcolor}>
-                  <Text color={textColorOne} fontSize="16px">
+                  <Text color={textColorOne} fontSize="16px" mt="2" >
                     RigelProtocol
                   </Text>
                   <Spacer />
                   <VStack>
-                    <Text fontSize="24px" color={textColorOne}>
-                      {isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT]).toFixed(2)}
+                    <Text fontSize="24px" color={textColorOne} isTruncated width="160px" textAlign="right">
+                      {isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT])}
                     </Text>
-                    <Text fontSize="14px" color={color}>
+                    <Text fontSize="14px" color={color} textAlign="right">
                       -2.56
                     </Text>
                   </VStack>
@@ -741,7 +746,7 @@ const SetPrice = () => {
                     _hover={{ bgColor: buttonBgcolor }}
                   >
                     Approve {approval.length > 0 && approval[0]} {approval.length > 1 && `and ${currencies[Field.INPUT]?.tokenInfo.name}`}
-                  </Button> : <Button
+                  </Button> : !sendingTransaction ? <Button
                     w="100%"
                     borderRadius="6px"
                     border={lightmode ? '2px' : 'none'}
@@ -756,39 +761,24 @@ const SetPrice = () => {
                     _hover={{ bgColor: buttonBgcolor }}
                   >
                     Send Transaction
+                  </Button> : <Button
+                    w="100%"
+                    borderRadius="6px"
+                    border={lightmode ? '2px' : 'none'}
+                    borderColor={borderColor}
+                    h="48px"
+                    p="5px"
+                    color={color}
+                    bgColor={buttonBgcolor}
+                    onClick={viewTransactionHistory}
+                    fontSize="18px"
+                    boxShadow={lightmode ? 'base' : 'lg'}
+                    _hover={{ bgColor: buttonBgcolor }}
+                  >
+                    Transaction running
                   </Button>
                 }
-                {/* <Button
-                  w="100%"
-                  borderRadius="6px"
-                  border={lightmode ? '2px' : 'none'}
-                  borderColor={borderColor}
-                  h="48px"
-                  p="5px"
-                  color={color}
-                  bgColor={buttonBgcolor}
-                  fontSize="18px"
-                  boxShadow={lightmode ? 'base' : 'lg'}
-                  _hover={{ bgColor: buttonBgcolor }}
-                >
-                  Enter Percentage
-                </Button> */}
-                {/* <Button
-                  w="100%"
-                  borderRadius="6px"
-                  border={lightmode ? '2px' : 'none'}
-                  borderColor={borderColor}
-                  h="48px"
-                  p="5px"
-                  color={color}
-                  bgColor={buttonBgcolor}
-                  fontSize="18px"
-                  boxShadow={lightmode ? 'base' : 'lg'}
-                  _hover={{ bgColor: buttonBgcolor }}
-                  onClick={signTransaction}
-                >
-                  Sign Transaction
-                </Button> */}
+
               </Box>
 
             </Box>

@@ -46,7 +46,7 @@ const To: React.FC<ToProps> = ({
         border={display ? "0" : "1px"}
         borderColor={borderColor}
         className='SelectToken'
-
+        width="100%"
       >
         <InputSelector
           onCurrencySelect={handleInputSelect}
