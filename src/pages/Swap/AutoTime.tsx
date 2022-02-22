@@ -103,7 +103,7 @@ const SetPrice = () => {
 
   const getDataFromDataBase = async () => {
     try {
-      let result = await fetch(`http://localhost:4000/auto/data/${account}`)
+      let result = await fetch(`https://rigelprotocol-autoswap.herokuapp.com/auto/data/${account}`)
       const data = await result.json()
       setSuccessfullyTransaction([...data.transactionHash])
     } catch (e) {
@@ -334,7 +334,7 @@ const SetPrice = () => {
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)
       console.log({ changeFrequencyToday })
-      const response = await fetch('http://localhost:4000/auto/add', {
+      const response = await fetch('https://rigelprotocol-autoswap.herokuapp.com/auto/add', {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
