@@ -1906,7 +1906,7 @@ export function Index() {
                     display={{ base: "none", md: "flex", lg: "flex" }}
                   >
                     <Text>
-                      This Feature is currently being worked on... kindly check back soon
+                      RGP staking V2 coming soon
                     </Text>
                   </Flex>
 
