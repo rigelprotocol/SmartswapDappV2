@@ -139,9 +139,7 @@ export function useDerivedSwapInfo(): {
     inputCurrency,
     // isExactIn ? outputCurrency : inputCurrency,
     outputCurrency,
-    parsedAmount,
-    inputCurrency,
-    outputCurrency
+    parsedAmount
   );
 
   const formatAmount = tryParseAmount(
