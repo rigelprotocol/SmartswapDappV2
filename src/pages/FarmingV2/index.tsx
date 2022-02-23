@@ -1,7 +1,7 @@
 /** @format */
 
-import React, {useEffect, useState} from "react";
-import {Box, Flex, Text} from "@chakra-ui/layout";
+import React, { useEffect, useState, useMemo } from "react";
+import { Box, Flex, Text } from "@chakra-ui/layout";
 import {
   Alert,
   AlertDescription,
@@ -17,8 +17,12 @@ import {
   Tabs,
   useColorModeValue,
   useMediaQuery,
+  Tooltip,
+  IconButton,
+  useClipboard,
 } from "@chakra-ui/react";
-import {useHistory, useRouteMatch} from "react-router-dom";
+import { CopyIcon } from "../../theme/components/Icons";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import YieldFarm from "./YieldFarm";
 import {AlertSvg} from "./Icon";
 
@@ -40,6 +44,7 @@ import {
   smartSwapLPTokenV2PoolFour,
   smartSwapLPTokenV2PoolSeven,
   smartSwapLPTokenV2PoolSix,
+    smartSwapLPTokenV2PoolEight, smartSwapLPTokenV2PoolNine
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
@@ -52,7 +57,8 @@ import {
   SMARTSWAPLP_TOKEN4ADDRESSES,
   SMARTSWAPLP_TOKEN5ADDRESSES,
   SMARTSWAPLP_TOKEN6ADDRESSES,
-  SMARTSWAPLP_TOKEN7ADDRESSES
+  SMARTSWAPLP_TOKEN7ADDRESSES,
+    SMARTSWAPLP_TOKEN8ADDRESSES, SMARTSWAPLP_TOKEN9ADDRESSES
 } from "../../utils/addresses";
 import { formatBigNumber } from "../../utils";
 import { RootState } from "../../state";
@@ -62,10 +68,11 @@ import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import Joyride from "react-joyride";
 import {steps} from "../../components/Onboarding/FarmingSteps";
 import WelcomeModal from "../../components/Onboarding/WelcomeModal";
-
+import CryptoJS from 'crypto-js';
+import { shortenCode } from "../../utils";
+import { useLocation } from 'react-router-dom';
 
 export const BIG_TEN = new bigNumber(10);
-
 export const LIQUIDITY = "liquidity";
 export const STAKING = "staking";
 export const OTHER_FARMS = "other farms";
@@ -85,11 +92,17 @@ export function Index() {
   const [showAlert, setShowAlert] = useState(true);
   const [farmDataLoading, setfarmDataLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(false);
-  const [switchTab, setSwitchTab] = useState(false);
+  const [switchTab, setSwitchTab] = useState(true);
   const [tabIndex, setTabIndex] = useState(0);
   const [liquidityIndex, setLiquidityIndex] = useState(0);
   const [stakingIndex, setStakingIndex] = useState(1);
   const [isMobileDevice] = useMediaQuery("(max-width: 750px)");
+  const [referralCode, setReferralCode] = useState("");
+  const [refAddress, setRefAddress] = useState("");
+  const [referralLink, setReferralLink] = useState("");
+  const hostName = window.location.href.split('?')[0];
+  const { hasCopied, onCopy } = useClipboard(`${hostName}?ref=${referralCode}`);
+  const [URLRefCode, setURLRefCode] = useState("");
 
   const handleTabsChange = (index: number) => {
     const useIndex =
@@ -100,20 +113,31 @@ export function Index() {
   const goToV1 = (index: number) => {
     setTabIndex(index);
   };
-
   const handleStakingTab = (event: { target: { value: string } }) => {
-    setStakingIndex(parseInt(event.target.value, 10));
-    setTabIndex(parseInt(event.target.value, 10));
+    if(parseInt(event.target.value, 10) === 1){
+      setStakingIndex(1);
+      setTabIndex(1);
+      history.push("/farming-v2/staking-RGPv2")
+    } else if(parseInt(event.target.value, 10) === 3){
+      setStakingIndex(3);
+      setTabIndex(3);
+      history.push("/farming-v2/staking-RGPv1")
+    }
   };
 
   const handleLiquidityTab = (event: { target: { value: string } }) => {
-    setLiquidityIndex(parseInt(event.target.value, 10));
-    setTabIndex(parseInt(event.target.value, 10));
+    if(parseInt(event.target.value, 10) === 0){
+      setLiquidityIndex(0);
+      setTabIndex(0);
+    } else if(parseInt(event.target.value, 10) === 2){
+      setLiquidityIndex(2);
+      setTabIndex(2);
+    }
   };
 
   const { account, chainId, library } = useActiveWeb3React();
   const dispatch = useDispatch();
-  let match = useRouteMatch("/farming-V2/staking-RGP");
+  let match = useRouteMatch("/farming-V2/staking-RGPv2");
   const FarmData = useFarms();
 
 
@@ -149,7 +173,10 @@ export function Index() {
   }, []);
 
   useEffect(() => {
-    if (match) setSelected(STAKING);
+    if (match) {
+      setSelected(STAKING);
+      setTabIndex(1)
+    }
   }, [match]);
 
   const changeVersion = (version: string, external?: boolean) => {
@@ -165,11 +192,18 @@ export function Index() {
       setSelected(LIQUIDITY);
       changeVersion("/farming-v2");
     } else if (value === STAKING) {
-      setSwitchTab(!switchTab);
-      setSelected(STAKING);
-      changeVersion("/farming-v2/staking-RGP");
+        setSwitchTab(!switchTab);
+        setSelected(STAKING);
+      if(tabIndex === 1){
+        setStakingIndex(1)
+        changeVersion("/farming-v2/staking-RGPv2");
+      } else{
+        setStakingIndex(3)
+        changeVersion("/farming-v2/staking-RGPv1");
+      }
+
     } else {
-      setSwitchTab(false);
+      setSwitchTab(true);
     }
   };
 
@@ -193,6 +227,36 @@ export function Index() {
   const handleAlert = () => {
     setShowAlert(false);
   };
+
+  useEffect(() => {
+    const handleReferralCode = () =>{
+      const encryptedReferralCode = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(account)).toString();
+      setReferralCode(encryptedReferralCode);
+      const refLink = `${hostName}?ref=${referralCode}`;
+      setReferralLink(refLink);
+    }
+    handleReferralCode()
+  }, [account])
+
+  function useURLQuery() {
+    const { search } = useLocation();
+    return React.useMemo(() => new URLSearchParams(search), [search]);
+  }
+  const query = useURLQuery();
+
+  useEffect(() => {
+    const handleURLRefCode = () =>{
+      try{
+        const queryRef = query.get("ref");
+        const decryptedReferralCode = CryptoJS.enc.Base64.parse(queryRef).toString(CryptoJS.enc.Utf8);
+        decryptedReferralCode === account ? setRefAddress('0x0000000000000000000000000000000000000000')
+        : setRefAddress(decryptedReferralCode)
+      }catch(error){
+        console.log(error)
+      }
+    }
+    handleURLRefCode();
+  }, [account])
 
   const getFarmTokenBalance = async () => {
     if (account) {
@@ -285,6 +349,8 @@ export function Index() {
             poolFive,
               poolSix,
               poolSeven,
+              poolEight,
+              poolNine,
             RGPToken2,
           ] = await Promise.all([
             rigelToken(RGP[chainId as number], library),
@@ -316,6 +382,14 @@ export function Index() {
                 SMARTSWAPLP_TOKEN7ADDRESSES[chainId as number],
                 library
             ),
+            smartSwapLPTokenV2PoolEight(
+                SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
+                library
+            ),
+            smartSwapLPTokenV2PoolNine(
+                SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+                library
+            ),
             rigelToken(RGP[chainId as number], library),
           ]);
 
@@ -326,8 +400,10 @@ export function Index() {
             poolThreeBalance,
             poolFourBalance,
             poolFiveBalance,
-              poolSixBalance,
-              poolSevenBalance,
+            poolSixBalance,
+            poolSevenBalance,
+            poolEightBalance,
+            poolNineBalance,
             RGPbalance2,
           ] = await Promise.all([
             RGPToken.balanceOf(account),
@@ -338,6 +414,8 @@ export function Index() {
             poolFive.balanceOf(account),
             poolSix.balanceOf(account),
             poolSeven.balanceOf(account),
+            poolEight.balanceOf(account),
+            poolNine.balanceOf(account),
             RGPToken2.balanceOf(account),
           ]);
 
@@ -351,6 +429,8 @@ export function Index() {
               formatBigNumber(poolFiveBalance),
               formatBigNumber(poolSixBalance),
               formatBigNumber(poolSevenBalance),
+              formatBigNumber(poolEightBalance),
+              formatBigNumber(poolNineBalance),
               formatBigNumber(RGPbalance2),
             ])
           );
@@ -688,7 +768,7 @@ export function Index() {
           ])
         );
       } else {
-        const [specialPool, pool1, pool2, pool3, pool4, pool5, pool6, pool7, specialPool2] =
+        const [specialPool, pool1, pool2, pool3, pool4, pool5, pool6, pool7, pool8, pool9, specialPool2] =
           await Promise.all([
             RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library),
             smartSwapLPTokenPoolOne(
@@ -719,6 +799,14 @@ export function Index() {
                 SMARTSWAPLP_TOKEN7ADDRESSES[chainId as number],
                 library
             ),
+            smartSwapLPTokenV2PoolEight(
+                SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
+                library
+            ),
+            smartSwapLPTokenV2PoolNine(
+                SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+                library
+            ),
             RGPSpecialPool2(
               RGPSPECIALPOOLADDRESSES2[chainId as number],
               library
@@ -734,6 +822,8 @@ export function Index() {
           pool5Reserve,
             pool6Reserve,
             pool7Reserve,
+          pool8Reserve,
+          pool9Reserve,
           rgpTotalStakingV2,
         ] = await Promise.all([
           await specialPool.totalStaking(),
@@ -744,6 +834,8 @@ export function Index() {
           pool5.getReserves(),
           pool6.getReserves(),
           pool7.getReserves(),
+          pool8.getReserves(),
+          pool9.getReserves(),
           await specialPool2.totalStaking(),
         ]);
         const RGPprice: number | any = ethers.utils.formatUnits(
@@ -787,12 +879,26 @@ export function Index() {
             )
             .toString();
 
+        const RGP_SHIBLiquidity = ethers.utils
+            .formatUnits(
+                pool8Reserve[1].mul(Math.floor(Number(RGPprice) * 1000 * 2)),
+                21
+            )
+            .toString();
+
+        const RGP_MBOXLiquidity = ethers.utils
+            .formatUnits(
+                pool9Reserve[1].mul(Math.floor(Number(RGPprice) * 1000 * 2)),
+                21
+            )
+            .toString();
+
         dispatch(
           updateTotalLiquidity([
             {
               deposit: "RGP",
               liquidity: RGPLiquidity,
-              apy: calculateApy(RGPprice, RGPLiquidity, 250),
+              apy: 8.756,
             },
             {
               deposit: "RGP-BNB",
@@ -830,9 +936,19 @@ export function Index() {
               apy: calculateApy(RGPprice, MHT_RGPLiquidity, 340.48),
             },
             {
+              deposit: "RGP-SHIB",
+              liquidity: RGP_SHIBLiquidity,
+              apy: calculateApy(RGPprice, RGP_SHIBLiquidity, 340.48),
+            },
+            {
+              deposit: "RGP-MBOX",
+              liquidity: RGP_MBOXLiquidity,
+              apy: calculateApy(RGPprice, RGP_MBOXLiquidity, 340.48),
+            },
+            {
               deposit: "RGP",
               liquidity: RGPLiquidityV2,
-              apy: calculateApy(RGPprice, RGPLiquidityV2, 250),
+              apy: 8.756,
             },
           ])
         );
@@ -997,15 +1113,19 @@ export function Index() {
           poolThreeEarned,
           poolFourEarned,
           poolFiveEarned,
-            poolSixEarned,
-            poolSevenEarned,
+          poolSixEarned,
+          poolSevenEarned,
+          poolEightEarned,
+          poolNineEarned,
           poolOneStaked,
           poolTwoStaked,
           poolThreeStaked,
           poolFourStaked,
           poolFiveStaked,
-            poolSixStaked,
-            poolSevenStaked,
+          poolSixStaked,
+          poolSevenStaked,
+          poolEightStaked,
+          poolNineStaked,
         ] = await Promise.all([
           masterChefV2.pendingRigel(1, account),
           masterChefV2.pendingRigel(2, account),
@@ -1014,6 +1134,8 @@ export function Index() {
           masterChefV2.pendingRigel(5, account),
           masterChefV2.pendingRigel(6, account),
           masterChefV2.pendingRigel(7, account),
+          masterChefV2.pendingRigel(8, account),
+          masterChefV2.pendingRigel(9, account),
           masterChefV2.userInfo(1, account),
           masterChefV2.userInfo(2, account),
           masterChefV2.userInfo(3, account),
@@ -1021,6 +1143,8 @@ export function Index() {
           masterChefV2.userInfo(5, account),
           masterChefV2.userInfo(6, account),
           masterChefV2.userInfo(7, account),
+          masterChefV2.userInfo(8, account),
+          masterChefV2.userInfo(9, account),
         ]);
 
         const RGPStakedEarned = await specialPoolStaked();
@@ -1084,6 +1208,14 @@ export function Index() {
             {
               staked: formatBigNumber(poolSevenStaked.amount),
               earned: formatBigNumber(poolSevenEarned),
+            },
+            {
+              staked: formatBigNumber(poolEightStaked.amount),
+              earned: formatBigNumber(poolEightEarned),
+            },
+            {
+              staked: formatBigNumber(poolNineStaked.amount),
+              earned: formatBigNumber(poolNineEarned),
             },
             { staked: RGPStakedV2, earned: RGPEarnedV2, symbol: "RGP" },
           ])
@@ -1187,7 +1319,53 @@ export function Index() {
                     textHeader={'Welcome to SmartSwap Farming'}
                     welcomeText="With farming, you can maximize the rate of return on capital and generate rewards on your cryptocurrency holdings." />
 
-      {(chainId && library) || !showAlert ? null : (
+      {!showAlert || (tabIndex === 0) || (tabIndex === 2) ? null
+        : (tabIndex === 1) && (stakingIndex === 1) ?
+        (
+          <Box mx={[5, 10, 15, 20]} my={4}>
+            <Alert
+              color='#FFFFFF'
+              background={mode === DARK_THEME ? "#319EF6" : "#319EF6"}
+              borderRadius='8px'
+            >
+              <AlertSvg />
+              <AlertDescription
+                fontFamily='Inter'
+                fontSize={{ base: "12px", md: "14px", lg: "16px" }}
+                fontWeight='500'
+                lineHeight='24px'
+                letterSpacing='0em'
+                textAlign='left'
+                padding='8px'
+              >
+                  {
+                    (chainId && library) ?
+                    <Box display="flex">
+                      Your referral link is {hostName}?ref={shortenCode(referralCode)}
+                      <Tooltip hasArrow label={hasCopied ? "Copied!" : "Copy"} bg="gray.300" color="black">
+                        <IconButton onClick={onCopy} aria-label="Copy referral link" icon={<CopyIcon />} colorScheme="ghost" pl={3}/>
+                      </Tooltip>
+                      <Text>Copy link</Text>
+                    </Box>
+                    : `Connect your wallet to get a referral link`
+                  }
+              </AlertDescription>
+
+              <CloseButton
+                position='absolute'
+                margin='2px'
+                height='14px'
+                width='14px'
+                background='#319EF6'
+                color='#fff'
+                right='20px'
+                textAign='center'
+                onClick={handleAlert}
+              />
+            </Alert>
+          </Box>
+        )
+        : (
         <Box mx={[5, 10, 15, 20]} my={4}>
           <Alert
             color='#FFFFFF'
@@ -1204,8 +1382,9 @@ export function Index() {
               textAlign='left'
               padding='10px'
             >
-              This is the V2 Farm. You should migrate your stakings from V1
-              Farm.
+            {
+              `This is the V2 Farm. You should migrate your stakings from V1 Farm.`
+            }
             </AlertDescription>
 
             <CloseButton
@@ -1275,6 +1454,17 @@ export function Index() {
                 ? "#DEE5ED !important"
                 : "#DEE5ED !important"
             }
+            color={
+              mode === LIGHT_THEME && selected === LIQUIDITY
+                ? "#333333"
+                : mode === DARK_THEME && selected === LIQUIDITY
+                ? "#F1F5F8"
+                : mode === DARK_THEME && selected === STAKING
+                ? "#F1F5F8"
+                : mode === LIGHT_THEME && selected === STAKING
+                ? "#333333"
+                : "#333333"
+            }
             // px={5}
             // py={4}
             // minWidth={{ base: "none", md: "200px", lg: "200px" }}
@@ -1293,19 +1483,6 @@ export function Index() {
             }
           >
             <Text
-              color={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#333333"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#F1F5F8"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#F1F5F8"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#333333"
-                  : "#333333"
-              }
-              fontSize={isMobileDevice ? "14px" : undefined}
-              mt='2'
               className={'liquidity'}
             >
               Liquidity Pools
@@ -1348,7 +1525,7 @@ export function Index() {
                 margin='10px 16px'
               >
                 <option value={0}>V2</option>
-                <option value={3}>V1</option>
+                <option value={2}>V1</option>
               </Select>
             )}
           </Tab>
@@ -1442,8 +1619,8 @@ export function Index() {
                 flex-grow='0'
                 margin='10px 16px'
               >
-                <option value={1}>V1</option>
-                <option value={5}>V2</option>
+                <option value={1}>V2</option>
+                <option value={3}>V1</option>
               </Select>
             )}
           </Tab>
@@ -1603,7 +1780,7 @@ export function Index() {
                     : Number(chainId) !== Number(SupportedChainId.POLYGON)
                     ? FarmData.contents.map((content: any, index: number) =>
                         Number(chainId) !== Number(SupportedChainId.POLYGON) &&
-                        index !== 0 && index !== 8 ? (
+                        index !== 0 && index !== 10 ? (
                           <YieldFarm
                             farmDataLoading={farmDataLoading}
                             content={content}
@@ -1620,54 +1797,54 @@ export function Index() {
 
           <TabPanel padding='0px'>
             <Flex
-              justifyContent='center'
-              alignItems='center'
-              rounded='lg'
-              mb={4}
+                justifyContent='center'
+                alignItems='center'
+                rounded='lg'
+                mb={4}
             >
               <Box
-                bg='#120136'
-                minHeight='89vh'
-                w={["100%", "100%", "100%"]}
-                background={
-                  mode === LIGHT_THEME
-                    ? "#FFFFFF !important"
-                    : mode === DARK_THEME
-                    ? "#15202B !important"
-                    : "#FFFFFF !important"
-                }
-                rounded='lg'
+                  bg='#120136'
+                  minHeight='89vh'
+                  w={["100%", "100%", "100%"]}
+                  background={
+                    mode === LIGHT_THEME
+                        ? "#FFFFFF !important"
+                        : mode === DARK_THEME
+                        ? "#15202B !important"
+                        : "#FFFFFF !important"
+                  }
+                  rounded='lg'
               >
                 <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
                   <Flex
-                    alignItems='center'
-                    justifyContent='space-between'
-                    px={4}
-                    py={4}
-                    background={
-                      mode === DARK_THEME
-                        ? "#213345"
-                        : mode === LIGHT_THEME
-                        ? "#F2F5F8"
-                        : "#F2F5F8 !important"
-                    }
-                    color={
-                      mode === LIGHT_THEME
-                        ? "#333333"
-                        : mode === DARK_THEME
-                        ? "#F1F5F8"
-                        : "#333333"
-                    }
-                    w={["100%", "100%", "100%"]}
-                    align='left'
-                    border={
-                      mode === LIGHT_THEME
-                        ? "1px solid #DEE5ED !important"
-                        : mode === DARK_THEME
-                        ? "1px solid #324D68 !important"
-                        : "1px solid #324D68"
-                    }
-                    display={{ base: "none", md: "flex", lg: "flex" }}
+                      alignItems='center'
+                      justifyContent='space-between'
+                      px={4}
+                      py={4}
+                      background={
+                        mode === DARK_THEME
+                            ? "#213345"
+                            : mode === LIGHT_THEME
+                            ? "#F2F5F8"
+                            : "#F2F5F8 !important"
+                      }
+                      color={
+                        mode === LIGHT_THEME
+                            ? "#333333"
+                            : mode === DARK_THEME
+                            ? "#F1F5F8"
+                            : "#333333"
+                      }
+                      w={["100%", "100%", "100%"]}
+                      align='left'
+                      border={
+                        mode === LIGHT_THEME
+                            ? "1px solid #DEE5ED !important"
+                            : mode === DARK_THEME
+                            ? "1px solid #324D68 !important"
+                            : "1px solid #324D68"
+                      }
+                      display={{ base: "none", md: "flex", lg: "flex" }}
                   >
                     <Text>Deposit</Text>
                     <Text>Earn</Text>
@@ -1676,20 +1853,21 @@ export function Index() {
                     <Text />
                   </Flex>
                   {FarmData.contents.map((content: any, index: number) =>
-                    index === 0 ? (
-                      <YieldFarm
-                        farmDataLoading={farmDataLoading}
-                        content={content}
-                        key={content.pid}
-                        wallet={wallet}
-                      />
-                    ) : null
+                      index === 10 ? (
+                          <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content={content}
+                              key={content.pid}
+                              wallet={wallet}
+                              URLReferrerAddress={refAddress}
+                          />
+                      ) : null
                   )}
                 </Box>
               </Box>
             </Flex>
           </TabPanel>
-          <TabPanel padding='0px'></TabPanel>
+
           <TabPanel padding='0px'>
             <Flex
               justifyContent='center'
@@ -1780,57 +1958,56 @@ export function Index() {
               </Box>
             </Flex>
           </TabPanel>
-          <TabPanel padding='0px'></TabPanel>
           <TabPanel padding='0px'>
             <Flex
-                justifyContent='center'
-                alignItems='center'
-                rounded='lg'
-                mb={4}
+              justifyContent='center'
+              alignItems='center'
+              rounded='lg'
+              mb={4}
             >
               <Box
-                  bg='#120136'
-                  minHeight='89vh'
-                  w={["100%", "100%", "100%"]}
-                  background={
-                    mode === LIGHT_THEME
-                        ? "#FFFFFF !important"
-                        : mode === DARK_THEME
-                        ? "#15202B !important"
-                        : "#FFFFFF !important"
-                  }
-                  rounded='lg'
+                bg='#120136'
+                minHeight='89vh'
+                w={["100%", "100%", "100%"]}
+                background={
+                  mode === LIGHT_THEME
+                    ? "#FFFFFF !important"
+                    : mode === DARK_THEME
+                    ? "#15202B !important"
+                    : "#FFFFFF !important"
+                }
+                rounded='lg'
               >
                 <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
                   <Flex
-                      alignItems='center'
-                      justifyContent='space-between'
-                      px={4}
-                      py={4}
-                      background={
-                        mode === DARK_THEME
-                            ? "#213345"
-                            : mode === LIGHT_THEME
-                            ? "#F2F5F8"
-                            : "#F2F5F8 !important"
-                      }
-                      color={
-                        mode === LIGHT_THEME
-                            ? "#333333"
-                            : mode === DARK_THEME
-                            ? "#F1F5F8"
-                            : "#333333"
-                      }
-                      w={["100%", "100%", "100%"]}
-                      align='left'
-                      border={
-                        mode === LIGHT_THEME
-                            ? "1px solid #DEE5ED !important"
-                            : mode === DARK_THEME
-                            ? "1px solid #324D68 !important"
-                            : "1px solid #324D68"
-                      }
-                      display={{ base: "none", md: "flex", lg: "flex" }}
+                    alignItems='center'
+                    justifyContent='space-between'
+                    px={4}
+                    py={4}
+                    background={
+                      mode === DARK_THEME
+                        ? "#213345"
+                        : mode === LIGHT_THEME
+                        ? "#F2F5F8"
+                        : "#F2F5F8 !important"
+                    }
+                    color={
+                      mode === LIGHT_THEME
+                        ? "#333333"
+                        : mode === DARK_THEME
+                        ? "#F1F5F8"
+                        : "#333333"
+                    }
+                    w={["100%", "100%", "100%"]}
+                    align='left'
+                    border={
+                      mode === LIGHT_THEME
+                        ? "1px solid #DEE5ED !important"
+                        : mode === DARK_THEME
+                        ? "1px solid #324D68 !important"
+                        : "1px solid #324D68"
+                    }
+                    display={{ base: "none", md: "flex", lg: "flex" }}
                   >
                     <Text>Deposit</Text>
                     <Text>Earn</Text>
@@ -1839,14 +2016,14 @@ export function Index() {
                     <Text />
                   </Flex>
                   {FarmData.contents.map((content: any, index: number) =>
-                      index === 8 ? (
-                          <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                          />
-                      ) : null
+                    index === 0 ? (
+                      <YieldFarm
+                        farmDataLoading={farmDataLoading}
+                        content={content}
+                        key={content.pid}
+                        wallet={wallet}
+                      />
+                    ) : null
                   )}
                 </Box>
               </Box>

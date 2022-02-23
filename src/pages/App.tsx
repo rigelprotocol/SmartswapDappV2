@@ -64,6 +64,7 @@ export default function App() {
               {/* <Route path="*">
                 <Redirect to="/swap" />
               </Route> */}
+
             </Switch>
           </ErrorBoundary>
         </HashRouter>

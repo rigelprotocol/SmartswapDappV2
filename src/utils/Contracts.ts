@@ -187,6 +187,22 @@ export const smartSwapLPTokenV2PoolSeven = async (address: string, library: Web3
   );
 };
 
+export const smartSwapLPTokenV2PoolEight = async (address: string, library: Web3Provider | undefined) => {
+  return new Contract(
+      address,
+      SmartSwapLPTokenABI3,
+      library?.getSigner()
+  );
+};
+
+export const smartSwapLPTokenV2PoolNine = async (address: string, library: Web3Provider | undefined) => {
+  return new Contract(
+      address,
+      SmartSwapLPTokenABI3,
+      library?.getSigner()
+  );
+};
+
 export const rigelToken = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
     address,

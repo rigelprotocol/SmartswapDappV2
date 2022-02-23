@@ -20,11 +20,10 @@ import './toast.css';
 export interface ToastProps {
   message: string;
   URL?: string;
-  error?: boolean;
   remove: Function;
 }
 
-function Toast({ message, URL, remove, error }: ToastProps) {
+function Toast({ message, URL, remove }: ToastProps) {
   const bgColor3 = useColorModeValue('#DEE6ED', '#324d68');
   const buttonBorder = useColorModeValue('gray.200', 'gray.100');
   const successIcon = useColorModeValue('#22bb33', '#75f083');
@@ -45,12 +44,13 @@ function Toast({ message, URL, remove, error }: ToastProps) {
     setTimeout(() => {
       remove();
     }, 6000);
+
   }, []);
 
   return (
     <Box
       height={'140px'}
-      background={error ? "red" : bg}
+      background={bg}
       width={'350px'}
       borderRadius={'6px'}
       boxShadow={shadow}
@@ -62,22 +62,19 @@ function Toast({ message, URL, remove, error }: ToastProps) {
       <Flex h={'100%'}>
         <Box flex={'1'}>
           <HStack h={'100%'} p={3} w={'90%'}>
-            {error ?
-              <AiOutlineExclamationCircle color="white" size={'40px'} /> :
-              <AiOutlineCheckCircle color={successIcon} size={'40px'} />
-            }
+            <AiOutlineCheckCircle color={successIcon} size={'40px'} />
             <VStack alignItems={'start'} textAlign={'start'} px={'10px'}>
-              <Text fontSize='16px' fontWeight='bold' color={error ? "white" : textColor}>
+              <Text fontSize='16px' fontWeight='bold' color={textColor}>
                 {message}
               </Text>
-              {!error && <Link
+              <Link
                 href={`${URL}`}
                 isExternal
                 variant={'link'}
                 color={'brand.200'}
               >
                 View on Explorer
-              </Link>}
+              </Link>
 
             </VStack>
           </HStack>
@@ -115,7 +112,6 @@ export const Notify = () => {
           message={toastDetails.message}
           URL={toastDetails.URL}
           remove={() => dispatch(removeToast())}
-          error={toastDetails?.error}
         />
       )}
     </Box>

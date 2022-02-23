@@ -22,9 +22,9 @@ const BridgeCard = () => {
   return (
     <>
       {chainId === 137 ||
-      chainId === 80001 ||
-      chainId === 42262 ||
-      chainId === 42261 ? (
+        chainId === 80001 ||
+        chainId === 42262 ||
+        chainId === 42261 ? (
         <Box
           mt={5}
           h='86px'
@@ -78,7 +78,7 @@ const BridgeCard = () => {
                       style={{ textDecoration: "underline" }}
                       target='_blank'
                     >
-                      Warmhole
+                      Wormhole
                     </a>
                   </Text>
                 )}

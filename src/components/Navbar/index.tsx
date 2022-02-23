@@ -75,7 +75,7 @@ const Index = () => {
                   <WalletConnection />
                 </Flex>
                 <Flex mr={4}>
-                  {library && library.provider.isMetaMask && <NetworkConnector />}
+                   <NetworkConnector />
                   <ColorModeSwitcher />
                   <SocialMedia />
                 </Flex>
@@ -110,7 +110,7 @@ const Index = () => {
 
               <Flex h="8" justify="flex-end" >
 
-                {library && library.provider.isMetaMask && <NetworkConnector />}
+                <NetworkConnector />
                 <Flex h="8" justify="flex-end" className='Wallet'>
                   <WalletConnection />
                 </Flex>

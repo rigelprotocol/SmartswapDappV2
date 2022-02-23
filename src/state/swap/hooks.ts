@@ -1,22 +1,28 @@
-import { AppDispatch, RootState } from '../index';
-import { useCallback, useEffect, useState } from 'react';
-import { Field, selectCurrency, typeInput, replaceSwapState, switchCurrencies } from './actions';
-import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
-import { ParsedQs } from 'qs';
-import { useCurrency } from '../../hooks/Tokens';
-import { useDispatch, useSelector } from 'react-redux';
-import { Currency } from '@uniswap/sdk-core';
-import { useNativeBalance } from '../../utils/hooks/useBalances';
-import { getERC20Token } from '../../utils/utilsFunctions';
-import { isAddress, ParseFloat } from '../../utils';
-import { ethers } from 'ethers';
-import { SupportedChainSymbols } from '../../utils/constants/chains';
-import { useSwap } from '../../hooks/useSwap';
-import { ZERO_ADDRESS } from '../../constants';
-import { parseUnits } from '@ethersproject/units';
-import useParsedQueryString from '../../hooks/useParsedQueryString';
-import JSBI from 'jsbi';
-import {Web3Provider} from "@ethersproject/providers";
+import { AppDispatch, RootState } from "../index";
+import { useCallback, useEffect, useState } from "react";
+import {
+  Field,
+  selectCurrency,
+  typeInput,
+  replaceSwapState,
+  switchCurrencies,
+} from "./actions";
+import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
+import { ParsedQs } from "qs";
+import { useCurrency } from "../../hooks/Tokens";
+import { useDispatch, useSelector } from "react-redux";
+import { Currency } from "@uniswap/sdk-core";
+import { useNativeBalance } from "../../utils/hooks/useBalances";
+import { getERC20Token } from "../../utils/utilsFunctions";
+import { isAddress, ParseFloat } from "../../utils";
+import { ethers } from "ethers";
+import { SupportedChainSymbols } from "../../utils/constants/chains";
+import { useSwap } from "../../hooks/useSwap";
+import { ZERO_ADDRESS } from "../../constants";
+import { parseUnits } from "@ethersproject/units";
+import useParsedQueryString from "../../hooks/useParsedQueryString";
+import JSBI from "jsbi";
+import { Web3Provider } from "@ethersproject/providers";
 
 export function tryParseAmount<T extends Currency>(
   value?: string,
@@ -27,7 +33,7 @@ export function tryParseAmount<T extends Currency>(
   }
   try {
     const typedValueParsed = parseUnits(value, currency.decimals).toString();
-    if (typedValueParsed !== '0') {
+    if (typedValueParsed !== "0") {
       return typedValueParsed;
     }
   } catch (error) {
@@ -38,14 +44,14 @@ export function tryParseAmount<T extends Currency>(
   return undefined;
 }
 
-export function useSwapState(): RootState['swap'] {
-  return useSelector<RootState, RootState['swap']>((state) => state.swap);
+export function useSwapState(): RootState["swap"] {
+  return useSelector<RootState, RootState["swap"]>((state) => state.swap);
 }
 
 export function useSwapActionHandlers(): {
   onCurrencySelection: (field: Field, currency: Currency) => void;
   onUserInput: (field: Field, typedValue: string) => void;
-  onSwitchTokens: () => void
+  onSwitchTokens: () => void;
 } {
   const { chainId, account } = useActiveWeb3React();
   const {
@@ -58,7 +64,6 @@ export function useSwapActionHandlers(): {
 
   const [Balance, Symbol] = useNativeBalance();
 
-
   const dispatch = useDispatch<AppDispatch>();
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
@@ -69,18 +74,16 @@ export function useSwapActionHandlers(): {
             ? currency.address
             : currency.isNative
             ? currency.symbol
-            : '',
+            : "",
         })
       );
     },
     [dispatch]
   );
 
-
   const onSwitchTokens = useCallback(() => {
-    dispatch(switchCurrencies())
-  }, [dispatch])
-
+    dispatch(switchCurrencies());
+  }, [dispatch]);
 
   const onUserInput = useCallback(
     (field: Field, typedValue: string) => {
@@ -91,7 +94,7 @@ export function useSwapActionHandlers(): {
   return {
     onCurrencySelection,
     onUserInput,
-    onSwitchTokens
+    onSwitchTokens,
   };
 }
 
@@ -146,34 +149,39 @@ export function useDerivedSwapInfo(): {
       return balance ? JSBI.BigInt(balance.toString()) : undefined;
     } else if (isAddress(currency.address)) {
       const token = await getERC20Token(
-        currency.address ? currency.address : '', library
+        currency.address ? currency.address : "",
+        library
       );
 
-     // const balance = await token.balanceOf(account);
-     // const amount = ethers.utils.formatEther(balance);
-      const [balance, decimals] = await Promise.all([token.balanceOf(account), token.decimals()]);
-      const amount = ethers.utils.formatUnits(balance.toString(), decimals)       
-      return amount === '0.0' ? '0' :  ParseFloat(amount, 4) ;
-
+      // const balance = await token.balanceOf(account);
+      // const amount = ethers.utils.formatEther(balance);
+      const [balance, decimals] = await Promise.all([
+        token.balanceOf(account),
+        token.decimals(),
+      ]);
+      const amount = ethers.utils.formatUnits(balance.toString(), decimals);
+      return amount === "0.0" ? "0" : ParseFloat(amount, 4);
     }
   };
-  
- 
+
   let inputError: string | undefined;
   if (!account) {
-    inputError = 'Connect Wallet';
+    inputError = "Connect Wallet";
   }
 
-  if ((inputCurrency && outputCurrency && !typedValue) || (inputCurrency && outputCurrency && typedValue == 0)){
-    inputError = 'Enter an amount';
+  if (
+    (inputCurrency && outputCurrency && !typedValue) ||
+    (inputCurrency && outputCurrency && typedValue == 0)
+  ) {
+    inputError = "Enter an amount";
   }
 
   if (!inputCurrency || !outputCurrency || !address) {
-    inputError = inputError ?? 'Select a Token';
+    inputError = inputError ?? "Select a Token";
   }
 
   if (parseFloat(typedValue) > 0 && pathArray?.length === 0 && !wrap) {
-    inputError = 'Insufficient Liquidity for this Trade.';
+    inputError = "Insufficient Liquidity for this Trade.";
   }
 
   return {
@@ -190,13 +198,13 @@ export function useDerivedSwapInfo(): {
 
 function parseTokenAmountURLParameter(urlParam: any): string {
   // eslint-disable-next-line no-restricted-globals
-  return typeof urlParam === 'string' && !isNaN(parseFloat(urlParam))
+  return typeof urlParam === "string" && !isNaN(parseFloat(urlParam))
     ? urlParam
-    : '';
+    : "";
 }
 
 function parseIndependentFieldURLParameter(urlParam: any): Field {
-  return typeof urlParam === 'string' && urlParam.toLowerCase() === 'output'
+  return typeof urlParam === "string" && urlParam.toLowerCase() === "output"
     ? Field.OUTPUT
     : Field.INPUT;
 }
@@ -205,7 +213,7 @@ const ENS_NAME_REGEX =
   /^[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)?$/;
 const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/;
 function validatedRecipient(recipient: any): string | null {
-  if (typeof recipient !== 'string') return null;
+  if (typeof recipient !== "string") return null;
   const address = isAddress(recipient);
   if (address) return address;
   if (ENS_NAME_REGEX.test(recipient)) return recipient;
@@ -213,25 +221,25 @@ function validatedRecipient(recipient: any): string | null {
   return null;
 }
 
-function parseCurrencyFromURLParameter(urlParam: any, symbol = ''): string {
-  if (typeof urlParam === 'string') {
+function parseCurrencyFromURLParameter(urlParam: any, symbol = ""): string {
+  if (typeof urlParam === "string") {
     const valid = isAddress(urlParam);
     if (valid) return valid;
     if (valid === false) return symbol;
   }
-  return urlParam ?? '';
+  return urlParam ?? "";
 }
 function queryParametersToSwapState(parsedQs: any, chainId: number) {
   let inputCurrency = parseCurrencyFromURLParameter(parsedQs.inputCurrency);
   let outputCurrency = parseCurrencyFromURLParameter(parsedQs.outputCurrency);
   const symbol = SupportedChainSymbols[chainId ?? 56];
-  if (inputCurrency === '' && outputCurrency === '') {
+  if (inputCurrency === "" && outputCurrency === "") {
     inputCurrency = symbol;
-    outputCurrency = '';
-  } else if (inputCurrency === '') {
-    inputCurrency = outputCurrency === symbol ? '' : symbol;
-  } else if (outputCurrency === '' || inputCurrency === outputCurrency) {
-    outputCurrency = inputCurrency === symbol ? '' : symbol;
+    outputCurrency = "";
+  } else if (inputCurrency === "") {
+    inputCurrency = outputCurrency === symbol ? "" : symbol;
+  } else if (outputCurrency === "" || inputCurrency === outputCurrency) {
+    outputCurrency = inputCurrency === symbol ? "" : symbol;
   }
   const recipient = validatedRecipient(parsedQs.recipient);
 

@@ -6,6 +6,7 @@ export const RGPADDRESSES: { [key: string]: string } = {
   "137": "0x4AF5ff1A60a6eF6C7c8f9C4E304cD9051fCa3Ec0",
   "80001": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
   "42261": "0x2d2cd8ED2ec05A55162308332C40C3eF1994F59D",
+  "42262": "0x4AF5ff1A60a6eF6C7c8f9C4E304cD9051fCa3Ec0",
 };
 
 //Smartswap factory addresses
@@ -17,6 +18,7 @@ export const SMARTSWAPFACTORYADDRESSES: { [key: string]: string } = {
   "137": "0xbb0fa753ae6fddb78bb66d70fc223e4a10d5f4d4",
   "80001": "0xC8F273a1656d26BB8ECBc8B267e53304533600c4",
   "42261": "0xF9d14C9516AF795ee2b5dca7479f927EEaC1EDdb",
+  "42262": "0xCE2ca7C47813E86008B0f9D5d5661356c130997f",
 };
 
 //SMARTSWAP ROUTER
@@ -28,6 +30,7 @@ export const SMARTSWAPROUTER: { [key: string]: string } = {
   "137": "0x5f5acbd6c1c98d380aa12e614510bacf39fbd531",
   "80001": "0xaEBC5E5aC2Ad8680978Ce11d03048A4E2889DEbA",
   "42261": "0x3c5AAa6cAA82CC62327C7A0849e4d854B1905A3d",
+  "42262": "0xFf672dB2558c8A78813EA3F61303460fcec656F7",
 };
 
 //Native Wrapped
@@ -39,6 +42,7 @@ export const WNATIVEADDRESSES: { [key: string]: string } = {
   "137": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
   "80001": "0x9d91d1f8Ac4CF6C698a1a15c738323E2ad6F23E4",
   "42261": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
+  "42262": "0x21C718C22D52d0F3a789b752D4c2fD5908a8A733",
 };
 export const OTHERMARKETADDRESSES: { [key: string]: string } = {
   "pancakeswap": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
@@ -54,6 +58,26 @@ export const WNATIVEADDRESSESSYMBOL: { [key: string]: string } = {
   "137": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
   "80001": "0x9d91d1f8Ac4CF6C698a1a15c738323E2ad6F23E4",
   "42261": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
+  "42262": "0x21C718C22D52d0F3a789b752D4c2fD5908a8A733",
+};
+
+export const SYMBOLS: { [key: string]: { [key: string]: string } } = {
+  ETH: {
+    "1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    "3": "0x492Df17f202e36525151Ce7BcD49d5637Dc10659",
+  },
+  BNB: {
+    "56": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "97": "0x23967E68bB6FeA03fcc3676F8E55272106F44A4A",
+  },
+  MATIC: {
+    "137": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+    "80001": "0x9d91d1f8Ac4CF6C698a1a15c738323E2ad6F23E4",
+  },
+  ROSE: {
+    "42261": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
+    "42262": "0x21C718C22D52d0F3a789b752D4c2fD5908a8A733",
+  },
 };
 
 export const MASTERCHEFV2ADDRESSES: { [key: string]: string } = {
@@ -138,22 +162,41 @@ export const SMARTSWAPLP_TOKEN5ADDRESSES: { [key: string]: string } = {
 };
 
 export const SMARTSWAPLP_TOKEN6ADDRESSES: { [key: string]: string } = {
-  '1': '0x',
-  '3': '0x',
-  '56': '0x9BbFDaaC4fBa085E5368fD334B1769646ff6b961',
-  '97': '0x5906a2f01a2fC5d6147f233970531797aD03F624',
-  '137': '0x',
-  '80001': '',
+  "1": "0x",
+  "3": "0x",
+  "56": "0x9BbFDaaC4fBa085E5368fD334B1769646ff6b961",
+  "97": "0x5906a2f01a2fC5d6147f233970531797aD03F624",
+  "137": "0x",
+  "80001": "",
 };
 
 export const SMARTSWAPLP_TOKEN7ADDRESSES: { [key: string]: string } = {
-  '1': '0x',
-  '3': '0x',
-  '56': '0x481d0811D07CCF76680e737D9C1273c2bDC52E2A',
-  '97': '0xE25E2907749df9B21C23196469ff40C597c4914D',
-  '137': '0x',
-  '80001': '',
+  "1": "0x",
+  "3": "0x",
+  "56": "0x481d0811D07CCF76680e737D9C1273c2bDC52E2A",
+  "97": "0xE25E2907749df9B21C23196469ff40C597c4914D",
+  "137": "0x",
+  "80001": "",
 };
+
+export const SMARTSWAPLP_TOKEN8ADDRESSES: { [key: string]: string } = {
+  "1": "0x",
+  "3": "0x",
+  "56": "0xdEbd3852afE9d95A6b5B6AfCc89642f69836466F",
+  "97": "0x52D48BcDe6EE6f31c8d80fCDd7ac0B07710f9449",
+  "137": "0x",
+  "80001": "",
+};
+
+export const SMARTSWAPLP_TOKEN9ADDRESSES: { [key: string]: string } = {
+  "1": "0x",
+  "3": "0x",
+  "56": "0x3D27f0652dAC08974b6B5116e6592DC6cb69F8fF",
+  "97": "0x6F2eF79CB0f64D3Ad0f72174Aae8EC47033E82Fb",
+  "137": "0x",
+  "80001": "",
+};
+
 export const RGP: { [key: string]: string } = {
   "1": "0x",
   "3": "0x80278a0Cf536e568A76425B67Fb3931Dca21535c",
@@ -162,6 +205,7 @@ export const RGP: { [key: string]: string } = {
   "137": "0x4AF5ff1A60a6eF6C7c8f9C4E304cD9051fCa3Ec0",
   "80001": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
   "42261": "0x2d2cd8ED2ec05A55162308332C40C3eF1994F59D",
+  "42262": "0x4AF5ff1A60a6eF6C7c8f9C4E304cD9051fCa3Ec0",
 };
 
 //BUSD addresses
@@ -182,8 +226,7 @@ export const USDT: { [key: string]: string } = {
   "97": "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd",
   "137": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   "80001": "0x7E1cF971de65eB065A72595B3Ac9e1b9Cc630564",
-  "42262": "0xC584fFD011e16A10fd8329853B9B8DE6E0313AD9",
-  "42261": "",
+  "42262": "0xdC19A122e268128B5eE20366299fc7b5b199C8e3",
 };
 
 //   '1': '0x',

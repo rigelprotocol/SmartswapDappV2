@@ -3,13 +3,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface ToastState {
     message: string,
     URL?: string,
-    error?: boolean,
 }
 
 const initialState: ToastState = {
     message: '',
     URL: '',
-    error: false
 };
 
 const toastSlice = createSlice({
@@ -20,17 +18,19 @@ const toastSlice = createSlice({
             state.message = action.payload.message;
             state.URL = action.payload.URL;
         },
+<<<<<<< HEAD
         errorToast: (state, action: PayloadAction<ToastState>) => {
             state.message = action.payload.message;
             state.error = action.payload.error;
         },
+=======
+>>>>>>> develop
         removeToast: (state) => {
             state.message = '';
-            state.error = false
         }
     }
 });
 
-export const { addToast, removeToast, errorToast } = toastSlice.actions;
+export const { addToast, removeToast } = toastSlice.actions;
 
 export default toastSlice.reducer;

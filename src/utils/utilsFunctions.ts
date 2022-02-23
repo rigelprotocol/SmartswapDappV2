@@ -78,7 +78,7 @@ export const getDecimals = async (
 export const switchNetwork = async (
   chainId: string,
   account: string,
-  library: Web3Provider
+  library: Web3Provider | undefined
 ) => {
   const polygonParams = {
     chainId: "0x89",
