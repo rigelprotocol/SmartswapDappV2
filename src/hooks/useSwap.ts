@@ -15,11 +15,13 @@ import { ZERO_ADDRESS } from "../constants";
 import { ethers } from "ethers";
 import { getAddress } from "../utils/hooks/usePools";
 import { SupportedChainSymbols } from "../utils/constants/chains";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../state";
 import { getNativeAddress } from "../utils/hooks/usePools";
 import { getDecimals } from "../utils/utilsFunctions";
 import { useCurrency } from "./Tokens";
+import { changeIndependentField } from "../state/swap/actions";
+import { Field } from "../state/swap/actions";
 
 const formatAmount = (number: string, decimals: number) => {
   return ethers.utils.formatUnits(number, decimals);
@@ -80,6 +82,17 @@ export const useSwap = (
 
   const typedValue = useSelector<RootState, string>(
     (state) => state.swap.typedValue
+  );
+  const dispatch = useDispatch();
+  const changeField = useCallback(
+    (inputfield: string, output: string) => {
+      if (inputfield === "OUTPUT" && output) {
+        dispatch(
+          changeIndependentField({ field: Field.INPUT, typedValue: output })
+        );
+      }
+    },
+    [dispatch]
   );
 
   let nativeAddress;
@@ -187,14 +200,9 @@ export const useSwap = (
               independentFieldString === "INPUT" ? decimal2 : decimal1
             );
 
-            setPath([
-              independentFieldString === "INPUT"
-                ? (inputAddress as string)
-                : (outputAddress as string),
-              independentFieldString === "INPUT"
-                ? (outputAddress as string)
-                : (inputAddress as string),
-            ]);
+            setPath([inputAddress as string, outputAddress as string]);
+
+            changeField(independentFieldString, output);
 
             setPathSymbol(`${Input?.symbol} - ${Output?.symbol}`);
             setAmount(output);
@@ -307,6 +315,8 @@ export const useSwap = (
                 ]);
                 setPathSymbol(`${Input?.symbol} - USDT - ${Output?.symbol}`);
 
+                changeField(independentFieldString, output);
+
                 setAmount(output);
               } else {
                 setAmount("");
@@ -368,6 +378,8 @@ export const useSwap = (
                     : (inputAddress as string),
                 ]);
                 setPathSymbol(`${Input?.symbol} - RGP - ${Output?.symbol}`);
+
+                changeField(independentFieldString, output);
 
                 setAmount(output);
               } else {
@@ -435,6 +447,8 @@ export const useSwap = (
                   } - ${Output?.symbol}`
                 );
 
+                changeField(independentFieldString, output);
+
                 setAmount(output);
               } else {
                 setAmount("");
@@ -497,6 +511,8 @@ export const useSwap = (
                     : (inputAddress as string),
                 ]);
                 setPathSymbol(`${Input?.symbol} - BUSD - ${Output?.symbol}`);
+
+                changeField(independentFieldString, output);
 
                 setAmount(output);
               } else {
@@ -568,6 +584,8 @@ export const useSwap = (
                 setPathSymbol(
                   `${Input?.symbol} - RGP - USDT - ${Output?.symbol}`
                 );
+
+                changeField(independentFieldString, output);
 
                 setAmount(output);
               } else {
@@ -641,6 +659,8 @@ export const useSwap = (
                     SupportedChainSymbols[chainId as number]
                   } - ${Output?.symbol}`
                 );
+
+                changeField(independentFieldString, output);
 
                 setAmount(output);
               } else {

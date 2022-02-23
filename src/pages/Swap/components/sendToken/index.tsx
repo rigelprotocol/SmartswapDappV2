@@ -107,6 +107,7 @@ const SendToken = () => {
     pathSymbol,
     pathArray,
     isExactIn,
+    formatAmount,
   } = useDerivedSwapInfo();
   const { independentField, typedValue } = useSwapState();
   const dependentField: Field =
@@ -296,15 +297,13 @@ const SendToken = () => {
 
   const [sendingTrx, setSendingTrx] = useState(false);
   const outputToken = useCallback((): any => {
-    if (isExactIn ? parsedAmounts[Field.OUTPUT] : parsedAmounts[Field.INPUT]) {
-      return ethers.utils.parseUnits(
-        isExactIn
-          ? (parsedAmounts[Field.OUTPUT] as string)
-          : (parsedAmounts[Field.INPUT] as string),
-        isExactIn
-          ? currencies[Field.OUTPUT]?.decimals
-          : currencies[Field.INPUT]?.decimals
-      );
+    if (parsedAmounts[Field.OUTPUT]) {
+      return isExactIn
+        ? ethers.utils.parseUnits(
+            parsedAmounts[Field.OUTPUT] as string,
+            currencies[Field.OUTPUT]?.decimals
+          )
+        : parsedAmounts[Field.OUTPUT];
     }
   }, [parsedAmounts]);
 
@@ -317,6 +316,8 @@ const SendToken = () => {
     const from = currencies[Field.INPUT]?.wrapped.address;
     const to = currencies[Field.OUTPUT]?.wrapped.address;
     console.log("output", outputToken().toString());
+    console.log("parseAmount", parsedAmount);
+    console.log("formatAmount", formatAmount);
     console.log(pathArray);
     try {
       setSendingTrx(true);
@@ -332,7 +333,7 @@ const SendToken = () => {
       );
 
       const sendTransaction = await route.swapExactTokensForTokens(
-        parsedAmount,
+        isExactIn ? parsedAmount : formatAmount,
         outputToken(),
         // [from, to],
         pathArray,
@@ -406,7 +407,8 @@ const SendToken = () => {
     const dl = getDeadline(deadline);
     const from = WNATIVEADDRESSES[chainId as number];
     const to = currencies[Field.OUTPUT]?.wrapped.address;
-
+    console.log(pathArray);
+    console.log(parsedOutput(currencies[Field.OUTPUT]?.decimals as number));
     try {
       setSendingTrx(true);
       dispatch(
