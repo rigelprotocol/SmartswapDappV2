@@ -220,6 +220,8 @@ const Remove = () => {
                   ? "ETH"
                   : pool?.path[0].token === "WROSE"
                   ? "ROSE"
+                  : pool?.path[0].token === "wROSE"
+                  ? "ROSE"
                   : pool?.path[0].token
               }
             /
@@ -229,6 +231,8 @@ const Remove = () => {
                 : pool?.path[1].token === "WETH"
                 ? "ETH"
                 : pool?.path[1].token === "WROSE"
+                ? "ROSE"
+                : pool?.path[1].token === "wROSE"
                 ? "ROSE"
                 : pool?.path[1].token
             } LP token Removal`,
@@ -254,6 +258,8 @@ const Remove = () => {
                 ? "ETH"
                 : pool?.path[0].token === "WROSE"
                 ? "ROSE"
+                : pool?.path[0].token === "wROSE"
+                ? "ROSE"
                 : pool?.path[0].token
             }
           /
@@ -263,6 +269,8 @@ const Remove = () => {
               : pool?.path[1].token === "WETH"
               ? "ETH"
               : pool?.path[1].token === "WROSE"
+              ? "ROSE"
+              : pool?.path[1].token === "wROSE"
               ? "ROSE"
               : pool?.path[1].token
           } LP token Removal`,
@@ -309,6 +317,8 @@ const Remove = () => {
                 ? "ETH"
                 : pool?.path[0].token === "WROSE"
                 ? "ROSE"
+                : pool?.path[0].token === "wROSE"
+                ? "ROSE"
                 : pool?.path[0].token
             }
            and ${parseFloat(formatAmountBMin).toFixed(6)}
@@ -318,6 +328,8 @@ const Remove = () => {
               : pool?.path[1].token === "WETH"
               ? "ETH"
               : pool?.path[1].token === "WROSE"
+              ? "ROSE"
+              : pool?.path[1].token === "wROSE"
               ? "ROSE"
               : pool?.path[1].token
           } `,
@@ -379,6 +391,8 @@ const Remove = () => {
                   ? "ETH"
                   : pool?.path[0].token === "WROSE"
                   ? "ROSE"
+                  : pool?.path[0].token === "wROSE"
+                  ? "ROSE"
                   : pool?.path[0].token
               }
             and ${outPutValueForTokenB}
@@ -388,6 +402,8 @@ const Remove = () => {
                 : pool?.path[1].token === "WETH"
                 ? "ETH"
                 : pool?.path[1].token === "WROSE"
+                ? "ROSE"
+                : pool?.path[1].token === "wROSE"
                 ? "ROSE"
                 : pool?.path[1].token
             } `,
@@ -406,6 +422,8 @@ const Remove = () => {
                 ? "ETH"
                 : pool?.path[0].token === "WROSE"
                 ? "ROSE"
+                : pool?.path[0].token === "wROSE"
+                ? "ROSE"
                 : pool?.path[0].token
             }
           /
@@ -415,6 +433,8 @@ const Remove = () => {
               : pool?.path[1].token === "WETH"
               ? "ETH"
               : pool?.path[1].token === "WROSE"
+              ? "ROSE"
+              : pool?.path[1].token === "wROSE"
               ? "ROSE"
               : pool?.path[1].token
           } LP token Removal`,
@@ -439,6 +459,8 @@ const Remove = () => {
                 ? "MATIC"
                 : pool?.path[0].token === "WROSE"
                 ? "ROSE"
+                : pool?.path[0].token === "wROSE"
+                ? "ROSE"
                 : pool?.path[0].token
             }
           /
@@ -450,6 +472,8 @@ const Remove = () => {
               : pool?.path[1].token === "WMATIC"
               ? "MATIC"
               : pool?.path[1].token === "WROSE"
+              ? "ROSE"
+              : pool?.path[1].token === "wROSE"
               ? "ROSE"
               : pool?.path[1].token
           } LP token Approval`,
@@ -488,6 +512,8 @@ const Remove = () => {
                   ? "MATIC"
                   : pool?.path[0].token === "WROSE"
                   ? "ROSE"
+                  : pool?.path[0].token === "wROSE"
+                  ? "ROSE"
                   : pool?.path[0].token
               }
             /
@@ -499,6 +525,8 @@ const Remove = () => {
                 : pool?.path[1].token === "WMATIC"
                 ? "MATIC"
                 : pool?.path[1].token === "WROSE"
+                ? "ROSE"
+                : pool?.path[1].token === "wROSE"
                 ? "ROSE"
                 : pool?.path[1].token
             } LP token Approval`,
@@ -516,6 +544,8 @@ const Remove = () => {
                   ? "MATIC"
                   : pool?.path[0].token === "WROSE"
                   ? "ROSE"
+                  : pool?.path[0].token === "wROSE"
+                  ? "ROSE"
                   : pool?.path[0].token
               }
             /
@@ -527,6 +557,8 @@ const Remove = () => {
                 : pool?.path[1].token === "WMATIC"
                 ? "MATIC"
                 : pool?.path[1].token === "WROSE"
+                ? "ROSE"
+                : pool?.path[1].token === "wROSE"
                 ? "ROSE"
                 : pool?.path[1].token
             } LP token`,
@@ -547,6 +579,8 @@ const Remove = () => {
                 ? "MATIC"
                 : pool?.path[0].token === "WROSE"
                 ? "ROSE"
+                : pool?.path[0].token === "wROSE"
+                ? "ROSE"
                 : pool?.path[0].token
             }
           /
@@ -558,6 +592,8 @@ const Remove = () => {
               : pool?.path[1].token === "WMATIC"
               ? "MATIC"
               : pool?.path[1].token === "WROSE"
+              ? "ROSE"
+              : pool?.path[1].token === "wROSE"
               ? "ROSE"
               : pool?.path[1].token
           } LP token Approval`,
@@ -582,6 +618,8 @@ const Remove = () => {
                 ? "MATIC"
                 : pool?.path[0].token === "WROSE"
                 ? "ROSE"
+                : pool?.path[0].token === "wROSE"
+                ? "ROSE"
                 : pool?.path[0].token
             }
           /
@@ -593,6 +631,8 @@ const Remove = () => {
               : pool?.path[1].token === "WMATIC"
               ? "MATIC"
               : pool?.path[1].token === "WROSE"
+              ? "ROSE"
+              : pool?.path[1].token === "wROSE"
               ? "ROSE"
               : pool?.path[1].token
           } LP token`,
@@ -630,6 +670,8 @@ const Remove = () => {
                   ? "MATIC"
                   : pool?.path[0].token === "WROSE"
                   ? "ROSE"
+                  : pool?.path[0].token === "wROSE"
+                  ? "ROSE"
                   : pool?.path[0].token
               }
             /
@@ -641,6 +683,8 @@ const Remove = () => {
                 : pool?.path[1].token === "WMATIC"
                 ? "MATIC"
                 : pool?.path[1].token === "WROSE"
+                ? "ROSE"
+                : pool?.path[1].token === "wROSE"
                 ? "ROSE"
                 : pool?.path[1].token
             } LP token`,
@@ -658,6 +702,8 @@ const Remove = () => {
                   ? "MATIC"
                   : pool?.path[0].token === "WROSE"
                   ? "ROSE"
+                  : pool?.path[0].token === "wROSE"
+                  ? "ROSE"
                   : pool?.path[0].token
               }
             /
@@ -669,6 +715,8 @@ const Remove = () => {
                 : pool?.path[1].token === "WMATIC"
                 ? "MATIC"
                 : pool?.path[1].token === "WROSE"
+                ? "ROSE"
+                : pool?.path[1].token === "wROSE"
                 ? "ROSE"
                 : pool?.path[1].token
             } LP token`,
@@ -689,6 +737,8 @@ const Remove = () => {
                 ? "MATIC"
                 : pool?.path[0].token === "WROSE"
                 ? "ROSE"
+                : pool?.path[0].token === "wROSE"
+                ? "ROSE"
                 : pool?.path[0].token
             }
           /
@@ -700,6 +750,8 @@ const Remove = () => {
               : pool?.path[1].token === "WMATIC"
               ? "MATIC"
               : pool?.path[1].token === "WROSE"
+              ? "ROSE"
+              : pool?.path[1].token === "wROSE"
               ? "ROSE"
               : pool?.path[1].token
           } LP token`,
@@ -829,6 +881,8 @@ const Remove = () => {
                         ? "MATIC"
                         : pool?.path[0].token === "WROSE"
                         ? "ROSE"
+                        : pool?.path[0].token === "wROSE"
+                        ? "ROSE"
                         : pool?.path[0].token}{" "}
                       /{" "}
                       {pool?.path[1].token === "WBNB"
@@ -838,6 +892,8 @@ const Remove = () => {
                         : pool?.path[1].token === "WMATIC"
                         ? "MATIC"
                         : pool?.path[1].token === "WROSE"
+                        ? "ROSE"
+                        : pool?.path[1].token === "wROSE"
                         ? "ROSE"
                         : pool?.path[1].token}
                     </Text>
@@ -884,6 +940,8 @@ const Remove = () => {
                           ? "MATIC"
                           : pool?.path[0].token === "WROSE"
                           ? "ROSE"
+                          : pool?.path[0].token === "wROSE"
+                          ? "ROSE"
                           : pool?.path[0].token}
                         :
                       </Text>
@@ -903,6 +961,8 @@ const Remove = () => {
                           : pool?.path[1].token === "WMATIC"
                           ? "MATIC"
                           : pool?.path[1].token === "WROSE"
+                          ? "ROSE"
+                          : pool?.path[1].token === "wROSE"
                           ? "ROSE"
                           : pool?.path[1].token}
                         :
@@ -1022,6 +1082,8 @@ const Remove = () => {
                         ? "MATIC"
                         : pool?.path[0].token === "WROSE"
                         ? "ROSE"
+                        : pool?.path[0].token === "wROSE"
+                        ? "ROSE"
                         : pool?.path[0].token}
                     </Text>
                   </Flex>
@@ -1071,6 +1133,8 @@ const Remove = () => {
                         : pool?.path[1].token === "WMATIC"
                         ? "MATIC"
                         : pool?.path[1].token === "WROSE"
+                        ? "ROSE"
+                        : pool?.path[1].token === "wROSE"
                         ? "ROSE"
                         : pool?.path[1].token}
                     </Text>
