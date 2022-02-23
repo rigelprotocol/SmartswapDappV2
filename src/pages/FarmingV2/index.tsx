@@ -502,10 +502,6 @@ export function Index() {
           await specialPool2.totalStaking(),
         ]);
 
-        const MRGPprice: number | any = ethers.utils.formatUnits(
-          pool3Reserve[1].mul(1000).div(pool3Reserve[0]),
-          3
-        );
         // const getMaticPrice = (): number => {
         //   let MaticPrice;
         //   MaticPrice = ethers.utils.formatUnits(
@@ -516,12 +512,7 @@ export function Index() {
         //   return Number(MaticPrice);
         // };
         // const MaticPrice = getMaticPrice();
-        const MRGPLiquidity = ethers.utils
-          .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * MRGPprice)), 18)
-          .toString();
-        const MRGPLiquidityV2 = ethers.utils
-          .formatUnits(rgpTotalStakingV2.mul(Math.floor(1000 * MRGPprice)), 18)
-          .toString();
+
         //
         // const RGP_WMATICLiquidity = ethers.utils
         //   .formatUnits(
@@ -574,6 +565,9 @@ export function Index() {
         const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
         const USDC_RGPLiq = totalRGP3 * rgpPrice * 2;
 
+        const MRGPLiquidityV2 = ethers.utils
+          .formatUnits(rgpTotalStakingV2.mul(Math.floor(1000 * rgpPrice)), 18)
+          .toString();
 
         dispatch(
           updateTotalLiquidity([
@@ -680,14 +674,6 @@ export function Index() {
           // pool5.getReserves(),
         ]);
 
-        const MRGPprice: number | any = ethers.utils.formatUnits(
-          pool3Reserve[1].mul(1000).div(pool3Reserve[0]),
-          3
-        );
-        const MRGPLiquidityV2 = ethers.utils
-          .formatUnits(rgpTotalStakingV2.mul(Math.floor(1000 * MRGPprice)), 18)
-          .toString();
-
         const totalUSDT2: number | any = ethers.utils.formatUnits(
           pool2Reserve[1],
           6
@@ -709,6 +695,10 @@ export function Index() {
 
         const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
         const USDC_RGPLiq = totalRGP3 * rgpPrice * 2;
+
+        const MRGPLiquidityV2 = ethers.utils
+          .formatUnits(rgpTotalStakingV2.mul(Math.floor(1000 * rgpPrice)), 18)
+          .toString();
 
         dispatch(
           updateTotalLiquidity([

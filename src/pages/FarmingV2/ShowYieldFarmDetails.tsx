@@ -1564,10 +1564,10 @@ const ShowYieldFarmDetails = ({
         flexDirection={["column", "column", "row"]}
         color={mode === DARK_THEME ? "#F1F5F8" : "#333333"}
         background={mode === DARK_THEME ? "#213345" : "#F2F5F8"}
-        padding='0 20px'
         paddingBottom='4px'
         border={mode === DARK_THEME ? "2px solid #324D68" : "2px solid #DEE6ED"}
         width='100%'
+        justifyContent='space-around'
       >
         <Box
           flexBasis='35%'
@@ -1654,7 +1654,7 @@ const ShowYieldFarmDetails = ({
         </Box>
         {/* margin={['0', '0', '0 20px']} */}
         <Box
-          flexBasis='30%'
+          flexBasis='35%'
           width='100%'
           display='flex'
           justifyContent='space-around'
@@ -1744,52 +1744,7 @@ const ShowYieldFarmDetails = ({
         </Box>
 
         <Box
-          flexBasis='20%'
-          width='100%'
-          display='flex'
-          justifyContent='space-around'
-        >
-          <Box>
-            {
-              <Flex marginTop='10px'>
-                <Text fontSize='24px' marginTop='15px' fontWeight='bold'>
-                  {FarmingFeeLoading ? (
-                    <Spinner speed='0.65s' color='#999999' />
-                  ) : (
-                    farmingFee
-                  )}
-                </Text>
-                <Flex flexDirection={["column", "column", "column"]}>
-                  <Text
-                    fontSize='16px'
-                    color={mode === DARK_THEME ? "#999999" : "#999999"}
-                    textAlign='right'
-                    marginLeft='30px'
-                  >
-                    Minimum
-                  </Text>{" "}
-                  <Text
-                    fontSize='16px'
-                    color={mode === DARK_THEME ? "#999999" : "#999999"}
-                    marginLeft='30px'
-                  >
-                    Farming Fee
-                  </Text>{" "}
-                </Flex>
-              </Flex>
-            }
-          </Box >
-
-          <Box
-            my={3}
-            mx={1}
-            display={{ base: "none", md: "block", lg: "block" }}
-          >
-            <Divider orientation='vertical' height='84px' />
-          </Box>
-        </Box >
-        <Box
-          flexBasis='15%'
+          flexBasis='30%'
           width='100%'
           margin={["0", "0", "0 20px"]}
           justifySelf='end'
