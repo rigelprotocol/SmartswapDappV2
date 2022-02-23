@@ -40,6 +40,11 @@ export const WNATIVEADDRESSES: { [key: string]: string } = {
   "80001": "0x9d91d1f8Ac4CF6C698a1a15c738323E2ad6F23E4",
   "42261": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
 };
+export const OTHERMARKETADDRESSES: { [key: string]: string } = {
+  "pancakeswap": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+  "uniswap": "",
+  "sushiswap": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
+};
 
 export const WNATIVEADDRESSESSYMBOL: { [key: string]: string } = {
   "1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",

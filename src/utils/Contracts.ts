@@ -120,6 +120,13 @@ export const RGPSpecialPool2 = async (address: string, library: Web3Provider | u
     library?.getSigner()
   );
 };
+export const otherMarketPriceContract = async (address: string, library: Web3Provider | undefined) => {
+  return new Contract(
+    address,
+    SmartSwapRouterV2Abi,
+    library?.getSigner()
+  );
+};
 
 //Liquuidity provider token contracts
 
@@ -166,17 +173,17 @@ export const smartSwapLPTokenV2PoolFive = async (address: string, library: Web3P
 
 export const smartSwapLPTokenV2PoolSix = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      SmartSwapLPTokenABI3,
-      library?.getSigner()
+    address,
+    SmartSwapLPTokenABI3,
+    library?.getSigner()
   );
 };
 
 export const smartSwapLPTokenV2PoolSeven = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      SmartSwapLPTokenABI3,
-      library?.getSigner()
+    address,
+    SmartSwapLPTokenABI3,
+    library?.getSigner()
   );
 };
 

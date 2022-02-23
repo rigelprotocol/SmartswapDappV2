@@ -35,8 +35,8 @@ import {
   ChevronDownIcon
 } from "@chakra-ui/icons";
 import { useDispatch } from "react-redux";
-import { autoSwapV2, rigelToken, SmartSwapRouter } from '../../utils/Contracts';
-import { RGPADDRESSES, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES, SMARTSWAPROUTER } from '../../utils/addresses';
+import { autoSwapV2, rigelToken, SmartSwapRouter, otherMarketPriceContract } from '../../utils/Contracts';
+import { RGPADDRESSES, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES, SMARTSWAPROUTER, OTHERMARKETADDRESSES } from '../../utils/addresses';
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { changeFrequencyTodays } from '../../utils/utilsFunctions';
 
@@ -68,9 +68,11 @@ const SetPrice = () => {
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [sendingTransaction, setSendingTransaction] = useState(false)
   const [selectedFrequency, setSelectedFrequency] = useState("daily")
+  const [marketType, setMarketType] = useState("pancakeswap")
   const [successfullyTransaction, setSuccessfullyTransaction] = useState<String[] | []>([])
   const [percentageChange, setPercentageChange] = useState<string>("0")
   const [priceOut, setPriceOut] = useState<string>("")
+  const [otherMarketprice, setOtherMarketprice] = useState<string>("0")
   const [approval, setApproval] = useState<String[]>([])
 
   const handleTypeInput = useCallback(
@@ -95,11 +97,11 @@ const SetPrice = () => {
   useEffect(async () => {
     await checkForApproval()
   }, [currencies[Field.INPUT]])
-  useEffect(() => {
-    if (currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
-      getPriceForOne()
-    }
-  }, [currencies[Field.INPUT], currencies[Field.OUTPUT]])
+  // useEffect(() => {
+  //   if (currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
+  //     getPriceForOne()
+  //   }
+  // }, [currencies[Field.INPUT], currencies[Field.OUTPUT]])
 
   useEffect(() => {
     if (chainId === 97 && account)
@@ -107,18 +109,46 @@ const SetPrice = () => {
   }, [chainId, account])
 
 
-  const getPriceForOne = async () => {
-    const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
-    const routeAddress = currencies[Field.INPUT]?.isNative ? [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
-      currencies[Field.OUTPUT]?.isNative ? [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
-        [currencies[Field.INPUT]?.wrapped.address, currencies[Field.OUTPUT]?.wrapped.address]
-    console.log(routeAddress)
-    const priceOutput = await rout.getAmountsOut(
-      '1000000000000000000',
-      routeAddress
-    );
-    setPriceOut(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
-  }
+
+  useMemo(async () => {
+    if (currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
+      const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
+      const routeAddress = currencies[Field.INPUT]?.isNative ? [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
+        currencies[Field.OUTPUT]?.isNative ? [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
+          [currencies[Field.INPUT]?.wrapped.address, currencies[Field.OUTPUT]?.wrapped.address]
+      console.log(routeAddress)
+      const priceOutput = await rout.getAmountsOut(
+        '1000000000000000000',
+        routeAddress
+      );
+      setPriceOut(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
+    }
+  }, [currencies[Field.INPUT], currencies[Field.OUTPUT]])
+
+
+  useMemo(async () => {
+    if (chainId === 56 && currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
+
+      console.log(marketType, OTHERMARKETADDRESSES[marketType])
+      const rout = await otherMarketPriceContract(OTHERMARKETADDRESSES[marketType], library);
+      const routeAddress = currencies[Field.INPUT]?.isNative ? [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
+        currencies[Field.OUTPUT]?.isNative ? [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
+          [currencies[Field.INPUT]?.wrapped.address, currencies[Field.OUTPUT]?.wrapped.address]
+      console.log(routeAddress)
+      if (typedValue) {
+        const priceOutput = await rout.getAmountsOut(
+          Web3.utils.toWei(typedValue, 'ether'),
+          routeAddress
+        );
+        console.log(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
+        setOtherMarketprice(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
+      }
+    }
+  }, [chainId, currencies[Field.INPUT], currencies[Field.OUTPUT], marketType, typedValue])
+
+
+
+
   const getDataFromDataBase = async () => {
     try {
       let result = await fetch(`https://rigelprotocol-autoswap.herokuapp.com/auto/data/${account}`)
@@ -189,12 +219,6 @@ const SetPrice = () => {
         setSignedTransaction({ ...sig, mess })
         setTransactionSigned(true)
 
-        let accounts = web3.eth.accounts.recover({
-          messageHash: mess,
-          v: web3.utils.toHex(sig.v.toString()),
-          r: sig.r,
-          s: sig.s
-        })
         // await checkForApproval()
       } catch (e) {
         dispatch(
@@ -499,9 +523,10 @@ const SetPrice = () => {
                 </Box>
                 <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2}>
                   <Flex>
-                    <Text color={textColorOne} fontSize="16px">
-                      Uniswap
-                    </Text>
+                    <Select variant='unstyled' width="110px" cursor="pointer" onChange={(e) => setMarketType(e.target.value)}>
+                      <option value='pancakeswap'>Pancakeswap</option>
+                      <option value='sushiswap'>Sushiswap</option>
+                    </Select>
                     <ChevronDownIcon mt={1} />
                     <Select variant='unstyled' placeholder='Unstyled'>
                       <option value='daily'>Daily</option>
@@ -510,8 +535,8 @@ const SetPrice = () => {
                     </Select>
                     <Spacer />
                     <VStack>
-                      <Text fontSize="24px" color={textColorOne}>
-                        2.6766
+                      <Text fontSize="24px" color={textColorOne} isTruncated width="160px" >
+                        {otherMarketprice}
                       </Text>
                       <Text fontSize="14px" color={color}>
                         -2.67
@@ -644,6 +669,7 @@ const SetPrice = () => {
                     currency={currencies[Field.OUTPUT]}
                     otherCurrency={currencies[Field.INPUT]}
                     display={true}
+                    value=""
                   />
                 </Box>
 
@@ -663,15 +689,15 @@ const SetPrice = () => {
                 </Box>
                 <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2}>
                   <Flex>
-                    <Select variant='unstyled' placeholder='Uniswap' width="110px" cursor="pointer">
-                      <option value='pancake'>Pancakeswap</option>
+                    <Select variant='unstyled' width="110px" cursor="pointer" onChange={(e) => setMarketType(e.target.value)} textAlign="right">
+                      <option value='pancakeswap'>Pancakeswap</option>
                       <option value='sushiswap'>Sushiswap</option>
                     </Select>
 
                     <Spacer />
                     <VStack>
-                      <Text fontSize="24px" color={textColorOne}>
-                        2.6766
+                      <Text fontSize="24px" color={textColorOne} textAlign="right" isTruncated width="160px" >
+                        {otherMarketprice}
                       </Text>
                       <Text fontSize="14px" color={color}>
                         -2.67
