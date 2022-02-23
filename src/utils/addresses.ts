@@ -56,6 +56,25 @@ export const WNATIVEADDRESSESSYMBOL: { [key: string]: string } = {
   "42262": "0x21C718C22D52d0F3a789b752D4c2fD5908a8A733",
 };
 
+export const SYMBOLS: { [key: string]: { [key: string]: string } } = {
+  ETH: {
+    "1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    "3": "0x492Df17f202e36525151Ce7BcD49d5637Dc10659",
+  },
+  BNB: {
+    "56": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "97": "0x23967E68bB6FeA03fcc3676F8E55272106F44A4A",
+  },
+  MATIC: {
+    "137": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+    "80001": "0x9d91d1f8Ac4CF6C698a1a15c738323E2ad6F23E4",
+  },
+  ROSE: {
+    "42261": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
+    "42262": "0x21C718C22D52d0F3a789b752D4c2fD5908a8A733",
+  },
+};
+
 export const MASTERCHEFV2ADDRESSES: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
