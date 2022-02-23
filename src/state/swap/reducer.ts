@@ -5,10 +5,6 @@ import {
   typeInput,
   replaceSwapState,
   switchCurrencies,
-<<<<<<< HEAD
-=======
-  changeIndependentField,
->>>>>>> d3870f9 (Fix input issues)
 } from "./actions";
 export interface SwapState {
   readonly independentField: Field;

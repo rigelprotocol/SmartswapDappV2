@@ -12,10 +12,7 @@ export const selectCurrency = createAction<{
 export const typeInput =
   createAction<{ field: Field; typedValue: string }>("swap/typeInput");
 export const switchCurrencies = createAction<void>("swap/switchCurrencies");
-export const changeIndependentField = createAction<{
-  field: Field;
-  typedValue: string;
-}>("swap/changeIndependentField");
+
 export const replaceSwapState = createAction<{
   field: Field;
   typedValue: string;
