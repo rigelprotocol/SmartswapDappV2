@@ -144,7 +144,7 @@ export function useDerivedSwapInfo(): {
 
   const formatAmount = tryParseAmount(
     amount as string,
-    (isExactIn ? inputCurrency : outputCurrency) ?? undefined
+    inputCurrency as Currency
   );
 
   const showWrap = wrap;
