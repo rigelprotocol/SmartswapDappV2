@@ -5,7 +5,6 @@ import From from './components/sendToken/From';
 import To from './components/sendToken/To';
 import SwapSettings from './components/sendToken/SwapSettings';
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
-import USDTLOGO from '../../assets/roundedlogo.svg';
 import { VectorIcon, ExclamationIcon, SwitchIcon } from '../../theme/components/Icons';
 import { useAutoTimeActionHandlers, useDerivedAutoTimeInfo, useAutoTimeState } from '../../state/auto-time/hooks';
 import { getERC20Token } from '../../utils/utilsFunctions';
@@ -36,8 +35,8 @@ import {
   ChevronDownIcon
 } from "@chakra-ui/icons";
 import { useDispatch } from "react-redux";
-import { autoSwapV2, rigelToken } from '../../utils/Contracts';
-import { RGPADDRESSES, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES } from '../../utils/addresses';
+import { autoSwapV2, rigelToken, SmartSwapRouter } from '../../utils/Contracts';
+import { RGPADDRESSES, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES, SMARTSWAPROUTER } from '../../utils/addresses';
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { changeFrequencyTodays } from '../../utils/utilsFunctions';
 
@@ -71,6 +70,7 @@ const SetPrice = () => {
   const [selectedFrequency, setSelectedFrequency] = useState("daily")
   const [successfullyTransaction, setSuccessfullyTransaction] = useState<String[] | []>([])
   const [percentageChange, setPercentageChange] = useState<string>("0")
+  const [priceOut, setPriceOut] = useState<string>("")
   const [approval, setApproval] = useState<String[]>([])
 
   const handleTypeInput = useCallback(
@@ -95,12 +95,30 @@ const SetPrice = () => {
   useEffect(async () => {
     await checkForApproval()
   }, [currencies[Field.INPUT]])
+  useEffect(() => {
+    if (currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
+      getPriceForOne()
+    }
+  }, [currencies[Field.INPUT], currencies[Field.OUTPUT]])
 
   useEffect(() => {
     if (chainId === 97 && account)
       getDataFromDataBase()
   }, [chainId, account])
 
+
+  const getPriceForOne = async () => {
+    const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
+    const routeAddress = currencies[Field.INPUT]?.isNative ? [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
+      currencies[Field.OUTPUT]?.isNative ? [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
+        [currencies[Field.INPUT]?.wrapped.address, currencies[Field.OUTPUT]?.wrapped.address]
+    console.log(routeAddress)
+    const priceOutput = await rout.getAmountsOut(
+      '1000000000000000000',
+      routeAddress
+    );
+    setPriceOut(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
+  }
   const getDataFromDataBase = async () => {
     try {
       let result = await fetch(`https://rigelprotocol-autoswap.herokuapp.com/auto/data/${account}`)
@@ -349,6 +367,7 @@ const SetPrice = () => {
           frequency: selectedFrequency,
           frequencyNumber: changeFrequencyToday.days,
           presentDate: changeFrequencyToday.today,
+          presentMonth: changeFrequencyToday.month,
           fromAddress: currencies[Field.INPUT]?.isNative ? WNATIVEADDRESSES[chainId as number] : currencies[Field.INPUT]?.wrapped.address,
           toAddress: currencies[Field.OUTPUT]?.isNative ? WNATIVEADDRESSES[chainId as number] : currencies[Field.OUTPUT]?.wrapped.address,
           signature: signedTransaction,
@@ -484,6 +503,11 @@ const SetPrice = () => {
                       Uniswap
                     </Text>
                     <ChevronDownIcon mt={1} />
+                    <Select variant='unstyled' placeholder='Unstyled'>
+                      <option value='daily'>Daily</option>
+                      <option value='weekly'>Weekly</option>
+                      <option value='monthly'>Monthly</option>
+                    </Select>
                     <Spacer />
                     <VStack>
                       <Text fontSize="24px" color={textColorOne}>
@@ -502,10 +526,16 @@ const SetPrice = () => {
                   <VectorIcon />
                 </Center>
                 <Spacer />
-                <Text fontSize="14px" mr={2} color={textColorOne}>
-                  1 RGP = 1.34566 USDT
-                </Text>
-                <ExclamationIcon />
+                {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
+                  <>
+                    <Text fontSize="14px" mr={2} color={textColorOne}>
+                      1 {currencies[Field.INPUT]?.symbol} = {priceOut} {currencies[Field.OUTPUT]?.symbol}
+                    </Text>
+                    <ExclamationIcon />
+                  </>
+
+                }
+
               </Flex>
               <Box display="flex" mt={5}>
                 <VStack>
@@ -633,10 +663,11 @@ const SetPrice = () => {
                 </Box>
                 <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2}>
                   <Flex>
-                    <Text color={textColorOne} fontSize="16px">
-                      Uniswap
-                    </Text>
-                    <ChevronDownIcon mt={1} />
+                    <Select variant='unstyled' placeholder='Uniswap' width="110px" cursor="pointer">
+                      <option value='pancake'>Pancakeswap</option>
+                      <option value='sushiswap'>Sushiswap</option>
+                    </Select>
+
                     <Spacer />
                     <VStack>
                       <Text fontSize="24px" color={textColorOne}>
@@ -655,10 +686,17 @@ const SetPrice = () => {
                   <VectorIcon />
                 </Center>
                 <Spacer />
-                <Text fontSize="14px" mr={2} color={textColorOne}>
-                  1 RGP = 1.34566 USDT
-                </Text>
-                <ExclamationIcon />
+                {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
+                  <>
+                    <Text fontSize="14px" mr={2} color={textColorOne}>
+                      1 {currencies[Field.INPUT]?.symbol} = {priceOut} {currencies[Field.OUTPUT]?.symbol}
+                    </Text>
+                    <ExclamationIcon />
+                  </>
+
+                }
+
+
               </Flex>
               <Box display="flex" mt={5}>
                 <VStack>
@@ -688,11 +726,6 @@ const SetPrice = () => {
                     </Text>
                     <ExclamationIcon />
                   </Flex>
-                  {/* <Menu>
-                    <MenuButton as={Button} rightIcon={<ChevronDownIcon />} size="md" bg={bgColor} fontSize="16px" color={textColorOne} borderColor={borderColor} borderWidth="1px">
-                      Week
-                    </MenuButton>
-                  </Menu> */}
                   <Select onChange={(e) => setSelectedFrequency(e.target.value)}>
                     <option value='daily'>Daily</option>
                     <option value='weekly'>Weekly</option>
