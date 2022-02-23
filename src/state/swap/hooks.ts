@@ -135,8 +135,10 @@ export function useDerivedSwapInfo(): {
   );
 
   const [address, wrap, amount, pathArray, pathSymbol] = useSwap(
-    isExactIn ? inputCurrency : outputCurrency,
-    isExactIn ? outputCurrency : inputCurrency,
+    // isExactIn ? inputCurrency : outputCurrency,
+    inputCurrency,
+    // isExactIn ? outputCurrency : inputCurrency,
+    outputCurrency,
     parsedAmount,
     inputCurrency,
     outputCurrency

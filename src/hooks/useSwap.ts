@@ -199,13 +199,30 @@ export const useSwap = (
               amountOut[1],
               independentFieldString === "INPUT" ? decimal2 : decimal1
             );
+            const amountsIn = await SwapRouter.getAmountsIn(amountIn, [
+              tokenOneAddress,
+              tokenTwoAddress,
+            ]);
+
+            const output = formatAmount(amountOut[1], currencyB.decimals);
+
+            const amountsInOutput = formatAmount(
+              amountsIn[0],
+              currencyB.decimals
+            );
+
+            console.log(amountsIn[1].toString());
+            console.log(amountsInOutput);
+            console.log(tokenOneAddress, tokenTwoAddress);
 
             setPath([inputAddress as string, outputAddress as string]);
 
-            changeField(independentFieldString, output);
+            // changeField(independentFieldString, amountsInOutput);
 
             setPathSymbol(`${Input?.symbol} - ${Output?.symbol}`);
-            setAmount(output);
+            setAmount(
+              independentFieldString === "INPUT" ? output : amountsInOutput
+            );
           } else {
             setAmount("");
           }
