@@ -502,6 +502,10 @@ export function Index() {
           await specialPool2.totalStaking(),
         ]);
 
+        const MRGPprice: number | any = ethers.utils.formatUnits(
+          pool3Reserve[1].mul(1000).div(pool3Reserve[0]),
+          3
+        );
         // const getMaticPrice = (): number => {
         //   let MaticPrice;
         //   MaticPrice = ethers.utils.formatUnits(
@@ -560,13 +564,14 @@ export function Index() {
             pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
             3
         );
+        console.log(`price2- ${RGPprice}`);
 
         const RGP_USDTLiq = totalUSDT2 * 2;
         const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
         const USDC_RGPLiq = totalRGP3 * rgpPrice * 2;
 
         const MRGPLiquidityV2 = ethers.utils
-          .formatUnits(rgpTotalStakingV2.mul(Math.floor(1000 * rgpPrice)), 18)
+          .formatUnits(rgpTotalStakingV2.mul(Math.floor(Number(rgpPrice) * 1000)), 18)
           .toString();
 
         dispatch(
@@ -673,6 +678,10 @@ export function Index() {
           // pool4.getReserves(),
           // pool5.getReserves(),
         ]);
+        const MRGPprice: number | any = ethers.utils.formatUnits(
+          pool3Reserve[1].mul(1000).div(pool3Reserve[0]),
+          3
+        );
 
         const totalUSDT2: number | any = ethers.utils.formatUnits(
           pool2Reserve[1],
@@ -697,7 +706,7 @@ export function Index() {
         const USDC_RGPLiq = totalRGP3 * rgpPrice * 2;
 
         const MRGPLiquidityV2 = ethers.utils
-          .formatUnits(rgpTotalStakingV2.mul(Math.floor(1000 * rgpPrice)), 18)
+          .formatUnits(rgpTotalStakingV2.mul(Math.floor(Number(rgpPrice) * 1000)), 18)
           .toString();
 
         dispatch(
