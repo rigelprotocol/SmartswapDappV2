@@ -106,6 +106,7 @@ const SendToken = () => {
     showWrap,
     pathSymbol,
     pathArray,
+    isExactIn,
   } = useDerivedSwapInfo();
   const { independentField, typedValue } = useSwapState();
   const dependentField: Field =
@@ -295,10 +296,14 @@ const SendToken = () => {
 
   const [sendingTrx, setSendingTrx] = useState(false);
   const outputToken = useCallback((): any => {
-    if (parsedAmounts[Field.OUTPUT]) {
+    if (isExactIn ? parsedAmounts[Field.OUTPUT] : parsedAmounts[Field.INPUT]) {
       return ethers.utils.parseUnits(
-        parsedAmounts[Field.OUTPUT] as string,
-        currencies[Field.OUTPUT]?.decimals
+        isExactIn
+          ? (parsedAmounts[Field.OUTPUT] as string)
+          : (parsedAmounts[Field.INPUT] as string),
+        isExactIn
+          ? currencies[Field.OUTPUT]?.decimals
+          : currencies[Field.INPUT]?.decimals
       );
     }
   }, [parsedAmounts]);
@@ -312,6 +317,7 @@ const SendToken = () => {
     const from = currencies[Field.INPUT]?.wrapped.address;
     const to = currencies[Field.OUTPUT]?.wrapped.address;
     console.log("output", outputToken().toString());
+    console.log(pathArray);
     try {
       setSendingTrx(true);
       dispatch(

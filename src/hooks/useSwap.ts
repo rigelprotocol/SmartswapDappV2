@@ -54,7 +54,9 @@ export const useSwap = (
   currencyA: Currency,
   currencyB: Currency,
   amountIn?: string,
-  isExactIn?: string
+  isExactIn?: string,
+  Input?: Currency,
+  Output?: Currency
 ) => {
   const { chainId, library } = useActiveWeb3React();
   const [address, setAddress] = useState<string>();
@@ -94,11 +96,21 @@ export const useSwap = (
   //   ? [currencyA?.wrapped, currencyB?.wrapped]
   //   : [undefined, undefined];
 
-  const [tokenA, tokenB] = [
-    useCurrency(Id1)?.wrapped,
-    useCurrency(Id2)?.wrapped,
-  ];
+  // const [tokenA, tokenB] = [
+  //   useCurrency(Id1)?.wrapped,
+  //   useCurrency(Id2)?.wrapped,
+  // ];
 
+  const [tokenA, tokenB] = chainId
+    ? [currencyA?.wrapped, currencyB?.wrapped]
+    : [undefined, undefined];
+
+  const [inputCurrency, outputCurrency] = chainId
+    ? [Input?.wrapped, Output?.wrapped]
+    : [undefined, undefined];
+
+  const inputAddress = inputCurrency?.address || nativeAddress?.address;
+  const outputAddress = outputCurrency?.address || nativeAddress?.address;
   const tokenOneAddress = tokenA?.address || nativeAddress?.address;
   const tokenTwoAddress = tokenB?.address || nativeAddress?.address;
 
@@ -175,8 +187,16 @@ export const useSwap = (
               independentFieldString === "INPUT" ? decimal2 : decimal1
             );
 
-            setPath([tokenOneAddress as string, tokenTwoAddress as string]);
-            setPathSymbol(`${currencyA.symbol} - ${currencyB.symbol}`);
+            setPath([
+              independentFieldString === "INPUT"
+                ? (inputAddress as string)
+                : (outputAddress as string),
+              independentFieldString === "INPUT"
+                ? (outputAddress as string)
+                : (inputAddress as string),
+            ]);
+
+            setPathSymbol(`${Input?.symbol} - ${Output?.symbol}`);
             setAmount(output);
           } else {
             setAmount("");
@@ -277,13 +297,15 @@ export const useSwap = (
                   independentFieldString === "INPUT" ? decimal2 : decimal1
                 );
                 setPath([
-                  CurrencyA as string,
+                  independentFieldString === "INPUT"
+                    ? (inputAddress as string)
+                    : (outputAddress as string),
                   USDT[chainId as number],
-                  CurrencyB as string,
+                  independentFieldString === "INPUT"
+                    ? (outputAddress as string)
+                    : (inputAddress as string),
                 ]);
-                setPathSymbol(
-                  `${currencyA.symbol} - USDT - ${currencyB.symbol}`
-                );
+                setPathSymbol(`${Input?.symbol} - USDT - ${Output?.symbol}`);
 
                 setAmount(output);
               } else {
@@ -337,13 +359,15 @@ export const useSwap = (
                   independentFieldString === "INPUT" ? decimal2 : decimal1
                 );
                 setPath([
-                  CurrencyA as string,
+                  independentFieldString === "INPUT"
+                    ? (inputAddress as string)
+                    : (outputAddress as string),
                   RGPADDRESSES[chainId as number],
-                  CurrencyB as string,
+                  independentFieldString === "INPUT"
+                    ? (outputAddress as string)
+                    : (inputAddress as string),
                 ]);
-                setPathSymbol(
-                  `${currencyA.symbol} - RGP - ${currencyB.symbol}`
-                );
+                setPathSymbol(`${Input?.symbol} - RGP - ${Output?.symbol}`);
 
                 setAmount(output);
               } else {
@@ -397,14 +421,18 @@ export const useSwap = (
                   independentFieldString === "INPUT" ? decimal2 : decimal1
                 );
                 setPath([
-                  CurrencyA as string,
+                  independentFieldString === "INPUT"
+                    ? (inputAddress as string)
+                    : (outputAddress as string),
                   WNATIVEADDRESSES[chainId as number],
-                  CurrencyB as string,
+                  independentFieldString === "INPUT"
+                    ? (outputAddress as string)
+                    : (inputAddress as string),
                 ]);
                 setPathSymbol(
-                  `${currencyA.symbol} - ${
+                  `${Input?.symbol} - ${
                     SupportedChainSymbols[chainId as number]
-                  } - ${currencyB.symbol}`
+                  } - ${Output?.symbol}`
                 );
 
                 setAmount(output);
@@ -460,13 +488,15 @@ export const useSwap = (
                 );
 
                 setPath([
-                  CurrencyA as string,
+                  independentFieldString === "INPUT"
+                    ? (inputAddress as string)
+                    : (outputAddress as string),
                   BUSD[chainId as number],
-                  CurrencyB as string,
+                  independentFieldString === "INPUT"
+                    ? (outputAddress as string)
+                    : (inputAddress as string),
                 ]);
-                setPathSymbol(
-                  `${currencyA.symbol} - BUSD - ${currencyB.symbol}`
-                );
+                setPathSymbol(`${Input?.symbol} - BUSD - ${Output?.symbol}`);
 
                 setAmount(output);
               } else {
@@ -526,13 +556,17 @@ export const useSwap = (
                   independentFieldString === "INPUT" ? decimal2 : decimal1
                 );
                 setPath([
-                  CurrencyA as string,
+                  independentFieldString === "INPUT"
+                    ? (inputAddress as string)
+                    : (outputAddress as string),
                   RGPADDRESSES[chainId as number],
                   USDT[chainId as number],
-                  CurrencyB as string,
+                  independentFieldString === "INPUT"
+                    ? (outputAddress as string)
+                    : (inputAddress as string),
                 ]);
                 setPathSymbol(
-                  `${currencyA.symbol} - RGP - USDT - ${currencyB.symbol}`
+                  `${Input?.symbol} - RGP - USDT - ${Output?.symbol}`
                 );
 
                 setAmount(output);
@@ -593,15 +627,19 @@ export const useSwap = (
                   independentFieldString === "INPUT" ? decimal2 : decimal1
                 );
                 setPath([
-                  CurrencyA as string,
+                  independentFieldString === "INPUT"
+                    ? (inputAddress as string)
+                    : (outputAddress as string),
                   USDT[chainId as number],
                   WNATIVEADDRESSES[chainId as number],
-                  CurrencyB as string,
+                  independentFieldString === "INPUT"
+                    ? (outputAddress as string)
+                    : (inputAddress as string),
                 ]);
                 setPathSymbol(
-                  `${currencyA.symbol} - USDT - ${
+                  `${Input?.symbol} - USDT - ${
                     SupportedChainSymbols[chainId as number]
-                  } - ${currencyB.symbol}`
+                  } - ${Output?.symbol}`
                 );
 
                 setAmount(output);

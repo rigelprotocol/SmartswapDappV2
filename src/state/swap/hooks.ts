@@ -107,6 +107,7 @@ export function useDerivedSwapInfo(): {
   showWrap: boolean;
   pathArray: [];
   pathSymbol: string;
+  isExactIn: boolean;
 } {
   const { account } = useActiveWeb3React();
   const [Balance] = useNativeBalance();
@@ -135,7 +136,9 @@ export function useDerivedSwapInfo(): {
   const [address, wrap, amount, pathArray, pathSymbol] = useSwap(
     isExactIn ? inputCurrency : outputCurrency,
     isExactIn ? outputCurrency : inputCurrency,
-    parsedAmount
+    parsedAmount,
+    inputCurrency,
+    outputCurrency
   );
 
   const showWrap = wrap;
@@ -193,6 +196,7 @@ export function useDerivedSwapInfo(): {
     showWrap,
     pathArray,
     pathSymbol,
+    isExactIn,
   };
 }
 
