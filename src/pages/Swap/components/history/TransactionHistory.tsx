@@ -30,7 +30,7 @@ const TransactionHistory = ({ data }: { data: DataType }) => {
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   const successColor = useColorModeValue('#22bb33', '#75f083');
   const deleteDataFromDatabase = async (id: string) => {
-    const data = await fetch(`http://localhost:7000/auto/data/${id}`, { method: 'DELETE' })
+    const data = await fetch(`https://rigelprotocol-autoswap.herokuapp.com/auto/data/${id}`, { method: 'DELETE' })
     const res = await data.json()
     if (res === "success") {
       alert("successfully deleted")
