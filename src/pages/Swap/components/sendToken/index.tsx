@@ -239,6 +239,7 @@ const SendToken = () => {
       return setHasBeenApproved(true);
     }
     try {
+      console.log(parsedAmount);
       dispatch(
         setOpenModal({
           message: `Approve Tokens for Swap`,
@@ -310,30 +311,18 @@ const SendToken = () => {
     const dl = getDeadline(deadline);
     const from = currencies[Field.INPUT]?.wrapped.address;
     const to = currencies[Field.OUTPUT]?.wrapped.address;
-    // try {
-    setSendingTrx(true);
-    dispatch(
-      setOpenModal({
-        message: `Swapping ${formattedAmounts[Field.INPUT]} ${currencies[Field.INPUT]?.symbol
-          } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol
-          }`,
-        trxState: TrxState.WaitingForConfirmation,
-      })
-    );
+    console.log("output", outputToken().toString());
+    try {
+      setSendingTrx(true);
+      dispatch(
+        setOpenModal({
+          message: `Swapping ${formattedAmounts[Field.INPUT]} ${currencies[Field.INPUT]?.symbol
+            } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol
+            }`,
+          trxState: TrxState.WaitingForConfirmation,
+        })
+      );
 
-<<<<<<< HEAD
-    const sendTransaction = await route.swapExactTokensForTokens(
-      parsedAmount,
-      outputToken(),
-      // [from, to],
-      pathArray,
-      account,
-      dl,
-      {
-        from: account,
-        // gasLimit: 290000,
-        // gasPrice: ethers.utils.parseUnits("10", "gwei"),
-=======
       const sendTransaction = await route.swapExactTokensForTokens(
         parsedAmount,
         outputToken(),
@@ -380,62 +369,24 @@ const SendToken = () => {
         );
         dispatch(
           addToast({
-            message: `Swap ${inputAmount} ${
-              currencies[Field.INPUT]?.symbol
-            } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${inputAmount} ${currencies[Field.INPUT]?.symbol
+              } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
         onUserInput(Field.INPUT, "");
->>>>>>> develop
       }
-    );
-    const { hash } = sendTransaction;
-    const { confirmations, status } = await sendTransaction.wait(3);
-    const receipt = await sendTransaction.wait();
-    const outputAmount = await getOutPutDataFromEvent(to, receipt.events);
-    const inputAmount = await getInPutDataFromEvent(
-      from,
-      receipt.events,
-      outputToken()
-    );
-    if (
-      typeof sendTransaction.hash !== "undefined" &&
-      confirmations >= 3 &&
-      status
-    ) {
+    } catch (e) {
+      console.log(e);
       setSendingTrx(false);
-      const explorerLink = getExplorerLink(
-        chainId as number,
-        hash,
-        ExplorerDataType.TRANSACTION
-      );
       dispatch(
         setOpenModal({
-          message: `Swap Successful.`,
-          trxState: TrxState.TransactionSuccessful,
-        })
-      );
-      dispatch(
-        addToast({
-          message: `Swap ${inputAmount} ${currencies[Field.INPUT]?.symbol
-            } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
-          URL: explorerLink,
+          message: `Swap Failed`,
+          trxState: TrxState.TransactionFailed,
         })
       );
       onUserInput(Field.INPUT, "");
     }
-    // } catch (e) {
-    //   console.log(e);
-    //   setSendingTrx(false);
-    //   dispatch(
-    //     setOpenModal({
-    //       message: `Swap Failed`,
-    //       trxState: TrxState.TransactionFailed,
-    //     })
-    //   );
-    //   onUserInput(Field.INPUT, "");
-    // }
   };
 
   const swapDefaultForOtherTokens = async () => {

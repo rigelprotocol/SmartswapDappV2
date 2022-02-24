@@ -66,8 +66,8 @@ const SetPrice = () => {
   )
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
   const [transactionSigned, setTransactionSigned] = useState(false)
-  const [sendingTransaction, setSendingTransaction] = useState(false)
   const [selectedFrequency, setSelectedFrequency] = useState("daily")
+  const [toPriceOut, setToPriceOut] = useState("0")
   const [marketType, setMarketType] = useState("pancakeswap")
   const [successfullyTransaction, setSuccessfullyTransaction] = useState<String[] | []>([])
   const [percentageChange, setPercentageChange] = useState<string>("0")
@@ -97,16 +97,7 @@ const SetPrice = () => {
   useEffect(async () => {
     await checkForApproval()
   }, [currencies[Field.INPUT]])
-  // useEffect(() => {
-  //   if (currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
-  //     getPriceForOne()
-  //   }
-  // }, [currencies[Field.INPUT], currencies[Field.OUTPUT]])
 
-  useEffect(() => {
-    if (chainId === 97 && account)
-      getDataFromDataBase()
-  }, [chainId, account])
 
 
 
@@ -121,9 +112,17 @@ const SetPrice = () => {
         '1000000000000000000',
         routeAddress
       );
+      if (typedValue) {
+        const toPriceOut = await rout.getAmountsOut(
+          Web3.utils.toWei(typedValue, 'ether'),
+          routeAddress
+        );
+        setToPriceOut(ethers.utils.formatUnits(toPriceOut[1].toString(), currencies[Field.OUTPUT]?.decimals))
+      }
+
       setPriceOut(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
     }
-  }, [currencies[Field.INPUT], currencies[Field.OUTPUT]])
+  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue])
 
 
   useMemo(async () => {
@@ -146,19 +145,6 @@ const SetPrice = () => {
     }
   }, [chainId, currencies[Field.INPUT], currencies[Field.OUTPUT], marketType, typedValue])
 
-
-
-
-  const getDataFromDataBase = async () => {
-    try {
-      let result = await fetch(`https://rigelprotocol-autoswap.herokuapp.com/auto/data/${account}`)
-      const data = await result.json()
-      setSuccessfullyTransaction([...data.transactionHash])
-    } catch (e) {
-      console.log(e)
-    }
-
-  }
 
   const checkForApproval = async () => {
     // check approval for RGP and the other token
@@ -202,6 +188,7 @@ const SetPrice = () => {
       ? parsedAmounts[independentField] ?? "" //?.toExact() ?? ''
       : parsedAmounts[dependentField] ?? "", //?.toSignificant(6) ?? '',
   };
+  console.log("heje", formattedAmounts[Field.OUTPUT])
 
 
   const signTransaction = async () => {
@@ -238,12 +225,6 @@ const SetPrice = () => {
       );
     }
 
-  }
-
-
-
-  const viewTransactionHistory = () => {
-    alert("we need a modal showing history")
   }
 
   const approveOneOrTwoTokens = async () => {
@@ -375,7 +356,24 @@ const SetPrice = () => {
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)
-      console.log({ changeFrequencyToday })
+      console.log({
+        address: account,
+        chainID: chainId,
+        frequency: selectedFrequency,
+        frequencyNumber: changeFrequencyToday.days,
+        presentDate: changeFrequencyToday.today,
+        presentMonth: changeFrequencyToday.month,
+        fromAddress: currencies[Field.INPUT]?.isNative ? WNATIVEADDRESSES[chainId as number] : currencies[Field.INPUT]?.wrapped.address,
+        toAddress: currencies[Field.OUTPUT]?.isNative ? WNATIVEADDRESSES[chainId as number] : currencies[Field.OUTPUT]?.wrapped.address,
+        signature: signedTransaction,
+        percentageChange,
+        toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped.decimals,
+        fromPrice: typedValue,
+        currentToPrice: toPriceOut,
+        orderID: orderID.toString()
+
+      })
+
       const response = await fetch('https://rigelprotocol-autoswap.herokuapp.com/auto/add', {
         method: "POST",
         mode: "cors",
@@ -398,7 +396,7 @@ const SetPrice = () => {
           percentageChange,
           toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped.decimals,
           fromPrice: typedValue,
-          currentToPrice: formattedAmounts[Field.OUTPUT],
+          currentToPrice: toPriceOut,
           orderID: orderID.toString()
 
         })
@@ -412,7 +410,6 @@ const SetPrice = () => {
         })
       );
       setApproval([])
-      setSendingTransaction(true)
     }
 
   }
@@ -501,7 +498,7 @@ const SetPrice = () => {
                     onCurrencySelection={onCurrencySelection}
                     currency={currencies[Field.OUTPUT]}
                     otherCurrency={currencies[Field.INPUT]}
-                    value={formattedAmounts[Field.OUTPUT]}
+                    value=""
 
                     display={true}
                   />
@@ -514,7 +511,8 @@ const SetPrice = () => {
                   <Spacer />
                   <VStack>
                     <Text fontSize="24px" color={textColorOne} isTruncated width="160px" textAlign="right">
-                      {isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT])}
+                      {/* {isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT])} */}
+                      {toPriceOut}
                     </Text>
                     <Text fontSize="14px" color={color} textAlign="right">
                       -2.56
@@ -527,15 +525,10 @@ const SetPrice = () => {
                       <option value='pancakeswap'>Pancakeswap</option>
                       <option value='sushiswap'>Sushiswap</option>
                     </Select>
-                    <ChevronDownIcon mt={1} />
-                    <Select variant='unstyled' placeholder='Unstyled'>
-                      <option value='daily'>Daily</option>
-                      <option value='weekly'>Weekly</option>
-                      <option value='monthly'>Monthly</option>
-                    </Select>
+
                     <Spacer />
                     <VStack>
-                      <Text fontSize="24px" color={textColorOne} isTruncated width="160px" >
+                      <Text fontSize="24px" color={textColorOne} isTruncated width="160px" textAlign="right">
                         {otherMarketprice}
                       </Text>
                       <Text fontSize="14px" color={color}>
@@ -617,12 +610,6 @@ const SetPrice = () => {
           <>
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
               <ShowDetails />
-
-              {account && successfullyTransaction.length > 0 && successfullyTransaction.map(transaction => {
-                return <Text fontSize="13px" mb="10px"><a href={getExplorerLink(chainId as number, transaction, ExplorerDataType.TRANSACTION)} target="_blank">{transaction}</a></Text>
-              })
-
-              }
             </Box>
 
             <Box
@@ -680,7 +667,8 @@ const SetPrice = () => {
                   <Spacer />
                   <VStack>
                     <Text fontSize="24px" color={textColorOne} isTruncated width="160px" textAlign="right">
-                      {isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT])}
+                      {/* {isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT])} */}
+                      {toPriceOut}
                     </Text>
                     <Text fontSize="14px" color={color} textAlign="right">
                       -2.56
@@ -805,7 +793,7 @@ const SetPrice = () => {
                     _hover={{ bgColor: buttonBgcolor }}
                   >
                     Approve {approval.length > 0 && approval[0]} {approval.length > 1 && `and ${currencies[Field.INPUT]?.tokenInfo.name}`}
-                  </Button> : !sendingTransaction ? <Button
+                  </Button> : <Button
                     w="100%"
                     borderRadius="6px"
                     border={lightmode ? '2px' : 'none'}
@@ -820,21 +808,6 @@ const SetPrice = () => {
                     _hover={{ bgColor: buttonBgcolor }}
                   >
                     Send Transaction
-                  </Button> : <Button
-                    w="100%"
-                    borderRadius="6px"
-                    border={lightmode ? '2px' : 'none'}
-                    borderColor={borderColor}
-                    h="48px"
-                    p="5px"
-                    color={color}
-                    bgColor={buttonBgcolor}
-                    onClick={viewTransactionHistory}
-                    fontSize="18px"
-                    boxShadow={lightmode ? 'base' : 'lg'}
-                    _hover={{ bgColor: buttonBgcolor }}
-                  >
-                    Transaction running
                   </Button>
                 }
 

@@ -26,11 +26,8 @@ const ShowDetails = () => {
 
   const { inputdetails, outputdetails } = useDetails(swapDetails);
 
-<<<<<<< HEAD
-=======
 
 
->>>>>>> develop
   useEffect(() => {
     const isActive = checkSideTab('details');
     dispatch(detailsTab({ removeDetailsTab: isActive }));

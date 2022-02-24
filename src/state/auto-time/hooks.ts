@@ -187,13 +187,13 @@ export function useDerivedAutoTimeInfo(): {
         inputError = 'Enter an amount';
     }
 
-    if (!inputCurrency || !outputCurrency || !address) {
+    if (!inputCurrency || !outputCurrency) {
         inputError = inputError ?? 'Select a Token';
     }
 
-    if (parseFloat(typedValue) > 0 && pathArray?.length === 0 && !wrap) {
-        inputError = 'Insufficient Liquidity for this Trade.';
-    }
+    // if (parseFloat(typedValue) > 0 && pathArray?.length === 0 && !wrap) {
+    //     inputError = 'Insufficient Liquidity for this Trade.';
+    // }
 
     return {
         currencies,

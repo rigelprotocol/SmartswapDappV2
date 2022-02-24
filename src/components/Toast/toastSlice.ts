@@ -18,13 +18,6 @@ const toastSlice = createSlice({
             state.message = action.payload.message;
             state.URL = action.payload.URL;
         },
-<<<<<<< HEAD
-        errorToast: (state, action: PayloadAction<ToastState>) => {
-            state.message = action.payload.message;
-            state.error = action.payload.error;
-        },
-=======
->>>>>>> develop
         removeToast: (state) => {
             state.message = '';
         }
