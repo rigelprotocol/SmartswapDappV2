@@ -111,8 +111,8 @@ const useMarketHistory = () => {
                             getTokenSymbol(data.tokenOut.symbol),
                         token1: data.tokenIn,
                         token2: data.tokenOut,
-                        amountIn: formatAmount(data.amountIn),
-                        amountOut: formatAmount(data.amountOut),
+                        amountIn: formatAmount(data.amountIn, data.tokenIn.decimals),
+                        amountOut: formatAmount(data.amountOut, data.tokenOut.decimals),
                         time: data.time
                     }));
 

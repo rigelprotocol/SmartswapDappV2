@@ -6,6 +6,7 @@ import { getERC20Token } from "../utilsFunctions";
 import { ethers } from 'ethers';
 import SmartSwapRouter02 from '../abis/swapAbiForDecoder.json';
 import { SMARTSWAPROUTER } from "../addresses";
+import { ParseFloat } from '..';
 
 const abiDecoder = require('abi-decoder');
 
@@ -51,10 +52,10 @@ interface DataIncoming {
     time: string
 }
 
-export const formatAmount = (number: string) => {
+export const formatAmount = (number: string, decimals: any) => {
     const num = ethers.BigNumber.from(number).toString();
-    let res = ethers.utils.formatEther(num);
-    res = (+res).toFixed(4);
+    let res = ethers.utils.formatUnits(num, decimals)
+    res = ParseFloat(res, 5)
     return res;
 
 };
@@ -179,8 +180,8 @@ const useAccountHistory = () => {
                             getTokenSymbol(data.tokenOut.symbol),
                         token1: data.tokenIn,
                         token2: data.tokenOut,
-                        amountIn: formatAmount(data.amountIn),
-                        amountOut: formatAmount(data.amountOut),
+                        amountIn: formatAmount(data.amountIn, data.tokenIn.decimals),
+                        amountOut: formatAmount(data.amountOut, data.tokenOut.decimals),
                         time: data.time,
                     }));
 
