@@ -1559,16 +1559,16 @@ const ShowYieldFarmDetails = ({
           }
         }}
       />
-
-      <Flex
-        flexDirection={["column", "column", "row"]}
-        color={mode === DARK_THEME ? "#F1F5F8" : "#333333"}
-        background={mode === DARK_THEME ? "#213345" : "#F2F5F8"}
-        padding='0 20px'
-        paddingBottom='4px'
-        border={mode === DARK_THEME ? "2px solid #324D68" : "2px solid #DEE6ED"}
-        width='100%'
-      >
+      {Number(content.poolVersion) === 2 ? (
+        <Flex
+          flexDirection={["column", "column", "row"]}
+          color={mode === DARK_THEME ? "#F1F5F8" : "#333333"}
+          background={mode === DARK_THEME ? "#213345" : "#F2F5F8"}
+          padding='0 20px'
+          paddingBottom='4px'
+          border={mode === DARK_THEME ? "2px solid #324D68" : "2px solid #DEE6ED"}
+          width='100%'
+        >
         <Box
           flexBasis='35%'
           width='100%'
@@ -1654,7 +1654,7 @@ const ShowYieldFarmDetails = ({
         </Box>
         {/* margin={['0', '0', '0 20px']} */}
         <Box
-          flexBasis='30%'
+          flexBasis='35%'
           width='100%'
           display='flex'
           justifyContent='space-around'
@@ -1744,52 +1744,7 @@ const ShowYieldFarmDetails = ({
         </Box>
 
         <Box
-          flexBasis='20%'
-          width='100%'
-          display='flex'
-          justifyContent='space-around'
-        >
-          <Box>
-            {
-              <Flex marginTop='10px'>
-                <Text fontSize='24px' marginTop='15px' fontWeight='bold'>
-                  {FarmingFeeLoading ? (
-                    <Spinner speed='0.65s' color='#999999' />
-                  ) : (
-                    farmingFee
-                  )}
-                </Text>
-                <Flex flexDirection={["column", "column", "column"]}>
-                  <Text
-                    fontSize='16px'
-                    color={mode === DARK_THEME ? "#999999" : "#999999"}
-                    textAlign='right'
-                    marginLeft='30px'
-                  >
-                    Minimum
-                  </Text>{" "}
-                  <Text
-                    fontSize='16px'
-                    color={mode === DARK_THEME ? "#999999" : "#999999"}
-                    marginLeft='30px'
-                  >
-                    Farming Fee
-                  </Text>{" "}
-                </Flex>
-              </Flex>
-            }
-          </Box >
-
-          <Box
-            my={3}
-            mx={1}
-            display={{ base: "none", md: "block", lg: "block" }}
-          >
-            <Divider orientation='vertical' height='84px' />
-          </Box>
-        </Box >
-        <Box
-          flexBasis='15%'
+          flexBasis='30%'
           width='100%'
           margin={["0", "0", "0 20px"]}
           justifySelf='end'
@@ -1820,7 +1775,271 @@ const ShowYieldFarmDetails = ({
             </Flex>
           </Flex>
         </Box>
-      </Flex >
+      </Flex>
+      ) : (
+        <Flex
+          flexDirection={["column", "column", "row"]}
+          color={mode === DARK_THEME ? "#F1F5F8" : "#333333"}
+          background={mode === DARK_THEME ? "#213345" : "#F2F5F8"}
+          padding='0 20px'
+          paddingBottom='4px'
+          border={mode === DARK_THEME ? "2px solid #324D68" : "2px solid #DEE6ED"}
+          width='100%'
+        >
+          <Box
+            flexBasis='35%'
+            width='100%'
+            textAlign='right'
+            display='flex'
+            justifyContent='space-around'
+          >
+            <Box>
+              <Flex my={2} justify={{ base: "center", md: "none", lg: "none" }}>
+                <Text
+                  color={mode === DARK_THEME ? "#F1F5F8" : "#333333"}
+                  fontSize='20px'
+                  marginRight='10px'
+                  fontWeight='bold'
+                >
+                  <Tooltip hasArrow label={content.tokensStaked[1]} bg='gray.300' color='black'>
+                    {parseFloat(content.tokensStaked[1]).toFixed(4)}
+                  </Tooltip>
+
+                </Text>
+                <Text
+                  fontSize='16px'
+                  color={mode === DARK_THEME ? "#DCE5EF" : "#333333"}
+                >
+                  {content.deposit} Tokens Staked
+                </Text>
+              </Flex>
+
+              <Flex marginLeft={{ base: "20px", md: "none", lg: "none" }}>
+                <Button
+                  w='45%'
+                  h='40px'
+                  borderRadius='6px'
+                  bg={mode === DARK_THEME ? "#4CAFFF" : "#319EF6"}
+                  color={mode === DARK_THEME ? "#FFFFFF" : "#FFFFFF"}
+                  border='0'
+                  mb='4'
+                  mr='6'
+                  disabled={
+                    approveValueForRGP &&
+                    approveValueForOtherToken &&
+                    parseFloat(content.tokensStaked[1]) <= 0
+                  }
+                  padding='10px 40px'
+                  cursor='pointer'
+                  onClick={() => setApprove(content.deposit)}
+                  className={approveValueForRGP && approveValueForOtherToken ? 'unstake' : 'approve'}
+                >
+                  {approveValueForRGP && approveValueForOtherToken
+                    ? "Unstake"
+                    : "Approve"}
+                </Button>
+                <Button
+                  w='45%'
+                  h='40px'
+                  borderRadius='6px'
+                  bg={
+                    mode === DARK_THEME && !approveValueForRGP
+                      ? "#319EF6"
+                      : "#4A739B"
+                  }
+                  color={mode === DARK_THEME ? "#FFFFFF" : "#FFFFFF"}
+                  border='0'
+                  mb='4'
+                  mr='6'
+                  padding='10px 40px'
+                  cursor='pointer'
+                  disabled={!approveValueForRGP || !approveValueForOtherToken}
+                  onClick={openDepositeModal}
+                  className={'deposit'}
+                >
+                  Deposit
+                </Button>
+              </Flex>
+            </Box>
+            <Box
+              mx={1}
+              my={3}
+              display={{ base: "none", md: "block", lg: "block" }}
+            >
+              <Divider orientation='vertical' height='84px' />
+            </Box>
+          </Box>
+          {/* margin={['0', '0', '0 20px']} */}
+          <Box
+            flexBasis='30%'
+            width='100%'
+            display='flex'
+            justifyContent='space-around'
+          >
+            {isMobileDevice ? (
+              <Box width='60%' margin='0 auto'>
+                <Flex my={2}>
+                  <Text
+                    fontSize='20px'
+                    color={mode === DARK_THEME ? "#F1F5F8" : "#333333"}
+                    marginRight='10px'
+                    textAlign='center'
+                    fontWeight='bold'
+                  >
+                    {content.RGPEarned}
+                  </Text>{" "}
+                  <Text color={mode === DARK_THEME ? "#DCE5EF" : "#333333"}>
+                    RGP Earned
+                  </Text>
+                </Flex>
+                <Button
+                  w='95%'
+                  h='40px'
+                  margin='0 auto'
+                  borderRadius='6px'
+                  bg={mode === DARK_THEME ? "#4A739B" : "#999999"}
+                  color={mode === DARK_THEME ? "#FFFFFF" : "#FFFFFF"}
+                  border='0'
+                  mb='4'
+                  mr='2'
+                  cursor='pointer'
+                  _hover={{ color: "white" }}
+                  disabled={parseFloat(content.RGPEarned) <= 0}
+                  onClick={() => {
+                    harvestTokens(content.pId);
+                  }}
+                  className={'harvest'}
+                >
+                  Harvest
+                </Button>
+              </Box>
+            ) : (
+              <Box margin='0 auto'>
+                <Flex my={2}>
+                  <Text
+                    fontSize='20px'
+                    color={mode === DARK_THEME ? "#F1F5F8" : "#333333"}
+                    marginRight='10px'
+                    textAlign='center'
+                    fontWeight='bold'
+                  >
+                    {content.RGPEarned}
+                  </Text>{" "}
+                  <Text color={mode === DARK_THEME ? "#DCE5EF" : "#333333"}>
+                    RGP Earned
+                  </Text>
+                </Flex>
+                <Button
+                  w='95%'
+                  h='40px'
+                  margin='0 auto'
+                  borderRadius='6px'
+                  bg={mode === DARK_THEME ? "#4A739B" : "#999999"}
+                  color={mode === DARK_THEME ? "#FFFFFF" : "#FFFFFF"}
+                  border='0'
+                  mb='4'
+                  mr='2'
+                  cursor='pointer'
+                  _hover={{ color: "white" }}
+                  disabled={parseFloat(content.RGPEarned) <= 0}
+                  onClick={() => {
+                    harvestTokens(content.pId);
+                  }}
+                  className={'harvest'}
+                >
+                  Harvest
+                </Button>
+              </Box>
+            )}
+            <Box
+              my={3}
+              display={{ base: "none", md: "block", lg: "block" }}
+              mx={1}
+            >
+              <Divider orientation='vertical' height='84px' />
+            </Box>
+          </Box>
+
+          <Box
+            flexBasis='20%'
+            width='100%'
+            display='flex'
+            justifyContent='space-around'
+          >
+            <Box>
+              {
+                <Flex marginTop='10px'>
+                  <Text fontSize='24px' marginTop='15px' fontWeight='bold'>
+                    {FarmingFeeLoading ? (
+                      <Spinner speed='0.65s' color='#999999' />
+                    ) : (
+                      farmingFee
+                    )}
+                  </Text>
+                  <Flex flexDirection={["column", "column", "column"]}>
+                    <Text
+                      fontSize='16px'
+                      color={mode === DARK_THEME ? "#999999" : "#999999"}
+                      textAlign='right'
+                      marginLeft='30px'
+                    >
+                      Minimum
+                    </Text>{" "}
+                    <Text
+                      fontSize='16px'
+                      color={mode === DARK_THEME ? "#999999" : "#999999"}
+                      marginLeft='30px'
+                    >
+                      Farming Fee
+                    </Text>{" "}
+                  </Flex>
+                </Flex>
+              }
+            </Box >
+
+            <Box
+              my={3}
+              mx={1}
+              display={{ base: "none", md: "block", lg: "block" }}
+            >
+              <Divider orientation='vertical' height='84px' />
+            </Box>
+          </Box >
+          <Box
+            flexBasis='15%'
+            width='100%'
+            margin={["0", "0", "0 20px"]}
+            justifySelf='end'
+          >
+            <Flex flexDirection='column' alignItems={{ base: "center" }}>
+              <Flex mb='5px'>
+                <Text marginTop='15px'>Auto-Harvest</Text>
+                <Circle
+                  size='20px'
+                  bg='#fff'
+                  display='inline-flex'
+                  marginLeft='10px'
+                  marginTop='17px'
+                  marginRight='10px'
+                >
+                  <Tooltip label='Coming soon' fontSize='md' marginTop='15px'>
+                    <QuestionOutlineIcon color='#120136' cursor='pointer' />
+                  </Tooltip>
+                </Circle>
+              </Flex>
+              <Flex>
+                <Switch
+                  disabled
+                  onChange={handleChecked}
+                  checked={!checked}
+                  className='react-switch'
+                />
+              </Flex>
+            </Flex>
+          </Box>
+        </Flex>
+      )}
+
       {Number(content.poolVersion) === 2 ? (
         <Modal
           isOpen={modal1Disclosure.isOpen}
