@@ -112,9 +112,11 @@ export function Index() {
   const [URLRefCode, setURLRefCode] = useState("");
 
   const handleTabsChange = (index: number) => {
-    const useIndex =
-      index === 0 ? liquidityIndex : index === 1 ? stakingIndex : index;
-    setTabIndex(useIndex);
+    if (chainId !== SupportedChainId.OASISMAINNET) {
+      const useIndex =
+        index === 0 ? liquidityIndex : index === 1 ? stakingIndex : index;
+      setTabIndex(useIndex);
+    }
   };
 
   const goToV1 = (index: number) => {
@@ -765,6 +767,7 @@ export function Index() {
           18
         );
         const rgpPrice = totalUSDT2 / totalRGP2;
+
         const RGP_USDTLiquidity = totalUSDT2 * 2;
 
         const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
@@ -1807,7 +1810,8 @@ export function Index() {
           >
             <Text className={"liquidity"}>Liquidity Pools</Text>
             {Number(chainId) === Number(SupportedChainId.POLYGON) ||
-            Number(chainId) === Number(SupportedChainId.POLYGONTEST) ? null : (
+            Number(chainId) === Number(SupportedChainId.POLYGONTEST) ||
+            Number(chainId) === Number(SupportedChainId.OASISMAINNET) ? null : (
               <Select
                 borderColor={
                   mode === LIGHT_THEME && selected === LIQUIDITY
@@ -1894,11 +1898,15 @@ export function Index() {
             // px={5}
             // py={4}
             // minWidth={{ base: "none", md: "200px", lg: "200px" }}
-            onClick={() => handleSelect(STAKING)}
+
+            onClick={() => {
+              handleSelect(STAKING);
+            }}
           >
             <Text className={"staking"}>Staking</Text>
             {Number(chainId) === Number(SupportedChainId.POLYGON) ||
-            Number(chainId) === Number(SupportedChainId.POLYGONTEST) ? null : (
+            Number(chainId) === Number(SupportedChainId.POLYGONTEST) ||
+            Number(chainId) === Number(SupportedChainId.OASISMAINNET) ? null : (
               <Select
                 borderColor={
                   mode === LIGHT_THEME && selected === LIQUIDITY
