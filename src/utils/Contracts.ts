@@ -1,19 +1,20 @@
-import {Contract} from '@ethersproject/contracts';
+import { Contract } from '@ethersproject/contracts';
 import SmartFactory from './abis/SmartSwapFactoryForSwap.json';
 import LiquidityPairAbi from './abis/smartSwapLPToken.json';
 import SmartSwapRouterV2Abi from './abis/SmartSwapRouterV2.json';
 import masterChefV2 from './abis/masterChefV2.json'
 import specialPool from './abis/specialPool.json'
 import specialPool2 from './abis/specialPool2.json'
-import {allowanceAbi, approveAbi} from "../constants";
+import { allowanceAbi, approveAbi } from "../constants";
 import WETHABI from './abis/WETH9.json';
 import SmartSwapLPTokenABI1 from './abis/LPToken1.json'
 import SmartSwapLPTokenABI2 from './abis/LPToken2.json'
 import SmartSwapLPTokenABI3 from './abis/SmartSwapLPTokenThree.json'
+import AUTOSWAPV2 from './abis/autoswap.json'
 import RigelToken from './abis/RigelToken.json'
-import {JsonRpcSigner, Web3Provider} from '@ethersproject/providers'
-import {AddressZero} from '@ethersproject/constants'
-import {getAddress} from '@ethersproject/address'
+import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers'
+import { AddressZero } from '@ethersproject/constants'
+import { getAddress } from '@ethersproject/address'
 
 
 export function isAddress(value: any): string | false {
@@ -43,46 +44,53 @@ export function getContract(address: string, ABI: any, library: Web3Provider, ac
   return new Contract(address, ABI, getProviderOrSigner(library, account) as any)
 }
 
-
+// AUTO SWAP TOKEN CONTRACT
+export const autoSwapV2 = async (address: string, library: Web3Provider | undefined) => {
+  return new Contract(
+    address,
+    AUTOSWAPV2,
+    library?.getSigner()
+  );
+};
 
 export const smartFactory = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      SmartFactory,
-      library?.getSigner()
+    address,
+    SmartFactory,
+    library?.getSigner()
   );
 };
 
 export const LiquidityPairInstance = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      LiquidityPairAbi,
-      library?.getSigner()
+    address,
+    LiquidityPairAbi,
+    library?.getSigner()
   );
 };
 
 export const SmartSwapRouter = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      SmartSwapRouterV2Abi,
-      library?.getSigner()
+    address,
+    SmartSwapRouterV2Abi,
+    library?.getSigner()
   );
 };
 
 export const ApprovalRouter = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      approveAbi,
-      library?.getSigner()
+    address,
+    approveAbi,
+    library?.getSigner()
   );
 };
 
 
 export const ApproveCheck = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      allowanceAbi,
-      library?.getSigner()
+    address,
+    allowanceAbi,
+    library?.getSigner()
   );
 };
 
@@ -94,9 +102,9 @@ export const WETH = async (address: string, library: Web3Provider | undefined) =
 
 export const MasterChefV2Contract = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      masterChefV2,
-      library?.getSigner()
+    address,
+    masterChefV2,
+    library?.getSigner()
   );
 };
 
@@ -105,18 +113,18 @@ export const MasterChefV2Contract = async (address: string, library: Web3Provide
 // contract for special pool
 export const RGPSpecialPool = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      specialPool,
-      library?.getSigner()
+    address,
+    specialPool,
+    library?.getSigner()
   );
 };
 
 // contract for special pool v2
 export const RGPSpecialPool2 = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      specialPool2,
-      library?.getSigner()
+    address,
+    specialPool2,
+    library?.getSigner()
   );
 };
 
@@ -124,89 +132,89 @@ export const RGPSpecialPool2 = async (address: string, library: Web3Provider | u
 
 export const smartSwapLPTokenPoolOne = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      SmartSwapLPTokenABI1,
-      library?.getSigner()
+    address,
+    SmartSwapLPTokenABI1,
+    library?.getSigner()
   );
 };
 
 
 export const smartSwapLPTokenPoolTwo = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      SmartSwapLPTokenABI2,
-      library?.getSigner()
+    address,
+    SmartSwapLPTokenABI2,
+    library?.getSigner()
   );
 };
 
 export const smartSwapLPTokenPoolThree = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      SmartSwapLPTokenABI3,
-      library?.getSigner()
+    address,
+    SmartSwapLPTokenABI3,
+    library?.getSigner()
   );
 };
 
 export const smartSwapLPTokenV2PoolFour = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      SmartSwapLPTokenABI3,
-      library?.getSigner()
+    address,
+    SmartSwapLPTokenABI3,
+    library?.getSigner()
   );
 };
 
 export const smartSwapLPTokenV2PoolFive = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      SmartSwapLPTokenABI3,
-      library?.getSigner()
+    address,
+    SmartSwapLPTokenABI3,
+    library?.getSigner()
   );
 };
 
 export const smartSwapLPTokenV2PoolSix = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      SmartSwapLPTokenABI3,
-      library?.getSigner()
+    address,
+    SmartSwapLPTokenABI3,
+    library?.getSigner()
   );
 };
 
 export const smartSwapLPTokenV2PoolSeven = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      SmartSwapLPTokenABI3,
-      library?.getSigner()
+    address,
+    SmartSwapLPTokenABI3,
+    library?.getSigner()
   );
 };
 
 export const smartSwapLPTokenV2PoolEight = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      SmartSwapLPTokenABI3,
-      library?.getSigner()
+    address,
+    SmartSwapLPTokenABI3,
+    library?.getSigner()
   );
 };
 
 export const smartSwapLPTokenV2PoolNine = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      SmartSwapLPTokenABI3,
-      library?.getSigner()
+    address,
+    SmartSwapLPTokenABI3,
+    library?.getSigner()
   );
 };
 
 export const rigelToken = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      RigelToken,
-      library?.getSigner()
+    address,
+    RigelToken,
+    library?.getSigner()
   );
 };
 
 export const smartSwapLPTokenV2 = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(
-      address,
-      SmartSwapLPTokenABI3,
-      library?.getSigner()
+    address,
+    SmartSwapLPTokenABI3,
+    library?.getSigner()
   );
 };

@@ -56,25 +56,25 @@ const SetPrice = () => {
             </Box>
 
             <Box mx={4} mb={4} w={['100%', '100%', '45%', '29.5%']}
-            borderColor={borderColor}
-            borderWidth="1px"
-            borderRadius="6px"
-            pl={3}
-            pr={3}
-            pb={4}
+              borderColor={borderColor}
+              borderWidth="1px"
+              borderRadius="6px"
+              pl={3}
+              pr={3}
+              pb={4}
             >
-              <SwapSettings/>
+              <SwapSettings />
               <From />
               <Flex justifyContent="center">
                 <SwitchIcon />
               </Flex>
               <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" p={3} mt={4}>
 
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={5}>
-                <Text color={balanceColor} fontSize="14px">
-                  Balance: 2.2332 USDT
-                </Text>
-                <Menu>
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={5}>
+                  <Text color={balanceColor} fontSize="14px">
+                    Balance: 2.2332 USDT
+                  </Text>
+                  <Menu>
                     <Button
                       border="0px"
                       h="40px"
@@ -92,7 +92,7 @@ const SetPrice = () => {
                   <Text color={textColorOne} fontSize="16px">
                     RigelProtocol
                   </Text>
-                  <Spacer/>
+                  <Spacer />
                   <VStack>
                     <Text fontSize="24px" color={textColorOne}>
                       2.5566
@@ -107,8 +107,8 @@ const SetPrice = () => {
                     <Text color={textColorOne} fontSize="16px">
                       Uniswap
                     </Text>
-                    <ChevronDownIcon mt={1}/>
-                    <Spacer/>
+                    <ChevronDownIcon mt={1} />
+                    <Spacer />
                     <VStack>
                       <Text fontSize="24px" color={textColorOne}>
                         2.6766
@@ -121,36 +121,36 @@ const SetPrice = () => {
                 </Box>
               </Box>
 
-              <Flex  mt={5}>
+              <Flex mt={5}>
                 <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px">
-                  <VectorIcon/>
+                  <VectorIcon />
                 </Center>
-                <Spacer/>
+                <Spacer />
                 <Text fontSize="14px" mr={2} color={textColorOne}>
                   1 RGP = 1.34566 USDT
                 </Text>
-                <ExclamationIcon/>
+                <ExclamationIcon />
               </Flex>
               <Box display="flex" mt={5}>
                 <VStack>
                   <Flex>
                     <Text fontSize="14px" mr={2}>
-                     Swap if price changes by
+                      Swap if price changes by
                     </Text>
-                    <ExclamationIcon/>
+                    <ExclamationIcon />
                   </Flex>
                   <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
-                    <Input placeholder="0" w="60px"/>
-                    <InputRightAddon children="%" fontSize="16px"/>
+                    <Input placeholder="0" w="60px" />
+                    <InputRightAddon children="%" fontSize="16px" />
                   </InputGroup>
                 </VStack>
-                <Spacer/>
+                <Spacer />
                 <VStack>
                   <Flex>
                     <Text fontSize="14px" mr={2}>
-                     Swap Every
+                      Swap Every
                     </Text>
-                    <ExclamationIcon/>
+                    <ExclamationIcon />
                   </Flex>
                   <Menu>
                     <MenuButton as={Button} rightIcon={<ChevronDownIcon />} size="md" bg={bgColor} fontSize="16px" color={textColorOne} borderColor={borderColor} borderWidth="1px">
@@ -196,19 +196,19 @@ const SetPrice = () => {
               pl={3}
               pr={3}
               pb={4}
-              >
-              <SwapSettings/>
+            >
+              <SwapSettings />
               <From />
               <Flex justifyContent="center">
                 <SwitchIcon />
               </Flex>
               <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" p={3} mt={4}>
 
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={5}>
-                <Text color={balanceColor} fontSize="14px">
-                  Balance: 2.2332 USDT
-                </Text>
-                <Menu>
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={5}>
+                  <Text color={balanceColor} fontSize="14px">
+                    Balance: 2.2332 USDT
+                  </Text>
+                  <Menu>
                     <Button
                       border="0px"
                       h="40px"
@@ -226,7 +226,7 @@ const SetPrice = () => {
                   <Text color={textColorOne} fontSize="16px">
                     RigelProtocol
                   </Text>
-                  <Spacer/>
+                  <Spacer />
                   <VStack>
                     <Text fontSize="24px" color={textColorOne}>
                       2.5566
@@ -241,8 +241,8 @@ const SetPrice = () => {
                     <Text color={textColorOne} fontSize="16px">
                       Uniswap
                     </Text>
-                    <ChevronDownIcon mt={1}/>
-                    <Spacer/>
+                    <ChevronDownIcon mt={1} />
+                    <Spacer />
                     <VStack>
                       <Text fontSize="24px" color={textColorOne}>
                         2.6766
@@ -255,36 +255,36 @@ const SetPrice = () => {
                 </Box>
               </Box>
 
-              <Flex  mt={5}>
+              <Flex mt={5}>
                 <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px">
-                  <VectorIcon/>
+                  <VectorIcon />
                 </Center>
-                <Spacer/>
+                <Spacer />
                 <Text fontSize="14px" mr={2} color={textColorOne}>
                   1 RGP = 1.34566 USDT
                 </Text>
-                <ExclamationIcon/>
+                <ExclamationIcon />
               </Flex>
               <Box display="flex" mt={5}>
                 <VStack>
                   <Flex>
                     <Text fontSize="14px" mr={2}>
-                     Swap if price changes by
+                      Swap if price changes by
                     </Text>
-                    <ExclamationIcon/>
+                    <ExclamationIcon />
                   </Flex>
                   <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
-                    <Input placeholder="0" w="60px"/>
-                    <InputRightAddon children="%" fontSize="16px"/>
+                    <Input placeholder="0" w="60px" />
+                    <InputRightAddon children="%" fontSize="16px" />
                   </InputGroup>
                 </VStack>
-                <Spacer/>
+                <Spacer />
                 <VStack>
                   <Flex>
                     <Text fontSize="14px" mr={2}>
-                     Swap Every
+                      Swap Every
                     </Text>
-                    <ExclamationIcon/>
+                    <ExclamationIcon />
                   </Flex>
                   <Menu>
                     <MenuButton as={Button} rightIcon={<ChevronDownIcon />} size="md" bg={bgColor} fontSize="16px" color={textColorOne} borderColor={borderColor} borderWidth="1px">

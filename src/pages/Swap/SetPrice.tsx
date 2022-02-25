@@ -1,9 +1,11 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import ShowDetails from './components/details/ShowDetails';
 import History from './components/history/History';
 import { VectorIcon, ExclamationIcon, SwitchIcon } from '../../theme/components/Icons';
 import To from './components/sendToken/To';
 import From from './components/sendToken/From';
+import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
+import Web3 from 'web3';
 import SwapSettings from './components/sendToken/SwapSettings';
 import {
   Box,
@@ -16,6 +18,8 @@ import {
   useColorModeValue,
   useMediaQuery
 } from '@chakra-ui/react';
+import { ethers } from 'ethers';
+import { getERC20Token } from '../../utils/utilsFunctions';
 import {
   useDerivedSwapInfo,
   useSwapActionHandlers,
@@ -23,6 +27,11 @@ import {
 } from '../../state/swap/hooks';
 import { Field } from '../../state/swap/actions';
 import { maxAmountSpend } from '../../utils/maxAmountSpend';
+import { autoSwapV2, rigelToken, SmartSwapRouter } from '../../utils/Contracts';
+import { RGPADDRESSES, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES, SMARTSWAPROUTER } from '../../utils/addresses';
+import { useDispatch } from "react-redux";
+import { setOpenModal, TrxState } from "../../state/application/reducer";
+
 
 const SetPrice = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
@@ -31,9 +40,11 @@ const SetPrice = () => {
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
   const lightmode = useColorModeValue(true, false);
   const buttonBgcolor = useColorModeValue('#F2F5F8', '#213345');
+  const dispatch = useDispatch();
   const color = useColorModeValue('#999999', '#7599BD');
 
   const { onCurrencySelection, onUserInput, onSwitchTokens } = useSwapActionHandlers();
+  const { account, chainId, library } = useActiveWeb3React()
 
   const {
     currencies,
@@ -45,6 +56,23 @@ const SetPrice = () => {
     pathSymbol,
     pathArray,
   } = useDerivedSwapInfo();
+  useEffect(async () => {
+    await checkForApproval()
+  }, [currencies[Field.INPUT]])
+
+  const [priceChange, setPriceChange] = useState("0")
+  const [transactionSigned, setTransactionSigned] = useState(false)
+  const [signedTransaction, setSignedTransaction] = useState<{ r: string, s: string, _vs: string, mess: string, v: string, recoveryParam: string }>({
+    r: "",
+    s: "",
+    _vs: "",
+    mess: "",
+    v: "",
+    recoveryParam: ""
+  }
+  )
+  const [hasBeenApproved, setHasBeenApproved] = useState(false)
+  const [approval, setApproval] = useState<String[]>([])
 
   const { independentField, typedValue } = useSwapState();
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
@@ -72,6 +100,107 @@ const SetPrice = () => {
       : parsedAmounts[dependentField] ?? '', //?.toSignificant(6) ?? '',
   };
 
+  const sendTransactionToDatabase = async () => {
+    const smartSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
+    dispatch(
+      setOpenModal({
+        message: `Signing initial transaction between ${currencies[Field.INPUT]?.symbol} and ${currencies[Field.OUTPUT]?.symbol}`,
+        trxState: TrxState.WaitingForConfirmation,
+      })
+    );
+    const time = Date.now();
+    let data
+    if (currencies[Field.INPUT]?.isNative) {
+      data = await smartSwapV2Contract.setPeriodToSwapETHForTokens(
+        currencies[Field.OUTPUT]?.wrapped.address,
+        account,
+        time,
+        signedTransaction?.mess,
+        signedTransaction?.r,
+        signedTransaction?.s,
+        signedTransaction?.v,
+        { value: Web3.utils.toWei(typedValue, 'ether') }
+      )
+    } else if (currencies[Field.OUTPUT]?.isNative) {
+      data = await smartSwapV2Contract.setPeriodToswapTokensForETH(
+        currencies[Field.INPUT]?.wrapped.address,
+        account,
+        Web3.utils.toWei(typedValue, 'ether'),
+        time,
+        signedTransaction?.mess,
+        signedTransaction?.r,
+        signedTransaction?.s,
+        signedTransaction?.v,
+      )
+    } else {
+      data = await smartSwapV2Contract.callPeriodToSwapExactTokens(
+        currencies[Field.INPUT]?.wrapped.address,
+        currencies[Field.OUTPUT]?.wrapped.address,
+        account,
+        Web3.utils.toWei(typedValue, 'ether'),
+        time,
+        signedTransaction?.mess,
+        signedTransaction?.r,
+        signedTransaction?.s,
+        signedTransaction?.v,
+      )
+    }
+
+    const fetchTransactionData = async (sendTransaction: any) => {
+      const { confirmations, status, logs } = await sendTransaction.wait(1);
+
+      return { confirmations, status, logs };
+    };
+    const { confirmations, status, logs } = await fetchTransactionData(data)
+    let orderID = await smartSwapV2Contract.orderCount()
+    if (confirmations >= 1 && status) {
+      dispatch(
+        setOpenModal({
+          message: "Storing Transaction",
+          trxState: TrxState.WaitingForConfirmation,
+        })
+      );
+
+      const response = await fetch('https://rigelprotocol-autoswap.herokuapp.com/auto/add', {
+        method: "POST",
+        mode: "cors",
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: JSON.stringify({
+          address: account,
+          chainID: chainId,
+          frequency: "price",
+          frequencyNumber: 1,
+          presentDate: 0,
+          presentMonth: 0,
+          fromAddress: currencies[Field.INPUT]?.isNative ? WNATIVEADDRESSES[chainId as number] : currencies[Field.INPUT]?.wrapped.address,
+          toAddress: currencies[Field.OUTPUT]?.isNative ? WNATIVEADDRESSES[chainId as number] : currencies[Field.OUTPUT]?.wrapped.address,
+          signature: signedTransaction,
+          percentageChange: priceChange,
+          toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped.decimals,
+          fromPrice: typedValue,
+          currentToPrice: formattedAmounts[Field.OUTPUT],
+          orderID: orderID.toString()
+
+        })
+      })
+      const res = await response.json()
+      console.log(res)
+      dispatch(
+        setOpenModal({
+          message: "Successfully stored Transaction",
+          trxState: TrxState.TransactionSuccessful,
+        })
+      );
+      setApproval([])
+    }
+
+  }
+
   const handleMaxInput = async () => {
     const value = await getMaxValue(currencies[Field.INPUT]);
     const maxAmountInput = maxAmountSpend(value, currencies[Field.INPUT]);
@@ -92,6 +221,170 @@ const SetPrice = () => {
     },
     [onUserInput]
   );
+
+  const signTransaction = async () => {
+    if (account !== undefined) {
+      try {
+        // let web3 = new Web3(Web3.givenProvider);
+        const signer = library?.getSigner();
+        const permitHash = "0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9";
+        const mess = ethers.utils.solidityKeccak256(['string'], [permitHash])
+        let signature = await signer?.signMessage(mess)
+        console.log({ signature })
+        var sig = ethers.utils.splitSignature(signature)
+
+        setSignedTransaction({ ...sig, mess })
+        console.log({ ...sig, mess })
+        setTransactionSigned(true)
+
+        // await checkForApproval()
+      } catch (e) {
+        dispatch(
+          setOpenModal({
+            message: "Signing wallet failed",
+            trxState: TrxState.TransactionFailed,
+          })
+        );
+      }
+
+    } else {
+      dispatch(
+        setOpenModal({
+          message: "connect wallet",
+          trxState: TrxState.TransactionFailed,
+        })
+      );
+    }
+
+  }
+
+  const approveOneOrTwoTokens = async () => {
+    if (currencies[Field.INPUT]?.isNative) {
+      setHasBeenApproved(true);
+      setApproval(approval.filter(t => t !== currencies[Field.INPUT]?.name))
+    }
+    if (setApproval.length > 0) {
+      try {
+        dispatch(
+          setOpenModal({
+            message: `Approve Tokens for Swap`,
+            trxState: TrxState.WaitingForConfirmation,
+          })
+        );
+        let arr = approval
+        if (arr[0] === "RGP") {
+          const address = RGPADDRESSES[chainId as number];
+          const rgp = await rigelToken(RGP[chainId as number], library);
+          const token = await getERC20Token(address, library);
+
+          const walletBal = (await token.balanceOf(account)) + 4e18;
+          const approveTransaction = await rgp.approve(
+            AUTOSWAPV2ADDRESSES[chainId as number],
+            walletBal,
+            {
+              from: account,
+            }
+          );
+
+          arr.length > 1 ? setApproval([arr[1]]) : setApproval([])
+        } else {
+          // setRGPApproval(true)
+        }
+        if (approval[0] === currencies[Field.INPUT]?.name) {
+          const address = currencies[Field.INPUT]?.wrapped.address;
+          const token = await getERC20Token(address, library);
+          const walletBal = (await token.balanceOf(account)) + 4e18;
+          const approveTransaction = await token.approve(
+            AUTOSWAPV2ADDRESSES[chainId as number],
+            walletBal,
+            {
+              from: account,
+            }
+          );
+          const { confirmations } = await approveTransaction.wait(1);
+          if (confirmations >= 1) {
+            dispatch(
+              setOpenModal({
+                message: `Approval Successful.`,
+                trxState: TrxState.TransactionSuccessful,
+              })
+            );
+          }
+          setApproval([])
+        } else {
+          // setOtherTokenApproval(true)
+        }
+        dispatch(
+          setOpenModal({
+            message: `Approval Successful.`,
+            trxState: TrxState.TransactionSuccessful,
+          })
+        );
+      } catch (e) {
+        console.log(e)
+      }
+    } else return
+
+  }
+  const checkForApproval = async () => {
+    // check approval for RGP and the other token
+    const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number])
+    const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
+    if (parseFloat(RGPBalance) > 0 && parseFloat(tokenBalance) > 0) {
+      setHasBeenApproved(true)
+    } else if (parseFloat(RGPBalance) <= 0 && parseFloat(tokenBalance) <= 0) {
+      setHasBeenApproved(false)
+      setApproval(["RGP", currencies[Field.INPUT]?.wrapped.name])
+    } else if (parseFloat(tokenBalance) <= 0) {
+      setHasBeenApproved(false)
+      setApproval([currencies[Field.INPUT].wrapped.name])
+    } else if (parseFloat(RGPBalance) <= 0) {
+      setHasBeenApproved(false)
+      setApproval(["RGP"])
+    }
+  }
+
+  const checkApproval = async (tokenAddress: string) => {
+    if (currencies[Field.INPUT]?.isNative) {
+      return setHasBeenApproved(true);
+    }
+    try {
+      const status = await getERC20Token(tokenAddress, library);
+      const check = await status.allowance(
+        account,
+        AUTOSWAPV2ADDRESSES[chainId as number],
+        {
+          from: account,
+        }
+      )
+
+      const approveBalance = ethers.utils.formatEther(check).toString();
+      return approveBalance
+    } catch (e) {
+      console.log(e)
+    }
+
+  }
+  const checkApprovalForRGP = async (tokenAddress: string) => {
+
+    try {
+      const status = await rigelToken(tokenAddress, library);
+      const check = await status.allowance(
+        account,
+        AUTOSWAPV2ADDRESSES[chainId as number],
+        {
+          from: account,
+        }
+      )
+
+      const approveBalance = ethers.utils.formatEther(check).toString();
+      return approveBalance
+    } catch (e) {
+      console.log(e)
+    }
+
+  }
+
 
   return (
     <Box fontSize="xl">
@@ -152,21 +445,69 @@ const SetPrice = () => {
           </Flex>
 
           <Box mt={5}>
-            <Button
-              w="100%"
-              borderRadius="6px"
-              border={lightmode ? '2px' : 'none'}
-              borderColor={borderColor}
-              h="48px"
-              p="5px"
-              color={color}
-              bgColor={buttonBgcolor}
-              fontSize="18px"
-              boxShadow={lightmode ? 'base' : 'lg'}
-              _hover={{ bgColor: buttonBgcolor }}
-            >
-              Enter Percentage
-            </Button>
+            {inputError ?
+              <Button
+                w="100%"
+                borderRadius="6px"
+                border={lightmode ? '2px' : 'none'}
+                borderColor={borderColor}
+                h="48px"
+                p="5px"
+                color={color}
+                bgColor={buttonBgcolor}
+                fontSize="18px"
+                boxShadow={lightmode ? 'base' : 'lg'}
+                _hover={{ bgColor: buttonBgcolor }}
+              >
+                {inputError}
+              </Button> : !transactionSigned ? <Button
+                w="100%"
+                borderRadius="6px"
+                border={lightmode ? '2px' : 'none'}
+                borderColor={borderColor}
+                onClick={signTransaction}
+                h="48px"
+                p="5px"
+                color={color}
+                bgColor={buttonBgcolor}
+                fontSize="18px"
+                boxShadow={lightmode ? 'base' : 'lg'}
+                _hover={{ bgColor: buttonBgcolor }}
+              >
+                Sign Wallet
+              </Button> : approval.length > 0 ? <Button
+                w="100%"
+                borderRadius="6px"
+                border={lightmode ? '2px' : 'none'}
+                borderColor={borderColor}
+                h="48px"
+                p="5px"
+                onClick={approveOneOrTwoTokens}
+                color={color}
+                bgColor={buttonBgcolor}
+                fontSize="18px"
+                boxShadow={lightmode ? 'base' : 'lg'}
+                _hover={{ bgColor: buttonBgcolor }}
+              >
+                Approve {approval.length > 0 && approval[0]} {approval.length > 1 && `and ${currencies[Field.INPUT]?.tokenInfo.name}`}
+              </Button> : <Button
+                w="100%"
+                borderRadius="6px"
+                border={lightmode ? '2px' : 'none'}
+                borderColor={borderColor}
+                h="48px"
+                p="5px"
+                color={color}
+                bgColor={buttonBgcolor}
+                onClick={sendTransactionToDatabase}
+                fontSize="18px"
+                boxShadow={lightmode ? 'base' : 'lg'}
+                _hover={{ bgColor: buttonBgcolor }}
+              >
+                Send Transaction
+              </Button>
+            }
+
           </Box>
 
         </Box>
