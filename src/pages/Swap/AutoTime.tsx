@@ -6,13 +6,16 @@ import To from './components/sendToken/To';
 import SwapSettings from './components/sendToken/SwapSettings';
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
 import { VectorIcon, ExclamationIcon, SwitchIcon } from '../../theme/components/Icons';
-import { useAutoTimeActionHandlers, useDerivedAutoTimeInfo, useAutoTimeState } from '../../state/auto-time/hooks';
+import {
+  useDerivedSwapInfo,
+  useSwapActionHandlers,
+  useSwapState,
+} from '../../state/swap/hooks';
 import { getERC20Token } from '../../utils/utilsFunctions';
-import { Field } from '../../state/auto-time/actions';
+import { Field } from '../../state/swap/actions';
 import Web3 from 'web3';
 import { RGP } from '../../utils/addresses';
 import { ethers } from 'ethers';
-import { getExplorerLink, ExplorerDataType } from '../../utils/getExplorerLink';
 import {
   Box,
   Flex,
@@ -53,8 +56,8 @@ const SetPrice = () => {
   const lightmode = useColorModeValue(true, false);
   const borderTwo = useColorModeValue('#319EF6', '#4CAFFF');
   const { account, library, chainId } = useActiveWeb3React()
-  const { onCurrencySelection, onUserInput } = useAutoTimeActionHandlers();
-  const { independentField, typedValue } = useAutoTimeState();
+
+  const { independentField, typedValue } = useSwapState();
   const [signedTransaction, setSignedTransaction] = useState<{ r: string, s: string, _vs: string, mess: string, v: string, recoveryParam: string }>({
     r: "",
     s: "",
@@ -75,6 +78,18 @@ const SetPrice = () => {
   const [otherMarketprice, setOtherMarketprice] = useState<string>("0")
   const [approval, setApproval] = useState<String[]>([])
 
+  const { onCurrencySelection, onUserInput, onSwitchTokens } = useSwapActionHandlers();
+
+  const {
+    currencies,
+    getMaxValue,
+    bestTrade,
+    parsedAmount,
+    inputError,
+    showWrap,
+    pathSymbol,
+    pathArray,
+  } = useDerivedSwapInfo();
   const handleTypeInput = useCallback(
     (value: string) => {
       onUserInput(Field.INPUT, value);
@@ -87,13 +102,6 @@ const SetPrice = () => {
     },
     [onUserInput]
   );
-  const {
-    currencies,
-    inputError,
-    showWrap,
-    bestTrade,
-    parsedAmount,
-  } = useDerivedAutoTimeInfo();
   useEffect(async () => {
     await checkForApproval()
   }, [currencies[Field.INPUT]])
@@ -487,7 +495,7 @@ const SetPrice = () => {
                 otherCurrency={currencies[Field.OUTPUT]}
                 value={typedValue}
               />
-              <Flex justifyContent="center">
+              <Flex justifyContent="center" onClick={onSwitchTokens}>
                 <SwitchIcon />
               </Flex>
               <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" p={3} mt={4}>
@@ -629,7 +637,7 @@ const SetPrice = () => {
                 otherCurrency={currencies[Field.OUTPUT]}
                 value={typedValue}
               />
-              <Flex justifyContent="center">
+              <Flex justifyContent="center" onClick={onSwitchTokens}>
                 <SwitchIcon />
               </Flex>
               <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" p={3} mt={4}>
