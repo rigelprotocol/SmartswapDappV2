@@ -53,15 +53,15 @@ const SetPrice = () => {
     () =>
       showWrap
         ? {
-            [Field.INPUT]: typedValue,
-            [Field.OUTPUT]: typedValue,
-          }
+          [Field.INPUT]: typedValue,
+          [Field.OUTPUT]: typedValue,
+        }
         : {
-            [Field.INPUT]:
-              independentField === Field.INPUT ? parsedAmount : bestTrade,
-            [Field.OUTPUT]:
-              independentField === Field.OUTPUT ? parsedAmount : bestTrade,
-          },
+          [Field.INPUT]:
+            independentField === Field.INPUT ? parsedAmount : bestTrade,
+          [Field.OUTPUT]:
+            independentField === Field.OUTPUT ? parsedAmount : bestTrade,
+        },
     [independentField, parsedAmount, showWrap, bestTrade]
   );
 
@@ -111,8 +111,8 @@ const SetPrice = () => {
           borderColor={borderColor} borderWidth="1px"
           borderRadius="6px" pl={3} pr={3}
           h="550px"
-          >
-          <SwapSettings/>
+        >
+          <SwapSettings />
           <From
             onUserInput={handleTypeInput}
             onCurrencySelection={onCurrencySelection}
@@ -122,7 +122,7 @@ const SetPrice = () => {
             value={formattedAmounts[Field.INPUT]}
           />
           <Flex justifyContent="center" onClick={onSwitchTokens}>
-            <SwitchIcon/>
+            <SwitchIcon />
           </Flex>
           <To
             onCurrencySelection={onCurrencySelection}
@@ -135,20 +135,20 @@ const SetPrice = () => {
             <Text fontSize="14px" color={iconColor} mr={2}>
               Set Price
             </Text>
-            <ExclamationIcon/>
+            <ExclamationIcon />
           </Flex>
 
-          <Input placeholder="0.00" size="lg" borderRadius={4} borderColor={borderColor}/>
+          <Input placeholder="0.00" size="lg" borderRadius={4} borderColor={borderColor} />
 
-          <Flex  mt={5}>
+          <Flex mt={5}>
             <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px">
-              <VectorIcon/>
+              <VectorIcon />
             </Center>
-            <Spacer/>
+            <Spacer />
             <Text fontSize="14px" mr={2} color={textColorOne}>
               1 RGP = 1.34566 USDT
             </Text>
-            <ExclamationIcon/>
+            <ExclamationIcon />
           </Flex>
 
           <Box mt={5}>
@@ -174,7 +174,7 @@ const SetPrice = () => {
         <Box mx={5} w={['100%', '100%', '45%', '29.5%']} mb={4}>
           <History />
         </Box>
-        
+
       </Flex>
     </Box>
   )
