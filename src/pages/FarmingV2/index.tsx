@@ -564,10 +564,8 @@ export function Index() {
         const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
         const USDC_RGPLiq = totalRGP3 * rgpPrice * 2;
 
-        const RGPLiquidityV2 = ethers.utils
-          .formatUnits(rgpTotalStakingV2.mul(Math.floor(1000 * rgpPrice)), 21)
-          .toString();
-
+        const RGPLiquidityV2 = ethers.utils.formatUnits(rgpTotalStakingV2.mul(rgpPrice/2), 18).toString();
+        
         dispatch(
           updateTotalLiquidity([
             {
@@ -699,10 +697,7 @@ export function Index() {
         const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
         const USDC_RGPLiq = totalRGP3 * rgpPrice * 2;
 
-        const RGPLiquidityV2 = ethers.utils
-          .formatUnits(rgpTotalStakingV2.mul(Math.floor(1000 * rgpPrice)), 21)
-          .toString();
-          console.log(`Here - ${rgpPrice}`);
+        const RGPLiquidityV2 = ethers.utils.formatUnits(rgpTotalStakingV2.mul(rgpPrice/2), 18).toString();
 
         dispatch(
           updateTotalLiquidity([
