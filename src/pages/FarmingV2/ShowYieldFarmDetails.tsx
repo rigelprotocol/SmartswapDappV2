@@ -733,7 +733,7 @@ const ShowYieldFarmDetails = ({
         return;
       } else if (
         Number(content.poolVersion) === 2 &&
-        Number(depositTokenValue) < Number(minimumStakeAmount)
+        (parseFloat(content.tokensStaked[1]) <= 0 && Number(depositTokenValue) < Number(minimumStakeAmount))
       ) {
         setDepositInputHasError(true);
         setDepositErrorButtonText(
