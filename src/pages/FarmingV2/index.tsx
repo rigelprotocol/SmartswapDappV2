@@ -624,18 +624,12 @@ export function Index() {
           pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
           3
         );
-        console.log(`price2- ${RGPprice}`);
 
         const RGP_USDTLiq = totalUSDT2 * 2;
         const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
         const USDC_RGPLiq = totalRGP3 * rgpPrice * 2;
 
-        const MRGPLiquidityV2 = ethers.utils
-          .formatUnits(
-            rgpTotalStakingV2.mul(Math.floor(Number(rgpPrice) * 1000)),
-            18
-          )
-          .toString();
+        const RGPLiquidityV2 = ethers.utils.formatUnits(rgpTotalStakingV2, 18) * rgpPrice/2;
 
         dispatch(
           updateTotalLiquidity([
@@ -691,7 +685,7 @@ export function Index() {
             },
             {
               deposit: "RGP",
-              liquidity: MRGPLiquidityV2,
+              liquidity: RGPLiquidityV2,
               apy: 8.756,
             },
             // {
@@ -746,7 +740,7 @@ export function Index() {
           // pool5.getReserves(),
         ]);
         const MRGPprice: number | any = ethers.utils.formatUnits(
-          pool3Reserve[1].mul(1000).div(pool3Reserve[0]),
+          pool3Reserve[0].mul(1000).div(pool3Reserve[1]),
           3
         );
 
@@ -773,12 +767,7 @@ export function Index() {
         const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
         const USDC_RGPLiq = totalRGP3 * rgpPrice * 2;
 
-        const MRGPLiquidityV2 = ethers.utils
-          .formatUnits(
-            rgpTotalStakingV2.mul(Math.floor(Number(rgpPrice) * 1000)),
-            18
-          )
-          .toString();
+        const RGPLiquidityV2 = ethers.utils.formatUnits(rgpTotalStakingV2, 18) * rgpPrice/2;
 
         dispatch(
           updateTotalLiquidity([
@@ -834,7 +823,7 @@ export function Index() {
             },
             {
               deposit: "RGP",
-              liquidity: MRGPLiquidityV2,
+              liquidity: RGPLiquidityV2,
               apy: "8.756",
             },
           ])
@@ -1080,7 +1069,6 @@ export function Index() {
           pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
           3
         );
-
         const BNBprice = getBnbPrice(pool3, pool3Reserve);
         const RGPLiquidity = ethers.utils
           .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * RGPprice)), 21)
