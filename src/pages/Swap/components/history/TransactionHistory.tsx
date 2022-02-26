@@ -23,19 +23,13 @@ export interface DataType {
   id: string
 }
 
-const TransactionHistory = ({ data }: { data: DataType }) => {
+const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: any }) => {
 
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
   const nonActiveTabColor = useColorModeValue('#666666', '#4A739B');
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   const successColor = useColorModeValue('#22bb33', '#75f083');
-  const deleteDataFromDatabase = async (id: string) => {
-    const data = await fetch(`https://rigelprotocol-autoswap.herokuapp.com/auto/data/${id}`, { method: 'DELETE' })
-    const res = await data.json()
-    if (res === "success") {
-      alert("successfully deleted")
-    }
-  }
+
   return (
     <Flex  >
       <Box
@@ -145,7 +139,7 @@ const TransactionHistory = ({ data }: { data: DataType }) => {
             </Text>
             {data.id && <Button
               border=" 1px solid #CC334F" box-shadow="0px 1px 7px -2px rgba(24, 39, 75, 0.06), 0px 2px 2px rgba(24, 39, 75, 0.06)"
-              border-radius="6px" backgroundColor="transparent" mt="2" onClick={() => deleteDataFromDatabase(data.id)}>
+              border-radius="6px" backgroundColor="transparent" mt="2" onClick={() => deleteData(data.id)}>
               Cancel
             </Button>}
 

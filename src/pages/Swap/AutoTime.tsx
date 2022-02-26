@@ -72,7 +72,6 @@ const SetPrice = () => {
   const [selectedFrequency, setSelectedFrequency] = useState("daily")
   const [toPriceOut, setToPriceOut] = useState("0")
   const [marketType, setMarketType] = useState("pancakeswap")
-  const [successfullyTransaction, setSuccessfullyTransaction] = useState<String[] | []>([])
   const [percentageChange, setPercentageChange] = useState<string>("0")
   const [priceOut, setPriceOut] = useState<string>("")
   const [otherMarketprice, setOtherMarketprice] = useState<string>("0")
@@ -104,10 +103,34 @@ const SetPrice = () => {
   );
   useEffect(async () => {
     await checkForApproval()
-  }, [currencies[Field.INPUT]])
+  }, [currencies[Field.INPUT], account])
+  useEffect(() => {
+    // const checkSignature = checkIfSignatureExists(account)
+    async function checkIfSignatureExists() {
+      console.log({ account })
+      let user = await fetch(`https://rigelprotocol-autoswap.herokuapp.com/auto/data/${account}`)
+      let data = await user.json()
+      if (data) {
+        setSignedTransaction(data.signature)
+        setTransactionSigned(true)
+      } else {
+        setSignedTransaction({
+          r: "",
+          s: "",
+          _vs: "",
+          mess: "",
+          v: "",
+          recoveryParam: ""
+        })
+        setTransactionSigned(false)
+      }
+    }
+    checkIfSignatureExists()
+  }, [account])
 
-
-
+  // const checkIfSignatureExists = async () => {
+  //   await if
+  // }
 
   useMemo(async () => {
     if (currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
@@ -196,7 +219,6 @@ const SetPrice = () => {
       ? parsedAmounts[independentField] ?? "" //?.toExact() ?? ''
       : parsedAmounts[dependentField] ?? "", //?.toSignificant(6) ?? '',
   };
-  console.log("heje", formattedAmounts[Field.OUTPUT])
 
 
   const signTransaction = async () => {
@@ -417,6 +439,15 @@ const SetPrice = () => {
           trxState: TrxState.TransactionSuccessful,
         })
       );
+      setSignedTransaction({
+        r: "",
+        s: "",
+        _vs: "",
+        mess: "",
+        v: "",
+        recoveryParam: ""
+      })
+      onUserInput(Field.INPUT, "");
       setApproval([])
     }
 

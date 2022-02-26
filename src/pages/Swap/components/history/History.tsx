@@ -10,8 +10,15 @@ import MarketHistory from "./MarketHistory";
 import { transactionTab } from "../../../../state/transaction/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../state";
+import { autoSwapV2 } from '../../../../utils/Contracts';
+import { AUTOSWAPV2ADDRESSES } from '../../../../utils/addresses';
+import { useActiveWeb3React } from '../../../../utils/hooks/useActiveWeb3React';
+import { setOpenModal, TrxState } from "../../../../state/application/reducer";
+
 
 const History = () => {
+
+  const { account, chainId, library } = useActiveWeb3React()
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
   const nonActiveTabColor = useColorModeValue('#CCCCCC', '#4A739B');
   const iconColor = useColorModeValue('#666666', '#DCE5EF');
@@ -39,6 +46,22 @@ const History = () => {
 
   }, []);
 
+  const deleteDataFromDatabase = async (id: string) => {
+    setOpenModal({
+      message: "Deleting Transaction...",
+      trxState: TrxState.WaitingForConfirmation,
+    })
+    const data = await fetch(`https://rigelprotocol-autoswap.herokuapp.com/auto/data/${id}`, { method: 'DELETE' })
+    const res = await data.json()
+    if (res === "success") {
+      dispatch(
+        setOpenModal({
+          message: `Data deleted Successful.`,
+          trxState: TrxState.TransactionSuccessful,
+        })
+      );
+    }
+  }
 
   return (
     <Flex
@@ -140,7 +163,7 @@ const History = () => {
         ))}
 
         {show && !showMarketHistory && historyData && userData.map((data: DataType) => (
-          <TransactionHistory key={data.time} data={data} />
+          <TransactionHistory key={data.time} data={data} deleteData={deleteDataFromDatabase} />
         ))}
       </Box>
     </Flex>
