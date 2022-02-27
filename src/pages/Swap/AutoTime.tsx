@@ -107,11 +107,23 @@ const SetPrice = () => {
   useEffect(() => {
     // const checkSignature = checkIfSignatureExists(account)
     async function checkIfSignatureExists() {
-      console.log({ account })
+      const smartSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
       let user = await fetch(`https://rigelprotocol-autoswap.herokuapp.com/auto/data/${account}`)
       let data = await user.json()
       if (data) {
         setSignedTransaction(data.signature)
+        if (account) {
+          console.log(data.signature, Web3.utils.toHex(data.signature.v.toString()), data.signature.v)
+          let datum = await smartSwapV2Contract.recover_With_rsv(
+            account,
+            data.signature.mess,
+            Web3.utils.toHex(data.signature.v.toString()),
+            data.signature.r,
+            data.signature.s
+          )
+          console.log({ datum }, "ueueuue")
+        }
+
         setTransactionSigned(true)
       } else {
         setSignedTransaction({
@@ -125,7 +137,10 @@ const SetPrice = () => {
         setTransactionSigned(false)
       }
     }
-    checkIfSignatureExists()
+    if (account) {
+      checkIfSignatureExists()
+
+    }
   }, [account])
 
   // const checkIfSignatureExists = async () => {
@@ -138,7 +153,6 @@ const SetPrice = () => {
       const routeAddress = currencies[Field.INPUT]?.isNative ? [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
         currencies[Field.OUTPUT]?.isNative ? [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
           [currencies[Field.INPUT]?.wrapped.address, currencies[Field.OUTPUT]?.wrapped.address]
-      console.log(routeAddress)
       const priceOutput = await rout.getAmountsOut(
         '1000000000000000000',
         routeAddress
@@ -158,19 +172,15 @@ const SetPrice = () => {
 
   useMemo(async () => {
     if (chainId === 56 && currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
-
-      console.log(marketType, OTHERMARKETADDRESSES[marketType])
       const rout = await otherMarketPriceContract(OTHERMARKETADDRESSES[marketType], library);
       const routeAddress = currencies[Field.INPUT]?.isNative ? [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
         currencies[Field.OUTPUT]?.isNative ? [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
           [currencies[Field.INPUT]?.wrapped.address, currencies[Field.OUTPUT]?.wrapped.address]
-      console.log(routeAddress)
       if (typedValue) {
         const priceOutput = await rout.getAmountsOut(
           Web3.utils.toWei(typedValue, 'ether'),
           routeAddress
         );
-        console.log(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
         setOtherMarketprice(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
       }
     }
@@ -232,7 +242,7 @@ const SetPrice = () => {
         let signature = await web3.eth.sign(mess, account);
 
         var sig = ethers.utils.splitSignature(signature)
-
+        console.log({ ...sig, mess })
         setSignedTransaction({ ...sig, mess })
         setTransactionSigned(true)
 
@@ -386,6 +396,7 @@ const SetPrice = () => {
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)
+      console.log(currencies[Field.OUTPUT])
       console.log({
         address: account,
         chainID: chainId,
@@ -397,7 +408,7 @@ const SetPrice = () => {
         toAddress: currencies[Field.OUTPUT]?.isNative ? WNATIVEADDRESSES[chainId as number] : currencies[Field.OUTPUT]?.wrapped.address,
         signature: signedTransaction,
         percentageChange,
-        toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped.decimals,
+        toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped ? currencies[Field.OUTPUT]?.wrapped.decimals : currencies[Field.OUTPUT]?.decimals,
         fromPrice: typedValue,
         currentToPrice: toPriceOut,
         orderID: orderID.toString()
@@ -424,7 +435,7 @@ const SetPrice = () => {
           toAddress: currencies[Field.OUTPUT]?.isNative ? WNATIVEADDRESSES[chainId as number] : currencies[Field.OUTPUT]?.wrapped.address,
           signature: signedTransaction,
           percentageChange,
-          toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped.decimals,
+          toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped ? currencies[Field.OUTPUT]?.wrapped.decimals : currencies[Field.OUTPUT]?.decimals,
           fromPrice: typedValue,
           currentToPrice: toPriceOut,
           orderID: orderID.toString()
