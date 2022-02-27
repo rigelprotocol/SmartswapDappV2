@@ -6,6 +6,7 @@ import { getERC20Token } from "../utilsFunctions";
 import { ethers } from 'ethers';
 import SmartSwapRouter02 from '../abis/swapAbiForDecoder.json';
 import { SMARTSWAPROUTER } from "../addresses";
+import { ParseFloat } from '..';
 
 const abiDecoder = require('abi-decoder');
 
@@ -21,6 +22,28 @@ export function timeConverter(UNIX_timestamp: any) {
     return date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec;
 }
 
+export const APIENDPOINT: { [key: string]: string } = {
+    "1": "",
+    "3": "",
+    "56": "api.bscscan.com/api",
+    "97": "api-testnet.bscscan.com/api",
+    "137": "api.polygonscan.com/api",
+    "80001": "api-testnet.polygonscan.com/api",
+    "42261": "testnet.explorer.emerald.oasis.dev/api",
+    "42262": "explorer.emerald.oasis.dev/api",
+};
+
+export const APIKEY: { [key: string]: string } = {
+    "1": "",
+    "3": "",
+    "56": "AATZWFQ47VX3Y1DN7M97BJ5FEJR6MGRQSD",
+    "97": "AATZWFQ47VX3Y1DN7M97BJ5FEJR6MGRQSD",
+    "137": "89B4F6NVVEVGC8EMDCJVRJMVGSCVHHZTR7",
+    "80001": "89B4F6NVVEVGC8EMDCJVRJMVGSCVHHZTR7",
+    "42261": "",
+    "42262": "",
+};
+
 interface DataIncoming {
     inputAmount: string,
     outputAmount: string,
@@ -29,10 +52,10 @@ interface DataIncoming {
     time: string
 }
 
-export const formatAmount = (number: string) => {
+export const formatAmount = (number: string, decimals: any) => {
     const num = ethers.BigNumber.from(number).toString();
-    let res = ethers.utils.formatEther(num);
-    res = (+res).toFixed(4);
+    let res = ethers.utils.formatUnits(num, decimals)
+    res = ParseFloat(res, 5)
     return res;
 
 };
@@ -79,8 +102,10 @@ const useAccountHistory = () => {
         return abiDecoder.decodeMethod(input);
     }
 
-    const testNetwork = chainId === 97;
+
     const contractAddress = SMARTSWAPROUTER[chainId as number];
+    const api = APIENDPOINT[chainId as number];
+    const apikey = APIKEY[chainId as number];
 
 
     useEffect(() => {
@@ -89,16 +114,22 @@ const useAccountHistory = () => {
             if (account) {
                 setLoading(true);
 
+
+
                 try {
-                    const uri = `https://api${testNetwork ? '-testnet.bscscan.com' : '.bscscan.com'
-                        }/api?module=account&action=txlist&address=${account}&startblock=0
-                        &endblock=latest&sort=desc&apikey=AATZWFQ47VX3Y1DN7M97BJ5FEJR6MGRQSD`;
+
+                    const uri = `https://${api}?module=account&action=txlist&address=${account}&startblock=0
+                        &endblock=latest&sort=desc&apikey=${apikey}`;
+
+
 
                     const data = await fetch(uri);
                     const jsondata = await data.json();
 
-                    console.log("first Test : ", jsondata)
-                    const SwapTrx = jsondata.result.filter((item: any) => item.to === contractAddress);
+
+
+                    const SwapTrx = jsondata.result.filter((item: any) => item.to === contractAddress.toLowerCase());
+
 
 
                     const dataFiltered = SwapTrx
@@ -132,7 +163,6 @@ const useAccountHistory = () => {
 
 
 
-                    console.log("dataToUse Test : ", userData)
                     const swapDataForWallet = await Promise.all(
                         userData.map(async (data: DataIncoming) => ({
                             tokenIn: await tokenList(data.tokenIn),
@@ -150,13 +180,12 @@ const useAccountHistory = () => {
                             getTokenSymbol(data.tokenOut.symbol),
                         token1: data.tokenIn,
                         token2: data.tokenOut,
-                        amountIn: formatAmount(data.amountIn),
-                        amountOut: formatAmount(data.amountOut),
+                        amountIn: formatAmount(data.amountIn, data.tokenIn.decimals),
+                        amountOut: formatAmount(data.amountOut, data.tokenOut.decimals),
                         time: data.time,
                     }));
 
 
-                    console.log("dataToUse000 : ", userSwapHistory)
                     setHistoryData(userSwapHistory);
                     setLoading(false);
 

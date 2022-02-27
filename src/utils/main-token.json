@@ -480,5 +480,40 @@
     "imported": false,
     "name": "MBOX",
     "logoURI": "https://bscscan.com/token/images/mobox_32.png"
+  },
+  {
+    "symbol": "WMATIC",
+    "available": true,
+    "imported": false,
+    "name": "Wrapped Matic",
+    "logoURI": "https://polygonscan.com/token/images/wMatic_32.png"
+  },
+  {
+    "symbol": "MATIC",
+    "available": true,
+    "imported": false,
+    "name": "MATIC",
+    "logoURI": "https://polygonscan.com/images/svg/brands/polygon.svg"
+  },
+  {
+    "symbol": "wROSE",
+    "available": true,
+    "imported": false,
+    "name": "Wrapped Rose",
+    "logoURI": "https://assets.coingecko.com/coins/images/13162/small/rose.png?1605772906"
+  },
+  {
+    "symbol": "ROSE",
+    "available": true,
+    "imported": false,
+    "name": "Rose",
+    "logoURI": "https://assets.coingecko.com/coins/images/13162/small/rose.png?1605772906"
+  },
+  {
+    "symbol": "USDT",
+    "available": true,
+    "imported": false,
+    "name": "Tether USD",
+    "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
   }
 ]
