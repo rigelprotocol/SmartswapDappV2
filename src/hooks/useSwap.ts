@@ -402,8 +402,7 @@ export const useSwap = (
                   CurrencyB as string,
                 ]);
                 setPathSymbol(
-                  `${currencyA.symbol} - ${
-                    SupportedChainSymbols[chainId as number]
+                  `${currencyA.symbol} - ${SupportedChainSymbols[chainId as number]
                   } - ${currencyB.symbol}`
                 );
 
@@ -599,8 +598,7 @@ export const useSwap = (
                   CurrencyB as string,
                 ]);
                 setPathSymbol(
-                  `${currencyA.symbol} - USDT - ${
-                    SupportedChainSymbols[chainId as number]
+                  `${currencyA.symbol} - USDT - ${SupportedChainSymbols[chainId as number]
                   } - ${currencyB.symbol}`
                 );
 

@@ -93,7 +93,7 @@ export const AUTOSWAPV2ADDRESSES: { [key: string]: string } = {
   // "1": "0x",
   // "3": "0x",
   // "56": "0xe1eccccb46755a38d218bf7fdcd6f26c2cd7671f",
-  "97": "0xc48b2e1f1ab9d242d47cfa65f0250f8702eadbe0",
+  "97": "0x147b0a75a933abe0e2c45c1a2e524ec8af764d4f",
   // "137": "0x2614118C1f32C8B183E060507cCA2f23FA786428",
   // "80001": "0x4B3B531bbbf7821A6f3019f82B461da760a184Ae",
   // "42261": "0xFCAD25Ce875EA7eaBdcf99cdF57692376F1DbdF1",
