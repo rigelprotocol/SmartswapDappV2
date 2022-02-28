@@ -140,7 +140,7 @@ const SetPrice = () => {
       }
     }
     if (account) {
-      // checkIfSignatureExists()
+      checkIfSignatureExists()
 
     }
   }, [account])
