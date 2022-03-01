@@ -345,33 +345,36 @@ const SetPrice = () => {
         trxState: TrxState.WaitingForConfirmation,
       })
     );
-    const time = Date.now();
-    console.log("time", time.toLocaleString())
-    // console.log(Web3.utils.toWei(time, 'ether') )
+    let minutesToAdd = 20;
+    let currentDate = new Date();
+    let futureDate = currentDate.getTime() + minutesToAdd;
+    console.log({ futureDate })
     let data, response
-    // if (currencies[Field.INPUT]?.isNative) {
-    //   data = await smartSwapV2Contract.setPeriodToSwapETHForTokens(
-    //     { value: Web3.utils.toWei(typedValue, 'ether') },
-    //     currencies[Field.OUTPUT]?.wrapped.address,
-    //     account,
-    //     time,
-    //     signedTransaction?.mess,
-    //     signedTransaction?.r,
-    //     signedTransaction?.s,
-    //     signedTransaction?.v
-    //   )
-    //   const fetchTransactionData = async (sendTransaction: any) => {
-    //     const { confirmations, status, logs } = await sendTransaction.wait(1);
+    if (currencies[Field.INPUT]?.isNative) {
+      console.log(Web3.utils.toWei(typedValue, 'ether'), { typedValue })
+      data = await smartSwapV2Contract.setPeriodToSwapETHForTokens(
 
-    //     return { confirmations, status, logs };
-    //   };
-    //   const { confirmations, status, logs } = await fetchTransactionData(data)
-    //   if (confirmations >= 1 && status) {
-    //     response = true
-    //   }
-    // } else {
-    //   response = true
-    // }
+        currencies[Field.OUTPUT]?.wrapped.address,
+        account,
+        futureDate,
+        signedTransaction?.mess,
+        signedTransaction?.r,
+        signedTransaction?.s,
+        signedTransaction?.v,
+        { value: Web3.utils.toWei(typedValue, 'ether') }
+      )
+      const fetchTransactionData = async (sendTransaction: any) => {
+        const { confirmations, status, logs } = await sendTransaction.wait(1);
+
+        return { confirmations, status, logs };
+      };
+      const { confirmations, status, logs } = await fetchTransactionData(data)
+      if (confirmations >= 1 && status) {
+        response = true
+      }
+    } else {
+      response = true
+    }
     // else if (currencies[Field.OUTPUT]?.isNative) {
     //   data = await smartSwapV2Contract.setPeriodToswapTokensForETH(
     //     currencies[Field.INPUT]?.wrapped.address,
@@ -427,35 +430,35 @@ const SetPrice = () => {
 
       })
 
-      // const response = await fetch(`${URL}/auto/add`, {
-      //   method: "POST",
-      //   mode: "cors",
-      //   cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-      //   credentials: 'same-origin', // include, *same-origin, omit
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //     // 'Content-Type': 'application/x-www-form-urlencoded',
-      //   },
-      //   body: JSON.stringify({
-      //     address: account,
-      //     chainID: chainId,
-      //     frequency: selectedFrequency,
-      //     frequencyNumber: changeFrequencyToday.days,
-      //     presentDate: changeFrequencyToday.today,
-      //     presentMonth: changeFrequencyToday.month,
-      //     fromAddress: currencies[Field.INPUT]?.isNative ? "native" : currencies[Field.INPUT]?.wrapped.address,
-      //     toAddress: currencies[Field.OUTPUT]?.isNative ? "native" : currencies[Field.OUTPUT]?.wrapped.address,
-      //     signature: signedTransaction,
-      //     percentageChange,
-      //     toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped ? currencies[Field.OUTPUT]?.wrapped.decimals : currencies[Field.OUTPUT]?.decimals,
-      //     fromPrice: typedValue,
-      //     currentToPrice: toPriceOut,
-      //     orderID: orderID.toString()
+      const response = await fetch(`${URL}/auto/add`, {
+        method: "POST",
+        mode: "cors",
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: JSON.stringify({
+          address: account,
+          chainID: chainId,
+          frequency: selectedFrequency,
+          frequencyNumber: changeFrequencyToday.days,
+          presentDate: changeFrequencyToday.today,
+          presentMonth: changeFrequencyToday.month,
+          fromAddress: currencies[Field.INPUT]?.isNative ? "native" : currencies[Field.INPUT]?.wrapped.address,
+          toAddress: currencies[Field.OUTPUT]?.isNative ? "native" : currencies[Field.OUTPUT]?.wrapped.address,
+          signature: signedTransaction,
+          percentageChange,
+          toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped ? currencies[Field.OUTPUT]?.wrapped.decimals : currencies[Field.OUTPUT]?.decimals,
+          fromPrice: typedValue,
+          currentToPrice: toPriceOut,
+          orderID: orderID.toString()
 
-      //   })
-      // })
-      // const res = await response.json()
-      // console.log(res)
+        })
+      })
+      const res = await response.json()
+      console.log(res)
       dispatch(
         setOpenModal({
           message: "Successfully stored Transaction",
