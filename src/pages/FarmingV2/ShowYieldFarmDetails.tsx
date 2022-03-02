@@ -1195,11 +1195,11 @@ const ShowYieldFarmDetails = ({
           await LPDeposit(9);
         }
       }
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
       dispatch(
         setOpenModal({
-          message: `Failed transaction`,
+          message: `Failed to deposit LP tokens.`,
           trxState: TrxState.TransactionFailed,
         })
       );
