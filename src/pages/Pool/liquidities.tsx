@@ -1,17 +1,10 @@
 import React, { useState } from "react";
 import { Box, Flex, Text, Img, useColorModeValue } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import BNBImage from "../../assets/BNB.svg";
-import RGPImage from "../../assets/rgp.svg";
-import ETHImage from "../../assets/eth.svg";
-import NullImage from "../../assets/Null-24.svg";
-import BUSDImage from "../../assets/busd.svg";
 import LiquidityDetails from "./liquidityDetails";
 import CurrencyLogo from "../../components/currencyLogo";
-import MATICIMAGE from "../../assets/Matic.svg";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import { isAddress } from "../../utils";
-import { Token } from "@uniswap/sdk-core";
 
 const Liquidities = (props: Liquidity) => {
   const [showDetails, setShowDetails] = useState(false);
@@ -100,22 +93,22 @@ const Liquidities = (props: Liquidity) => {
               {props.pair.path[0].token == "WBNB"
                 ? "BNB"
                 : props.pair.path[0].token == "WETH"
-                ? "ETH"
-                : props.pair.path[0].token == "WMATIC"
-                ? "MATIC"
-                : props.pair.path[0].token == "WROSE"
-                ? "ROSE"
-                : props.pair.path[0].token}{" "}
+                  ? "ETH"
+                  : props.pair.path[0].token == "WMATIC"
+                    ? "MATIC"
+                    : props.pair.path[0].token == "WROSE"
+                      ? "ROSE"
+                      : props.pair.path[0].token}{" "}
               /{" "}
               {props.pair.path[1].token == "WBNB"
                 ? "BNB"
                 : props.pair.path[1].token == "WETH"
-                ? "ETH"
-                : props.pair.path[1].token == "WMATIC"
-                ? "MATIC"
-                : props.pair.path[1].token == "WROSE"
-                ? "ROSE"
-                : props.pair.path[1].token}
+                  ? "ETH"
+                  : props.pair.path[1].token == "WMATIC"
+                    ? "MATIC"
+                    : props.pair.path[1].token == "WROSE"
+                      ? "ROSE"
+                      : props.pair.path[1].token}
             </Box>
           </Flex>
           <Flex

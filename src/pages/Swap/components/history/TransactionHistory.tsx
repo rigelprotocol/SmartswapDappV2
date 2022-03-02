@@ -1,4 +1,4 @@
-import { Flex, Grid, Text, Box, useColorModeValue } from '@chakra-ui/react';
+import { Flex, Grid, Text, Box, useColorModeValue, Button } from '@chakra-ui/react';
 import React from 'react';
 import { ArrowRightIcon } from '../../../../theme/components/Icons';
 import TokenIcon from '../../../../assets/Null-24.svg';
@@ -17,10 +17,13 @@ export interface DataType {
   token2: TokenDetails,
   amountIn: string,
   amountOut: string,
-  time: string
+  time: string,
+  name: string,
+  frequency: string,
+  id: string
 }
 
-const TransactionHistory = ({ data }: { data: DataType }) => {
+const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: any }) => {
 
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
   const nonActiveTabColor = useColorModeValue('#666666', '#4A739B');
@@ -77,7 +80,7 @@ const TransactionHistory = ({ data }: { data: DataType }) => {
               Type
             </Text>
             <Text color={activeTabColor} fontSize="14px" fontWeight="regular">
-              Straight Swap
+              {data.name === "swapTokens" ? "Auto period" : "Straight Swap"}
             </Text>
           </Box>
           <Box>
@@ -103,7 +106,7 @@ const TransactionHistory = ({ data }: { data: DataType }) => {
               Interval
             </Text>
             <Text color={activeTabColor} fontSize="14px" fontWeight="regular">
-              --
+              {data.frequency ? data.frequency : "--"}
             </Text>
           </Box>
         </Grid>
@@ -134,6 +137,12 @@ const TransactionHistory = ({ data }: { data: DataType }) => {
             <Text color={successColor} fontSize="14px" fontWeight="regular">
               Completed
             </Text>
+            {data.id && <Button
+              border=" 1px solid #CC334F" box-shadow="0px 1px 7px -2px rgba(24, 39, 75, 0.06), 0px 2px 2px rgba(24, 39, 75, 0.06)"
+              border-radius="6px" backgroundColor="transparent" mt="2" onClick={() => deleteData(data.id)}>
+              Cancel
+            </Button>}
+
           </Box>
 
         </Grid>

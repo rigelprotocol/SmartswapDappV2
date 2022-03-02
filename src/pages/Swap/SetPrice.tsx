@@ -61,6 +61,7 @@ const SetPrice = () => {
   }, [currencies[Field.INPUT]])
 
   const [priceChange, setPriceChange] = useState("0")
+  const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [signedTransaction, setSignedTransaction] = useState<{ r: string, s: string, _vs: string, mess: string, v: string, recoveryParam: string }>({
     r: "",
@@ -73,6 +74,33 @@ const SetPrice = () => {
   )
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
   const [approval, setApproval] = useState<String[]>([])
+
+  useEffect(() => {
+    setURL("http://localhost:7000")
+    async function checkIfSignatureExists() {
+      let user = await fetch(`${URL}/auto/data/${account}`)
+      let data = await user.json()
+      console.log({ data })
+      if (data) {
+        setSignedTransaction(data.signature)
+        setTransactionSigned(true)
+      } else {
+        setSignedTransaction({
+          r: "",
+          s: "",
+          _vs: "",
+          mess: "",
+          v: "",
+          recoveryParam: ""
+        })
+        setTransactionSigned(false)
+      }
+    }
+    if (account) {
+      checkIfSignatureExists()
+
+    }
+  }, [account])
 
   const { independentField, typedValue } = useSwapState();
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
@@ -108,52 +136,41 @@ const SetPrice = () => {
         trxState: TrxState.WaitingForConfirmation,
       })
     );
-    const time = Date.now();
-    let data
+    let minutesToAdd = 20;
+    let currentDate = new Date();
+    let futureDate = currentDate.getTime() + minutesToAdd;
+    console.log({ futureDate })
+    let data, response
     if (currencies[Field.INPUT]?.isNative) {
+      console.log(Web3.utils.toWei(typedValue, 'ether'), { typedValue })
       data = await smartSwapV2Contract.setPeriodToSwapETHForTokens(
+
         currencies[Field.OUTPUT]?.wrapped.address,
         account,
-        time,
+        futureDate,
         signedTransaction?.mess,
         signedTransaction?.r,
         signedTransaction?.s,
         signedTransaction?.v,
         { value: Web3.utils.toWei(typedValue, 'ether') }
       )
-    } else if (currencies[Field.OUTPUT]?.isNative) {
-      data = await smartSwapV2Contract.setPeriodToswapTokensForETH(
-        currencies[Field.INPUT]?.wrapped.address,
-        account,
-        Web3.utils.toWei(typedValue, 'ether'),
-        time,
-        signedTransaction?.mess,
-        signedTransaction?.r,
-        signedTransaction?.s,
-        signedTransaction?.v,
-      )
+      const fetchTransactionData = async (sendTransaction: any) => {
+        const { confirmations, status, logs } = await sendTransaction.wait(1);
+
+        return { confirmations, status, logs };
+      };
+      const { confirmations, status, logs } = await fetchTransactionData(data)
+      if (confirmations >= 1 && status) {
+        response = true
+      }
     } else {
-      data = await smartSwapV2Contract.callPeriodToSwapExactTokens(
-        currencies[Field.INPUT]?.wrapped.address,
-        currencies[Field.OUTPUT]?.wrapped.address,
-        account,
-        Web3.utils.toWei(typedValue, 'ether'),
-        time,
-        signedTransaction?.mess,
-        signedTransaction?.r,
-        signedTransaction?.s,
-        signedTransaction?.v,
-      )
+      response = true
     }
 
-    const fetchTransactionData = async (sendTransaction: any) => {
-      const { confirmations, status, logs } = await sendTransaction.wait(1);
 
-      return { confirmations, status, logs };
-    };
-    const { confirmations, status, logs } = await fetchTransactionData(data)
     let orderID = await smartSwapV2Contract.orderCount()
-    if (confirmations >= 1 && status) {
+
+    if (response) {
       dispatch(
         setOpenModal({
           message: "Storing Transaction",
@@ -161,7 +178,7 @@ const SetPrice = () => {
         })
       );
 
-      const response = await fetch('https://rigelprotocol-autoswap.herokuapp.com/auto/add', {
+      const response = await fetch(`${URL}/auto/add`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -196,10 +213,20 @@ const SetPrice = () => {
           trxState: TrxState.TransactionSuccessful,
         })
       );
+      setSignedTransaction({
+        r: "",
+        s: "",
+        _vs: "",
+        mess: "",
+        v: "",
+        recoveryParam: ""
+      })
+      onUserInput(Field.INPUT, "");
       setApproval([])
     }
 
   }
+
 
   const handleMaxInput = async () => {
     const value = await getMaxValue(currencies[Field.INPUT]);

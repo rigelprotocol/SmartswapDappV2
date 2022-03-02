@@ -211,7 +211,6 @@ const ShowYieldFarmDetails = ({
           library
         );
         const approvalForRGPBUSD = await poolAllowance(poolOne);
-        console.log(approvalForRGPBUSD, "approval-matic");
         changeApprovalButton(approvalForRGPBUSD, rgpApproval);
       } else if (content.deposit === "RGP") {
         changeApprovalButton(true, rgpApproval);

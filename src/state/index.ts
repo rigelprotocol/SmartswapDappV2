@@ -12,25 +12,24 @@ import mint from './mint/reducer'
 import farms from "./farm/reducer"
 
 
-const PERSISTED_KEYS: string[] = ['user','lists'];
+const PERSISTED_KEYS: string[] = ['user', 'lists'];
 
 const store = configureStore({
-    reducer: {
-        toast: toastReducers,
-        block: blockReducer,
-        application,
-        transactions,
+  reducer: {
+    toast: toastReducers,
+    block: blockReducer,
+    application,
+    transactions,
 
-        // Exchange
-        swap,
-        user,
+    // Exchange
+    swap,
+    user,
 
-        mint,
+    mint,
 
-        lists,
-
-        farms
-    },
+    lists,
+    farms
+  },
   middleware: [...getDefaultMiddleware({ thunk: true }), save({ states: PERSISTED_KEYS })],
   preloadedState: load({ states: PERSISTED_KEYS }),
 });

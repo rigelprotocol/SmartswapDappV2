@@ -10,7 +10,8 @@ interface ToProps {
   onCurrencySelection: Function,
   currency: Currency | undefined,
   otherCurrency: Currency | undefined,
-  value: string
+  value: string,
+  display?: boolean
 }
 
 
@@ -19,12 +20,11 @@ const To: React.FC<ToProps> = ({
   currency,
   otherCurrency,
   onUserOutput,
-  value
-
+  value,
+  display
 }) => {
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   const [tokenModal, setTokenModal] = useState(false);
-
   const handleInputSelect = useCallback(
     (outputCurrency) => {
 
@@ -43,14 +43,15 @@ const To: React.FC<ToProps> = ({
         mb={4}
         mt={4}
         borderRadius="6px"
-        border="1px"
+        border={display ? "0" : "1px"}
         borderColor={borderColor}
         className='SelectToken'
+        width="100%"
       >
         <InputSelector
-
           onCurrencySelect={handleInputSelect}
           currency={currency}
+          display={display}
           otherCurrency={otherCurrency}
           tokenModal={tokenModal}
           setToken={() => setTokenModal((state) => !state)}
