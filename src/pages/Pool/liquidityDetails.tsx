@@ -62,6 +62,10 @@ const LiquidityDetails = (props: LiquidityDetail) => {
               ? "ETH"
               : props.pair.path[0].token == "WMATIC"
               ? "MATIC"
+              : props.pair.path[0].token == "WROSE"
+              ? "ROSE"
+              : props.pair.path[0].token == "wROSE"
+              ? "ROSE"
               : props.pair.path[0].token}
             :
           </Text>
@@ -76,6 +80,10 @@ const LiquidityDetails = (props: LiquidityDetail) => {
               ? "ETH"
               : props.pair.path[1].token === "WMATIC"
               ? "MATIC"
+              : props.pair.path[1].token === "WROSE"
+              ? "ROSE"
+              : props.pair.path[1].token === "wROSE"
+              ? "ROSE"
               : props.pair.path[1].token}
           </Text>
           <Text>{props.pair.pooledToken1}</Text>
