@@ -6,7 +6,6 @@ import To from './components/sendToken/To';
 import SwapSettings from './components/sendToken/SwapSettings';
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
 import { VectorIcon, ExclamationIcon, SwitchIcon } from '../../theme/components/Icons';
-import Automodal
 import {
   useDerivedSwapInfo,
   useSwapActionHandlers,
