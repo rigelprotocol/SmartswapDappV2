@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Flex, Text } from "@chakra-ui/layout";
 import {
   Alert,
@@ -71,6 +71,7 @@ import WelcomeModal from "../../components/Onboarding/WelcomeModal";
 import CryptoJS from 'crypto-js';
 import { shortenCode } from "../../utils";
 import { useLocation } from 'react-router-dom';
+import {setOpenModal, TrxState} from "../../state/application/reducer";
 
 export const BIG_TEN = new bigNumber(10);
 export const LIQUIDITY = "liquidity";
@@ -254,14 +255,14 @@ export function Index() {
       }catch(error){
         console.log(error)
       }
-    }
+    };
     handleURLRefCode();
-  }, [account])
+  }, [account]);
 
   const getFarmTokenBalance = async () => {
     if (account) {
       try {
-        if (Number(chainId) === Number(SupportedChainId.POLYGON)) {
+        if (Number(chainId) === Number(SupportedChainId.POLYGON) || account && Number(chainId) === Number(SupportedChainId.POLYGONTEST)) {
           const [RGPToken, poolOne, poolTwo, poolThree] = await Promise.all([
             rigelToken(RGP[chainId as number], library),
             smartSwapLPTokenPoolOne(
@@ -936,12 +937,12 @@ export function Index() {
               apy: calculateApy(RGPprice, MHT_RGPLiquidity, 340.48),
             },
             {
-              deposit: "RGP-SHIB",
+              deposit: "SHIB-RGP",
               liquidity: RGP_SHIBLiquidity,
               apy: calculateApy(RGPprice, RGP_SHIBLiquidity, 340.48),
             },
             {
-              deposit: "RGP-MBOX",
+              deposit: "MBOX-RGP",
               liquidity: RGP_MBOXLiquidity,
               apy: calculateApy(RGPprice, RGP_MBOXLiquidity, 340.48),
             },
@@ -1000,7 +1001,7 @@ export function Index() {
 
   const getTokenStaked = async () => {
     try {
-      if (account && Number(chainId) === Number(SupportedChainId.POLYGON)) {
+      if (account && Number(chainId) === Number(SupportedChainId.POLYGON) || account && Number(chainId) === Number(SupportedChainId.POLYGONTEST)) {
         const masterChefV2 = await MasterChefV2Contract(
           MASTERCHEFV2ADDRESSES[chainId as number],
           library
@@ -1224,6 +1225,14 @@ export function Index() {
         setInitialLoad(false);
       }
     } catch (error) {
+      if (error.code == -32603) {
+        dispatch(
+            setOpenModal({
+              message: `RPC URL Error. Failed to load accurate data.`,
+              trxState: TrxState.TransactionFailed,
+            })
+        );
+      }
       console.error(error, "getTokenStaked =>Farming v2");
     }
   };

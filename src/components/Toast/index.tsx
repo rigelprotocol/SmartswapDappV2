@@ -20,13 +20,15 @@ import './toast.css';
 export interface ToastProps {
   message: string;
   URL?: string;
+  error?: boolean;
   remove: Function;
 }
 
-function Toast({ message, URL, remove }: ToastProps) {
+function Toast({ message, URL, error, remove }: ToastProps) {
   const bgColor3 = useColorModeValue('#DEE6ED', '#324d68');
   const buttonBorder = useColorModeValue('gray.200', 'gray.100');
   const successIcon = useColorModeValue('#22bb33', '#75f083');
+  const errorIcon = useColorModeValue('#CC334F', '#FF3358');
   const textColor = useColorModeValue('black', '#fff');
   const bg = useColorModeValue('#fff', '#15202b');
   const shadow = useColorModeValue(
@@ -62,20 +64,25 @@ function Toast({ message, URL, remove }: ToastProps) {
       <Flex h={'100%'}>
         <Box flex={'1'}>
           <HStack h={'100%'} p={3} w={'90%'}>
-            <AiOutlineCheckCircle color={successIcon} size={'40px'} />
+            {error ?
+                <AiOutlineExclamationCircle color={errorIcon} size={'40px'} />
+                :
+                <AiOutlineCheckCircle color={successIcon} size={'40px'} />
+            }
             <VStack alignItems={'start'} textAlign={'start'} px={'10px'}>
               <Text fontSize='16px' fontWeight='bold' color={textColor}>
                 {message}
               </Text>
+              {!error &&
               <Link
-                href={`${URL}`}
-                isExternal
-                variant={'link'}
-                color={'brand.200'}
+                  href={`${URL}`}
+                  isExternal
+                  variant={'link'}
+                  color={'brand.200'}
               >
                 View on Explorer
               </Link>
-
+              }
             </VStack>
           </HStack>
         </Box>
@@ -96,7 +103,7 @@ function Toast({ message, URL, remove }: ToastProps) {
         border={'1px solid'}
         borderColor={buttonBorder}
       />
-      <animated.div className={'progress'} style={faderStyle} />
+      {!error && <animated.div className={'progress'} style={faderStyle} />}
     </Box>
   );
 }
@@ -111,6 +118,7 @@ export const Notify = () => {
         <Toast
           message={toastDetails.message}
           URL={toastDetails.URL}
+          error={toastDetails.error}
           remove={() => dispatch(removeToast())}
         />
       )}
