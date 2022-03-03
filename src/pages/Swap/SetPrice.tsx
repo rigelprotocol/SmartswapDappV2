@@ -76,7 +76,7 @@ const SetPrice = () => {
   const [approval, setApproval] = useState<String[]>([])
 
   useEffect(() => {
-    setURL("http://localhost:7000")
+    // setURL("http://localhost:7000")
     async function checkIfSignatureExists() {
       let user = await fetch(`${URL}/auto/data/${account}`)
       let data = await user.json()

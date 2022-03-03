@@ -127,8 +127,9 @@ const useAccountHistory = () => {
 
                 const data = await fetch(uri);
                 const jsondata = await data.json();
-                console.log({ contractAddress })
+                console.log({ jsondata, contractAddress })
                 const SwapTrx = jsondata.result.filter((item: any) => item.to == contractAddress);
+
                 const dataFiltered = SwapTrx
                     .filter((items: any) => decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02) !== undefined && items.isError !== "1")
                     .map((items: any) => ({
@@ -138,7 +139,7 @@ const useAccountHistory = () => {
                         transactionFee: items.gasPrice * items.gasUsed,
                         name: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).name
                     }));
-
+                console.log({ SwapTrx, dataFiltered })
                 const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(0, 5) : dataFiltered;
                 let userData
                 if (locationData === "swap") {

@@ -34,6 +34,7 @@ import {
   useMediaQuery,
   Select
 } from '@chakra-ui/react';
+import AutoTimeModal from './modals/autoTimeModal';
 import {
   ChevronDownIcon
 } from "@chakra-ui/icons";
@@ -68,6 +69,7 @@ const SetPrice = () => {
   }
   )
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
+  const [signatureFromDataBase, setSignatureFromDataBase] = useState(false)
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [selectedFrequency, setSelectedFrequency] = useState("daily")
   const [toPriceOut, setToPriceOut] = useState("0")
@@ -76,6 +78,9 @@ const SetPrice = () => {
   const [priceOut, setPriceOut] = useState<string>("")
   const [otherMarketprice, setOtherMarketprice] = useState<string>("0")
   const [approval, setApproval] = useState<String[]>([])
+  const [showModal, setShowModal] = useState(false)
+
+  const [checkedItem, setCheckedItem] = useState(false)
   const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
 
   const { onCurrencySelection, onUserInput, onSwitchTokens } = useSwapActionHandlers();
@@ -103,17 +108,21 @@ const SetPrice = () => {
     [onUserInput]
   );
   useEffect(async () => {
-    await checkForApproval()
+    // setURL("http://localhost:7000")
+    if (account) {
+
+      await checkForApproval()
+    }
   }, [currencies[Field.INPUT], account])
   useEffect(() => {
     setURL("http://localhost:7000")
     async function checkIfSignatureExists() {
-      const autoswapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
       let user = await fetch(`${URL}/auto/data/${account}`)
       let data = await user.json()
       if (data) {
         setSignedTransaction(data.signature)
         setTransactionSigned(true)
+        setSignatureFromDataBase(true)
       } else {
         setSignedTransaction({
           r: "",
@@ -124,12 +133,13 @@ const SetPrice = () => {
           recoveryParam: ""
         })
         setTransactionSigned(false)
+        setSignatureFromDataBase(false)
       }
     }
     if (account) {
       checkIfSignatureExists()
-
     }
+    setCheckedItem(false)
   }, [account])
 
   // const checkIfSignatureExists = async () => {
@@ -174,21 +184,23 @@ const SetPrice = () => {
       }
     }
   }, [chainId, currencies[Field.INPUT], currencies[Field.OUTPUT], marketType, typedValue])
-
-
   const checkForApproval = async () => {
+
+    const autoSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
     // check approval for RGP and the other token
     const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number])
     const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
-    if (parseFloat(RGPBalance) > 0 && parseFloat(tokenBalance) > 0) {
+    const amountToApprove = await autoSwapV2Contract.fee()
+    const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
+    if (parseFloat(RGPBalance) >= fee && parseFloat(tokenBalance) > 0) {
       setHasBeenApproved(true)
-    } else if (parseFloat(RGPBalance) <= 0 && parseFloat(tokenBalance) <= 0) {
+    } else if (parseFloat(RGPBalance) < fee && parseFloat(tokenBalance) <= 0) {
       setHasBeenApproved(false)
       setApproval(["RGP", currencies[Field.INPUT]?.wrapped.name])
     } else if (parseFloat(tokenBalance) <= 0) {
       setHasBeenApproved(false)
       setApproval([currencies[Field.INPUT].wrapped.name])
-    } else if (parseFloat(RGPBalance) <= 0) {
+    } else if (parseFloat(RGPBalance) < fee) {
       setHasBeenApproved(false)
       setApproval(["RGP"])
     }
@@ -325,7 +337,8 @@ const SetPrice = () => {
 
   }
   const sendTransactionToDatabase = async () => {
-    const smartSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
+
+    const autoSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
     dispatch(
       setOpenModal({
         message: `Signing initial transaction between ${currencies[Field.INPUT]?.symbol} and ${currencies[Field.OUTPUT]?.symbol}`,
@@ -339,7 +352,7 @@ const SetPrice = () => {
     let data, response
     if (currencies[Field.INPUT]?.isNative) {
       console.log(Web3.utils.toWei(typedValue, 'ether'), { typedValue })
-      data = await smartSwapV2Contract.setPeriodToSwapETHForTokens(
+      data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
 
         currencies[Field.OUTPUT]?.wrapped.address,
         account,
@@ -361,34 +374,9 @@ const SetPrice = () => {
       }
     } else {
       response = true
+
     }
-    // else if (currencies[Field.OUTPUT]?.isNative) {
-    //   data = await smartSwapV2Contract.setPeriodToswapTokensForETH(
-    //     currencies[Field.INPUT]?.wrapped.address,
-    //     account,
-    //     Web3.utils.toWei(typedValue, 'ether'),
-    //     time,
-    //     signedTransaction?.mess,
-    //     signedTransaction?.r,
-    //     signedTransaction?.s,
-    //     signedTransaction?.v,
-    //   )
-    // } else {
-    //   data = await smartSwapV2Contract.callPeriodToSwapExactTokens(
-    //     currencies[Field.INPUT]?.wrapped.address,
-    //     currencies[Field.OUTPUT]?.wrapped.address,
-    //     account,
-    //     Web3.utils.toWei(typedValue, 'ether'),
-    //     time,
-    //     signedTransaction?.mess,
-    //     signedTransaction?.r,
-    //     signedTransaction?.s,
-    //     signedTransaction?.v,
-    //   )
-    // }
-
-
-    let orderID = await smartSwapV2Contract.orderCount()
+    let orderID = await autoSwapV2Contract.orderCount()
 
     if (response) {
       dispatch(
@@ -398,25 +386,6 @@ const SetPrice = () => {
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)
-      console.log(currencies[Field.OUTPUT])
-      console.log({
-        address: account,
-        chainID: chainId,
-        frequency: selectedFrequency,
-        frequencyNumber: changeFrequencyToday.days,
-        presentDate: changeFrequencyToday.today,
-        presentMonth: changeFrequencyToday.month,
-        fromAddress: currencies[Field.INPUT]?.isNative ? WNATIVEADDRESSES[chainId as number] : currencies[Field.INPUT]?.wrapped.address,
-        toAddress: currencies[Field.OUTPUT]?.isNative ? WNATIVEADDRESSES[chainId as number] : currencies[Field.OUTPUT]?.wrapped.address,
-        signature: signedTransaction,
-        percentageChange,
-        toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped ? currencies[Field.OUTPUT]?.wrapped.decimals : currencies[Field.OUTPUT]?.decimals,
-        fromPrice: typedValue,
-        currentToPrice: toPriceOut,
-        orderID: orderID.toString()
-
-      })
-
       const response = await fetch(`${URL}/auto/add`, {
         method: "POST",
         mode: "cors",
@@ -440,7 +409,7 @@ const SetPrice = () => {
           toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped ? currencies[Field.OUTPUT]?.wrapped.decimals : currencies[Field.OUTPUT]?.decimals,
           fromPrice: typedValue,
           currentToPrice: toPriceOut,
-          orderID: orderID.toString()
+          orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1,
 
         })
       })
@@ -462,6 +431,8 @@ const SetPrice = () => {
       })
       onUserInput(Field.INPUT, "");
       setApproval([])
+      setSignatureFromDataBase(true)
+      setCheckedItem(false)
     }
 
   }
@@ -807,7 +778,8 @@ const SetPrice = () => {
                     borderRadius="6px"
                     border={lightmode ? '2px' : 'none'}
                     borderColor={borderColor}
-                    onClick={signTransaction}
+                    // onClick={signTransaction}
+                    onClick={() => setShowModal(!showModal)}
                     h="48px"
                     p="5px"
                     color={color}
@@ -841,7 +813,8 @@ const SetPrice = () => {
                     p="5px"
                     color={color}
                     bgColor={buttonBgcolor}
-                    onClick={sendTransactionToDatabase}
+                    onClick={() => signatureFromDataBase ? setShowModal(!showModal) : sendTransactionToDatabase()}
+                    // onClick={sendTransactionToDatabase}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
                     _hover={{ bgColor: buttonBgcolor }}
@@ -876,6 +849,25 @@ const SetPrice = () => {
           </>
         )}
       </Flex>
+      <AutoTimeModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        from={currencies[Field.INPUT]?.symbol}
+        to={currencies[Field.OUTPUT]?.symbol}
+        title="Confirm Auto time"
+        inputLogo={currencies[Field.INPUT]?.logoURI}
+        outputLogo={currencies[Field.OUTPUT]?.logoURI}
+        frequency={selectedFrequency}
+        percentageChange={percentageChange}
+        buttonText={signatureFromDataBase ? "Send Transaction" : "Sign Wallet"}
+        fromDeposited={formattedAmounts[Field.INPUT]}
+        toDeposited={toPriceOut}
+        signSignature={signatureFromDataBase ? sendTransactionToDatabase : signTransaction}
+        setCheckedItem={setCheckedItem}
+        checkedItem={checkedItem}
+        // priceImpact={priceImpact}
+        pathSymbol={pathSymbol}
+      />
     </Box>
   )
 }
