@@ -115,7 +115,7 @@ const SetPrice = () => {
     }
   }, [currencies[Field.INPUT], account])
   useEffect(() => {
-    setURL("http://localhost:7000")
+    // setURL("http://localhost:7000")
     async function checkIfSignatureExists() {
       let user = await fetch(`${URL}/auto/data/${account}`)
       let data = await user.json()
@@ -824,23 +824,6 @@ const SetPrice = () => {
                 }
 
               </Box>
-              <AutoModal
-                showModal={showModal}
-                setShowModal={setShowModal}
-                from={currencies[Field.INPUT]?.symbol}
-                to={currencies[Field.OUTPUT]?.symbol}
-                title={"Confirm Swap"}
-                inputLogo={currencies[Field.INPUT]?.logoURI}
-                outputLogo={currencies[Field.OUTPUT]?.logoURI}
-                minRecieved={minimum}
-                slippage={Number(allowedSlippage / 100)}
-                fromDeposited={formattedAmounts[Field.INPUT]}
-                toDeposited={receivedAmount}
-                handleSwap={swapTokens}
-                fee={LPFee}
-                priceImpact={priceImpact}
-                pathSymbol={pathSymbol}
-              />
             </Box>
 
             <Box mx={5} w={['100%', '100%', '45%', '29.5%']} mb={4}>
