@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import SmartSwapRouter02 from '../abis/swapAbiForDecoder.json';
-import { timeConverter, getTokenSymbol, formatAmount } from "./useAccountHistory";
+import { timeConverter, getTokenSymbol, formatAmount, APIENDPOINT, APIKEY } from "./useAccountHistory";
 import { SMARTSWAPROUTER } from "../addresses";
 import { getERC20Token } from '../utilsFunctions';
 
@@ -13,8 +13,11 @@ const useMarketHistory = () => {
     const [loadMarketData, setLoadMarketData] = useState(false);
     const [marketHistoryData, setMarketHistoryData] = useState({} as any);
 
-    const testNetwork = chainId === 97;
+
+
     const contractAddress = SMARTSWAPROUTER[chainId as number];
+    const api = APIENDPOINT[chainId as number];
+    const apikey = APIKEY[chainId as number];
 
     abiDecoder.addABI(SmartSwapRouter02);
 
@@ -47,12 +50,12 @@ const useMarketHistory = () => {
                 setLoadMarketData(true);
                 try {
 
-                    const uri = `https://api${testNetwork ? '-testnet.bscscan.com' : '.bscscan.com'
-                        }/api?module=account&action=txlist&address=${contractAddress}&startblock=0
-                        &endblock=latest&sort=desc&apikey=AATZWFQ47VX3Y1DN7M97BJ5FEJR6MGRQSD`;
+                    const uri = `https://${api}?module=account&action=txlist&address=${contractAddress}&startblock=0
+                    &endblock=latest&sort=desc&apikey=${apikey}`;
 
                     const data = await fetch(uri);
                     const jsonData = await data.json();
+
 
                     const filteredData = jsonData.result
                         .filter((items: any) => decodeInput(items.input) !== undefined && items.isError !== "1")
@@ -108,8 +111,8 @@ const useMarketHistory = () => {
                             getTokenSymbol(data.tokenOut.symbol),
                         token1: data.tokenIn,
                         token2: data.tokenOut,
-                        amountIn: formatAmount(data.amountIn),
-                        amountOut: formatAmount(data.amountOut),
+                        amountIn: formatAmount(data.amountIn, data.tokenIn.decimals),
+                        amountOut: formatAmount(data.amountOut, data.tokenOut.decimals),
                         time: data.time
                     }));
 
@@ -127,7 +130,7 @@ const useMarketHistory = () => {
 
         };
         getMarketData();
-    }, [chainId, account, contractAddress]);
+    }, [chainId, account]);
     return { marketHistoryData, loadMarketData };
 
 };

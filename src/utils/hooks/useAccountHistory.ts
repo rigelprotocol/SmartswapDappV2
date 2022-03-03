@@ -10,7 +10,7 @@ import { useLocation } from 'react-router-dom';
 import { SMARTSWAPROUTER, AUTOSWAPV2ADDRESSES } from "../addresses";
 import Web3 from 'web3';
 import { autoSwapV2, SmartSwapRouter } from '../Contracts';
-
+import { ParseFloat } from '..';
 
 const abiDecoder = require('abi-decoder');
 
@@ -26,6 +26,28 @@ export function timeConverter(UNIX_timestamp: any) {
     return date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec;
 }
 
+export const APIENDPOINT: { [key: string]: string } = {
+    "1": "",
+    "3": "",
+    "56": "api.bscscan.com/api",
+    "97": "api-testnet.bscscan.com/api",
+    "137": "api.polygonscan.com/api",
+    "80001": "api-testnet.polygonscan.com/api",
+    "42261": "testnet.explorer.emerald.oasis.dev/api",
+    "42262": "explorer.emerald.oasis.dev/api",
+};
+
+export const APIKEY: { [key: string]: string } = {
+    "1": "",
+    "3": "",
+    "56": "AATZWFQ47VX3Y1DN7M97BJ5FEJR6MGRQSD",
+    "97": "AATZWFQ47VX3Y1DN7M97BJ5FEJR6MGRQSD",
+    "137": "89B4F6NVVEVGC8EMDCJVRJMVGSCVHHZTR7",
+    "80001": "89B4F6NVVEVGC8EMDCJVRJMVGSCVHHZTR7",
+    "42261": "",
+    "42262": "",
+};
+
 interface DataIncoming {
     inputAmount: string,
     outputAmount: string,
@@ -37,10 +59,10 @@ interface DataIncoming {
     id: string
 }
 let web3 = new Web3(Web3.givenProvider);
-export const formatAmount = (number: string) => {
+export const formatAmount = (number: string, decimals: any) => {
     const num = ethers.BigNumber.from(number).toString();
-    let res = ethers.utils.formatEther(num);
-    res = (+res).toFixed(4);
+    let res = ethers.utils.formatUnits(num, decimals)
+    res = ParseFloat(res, 5)
     return res;
 
 };
@@ -114,6 +136,10 @@ const useAccountHistory = () => {
         let hash = res.filter((dat: any) => dat.fromAddress === from && dat.toAddress === to && dat.orderID === Number(id))
         return hash[0]
     }
+
+    const api = APIENDPOINT[chainId as number];
+    const apikey = APIKEY[chainId as number];
+
 
     useEffect(() => {
 
@@ -224,6 +250,8 @@ const useAccountHistory = () => {
                 }));
                 setHistoryData(userSwapHistory);
 
+                setHistoryData(userSwapHistory);
+                setLoading(false);
 
 
 
