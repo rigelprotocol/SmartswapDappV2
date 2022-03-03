@@ -129,7 +129,7 @@ const SetPrice = () => {
   };
 
   const sendTransactionToDatabase = async () => {
-    const smartSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
+    const autoSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
     dispatch(
       setOpenModal({
         message: `Signing initial transaction between ${currencies[Field.INPUT]?.symbol} and ${currencies[Field.OUTPUT]?.symbol}`,
@@ -143,7 +143,7 @@ const SetPrice = () => {
     let data, response
     if (currencies[Field.INPUT]?.isNative) {
       console.log(Web3.utils.toWei(typedValue, 'ether'), { typedValue })
-      data = await smartSwapV2Contract.setPeriodToSwapETHForTokens(
+      data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
 
         currencies[Field.OUTPUT]?.wrapped.address,
         account,
@@ -168,7 +168,7 @@ const SetPrice = () => {
     }
 
 
-    let orderID = await smartSwapV2Contract.orderCount()
+    let orderID = await autoSwapV2Contract.orderCount()
 
     if (response) {
       dispatch(
