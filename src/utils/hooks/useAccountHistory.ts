@@ -144,7 +144,7 @@ const useAccountHistory = () => {
     }
 
     useEffect(() => {
-        // setURL("http://localhost:7000")
+        setURL("http://localhost:7000")
         const loadAccountHistory = async () => {
             if (account && contractAddress && locationData) {
                 setLoading(true);
@@ -199,8 +199,8 @@ const useAccountHistory = () => {
                     let useDataLooped: any = []
 
                     dataToUse.forEach((data: any) => {
-                        console.log({ dataToUse })
                         let id = data.transactionObj[0].value
+                        console.log({ id })
                         if (id === "0") {
                             return
                         } else {
@@ -211,7 +211,7 @@ const useAccountHistory = () => {
                     }
                     )
 
-                    console.log({ useDataLooped })
+                    console.log({ dataToUse, useDataLooped })
                     userData = await Promise.all(
                         useDataLooped.map(async (data: any) => {
                             const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);

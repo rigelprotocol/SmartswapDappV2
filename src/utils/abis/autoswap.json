@@ -56,12 +56,6 @@
             {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "expectedTime",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
                 "name": "timestamp",
                 "type": "uint256"
             }
@@ -149,12 +143,6 @@
                 "indexed": false,
                 "internalType": "uint256",
                 "name": "amountToSwap",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "expectedTime",
                 "type": "uint256"
             }
         ],
@@ -266,11 +254,6 @@
             {
                 "internalType": "uint256",
                 "name": "time",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "expectedTime",
                 "type": "uint256"
             },
             {
