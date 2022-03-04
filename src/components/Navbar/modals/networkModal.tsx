@@ -3,7 +3,6 @@ import {Modal, ModalCloseButton, ModalContent, ModalOverlay, useColorModeValue,}
 import WalletOptions from '../WalletOptions';
 import {connectorKey, ConnectorNames} from '../../../connectors';
 import useAuth from '../../../utils/hooks/useAuth';
-import {useActiveWeb3React} from "../../../utils/hooks/useActiveWeb3React";
 
 const NetworkModal = ({
   displayNetwork,
@@ -24,6 +23,7 @@ const NetworkModal = ({
   const connectWallet = (connectorID: ConnectorNames) => {
     login(connectorID);
     window.localStorage.setItem(connectorKey, connectorID);
+    setDisplayNetwork(false);
   };
 
   return (

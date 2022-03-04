@@ -71,8 +71,7 @@ const SetPrice = () => {
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
   const [signatureFromDataBase, setSignatureFromDataBase] = useState(false)
   const [transactionSigned, setTransactionSigned] = useState(false)
-  const [selectedFrequency, setSelectedFrequency] = useState("daily")
-  const [toPriceOut, setToPriceOut] = useState("0")
+  const [selectedFrequency, setSelectedFrequency] = useState("5")
   const [marketType, setMarketType] = useState("pancakeswap")
   const [percentageChange, setPercentageChange] = useState<string>("0")
   const [priceOut, setPriceOut] = useState<string>("")
@@ -156,13 +155,6 @@ const SetPrice = () => {
         '1000000000000000000',
         routeAddress
       );
-      if (typedValue) {
-        const toPriceOut = await rout.getAmountsOut(
-          Web3.utils.toWei(typedValue, 'ether'),
-          routeAddress
-        );
-        setToPriceOut(ethers.utils.formatUnits(toPriceOut[1].toString(), currencies[Field.OUTPUT]?.decimals))
-      }
 
       setPriceOut(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
     }
@@ -408,8 +400,9 @@ const SetPrice = () => {
           percentageChange,
           toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped ? currencies[Field.OUTPUT]?.wrapped.decimals : currencies[Field.OUTPUT]?.decimals,
           fromPrice: typedValue,
-          currentToPrice: toPriceOut,
+          currentToPrice: formattedAmounts[Field.OUTPUT],
           orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1,
+          type: "Auto Time"
 
         })
       })
@@ -534,8 +527,7 @@ const SetPrice = () => {
                   <Spacer />
                   <VStack>
                     <Text fontSize="24px" color={textColorOne} isTruncated width="160px" textAlign="right">
-                      {/* {isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT])} */}
-                      {toPriceOut}
+                      {isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT])}
                     </Text>
                     <Text fontSize="14px" color={color} textAlign="right">
                       -2.56
@@ -677,8 +669,7 @@ const SetPrice = () => {
                   <Spacer />
                   <VStack>
                     <Text fontSize="24px" color={textColorOne} isTruncated width="160px" textAlign="right">
-                      {/* {isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT])} */}
-                      {toPriceOut}
+                      {isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT])}
                     </Text>
                     <Text fontSize="14px" color={color} textAlign="right">
                       -2.56
@@ -751,6 +742,8 @@ const SetPrice = () => {
                     <ExclamationIcon />
                   </Flex>
                   <Select onChange={(e) => setSelectedFrequency(e.target.value)}>
+                    <option value='5'>5 minutes</option>
+                    <option value='30'>30 minutes</option>
                     <option value='daily'>Daily</option>
                     <option value='weekly'>Weekly</option>
                     <option value='monthly'>Monthly</option>
@@ -844,7 +837,7 @@ const SetPrice = () => {
         percentageChange={percentageChange}
         buttonText={signatureFromDataBase ? "Send Transaction" : "Sign Wallet"}
         fromDeposited={formattedAmounts[Field.INPUT]}
-        toDeposited={toPriceOut}
+        toDeposited={formattedAmounts[Field.OUTPUT]}
         signSignature={signatureFromDataBase ? sendTransactionToDatabase : signTransaction}
         setCheckedItem={setCheckedItem}
         checkedItem={checkedItem}

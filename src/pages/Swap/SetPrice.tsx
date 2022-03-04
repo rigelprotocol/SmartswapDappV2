@@ -465,9 +465,12 @@ const SetPrice = () => {
               <VectorIcon />
             </Center>
             <Spacer />
-            <Text fontSize="14px" mr={2} color={textColorOne}>
-              1 RGP = 1.34566 USDT
-            </Text>
+            {currencies[Field.INPUT]?.symbol && currencies[Field.OUTPUT]?.symbol &&
+              <Text fontSize="14px" mr={2} color={textColorOne}>
+                1 {currencies[Field.INPUT]?.symbol} = {formattedAmounts[Field.OUTPUT]} {currencies[Field.OUTPUT]?.symbol}
+              </Text>
+            }
+
             <ExclamationIcon />
           </Flex>
 

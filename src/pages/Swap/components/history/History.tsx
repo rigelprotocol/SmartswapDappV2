@@ -10,19 +10,17 @@ import MarketHistory from "./MarketHistory";
 import { transactionTab } from "../../../../state/transaction/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../state";
-import { autoSwapV2 } from '../../../../utils/Contracts';
-import { AUTOSWAPV2ADDRESSES } from '../../../../utils/addresses';
 import { useActiveWeb3React } from '../../../../utils/hooks/useActiveWeb3React';
 import { setOpenModal, TrxState } from "../../../../state/application/reducer";
 
 
 const History = () => {
 
-  const { account, chainId, library } = useActiveWeb3React()
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
   const nonActiveTabColor = useColorModeValue('#CCCCCC', '#4A739B');
   const iconColor = useColorModeValue('#666666', '#DCE5EF');
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
+  const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
 
   // const [sideBarRemoved, setSideBarRemoved] = useState<Boolean>(false);
 
@@ -41,6 +39,7 @@ const History = () => {
 
 
   useEffect(() => {
+    // setURL("http://localhost:7000")
     const isActive = checkSideTab('history');
     dispatch(transactionTab({ removeSideTab: isActive }))
 
@@ -51,7 +50,7 @@ const History = () => {
       message: "Deleting Transaction...",
       trxState: TrxState.WaitingForConfirmation,
     })
-    const data = await fetch(`https://rigelprotocol-autoswap.herokuapp.com/auto/data/${id}`, { method: 'DELETE' })
+    const data = await fetch(`${URL}/auto/data/${id}`, { method: 'DELETE' })
     const res = await data.json()
     if (res === "success") {
       dispatch(
