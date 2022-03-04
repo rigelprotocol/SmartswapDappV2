@@ -71,7 +71,7 @@ const SetPrice = () => {
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
   const [signatureFromDataBase, setSignatureFromDataBase] = useState(false)
   const [transactionSigned, setTransactionSigned] = useState(false)
-  const [selectedFrequency, setSelectedFrequency] = useState("daily")
+  const [selectedFrequency, setSelectedFrequency] = useState("5")
   const [toPriceOut, setToPriceOut] = useState("0")
   const [marketType, setMarketType] = useState("pancakeswap")
   const [percentageChange, setPercentageChange] = useState<string>("0")
@@ -108,7 +108,7 @@ const SetPrice = () => {
     [onUserInput]
   );
   useEffect(async () => {
-    // setURL("http://localhost:7000")
+    setURL("http://localhost:7000")
     if (account) {
 
       await checkForApproval()
@@ -410,6 +410,7 @@ const SetPrice = () => {
           fromPrice: typedValue,
           currentToPrice: toPriceOut,
           orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1,
+          type: "Auto Time"
 
         })
       })
@@ -764,6 +765,8 @@ const SetPrice = () => {
                     <ExclamationIcon />
                   </Flex>
                   <Select onChange={(e) => setSelectedFrequency(e.target.value)}>
+                    <option value='5'>5 minutes</option>
+                    <option value='30'>30 minutes</option>
                     <option value='daily'>Daily</option>
                     <option value='weekly'>Weekly</option>
                     <option value='monthly'>Monthly</option>

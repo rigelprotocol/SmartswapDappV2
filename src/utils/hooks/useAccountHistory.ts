@@ -7,9 +7,10 @@ import { ethers } from 'ethers';
 import SmartSwapRouter02 from '../abis/swapAbiForDecoder.json';
 import AUTOSWAP from '../abis/autoswap.json';
 import { useLocation } from 'react-router-dom';
-import { SMARTSWAPROUTER, AUTOSWAPV2ADDRESSES } from "../addresses";
+import { SMARTSWAPROUTER, AUTOSWAPV2ADDRESSES, RGPADDRESSES } from "../addresses";
 import Web3 from 'web3';
-import { autoSwapV2, SmartSwapRouter } from '../Contracts';
+import { SupportedChainName } from '../constants/chains';
+import { autoSwapV2, SmartSwapRouter, rigelToken } from '../Contracts';
 
 
 const abiDecoder = require('abi-decoder');
@@ -34,7 +35,9 @@ interface DataIncoming {
     time: string,
     name: string,
     frequency: string,
-    id: string
+    id: string,
+    isError: string,
+    error: []
 }
 let web3 = new Web3(Web3.givenProvider);
 export const formatAmount = (number: string) => {
@@ -65,6 +68,7 @@ const useAccountHistory = () => {
     const [historyData, setHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState(account)
+    const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const tokenList = async (addressName: string) => {
         const token = await getERC20Token(addressName, library);
@@ -109,14 +113,15 @@ const useAccountHistory = () => {
     }, [location, chainId])
 
     const getFrequencyFromDatabase = async (from: string, to: string, id: string) => {
-        const data = await fetch("https://rigelprotocol-autoswap.herokuapp.com/auto")
+        const data = await fetch(`${URL}/auto`)
         const res = await data.json()
-        let hash = res.filter((dat: any) => dat.fromAddress === from && dat.toAddress === to && dat.orderID === Number(id))
+        console.log({ from, to, id })
+        let hash = res.filter((dat: any) => dat.orderID === Number(id))
         return hash[0]
     }
 
     useEffect(() => {
-
+        setURL("http://localhost:7000")
         const loadAccountHistory = async () => {
             if (account && contractAddress && locationData) {
                 setLoading(true);
@@ -127,20 +132,20 @@ const useAccountHistory = () => {
 
                 const data = await fetch(uri);
                 const jsondata = await data.json();
-                console.log({ jsondata, contractAddress })
                 const SwapTrx = jsondata.result.filter((item: any) => item.to == contractAddress);
-
+                console.log(SwapTrx)
                 const dataFiltered = SwapTrx
-                    .filter((items: any) => decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02) !== undefined && items.isError !== "1")
+                    .filter((items: any) => decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02) !== undefined) // && items.isError !== "1"
                     .map((items: any) => ({
                         value: items.value,
                         transactionObj: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).params,
                         timestamp: items.timeStamp,
                         transactionFee: items.gasPrice * items.gasUsed,
-                        name: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).name
+                        // name: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).name,
+                        isError: items.isError
                     }));
-                console.log({ SwapTrx, dataFiltered })
-                const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(0, 5) : dataFiltered;
+                const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(5, 10) : dataFiltered;
+                console.log({ dataToUse })
                 let userData
                 if (locationData === "swap") {
                     userData = dataToUse.map((data: any) => ({
@@ -159,41 +164,66 @@ const useAccountHistory = () => {
                                 ? data.transactionObj[1].value[data.transactionObj[1].value.length - 1]
                                 : data.transactionObj[2].value[data.transactionObj[2].value.length - 1],
                         time: timeConverter(data.timestamp),
-                        name: data.name,
+                        // name: data.name,
                         frequency: "",
-                        id: ""
+                        id: "",
+                        isError: data.isError
                     }));
                 } else if (locationData === "auto" && AUTOSWAPV2ADDRESSES[chainId as number]) {
-                    const smartSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
+                    const autoswapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
+                    const rigelContract = await rigelToken(RGPADDRESSES[chainId as number], library);
                     userData = await Promise.all(
                         dataToUse.map(async (data: any) => {
                             const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
                             let id = data.transactionObj[0].value
-                            let dataReturned = await smartSwapV2Contract.getUserData(account, id)
+                            let dataReturned = await autoswapV2Contract.getUserData(account, id)
                             let database = await getFrequencyFromDatabase(dataReturned.swapFromToken, dataReturned.swapToToken, dataReturned.id.toString())
-                            console.log(dataReturned.path)
-                            console.log(Web3.utils.toWei(dataReturned.amountIn.toString(), "ether"), dataReturned.amountIn.toString())
                             const toPriceOut = await rout.getAmountsOut(
                                 dataReturned.amountIn.toString(),
                                 dataReturned.path
                             );
-                            console.log(toPriceOut)
+                            console.log({ dataReturned, database })
+                            const error = []
+                            if (parseInt(data.isError) > 0) {
+                                const rgpBalance = await rigelContract.balanceOf(account)
+                                const ERC20Token = database && database.fromAddress === "native" ? "native" : await getERC20Token(dataReturned.swapFromToken, library)
+                                const rgp = Web3.utils.fromWei(rgpBalance.toString(), 'ether')
+                                const amountToApprove = await autoswapV2Contract.fee()
+                                const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
+                                const fromBalance = ERC20Token === "native" ? await library?.getBalance(account as string) : await ERC20Token.balanceOf(account)
+                                const fromName = ERC20Token === "native" ? SupportedChainName[chainId as number] : await ERC20Token.name()
+                                const fromAddressBal = Web3.utils.fromWei(fromBalance.toString(), "ether")
+                                console.log({ rgp, fee, fromAddressBal })
+                                if (rgp < fee) {
+                                    error.push("insufficient RGP for gas fee")
+                                }
+                                if (database && database.fromPrice) {
+                                    if (database.fromPrice > fromAddressBal) {
+                                        error.push(`insufficient ${fromName} balance`)
+                                    }
+                                }
+                                if (error.length === 0) {
+                                    error.push("error")
+                                }
+                            }
                             return {
                                 inputAmount: dataReturned.amountIn.toString(),
                                 outputAmount: toPriceOut[1].toString(),
                                 tokenIn: dataReturned.swapFromToken,
                                 tokenOut: dataReturned.swapToToken,
                                 time: timeConverter(dataReturned.time.toString()),
-                                name: data.name,
+                                name: database ? database.type : "",
                                 frequency: database ? database.frequency : "",
-                                id: database ? database._id : ""
+                                id: database ? database._id : "",
+                                isError: data.isError,
+                                error
                             }
                         }
                         )
                     )
 
                 }
-
+                console.log({ userData })
 
                 const swapDataForWallet = await Promise.all(
                     userData.map(async (data: DataIncoming) => ({
@@ -204,7 +234,9 @@ const useAccountHistory = () => {
                         time: data.time,
                         name: data.name,
                         frequency: data.frequency,
-                        id: data.id
+                        id: data.id,
+                        isError: data.isError,
+                        error: data.error
                     })),
                 );
 
@@ -220,7 +252,9 @@ const useAccountHistory = () => {
                     time: data.time,
                     name: data.name,
                     frequency: data.frequency,
-                    id: data.id
+                    id: data.id,
+                    isError: data.isError,
+                    error: data.error
                 }));
                 setHistoryData(userSwapHistory);
 

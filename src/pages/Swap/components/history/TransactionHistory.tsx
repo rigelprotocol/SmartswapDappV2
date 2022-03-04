@@ -20,7 +20,9 @@ export interface DataType {
   time: string,
   name: string,
   frequency: string,
-  id: string
+  id: string,
+  isError: string,
+  error: []
 }
 
 const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: any }) => {
@@ -29,7 +31,8 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
   const nonActiveTabColor = useColorModeValue('#666666', '#4A739B');
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   const successColor = useColorModeValue('#22bb33', '#75f083');
-
+  const failedColor = useColorModeValue('#75f083', "#FF4243");
+  console.log(data)
   return (
     <Flex  >
       <Box
@@ -80,7 +83,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
               Type
             </Text>
             <Text color={activeTabColor} fontSize="14px" fontWeight="regular">
-              {data.name === "swapTokens" ? "Auto period" : "Straight Swap"}
+              {data.name ? data.name : "Straight Swap"}
             </Text>
           </Box>
           <Box>
@@ -134,14 +137,33 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
             >
               Status
             </Text>
-            <Text color={successColor} fontSize="14px" fontWeight="regular">
-              Completed
+            <Text color={parseInt(data.isError) > 0 ? failedColor : successColor} fontSize="14px" fontWeight="regular">
+              {/* Completed */}
+              {parseInt(data.isError) > 0 ? "Failed" : "Completed"}
             </Text>
             {data.id && <Button
               border=" 1px solid #CC334F" box-shadow="0px 1px 7px -2px rgba(24, 39, 75, 0.06), 0px 2px 2px rgba(24, 39, 75, 0.06)"
               border-radius="6px" backgroundColor="transparent" mt="2" onClick={() => deleteData(data.id)}>
               Cancel
             </Button>}
+
+          </Box>
+          <Box>
+            {data.error.length > 0 &&
+              <>
+                <Text
+                  color={nonActiveTabColor}
+                  fontSize="12px"
+                  lineHeight="0"
+                  mb="8px"
+                >
+                  Error
+                </Text>
+                <Text color={parseInt(data.isError) > 0 ? failedColor : successColor} fontSize="14px" fontWeight="regular">
+                  {data.error[0]}
+                </Text>
+              </>
+            }
 
           </Box>
 
