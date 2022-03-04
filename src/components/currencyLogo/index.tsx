@@ -42,13 +42,11 @@ export function getCurrencyLogoUrls(currency) {
   );
   if (currency.chainId in SupportedChainSymbols) {
     urls.push(
-      `https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/${
-        SupportedChainSymbols[currency.chainId]
+      `https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/${SupportedChainSymbols[currency.chainId]
       }/assets/${currency.address}/logo.png`
     );
     urls.push(
-      `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${
-        SupportedChainSymbols[currency.chainId]
+      `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${SupportedChainSymbols[currency.chainId]
       }/assets/${currency.address}/logo.png`
     );
     urls.push(
@@ -100,7 +98,6 @@ const CurrencyLogo: FunctionComponent<CurrencyLogoProps> = ({
         currency.isNative ||
         (currency.symbol === "WETH" && currency.equals(WETH9[currency.chainId]))
       ) {
-        console.log("got in");
         return [LOGO[currency.chainId], unknown];
       } else if (currency.isToken && currency.symbol === "RGP") {
         return ["https://bscscan.com/token/images/rigelprotocol_32.png"];

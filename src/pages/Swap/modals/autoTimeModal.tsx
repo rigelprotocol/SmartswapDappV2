@@ -180,7 +180,7 @@ const AutoTimeModal: React.FC<IModal> = ({
                                 <Box color={lightTextColor}>
                                     Frequency <InfoOutlineIcon />
                                 </Box>
-                                <Text color={heavyTextColor}>{frequency}</Text>
+                                <Text color={heavyTextColor}>{frequency === "5" || frequency === "30" ? `${frequency} minutes` : `${frequency}`}</Text>
                             </Flex>
                             <Flex justifyContent='space-between' my='4'>
                                 <Box color={lightTextColor}>

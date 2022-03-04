@@ -144,7 +144,7 @@ const useAccountHistory = () => {
     }
 
     useEffect(() => {
-        setURL("http://localhost:7000")
+        // setURL("http://localhost:7000")
         const loadAccountHistory = async () => {
             if (account && contractAddress && locationData) {
                 setLoading(true);
@@ -167,7 +167,7 @@ const useAccountHistory = () => {
                         // name: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).name,
                         isError: items.isError
                     }));
-                const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(5, 10) : dataFiltered;
+                const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(0, 5) : dataFiltered;
                 console.log({ dataToUse })
                 let userData
                 if (locationData === "swap") {
@@ -195,10 +195,28 @@ const useAccountHistory = () => {
                 } else if (locationData === "auto" && AUTOSWAPV2ADDRESSES[chainId as number]) {
                     const autoswapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
                     const rigelContract = await rigelToken(RGPADDRESSES[chainId as number], library);
+
+                    let useDataLooped: any = []
+
+                    dataToUse.forEach((data: any) => {
+                        console.log({ dataToUse })
+                        let id = data.transactionObj[0].value
+                        if (id === "0") {
+                            return
+                        } else {
+                            useDataLooped.push(data)
+                        }
+
+
+                    }
+                    )
+
+                    console.log({ useDataLooped })
                     userData = await Promise.all(
-                        dataToUse.map(async (data: any) => {
+                        useDataLooped.map(async (data: any) => {
                             const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
                             let id = data.transactionObj[0].value
+                            console.log({ id })
                             let dataReturned = await autoswapV2Contract.getUserData(account, id)
                             let database = await getFrequencyFromDatabase(dataReturned.swapFromToken, dataReturned.swapToToken, dataReturned.id.toString())
                             const toPriceOut = await rout.getAmountsOut(
