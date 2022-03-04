@@ -11,7 +11,7 @@ import { SMARTSWAPROUTER, AUTOSWAPV2ADDRESSES, RGPADDRESSES } from "../addresses
 import Web3 from 'web3';
 import { SupportedChainName } from '../constants/chains';
 import { autoSwapV2, SmartSwapRouter, rigelToken } from '../Contracts';
-
+import { ParseFloat } from '..';
 
 const abiDecoder = require('abi-decoder');
 
@@ -27,6 +27,28 @@ export function timeConverter(UNIX_timestamp: any) {
     return date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec;
 }
 
+export const APIENDPOINT: { [key: string]: string } = {
+    "1": "",
+    "3": "",
+    "56": "api.bscscan.com/api",
+    "97": "api-testnet.bscscan.com/api",
+    "137": "api.polygonscan.com/api",
+    "80001": "api-testnet.polygonscan.com/api",
+    "42261": "testnet.explorer.emerald.oasis.dev/api",
+    "42262": "explorer.emerald.oasis.dev/api",
+};
+
+export const APIKEY: { [key: string]: string } = {
+    "1": "",
+    "3": "",
+    "56": "AATZWFQ47VX3Y1DN7M97BJ5FEJR6MGRQSD",
+    "97": "AATZWFQ47VX3Y1DN7M97BJ5FEJR6MGRQSD",
+    "137": "89B4F6NVVEVGC8EMDCJVRJMVGSCVHHZTR7",
+    "80001": "89B4F6NVVEVGC8EMDCJVRJMVGSCVHHZTR7",
+    "42261": "",
+    "42262": "",
+};
+
 interface DataIncoming {
     inputAmount: string,
     outputAmount: string,
@@ -40,10 +62,10 @@ interface DataIncoming {
     error: []
 }
 let web3 = new Web3(Web3.givenProvider);
-export const formatAmount = (number: string) => {
+export const formatAmount = (number: string, decimals: any) => {
     const num = ethers.BigNumber.from(number).toString();
-    let res = ethers.utils.formatEther(num);
-    res = (+res).toFixed(4);
+    let res = ethers.utils.formatUnits(num, decimals)
+    res = ParseFloat(res, 5)
     return res;
 
 };
@@ -97,7 +119,8 @@ const useAccountHistory = () => {
 
     const testNetwork = chainId === 97;
     // setContractAddress(SMARTSWAPROUTER[chainId as number]);
-
+    const api = APIENDPOINT[chainId as number];
+    const apikey = APIKEY[chainId as number];
 
     const location = useLocation().pathname;
     useMemo(() => {

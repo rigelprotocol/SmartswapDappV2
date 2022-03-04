@@ -106,6 +106,8 @@ const SendToken = () => {
     showWrap,
     pathSymbol,
     pathArray,
+    isExactIn,
+    formatAmount,
   } = useDerivedSwapInfo();
   const { independentField, typedValue } = useSwapState();
   const dependentField: Field =
@@ -296,10 +298,12 @@ const SendToken = () => {
   const [sendingTrx, setSendingTrx] = useState(false);
   const outputToken = useCallback((): any => {
     if (parsedAmounts[Field.OUTPUT]) {
-      return ethers.utils.parseUnits(
-        parsedAmounts[Field.OUTPUT] as string,
-        currencies[Field.OUTPUT]?.decimals
-      );
+      return isExactIn
+        ? ethers.utils.parseUnits(
+            parsedAmounts[Field.OUTPUT] as string,
+            currencies[Field.OUTPUT]?.decimals
+          )
+        : parsedAmounts[Field.OUTPUT];
     }
   }, [parsedAmounts]);
 
@@ -311,7 +315,7 @@ const SendToken = () => {
     const dl = getDeadline(deadline);
     const from = currencies[Field.INPUT]?.wrapped.address;
     const to = currencies[Field.OUTPUT]?.wrapped.address;
-    console.log("output", outputToken().toString());
+
     try {
       setSendingTrx(true);
       dispatch(
@@ -324,7 +328,8 @@ const SendToken = () => {
       );
 
       const sendTransaction = await route.swapExactTokensForTokens(
-        parsedAmount,
+        isExactIn ? parsedAmount : formatAmount,
+        // parsedAmount,
         outputToken(),
         // [from, to],
         pathArray,
@@ -415,7 +420,7 @@ const SendToken = () => {
         account,
         dl,
         {
-          value: parsedAmount,
+          value: isExactIn ? parsedAmount : formatAmount,
         }
       );
       const { hash } = sendTransaction;
@@ -494,7 +499,7 @@ const SendToken = () => {
         })
       );
       const sendTransaction = await route.swapExactTokensForETH(
-        parsedAmount,
+        isExactIn ? parsedAmount : formatAmount,
         parsedOutput(currencies[Field.OUTPUT]?.decimals as number),
         // [from, to],
         pathArray,
@@ -568,7 +573,7 @@ const SendToken = () => {
     );
     try {
       const sendTransaction = await weth.deposit({
-        value: parsedAmount,
+        value: isExactIn ? parsedAmount : formatAmount,
       });
       const { confirmations, status } = await sendTransaction.wait(1);
       const { hash } = sendTransaction;
@@ -622,7 +627,9 @@ const SendToken = () => {
       })
     );
     try {
-      const sendTransaction = await weth.withdraw(parsedAmount);
+      const sendTransaction = await weth.withdraw(
+        isExactIn ? parsedAmount : formatAmount
+      );
       const { confirmations, status } = await sendTransaction.wait(3);
       const { hash } = sendTransaction;
       if (

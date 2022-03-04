@@ -15,11 +15,12 @@ import { ZERO_ADDRESS } from "../constants";
 import { ethers } from "ethers";
 import { getAddress } from "../utils/hooks/usePools";
 import { SupportedChainSymbols } from "../utils/constants/chains";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../state";
 import { getNativeAddress } from "../utils/hooks/usePools";
 import { getDecimals } from "../utils/utilsFunctions";
 import { useCurrency } from "./Tokens";
+import { Field } from "../state/swap/actions";
 
 const formatAmount = (number: string, decimals: number) => {
   return ethers.utils.formatUnits(number, decimals);
@@ -53,8 +54,7 @@ export function tryParseAmount<T extends Currency>(
 export const useSwap = (
   currencyA: Currency,
   currencyB: Currency,
-  amountIn?: string,
-  isExactIn?: string
+  amountIn?: string
 ) => {
   const { chainId, library } = useActiveWeb3React();
   const [address, setAddress] = useState<string>();
@@ -68,18 +68,6 @@ export const useSwap = (
     (state) => state.swap.independentField
   );
 
-  const Id1 = useSelector<RootState, string | undefined>(
-    (state) => state.swap.INPUT.currencyId
-  );
-
-  const Id2 = useSelector<RootState, string | undefined>(
-    (state) => state.swap.OUTPUT.currencyId
-  );
-
-  const typedValue = useSelector<RootState, string>(
-    (state) => state.swap.typedValue
-  );
-
   let nativeAddress;
 
   if (!currencyA || !currencyB) {
@@ -90,14 +78,9 @@ export const useSwap = (
     nativeAddress = { address: WNATIVEADDRESSES[chainId as number] };
   }
 
-  // const [tokenA, tokenB] = chainId
-  //   ? [currencyA?.wrapped, currencyB?.wrapped]
-  //   : [undefined, undefined];
-
-  const [tokenA, tokenB] = [
-    useCurrency(Id1)?.wrapped,
-    useCurrency(Id2)?.wrapped,
-  ];
+  const [tokenA, tokenB] = chainId
+    ? [currencyA?.wrapped, currencyB?.wrapped]
+    : [undefined, undefined];
 
   const tokenOneAddress = tokenA?.address || nativeAddress?.address;
   const tokenTwoAddress = tokenB?.address || nativeAddress?.address;
@@ -114,20 +97,10 @@ export const useSwap = (
         const SmartFactory = await smartFactory(validSmartAddress, library);
 
         const pairAddress = await SmartFactory.getPair(
-          SYMBOLS[Id1 as string]?.[chainId as number]
-            ? SYMBOLS[Id1 as string]?.[chainId as number]
-            : Id1,
-          SYMBOLS[Id2 as string]?.[chainId as number]
-            ? SYMBOLS[Id2 as string]?.[chainId as number]
-            : Id2
+          tokenOneAddress,
+          tokenTwoAddress
         );
         setAddress(pairAddress);
-
-        const address1 = SYMBOLS[Id1 as string]?.[chainId as number]
-          ? SYMBOLS[Id1 as string]?.[chainId as number]
-          : Id1;
-
-        console.log(address1);
 
         if (wrappable) {
           setWrap(true);
@@ -140,44 +113,38 @@ export const useSwap = (
               SMARTSWAPROUTER[chainId as number],
               library
             );
-            const decimal1 = await getDecimals(
-              SYMBOLS[Id1 as string]?.[chainId as number]
-                ? SYMBOLS[Id1]?.[chainId as number]
-                : Id1,
-              library
-            );
-            const decimal2 = await getDecimals(
-              SYMBOLS[Id2 as string]?.[chainId as number]
-                ? SYMBOLS[Id2]?.[chainId as number]
-                : Id2,
-              library
-            );
 
-            const address1 = SYMBOLS[Id1 as string]?.[chainId as number]
-              ? SYMBOLS[Id1 as string]?.[chainId as number]
-              : Id1;
-            const address2 = SYMBOLS[Id2 as string]?.[chainId as number]
-              ? SYMBOLS[Id2 as string]?.[chainId as number]
-              : Id2;
+            const amountOut = await SwapRouter.getAmountsOut(amountIn, [
+              tokenOneAddress,
+              tokenTwoAddress,
+            ]);
 
-            const amountOut = await SwapRouter.getAmountsOut(
+            console.log(amountIn);
+            console.log(tokenOneAddress, tokenTwoAddress);
+
+            const amountsIn =
               independentFieldString === "INPUT"
-                ? tryParseAmount(typedValue, decimal1)
-                : tryParseAmount(typedValue, decimal2),
-              [
-                independentFieldString === "INPUT" ? address1 : address2,
-                independentFieldString === "INPUT" ? address2 : address1,
-              ]
-            );
+                ? undefined
+                : await SwapRouter.getAmountsIn(amountIn, [
+                  tokenOneAddress,
+                  tokenTwoAddress,
+                ]);
 
-            const output = formatAmount(
-              amountOut[1],
-              independentFieldString === "INPUT" ? decimal2 : decimal1
-            );
+            console.log(amountsIn);
+
+            const output = formatAmount(amountOut[1], currencyB.decimals);
+
+            const amountsInOutput =
+              independentFieldString === "INPUT"
+                ? undefined
+                : formatAmount(amountsIn[0], currencyA.decimals);
 
             setPath([tokenOneAddress as string, tokenTwoAddress as string]);
-            setPathSymbol(`${currencyA.symbol} - ${currencyB.symbol}`);
-            setAmount(output);
+
+            setPathSymbol(`${currencyA?.symbol} - ${currencyB?.symbol}`);
+            setAmount(
+              independentFieldString === "INPUT" ? output : amountsInOutput
+            );
           } else {
             setAmount("");
           }
@@ -186,12 +153,8 @@ export const useSwap = (
           //   setWrap(true);
           setWrap(false);
           // RGP BNB BUSD USDT
-          const CurrencyA = SYMBOLS[Id1 as string]?.[chainId as number]
-            ? SYMBOLS[Id1 as string]?.[chainId as number]
-            : Id1;
-          const CurrencyB = SYMBOLS[Id2 as string]?.[chainId as number]
-            ? SYMBOLS[Id2 as string]?.[chainId as number]
-            : Id2;
+          const CurrencyA = getAddress(currencyA);
+          const CurrencyB = getAddress(currencyB);
           const factory = await smartFactory(
             SMARTSWAPFACTORYADDRESSES[chainId as number],
             library
@@ -235,57 +198,39 @@ export const useSwap = (
           try {
             if (USDTTOKENA !== ZERO_ADDRESS && USDTTOKENB !== ZERO_ADDRESS) {
               if (amountIn !== undefined) {
-                const decimal1 = await getDecimals(
-                  SYMBOLS[Id1 as string]?.[chainId as number]
-                    ? SYMBOLS[Id1]?.[chainId as number]
-                    : Id1,
-                  library
-                );
-                const decimal2 = await getDecimals(
-                  SYMBOLS[Id2 as string]?.[chainId as number]
-                    ? SYMBOLS[Id2]?.[chainId as number]
-                    : Id2,
-                  library
-                );
+                const amountsOut = await SwapRouter.getAmountsOut(amountIn, [
+                  CurrencyA,
+                  USDT[chainId as number],
+                  CurrencyB,
+                ]);
 
-                const address1 = SYMBOLS[Id1 as string]?.[chainId as number]
-                  ? SYMBOLS[Id1 as string]?.[chainId as number]
-                  : Id1;
-                const address2 = SYMBOLS[Id2 as string]?.[chainId as number]
-                  ? SYMBOLS[Id2 as string]?.[chainId as number]
-                  : Id2;
-
-                const firstAmount = await SwapRouter.getAmountsOut(
+                const amountsIn =
                   independentFieldString === "INPUT"
-                    ? tryParseAmount(typedValue, decimal1)
-                    : tryParseAmount(typedValue, decimal2),
-                  [
-                    independentFieldString === "INPUT" ? address1 : address2,
-                    USDT[chainId as number],
-                  ]
-                );
-                const secondAmount = await SwapRouter.getAmountsOut(
-                  firstAmount[1].toString(),
-                  [
-                    USDT[chainId as number],
-                    independentFieldString === "INPUT" ? address2 : address1,
-                  ]
-                );
+                    ? undefined
+                    : await SwapRouter.getAmountsIn(amountIn, [
+                      CurrencyA,
+                      USDT[chainId as number],
+                      CurrencyB,
+                    ]);
 
-                const output = formatAmount(
-                  secondAmount[1],
-                  independentFieldString === "INPUT" ? decimal2 : decimal1
-                );
+                const amountsInOutput =
+                  independentFieldString === "INPUT"
+                    ? undefined
+                    : formatAmount(amountsIn[0], currencyA.decimals);
+
+                const output = formatAmount(amountsOut[2], currencyB.decimals);
                 setPath([
                   CurrencyA as string,
                   USDT[chainId as number],
                   CurrencyB as string,
                 ]);
                 setPathSymbol(
-                  `${currencyA.symbol} - USDT - ${currencyB.symbol}`
+                  `${currencyA?.symbol} - USDT - ${currencyB?.symbol}`
                 );
 
-                setAmount(output);
+                setAmount(
+                  independentFieldString === "INPUT" ? output : amountsInOutput
+                );
               } else {
                 setAmount("");
                 setPathSymbol("");
@@ -296,56 +241,39 @@ export const useSwap = (
               RGPTOKENB !== ZERO_ADDRESS
             ) {
               if (amountIn !== undefined) {
-                const decimal1 = await getDecimals(
-                  SYMBOLS[Id1 as string]?.[chainId as number]
-                    ? SYMBOLS[Id1]?.[chainId as number]
-                    : Id1,
-                  library
-                );
-                const decimal2 = await getDecimals(
-                  SYMBOLS[Id2 as string]?.[chainId as number]
-                    ? SYMBOLS[Id2]?.[chainId as number]
-                    : Id2,
-                  library
-                );
+                const amountsOut = await SwapRouter.getAmountsOut(amountIn, [
+                  CurrencyA,
+                  RGPADDRESSES[chainId as number],
+                  CurrencyB,
+                ]);
 
-                const address1 = SYMBOLS[Id1 as string]?.[chainId as number]
-                  ? SYMBOLS[Id1 as string]?.[chainId as number]
-                  : Id1;
-                const address2 = SYMBOLS[Id2 as string]?.[chainId as number]
-                  ? SYMBOLS[Id2 as string]?.[chainId as number]
-                  : Id2;
-
-                const firstAmount = await SwapRouter.getAmountsOut(
+                const amountsIn =
                   independentFieldString === "INPUT"
-                    ? tryParseAmount(typedValue, decimal1)
-                    : tryParseAmount(typedValue, decimal2),
-                  [
-                    independentFieldString === "INPUT" ? address1 : address2,
-                    RGPADDRESSES[chainId as number],
-                  ]
-                );
-                const secondAmount = await SwapRouter.getAmountsOut(
-                  firstAmount[1].toString(),
-                  [
-                    RGPADDRESSES[chainId as number],
-                    independentFieldString === "INPUT" ? address2 : address1,
-                  ]
-                );
-                const output = formatAmount(
-                  secondAmount[1],
-                  independentFieldString === "INPUT" ? decimal2 : decimal1
-                );
+                    ? undefined
+                    : await SwapRouter.getAmountsIn(amountIn, [
+                      CurrencyA,
+                      RGPADDRESSES[chainId as number],
+                      CurrencyB,
+                    ]);
+
+                const amountsInOutput =
+                  independentFieldString === "INPUT"
+                    ? undefined
+                    : formatAmount(amountsIn[0], currencyA.decimals);
+
+                const output = formatAmount(amountsOut[2], currencyB.decimals);
                 setPath([
                   CurrencyA as string,
                   RGPADDRESSES[chainId as number],
                   CurrencyB as string,
                 ]);
                 setPathSymbol(
-                  `${currencyA.symbol} - RGP - ${currencyB.symbol}`
+                  `${currencyA?.symbol} - RGP - ${currencyB?.symbol}`
                 );
 
-                setAmount(output);
+                setAmount(
+                  independentFieldString === "INPUT" ? output : amountsInOutput
+                );
               } else {
                 setAmount("");
                 setPathSymbol("");
@@ -356,57 +284,40 @@ export const useSwap = (
               NATIVETOKENB !== ZERO_ADDRESS
             ) {
               if (amountIn !== undefined) {
-                const decimal1 = await getDecimals(
-                  SYMBOLS[Id1 as string]?.[chainId as number]
-                    ? SYMBOLS[Id1]?.[chainId as number]
-                    : Id1,
-                  library
-                );
-                const decimal2 = await getDecimals(
-                  SYMBOLS[Id2 as string]?.[chainId as number]
-                    ? SYMBOLS[Id2]?.[chainId as number]
-                    : Id2,
-                  library
-                );
+                const amountsOut = await SwapRouter.getAmountsOut(amountIn, [
+                  CurrencyA,
+                  WNATIVEADDRESSES[chainId as number],
+                  CurrencyB,
+                ]);
 
-                const address1 = SYMBOLS[Id1 as string]?.[chainId as number]
-                  ? SYMBOLS[Id1 as string]?.[chainId as number]
-                  : Id1;
-                const address2 = SYMBOLS[Id2 as string]?.[chainId as number]
-                  ? SYMBOLS[Id2 as string]?.[chainId as number]
-                  : Id2;
-
-                const firstAmount = await SwapRouter.getAmountsOut(
+                const amountsIn =
                   independentFieldString === "INPUT"
-                    ? tryParseAmount(typedValue, decimal1)
-                    : tryParseAmount(typedValue, decimal2),
-                  [
-                    independentFieldString === "INPUT" ? address1 : address2,
-                    WNATIVEADDRESSES[chainId as number],
-                  ]
-                );
-                const secondAmount = await SwapRouter.getAmountsOut(
-                  firstAmount[1].toString(),
-                  [
-                    WNATIVEADDRESSES[chainId as number],
-                    independentFieldString === "INPUT" ? address2 : address1,
-                  ]
-                );
-                const output = formatAmount(
-                  secondAmount[1],
-                  independentFieldString === "INPUT" ? decimal2 : decimal1
-                );
+                    ? undefined
+                    : await SwapRouter.getAmountsIn(amountIn, [
+                      CurrencyA,
+                      WNATIVEADDRESSES[chainId as number],
+                      CurrencyB,
+                    ]);
+
+                const amountsInOutput =
+                  independentFieldString === "INPUT"
+                    ? undefined
+                    : formatAmount(amountsIn[0], currencyA.decimals);
+
+                const output = formatAmount(amountsOut[2], currencyB.decimals);
                 setPath([
                   CurrencyA as string,
                   WNATIVEADDRESSES[chainId as number],
                   CurrencyB as string,
                 ]);
                 setPathSymbol(
-                  `${currencyA.symbol} - ${SupportedChainSymbols[chainId as number]
-                  } - ${currencyB.symbol}`
+                  `${currencyA?.symbol} - ${SupportedChainSymbols[chainId as number]
+                  } - ${currencyB?.symbol}`
                 );
 
-                setAmount(output);
+                setAmount(
+                  independentFieldString === "INPUT" ? output : amountsInOutput
+                );
               } else {
                 setAmount("");
                 setPathSymbol("");
@@ -417,46 +328,27 @@ export const useSwap = (
               BUSDTOKENB !== ZERO_ADDRESS
             ) {
               if (amountIn !== undefined) {
-                const decimal1 = await getDecimals(
-                  SYMBOLS[Id1 as string]?.[chainId as number]
-                    ? SYMBOLS[Id1]?.[chainId as number]
-                    : Id1,
-                  library
-                );
-                const decimal2 = await getDecimals(
-                  SYMBOLS[Id2 as string]?.[chainId as number]
-                    ? SYMBOLS[Id2]?.[chainId as number]
-                    : Id2,
-                  library
-                );
+                const amountsOut = await SwapRouter.getAmountsOut(amountIn, [
+                  CurrencyA,
+                  BUSD[chainId as number],
+                  CurrencyB,
+                ]);
 
-                const address1 = SYMBOLS[Id1 as string]?.[chainId as number]
-                  ? SYMBOLS[Id1 as string]?.[chainId as number]
-                  : Id1;
-                const address2 = SYMBOLS[Id2 as string]?.[chainId as number]
-                  ? SYMBOLS[Id2 as string]?.[chainId as number]
-                  : Id2;
-
-                const firstAmount = await SwapRouter.getAmountsOut(
+                const amountsIn =
                   independentFieldString === "INPUT"
-                    ? tryParseAmount(typedValue, decimal1)
-                    : tryParseAmount(typedValue, decimal2),
-                  [
-                    independentFieldString === "INPUT" ? address1 : address2,
-                    BUSD[chainId as number],
-                  ]
-                );
-                const secondAmount = await SwapRouter.getAmountsOut(
-                  firstAmount[1].toString(),
-                  [
-                    BUSD[chainId as number],
-                    independentFieldString === "INPUT" ? address2 : address1,
-                  ]
-                );
-                const output = formatAmount(
-                  secondAmount[1],
-                  independentFieldString === "INPUT" ? decimal2 : decimal1
-                );
+                    ? undefined
+                    : await SwapRouter.getAmountsIn(amountIn, [
+                      CurrencyA,
+                      BUSD[chainId as number],
+                      CurrencyB,
+                    ]);
+
+                const amountsInOutput =
+                  independentFieldString === "INPUT"
+                    ? undefined
+                    : formatAmount(amountsIn[0], currencyA.decimals);
+
+                const output = formatAmount(amountsOut[2], currencyB.decimals);
 
                 setPath([
                   CurrencyA as string,
@@ -464,10 +356,12 @@ export const useSwap = (
                   CurrencyB as string,
                 ]);
                 setPathSymbol(
-                  `${currencyA.symbol} - BUSD - ${currencyB.symbol}`
+                  `${currencyA?.symbol} - BUSD - ${currencyB?.symbol}`
                 );
 
-                setAmount(output);
+                setAmount(
+                  independentFieldString === "INPUT" ? output : amountsInOutput
+                );
               } else {
                 setAmount("");
                 setPathSymbol("");
@@ -479,51 +373,29 @@ export const useSwap = (
               USDTTOKENB !== ZERO_ADDRESS
             ) {
               if (amountIn !== undefined) {
-                const decimal1 = await getDecimals(
-                  SYMBOLS[Id1 as string]?.[chainId as number]
-                    ? SYMBOLS[Id1]?.[chainId as number]
-                    : Id1,
-                  library
-                );
-                const decimal2 = await getDecimals(
-                  SYMBOLS[Id2 as string]?.[chainId as number]
-                    ? SYMBOLS[Id2]?.[chainId as number]
-                    : Id2,
-                  library
-                );
+                const amountsOut = await SwapRouter.getAmountsOut(amountIn, [
+                  CurrencyA,
+                  RGPADDRESSES[chainId as number],
+                  USDT[chainId as number],
+                  CurrencyB,
+                ]);
 
-                const address1 = SYMBOLS[Id1 as string]?.[chainId as number]
-                  ? SYMBOLS[Id1 as string]?.[chainId as number]
-                  : Id1;
-                const address2 = SYMBOLS[Id2 as string]?.[chainId as number]
-                  ? SYMBOLS[Id2 as string]?.[chainId as number]
-                  : Id2;
-
-                const firstAmount = await SwapRouter.getAmountsOut(
+                const amountsIn =
                   independentFieldString === "INPUT"
-                    ? tryParseAmount(typedValue, decimal1)
-                    : tryParseAmount(typedValue, decimal2),
-                  [
-                    independentFieldString === "INPUT" ? address1 : address2,
-                    RGPADDRESSES[chainId as number],
-                  ]
-                );
-                const secondAmount = await SwapRouter.getAmountsOut(
-                  firstAmount[1].toString(),
-                  [RGPADDRESSES[chainId as number], USDT[chainId as number]]
-                );
+                    ? undefined
+                    : await SwapRouter.getAmountsIn(amountIn, [
+                      CurrencyA,
+                      RGPADDRESSES[chainId as number],
+                      USDT[chainId as number],
+                      CurrencyB,
+                    ]);
 
-                const thirdAmount = await SwapRouter.getAmountsOut(
-                  secondAmount[1].toString(),
-                  [
-                    USDT[chainId as number],
-                    independentFieldString === "INPUT" ? address2 : address1,
-                  ]
-                );
-                const output = formatAmount(
-                  thirdAmount[1],
-                  independentFieldString === "INPUT" ? decimal2 : decimal1
-                );
+                const amountsInOutput =
+                  independentFieldString === "INPUT"
+                    ? undefined
+                    : formatAmount(amountsIn[0], currencyA.decimals);
+
+                const output = formatAmount(amountsOut[3], currencyB.decimals);
                 setPath([
                   CurrencyA as string,
                   RGPADDRESSES[chainId as number],
@@ -531,10 +403,12 @@ export const useSwap = (
                   CurrencyB as string,
                 ]);
                 setPathSymbol(
-                  `${currencyA.symbol} - RGP - USDT - ${currencyB.symbol}`
+                  `${currencyA?.symbol} - RGP - USDT - ${currencyB?.symbol}`
                 );
 
-                setAmount(output);
+                setAmount(
+                  independentFieldString === "INPUT" ? output : amountsInOutput
+                );
               } else {
                 setAmount("");
                 setPathSymbol("");
@@ -546,63 +420,43 @@ export const useSwap = (
               NATIVETOKENB !== ZERO_ADDRESS
             ) {
               if (amountIn !== undefined) {
-                const decimal1 = await getDecimals(
-                  SYMBOLS[Id1 as string]?.[chainId as number]
-                    ? SYMBOLS[Id1]?.[chainId as number]
-                    : Id1,
-                  library
-                );
-                const decimal2 = await getDecimals(
-                  SYMBOLS[Id2 as string]?.[chainId as number]
-                    ? SYMBOLS[Id2]?.[chainId as number]
-                    : Id2,
-                  library
-                );
+                const amountsOut = await SwapRouter.getAmountsOut(amountIn, [
+                  CurrencyA,
+                  USDT[chainId as number],
+                  WNATIVEADDRESSES[chainId as number],
+                  CurrencyB,
+                ]);
 
-                const address1 = SYMBOLS[Id1 as string]?.[chainId as number]
-                  ? SYMBOLS[Id1 as string]?.[chainId as number]
-                  : Id1;
-                const address2 = SYMBOLS[Id2 as string]?.[chainId as number]
-                  ? SYMBOLS[Id2 as string]?.[chainId as number]
-                  : Id2;
-
-                const firstAmount = await SwapRouter.getAmountsOut(
+                const amountsIn =
                   independentFieldString === "INPUT"
-                    ? tryParseAmount(typedValue, decimal1)
-                    : tryParseAmount(typedValue, decimal2),
-                  [
-                    independentFieldString === "INPUT" ? address1 : address2,
-                    USDT[chainId as number],
-                  ]
-                );
-                const secondAmount = await SwapRouter.getAmountsOut(
-                  firstAmount[1].toString(),
-                  [USDT[chainId as number], WNATIVEADDRESSES[chainId as number]]
-                );
+                    ? undefined
+                    : await SwapRouter.getAmountsIn(amountIn, [
+                      CurrencyA,
+                      USDT[chainId as number],
+                      WNATIVEADDRESSES[chainId as number],
+                      CurrencyB,
+                    ]);
 
-                const thirdAmount = await SwapRouter.getAmountsOut(
-                  secondAmount[1].toString(),
-                  [
-                    WNATIVEADDRESSES[chainId as number],
-                    independentFieldString === "INPUT" ? address2 : address1,
-                  ]
-                );
-                const output = formatAmount(
-                  thirdAmount[1],
-                  independentFieldString === "INPUT" ? decimal2 : decimal1
-                );
+                const amountsInOutput =
+                  independentFieldString === "INPUT"
+                    ? undefined
+                    : formatAmount(amountsIn[0], currencyA.decimals);
+
+                const output = formatAmount(amountsOut[3], currencyB.decimals);
                 setPath([
                   CurrencyA as string,
                   USDT[chainId as number],
                   WNATIVEADDRESSES[chainId as number],
-                  CurrencyB as string,
+                  CurrencyA as string,
                 ]);
                 setPathSymbol(
-                  `${currencyA.symbol} - USDT - ${SupportedChainSymbols[chainId as number]
-                  } - ${currencyB.symbol}`
+                  `${currencyA?.symbol} - USDT - ${SupportedChainSymbols[chainId as number]
+                  } - ${currencyB?.symbol}`
                 );
 
-                setAmount(output);
+                setAmount(
+                  independentFieldString === "INPUT" ? output : amountsInOutput
+                );
               } else {
                 setAmount("");
                 setPathSymbol("");
@@ -635,8 +489,6 @@ export const useSwap = (
     tokenA,
     tokenB,
     independentFieldString,
-    Id1,
-    Id2,
   ]);
 
   return [address, wrap, amount, pathArray, pathSymbol];
