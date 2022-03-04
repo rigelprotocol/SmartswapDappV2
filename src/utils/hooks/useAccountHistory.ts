@@ -63,6 +63,7 @@ interface DataIncoming {
 }
 let web3 = new Web3(Web3.givenProvider);
 export const formatAmount = (number: string, decimals: any) => {
+    console.log(decimals)
     const num = ethers.BigNumber.from(number).toString();
     let res = ethers.utils.formatUnits(num, decimals)
     res = ParseFloat(res, 5)
@@ -190,40 +191,41 @@ const useAccountHistory = () => {
                         // name: data.name,
                         frequency: "",
                         id: "",
-                        isError: data.isError
+                        isError: data.isError,
+                        error: []
                     }));
                 } else if (locationData === "auto" && AUTOSWAPV2ADDRESSES[chainId as number]) {
                     const autoswapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
                     const rigelContract = await rigelToken(RGPADDRESSES[chainId as number], library);
 
-                    let useDataLooped: any = []
+                    // let useDataLooped: any = []
 
-                    dataToUse.forEach((data: any) => {
+                    const boolArray = await Promise.all(dataToUse.map(async (data: any) => {
                         let id = data.transactionObj[0].value
                         console.log({ id })
-                        if (id === "0") {
-                            return
+                        let dataReturned = await autoswapV2Contract.getUserData(account, id)
+                        if (dataReturned.path.length > 0) {
+                            return true
                         } else {
-                            useDataLooped.push(data)
+                            return false
                         }
+                    }));
+                    let filteredData = dataToUse.filter((data: any, index: number) => {
+                        if (boolArray[index]) return data
+                    })
 
-
-                    }
-                    )
-
-                    console.log({ dataToUse, useDataLooped })
                     userData = await Promise.all(
-                        useDataLooped.map(async (data: any) => {
+                        filteredData.map(async (data: any) => {
                             const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
                             let id = data.transactionObj[0].value
                             console.log({ id })
                             let dataReturned = await autoswapV2Contract.getUserData(account, id)
+                            console.log({ dataReturned }, dataReturned.path)
                             let database = await getFrequencyFromDatabase(dataReturned.swapFromToken, dataReturned.swapToToken, dataReturned.id.toString())
-                            const toPriceOut = await rout.getAmountsOut(
+                            const toPriceOut = dataReturned.path.length === 0 ? ["0", "0"] : await rout.getAmountsOut(
                                 dataReturned.amountIn.toString(),
                                 dataReturned.path
                             );
-                            console.log({ dataReturned, database })
                             const error = []
                             if (parseInt(data.isError) > 0) {
                                 const rgpBalance = await rigelContract.balanceOf(account)
@@ -288,8 +290,9 @@ const useAccountHistory = () => {
                         getTokenSymbol(data.tokenOut.symbol),
                     token1: data.tokenIn,
                     token2: data.tokenOut,
-                    amountIn: formatAmount(data.amountIn),
-                    amountOut: formatAmount(data.amountOut),
+                    amountIn: formatAmount(data.amountIn, data.tokenIn.decimals),
+                    amountOut: formatAmount(data.amountOut, data.tokenOut.decimals),
+
                     time: data.time,
                     name: data.name,
                     frequency: data.frequency,
