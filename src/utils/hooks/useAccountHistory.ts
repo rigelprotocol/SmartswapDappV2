@@ -144,7 +144,7 @@ const useAccountHistory = () => {
     }
 
     useEffect(() => {
-        setURL("http://localhost:7000")
+        // setURL("http://localhost:7000")
         const loadAccountHistory = async () => {
             if (account && contractAddress && locationData) {
                 setLoading(true);

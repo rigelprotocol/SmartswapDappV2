@@ -108,7 +108,7 @@ const SetPrice = () => {
     [onUserInput]
   );
   useEffect(async () => {
-    setURL("http://localhost:7000")
+    // setURL("http://localhost:7000")
     if (account) {
 
       await checkForApproval()
