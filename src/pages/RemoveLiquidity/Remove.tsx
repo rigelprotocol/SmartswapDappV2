@@ -40,6 +40,7 @@ import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import CurrencyLogo from "../../components/currencyLogo";
 import { isAddress } from "../../utils";
 import TransactionSettings from "../../components/TransactionSettings";
+import { calculateGas } from "../Swap/components/sendToken";
 
 const Remove = () => {
   const [isTabDevice] = useMediaQuery("(min-width: 990px)");
@@ -175,6 +176,9 @@ const Remove = () => {
             trxState: TrxState.WaitingForConfirmation,
           })
         );
+        const { format1, format2 } = await calculateGas();
+
+        const isEIP1559 = await library?.getFeeData();
         const remove = await smartswaprouter.removeLiquidity(
           tokenA,
           tokenB,
@@ -185,8 +189,14 @@ const Remove = () => {
           deadLine,
           {
             from: account,
-            // gasLimit: 390000,
-            // gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+            maxPriorityFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format1, 9).toString()
+                : null,
+            maxFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format2, 9).toString()
+                : null,
           }
         );
         const { confirmations, events } = await remove.wait(1);
@@ -336,6 +346,9 @@ const Remove = () => {
             trxState: TrxState.WaitingForConfirmation,
           })
         );
+        const { format1, format2 } = await calculateGas();
+
+        const isEIP1559 = await library?.getFeeData();
         const remove = await smartswaprouter.removeLiquidityETH(
           tokenAddress,
           liquidity,
@@ -351,8 +364,14 @@ const Remove = () => {
           deadLine,
           {
             from: account,
-            // gasLimit: 390000,
-            // gasPrice: ethers.utils.parseUnits('10', 'gwei'),
+            maxPriorityFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format1, 9).toString()
+                : null,
+            maxFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format2, 9).toString()
+                : null,
           }
         );
         const { confirmations, events } = await remove.wait(1);
