@@ -17,9 +17,13 @@ import AutoTime from "./Swap/AutoTime";
 import FindPool from "./Pool/FindPool";
 import Index from "./index";
 import useConnectWallet from "../utils/hooks/useConnectWallet";
+import {useActiveWeb3React} from "../utils/hooks/useActiveWeb3React";
+import {SupportedChainId} from "../constants/chains";
 
 export default function App() {
   useConnectWallet();
+
+  const {chainId} = useActiveWeb3React();
 
   return (
     <Suspense fallback={null}>
@@ -45,8 +49,8 @@ export default function App() {
                 component={AddLiquidity}
               />
 
-              <Route exact strict path="/set-price" component={SetPrice} />
-              <Route exact path="/auto-time" component={AutoTime} />
+              <Route exact strict path="/set-price" component={chainId === SupportedChainId.BINANCETEST ? SetPrice : Swap} />
+              <Route exact path="/auto-time" component={chainId === SupportedChainId.BINANCETEST ? AutoTime : Swap} />
               <Route
                 exact
                 strict
