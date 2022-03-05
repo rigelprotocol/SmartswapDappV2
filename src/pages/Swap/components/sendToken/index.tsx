@@ -50,7 +50,6 @@ import { useCalculatePriceImpact } from "../../../../hooks/usePriceImpact";
 import { getERC20Token } from "../../../../utils/utilsFunctions";
 import { createAlchemyWeb3 } from "@alch/alchemy-web3";
 import { Percent } from "@uniswap/sdk-core";
-import { useGas } from "../../../../utils/hooks/useGas";
 import JSBI from "jsbi";
 
 export const calculateGas = async (): Promise<{
