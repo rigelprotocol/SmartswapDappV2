@@ -26,7 +26,8 @@ type InputSelectorProps = {
   onMax?: () => void,
   onUserInput: (value: string) => void,
   value: string | undefined,
-  display?: boolean
+  display?: boolean,
+  disable?: boolean
 };
 
 const InputSelector = ({
@@ -39,7 +40,8 @@ const InputSelector = ({
   onMax,
   onUserInput,
   display,
-  value
+  value,
+  disable
 }: InputSelectorProps) => {
   const inputColor = useColorModeValue('#333333', '#F1F5F8');
   const balanceColor = useColorModeValue('#666666', '#DCE5EF');
@@ -71,6 +73,7 @@ const InputSelector = ({
           onChange={(event) => {
             enforcer(event.target.value.replace(/,/g, '.'))
           }}
+          disabled={disable ? true : false}
           focusBorderColor="none"
         />}
         {display &&

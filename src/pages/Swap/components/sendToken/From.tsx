@@ -10,7 +10,8 @@ interface FromProps {
   currency: Currency | undefined,
   otherCurrency: Currency | undefined,
   onMax: () => void,
-  value: string
+  value: string,
+  disable?: boolean
 }
 
 const From: React.FC<FromProps> = ({
@@ -19,8 +20,8 @@ const From: React.FC<FromProps> = ({
   currency,
   otherCurrency,
   onMax,
-  value
-
+  value,
+  disable
 }) => {
 
 
@@ -55,7 +56,8 @@ const From: React.FC<FromProps> = ({
           onMax={onMax}
           setToken={() => setTokenModal((state) => !state)}
           value={value}
-          max />
+          max
+          disable={disable} />
       </Box>
     </>
   );

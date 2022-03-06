@@ -123,7 +123,7 @@ const useAccountHistory = () => {
     const apikey = APIKEY[chainId as number];
 
     const location = useLocation().pathname;
-    useMemo(() => {
+    useEffect(() => {
         if (location === "/auto-time") {
             setLocationData("auto")
             setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
@@ -144,7 +144,7 @@ const useAccountHistory = () => {
     }
 
     useEffect(() => {
-        // setURL("http://localhost:7000")
+        setURL("http://localhost:7000")
         const loadAccountHistory = async () => {
             if (account && contractAddress && locationData) {
                 setLoading(true);

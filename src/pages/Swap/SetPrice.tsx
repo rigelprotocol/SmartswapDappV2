@@ -1,8 +1,9 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import ShowDetails from './components/details/ShowDetails';
 import History from './components/history/History';
-import { VectorIcon, ExclamationIcon, SwitchIcon } from '../../theme/components/Icons';
+import { VectorIcon, ExclamationIcon, SwitchIcon, RightIcon } from '../../theme/components/Icons';
 import To from './components/sendToken/To';
+import SetPriceModal from './modals/setPriceModal';
 import From from './components/sendToken/From';
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
 import Web3 from 'web3';
@@ -10,13 +11,17 @@ import SwapSettings from './components/sendToken/SwapSettings';
 import {
   Box,
   Flex,
-  Input,
   Text,
   Center,
   Spacer,
   Button,
   useColorModeValue,
-  useMediaQuery
+  useMediaQuery,
+  Stack,
+  InputGroup,
+  InputAddonProps,
+  InputRightAddon,
+  HStack
 } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import { getERC20Token } from '../../utils/utilsFunctions';
@@ -25,6 +30,7 @@ import {
   useSwapActionHandlers,
   useSwapState,
 } from '../../state/swap/hooks';
+import CInput from './components/sendToken/Input';
 import { Field } from '../../state/swap/actions';
 import { maxAmountSpend } from '../../utils/maxAmountSpend';
 import { autoSwapV2, rigelToken, SmartSwapRouter } from '../../utils/Contracts';
@@ -59,10 +65,16 @@ const SetPrice = () => {
   useEffect(async () => {
     await checkForApproval()
   }, [currencies[Field.INPUT]])
-
-  const [priceChange, setPriceChange] = useState("0")
   const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
   const [transactionSigned, setTransactionSigned] = useState(false)
+  const [disableInput, setDisableInput] = useState(true)
+  const [initialFromPrice, setInitialFromPrice] = useState("")
+  const [initialToPrice, setInitialToPrice] = useState("")
+  const [differenceInPrice, setDifferenceInPrice] = useState(0)
+  const [signatureFromDataBase, setSignatureFromDataBase] = useState(false)
+  const [toPrice, setToPrice] = useState(0)
+  const [showModal, setShowModal] = useState(false)
+  const [checkedItem, setCheckedItem] = useState(false)
   const [signedTransaction, setSignedTransaction] = useState<{ r: string, s: string, _vs: string, mess: string, v: string, recoveryParam: string }>({
     r: "",
     s: "",
@@ -72,11 +84,13 @@ const SetPrice = () => {
     recoveryParam: ""
   }
   )
+
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
   const [approval, setApproval] = useState<String[]>([])
 
+
   useEffect(() => {
-    // setURL("http://localhost:7000")
+    setURL("http://localhost:7000")
     async function checkIfSignatureExists() {
       let user = await fetch(`${URL}/auto/data/${account}`)
       let data = await user.json()
@@ -84,6 +98,7 @@ const SetPrice = () => {
       if (data) {
         setSignedTransaction(data.signature)
         setTransactionSigned(true)
+        setSignatureFromDataBase(true)
       } else {
         setSignedTransaction({
           r: "",
@@ -94,6 +109,7 @@ const SetPrice = () => {
           recoveryParam: ""
         })
         setTransactionSigned(false)
+        setSignatureFromDataBase(false)
       }
     }
     if (account) {
@@ -105,6 +121,18 @@ const SetPrice = () => {
   const { independentField, typedValue } = useSwapState();
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
 
+  useEffect(() => {
+    if (parseFloat(initialToPrice) > 0 && parseFloat(initialFromPrice) > 0) {
+      setDisableInput(false)
+      let difference = parseFloat(initialToPrice) / parseFloat(initialFromPrice)
+      setDifferenceInPrice(difference)
+      if (typedValue) {
+        setToPrice(parseFloat(typedValue) * difference)
+      }
+    } else {
+      setDisableInput(true)
+    }
+  }, [initialToPrice, initialFromPrice, typedValue])
   const parsedAmounts = useMemo(
     () =>
       showWrap
@@ -197,7 +225,7 @@ const SetPrice = () => {
           fromAddress: currencies[Field.INPUT]?.isNative ? "native" : currencies[Field.INPUT]?.wrapped.address,
           toAddress: currencies[Field.OUTPUT]?.isNative ? "native" : currencies[Field.OUTPUT]?.wrapped.address,
           signature: signedTransaction,
-          percentageChange: priceChange,
+          percentageChange: toPrice,
           toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped.decimals,
           fromPrice: typedValue,
           currentToPrice: formattedAmounts[Field.OUTPUT],
@@ -440,6 +468,7 @@ const SetPrice = () => {
             otherCurrency={currencies[Field.OUTPUT]}
             onMax={handleMaxInput}
             value={formattedAmounts[Field.INPUT]}
+            disable={disableInput}
           />
           <Flex justifyContent="center" onClick={onSwitchTokens}>
             <SwitchIcon />
@@ -448,8 +477,8 @@ const SetPrice = () => {
             onCurrencySelection={onCurrencySelection}
             currency={currencies[Field.OUTPUT]}
             otherCurrency={currencies[Field.INPUT]}
-            value={formattedAmounts[Field.OUTPUT]}
-            onUserOutput={handleTypeOutput}
+            value={toPrice}
+            disable={disableInput}
           />
           <Flex>
             <Text fontSize="14px" color={iconColor} mr={2}>
@@ -458,7 +487,23 @@ const SetPrice = () => {
             <ExclamationIcon />
           </Flex>
 
-          <Input placeholder="0.00" size="lg" borderRadius={4} borderColor={borderColor} />
+          {/* <Input placeholder="0.00" size="lg" borderRadius={4} borderColor={borderColor} /> */}
+          <HStack>
+            <CInput
+              currency={currencies[Field.INPUT]}
+              initialFromPrice={initialFromPrice}
+              setInitialPrice={setInitialFromPrice}
+            />
+            <Flex justifyContent="center">
+              <RightIcon />
+            </Flex>
+            <CInput
+              currency={currencies[Field.OUTPUT]}
+              initialFromPrice={initialToPrice}
+              setInitialPrice={setInitialToPrice}
+            />
+          </HStack>
+
 
           <Flex mt={5}>
             <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px">
@@ -495,7 +540,8 @@ const SetPrice = () => {
                 borderRadius="6px"
                 border={lightmode ? '2px' : 'none'}
                 borderColor={borderColor}
-                onClick={signTransaction}
+                // onClick={signTransaction}
+                onClick={() => setShowModal(!showModal)}
                 h="48px"
                 p="5px"
                 color={color}
@@ -529,7 +575,8 @@ const SetPrice = () => {
                 p="5px"
                 color={color}
                 bgColor={buttonBgcolor}
-                onClick={sendTransactionToDatabase}
+                onClick={() => signatureFromDataBase ? setShowModal(!showModal) : sendTransactionToDatabase()}
+                // onClick={sendTransactionToDatabase}
                 fontSize="18px"
                 boxShadow={lightmode ? 'base' : 'lg'}
                 _hover={{ bgColor: buttonBgcolor }}
@@ -547,6 +594,24 @@ const SetPrice = () => {
         </Box>
 
       </Flex>
+      <SetPriceModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        from={currencies[Field.INPUT]?.symbol}
+        to={currencies[Field.OUTPUT]?.symbol}
+        title="Confirm set price"
+        inputLogo={currencies[Field.INPUT]?.logoURI}
+        outputLogo={currencies[Field.OUTPUT]?.logoURI}
+        toPrice={toPrice}
+        buttonText={signatureFromDataBase ? "Send Transaction" : "Sign Wallet"}
+        fromDeposited={formattedAmounts[Field.INPUT]}
+        toDeposited={formattedAmounts[Field.OUTPUT]}
+        signSignature={signatureFromDataBase ? sendTransactionToDatabase : signTransaction}
+        setCheckedItem={setCheckedItem}
+        checkedItem={checkedItem}
+        fromPrice={typedValue}
+        pathSymbol={pathSymbol}
+      />
     </Box>
   )
 }
