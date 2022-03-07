@@ -6,6 +6,7 @@ export enum TrxState {
     TransactionSubmitted,
     TransactionSuccessful,
     TransactionFailed,
+    TransactionConfirmation
 }
 interface IToken {
     id: number;
