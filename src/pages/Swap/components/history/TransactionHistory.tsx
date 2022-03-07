@@ -32,7 +32,6 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   const successColor = useColorModeValue('#22bb33', '#22bb33');
   const failedColor = useColorModeValue('#75f083', "#FF4243");
-  console.log(data)
   return (
     <Flex  >
       <Box

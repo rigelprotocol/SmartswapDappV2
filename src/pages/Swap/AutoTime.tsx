@@ -370,7 +370,7 @@ const SetPrice = () => {
     }
     let orderID = await autoSwapV2Contract.orderCount()
 
-    if (response) {
+    if (response && signedTransaction.r && signedTransaction.s) {
       dispatch(
         setOpenModal({
           message: "Storing Transaction",

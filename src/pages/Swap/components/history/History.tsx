@@ -23,6 +23,7 @@ const History = () => {
   const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
   const [data, setData] = useState<DataType | null>(null)
   const [showModal, setShowModal] = useState(false)
+  const [reload, setReload] = useState(false)
 
   // const [sideBarRemoved, setSideBarRemoved] = useState<Boolean>(false);
 
@@ -31,7 +32,7 @@ const History = () => {
 
   const sideBarRemoved = useSelector((state: RootState) => state.transactions.removeSideTab);
 
-  const { historyData, loading } = useAccountHistory();
+  const { historyData, loading } = useAccountHistory(reload);
   const { marketHistoryData, loadMarketData } = useMarketHistory();
 
   const userData = Object.keys(historyData).map((i) => historyData[i]);
@@ -62,6 +63,7 @@ const History = () => {
             trxState: TrxState.TransactionSuccessful,
           })
         );
+        setReload(true)
       }
     }
 

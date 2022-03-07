@@ -40,7 +40,7 @@ const ConfirmationModal: React.FC<IModal> = ({
 
     function continueTransaction() {
         // dispatch(setCloseModal())
-        onClose()
+        setShowModal(false)
         funct()
     }
     return (
@@ -97,7 +97,7 @@ const ConfirmationModal: React.FC<IModal> = ({
                                 background={closeButtonBgColour}
                                 color="#FFFFFF"
                                 cursor="pointer"
-                                onClick={onClose}
+                                onClick={() => setShowModal(false)}
                             >
                                 Close
                             </Button>

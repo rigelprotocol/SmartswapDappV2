@@ -84,7 +84,7 @@ export const getTokenSymbol = (symbol: string) => {
 
 
 
-const useAccountHistory = () => {
+const useAccountHistory = (reload: boolean) => {
     const { account, chainId, library } = useWeb3React();
     const [loading, setLoading] = useState(false);
     const [historyData, setHistoryData] = useState({} as any);
@@ -146,10 +146,10 @@ const useAccountHistory = () => {
     }
     useEffect(() => {
         setURL("http://localhost:7000")
-
+        console.log({ reload })
 
         loadAccountHistory();
-    }, [chainId, account, contractAddress]);
+    }, [chainId, account, contractAddress, reload]);
     const loadAccountHistory = async () => {
         if (account && contractAddress && locationData) {
             setLoading(true);
@@ -202,10 +202,8 @@ const useAccountHistory = () => {
                     let result
                     if (locationData === "auto") {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "auto time").sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
-                        console.log(new Date(result[0].time * 1000), result[0].time, "ieiie")
                     } else if (locationData === "price") {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "set price")
-                        console.log({ result })
                     }
 
                     userData = await Promise.all(result.map(async (data: any) => {
@@ -216,7 +214,6 @@ const useAccountHistory = () => {
                             data.amountToSwap,
                             [fromAddress, toAddress]
                         );
-                        console.log(data.time)
                         return {
                             inputAmount: data.amountToSwap,
                             outputAmount: toPriceOut[1].toString(),
