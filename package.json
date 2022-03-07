@@ -5,6 +5,7 @@
   "homepage": ".",
   "private": true,
   "dependencies": {
+    "@alch/alchemy-web3": "^1.2.5",
     "@binance-chain/bsc-connector": "^1.0.0",
     "@chakra-ui/icons": "^1.0.15",
     "@chakra-ui/react": "^1.0.0",

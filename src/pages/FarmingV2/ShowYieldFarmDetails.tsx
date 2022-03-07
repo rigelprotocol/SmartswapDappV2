@@ -72,6 +72,7 @@ import { steps } from "../../components/Onboarding/YieldSteps";
 import { Web3Provider } from "@ethersproject/providers";
 import { Contract } from "@ethersproject/contracts";
 import { getERC20Token } from "../../utils/utilsFunctions";
+import { calculateGas } from "../Swap/components/sendToken";
 
 const ShowYieldFarmDetails = ({
   content,
@@ -196,7 +197,7 @@ const ShowYieldFarmDetails = ({
       } else if (
         content.deposit === "RGP-BNB" ||
         content.deposit === "RGP-USDT" ||
-          content.deposit === "USDT-RGP"
+        content.deposit === "USDT-RGP"
       ) {
         const poolTwo = await smartSwapLPTokenPoolTwo(
           SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
@@ -754,7 +755,8 @@ const ShowYieldFarmDetails = ({
         return;
       } else if (
         Number(content.poolVersion) === 2 &&
-        (parseFloat(content.tokensStaked[1]) <= 0 && Number(depositTokenValue) < Number(minimumStakeAmount))
+        parseFloat(content.tokensStaked[1]) <= 0 &&
+        Number(depositTokenValue) < Number(minimumStakeAmount)
       ) {
         setDepositInputHasError(true);
         setDepositErrorButtonText(
@@ -839,7 +841,11 @@ const ShowYieldFarmDetails = ({
           await RGPUnstake();
         } else if (val === "RGP" && Number(content.id) === 11) {
           await RGPUnstakeV2();
-        } else if (val === "RGP-BNB" || val === "RGP-USDT" || val === "USDT-RGP") {
+        } else if (
+          val === "RGP-BNB" ||
+          val === "RGP-USDT" ||
+          val === "USDT-RGP"
+        ) {
           await tokensWithdrawal(2);
         } else if (
           val === "RGP-BUSD" ||
@@ -847,7 +853,6 @@ const ShowYieldFarmDetails = ({
           val === "RGP-MATIC" ||
           val === "RGP-ROSE" ||
           val === "ROSE-RGP"
-
         ) {
           await tokensWithdrawal(1);
         } else if (
@@ -898,13 +903,23 @@ const ShowYieldFarmDetails = ({
           MASTERCHEFV2ADDRESSES[chainId as number],
           library
         );
+
+        const { format1, format2 } = await calculateGas();
+
+        const isEIP1559 = await library?.getFeeData();
         const data = await lpTokens.withdraw(
           pid,
           ethers.utils.parseEther(unstakeToken.toString()),
           {
             from: account,
-            // gasLimit: 250000,
-            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+            maxPriorityFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format1, 9).toString()
+                : null,
+            maxFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format2, 9).toString()
+                : null,
           }
         );
         const { confirmations, status, logs } = await fetchTransactionData(
@@ -959,11 +974,23 @@ const ShowYieldFarmDetails = ({
           })
         );
         if (id === 0) {
+          const { format1, format2 } = await calculateGas();
+
+          const isEIP1559 = await library?.getFeeData();
           const specialPool = await RGPSpecialPool(
             RGPSPECIALPOOLADDRESSES[chainId as number],
             library
           );
-          const specialWithdraw = await specialPool.unStake(0);
+          const specialWithdraw = await specialPool.unStake(0, {
+            maxPriorityFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format1, 9).toString()
+                : null,
+            maxFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format2, 9).toString()
+                : null,
+          });
           const { confirmations, status, logs } = await fetchTransactionData(
             specialWithdraw
           );
@@ -985,7 +1012,19 @@ const ShowYieldFarmDetails = ({
             RGPSPECIALPOOLADDRESSES2[chainId as number],
             library
           );
-          const specialWithdraw = await specialPool.unStake(0);
+          const { format1, format2 } = await calculateGas();
+
+          const isEIP1559 = await library?.getFeeData();
+          const specialWithdraw = await specialPool.unStake(0, {
+            maxPriorityFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format1, 9).toString()
+                : null,
+            maxFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format2, 9).toString()
+                : null,
+          });
           const { confirmations, status, logs } = await fetchTransactionData(
             specialWithdraw
           );
@@ -1007,8 +1046,20 @@ const ShowYieldFarmDetails = ({
             MASTERCHEFV2ADDRESSES[chainId as number],
             library
           );
+          const { format1, format2 } = await calculateGas();
+
+          const isEIP1559 = await library?.getFeeData();
           console.log({ lpTokens });
-          const withdraw = await lpTokens.withdraw(id, 0);
+          const withdraw = await lpTokens.withdraw(id, 0, {
+            maxPriorityFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format1, 9).toString()
+                : null,
+            maxFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format2, 9).toString()
+                : null,
+          });
           const { confirmations, status, logs } = await fetchTransactionData(
             withdraw
           );
@@ -1087,14 +1138,23 @@ const ShowYieldFarmDetails = ({
               MASTERCHEFV2ADDRESSES[chainId as number],
               library
             );
+            const { format1, format2 } = await calculateGas();
+
+            const isEIP1559 = await library?.getFeeData();
 
             const data = await lpTokens.deposit(
               pid,
               ethers.utils.parseEther(depositTokenValue.toString()),
               {
                 from: account,
-                // gasLimit: 250000,
-                // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+                maxPriorityFeePerGas:
+                  isEIP1559 && chainId === 137
+                    ? ethers.utils.parseUnits(format1, 9).toString()
+                    : null,
+                maxFeePerGas:
+                  isEIP1559 && chainId === 137
+                    ? ethers.utils.parseUnits(format2, 9).toString()
+                    : null,
               }
             );
             const { confirmations, status, logs } = await fetchTransactionData(
@@ -1118,13 +1178,23 @@ const ShowYieldFarmDetails = ({
             library
           );
 
+          const { format1, format2 } = await calculateGas();
+
+          const isEIP1559 = await library?.getFeeData();
+
           const data = await lpTokens.deposit(
             pid,
             ethers.utils.parseEther(depositTokenValue.toString()),
             {
               from: account,
-              // gasLimit: 250000,
-              // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+              maxPriorityFeePerGas:
+                isEIP1559 && chainId === 137
+                  ? ethers.utils.parseUnits(format1, 9).toString()
+                  : null,
+              maxFeePerGas:
+                isEIP1559 && chainId === 137
+                  ? ethers.utils.parseUnits(format2, 9).toString()
+                  : null,
             }
           );
           // const { confirmations, status } = await fetchTransactionData(data);
@@ -1165,7 +1235,11 @@ const ShowYieldFarmDetails = ({
           await RGPuseStake(depositTokenValue);
         } else if (val === "RGP" && Number(content.id) === 11) {
           await RGPuseStakeV2(depositTokenValue, referrerAddress);
-        } else if (val === "RGP-BNB" || val === "RGP-USDT" || val === "USDT-RGP") {
+        } else if (
+          val === "RGP-BNB" ||
+          val === "RGP-USDT" ||
+          val === "USDT-RGP"
+        ) {
           await LPDeposit(2);
         } else if (
           val === "BNB-BUSD" ||
@@ -1218,12 +1292,22 @@ const ShowYieldFarmDetails = ({
           library
         );
 
+        const { format1, format2 } = await calculateGas();
+
+        const isEIP1559 = await library?.getFeeData();
+
         const data = await specialPool.stake(
           ethers.utils.parseEther(depositTokenValue.toString()),
           {
             from: account,
-            // gasLimit: 200000,
-            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+            maxPriorityFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format1, 9).toString()
+                : null,
+            maxFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format2, 9).toString()
+                : null,
           }
         );
         const { confirmations, status } = await fetchTransactionData(data);
@@ -1254,13 +1338,22 @@ const ShowYieldFarmDetails = ({
           RGPSPECIALPOOLADDRESSES2[chainId as number],
           library
         );
+        const { format1, format2 } = await calculateGas();
+
+        const isEIP1559 = await library?.getFeeData();
         const data = await specialPool.stake(
           ethers.utils.parseEther(depositTokenValue.toString()),
           referrerAddress,
           {
             from: account,
-            // gasLimit: 200000,
-            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+            maxPriorityFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format1, 9).toString()
+                : null,
+            maxFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format2, 9).toString()
+                : null,
           }
         );
         const { confirmations, status } = await fetchTransactionData(data);
@@ -1292,12 +1385,21 @@ const ShowYieldFarmDetails = ({
           RGPSPECIALPOOLADDRESSES[chainId as number],
           library
         );
+        const { format1, format2 } = await calculateGas();
+
+        const isEIP1559 = await library?.getFeeData();
         const data = await specialPool.unStake(
           ethers.utils.parseEther(unstakeToken.toString()), // user input from onclick shoild be here...
           {
             from: account,
-            // gasLimit: 150000,
-            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+            maxPriorityFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format1, 9).toString()
+                : null,
+            maxFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format2, 9).toString()
+                : null,
           }
         );
         const { confirmations, status } = await fetchTransactionData(data);
@@ -1329,12 +1431,21 @@ const ShowYieldFarmDetails = ({
           RGPSPECIALPOOLADDRESSES2[chainId as number],
           library
         );
+        const { format1, format2 } = await calculateGas();
+
+        const isEIP1559 = await library?.getFeeData();
         const data = await specialPool.unStake(
           ethers.utils.parseEther(unstakeToken.toString()), // user input from onclick shoild be here...
           {
             from: account,
-            // gasLimit: 150000,
-            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
+            maxPriorityFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format1, 9).toString()
+                : null,
+            maxFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format2, 9).toString()
+                : null,
           }
         );
         const { confirmations, status } = await fetchTransactionData(data);
