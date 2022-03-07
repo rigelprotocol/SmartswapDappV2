@@ -145,7 +145,7 @@ const useAccountHistory = () => {
         return res
     }
     useEffect(() => {
-        setURL("http://localhost:7000")
+        // setURL("http://localhost:7000")
 
 
         loadAccountHistory();
