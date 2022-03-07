@@ -86,6 +86,7 @@ const SetPrice = () => {
   )
 
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
+  const [priceOut, setPriceOut] = useState("")
   const [approval, setApproval] = useState<String[]>([])
 
 
@@ -133,6 +134,20 @@ const SetPrice = () => {
       setDisableInput(true)
     }
   }, [initialToPrice, initialFromPrice, typedValue])
+  useMemo(async () => {
+    if (currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
+      const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
+      const routeAddress = currencies[Field.INPUT]?.isNative ? [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
+        currencies[Field.OUTPUT]?.isNative ? [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
+          [currencies[Field.INPUT]?.wrapped.address, currencies[Field.OUTPUT]?.wrapped.address]
+      const priceOutput = await rout.getAmountsOut(
+        '1000000000000000000',
+        routeAddress
+      );
+
+      setPriceOut(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
+    }
+  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue])
   const parsedAmounts = useMemo(
     () =>
       showWrap
@@ -229,8 +244,8 @@ const SetPrice = () => {
           toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped.decimals,
           fromPrice: typedValue,
           currentToPrice: formattedAmounts[Field.OUTPUT],
-          orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1
-
+          orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1,
+          type: "Set Price"
         })
       })
       const res = await response.json()
@@ -280,16 +295,16 @@ const SetPrice = () => {
   const signTransaction = async () => {
     if (account !== undefined) {
       try {
-        // let web3 = new Web3(Web3.givenProvider);
-        const signer = library?.getSigner();
+        let web3 = new Web3(Web3.givenProvider);
         const permitHash = "0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9";
-        const mess = ethers.utils.solidityKeccak256(['string'], [permitHash])
-        let signature = await signer?.signMessage(mess)
-        console.log({ signature })
-        var sig = ethers.utils.splitSignature(signature)
 
-        setSignedTransaction({ ...sig, mess })
+        const mess = web3.utils.soliditySha3(permitHash)
+
+        let signature = await web3.eth.sign(mess, account);
+
+        var sig = ethers.utils.splitSignature(signature)
         console.log({ ...sig, mess })
+        setSignedTransaction({ ...sig, mess })
         setTransactionSigned(true)
 
         // await checkForApproval()
@@ -318,7 +333,8 @@ const SetPrice = () => {
       setHasBeenApproved(true);
       setApproval(approval.filter(t => t !== currencies[Field.INPUT]?.name))
     }
-    if (setApproval.length > 0) {
+    console.log(approval)
+    if (approval.length > 0) {
       try {
         dispatch(
           setOpenModal({
@@ -512,7 +528,7 @@ const SetPrice = () => {
             <Spacer />
             {currencies[Field.INPUT]?.symbol && currencies[Field.OUTPUT]?.symbol &&
               <Text fontSize="14px" mr={2} color={textColorOne}>
-                1 {currencies[Field.INPUT]?.symbol} = {formattedAmounts[Field.OUTPUT]} {currencies[Field.OUTPUT]?.symbol}
+                1 {currencies[Field.INPUT]?.symbol} = {priceOut} {currencies[Field.OUTPUT]?.symbol}
               </Text>
             }
 

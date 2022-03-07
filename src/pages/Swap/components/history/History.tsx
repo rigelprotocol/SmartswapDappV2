@@ -10,8 +10,8 @@ import MarketHistory from "./MarketHistory";
 import { transactionTab } from "../../../../state/transaction/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../state";
-import { useActiveWeb3React } from '../../../../utils/hooks/useActiveWeb3React';
-import { setOpenModal, TrxState } from "../../../../state/application/reducer";
+import ConfirmationModal from '../../../../components/Modals/confirmationModal';
+import { TrxState, setOpenModal } from '../../../../state/application/reducer';
 
 
 const History = () => {
@@ -21,6 +21,8 @@ const History = () => {
   const iconColor = useColorModeValue('#666666', '#DCE5EF');
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
+  const [data, setData] = useState<DataType | null>(null)
+  const [showModal, setShowModal] = useState(false)
 
   // const [sideBarRemoved, setSideBarRemoved] = useState<Boolean>(false);
 
@@ -45,28 +47,28 @@ const History = () => {
 
   }, []);
 
-  const deleteDataFromDatabase = async (id: string) => {
-    dispatch(
+  const deleteDataFromDatabase = async () => {
+    if (data) {
       setOpenModal({
         message: "Deleting Transaction...",
-        trxState: TrxState.TransactionConfirmation,
+        trxState: TrxState.WaitingForConfirmation,
       })
-    )
+      const result = await fetch(`${URL}/auto/data/${data.id}`, { method: 'DELETE' })
+      const res = await result.json()
+      if (res === "success") {
+        dispatch(
+          setOpenModal({
+            message: `Data deleted Successful.`,
+            trxState: TrxState.TransactionSuccessful,
+          })
+        );
+      }
+    }
 
-    // setOpenModal({
-    //   message: "Deleting Transaction...",
-    //   trxState: TrxState.WaitingForConfirmation,
-    // })
-    // const data = await fetch(`${URL}/auto/data/${id}`, { method: 'DELETE' })
-    // const res = await data.json()
-    // if (res === "success") {
-    //   dispatch(
-    //     setOpenModal({
-    //       message: `Data deleted Successful.`,
-    //       trxState: TrxState.TransactionSuccessful,
-    //     })
-    //   );
-    // }
+  }
+  const confirmDeletion = async (data: DataType) => {
+    setData(data)
+    setShowModal(true)
   }
 
   return (
@@ -169,9 +171,15 @@ const History = () => {
         ))}
 
         {show && !showMarketHistory && historyData && userData.map((data: DataType) => (
-          <TransactionHistory key={data.time} data={data} deleteData={deleteDataFromDatabase} />
+          <TransactionHistory key={data.time} data={data} deleteData={confirmDeletion} />
         ))}
       </Box>
+      <ConfirmationModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        funct={deleteDataFromDatabase}
+        text={`You are about to delete an ${data?.name} transaction. This will prevent future transaction from been auto enabled for you. Do you want to continue`}
+      />
     </Flex>
   );
 };

@@ -17,7 +17,6 @@ const abiDecoder = require('abi-decoder');
 
 export function timeConverter(UNIX_timestamp: any) {
     const a = new Date(UNIX_timestamp * 1000);
-    console.log({ a, UNIX_timestamp })
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const year = a.getFullYear();
     const month = months[a.getMonth()];
@@ -139,155 +138,157 @@ const useAccountHistory = () => {
             setContractAddress(SMARTSWAPROUTER[chainId as number])
         }
     }, [location, chainId])
+    const getTransactionFromDatabase = async (address: string) => {
+        const data = await fetch(`${URL}/auto/data/all/${address}`)
+        const res = await data.json()
 
+        return res
+    }
     useEffect(() => {
         setURL("http://localhost:7000")
-        const getTransactionFromDatabase = async (address: string) => {
-            const data = await fetch(`${URL}/auto/data/all/${address}`)
-            const res = await data.json()
 
-            return res
-        }
-        const loadAccountHistory = async () => {
-            if (account && contractAddress && locationData) {
-                setLoading(true);
-                // try {
-                let userData = []
-                if (locationData === "swap") {
-                    const uri = `https://api-testnet.bscscan.com/api?module=account&action=txlist&address=${stateAccount}&startblock=0
+
+        loadAccountHistory();
+    }, [chainId, account, contractAddress]);
+    const loadAccountHistory = async () => {
+        if (account && contractAddress && locationData) {
+            setLoading(true);
+            // try {
+            let userData = []
+            if (locationData === "swap") {
+                const uri = `https://api-testnet.bscscan.com/api?module=account&action=txlist&address=${stateAccount}&startblock=0
                         &endblock=latest&sort=desc&apikey=AATZWFQ47VX3Y1DN7M97BJ5FEJR6MGRQSD`;
 
-                    const data = await fetch(uri);
-                    const jsondata = await data.json();
-                    const SwapTrx = jsondata.result.filter((item: any) => item.to == contractAddress);
-                    const dataFiltered = SwapTrx
-                        .filter((items: any) => decodeInput(items.input, SmartSwapRouter02) !== undefined) // && items.transactionHash !== "1"
-                        .map((items: any) => ({
-                            value: items.value,
-                            transactionObj: decodeInput(items.input, SmartSwapRouter02).params,
-                            timestamp: items.timeStamp,
-                            transactionFee: items.gasPrice * items.gasUsed,
-                            // name: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).name,
-                            transactionHash: items.transactionHash
-                        }));
-                    const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(0, 5) : dataFiltered;
-                    userData = dataToUse.map((data: any) => ({
-                        inputAmount:
-                            Number(data.value) > 0 ? data.value : data.transactionObj[0].value,
-                        outputAmount:
-                            Number(data.value) > 0
-                                ? data.transactionObj[0].value
-                                : data.transactionObj[1].value,
-                        tokenIn:
-                            Number(data.value) > 0
-                                ? data.transactionObj[1].value[0]
-                                : data.transactionObj[2].value[0],
-                        tokenOut:
-                            Number(data.value) > 0
-                                ? data.transactionObj[1].value[data.transactionObj[1].value.length - 1]
-                                : data.transactionObj[2].value[data.transactionObj[2].value.length - 1],
-                        time: timeConverter(data.timestamp),
-                        // name: data.name,
-                        frequency: "",
-                        id: "",
-                        transactionHash: data.transactionHash,
-                        error: []
+                const data = await fetch(uri);
+                const jsondata = await data.json();
+                const SwapTrx = jsondata.result.filter((item: any) => item.to == contractAddress);
+                const dataFiltered = SwapTrx
+                    .filter((items: any) => decodeInput(items.input, SmartSwapRouter02) !== undefined) // && items.transactionHash !== "1"
+                    .map((items: any) => ({
+                        value: items.value,
+                        transactionObj: decodeInput(items.input, SmartSwapRouter02).params,
+                        timestamp: items.timeStamp,
+                        transactionFee: items.gasPrice * items.gasUsed,
+                        // name: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).name,
+                        transactionHash: items.transactionHash
                     }));
-                } else if (locationData === "auto" && AUTOSWAPV2ADDRESSES[chainId as number]) {
-                    const allTransaction = await getTransactionFromDatabase(account)
-                    if (allTransaction.length > 0) {
-                        const collapsedTransaction = allTransaction.map((data: any) => data.transaction).flat(1)
-                        let result
-                        if (locationData === "auto") {
-                            result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "auto time")
-                        } else if (locationData === "price") {
-                            result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "set price")
-                        }
-
-                        userData = await Promise.all(result.map(async (data: any) => {
-                            let fromAddress = data.swapFromToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapFromToken
-                            let toAddress = data.swapToToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapToToken
-                            const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
-                            const toPriceOut = await rout.getAmountsOut(
-                                data.amountToSwap,
-                                [fromAddress, toAddress]
-                            );
-                            console.log(data.time)
-                            return {
-                                inputAmount: data.amountToSwap,
-                                outputAmount: toPriceOut[1].toString(),
-                                tokenIn: data.swapFromToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapFromToken,
-                                tokenOut: data.swapToToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapToToken,
-                                time: timeConverter(parseInt(data.time)),
-                                name: data ? data.typeOfTransaction : "",
-                                frequency: data ? data.frequency : "",
-                                id: data ? data.id : "",
-                                transactionHash: data.transactionHash,
-                                error: data.errorArray
-                            }
-                        })
-                        )
+                const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(0, 5) : dataFiltered;
+                userData = dataToUse.map((data: any) => ({
+                    inputAmount:
+                        Number(data.value) > 0 ? data.value : data.transactionObj[0].value,
+                    outputAmount:
+                        Number(data.value) > 0
+                            ? data.transactionObj[0].value
+                            : data.transactionObj[1].value,
+                    tokenIn:
+                        Number(data.value) > 0
+                            ? data.transactionObj[1].value[0]
+                            : data.transactionObj[2].value[0],
+                    tokenOut:
+                        Number(data.value) > 0
+                            ? data.transactionObj[1].value[data.transactionObj[1].value.length - 1]
+                            : data.transactionObj[2].value[data.transactionObj[2].value.length - 1],
+                    time: timeConverter(data.timestamp),
+                    // name: data.name,
+                    frequency: "--",
+                    id: "",
+                    transactionHash: data.transactionHash,
+                    error: []
+                }));
+            } else if (AUTOSWAPV2ADDRESSES[chainId as number]) {
+                const allTransaction = await getTransactionFromDatabase(account)
+                if (allTransaction.length > 0) {
+                    const collapsedTransaction = allTransaction.map((data: any) => data.transaction).flat(1)
+                    let result
+                    if (locationData === "auto") {
+                        result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "auto time").sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
+                        console.log(new Date(result[0].time * 1000), result[0].time, "ieiie")
+                    } else if (locationData === "price") {
+                        result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "set price")
+                        console.log({ result })
                     }
 
-
-
+                    userData = await Promise.all(result.map(async (data: any) => {
+                        let fromAddress = data.swapFromToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapFromToken
+                        let toAddress = data.swapToToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapToToken
+                        const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
+                        const toPriceOut = await rout.getAmountsOut(
+                            data.amountToSwap,
+                            [fromAddress, toAddress]
+                        );
+                        console.log(data.time)
+                        return {
+                            inputAmount: data.amountToSwap,
+                            outputAmount: toPriceOut[1].toString(),
+                            tokenIn: data.swapFromToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapFromToken,
+                            tokenOut: data.swapToToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapToToken,
+                            time: timeConverter(parseInt(data.time)),
+                            name: data ? data.typeOfTransaction : "",
+                            frequency: data ? data.frequency : "--",
+                            id: data ? data.id : "",
+                            transactionHash: data.transactionHash,
+                            error: data.errorArray
+                        }
+                    })
+                    )
                 }
 
-                const swapDataForWallet = await Promise.all(
-                    userData.map(async (data: DataIncoming) => ({
-                        tokenIn: await tokenList(data.tokenIn),
-                        tokenOut: await tokenList(data.tokenOut),
-                        amountIn: data.inputAmount,
-                        amountOut: data.outputAmount,
-                        time: data.time,
-                        name: data.name,
-                        frequency: data.frequency,
-                        id: data.id,
-                        transactionHash: data.transactionHash,
-                        error: data.error
-                    })),
-                );
 
-                const userSwapHistory = swapDataForWallet.map((data: any) => ({
-                    token1Icon:
-                        getTokenSymbol(data.tokenIn.symbol),
-                    token2Icon:
-                        getTokenSymbol(data.tokenOut.symbol),
-                    token1: data.tokenIn,
-                    token2: data.tokenOut,
-                    amountIn: formatAmount(data.amountIn, data.tokenIn.decimals),
-                    amountOut: formatAmount(data.amountOut, data.tokenOut.decimals),
 
+            }
+
+            const swapDataForWallet = await Promise.all(
+                userData.map(async (data: DataIncoming) => ({
+                    tokenIn: await tokenList(data.tokenIn),
+                    tokenOut: await tokenList(data.tokenOut),
+                    amountIn: data.inputAmount,
+                    amountOut: data.outputAmount,
                     time: data.time,
                     name: data.name,
                     frequency: data.frequency,
                     id: data.id,
                     transactionHash: data.transactionHash,
                     error: data.error
-                }));
-                setHistoryData(userSwapHistory);
+                })),
+            );
+
+            const userSwapHistory = swapDataForWallet.map((data: any) => ({
+                token1Icon:
+                    getTokenSymbol(data.tokenIn.symbol),
+                token2Icon:
+                    getTokenSymbol(data.tokenOut.symbol),
+                token1: data.tokenIn,
+                token2: data.tokenOut,
+                amountIn: formatAmount(data.amountIn, data.tokenIn.decimals),
+                amountOut: formatAmount(data.amountOut, data.tokenOut.decimals),
+
+                time: data.time,
+                name: data.name,
+                frequency: data.frequency,
+                id: data.id,
+                transactionHash: data.transactionHash,
+                error: data.error
+            }));
+            setHistoryData(userSwapHistory);
 
 
 
 
 
-                console.log("dataToUse000 : ", userSwapHistory)
+            console.log("dataToUse000 : ", userSwapHistory)
 
-                setLoading(false);
+            setLoading(false);
 
 
-                // } catch (e) {
-                //     console.log(e);
-                //     setLoading(false);
-                //     setHistoryData({})
-                // }
-            } else {
-                console.log('Wallet disconnected')
-            }
-        };
-        loadAccountHistory();
-    }, [chainId, account, contractAddress]);
-
+            // } catch (e) {
+            //     console.log(e);
+            //     setLoading(false);
+            //     setHistoryData({})
+            // }
+        } else {
+            console.log('Wallet disconnected')
+        }
+    };
     return { historyData, loading }
 };
 

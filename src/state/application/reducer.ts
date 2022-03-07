@@ -6,7 +6,6 @@ export enum TrxState {
     TransactionSubmitted,
     TransactionSuccessful,
     TransactionFailed,
-    TransactionConfirmation
 }
 interface IToken {
     id: number;
@@ -19,6 +18,7 @@ export interface modalState {
     message?: string;
     trxState: TrxState;
     urlNetwork?: string;
+    continue?: Function
 
 }
 

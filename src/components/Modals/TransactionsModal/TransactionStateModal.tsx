@@ -78,12 +78,7 @@ const TransactionStateModal: React.FC = () => {
                                         <Circle size="80px" background={bgColour} my={3}>
                                             <CloseIcon width="30px" height="30" color={errorBgColour} />
                                         </Circle>
-                                    </Circle> : modalDetails?.trxState === TrxState.TransactionConfirmation ?
-                                        <Circle size="90px" background={transBgColour} my={8}>
-                                            <Circle size="80px" background={bgColour} my={3}>
-                                                <ArrowUpIcon width="30px" height="30" color={transBgColour} />
-                                            </Circle>
-                                        </Circle> : null}
+                                    </Circle> : null}
 
 
                         <Text fontSize="20px" fontWeight="normal" color={textColour}>
@@ -148,47 +143,8 @@ const TransactionStateModal: React.FC = () => {
                             >
                                 Close
                             </Button>}
-                        {modalDetails?.trxState === TrxState.TransactionConfirmation ?
-                            <Circle size="90px" background={successBgColour} my={8}>
-                                <Circle size="80px" background={bgColour} my={3}>
-                                    <CheckIcon fontSize="40px" color={successBgColour} />
-                                </Circle>
-                            </Circle> :
-                            <>
-                                <h4>ejeeo Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo, sequi?</h4>
-                                {/* <Flex justifyContent="right">
-                                    <Button
-                                        variant="brand"
-                                        padding="24px 0"
-                                        width="150px"
-                                        boxShadow="none"
-                                        border="0"
-                                        mt={3}
-                                        background={closeButtonBgColour}
-                                        color="red"
-                                        cursor="pointer"
-                                        onClick={handleCloseModal}
-                                        marginLeft="40px"
-                                    >
-                                        Confirm
-                                    </Button>
-                                    <Button
-                                        variant="brand"
-                                        padding="24px 0"
-                                        width="150px"
-                                        boxShadow="none"
-                                        border="0"
-                                        mt={3}
-                                        background={closeButtonBgColour}
-                                        color="#FFFFFF"
-                                        cursor="pointer"
-                                        onClick={handleCloseModal}
-                                    >
-                                        Close
-                                    </Button>
-                                </Flex> */}
-                            </>
-                        }
+
+
                     </ModalBody>
                 </ModalContent>
             </Modal>

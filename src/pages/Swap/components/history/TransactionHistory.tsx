@@ -109,7 +109,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
               Interval
             </Text>
             <Text color={activeTabColor} fontSize="14px" fontWeight="regular">
-              {data.frequency ? data.frequency : "--"}
+              {data.frequency && (data.frequency === "5" || data.frequency === "30") ? `${data.frequency} minutes` : data.frequency}
             </Text>
           </Box>
         </Grid>
@@ -143,7 +143,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
             </Text>
             {data.id && <Button
               border=" 1px solid #CC334F" box-shadow="0px 1px 7px -2px rgba(24, 39, 75, 0.06), 0px 2px 2px rgba(24, 39, 75, 0.06)"
-              border-radius="6px" backgroundColor="transparent" mt="2" onClick={() => deleteData(data.id)}>
+              border-radius="6px" backgroundColor="transparent" mt="2" onClick={() => deleteData(data)}>
               Cancel
             </Button>}
 
