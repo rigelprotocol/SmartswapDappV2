@@ -21,7 +21,7 @@ export interface DataType {
   name: string,
   frequency: string,
   id: string,
-  isError: string,
+  transactionHash: string,
   error: []
 }
 
@@ -30,7 +30,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
   const nonActiveTabColor = useColorModeValue('#666666', '#4A739B');
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
-  const successColor = useColorModeValue('#22bb33', '#75f083');
+  const successColor = useColorModeValue('#22bb33', '#22bb33');
   const failedColor = useColorModeValue('#75f083', "#FF4243");
   console.log(data)
   return (
@@ -137,9 +137,9 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
             >
               Status
             </Text>
-            <Text color={parseInt(data.isError) > 0 ? failedColor : successColor} fontSize="14px" fontWeight="regular">
+            <Text color={data.error.length > 0 ? failedColor : successColor} fontSize="14px" fontWeight="regular">
               {/* Completed */}
-              {parseInt(data.isError) > 0 ? "Failed" : "Completed"}
+              {data.error.length > 0 ? "Failed" : "Completed"}
             </Text>
             {data.id && <Button
               border=" 1px solid #CC334F" box-shadow="0px 1px 7px -2px rgba(24, 39, 75, 0.06), 0px 2px 2px rgba(24, 39, 75, 0.06)"
@@ -159,7 +159,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
                 >
                   Error
                 </Text>
-                <Text color={parseInt(data.isError) > 0 ? failedColor : successColor} fontSize="14px" fontWeight="regular">
+                <Text color={data.error.length > 0 ? failedColor : successColor} fontSize="14px" fontWeight="regular">
                   {data.error[0]}
                 </Text>
               </>

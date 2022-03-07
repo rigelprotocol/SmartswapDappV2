@@ -39,27 +39,34 @@ const History = () => {
 
 
   useEffect(() => {
-    // setURL("http://localhost:7000")
+    setURL("http://localhost:7000")
     const isActive = checkSideTab('history');
     dispatch(transactionTab({ removeSideTab: isActive }))
 
   }, []);
 
   const deleteDataFromDatabase = async (id: string) => {
-    setOpenModal({
-      message: "Deleting Transaction...",
-      trxState: TrxState.WaitingForConfirmation,
-    })
-    const data = await fetch(`${URL}/auto/data/${id}`, { method: 'DELETE' })
-    const res = await data.json()
-    if (res === "success") {
-      dispatch(
-        setOpenModal({
-          message: `Data deleted Successful.`,
-          trxState: TrxState.TransactionSuccessful,
-        })
-      );
-    }
+    dispatch(
+      setOpenModal({
+        message: "Deleting Transaction...",
+        trxState: TrxState.TransactionConfirmation,
+      })
+    )
+
+    // setOpenModal({
+    //   message: "Deleting Transaction...",
+    //   trxState: TrxState.WaitingForConfirmation,
+    // })
+    // const data = await fetch(`${URL}/auto/data/${id}`, { method: 'DELETE' })
+    // const res = await data.json()
+    // if (res === "success") {
+    //   dispatch(
+    //     setOpenModal({
+    //       message: `Data deleted Successful.`,
+    //       trxState: TrxState.TransactionSuccessful,
+    //     })
+    //   );
+    // }
   }
 
   return (

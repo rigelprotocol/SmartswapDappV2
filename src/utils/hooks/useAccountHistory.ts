@@ -7,7 +7,7 @@ import { ethers } from 'ethers';
 import SmartSwapRouter02 from '../abis/swapAbiForDecoder.json';
 import AUTOSWAP from '../abis/autoswap.json';
 import { useLocation } from 'react-router-dom';
-import { SMARTSWAPROUTER, AUTOSWAPV2ADDRESSES, RGPADDRESSES } from "../addresses";
+import { SMARTSWAPROUTER, AUTOSWAPV2ADDRESSES, RGPADDRESSES, WNATIVEADDRESSES } from "../addresses";
 import Web3 from 'web3';
 import { SupportedChainName } from '../constants/chains';
 import { autoSwapV2, SmartSwapRouter, rigelToken } from '../Contracts';
@@ -17,6 +17,7 @@ const abiDecoder = require('abi-decoder');
 
 export function timeConverter(UNIX_timestamp: any) {
     const a = new Date(UNIX_timestamp * 1000);
+    console.log({ a, UNIX_timestamp })
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const year = a.getFullYear();
     const month = months[a.getMonth()];
@@ -58,12 +59,11 @@ interface DataIncoming {
     name: string,
     frequency: string,
     id: string,
-    isError: string,
+    transactionHash: string,
     error: []
 }
 let web3 = new Web3(Web3.givenProvider);
 export const formatAmount = (number: string, decimals: any) => {
-    console.log(decimals)
     const num = ethers.BigNumber.from(number).toString();
     let res = ethers.utils.formatUnits(num, decimals)
     res = ParseFloat(res, 5)
@@ -129,6 +129,10 @@ const useAccountHistory = () => {
             setLocationData("auto")
             setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
+        } else if (location === "/set-price") {
+            setLocationData("price")
+            setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
+            setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
         } else {
             setLocationData("swap")
             setStateAccount(account)
@@ -136,42 +140,37 @@ const useAccountHistory = () => {
         }
     }, [location, chainId])
 
-    const getFrequencyFromDatabase = async (from: string, to: string, id: string) => {
-        const data = await fetch(`${URL}/auto`)
-        const res = await data.json()
-        console.log({ from, to, id })
-        let hash = res.filter((dat: any) => dat.orderID === Number(id))
-        return hash[0]
-    }
-
     useEffect(() => {
-        // setURL("http://localhost:7000")
+        setURL("http://localhost:7000")
+        const getTransactionFromDatabase = async (address: string) => {
+            const data = await fetch(`${URL}/auto/data/all/${address}`)
+            const res = await data.json()
+
+            return res
+        }
         const loadAccountHistory = async () => {
             if (account && contractAddress && locationData) {
                 setLoading(true);
-
                 // try {
-                const uri = `https://api-testnet.bscscan.com/api?module=account&action=txlist&address=${stateAccount}&startblock=0
+                let userData = []
+                if (locationData === "swap") {
+                    const uri = `https://api-testnet.bscscan.com/api?module=account&action=txlist&address=${stateAccount}&startblock=0
                         &endblock=latest&sort=desc&apikey=AATZWFQ47VX3Y1DN7M97BJ5FEJR6MGRQSD`;
 
-                const data = await fetch(uri);
-                const jsondata = await data.json();
-                const SwapTrx = jsondata.result.filter((item: any) => item.to == contractAddress);
-                console.log(SwapTrx)
-                const dataFiltered = SwapTrx
-                    .filter((items: any) => decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02) !== undefined) // && items.isError !== "1"
-                    .map((items: any) => ({
-                        value: items.value,
-                        transactionObj: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).params,
-                        timestamp: items.timeStamp,
-                        transactionFee: items.gasPrice * items.gasUsed,
-                        // name: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).name,
-                        isError: items.isError
-                    }));
-                const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(0, 5) : dataFiltered;
-                console.log({ dataToUse })
-                let userData
-                if (locationData === "swap") {
+                    const data = await fetch(uri);
+                    const jsondata = await data.json();
+                    const SwapTrx = jsondata.result.filter((item: any) => item.to == contractAddress);
+                    const dataFiltered = SwapTrx
+                        .filter((items: any) => decodeInput(items.input, SmartSwapRouter02) !== undefined) // && items.transactionHash !== "1"
+                        .map((items: any) => ({
+                            value: items.value,
+                            transactionObj: decodeInput(items.input, SmartSwapRouter02).params,
+                            timestamp: items.timeStamp,
+                            transactionFee: items.gasPrice * items.gasUsed,
+                            // name: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).name,
+                            transactionHash: items.transactionHash
+                        }));
+                    const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(0, 5) : dataFiltered;
                     userData = dataToUse.map((data: any) => ({
                         inputAmount:
                             Number(data.value) > 0 ? data.value : data.transactionObj[0].value,
@@ -191,82 +190,48 @@ const useAccountHistory = () => {
                         // name: data.name,
                         frequency: "",
                         id: "",
-                        isError: data.isError,
+                        transactionHash: data.transactionHash,
                         error: []
                     }));
                 } else if (locationData === "auto" && AUTOSWAPV2ADDRESSES[chainId as number]) {
-                    const autoswapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
-                    const rigelContract = await rigelToken(RGPADDRESSES[chainId as number], library);
-
-                    // let useDataLooped: any = []
-
-                    const boolArray = await Promise.all(dataToUse.map(async (data: any) => {
-                        let id = data.transactionObj[0].value
-                        console.log({ id })
-                        let dataReturned = await autoswapV2Contract.getUserData(account, id)
-                        if (dataReturned.path.length > 0) {
-                            return true
-                        } else {
-                            return false
+                    const allTransaction = await getTransactionFromDatabase(account)
+                    if (allTransaction.length > 0) {
+                        const collapsedTransaction = allTransaction.map((data: any) => data.transaction).flat(1)
+                        let result
+                        if (locationData === "auto") {
+                            result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "auto time")
+                        } else if (locationData === "price") {
+                            result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "set price")
                         }
-                    }));
-                    let filteredData = dataToUse.filter((data: any, index: number) => {
-                        if (boolArray[index]) return data
-                    })
 
-                    userData = await Promise.all(
-                        filteredData.map(async (data: any) => {
+                        userData = await Promise.all(result.map(async (data: any) => {
+                            let fromAddress = data.swapFromToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapFromToken
+                            let toAddress = data.swapToToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapToToken
                             const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
-                            let id = data.transactionObj[0].value
-                            console.log({ id })
-                            let dataReturned = await autoswapV2Contract.getUserData(account, id)
-                            console.log({ dataReturned }, dataReturned.path)
-                            let database = await getFrequencyFromDatabase(dataReturned.swapFromToken, dataReturned.swapToToken, dataReturned.id.toString())
-                            const toPriceOut = dataReturned.path.length === 0 ? ["0", "0"] : await rout.getAmountsOut(
-                                dataReturned.amountIn.toString(),
-                                dataReturned.path
+                            const toPriceOut = await rout.getAmountsOut(
+                                data.amountToSwap,
+                                [fromAddress, toAddress]
                             );
-                            const error = []
-                            if (parseInt(data.isError) > 0) {
-                                const rgpBalance = await rigelContract.balanceOf(account)
-                                const ERC20Token = database && database.fromAddress === "native" ? "native" : await getERC20Token(dataReturned.swapFromToken, library)
-                                const rgp = Web3.utils.fromWei(rgpBalance.toString(), 'ether')
-                                const amountToApprove = await autoswapV2Contract.fee()
-                                const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
-                                const fromBalance = ERC20Token === "native" ? await library?.getBalance(account as string) : await ERC20Token.balanceOf(account)
-                                const fromName = ERC20Token === "native" ? SupportedChainName[chainId as number] : await ERC20Token.name()
-                                const fromAddressBal = Web3.utils.fromWei(fromBalance.toString(), "ether")
-                                console.log({ rgp, fee, fromAddressBal })
-                                if (rgp < fee) {
-                                    error.push("insufficient RGP for gas fee")
-                                }
-                                if (database && database.fromPrice) {
-                                    if (database.fromPrice > fromAddressBal) {
-                                        error.push(`insufficient ${fromName} balance`)
-                                    }
-                                }
-                                if (error.length === 0) {
-                                    error.push("error")
-                                }
-                            }
+                            console.log(data.time)
                             return {
-                                inputAmount: dataReturned.amountIn.toString(),
+                                inputAmount: data.amountToSwap,
                                 outputAmount: toPriceOut[1].toString(),
-                                tokenIn: dataReturned.swapFromToken,
-                                tokenOut: dataReturned.swapToToken,
-                                time: timeConverter(dataReturned.time.toString()),
-                                name: database ? database.type : "",
-                                frequency: database ? database.frequency : "",
-                                id: database ? database._id : "",
-                                isError: data.isError,
-                                error
+                                tokenIn: data.swapFromToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapFromToken,
+                                tokenOut: data.swapToToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapToToken,
+                                time: timeConverter(parseInt(data.time)),
+                                name: data ? data.typeOfTransaction : "",
+                                frequency: data ? data.frequency : "",
+                                id: data ? data.id : "",
+                                transactionHash: data.transactionHash,
+                                error: data.errorArray
                             }
-                        }
+                        })
                         )
-                    )
+                    }
+
+
 
                 }
-                console.log({ userData })
 
                 const swapDataForWallet = await Promise.all(
                     userData.map(async (data: DataIncoming) => ({
@@ -278,7 +243,7 @@ const useAccountHistory = () => {
                         name: data.name,
                         frequency: data.frequency,
                         id: data.id,
-                        isError: data.isError,
+                        transactionHash: data.transactionHash,
                         error: data.error
                     })),
                 );
@@ -297,7 +262,7 @@ const useAccountHistory = () => {
                     name: data.name,
                     frequency: data.frequency,
                     id: data.id,
-                    isError: data.isError,
+                    transactionHash: data.transactionHash,
                     error: data.error
                 }));
                 setHistoryData(userSwapHistory);
@@ -306,7 +271,7 @@ const useAccountHistory = () => {
 
 
 
-                // console.log("dataToUse000 : ", userSwapHistory)
+                console.log("dataToUse000 : ", userSwapHistory)
 
                 setLoading(false);
 
