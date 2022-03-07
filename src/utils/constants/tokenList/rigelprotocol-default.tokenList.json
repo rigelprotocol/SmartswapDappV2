@@ -348,20 +348,20 @@
       "logoURI": "https://bscscan.com/token/images/metafluence_32.png"
     },
     {
-      "name": "Revolve Games",
-      "address": "0xA9B86F17C25647EFA7aa983AeFE4D55d9eea45B5",
-      "symbol": "RPG",
+      "name": "MetaWars",
+      "address": "0x7F188b5daD1e9DAEd17133f0D409ff64b4A21430",
+      "symbol": "WARS",
       "decimals": 18,
       "chainId": 97,
-      "logoURI": "https://bscscan.com/token/images/revolvegames_32.png"
+      "logoURI": ""
     },
     {
-      "name": "Revolve Games",
-      "address": "0x01E0d17a533E5930A349C2BB71304F04F20AB12B",
-      "symbol": "RPG",
+      "name": "MetaWars",
+      "address": "0x50e756a22ff5cEE3559D18B9D9576bc38F09Fa7c",
+      "symbol": "WARS",
       "decimals": 18,
       "chainId": 56,
-      "logoURI": "https://bscscan.com/token/images/revolvegames_32.png"
+      "logoURI": ""
     }
   ]
 }
