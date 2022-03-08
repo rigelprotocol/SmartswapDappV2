@@ -579,7 +579,14 @@ const SetPrice = () => {
                     <ExclamationIcon />
                   </Flex>
                   <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
-                    <Input placeholder="0" w="60px" value={percentageChange} />
+                    <Input placeholder="0" w="60px" value={percentageChange} type="number" onChange={e => {
+                      if (parseFloat(e.target.value) > 100) {
+                        setPercentageChange("100")
+                      } else {
+                        setPercentageChange(e.target.value)
+                      }
+
+                    }} />
                     <InputRightAddon children="%" fontSize="16px" />
                   </InputGroup>
                 </VStack>
@@ -591,29 +598,81 @@ const SetPrice = () => {
                     </Text>
                     <ExclamationIcon />
                   </Flex>
-                  <Menu>
-                    <MenuButton as={Button} rightIcon={<ChevronDownIcon />} size="md" bg={bgColor} fontSize="16px" color={textColorOne} borderColor={borderColor} borderWidth="1px">
-                      Week
-                    </MenuButton>
-                  </Menu>
+                  <Select onChange={(e) => setSelectedFrequency(e.target.value)}>
+                    <option value='5'>5 minutes</option>
+                    <option value='30'>30 minutes</option>
+                    <option value='daily'>Daily</option>
+                    <option value='weekly'>Weekly</option>
+                    <option value='monthly'>Monthly</option>
+                  </Select>
                 </VStack>
               </Box>
               <Box mt={5}>
-                <Button
-                  w="100%"
-                  borderRadius="6px"
-                  border={lightmode ? '2px' : 'none'}
-                  borderColor={borderColor}
-                  h="48px"
-                  p="5px"
-                  color={color}
-                  bgColor={buttonBgcolor}
-                  fontSize="18px"
-                  boxShadow={lightmode ? 'base' : 'lg'}
-                  _hover={{ bgColor: buttonBgcolor }}
-                >
-                  Enter Percentage
-                </Button>
+                {inputError ?
+                  <Button
+                    w="100%"
+                    borderRadius="6px"
+                    border={lightmode ? '2px' : 'none'}
+                    borderColor={borderColor}
+                    h="48px"
+                    p="5px"
+                    color={color}
+                    bgColor={buttonBgcolor}
+                    fontSize="18px"
+                    boxShadow={lightmode ? 'base' : 'lg'}
+                    _hover={{ bgColor: buttonBgcolor }}
+                  >
+                    {inputError}
+                  </Button> : !transactionSigned ? <Button
+                    w="100%"
+                    borderRadius="6px"
+                    border={lightmode ? '2px' : 'none'}
+                    borderColor={borderColor}
+                    // onClick={signTransaction}
+                    onClick={() => setShowModal(!showModal)}
+                    h="48px"
+                    p="5px"
+                    color={color}
+                    bgColor={buttonBgcolor}
+                    fontSize="18px"
+                    boxShadow={lightmode ? 'base' : 'lg'}
+                    _hover={{ bgColor: buttonBgcolor }}
+                  >
+                    Sign Wallet
+                  </Button> : approval.length > 0 ? <Button
+                    w="100%"
+                    borderRadius="6px"
+                    border={lightmode ? '2px' : 'none'}
+                    borderColor={borderColor}
+                    h="48px"
+                    p="5px"
+                    onClick={approveOneOrTwoTokens}
+                    color={color}
+                    bgColor={buttonBgcolor}
+                    fontSize="18px"
+                    boxShadow={lightmode ? 'base' : 'lg'}
+                    _hover={{ bgColor: buttonBgcolor }}
+                  >
+                    Approve {approval.length > 0 && approval[0]} {approval.length > 1 && `and ${currencies[Field.INPUT]?.tokenInfo.name}`}
+                  </Button> : <Button
+                    w="100%"
+                    borderRadius="6px"
+                    border={lightmode ? '2px' : 'none'}
+                    borderColor={borderColor}
+                    h="48px"
+                    p="5px"
+                    color={color}
+                    bgColor={buttonBgcolor}
+                    onClick={() => signatureFromDataBase ? setShowModal(!showModal) : sendTransactionToDatabase()}
+                    // onClick={sendTransactionToDatabase}
+                    fontSize="18px"
+                    boxShadow={lightmode ? 'base' : 'lg'}
+                    _hover={{ bgColor: buttonBgcolor }}
+                  >
+                    Send Transaction
+                  </Button>
+                }
+
               </Box>
             </Box>
 

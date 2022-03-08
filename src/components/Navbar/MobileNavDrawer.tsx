@@ -120,13 +120,15 @@ const MobileNavDrawer = () => {
                     mb={3}
                   >
                     <Text _hover={{ color: '#319EF6' }} mb={2}>
-                      Straight
+                      <Nav label="Straight Swap" to="/swap" />
                     </Text>
                     <Text _focus={{ color: '#319EF6' }} mb={2}>
-                      Set Price
+                      <Nav label="Set Price" to="/set-price" />
+
                     </Text>
                     <Text _focus={{ color: '#319EF6' }} mb={2}>
-                      Auto-Time
+                      <Nav label="Auto Time" to="/auto-time" />
+
                     </Text>
                   </Flex>
                 </Collapse>

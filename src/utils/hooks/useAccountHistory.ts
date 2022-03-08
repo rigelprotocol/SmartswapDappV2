@@ -204,7 +204,6 @@ const useAccountHistory = () => {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "auto time").sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
                     } else if (locationData === "price") {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "set price").sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
-                        console.log({ result })
                     }
 
                     userData = await Promise.all(result.map(async (data: any) => {
@@ -215,7 +214,6 @@ const useAccountHistory = () => {
                             data.amountToSwap,
                             [fromAddress, toAddress]
                         );
-                        console.log(data.time)
                         return {
                             inputAmount: data.amountToSwap,
                             outputAmount: toPriceOut[1].toString(),
