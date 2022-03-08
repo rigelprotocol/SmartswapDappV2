@@ -46,6 +46,8 @@ import {
   smartSwapLPTokenV2PoolSeven,
   smartSwapLPTokenV2PoolEight,
   smartSwapLPTokenV2PoolNine,
+  smartSwapLPTokenV2PoolTwelve,
+  smartSwapLPTokenV2PoolThirteen,
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
@@ -58,6 +60,8 @@ import {
   SMARTSWAPLP_TOKEN7ADDRESSES,
   SMARTSWAPLP_TOKEN8ADDRESSES,
   SMARTSWAPLP_TOKEN9ADDRESSES,
+  SMARTSWAPLP_TOKEN12ADDRESSES,
+  SMARTSWAPLP_TOKEN13ADDRESSES,
   RGP,
   RGPADDRESSES,
   RGPSPECIALPOOLADDRESSES,
@@ -269,6 +273,20 @@ const ShowYieldFarmDetails = ({
       } else if (content.deposit === "MBOX-RGP") {
         const poolNine = await smartSwapLPTokenV2PoolNine(
           SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+          library
+        );
+        const approveForRGPMBOX = await poolAllowance(poolNine);
+        changeApprovalButton(approveForRGPMBOX, rgpApproval);
+      } else if (content.deposit === "WARS-RGP") {
+        const poolNine = await smartSwapLPTokenV2PoolNine(
+          SMARTSWAPLP_TOKEN12ADDRESSES[chainId as number],
+          library
+        );
+        const approveForRGPMBOX = await poolAllowance(poolNine);
+        changeApprovalButton(approveForRGPMBOX, rgpApproval);
+      } else if (content.deposit === "METO-RGP") {
+        const poolNine = await smartSwapLPTokenV2PoolNine(
+          SMARTSWAPLP_TOKEN13ADDRESSES[chainId as number],
           library
         );
         const approveForRGPMBOX = await poolAllowance(poolNine);
@@ -545,6 +563,36 @@ const ShowYieldFarmDetails = ({
         }
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
+      } else if (val === "WARS-RGP") {
+        const poolNine = await smartSwapLPTokenV2PoolNine(
+          SMARTSWAPLP_TOKEN12ADDRESSES[chainId as number],
+          library
+        );
+        if (!approveValueForOtherToken && !approveValueForRGP) {
+          await RGPApproval();
+          await LPApproval(poolNine);
+        } else if (!approveValueForRGP) {
+          await RGPApproval();
+        } else {
+          await LPApproval(poolNine);
+        }
+        setApproveValueForOtherToken(true);
+        setApproveValueForRGP(true);
+      } else if (val === "METO-RGP") {
+        const poolNine = await smartSwapLPTokenV2PoolNine(
+          SMARTSWAPLP_TOKEN13ADDRESSES[chainId as number],
+          library
+        );
+        if (!approveValueForOtherToken && !approveValueForRGP) {
+          await RGPApproval();
+          await LPApproval(poolNine);
+        } else if (!approveValueForRGP) {
+          await RGPApproval();
+        } else {
+          await LPApproval(poolNine);
+        }
+        setApproveValueForOtherToken(true);
+        setApproveValueForRGP(true);
       } else if (val === "RGP" && Number(content.id) === 1) {
         await RGPSpecialPoolV1Approval();
         setApproveValueForOtherToken(true);
@@ -610,6 +658,8 @@ const ShowYieldFarmDetails = ({
           pool7,
           pool8,
           pool9,
+          pool12,
+          pool13,
         ] = await Promise.all([
           rigelToken(RGP[chainId as number], library),
           smartSwapLPTokenPoolOne(
@@ -648,6 +698,14 @@ const ShowYieldFarmDetails = ({
             SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
             library
           ),
+          smartSwapLPTokenV2PoolTwelve(
+            SMARTSWAPLP_TOKEN12ADDRESSES[chainId as number],
+            library
+          ),
+          smartSwapLPTokenV2PoolThirteen(
+            SMARTSWAPLP_TOKEN13ADDRESSES[chainId as number],
+            library
+          ),
         ]);
 
         const [
@@ -660,6 +718,8 @@ const ShowYieldFarmDetails = ({
           pool7Allowance,
           pool8Allowance,
           pool9Allowance,
+          pool12Allowance,
+          pool13Allowance,
         ] = await Promise.all([
           allowance(pool1),
           allowance(pool2),
@@ -670,6 +730,8 @@ const ShowYieldFarmDetails = ({
           allowance(pool7),
           allowance(pool8),
           allowance(pool9),
+          allowance(pool12),
+          allowance(pool13),
         ]);
         let rigelAllowance;
         if (RGPSPECIALPOOLADDRESSES[chainId as number]) {
@@ -693,6 +755,8 @@ const ShowYieldFarmDetails = ({
               pool7Allowance,
               pool8Allowance,
               pool9Allowance,
+              pool12Allowance,
+              pool13Allowance,
             ])
           );
         } else {
@@ -708,6 +772,8 @@ const ShowYieldFarmDetails = ({
               pool7Allowance,
               pool8Allowance,
               pool9Allowance,
+              pool12Allowance,
+              pool13Allowance,
             ])
           );
         }
@@ -1590,6 +1656,20 @@ const ShowYieldFarmDetails = ({
           library
         );
         LPApproval(poolNine);
+        break;
+      case "WARS-RGP":
+        const poolTwelve = await smartSwapLPTokenV2PoolTwelve(
+          SMARTSWAPLP_TOKEN12ADDRESSES[chainId as number],
+          library
+        );
+        LPApproval(poolTwelve);
+        break;
+      case "METO-RGP":
+        const poolThirteen = await smartSwapLPTokenV2PoolThirteen(
+          SMARTSWAPLP_TOKEN13ADDRESSES[chainId as number],
+          library
+        );
+        LPApproval(poolThirteen);
         break;
       default:
         RGPApproval();

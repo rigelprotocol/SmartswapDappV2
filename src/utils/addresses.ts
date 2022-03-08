@@ -187,6 +187,24 @@ export const SMARTSWAPLP_TOKEN9ADDRESSES: { [key: string]: string } = {
   "80001": "",
 };
 
+export const SMARTSWAPLP_TOKEN12ADDRESSES: { [key: string]: string } = {
+  "1": "0x",
+  "3": "0x",
+  "56": "0xa0931B6B77241BEDD3663af5557Fb010e990033d",
+  "97": "0x67475ffAb02F2d1061077d2519404AFCEDe2FCb6",
+  "137": "0x",
+  "80001": "",
+};
+
+export const SMARTSWAPLP_TOKEN13ADDRESSES: { [key: string]: string } = {
+  "1": "0x",
+  "3": "0x",
+  "56": "0xe8929D8959e2970E8B5C58Ace19800F4dD9eA28D",
+  "97": "0x612fAC88D7310f4371018E8d76111Efd2221D30c",
+  "137": "0x",
+  "80001": "",
+};
+
 export const RGP: { [key: string]: string } = {
   "1": "0x",
   "3": "0x80278a0Cf536e568A76425B67Fb3931Dca21535c",
