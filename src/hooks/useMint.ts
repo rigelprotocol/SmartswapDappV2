@@ -15,8 +15,6 @@ import { ZERO_ADDRESS } from "../constants";
 import { ethers } from "ethers";
 import { useSelector } from "react-redux";
 import { RootState } from "../state";
-import { getDecimals } from "../utils/utilsFunctions";
-import { getNativeAddress } from "../utils/hooks/usePools";
 
 const formatAmount = (number: string, decimal: number) => {
   return ethers.utils.formatUnits(number, decimal);
@@ -29,7 +27,6 @@ export const useMint = (
 ) => {
   const { chainId, library } = useActiveWeb3React();
   const [address, setAddress] = useState<string>();
-  const [loading, setLoading] = useState<boolean>(false);
   const [amount, setAmount] = useState<string | undefined>("");
   const [wrap, setWrap] = useState<boolean>(false);
 
@@ -79,7 +76,7 @@ export const useMint = (
         if (!wrappable && address !== ZERO_ADDRESS) {
           setWrap(false);
           if (amountIn !== undefined) {
-            //setLoading(!loading);
+            // setLoading(true);
             const pairinstance = await LiquidityPairInstance(
               pairAddress,
               library

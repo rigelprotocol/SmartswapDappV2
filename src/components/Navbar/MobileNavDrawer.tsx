@@ -11,7 +11,7 @@ import {
   Text,
   Link,
   Collapse,
-  useMediaQuery,
+  useMediaQuery, MenuItem,
 } from '@chakra-ui/react';
 import {
   HamburgerIcon,
@@ -22,6 +22,8 @@ import {
 import { CloseIcon } from '../../theme/components/Icons';
 import { NavLink } from 'react-router-dom';
 import useToggle from '../../utils/hooks/useToggle';
+import {SupportedChainId} from "../../constants/chains";
+import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 
 const MobileNavDrawer = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -31,6 +33,8 @@ const MobileNavDrawer = () => {
   const SwapBgColor = useColorModeValue('#F2F5F8', '#213345');
   const closeButtonBorder = useColorModeValue('#666666', '#DCE5EF');
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
+
+  const {chainId} = useActiveWeb3React();
 
   const Nav = ({ to, label }: { to: string; label: string }) => (
     <NavLink
@@ -57,6 +61,7 @@ const MobileNavDrawer = () => {
         <HamburgerIcon
           color={HamburgerIconColor}
           onClick={onOpen}
+          cursor={'pointer'}
           w="24px"
           h="24px"
         />
@@ -119,15 +124,16 @@ const MobileNavDrawer = () => {
                     ml={10}
                     mb={3}
                   >
-                    <Text _hover={{ color: '#319EF6' }} mb={2}>
-                      Straight
+                    <Text _hover={{ color: '#319EF6' }} mb={2} onClick={onClose}>
+                      <Nav label="Straight Swap" to="/swap" />
                     </Text>
-                    <Text _focus={{ color: '#319EF6' }} mb={2}>
-                      Set Price
+                    <Text _hover={{ color: '#319EF6' }} mb={2} onClick={onClose}>
+                      <Nav label="Auto-Time" to={chainId === SupportedChainId.BINANCETEST ? '/auto-time' : '#'} />
                     </Text>
-                    <Text _focus={{ color: '#319EF6' }} mb={2}>
-                      Auto-Time
+                    <Text _hover={{ color: '#319EF6' }} mb={2} onClick={onClose}>
+                      <Nav label="Set Price" to={chainId === SupportedChainId.BINANCETEST ? '/set-price' : '#'} />
                     </Text>
+
                   </Flex>
                 </Collapse>
                 <Flex ml={6} mb={3}>
