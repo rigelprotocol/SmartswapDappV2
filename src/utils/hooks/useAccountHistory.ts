@@ -202,7 +202,6 @@ const useAccountHistory = () => {
                     let result = []
                     if (locationData === "auto") {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "auto time").sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
-                        console.log(new Date(result[0].time * 1000), result[0].time, "ieiie")
                     } else if (locationData === "price") {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "set price").sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
                         console.log({ result })
