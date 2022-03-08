@@ -353,7 +353,7 @@
       "symbol": "WARS",
       "decimals": 18,
       "chainId": 97,
-      "logoURI": ""
+      "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13105.png"
     },
     {
       "name": "MetaWars",
@@ -361,7 +361,7 @@
       "symbol": "WARS",
       "decimals": 18,
       "chainId": 56,
-      "logoURI": ""
+      "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13105.png"
     }
   ]
 }
