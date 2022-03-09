@@ -940,6 +940,10 @@ const ShowYieldFarmDetails = ({
           await tokensWithdrawal(8);
         } else if (val === "MBOX-RGP") {
           await tokensWithdrawal(9);
+        } else if (val === "WARS-RGP") {
+          await tokensWithdrawal(12);
+        } else if (val === "METO-RGP") {
+          await tokensWithdrawal(12);
         }
       }
     } catch (err) {
@@ -1074,7 +1078,7 @@ const ShowYieldFarmDetails = ({
               })
             );
           }
-        } else if (id === 10) {
+        } else if (id === 12) {
           const specialPool = await RGPSpecialPool2(
             RGPSPECIALPOOLADDRESSES2[chainId as number],
             library
