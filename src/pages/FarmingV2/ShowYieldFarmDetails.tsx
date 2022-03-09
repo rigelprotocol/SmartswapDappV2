@@ -943,7 +943,7 @@ const ShowYieldFarmDetails = ({
         } else if (val === "WARS-RGP") {
           await tokensWithdrawal(12);
         } else if (val === "METO-RGP") {
-          await tokensWithdrawal(12);
+          await tokensWithdrawal(13);
         }
       }
     } catch (err) {
