@@ -278,6 +278,7 @@ const ShowYieldFarmDetails = ({
         const approveForRGPMBOX = await poolAllowance(poolNine);
         changeApprovalButton(approveForRGPMBOX, rgpApproval);
       } else if (content.deposit === "WARS-RGP") {
+        console.log("here 2");
         const poolNine = await smartSwapLPTokenV2PoolNine(
           SMARTSWAPLP_TOKEN12ADDRESSES[chainId as number],
           library
@@ -1333,6 +1334,10 @@ const ShowYieldFarmDetails = ({
           await LPDeposit(8);
         } else if (val === "MBOX-RGP") {
           await LPDeposit(9);
+        } else if (val === "WARS-RGP") {
+          await LPDeposit(12);
+        } else if (val === "METO-RGP") {
+          await LPDeposit(13);
         }
       }
     } catch (error) {
