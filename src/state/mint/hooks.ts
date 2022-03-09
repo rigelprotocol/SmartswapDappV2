@@ -1,13 +1,7 @@
-import {
-  Currency,
-  CurrencyAmount,
-  Percent,
-  Price,
-  Token,
-} from '@uniswap/sdk-core';
+import {Currency} from '@uniswap/sdk-core';
 
 import JSBI from 'jsbi';
-import { ReactNode, useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../index';
 
@@ -113,6 +107,7 @@ export function useDerivedMintInfo(): {
   inputError?: string;
   parsedAmount: string | undefined;
   showWrap: boolean;
+  address: string;
 } {
   const { account } = useActiveWeb3React();
   const [Balance] = useNativeBalance();
@@ -169,5 +164,6 @@ export function useDerivedMintInfo(): {
     bestTrade,
     parsedAmount,
     showWrap,
+    address
   };
 }
