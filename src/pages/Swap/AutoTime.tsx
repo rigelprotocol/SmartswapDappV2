@@ -154,7 +154,6 @@ const SetPrice = () => {
         '1000000000000000000',
         routeAddress
       );
-
       setPriceOut(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
     }
   }, [currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue])
@@ -183,7 +182,6 @@ const SetPrice = () => {
     const tokenBalance = currencies[Field.INPUT]?.isNative ? "1" : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
     const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
-    console.log()
     if (parseFloat(RGPBalance) >= parseFloat(fee) && parseFloat(tokenBalance) > 0) {
       setHasBeenApproved(true)
     } else if (parseFloat(RGPBalance) < parseFloat(fee) && parseFloat(tokenBalance) <= 0 && currencies[Field.INPUT]?.wrapped.symbol !== "RGP") {
@@ -235,7 +233,6 @@ const SetPrice = () => {
         let signature = await web3.eth.sign(mess, account);
 
         var sig = ethers.utils.splitSignature(signature)
-        console.log({ ...sig, mess })
         setSignedTransaction({ ...sig, mess })
         setTransactionSigned(true)
 
@@ -340,10 +337,8 @@ const SetPrice = () => {
     let minutesToAdd = 20;
     let currentDate = new Date();
     let futureDate = currentDate.getTime() + minutesToAdd;
-    console.log({ futureDate })
     let data, response
     if (currencies[Field.INPUT]?.isNative) {
-      console.log(Web3.utils.toWei(typedValue, 'ether'), { typedValue })
       data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
 
         currencies[Field.OUTPUT]?.wrapped.address,
@@ -398,7 +393,7 @@ const SetPrice = () => {
           toAddress: currencies[Field.OUTPUT]?.isNative ? "native" : currencies[Field.OUTPUT]?.wrapped.address,
           signature: signedTransaction,
           percentageChange,
-          toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped ? currencies[Field.OUTPUT]?.wrapped.decimals : currencies[Field.OUTPUT]?.decimals,
+          toNumberOfDecimals: currencies[Field.OUTPUT]?.isNative ? 18 : currencies[Field.OUTPUT]?.wrapped.decimals,
           fromPrice: typedValue,
           currentToPrice: formattedAmounts[Field.OUTPUT],
           orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1,
@@ -407,7 +402,6 @@ const SetPrice = () => {
         })
       })
       const res = await response.json()
-      console.log(res)
       dispatch(
         setOpenModal({
           message: "Successfully stored Transaction",

@@ -36,7 +36,7 @@ export const changeFrequencyTodays = (frequency: string): { days: number, today:
   } else if (frequency === "30" || frequency === "5") {
     let timeInMinutes = date.getMinutes()
     days = parseInt(frequency)
-    today = timeInMinutes + days
+    today = timeInMinutes
     return { days, today, month }
   }
   return { days, today, month }

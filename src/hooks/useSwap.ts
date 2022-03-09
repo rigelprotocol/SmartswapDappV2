@@ -119,8 +119,6 @@ export const useSwap = (
               tokenTwoAddress,
             ]);
 
-            console.log(amountIn);
-            console.log(tokenOneAddress, tokenTwoAddress);
 
             const amountsIn =
               independentFieldString === "INPUT"
@@ -130,7 +128,6 @@ export const useSwap = (
                   tokenTwoAddress,
                 ]);
 
-            console.log(amountsIn);
 
             const output = formatAmount(amountOut[1], currencyB.decimals);
 

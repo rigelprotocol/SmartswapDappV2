@@ -94,9 +94,9 @@ const SetPrice = () => {
   useEffect(() => {
     // setURL("http://localhost:7000")
     async function checkIfSignatureExists() {
+
       let user = await fetch(`${URL}/auto/data/${account}`)
       let data = await user.json()
-      console.log({ data })
       if (data) {
         setSignedTransaction(data.signature)
         setTransactionSigned(true)
@@ -183,10 +183,8 @@ const SetPrice = () => {
     let minutesToAdd = 20;
     let currentDate = new Date();
     let futureDate = currentDate.getTime() + minutesToAdd;
-    console.log({ futureDate })
     let data, response
     if (currencies[Field.INPUT]?.isNative) {
-      console.log(Web3.utils.toWei(typedValue, 'ether'), { typedValue })
       data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
 
         currencies[Field.OUTPUT]?.wrapped.address,
@@ -242,7 +240,7 @@ const SetPrice = () => {
           toAddress: currencies[Field.OUTPUT]?.isNative ? "native" : currencies[Field.OUTPUT]?.wrapped.address,
           signature: signedTransaction,
           percentageChange: toPrice,
-          toNumberOfDecimals: currencies[Field.OUTPUT]?.wrapped.decimals,
+          toNumberOfDecimals: currencies[Field.OUTPUT]?.isNative ? 18 : currencies[Field.OUTPUT]?.wrapped.decimals,
           fromPrice: typedValue,
           currentToPrice: formattedAmounts[Field.OUTPUT],
           orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1,
@@ -250,7 +248,6 @@ const SetPrice = () => {
         })
       })
       const res = await response.json()
-      console.log(res)
       dispatch(
         setOpenModal({
           message: "Successfully stored Transaction",
@@ -296,7 +293,6 @@ const SetPrice = () => {
         let signature = await web3.eth.sign(mess, account);
 
         var sig = ethers.utils.splitSignature(signature)
-        console.log({ ...sig, mess })
         setSignedTransaction({ ...sig, mess })
         setTransactionSigned(true)
 
@@ -326,7 +322,6 @@ const SetPrice = () => {
       setHasBeenApproved(true);
       setApproval(approval.filter(t => t !== currencies[Field.INPUT]?.name))
     }
-    console.log(approval)
     if (approval.length > 0) {
       try {
         dispatch(
@@ -391,18 +386,21 @@ const SetPrice = () => {
 
   }
   const checkForApproval = async () => {
-    // check approval for RGP and the other token
-    const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number])
-    const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
-    if (parseFloat(RGPBalance) > 0 && parseFloat(tokenBalance) > 0) {
+
+    const autoSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
+    const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
+    const tokenBalance = currencies[Field.INPUT]?.isNative ? "1" : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
+    const amountToApprove = await autoSwapV2Contract.fee()
+    const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
+    if (parseFloat(RGPBalance) >= parseFloat(fee) && parseFloat(tokenBalance) > 0) {
       setHasBeenApproved(true)
-    } else if (parseFloat(RGPBalance) <= 0 && parseFloat(tokenBalance) <= 0) {
+    } else if (parseFloat(RGPBalance) < parseFloat(fee) && parseFloat(tokenBalance) <= 0 && currencies[Field.INPUT]?.wrapped.symbol !== "RGP") {
       setHasBeenApproved(false)
-      setApproval(["RGP", currencies[Field.INPUT]?.wrapped.name])
+      setApproval(["RGP", currencies[Field.INPUT]?.wrapped.symbol])
     } else if (parseFloat(tokenBalance) <= 0) {
       setHasBeenApproved(false)
-      setApproval([currencies[Field.INPUT].wrapped.name])
-    } else if (parseFloat(RGPBalance) <= 0) {
+      setApproval([currencies[Field.INPUT].wrapped.symbol])
+    } else if (parseFloat(RGPBalance) < parseFloat(fee)) {
       setHasBeenApproved(false)
       setApproval(["RGP"])
     }

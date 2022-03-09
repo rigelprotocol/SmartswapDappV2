@@ -148,9 +148,11 @@ const useAccountHistory = () => {
 
     const getTransactionFromDatabase = async (address: string) => {
         const data = await fetch(`${URL}/auto/data/all/${address}`)
-        const res = await data.json()
+        const trans = await fetch(`${URL}/auto`)
+        const transaction = await data.json()
+        const database = await trans.json()
 
-        return res
+        return { transaction, database }
     }
     const loadAccountHistory = async () => {
         if (account && contractAddress && locationData) {
@@ -199,19 +201,25 @@ const useAccountHistory = () => {
                     error: [],
                     status: data.status
                 }));
-            } else if (AUTOSWAPV2ADDRESSES[chainId as number] && locationData === "price" || locationData === "auto") {
-                const allTransaction = await getTransactionFromDatabase(account)
-                console.log({ allTransaction })
-                if (allTransaction.length > 0) {
-                    const collapsedTransaction = allTransaction[0].transaction
-                    console.log({ collapsedTransaction })
+            } else if ((AUTOSWAPV2ADDRESSES[chainId as number] && locationData === "price") || AUTOSWAPV2ADDRESSES[chainId as number] && locationData === "auto") {
+                const { transaction, database } = await getTransactionFromDatabase(account)
+                if (transaction.length > 0) {
+                    const collapsedTransaction = transaction[0].transaction
                     let result = []
                     if (locationData === "auto") {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "auto time").sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
+                        let newArray: any = []
+                        result.forEach((val: any) => {
+                            if (database.every((e: any) => e._id !== val.id)) {
+                                val.status = 4
+                                newArray.push(val)
+                            } else newArray.push(val)
+                        })
+
+                        result = newArray
                     } else if (locationData === "price") {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "Set Price").sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
                     }
-                    console.log({ result })
                     userData = await Promise.all(result.map(async (data: any) => {
                         let fromAddress = data.swapFromToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapFromToken
                         let toAddress = data.swapToToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapToToken

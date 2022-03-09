@@ -89,11 +89,11 @@ const History = () => {
         );
       }
     }
-
+    setShowModal(false)
   }
   const confirmDeletion = async (data: DataType) => {
     setData(data)
-    setShowModal(false)
+    setShowModal(true)
   }
 
   return (
@@ -195,8 +195,8 @@ const History = () => {
           <MarketHistory key={data.time} data={data} />
         ))}
 
-        {show && !showMarketHistory && historyData && userData.map((data: DataType) => (
-          <TransactionHistory key={data.time} data={data} deleteData={confirmDeletion} />
+        {show && !showMarketHistory && historyData && userData.map((data: DataType, index) => (
+          <TransactionHistory key={index} data={data} deleteData={confirmDeletion} />
         ))}
       </Box>
       <ConfirmationModal
