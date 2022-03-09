@@ -35,6 +35,7 @@ import { Field } from '../../state/swap/actions';
 import { maxAmountSpend } from '../../utils/maxAmountSpend';
 import { autoSwapV2, rigelToken, SmartSwapRouter } from '../../utils/Contracts';
 import { RGPADDRESSES, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES, SMARTSWAPROUTER } from '../../utils/addresses';
+import { RGP } from '../../utils/addresses';
 import { useDispatch } from "react-redux";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 
@@ -256,14 +257,6 @@ const SetPrice = () => {
           trxState: TrxState.TransactionSuccessful,
         })
       );
-      setSignedTransaction({
-        r: "",
-        s: "",
-        _vs: "",
-        mess: "",
-        v: "",
-        recoveryParam: ""
-      })
       onUserInput(Field.INPUT, "");
       setApproval([])
     }

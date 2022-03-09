@@ -19,7 +19,7 @@ const CInput: React.FC<CProps> = ({
     setInitialPrice
 }) => {
 
-    const tokenListTrgiggerBgColor = useColorModeValue('', '#213345');
+    const tokenListTrgiggerBgColor = useColorModeValue('', '#ffffff');
     return (
         <InputGroup size='sm' width="250px">
             <Input placeholder='0' height="40px" value={initialFromPrice} onChange={(e) => setInitialPrice(e.target.value)} />

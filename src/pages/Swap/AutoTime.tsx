@@ -76,7 +76,7 @@ const SetPrice = () => {
   const [percentageChange, setPercentageChange] = useState<string>("0")
   const [priceOut, setPriceOut] = useState<string>("")
   const [otherMarketprice, setOtherMarketprice] = useState<string>("0")
-  const [approval, setApproval] = useState<String[]>([])
+  const [approval, setApproval] = useState<string[] | undefined>([])
   const [showModal, setShowModal] = useState(false)
 
   const [checkedItem, setCheckedItem] = useState(false)
@@ -114,7 +114,6 @@ const SetPrice = () => {
     }
   }, [currencies[Field.INPUT], account])
   useEffect(() => {
-    // setURL("http://localhost:7000")
     async function checkIfSignatureExists() {
       let user = await fetch(`${URL}/auto/data/${account}`)
       let data = await user.json()
@@ -180,19 +179,20 @@ const SetPrice = () => {
 
     const autoSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
     // check approval for RGP and the other token
-    const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number])
-    const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
+    const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
+    const tokenBalance = currencies[Field.INPUT]?.isNative ? "1" : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
     const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
-    if (parseFloat(RGPBalance) >= fee && parseFloat(tokenBalance) > 0) {
+    console.log()
+    if (parseFloat(RGPBalance) >= parseFloat(fee) && parseFloat(tokenBalance) > 0) {
       setHasBeenApproved(true)
-    } else if (parseFloat(RGPBalance) < fee && parseFloat(tokenBalance) <= 0) {
+    } else if (parseFloat(RGPBalance) < parseFloat(fee) && parseFloat(tokenBalance) <= 0 && currencies[Field.INPUT]?.wrapped.symbol !== "RGP") {
       setHasBeenApproved(false)
-      setApproval(["RGP", currencies[Field.INPUT]?.wrapped.name])
+      setApproval(["RGP", currencies[Field.INPUT]?.wrapped.symbol])
     } else if (parseFloat(tokenBalance) <= 0) {
       setHasBeenApproved(false)
-      setApproval([currencies[Field.INPUT].wrapped.name])
-    } else if (parseFloat(RGPBalance) < fee) {
+      setApproval([currencies[Field.INPUT].wrapped.symbol])
+    } else if (parseFloat(RGPBalance) < parseFloat(fee)) {
       setHasBeenApproved(false)
       setApproval(["RGP"])
     }
@@ -414,14 +414,6 @@ const SetPrice = () => {
           trxState: TrxState.TransactionSuccessful,
         })
       );
-      setSignedTransaction({
-        r: "",
-        s: "",
-        _vs: "",
-        mess: "",
-        v: "",
-        recoveryParam: ""
-      })
       onUserInput(Field.INPUT, "");
       setApproval([])
       setSignatureFromDataBase(true)

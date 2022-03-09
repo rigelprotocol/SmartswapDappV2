@@ -22,7 +22,8 @@ export interface DataType {
   frequency: string,
   id: string,
   transactionHash: string,
-  error: []
+  error: [],
+  status: number
 }
 
 const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: any }) => {
@@ -30,6 +31,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
   const nonActiveTabColor = useColorModeValue('#666666', '#4A739B');
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
+  const pendingColor = useColorModeValue('#c8d41b', '#c8d41b');
   const successColor = useColorModeValue('#22bb33', '#22bb33');
   const failedColor = useColorModeValue('#75f083', "#FF4243");
   console.log(data)
@@ -137,15 +139,24 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
             >
               Status
             </Text>
-            <Text color={data.error.length > 0 ? failedColor : successColor} fontSize="14px" fontWeight="regular">
+            <Text color={data.status === 0 ? failedColor : data.status === 2 ? pendingColor : successColor} fontSize="14px" fontWeight="regular">
               {/* Completed */}
-              {data.error.length > 0 ? "Failed" : "Completed"}
+              {data.status === 1 || data.status === 10 ? "Completed" : data.status === 0 ? "Failed" : data.status === 2 ? "Pending" : data.status === 3 ? "Suspended" : ""}
             </Text>
-            {data.id && <Button
+            {data.name === "auto time" && data.id && data.status !== 4 ? <Button
               border=" 1px solid #CC334F" box-shadow="0px 1px 7px -2px rgba(24, 39, 75, 0.06), 0px 2px 2px rgba(24, 39, 75, 0.06)"
               border-radius="6px" backgroundColor="transparent" mt="2" onClick={() => deleteData(data)}>
               Cancel
-            </Button>}
+            </Button> : <></>}
+            {data.name === "Set Price" && data.id && data.status === 2 ? <Button
+              border=" 1px solid #CC334F" box-shadow="0px 1px 7px -2px rgba(24, 39, 75, 0.06), 0px 2px 2px rgba(24, 39, 75, 0.06)"
+              border-radius="6px" backgroundColor="transparent" mt="2" onClick={() => deleteData(data)}>
+              Pause
+            </Button> : data.id && data.status === 3 ? <Button
+              border=" 1px solid #CC334F" box-shadow="0px 1px 7px -2px rgba(24, 39, 75, 0.06), 0px 2px 2px rgba(24, 39, 75, 0.06)"
+              border-radius="6px" backgroundColor="transparent" mt="2" onClick={() => deleteData(data)}>
+              Resume
+            </Button> : <></>}
 
           </Box>
           <Box>

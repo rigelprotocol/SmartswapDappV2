@@ -41,14 +41,14 @@ const History = () => {
 
 
   useEffect(() => {
-    // setURL("http://localhost:7000")
+    setURL("http://localhost:7000")
     const isActive = checkSideTab('history');
     dispatch(transactionTab({ removeSideTab: isActive }))
 
   }, []);
 
   const deleteDataFromDatabase = async () => {
-    if (data) {
+    if (data && data.name === "auto time") {
       setOpenModal({
         message: "Deleting Transaction...",
         trxState: TrxState.WaitingForConfirmation,
@@ -63,12 +63,37 @@ const History = () => {
           })
         );
       }
+    } else if (data && data.name === "Set Price") {
+      setOpenModal({
+        message: data.status === 2 ? "Suspending Transaction..." : "Resuming Transaction",
+        trxState: TrxState.WaitingForConfirmation,
+      })
+      const result = await fetch(`${URL}/auto/update/${data.id}`, {
+        mode: "cors",
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        method: "PUT",
+        body: data.status === 2 ? JSON.stringify({ status: 3 }) : JSON.stringify({ status: 2 })
+      })
+      const res = await result.json()
+      if (res === "success") {
+        dispatch(
+          setOpenModal({
+            message: `Data deleted Successful.`,
+            trxState: TrxState.TransactionSuccessful,
+          })
+        );
+      }
     }
 
   }
   const confirmDeletion = async (data: DataType) => {
     setData(data)
-    setShowModal(true)
+    setShowModal(false)
   }
 
   return (
@@ -178,7 +203,7 @@ const History = () => {
         showModal={showModal}
         setShowModal={setShowModal}
         funct={deleteDataFromDatabase}
-        text={`You are about to delete an ${data?.name} transaction. This will prevent future transaction from been auto enabled for you. Do you want to continue`}
+        text={`You are about to ${data?.frequency === "price" ? "suspend" : "delete"} an ${data?.name} transaction. This will prevent future transaction from been auto enabled for you. Do you want to continue`}
       />
     </Flex>
   );

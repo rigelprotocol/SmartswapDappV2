@@ -59,7 +59,8 @@ interface DataIncoming {
     frequency: string,
     id: string,
     transactionHash: string,
-    error: []
+    error: [],
+    status: number
 }
 let web3 = new Web3(Web3.givenProvider);
 export const formatAmount = (number: string, decimals: any) => {
@@ -138,18 +139,19 @@ const useAccountHistory = () => {
             setContractAddress(SMARTSWAPROUTER[chainId as number])
         }
     }, [location, chainId])
-    const getTransactionFromDatabase = async (address: string) => {
-        const data = await fetch(`${URL}/auto/data/all/${address}`)
-        const res = await data.json()
-
-        return res
-    }
     useEffect(() => {
         // setURL("http://localhost:7000")
 
 
         loadAccountHistory();
     }, [chainId, account, contractAddress]);
+
+    const getTransactionFromDatabase = async (address: string) => {
+        const data = await fetch(`${URL}/auto/data/all/${address}`)
+        const res = await data.json()
+
+        return res
+    }
     const loadAccountHistory = async () => {
         if (account && contractAddress && locationData) {
             setLoading(true);
@@ -170,7 +172,8 @@ const useAccountHistory = () => {
                         timestamp: items.timeStamp,
                         transactionFee: items.gasPrice * items.gasUsed,
                         // name: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).name,
-                        transactionHash: items.transactionHash
+                        transactionHash: items.transactionHash,
+                        status: 10
                     }));
                 const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(0, 5) : dataFiltered;
                 userData = dataToUse.map((data: any) => ({
@@ -193,19 +196,22 @@ const useAccountHistory = () => {
                     frequency: "--",
                     id: "",
                     transactionHash: data.transactionHash,
-                    error: []
+                    error: [],
+                    status: data.status
                 }));
-            } else if (AUTOSWAPV2ADDRESSES[chainId as number]) {
+            } else if (AUTOSWAPV2ADDRESSES[chainId as number] && locationData === "price" || locationData === "auto") {
                 const allTransaction = await getTransactionFromDatabase(account)
+                console.log({ allTransaction })
                 if (allTransaction.length > 0) {
-                    const collapsedTransaction = allTransaction.map((data: any) => data.transaction).flat(1)
+                    const collapsedTransaction = allTransaction[0].transaction
+                    console.log({ collapsedTransaction })
                     let result = []
                     if (locationData === "auto") {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "auto time").sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
                     } else if (locationData === "price") {
-                        result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "set price").sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
+                        result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "Set Price").sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
                     }
-
+                    console.log({ result })
                     userData = await Promise.all(result.map(async (data: any) => {
                         let fromAddress = data.swapFromToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapFromToken
                         let toAddress = data.swapToToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapToToken
@@ -224,7 +230,8 @@ const useAccountHistory = () => {
                             frequency: data ? data.frequency : "--",
                             id: data ? data.id : "",
                             transactionHash: data.transactionHash,
-                            error: data.errorArray
+                            error: data.errorArray,
+                            status: data.status
                         }
                     })
                     )
@@ -245,7 +252,8 @@ const useAccountHistory = () => {
                     frequency: data.frequency,
                     id: data.id,
                     transactionHash: data.transactionHash,
-                    error: data.error
+                    error: data.error,
+                    status: data.status
                 })),
             );
 
@@ -264,7 +272,8 @@ const useAccountHistory = () => {
                 frequency: data.frequency,
                 id: data.id,
                 transactionHash: data.transactionHash,
-                error: data.error
+                error: data.error,
+                status: data.status
             }));
             setHistoryData(userSwapHistory);
 
