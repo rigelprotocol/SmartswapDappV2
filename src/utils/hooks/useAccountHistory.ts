@@ -11,6 +11,7 @@ import { SMARTSWAPROUTER, AUTOSWAPV2ADDRESSES, RGPADDRESSES, WNATIVEADDRESSES } 
 import Web3 from 'web3';
 import { SupportedChainName } from '../constants/chains';
 import { autoSwapV2, SmartSwapRouter, rigelToken } from '../Contracts';
+import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { ParseFloat } from '..';
 
 const abiDecoder = require('abi-decoder');
@@ -60,7 +61,8 @@ interface DataIncoming {
     id: string,
     transactionHash: string,
     error: [],
-    status: number
+    status: number,
+    currentToPrice?: string
 }
 let web3 = new Web3(Web3.givenProvider);
 export const formatAmount = (number: string, decimals: any) => {
@@ -124,6 +126,7 @@ const useAccountHistory = () => {
     const apikey = APIKEY[chainId as number];
 
     const location = useLocation().pathname;
+    const [, Symbol, Name,] = useNativeBalance()
     useEffect(() => {
         if (location === "/auto-time") {
             setLocationData("auto")
@@ -228,18 +231,20 @@ const useAccountHistory = () => {
                             data.amountToSwap,
                             [fromAddress, toAddress]
                         );
+                        console.log({ data })
                         return {
                             inputAmount: data.amountToSwap,
-                            outputAmount: toPriceOut[1].toString(),
-                            tokenIn: data.swapFromToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapFromToken,
-                            tokenOut: data.swapToToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapToToken,
+                            outputAmount: data.typeOfTransaction === "Set Price" ? Web3.utils.toWei(data.percentageChange, "ether") : toPriceOut[1].toString(),
+                            tokenIn: data.swapFromToken,
+                            tokenOut: data.swapToToken,
                             time: timeConverter(parseInt(data.time)),
                             name: data ? data.typeOfTransaction : "",
                             frequency: data ? data.frequency : "--",
                             id: data ? data.id : "",
                             transactionHash: data.transactionHash,
                             error: data.errorArray,
-                            status: data.status
+                            status: data.status,
+                            currentToPrice: data.name === "Set Price" ? formatAmount(data.currentToPrice, data.tokenOut.decimals) : data.percentageChange
                         }
                     })
                     )
@@ -251,8 +256,18 @@ const useAccountHistory = () => {
 
             const swapDataForWallet = await Promise.all(
                 userData.map(async (data: DataIncoming) => ({
-                    tokenIn: await tokenList(data.tokenIn),
-                    tokenOut: await tokenList(data.tokenOut),
+                    tokenIn: data.tokenIn === "native" ? {
+                        name: Name,
+                        symbol: Symbol,
+                        address: WNATIVEADDRESSES[chainId as number],
+                        decimals: 18
+                    } : await tokenList(data.tokenIn),
+                    tokenOut: data.tokenOut === "native" ? {
+                        name: Name,
+                        symbol: Symbol,
+                        address: WNATIVEADDRESSES[chainId as number],
+                        decimals: 18
+                    } : await tokenList(data.tokenOut),
                     amountIn: data.inputAmount,
                     amountOut: data.outputAmount,
                     time: data.time,
@@ -261,7 +276,8 @@ const useAccountHistory = () => {
                     id: data.id,
                     transactionHash: data.transactionHash,
                     error: data.error,
-                    status: data.status
+                    status: data.status,
+                    currentToPrice: data.currentToPrice
                 })),
             );
 
@@ -281,7 +297,8 @@ const useAccountHistory = () => {
                 id: data.id,
                 transactionHash: data.transactionHash,
                 error: data.error,
-                status: data.status
+                status: data.status,
+                currentToPrice: data.name === "Set Price" ? formatAmount(data.currentToPrice, data.tokenOut.decimals) : data.currentToPrice
             }));
             setHistoryData(userSwapHistory);
 

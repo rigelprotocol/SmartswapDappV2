@@ -106,12 +106,15 @@ const SetPrice = () => {
     },
     [onUserInput]
   );
-  useEffect(async () => {
+  useEffect(() => {
     // setURL("http://localhost:7000")
-    if (account) {
+    async function runCheck() {
+      if (account) {
 
-      await checkForApproval()
+        await checkForApproval()
+      }
     }
+    runCheck()
   }, [currencies[Field.INPUT], account])
   useEffect(() => {
     async function checkIfSignatureExists() {

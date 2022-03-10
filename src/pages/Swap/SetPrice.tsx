@@ -63,9 +63,16 @@ const SetPrice = () => {
     pathSymbol,
     pathArray,
   } = useDerivedSwapInfo();
-  useEffect(async () => {
-    await checkForApproval()
-  }, [currencies[Field.INPUT]])
+
+  useEffect(() => {
+    async function runCheck() {
+      if (account) {
+
+        await checkForApproval()
+      }
+    }
+    runCheck()
+  }, [currencies[Field.INPUT], account])
   const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [disableInput, setDisableInput] = useState(true)

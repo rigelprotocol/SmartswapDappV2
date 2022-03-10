@@ -1,4 +1,4 @@
-import { Flex, Grid, Text, Box, useColorModeValue, Button } from '@chakra-ui/react';
+import { Flex, Grid, Text, Box, useColorModeValue, Button, Tooltip } from '@chakra-ui/react';
 import React from 'react';
 import { ArrowRightIcon } from '../../../../theme/components/Icons';
 import TokenIcon from '../../../../assets/Null-24.svg';
@@ -23,7 +23,8 @@ export interface DataType {
   id: string,
   transactionHash: string,
   error: [],
-  status: number
+  status: number,
+  currentToPrice?: string
 }
 
 const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: any }) => {
@@ -88,17 +89,41 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
             </Text>
           </Box>
           <Box>
-            <Text
-              color={nonActiveTabColor}
-              fontSize="12px"
-              lineHeight="0"
-              mb="8px"
-            >
-              If Price(Above)
-            </Text>
-            <Text color={activeTabColor} fontSize="14px" fontWeight="regular">
-              @ 0.004500
-            </Text>
+            {data.name === "Set Price" ?
+              <>
+                <Tooltip label={`current ${data.token2.symbol} output`}>
+                  <Text
+                    color={nonActiveTabColor}
+                    fontSize="12px"
+                    lineHeight="0"
+                    mb="8px"
+                  >
+                    CO{data.token2.symbol[0]}
+                  </Text>
+                </Tooltip>
+
+                <Text color={activeTabColor} fontSize="14px" fontWeight="regular">
+                  {data.currentToPrice}
+                </Text>
+              </> :
+              <>
+                <Tooltip labele="If Price(Above)">
+                  <Text
+                    color={nonActiveTabColor}
+                    fontSize="12px"
+                    lineHeight="0"
+                    mb="8px"
+                  >
+                    IPA
+                  </Text>
+                </Tooltip>
+
+                <Text color={activeTabColor} fontSize="14px" fontWeight="regular">
+                  {data.currentToPrice}%
+                </Text>
+              </>
+            }
+
           </Box>
           <Box>
             <Text
