@@ -48,6 +48,39 @@ import { SupportedChainId } from "../../../../constants/chains";
 import { SMARTSWAPFACTORYADDRESSES } from "../../../../utils/addresses";
 import { useCalculatePriceImpact } from "../../../../hooks/usePriceImpact";
 import { getERC20Token } from "../../../../utils/utilsFunctions";
+import { createAlchemyWeb3 } from "@alch/alchemy-web3";
+import { Percent } from "@uniswap/sdk-core";
+import JSBI from "jsbi";
+
+export const calculateGas = async (): Promise<{
+  format1: string;
+  format2: string;
+}> => {
+  const web3 = createAlchemyWeb3("https://polygon-rpc.com");
+  const maxPriorityPerGas = await web3.eth.getMaxPriorityFeePerGas();
+  const baseFee = await web3.eth.getBlock("pending");
+  const baseFeeFormatted = web3.utils.hexToNumberString(baseFee.baseFeePerGas);
+  const maxPriorityPerGasFormatted =
+    web3.utils.hexToNumberString(maxPriorityPerGas);
+
+  const baseFeeThirtyPercent = new Percent("40", "100")
+    .multiply(maxPriorityPerGasFormatted)
+    .quotient.toString();
+
+  const addPriorityFee = JSBI.add(
+    JSBI.BigInt(maxPriorityPerGasFormatted),
+    JSBI.BigInt(baseFeeThirtyPercent)
+  );
+
+  const maxFee = JSBI.add(
+    JSBI.BigInt(baseFeeFormatted),
+    JSBI.BigInt(addPriorityFee.toString())
+  );
+
+  const format1 = ethers.utils.formatUnits(addPriorityFee.toString(), 9);
+  const format2 = ethers.utils.formatUnits(maxFee.toString(), 9);
+  return { format1, format2 };
+};
 
 const SendToken = () => {
   const history = useHistory();
@@ -236,6 +269,8 @@ const SendToken = () => {
     currencies[Field.OUTPUT] as Currency
   );
 
+  // const { maxPriority, maxFee, maxPriority2, maxFee2 } = useGas();
+
   const approveSwap = async () => {
     if (currencies[Field.INPUT]?.isNative) {
       return setHasBeenApproved(true);
@@ -327,6 +362,10 @@ const SendToken = () => {
         })
       );
 
+      const { format1, format2 } = await calculateGas();
+
+      const isEIP1559 = await library?.getFeeData();
+
       const sendTransaction = await route.swapExactTokensForTokens(
         isExactIn ? parsedAmount : formatAmount,
         // parsedAmount,
@@ -337,6 +376,14 @@ const SendToken = () => {
         dl,
         {
           from: account,
+          maxPriorityFeePerGas:
+            isEIP1559 && chainId === 137
+              ? ethers.utils.parseUnits(format1, 9).toString()
+              : null,
+          maxFeePerGas:
+            isEIP1559 && chainId === 137
+              ? ethers.utils.parseUnits(format2, 9).toString()
+              : null,
           // gasLimit: 290000,
           // gasPrice: ethers.utils.parseUnits("10", "gwei"),
         }
@@ -413,6 +460,9 @@ const SendToken = () => {
           trxState: TrxState.WaitingForConfirmation,
         })
       );
+      const { format1, format2 } = await calculateGas();
+
+      const isEIP1559 = await library?.getFeeData();
       const sendTransaction = await route.swapETHForExactTokens(
         parsedOutput(currencies[Field.OUTPUT]?.decimals as number),
         // [from, to],
@@ -421,6 +471,14 @@ const SendToken = () => {
         dl,
         {
           value: isExactIn ? parsedAmount : formatAmount,
+          maxPriorityFeePerGas:
+            isEIP1559 && chainId === 137
+              ? ethers.utils.parseUnits(format1, 9).toString()
+              : null,
+          maxFeePerGas:
+            isEIP1559 && chainId === 137
+              ? ethers.utils.parseUnits(format2, 9).toString()
+              : null,
         }
       );
       const { hash } = sendTransaction;
@@ -498,13 +556,50 @@ const SendToken = () => {
           trxState: TrxState.WaitingForConfirmation,
         })
       );
+      // const web3 = createAlchemyWeb3("https://polygon-rpc.com");
+      // const maxPriorityPerGas = await web3.eth.getMaxPriorityFeePerGas();
+      // const baseFee = await web3.eth.getBlock("pending");
+      // const baseFeeFormatted = web3.utils.hexToNumberString(
+      //   baseFee.baseFeePerGas
+      // );
+      // const maxPriorityPerGasFormatted =
+      //   web3.utils.hexToNumberString(maxPriorityPerGas);
+
+      // const baseFeeThirtyPercent = new Percent("40", "100")
+      //   .multiply(maxPriorityPerGasFormatted)
+      //   .quotient.toString();
+
+      // const addPriorityFee = JSBI.add(
+      //   JSBI.BigInt(maxPriorityPerGasFormatted),
+      //   JSBI.BigInt(baseFeeThirtyPercent)
+      // );
+
+      // const maxFee = JSBI.add(
+      //   JSBI.BigInt(baseFeeFormatted),
+      //   JSBI.BigInt(addPriorityFee.toString())
+      // );
+
+      // const format1 = ethers.utils.formatUnits(addPriorityFee.toString(), 9);
+      // const format2 = ethers.utils.formatUnits(maxFee.toString(), 9);
+
+      const { format1, format2 } = await calculateGas();
+
+      const isEIP1559 = await library?.getFeeData();
       const sendTransaction = await route.swapExactTokensForETH(
         isExactIn ? parsedAmount : formatAmount,
         parsedOutput(currencies[Field.OUTPUT]?.decimals as number),
         // [from, to],
         pathArray,
         account,
-        dl
+        dl,
+        isEIP1559 && chainId === 137
+          ? {
+              maxPriorityFeePerGas: ethers.utils
+                .parseUnits(format1, 9)
+                .toString(),
+              maxFeePerGas: ethers.utils.parseUnits(format2, 9).toString(),
+            }
+          : null
       );
       const { confirmations, status } = await sendTransaction.wait(1);
       const { hash } = sendTransaction;
@@ -572,9 +667,22 @@ const SendToken = () => {
       })
     );
     try {
-      const sendTransaction = await weth.deposit({
-        value: isExactIn ? parsedAmount : formatAmount,
-      });
+      const { format1, format2 } = await calculateGas();
+
+      const isEIP1559 = await library?.getFeeData();
+      const sendTransaction = await weth.deposit(
+        {
+          value: isExactIn ? parsedAmount : formatAmount,
+        },
+        isEIP1559 && chainId === 137
+          ? {
+              maxPriorityFeePerGas: ethers.utils
+                .parseUnits(format1, 9)
+                .toString(),
+              maxFeePerGas: ethers.utils.parseUnits(format2, 9).toString(),
+            }
+          : null
+      );
       const { confirmations, status } = await sendTransaction.wait(1);
       const { hash } = sendTransaction;
       if (
@@ -627,8 +735,19 @@ const SendToken = () => {
       })
     );
     try {
+      const { format1, format2 } = await calculateGas();
+
+      const isEIP1559 = await library?.getFeeData();
       const sendTransaction = await weth.withdraw(
-        isExactIn ? parsedAmount : formatAmount
+        isExactIn ? parsedAmount : formatAmount,
+        isEIP1559 && chainId === 137
+          ? {
+              maxPriorityFeePerGas: ethers.utils
+                .parseUnits(format1, 9)
+                .toString(),
+              maxFeePerGas: ethers.utils.parseUnits(format2, 9).toString(),
+            }
+          : null
       );
       const { confirmations, status } = await sendTransaction.wait(3);
       const { hash } = sendTransaction;
