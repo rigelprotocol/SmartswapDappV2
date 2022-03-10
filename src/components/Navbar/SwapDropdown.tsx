@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   Menu,
   MenuButton,
@@ -23,8 +23,19 @@ const Nav = ({ to, label }: { to: string; label: string }) => (
 );
 
 function SwapDropdown() {
-
+    const location = useLocation();
     const {chainId} = useActiveWeb3React();
+    const name = location.pathname;
+
+    const useName = () => {
+        console.log(name);
+        if (name == '/swap'|| name == '/auto-time' || name == '/set-price') {
+            console.log(`Correct name is ${name}`);
+            return name.substring(1);
+        } else {
+            return 'Swap'
+        }
+    };
 
   return (
     <Menu>
@@ -36,8 +47,9 @@ function SwapDropdown() {
         fontWeight={200}
         _focus={{ color: "#319EF6" }}
         fontSize="14px"
+        textTransform={'capitalize'}
       >
-        Swap
+          {useName()}
       </MenuButton>
       <MenuList>
         <MenuItem _focus={{ color: "#319EF6" }}>
