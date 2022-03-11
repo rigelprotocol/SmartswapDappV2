@@ -89,9 +89,9 @@ export default function AddLiquidity({
   const [balanceA, setBalanceA] = useState("");
   const [balanceB, setBalanceB] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [checkTokenApproval, setCheckTokenApproval] = useState(false);
-  const [isLoadingValue, setIsLoadingValue] = useState(false);
+  const [checkTokenApproval, setCheckTokenApproval] = useState(0);
 
+  const [isLoadingValue, setIsLoadingValue] = useState(false);
   const [userSlippageTolerance] = useUserSlippageTolerance();
   const [userDeadline] = useUserTransactionTTL();
 
@@ -213,7 +213,8 @@ export default function AddLiquidity({
             hash,
             ExplorerDataType.TRANSACTION
           );
-          setCheckTokenApproval(true);
+          setCheckTokenApproval(checkTokenApproval + 1);
+          console.log(checkTokenApproval);
           dispatch(
             setOpenModal({
               message: `${symbol} Approval Successful`,
