@@ -8,6 +8,7 @@ import {
     Flex,
     Heading,
   } from '@chakra-ui/react';
+import ComfirmPurchase from '../../Modals/ComfirmPurchase';
 
 type NftProps = {
     nftName: string,
@@ -22,10 +23,10 @@ type NftProps = {
 
 export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, isFeatured = false }: NftProps) {
 
-    
-  //const modalTextColor2 = useColorModeValue("#666666", "#DCE6EF");
-
-    return (
+ 
+  const [ purchaseModal,setOpenPerchaseModal] = useState(false)
+   
+  return (
          <Box
           bg={useColorModeValue('white', 'gray.800')}
           maxW="sm"
@@ -66,7 +67,7 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
               <Text >≈ 5000.91 RGP</Text>
             </Flex>
             <Flex mt="1" pt={2} justifyContent="space-between" alignContent="center">
-              <Button width={40} variant={'brand'}>Buy NFT</Button>
+              <Button onClick={()=>setOpenPerchaseModal(true) } width={40} variant={'brand'}>Buy NFT</Button>
               <Button 
               ml={2}
               textColor={'#319EF6'}
@@ -80,6 +81,8 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
             </Flex>
             
           </Box>
+          <ComfirmPurchase isOpen={purchaseModal} close={()=>setOpenPerchaseModal(false) } />
+     
         </Box>
     )
 }
