@@ -4,6 +4,7 @@ import AddLiquidity from "./AddLiquidity";
 import Pool from "./Pool";
 import RemoveLiquidity from "./RemoveLiquidity";
 import Swap from "./Swap";
+import Nft from './Nft'
 import FarmingV1 from "./FarmingV1";
 import FarmingV2 from "./FarmingV2";
 import Fonts from "./../theme/fonts";
@@ -42,6 +43,8 @@ export default function App() {
               <Route exact strict path="/pool" component={Pool} />
 
               <Route exact strict path="/find" component={FindPool} />
+              
+              <Route exact strict path="/nft" component={Nft} />
               <Route exact path="/add" component={AddLiquidity} />
               <Route
                 exact
