@@ -9,6 +9,7 @@ import {
     Heading,
   } from '@chakra-ui/react';
 import ComfirmPurchase from '../../Modals/ComfirmPurchase';
+import { Link } from 'react-router-dom';
 
 type NftProps = {
     nftName: string,
@@ -77,7 +78,7 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
               variant='outline'
               width={40}
               >
-                   View NFT</Button>
+                     <Link to="/nfts/123">View NFT</Link></Button>
             </Flex>
             
           </Box>

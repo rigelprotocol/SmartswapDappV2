@@ -14,11 +14,9 @@ const ComfirmPurchase = ({ isOpen, close }: comfirmPurchaseModalProps) => {
             <ModalContent>
                 <ModalHeader>Confirm Purchase</ModalHeader>
                 <ModalCloseButton />
-                <Divider marginTop={'-1.5'} />
+                <Divider marginTop={'-1.5'}  borderColor={'#DEE5ED'} />
                 <ModalBody>
                     <Box
-
-
                         marginTop={4}
                         textAlign="center"
                         borderWidth="1px"

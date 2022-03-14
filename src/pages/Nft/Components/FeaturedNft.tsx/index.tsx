@@ -6,13 +6,12 @@ import {
     Flex,
     Heading,
     Image,
-    Link,
     Stack,
     Text,
     useColorModeValue,
 } from '@chakra-ui/react';
 import ComfirmPurchase from "../../Modals/ComfirmPurchase";
-import ClaimNFTModal from "../../Modals/ClaimNFTModal";
+import { Link } from "react-router-dom";
 
 type NftProps = {
     nftName?: string,
@@ -79,13 +78,16 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
                                 variant='outline'
                                 width={'45%'}
                             >
-                                View NFT</Button>
+                                <Link to="/nfts/123">View NFT</Link>
+                                
+                                
+                                </Button>
                         </Flex>
 
                     </Stack>
                 </Stack>
             </Center>
-            <ClaimNFTModal isOpen={purchaseModal} close={()=>setOpenPerchaseModal(false) } />
+            <ComfirmPurchase isOpen={purchaseModal} close={()=>setOpenPerchaseModal(false) } />
         </>
     )
 }

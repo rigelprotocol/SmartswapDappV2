@@ -12,13 +12,11 @@ const ClaimNFTModal = ({ isOpen, close }: comfirmPurchaseModalProps) => {
         <Modal isOpen={isOpen} onClose={close}>
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader>Confirm Purchase</ModalHeader>
+                <ModalHeader>Claim NFT</ModalHeader>
                 <ModalCloseButton />
-                <Divider marginTop={'-1.5'} />
+                <Divider marginTop={'-1.5'}  borderColor={'#DEE5ED'} />
                 <ModalBody>
                     <Box
-
-
                         marginTop={4}
                         textAlign="center"
                         borderWidth="1px"
@@ -46,30 +44,16 @@ const ClaimNFTModal = ({ isOpen, close }: comfirmPurchaseModalProps) => {
                         marginTop={4}
                     >
                         <Flex mt="1" justifyContent="space-between" alignContent="center">
-
-
-                            <Text color={'grey'}>Choose token to pay with</Text>
-                            <Image width={5} height={5} src='/images/DownVector.svg' />
-
+                            <Text color={'grey'} >Investment required to claim:</Text>
+                            <Text>3000 USD</Text>
+                        </Flex>
+                        <Flex mt="1" justifyContent="space-between" alignContent="center">
+                            <Text color={'grey'} >Current investement level:</Text>
+                            <Text> 3000 USD </Text>
                         </Flex>
                     </Box>
 
-                    <Box
-                        padding={3}
-                        borderWidth="1px"
-                        borderColor={'#DEE5ED'}
-                        fontWeight="normal"
-                        marginTop={4}
-                    >
-                        <Flex mt="1" justifyContent="space-between" alignContent="center">
-                            <Text >Price</Text>
-                            <Text>250 USD</Text>
-                        </Flex>
-                        <Flex mt="1" justifyContent="space-between" alignContent="center">
-                            <Text ></Text>
-                            <Text> ≈ </Text>
-                        </Flex>
-                    </Box>
+                  
                     <Button
             mt={5}
             mb={2}
@@ -83,7 +67,7 @@ const ClaimNFTModal = ({ isOpen, close }: comfirmPurchaseModalProps) => {
             _focus={{
               bg: 'blue.500',
             }}>
-            Buy now
+            Claim NFT
           </Button>
 
                 </ModalBody>
