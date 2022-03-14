@@ -37,7 +37,7 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
                     // maxWidth={900}
                     direction={{ base: 'column', md: 'row' }}
                     bg={useColorModeValue('white', 'gray.900')}
-                    boxShadow={'2xl'}
+                    
                 >
                     <Flex flex={1} bg="blue.200">
                         <Image
@@ -53,21 +53,22 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
                         flex={1}
                         pl={10}
                     >
-                        <Text fontSize={38} pt={'25%'}>
+                        <Text fontWeight={700} fontSize={38} pt={'25%'}>
                             Featured NFT Name
                         </Text>
                         <Text align={'left'} pt={10} textColor={"grey"}>
                             Price
                         </Text>
 
-                        <Text fontSize={28}>
+                        <Text fontWeight={700} fontSize={28}>
                             7,500 USD
                         </Text>
 
-                        <Text align={'left'} pt={10} textColor={"grey"}>
+                        <Text align={'left'}  textColor={"grey"}>
                             500.91 RGP
                         </Text>
-                        <Flex t="1" pt={3} alignContent="center" pb={3}>
+
+                        <Flex  pt={20} alignContent="center" >
                             <Button  onClick={()=>setOpenPerchaseModal(true) } width={'45%'} variant={'brand'}>Buy NFT</Button>
                             <Button
                                 ml={5}

@@ -34,19 +34,18 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
           borderWidth="1px"
           rounded="lg"
           borderColor={'#DEE5ED'}
-          shadow="lg"
           position="relative"
           >
+            <Box p={2.5}>
           <Image
             src={image}
             alt={`Picture `}
             roundedTop="lg"
             //maxHeight={246}
-            borderRadius=".4rem"
-            p={2}
+            rounded="lg"
           />
-  
-          <Box p="6">
+  </Box>
+          <Box p="3">
             <Box d="flex" alignItems="baseline">
             <Text
             py={2} 
@@ -54,26 +53,26 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
                 {nftName}
               </Text>
             </Box>
-            <Flex mt="1" justifyContent="space-between" alignContent="center">
-              <Text textColor={'gray'}>Number:</Text>
+            <Flex mt="2" justifyContent="space-between" alignContent="center">
+              <Text textColor={'#666666'}>Number:</Text>
               <Text>#179 of 500</Text>
             </Flex>
   
-            <Flex mt="1" justifyContent="space-between" alignContent="center">
-              <Text textColor={'gray'}>Price:</Text>
+            <Flex mt="2" justifyContent="space-between" alignContent="center">
+              <Text textColor={'#666666'}>Price:</Text>
               <Text>250 USD</Text>
             </Flex>
-            <Flex mt="1" justifyContent="space-between" alignContent="center">
+            <Flex mt="2" justifyContent="space-between" alignContent="center">
               <Text></Text>
-              <Text >≈ 5000.91 RGP</Text>
+              <Text textColor={'#666666'} >≈ 5000.91 RGP</Text>
             </Flex>
-            <Flex mt="1" pt={2} justifyContent="space-between" alignContent="center">
+            <Flex mt="2" pt={2} justifyContent="space-between" alignContent="center">
               <Button onClick={()=>setOpenPerchaseModal(true) } width={40} variant={'brand'}>Buy NFT</Button>
               <Button 
               ml={2}
               textColor={'#319EF6'}
               borderRadius="6px"
-              mb="4"
+              mb="1.5"
               borderColor={'#319EF6'}
               variant='outline'
               width={40}

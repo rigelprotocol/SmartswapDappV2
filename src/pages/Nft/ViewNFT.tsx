@@ -37,8 +37,7 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
                     w={{ sm: '100%', md: '540px', lg: '950px' }}
                     direction={{ base: 'column', md: 'row' }}
                     bg={useColorModeValue('white', 'gray.900')}
-                    boxShadow={'2xl'}
-                >
+                    >
                     <Flex flex={1} bg="blue.200">
                         <Image
                             objectFit="cover"
@@ -54,7 +53,7 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
                         paddingRight={5}
                     >
                         <Text color={'#319EF6'}>You own 1 of these NFTs.</Text>
-                        <Text fontSize={30} >
+                        <Text fontSize={30} fontWeight={700}>
                             NFT Name
                         </Text>
 
@@ -98,12 +97,12 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
                             <GridItem colSpan={1} >
                                 <Flex mt="1" alignContent="center">
 
-                                    <Text >BSC</Text>
+                                    <Text  fontWeight={400} >BSC</Text>
                                     <Image ml={2} alt="bsc" src="/images/binance.svg" />
                                 </Flex>
                             </GridItem>
                             <GridItem colStart={3} colEnd={6}>
-                                <Text >2,500 USD</Text>
+                                <Text  fontWeight={400} >2,500 USD</Text>
                             </GridItem>
 
 
@@ -114,9 +113,9 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
                             </GridItem>
 
                             <GridItem colSpan={2} >
-                                <Text >750 USD</Text>
+                                <Text  fontWeight={400}>750 USD</Text>
                             </GridItem>
-                            <GridItem colStart={3} colEnd={6}><Text >300</Text>
+                            <GridItem colStart={3} colEnd={6}><Text  fontWeight={400} >300</Text>
                             </GridItem>
 
                         </Grid>
@@ -131,14 +130,14 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
 
                         <Flex mt="1" justifyContent="space-between" alignContent="center">
 
-                            <Text fontSize={28}>
-                                7,500 USD
+                            <Text fontWeight={700} fontSize={28}>
+                            250 USD
                             </Text>
                             <Text textColor={"grey"}>
                                 500.91 RGP
                             </Text>
                         </Flex>
-                        <Flex t="1" pb={5} pt={3} justifyContent="space-between" alignContent="center">
+                        <Flex t="1"  pt={3} justifyContent="space-between" alignContent="center">
                             <Button onClick={() => setOpenPerchaseModal(true)} width={'45%'} variant={'brand'}>Buy NFT</Button>
                             <Button
                                 textColor={'#319EF6'}
