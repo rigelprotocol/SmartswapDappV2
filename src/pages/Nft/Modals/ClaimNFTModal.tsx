@@ -8,6 +8,10 @@ type comfirmPurchaseModalProps = {
 }
 
 const ClaimNFTModal = ({ isOpen, close }: comfirmPurchaseModalProps) => {
+
+  
+  const textColor = useColorModeValue("#333333", "#F1F5F8");
+
   return (
         <Modal isOpen={isOpen} onClose={close}>
             <ModalOverlay />
@@ -31,7 +35,7 @@ const ClaimNFTModal = ({ isOpen, close }: comfirmPurchaseModalProps) => {
                         >
 
                             <Image width={54} height={54} src='https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png' alt="logo" />
-                            <Text paddingTop={3} fontSize={20} color={"black"} >NFT Name</Text>
+                            <Text paddingTop={3} fontSize={20} color={textColor} >NFT Name</Text>
 
                             <Text paddingTop={2} > <span style={{color: 'gray'}}>Created by:</span>  RigelProtocol</Text>
                         </Flex>

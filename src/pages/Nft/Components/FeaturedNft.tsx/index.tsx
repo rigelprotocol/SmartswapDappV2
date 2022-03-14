@@ -67,7 +67,7 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
                         <Text align={'left'} pt={10} textColor={"grey"}>
                             500.91 RGP
                         </Text>
-                        <Flex t="1" pt={3} alignContent="center">
+                        <Flex t="1" pt={3} alignContent="center" pb={3}>
                             <Button  onClick={()=>setOpenPerchaseModal(true) } width={'45%'} variant={'brand'}>Buy NFT</Button>
                             <Button
                                 ml={5}

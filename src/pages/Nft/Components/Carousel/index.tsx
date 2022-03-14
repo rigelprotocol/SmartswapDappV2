@@ -1,4 +1,5 @@
 import React from 'react';
+import Slider from "react-slick";
 import {
   Box,
   IconButton,
@@ -9,7 +10,6 @@ import {
   Container,
 } from '@chakra-ui/react';
 import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
-import Slider from 'react-slick';
 import { slides } from '../../mockData';
 
 const settings = {
@@ -22,17 +22,15 @@ const settings = {
   autoplaySpeed: 5000,
   slidesToShow: 1,
   slidesToScroll: 1,
+  
 };
+
 
 export default function Carousel() {
 
   const [slider, setSlider] = React.useState<Slider | null>(null);
-
-
   const top = useBreakpointValue({ base: '90%', md: '50%' });
   const side = useBreakpointValue({ base: '30%', md: '40px' });
-
-
 
   return (
     <Box
@@ -55,7 +53,8 @@ export default function Carousel() {
       {/* Left Icon */}
       <IconButton
         aria-label="left-arrow"
-        variant="ghost"
+        isActive
+        isRound
         position="absolute"
         left={side}
         top={top}
@@ -64,10 +63,12 @@ export default function Carousel() {
         onClick={() => slider?.slickPrev()}>
         <BiLeftArrowAlt size="40px" />
       </IconButton>
+
       {/* Right Icon */}
       <IconButton
+      isRound
         aria-label="right-arrow"
-        variant="ghost"
+        isActive
         position="absolute"
         right={side}
         top={top}
@@ -77,7 +78,7 @@ export default function Carousel() {
         <BiRightArrowAlt size="40px" />
       </IconButton>
       {/* Slider */}
-      <Slider {...settings} ref={(slider) => setSlider(slider)}>
+      <Slider {...settings} ref={(slider : any) => setSlider(slider)}>
         {slides.map((card, index) => (
           <Box
             key={index}
@@ -85,18 +86,20 @@ export default function Carousel() {
             position="relative"
             backgroundPosition="center"
             backgroundRepeat="no-repeat"
+          
             backgroundSize="cover"
             backgroundImage={`url(${card.backgroundImage})`}>
-            {/* This is the block you need to change, to customize the caption */}
             <Container size="container.lg" height="600px" position="relative">
               <Stack
+                mt={'30%'}
                 spacing={6}
                 w={'full'}
                 maxW={'lg'}
                 padding={10}
                 position="absolute"
                 top="50%"
-                backgroundColor={'black'}
+                opacity={90}
+                backgroundColor={'rgba(0, 0, 0, 0.9)'}
                 transform="translate(0, -50%)">
                 <Text color={'white'} fontSize={20} align={"center"}>
                   {card.tittle}

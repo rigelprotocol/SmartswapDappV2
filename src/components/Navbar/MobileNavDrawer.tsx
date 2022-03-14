@@ -142,6 +142,11 @@ const MobileNavDrawer = () => {
                 <Flex ml={6} mb={3}>
                   <Nav label="Farming" to="/farming-v2" />
                 </Flex>
+
+                <Flex ml={6} mb={3}>
+                  <Nav label="NFT" to="/nft" />
+                </Flex>
+
                 <Flex ml={6} mb={3}>
                   <Link href="#" isExternal>
                     Analytics <ExternalLinkIcon mx="2px" />

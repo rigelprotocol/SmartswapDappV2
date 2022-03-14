@@ -53,7 +53,7 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
                         pl={10}
                         paddingRight={5}
                     >
-                        <Text marginTop={-4} color={'#319EF6'}>You own 1 of these NFTs.</Text>
+                        <Text color={'#319EF6'}>You own 1 of these NFTs.</Text>
                         <Text fontSize={30} >
                             NFT Name
                         </Text>
