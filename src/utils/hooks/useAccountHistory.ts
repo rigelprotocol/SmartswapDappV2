@@ -66,11 +66,11 @@ interface DataIncoming {
 }
 let web3 = new Web3(Web3.givenProvider);
 export const formatAmount = (number: string, decimals: any) => {
+    console.log(number)
     const num = ethers.BigNumber.from(number).toString();
     let res = ethers.utils.formatUnits(num, decimals)
     res = ParseFloat(res, 5)
     return res;
-
 };
 
 export const getTokenSymbol = (symbol: string) => {
@@ -231,10 +231,10 @@ const useAccountHistory = () => {
                             data.amountToSwap,
                             [fromAddress, toAddress]
                         );
-                        console.log({ data })
+                        console.log("oorororkoorkooro",data.currentToPrice)
                         return {
                             inputAmount: data.amountToSwap,
-                            outputAmount: data.typeOfTransaction === "Set Price" ? Web3.utils.toWei(data.percentageChange, "ether") : toPriceOut[1].toString(),
+                            outputAmount: data.typeOfTransaction === "Set Price" ? ethers.utils.parseEther("0.5").toString() : toPriceOut[1].toString(),
                             tokenIn: data.swapFromToken,
                             tokenOut: data.swapToToken,
                             time: timeConverter(parseInt(data.time)),
@@ -298,7 +298,7 @@ const useAccountHistory = () => {
                 transactionHash: data.transactionHash,
                 error: data.error,
                 status: data.status,
-                currentToPrice: data.name === "Set Price" ? formatAmount(data.currentToPrice, data.tokenOut.decimals) : data.currentToPrice
+                currentToPrice: data.currentToPrice
             }));
             setHistoryData(userSwapHistory);
 
@@ -306,7 +306,7 @@ const useAccountHistory = () => {
 
 
 
-            console.log("dataToUse000 : ", userSwapHistory)
+            // console.log("dataToUse000 : ", userSwapHistory)
 
             setLoading(false);
 

@@ -142,6 +142,8 @@ const SetPrice = () => {
       setDisableInput(true)
     }
   }, [initialToPrice, initialFromPrice, typedValue])
+  const data2 =ethers.utils.parseEther("0.4".toString()).toString()
+  console.log({data2})
   useMemo(async () => {
     if (currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
       const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
