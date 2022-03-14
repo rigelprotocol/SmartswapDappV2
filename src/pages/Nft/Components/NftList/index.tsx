@@ -20,15 +20,9 @@ const NftList = () => {
         960: 2,
         600: 1
     }
-
-      
-
-
     return (
 <>
-            <Text>
-            NFTs
-            </Text>
+            
             <Masonry
              breakpointCols={breakPoint}
              className="my-masonry-grid"

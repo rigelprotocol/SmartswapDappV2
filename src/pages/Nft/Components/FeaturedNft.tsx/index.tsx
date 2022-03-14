@@ -29,7 +29,6 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
 
     return (
         <>
-            <Text pt={8} fontSize={24}>Featured NFT</Text>
             <Center py={8}>
                 <Stack
                     borderRadius="lg"
