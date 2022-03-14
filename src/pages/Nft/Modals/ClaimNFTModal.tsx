@@ -16,7 +16,7 @@ const ClaimNFTModal = ({ isOpen, close }: comfirmPurchaseModalProps) => {
         <Modal isOpen={isOpen} onClose={close}>
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader>Claim NFT</ModalHeader>
+                <ModalHeader color={textColor} >Claim NFT</ModalHeader>
                 <ModalCloseButton />
                 <Divider marginTop={'-1.5'}  borderColor={'#DEE5ED'} />
                 <ModalBody>
@@ -37,7 +37,7 @@ const ClaimNFTModal = ({ isOpen, close }: comfirmPurchaseModalProps) => {
                             <Image width={54} height={54} src='https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png' alt="logo" />
                             <Text paddingTop={3} fontSize={20} color={textColor} >NFT Name</Text>
 
-                            <Text paddingTop={2} > <span style={{color: 'gray'}}>Created by:</span>  RigelProtocol</Text>
+                            <Text color={textColor} paddingTop={2} > <span style={{color: '#666666'}}>Created by:</span>  RigelProtocol</Text>
                         </Flex>
                     </Box>
                     <Box
@@ -48,12 +48,12 @@ const ClaimNFTModal = ({ isOpen, close }: comfirmPurchaseModalProps) => {
                         marginTop={4}
                     >
                         <Flex mt="1" justifyContent="space-between" alignContent="center">
-                            <Text color={'grey'} >Investment required to claim:</Text>
-                            <Text>3000 USD</Text>
+                            <Text color={'#666666'} >Investment required to claim:</Text>
+                            <Text color={textColor}>3000 USD</Text>
                         </Flex>
                         <Flex mt="1" justifyContent="space-between" alignContent="center">
-                            <Text color={'grey'} >Current investement level:</Text>
-                            <Text> 3000 USD </Text>
+                            <Text color={'#666666'} >Current investement level:</Text>
+                            <Text color={textColor}> 3000 USD </Text>
                         </Flex>
                     </Box>
 

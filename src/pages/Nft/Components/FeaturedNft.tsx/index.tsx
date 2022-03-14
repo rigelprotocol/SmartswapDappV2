@@ -29,6 +29,9 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
 
     return (
         <>
+        <Text color={'#333333'} fontWeight={700} py={10} fontSize={24}>
+            Featured NFT
+          </Text>
             <Center py={8}>
                 <Stack
                     borderRadius="lg"
@@ -39,11 +42,11 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
                     bg={useColorModeValue('white', 'gray.900')}
                     
                 >
-                    <Flex flex={1} bg="blue.200">
+                    <Flex flex={1} >
                         <Image
                             objectFit="cover"
                             boxSize="100%"
-                            // 
+                            borderRadius={6}
                             src={
                                 'https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png'
                             }
@@ -53,18 +56,18 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
                         flex={1}
                         pl={10}
                     >
-                        <Text fontWeight={700} fontSize={38} pt={'25%'}>
+                        <Text fontWeight={700} color={'#333333'}  fontSize={38} pt={'25%'}>
                             Featured NFT Name
                         </Text>
-                        <Text align={'left'} pt={10} textColor={"grey"}>
+                        <Text align={'left'} pt={10} textColor={"#666666"}>
                             Price
                         </Text>
 
-                        <Text fontWeight={700} fontSize={28}>
+                        <Text color={'#333333'}  fontWeight={700} fontSize={28}>
                             7,500 USD
                         </Text>
 
-                        <Text align={'left'}  textColor={"grey"}>
+                        <Text align={'left'}  textColor={"#666666"}>
                             500.91 RGP
                         </Text>
 

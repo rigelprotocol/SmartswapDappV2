@@ -14,7 +14,6 @@ import { slides } from '../../mockData';
 
 const settings = {
   dots: true,
-  arrows: true,
   fade: true,
   infinite: true,
   autoplay: true,
@@ -37,7 +36,9 @@ export default function Carousel() {
       position={'relative'}
       height={'600px'}
       width={'full'}
-      overflow={'hidden'}>
+      rounded="xl"
+      overflow={'hidden'}
+      >
       {/* CSS files for react-slick */}
       <link
         rel="stylesheet"
@@ -80,23 +81,26 @@ export default function Carousel() {
       {/* Slider */}
       <Slider {...settings} ref={(slider : any) => setSlider(slider)}>
         {slides.map((card, index) => (
-          <Box
+     
+         <Box
             key={index}
             height={'6xl'}
             position="relative"
             backgroundPosition="center"
             backgroundRepeat="no-repeat"
-          
+            rounded="xl"
             backgroundSize="cover"
             backgroundImage={`url(${card.backgroundImage})`}>
-            <Container size="container.lg" height="600px" position="relative">
+        
+            <Container size="container.lg" height="600px"  position="relative">
               <Stack
                 mt={'30%'}
                 spacing={6}
+                rounded="xl"
                 w={'full'}
                 maxW={'lg'}
                 padding={10}
-                position="absolute"
+                position="relative"
                 top="50%"
                 opacity={90}
                 backgroundColor={'rgba(0, 0, 0, 0.9)'}

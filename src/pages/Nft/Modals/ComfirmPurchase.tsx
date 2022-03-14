@@ -14,7 +14,7 @@ const ComfirmPurchase = ({ isOpen, close }: comfirmPurchaseModalProps) => {
         <Modal isOpen={isOpen} onClose={close}>
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader>Confirm Purchase</ModalHeader>
+                <ModalHeader textColor={'#333333'}>Confirm Purchase</ModalHeader>
                 <ModalCloseButton />
                 <Divider marginTop={'-1.5'}  borderColor={'#DEE5ED'} />
                 <ModalBody>
@@ -35,7 +35,7 @@ const ComfirmPurchase = ({ isOpen, close }: comfirmPurchaseModalProps) => {
                             <Image width={54} height={54} src='https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png' alt="logo" />
                             <Text paddingTop={3} fontSize={20} color={textColor} >NFT Name</Text>
 
-                            <Text paddingTop={2} > <span style={{color: 'gray'}}>Created by:</span>  RigelProtocol</Text>
+                            <Text paddingTop={2} textColor={'#333333'} > <span style={{color: '#666666'}}>Created by:</span>  RigelProtocol</Text>
                         </Flex>
                     </Box>
                     <Box
@@ -48,7 +48,7 @@ const ComfirmPurchase = ({ isOpen, close }: comfirmPurchaseModalProps) => {
                         <Flex mt="1" justifyContent="space-between" alignContent="center">
 
 
-                            <Text color={'grey'}>Choose token to pay with</Text>
+                            <Text color={'#666666'} >Choose token to pay with</Text>
                             <Image width={5} height={5} src='/images/DownVector.svg' />
 
                         </Flex>
@@ -62,12 +62,12 @@ const ComfirmPurchase = ({ isOpen, close }: comfirmPurchaseModalProps) => {
                         marginTop={4}
                     >
                         <Flex mt="1" justifyContent="space-between" alignContent="center">
-                            <Text >Price</Text>
-                            <Text>250 USD</Text>
+                            <Text color={'#666666'} >Price</Text>
+                            <Text textColor={'#333333'}>250 USD</Text>
                         </Flex>
                         <Flex mt="1" justifyContent="space-between" alignContent="center">
                             <Text ></Text>
-                            <Text> ≈ </Text>
+                            <Text color={'#666666'} > ≈ </Text>
                         </Flex>
                     </Box>
                     <Button

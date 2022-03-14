@@ -7,26 +7,22 @@ import Nft from "../Nft"
 
 const NftList = () => {
 
-    const breakpoints = createBreakpoints({
-        sm: '30em',
-        md: '48em',
-        lg: '62em',
-        xl: '80em',
-        '2xl': '96em',
-      })
-      const breakPoint = {
+    const breakpointColumnsObj = {
         default: 4,
-        1280: 3,
-        960: 2,
-        600: 1
-    }
+        1100: 3,
+        700: 2,
+        500: 1
+      };
     return (
 <>
+<Text color={'#333333'} fontWeight={700} py={10} fontSize={24}>
+            NFTs
+          </Text>
             
             <Masonry
-             breakpointCols={breakPoint}
-             className="my-masonry-grid"
-             columnClassName="my-masonry-grid_column"
+               breakpointCols={breakpointColumnsObj}
+               className="my-masonry-grid"
+               columnClassName="my-masonry-grid_column"
             >
             {NFTsMockData.map((nft, i) => (
                 <div key={i} >

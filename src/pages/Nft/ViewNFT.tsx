@@ -33,13 +33,14 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
         <>
             <Center py={8} marginBottom={8}>
                 <Stack
-                    borderRadius="lg"
+
                     w={{ sm: '100%', md: '540px', lg: '950px' }}
                     direction={{ base: 'column', md: 'row' }}
                     bg={useColorModeValue('white', 'gray.900')}
-                    >
-                    <Flex flex={1} bg="blue.200">
+                >
+                    <Flex flex={1} >
                         <Image
+                            borderRadius="lg"
                             objectFit="cover"
                             boxSize="100%"
                             src={
@@ -53,11 +54,9 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
                         paddingRight={5}
                     >
                         <Text color={'#319EF6'}>You own 1 of these NFTs.</Text>
-                        <Text fontSize={30} fontWeight={700}>
+                        <Text color={'#333333'} fontSize={30} fontWeight={700}>
                             NFT Name
                         </Text>
-
-
                         <Flex mt="1" justifyContent="space-between" alignContent="center">
 
 
@@ -66,78 +65,59 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
                                 templateColumns='repeat(5, 1fr)'
                             >
                                 <GridItem rowSpan={2}   ><Image mt={3} src="/images/cirlce.png" /> </GridItem>
-                                <GridItem colSpan={2}  ><Text color={'grey'} >Creator</Text> </GridItem>
-                                <GridItem colSpan={4}  ><Text  >Rigel Protocol</Text> </GridItem>
+                                <GridItem colSpan={2}  ><Text color={'#666666'} >Creator</Text> </GridItem>
+                                <GridItem colSpan={4}  ><Text color={'#333333'}  >Rigel Protocol</Text> </GridItem>
                             </Grid>
-
-
                             <Flex
                                 flexDirection="column"
                                 justifyContent="center"
                             >
-                                <Text color={'grey'}>Number</Text>
-                                <Text>#31</Text>
+                                <Text color={'#666666'}>Number</Text>
+                                <Text color={'#333333'}>#31</Text>
                             </Flex>
-
-
-
                         </Flex>
-
-
-
-                        <Text py={3}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sociis iuop ullamcorper morbi ut amet.</Text>
+                        <Text color={'#333333'} py={3}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sociis iuop ullamcorper morbi ut amet.</Text>
 
                         <Grid pt={4} templateColumns='repeat(5, 2fr)' gap={0}>
-                            <GridItem colSpan={1} >
-                                <Text color={'grey'}>Blockchain</Text>
+                            <GridItem colSpan={1}   >
+                                <Text color={'#666666'}>Blockchain</Text>
                             </GridItem>
-                            <GridItem colStart={3} colEnd={6}   >   <Text color={'grey'}>Investment to claim</Text>
+                            <GridItem colStart={3} colEnd={6}   >   <Text color={'#666666'}>Investment to claim</Text>
                             </GridItem>
-
                             <GridItem colSpan={1} >
                                 <Flex mt="1" alignContent="center">
-
-                                    <Text  fontWeight={400} >BSC</Text>
+                                    <Text fontWeight={400} color={'#333333'} >BSC</Text>
                                     <Image ml={2} alt="bsc" src="/images/binance.svg" />
                                 </Flex>
                             </GridItem>
                             <GridItem colStart={3} colEnd={6}>
-                                <Text  fontWeight={400} >2,500 USD</Text>
+                                <Text fontWeight={400} color={'#333333'} >2,500 USD</Text>
                             </GridItem>
-
-
                             <GridItem colSpan={2} pt={2} >
-                                <Text color={'grey'}>Appraised Value</Text>
+                                <Text color={'#666666'}>Appraised Value</Text>
                             </GridItem>
-                            <GridItem colStart={3} pt={2} colEnd={6}><Text color={'grey'}>Number in circulation</Text>
+                            <GridItem colStart={3} pt={2} colEnd={6}><Text color={'#666666'}>Number in circulation</Text>
                             </GridItem>
 
                             <GridItem colSpan={2} >
-                                <Text  fontWeight={400}>750 USD</Text>
+                                <Text color={'#333333'} fontWeight={400}>750 USD</Text>
                             </GridItem>
-                            <GridItem colStart={3} colEnd={6}><Text  fontWeight={400} >300</Text>
+                            <GridItem  color={'#333333'} colStart={3} colEnd={6}><Text fontWeight={400} >300</Text>
                             </GridItem>
-
                         </Grid>
-
-
-
                         <Flex pt={5} mt="1" justifyContent="space-between" alignContent="center">
-                            <Text align={'left'} textColor={"grey"}>  Price    </Text>
-                            <Text color={'grey'} >  ≈</Text>
+                            <Text align={'left'} color={'#666666'}>  Price    </Text>
+                            <Text color={'#666666'} >  ≈</Text>
                         </Flex>
-
-
                         <Flex mt="1" justifyContent="space-between" alignContent="center">
-
-                            <Text fontWeight={700} fontSize={28}>
-                            250 USD
+                            <Text color={'#333333'} fontWeight={700} fontSize={28}>
+                                250 USD
                             </Text>
-                            <Text textColor={"grey"}>
+                            <Text color={'#666666'}>
                                 500.91 RGP
                             </Text>
                         </Flex>
-                        <Flex t="1"  pt={3} justifyContent="space-between" alignContent="center">
+                        <Flex t="1" pt={3} justifyContent="space-between" alignContent="center">
                             <Button onClick={() => setOpenPerchaseModal(true)} width={'45%'} variant={'brand'}>Buy NFT</Button>
                             <Button
                                 textColor={'#319EF6'}

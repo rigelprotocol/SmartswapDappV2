@@ -49,18 +49,19 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
             <Box d="flex" alignItems="baseline">
             <Text
             py={2} 
+            color={'#333333'}
               >
                 {nftName}
               </Text>
             </Box>
             <Flex mt="2" justifyContent="space-between" alignContent="center">
               <Text textColor={'#666666'}>Number:</Text>
-              <Text>#179 of 500</Text>
+              <Text  color={'#333333'}>#179 of 500</Text>
             </Flex>
   
             <Flex mt="2" justifyContent="space-between" alignContent="center">
               <Text textColor={'#666666'}>Price:</Text>
-              <Text>250 USD</Text>
+              <Text  color={'#333333'}>250 USD</Text>
             </Flex>
             <Flex mt="2" justifyContent="space-between" alignContent="center">
               <Text></Text>
