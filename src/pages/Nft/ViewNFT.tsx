@@ -68,7 +68,7 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
                             >
                                 <GridItem rowSpan={2}   ><Image mt={3} src="/images/cirlce.png" /> </GridItem>
                                 <GridItem colSpan={2}  ><Text color={'grey'} >Creator</Text> </GridItem>
-                                <GridItem colSpan={4}  ><Text color={'grey'} >Rigel Protocol</Text> </GridItem>
+                                <GridItem colSpan={4}  ><Text  >Rigel Protocol</Text> </GridItem>
                             </Grid>
 
 
