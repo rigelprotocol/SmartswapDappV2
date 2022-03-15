@@ -77,6 +77,7 @@ import { Web3Provider } from "@ethersproject/providers";
 import { Contract } from "@ethersproject/contracts";
 import { getERC20Token } from "../../utils/utilsFunctions";
 import { calculateGas } from "../Swap/components/sendToken";
+import { useUserGasPricePercentage } from "../../state/gas/hooks";
 
 const ShowYieldFarmDetails = ({
   content,
@@ -138,6 +139,7 @@ const ShowYieldFarmDetails = ({
   const closeModal = () => {
     modal2Disclosure.onClose();
   };
+  const [userGasPricePercentage] = useUserGasPricePercentage();
   const handleSetReferralField = () => {
     if (showReferrerField === true && URLReferrerAddress === "") {
       setShowReferrerField(false);
@@ -975,7 +977,11 @@ const ShowYieldFarmDetails = ({
           library
         );
 
-        const { format1, format2 } = await calculateGas();
+        const { format1, format2, format3 } = await calculateGas(
+          userGasPricePercentage,
+          library,
+          chainId as number
+        );
 
         const isEIP1559 = await library?.getFeeData();
         const data = await lpTokens.withdraw(
@@ -991,6 +997,12 @@ const ShowYieldFarmDetails = ({
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           }
         );
         const { confirmations, status, logs } = await fetchTransactionData(
@@ -1045,7 +1057,11 @@ const ShowYieldFarmDetails = ({
           })
         );
         if (id === 0) {
-          const { format1, format2 } = await calculateGas();
+          const { format1, format2, format3 } = await calculateGas(
+            userGasPricePercentage,
+            library,
+            chainId as number
+          );
 
           const isEIP1559 = await library?.getFeeData();
           const specialPool = await RGPSpecialPool(
@@ -1061,6 +1077,12 @@ const ShowYieldFarmDetails = ({
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           });
           const { confirmations, status, logs } = await fetchTransactionData(
             specialWithdraw
@@ -1083,7 +1105,11 @@ const ShowYieldFarmDetails = ({
             RGPSPECIALPOOLADDRESSES2[chainId as number],
             library
           );
-          const { format1, format2 } = await calculateGas();
+          const { format1, format2, format3 } = await calculateGas(
+            userGasPricePercentage,
+            library,
+            chainId as number
+          );
 
           const isEIP1559 = await library?.getFeeData();
           const specialWithdraw = await specialPool.unStake(0, {
@@ -1095,6 +1121,12 @@ const ShowYieldFarmDetails = ({
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           });
           const { confirmations, status, logs } = await fetchTransactionData(
             specialWithdraw
@@ -1117,7 +1149,11 @@ const ShowYieldFarmDetails = ({
             MASTERCHEFV2ADDRESSES[chainId as number],
             library
           );
-          const { format1, format2 } = await calculateGas();
+          const { format1, format2, format3 } = await calculateGas(
+            userGasPricePercentage,
+            library,
+            chainId as number
+          );
 
           const isEIP1559 = await library?.getFeeData();
           console.log({ lpTokens });
@@ -1130,6 +1166,12 @@ const ShowYieldFarmDetails = ({
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           });
           const { confirmations, status, logs } = await fetchTransactionData(
             withdraw
@@ -1209,7 +1251,11 @@ const ShowYieldFarmDetails = ({
               MASTERCHEFV2ADDRESSES[chainId as number],
               library
             );
-            const { format1, format2 } = await calculateGas();
+            const { format1, format2, format3 } = await calculateGas(
+              userGasPricePercentage,
+              library,
+              chainId as number
+            );
 
             const isEIP1559 = await library?.getFeeData();
 
@@ -1226,6 +1272,12 @@ const ShowYieldFarmDetails = ({
                   isEIP1559 && chainId === 137
                     ? ethers.utils.parseUnits(format2, 9).toString()
                     : null,
+                gasPrice:
+                  chainId === 137
+                    ? null
+                    : chainId === 80001
+                    ? null
+                    : ethers.utils.parseUnits(format3, 9).toString(),
               }
             );
             const { confirmations, status, logs } = await fetchTransactionData(
@@ -1249,7 +1301,11 @@ const ShowYieldFarmDetails = ({
             library
           );
 
-          const { format1, format2 } = await calculateGas();
+          const { format1, format2, format3 } = await calculateGas(
+            userGasPricePercentage,
+            library,
+            chainId as number
+          );
 
           const isEIP1559 = await library?.getFeeData();
 
@@ -1266,6 +1322,12 @@ const ShowYieldFarmDetails = ({
                 isEIP1559 && chainId === 137
                   ? ethers.utils.parseUnits(format2, 9).toString()
                   : null,
+              gasPrice:
+                chainId === 137
+                  ? null
+                  : chainId === 80001
+                  ? null
+                  : ethers.utils.parseUnits(format3, 9).toString(),
             }
           );
           // const { confirmations, status } = await fetchTransactionData(data);
@@ -1367,7 +1429,11 @@ const ShowYieldFarmDetails = ({
           library
         );
 
-        const { format1, format2 } = await calculateGas();
+        const { format1, format2, format3 } = await calculateGas(
+          userGasPricePercentage,
+          library,
+          chainId as number
+        );
 
         const isEIP1559 = await library?.getFeeData();
 
@@ -1383,6 +1449,12 @@ const ShowYieldFarmDetails = ({
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           }
         );
         const { confirmations, status } = await fetchTransactionData(data);
@@ -1413,7 +1485,11 @@ const ShowYieldFarmDetails = ({
           RGPSPECIALPOOLADDRESSES2[chainId as number],
           library
         );
-        const { format1, format2 } = await calculateGas();
+        const { format1, format2, format3 } = await calculateGas(
+          userGasPricePercentage,
+          library,
+          chainId as number
+        );
 
         const isEIP1559 = await library?.getFeeData();
         const data = await specialPool.stake(
@@ -1429,6 +1505,12 @@ const ShowYieldFarmDetails = ({
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           }
         );
         const { confirmations, status } = await fetchTransactionData(data);
@@ -1460,7 +1542,11 @@ const ShowYieldFarmDetails = ({
           RGPSPECIALPOOLADDRESSES[chainId as number],
           library
         );
-        const { format1, format2 } = await calculateGas();
+        const { format1, format2, format3 } = await calculateGas(
+          userGasPricePercentage,
+          library,
+          chainId as number
+        );
 
         const isEIP1559 = await library?.getFeeData();
         const data = await specialPool.unStake(
@@ -1475,6 +1561,12 @@ const ShowYieldFarmDetails = ({
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           }
         );
         const { confirmations, status } = await fetchTransactionData(data);
@@ -1506,7 +1598,11 @@ const ShowYieldFarmDetails = ({
           RGPSPECIALPOOLADDRESSES2[chainId as number],
           library
         );
-        const { format1, format2 } = await calculateGas();
+        const { format1, format2, format3 } = await calculateGas(
+          userGasPricePercentage,
+          library,
+          chainId as number
+        );
 
         const isEIP1559 = await library?.getFeeData();
         const data = await specialPool.unStake(
@@ -1521,6 +1617,12 @@ const ShowYieldFarmDetails = ({
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           }
         );
         const { confirmations, status } = await fetchTransactionData(data);

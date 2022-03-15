@@ -16,6 +16,7 @@ import {
 import { InfoOutlineIcon, ArrowDownIcon } from "@chakra-ui/icons";
 import RGPImage from "./../../../assets/tokens/RGP.svg";
 import USDTImage from "./../../../assets/tokens/USDT.svg";
+import { useUserGasPricePercentage } from "../../../state/gas/hooks";
 
 export type IModal = {
   title: string;
@@ -60,6 +61,7 @@ const ConfirmModal: React.FC<IModal> = ({
   const borderColor = useColorModeValue("#DEE6ED", "#324D68");
   const boxColor = useColorModeValue("#F2F5F8", "#213345");
   const { onClose } = useDisclosure();
+  const [userGasPricePercentage] = useUserGasPricePercentage();
 
   const amountIn = Number(minRecieved).toFixed(4);
 
@@ -197,13 +199,19 @@ const ConfirmModal: React.FC<IModal> = ({
                   {priceImpact}%
                 </Text>
               </Flex>
-              <Flex justifyContent='space-between'>
+              <Flex justifyContent='space-between' my='4'>
                 <Box color={lightTextColor}>
                   Liquidity Provider Fee <InfoOutlineIcon />
                 </Box>
                 <Text color={heavyTextColor}>
                   {fee} {from}
                 </Text>
+              </Flex>
+              <Flex justifyContent='space-between'>
+                <Box color={lightTextColor}>
+                  Gas Fee Increased By: <InfoOutlineIcon />
+                </Box>
+                <Text color={heavyTextColor}>{userGasPricePercentage}%</Text>
               </Flex>
             </Box>
             <Text mb='2' color={lightTextColor}>
