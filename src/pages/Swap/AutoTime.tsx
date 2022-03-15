@@ -106,7 +106,7 @@ const SetPrice = () => {
     [onUserInput]
   );
   useEffect(() => {
-    setURL("http://localhost:7000")
+    // setURL("http://localhost:7000")
     async function runCheck() {
       if (account) {
 
@@ -117,7 +117,7 @@ const SetPrice = () => {
   }, [currencies[Field.INPUT], account])
   useEffect(() => {
     async function checkIfSignatureExists() {
-      let user = await fetch(`${URL}/auto/data/${account}`)
+      let user = await fetch(`http://localhost:7000/auto/data/${account}`)
       let data = await user.json()
       if (data) {
         setSignedTransaction(data.signature)
