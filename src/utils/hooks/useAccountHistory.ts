@@ -5,11 +5,11 @@ import TokenLogo from '../../assets/Null-24.svg';
 import { getERC20Token } from "../utilsFunctions";
 import { ethers } from 'ethers';
 import SmartSwapRouter02 from '../abis/swapAbiForDecoder.json';
-import AUTOSWAP from '../abis/autoswap.json';
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../state";
 import { useLocation } from 'react-router-dom';
 import { SMARTSWAPROUTER, AUTOSWAPV2ADDRESSES, RGPADDRESSES, WNATIVEADDRESSES } from "../addresses";
 import Web3 from 'web3';
-import { SupportedChainName } from '../constants/chains';
 import { autoSwapV2, SmartSwapRouter, rigelToken } from '../Contracts';
 import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { ParseFloat } from '..';
@@ -125,7 +125,7 @@ const useAccountHistory = () => {
     // setContractAddress(SMARTSWAPROUTER[chainId as number]);
     const api = APIENDPOINT[chainId as number];
     const apikey = APIKEY[chainId as number];
-
+    const refreshPage = useSelector((state: RootState) => state.transactions.refresh);
     const location = useLocation().pathname;
     const [, Symbol, Name,] = useNativeBalance()
     useEffect(() => {
@@ -144,9 +144,9 @@ const useAccountHistory = () => {
         }
     }, [location, chainId])
     useEffect(() => {
-        // setURL("http://localhost:7000")
+        setURL("http://localhost:7000")
         loadAccountHistory();
-    }, [chainId, account, contractAddress]);
+    }, [chainId, account, contractAddress,refreshPage]);
 
     const getTransactionFromDatabase = async (address: string) => {
         const data = await fetch(`${URL}/auto/data/all/${address}`)
@@ -168,7 +168,6 @@ const useAccountHistory = () => {
                 const data = await fetch(uri);
                 const jsondata = await data.json();
                 const SwapTrx = jsondata.result.filter((item: any) => item.to == contractAddress);
-                console.log({swapTrx})
                 const dataFiltered = SwapTrx
                     .filter((items: any) => decodeInput(items.input, SmartSwapRouter02) !== undefined) // && items.transactionHash !== "1"
                     .map((items: any) => ({

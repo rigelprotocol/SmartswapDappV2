@@ -7,7 +7,7 @@ import useAccountHistory from "../../../../utils/hooks/useAccountHistory";
 import useMarketHistory from "../../../../utils/hooks/useMarketHistory";
 import { DataType } from "./TransactionHistory";
 import MarketHistory from "./MarketHistory";
-import { transactionTab } from "../../../../state/transaction/actions";
+import { transactionTab,refreshTransactionTab } from "../../../../state/transaction/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../state";
 import ConfirmationModal from '../../../../components/Modals/confirmationModal';
@@ -41,7 +41,7 @@ const History = () => {
 
 
   useEffect(() => {
-    // setURL("http://localhost:7000")
+    setURL("http://localhost:7000")
     const isActive = checkSideTab('history');
     dispatch(transactionTab({ removeSideTab: isActive }))
 
@@ -63,6 +63,7 @@ const History = () => {
           })
         );
       }
+      dispatch(refreshTransactionTab({ refresh:Math.random() }))
     } else if (data && data.name === "Set Price") {
       setOpenModal({
         message: data.status === 2 ? "Suspending Transaction..." : "Resuming Transaction",
@@ -88,6 +89,7 @@ const History = () => {
           })
         );
       }
+      dispatch(refreshTransactionTab({ refresh:Math.random() }))
     }
     setShowModal(false)
   }

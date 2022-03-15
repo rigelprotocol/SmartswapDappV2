@@ -39,6 +39,7 @@ import { RGP } from '../../utils/addresses';
 import { useDispatch,useSelector } from "react-redux";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { RootState } from "../../state";
+import { refreshTransactionTab, transactionTab } from '../../state/transaction/actions';
 
 
 const SetPrice = () => {
@@ -100,7 +101,7 @@ const SetPrice = () => {
 
 
   useEffect(() => {
-    // setURL("http://localhost:7000")
+    setURL("http://localhost:7000")
     async function checkIfSignatureExists() {
 
       let user = await fetch(`${URL}/auto/data/${account}`)
@@ -265,6 +266,7 @@ const SetPrice = () => {
           trxState: TrxState.TransactionSuccessful,
         })
       );
+      dispatch(refreshTransactionTab({ refresh:Math.random() }))
       onUserInput(Field.INPUT, "");
       setApproval([])
     }

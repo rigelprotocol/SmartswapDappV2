@@ -4,6 +4,7 @@ import {
     checkedTransaction,
     clearAllTransactions,
     finalizeTransaction, transactionTab, detailsTab,
+    refreshTransactionTab
 } from './actions'
 
 import { createReducer } from '@reduxjs/toolkit'
@@ -33,12 +34,14 @@ export interface TransactionState {
         [txHash: string]: TransactionDetails
     },
     removeSideTab: boolean,
-    removeDetailsTab: boolean
+    removeDetailsTab: boolean,
+    refresh:number
 }
 
 export const initialState: TransactionState = {
     removeSideTab: false,
-    removeDetailsTab: false
+    removeDetailsTab: false,
+    refresh:0
 };
 
 export default createReducer(initialState, (builder) =>
@@ -87,5 +90,9 @@ export default createReducer(initialState, (builder) =>
         })
         .addCase(detailsTab, (transactions, { payload: { removeDetailsTab } }) => {
         transactions.removeDetailsTab = removeDetailsTab;
-    })
+      
+    })  
+    .addCase(refreshTransactionTab,(transactions,{payload:{refresh}}) => {
+            transactions.refresh = refresh
+        })
 )

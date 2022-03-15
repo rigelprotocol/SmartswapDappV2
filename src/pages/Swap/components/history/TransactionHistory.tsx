@@ -207,7 +207,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
           </Box>
            
         </Grid>
-        {data?.chainID &&
+        {data?.chainID && data.transactionHash &&
             <Flex justifyContent="right">
                   <Box cursor="pointer">
                   <a href={getExplorerLink(parseInt(data?.chainID), data.transactionHash, ExplorerDataType.TRANSACTION)} target="_blank">
