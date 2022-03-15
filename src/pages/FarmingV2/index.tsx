@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Flex, Text } from "@chakra-ui/layout";
 import {
   Alert,
@@ -51,6 +51,8 @@ import {
   smartSwapLPTokenV2PoolSix,
   smartSwapLPTokenV2PoolEight,
   smartSwapLPTokenV2PoolNine,
+  smartSwapLPTokenV2PoolTwelve,
+  smartSwapLPTokenV2PoolThirteen,
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
@@ -66,6 +68,8 @@ import {
   SMARTSWAPLP_TOKEN7ADDRESSES,
   SMARTSWAPLP_TOKEN8ADDRESSES,
   SMARTSWAPLP_TOKEN9ADDRESSES,
+  SMARTSWAPLP_TOKEN12ADDRESSES,
+  SMARTSWAPLP_TOKEN13ADDRESSES,
 } from "../../utils/addresses";
 import { formatBigNumber } from "../../utils";
 import { RootState } from "../../state";
@@ -78,6 +82,7 @@ import WelcomeModal from "../../components/Onboarding/WelcomeModal";
 import CryptoJS from "crypto-js";
 import { shortenCode } from "../../utils";
 import { useLocation } from "react-router-dom";
+import { setOpenModal, TrxState } from "../../state/application/reducer";
 
 export const BIG_TEN = new bigNumber(10);
 export const LIQUIDITY = "liquidity";
@@ -275,7 +280,7 @@ export function Index() {
       try {
         if (
           Number(chainId) === Number(SupportedChainId.POLYGON) ||
-          Number(chainId) === Number(SupportedChainId.POLYGONTEST)
+          (account && Number(chainId) === Number(SupportedChainId.POLYGONTEST))
         ) {
           const [RGPToken, poolOne, poolTwo, poolThree, RGPToken2] =
             await Promise.all([
@@ -415,6 +420,8 @@ export function Index() {
             poolSeven,
             poolEight,
             poolNine,
+            poolTwelve,
+            poolThirteen,
             RGPToken2,
           ] = await Promise.all([
             rigelToken(RGP[chainId as number], library),
@@ -454,6 +461,14 @@ export function Index() {
               SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
               library
             ),
+            smartSwapLPTokenV2PoolNine(
+              SMARTSWAPLP_TOKEN12ADDRESSES[chainId as number],
+              library
+            ),
+            smartSwapLPTokenV2PoolNine(
+              SMARTSWAPLP_TOKEN13ADDRESSES[chainId as number],
+              library
+            ),
             rigelToken(RGP[chainId as number], library),
           ]);
 
@@ -468,6 +483,8 @@ export function Index() {
             poolSevenBalance,
             poolEightBalance,
             poolNineBalance,
+            poolTwelveBalance,
+            poolThirteenBalance,
             RGPbalance2,
           ] = await Promise.all([
             RGPToken.balanceOf(account),
@@ -480,6 +497,8 @@ export function Index() {
             poolSeven.balanceOf(account),
             poolEight.balanceOf(account),
             poolNine.balanceOf(account),
+            poolTwelve.balanceOf(account),
+            poolThirteen.balanceOf(account),
             RGPToken2.balanceOf(account),
           ]);
 
@@ -495,6 +514,8 @@ export function Index() {
               formatBigNumber(poolSevenBalance),
               formatBigNumber(poolEightBalance),
               formatBigNumber(poolNineBalance),
+              formatBigNumber(poolTwelveBalance),
+              formatBigNumber(poolThirteenBalance),
               formatBigNumber(RGPbalance2),
             ])
           );
@@ -629,7 +650,8 @@ export function Index() {
         const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
         const USDC_RGPLiq = totalRGP3 * rgpPrice * 2;
 
-        const RGPLiquidityV2 = ethers.utils.formatUnits(rgpTotalStakingV2, 18) * rgpPrice/2;
+        const RGPLiquidityV2 =
+          (ethers.utils.formatUnits(rgpTotalStakingV2, 18) * rgpPrice) / 2;
 
         dispatch(
           updateTotalLiquidity([
@@ -767,7 +789,8 @@ export function Index() {
         const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
         const USDC_RGPLiq = totalRGP3 * rgpPrice * 2;
 
-        const RGPLiquidityV2 = ethers.utils.formatUnits(rgpTotalStakingV2, 18) * rgpPrice/2;
+        const RGPLiquidityV2 =
+          (ethers.utils.formatUnits(rgpTotalStakingV2, 18) * rgpPrice) / 2;
 
         dispatch(
           updateTotalLiquidity([
@@ -998,6 +1021,8 @@ export function Index() {
           pool7,
           pool8,
           pool9,
+          pool12,
+          pool13,
           specialPool2,
         ] = await Promise.all([
           RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library),
@@ -1037,6 +1062,14 @@ export function Index() {
             SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
             library
           ),
+          smartSwapLPTokenV2PoolTwelve(
+            SMARTSWAPLP_TOKEN12ADDRESSES[chainId as number],
+            library
+          ),
+          smartSwapLPTokenV2PoolThirteen(
+            SMARTSWAPLP_TOKEN13ADDRESSES[chainId as number],
+            library
+          ),
           RGPSpecialPool2(RGPSPECIALPOOLADDRESSES2[chainId as number], library),
         ]);
 
@@ -1051,6 +1084,8 @@ export function Index() {
           pool7Reserve,
           pool8Reserve,
           pool9Reserve,
+          pool12Reserve,
+          pool13Reserve,
           rgpTotalStakingV2,
         ] = await Promise.all([
           await specialPool.totalStaking(),
@@ -1063,6 +1098,8 @@ export function Index() {
           pool7.getReserves(),
           pool8.getReserves(),
           pool9.getReserves(),
+          pool12.getReserves(),
+          pool13.getReserves(),
           await specialPool2.totalStaking(),
         ]);
         const RGPprice: number | any = ethers.utils.formatUnits(
@@ -1120,6 +1157,22 @@ export function Index() {
           )
           .toString();
 
+        const RGP_WARSLiquidity = ethers.utils
+          .formatUnits(
+            pool12Reserve[1].mul(Math.floor(Number(RGPprice) * 1000 * 2)),
+            21
+          )
+          .toString();
+
+        console.log("log", RGP_WARSLiquidity);
+
+        const RGP_METOLiquidity = ethers.utils
+          .formatUnits(
+            pool13Reserve[1].mul(Math.floor(Number(RGPprice) * 1000 * 2)),
+            21
+          )
+          .toString();
+
         dispatch(
           updateTotalLiquidity([
             {
@@ -1130,48 +1183,59 @@ export function Index() {
             {
               deposit: "RGP-BNB",
               liquidity: RGP_BNBLiquidity,
-              apy: calculateApy(RGPprice, RGP_BNBLiquidity, 953.3333333),
+              apy: calculateApy(RGPprice, RGP_BNBLiquidity, 515.3153153),
             },
             {
               deposit: "RGP-BUSD",
               liquidity: BUSD_RGPLiquidity,
-              apy: calculateApy(RGPprice, BUSD_RGPLiquidity, 3336.666667),
+              apy: calculateApy(RGPprice, BUSD_RGPLiquidity, 1803.603604),
             },
             {
               deposit: "BNB-BUSD",
               liquidity: BUSD_BNBLiquidity,
-              apy: calculateApy(RGPprice, BUSD_BNBLiquidity, 476.6666667),
+              apy: calculateApy(RGPprice, BUSD_BNBLiquidity, 257.6576577),
             },
             {
               deposit: "AXS-RGP",
               liquidity: AXS_RGPLiquidity,
-              apy: calculateApy(RGPprice, AXS_RGPLiquidity, 715),
+              apy: calculateApy(RGPprice, AXS_RGPLiquidity, 386.4864865),
             },
             {
               deposit: "AXS-BUSD",
               liquidity: AXS_BUSDLiquidity,
-              apy: calculateApy(RGPprice, AXS_BUSDLiquidity, 238.3333333),
+              apy: calculateApy(RGPprice, AXS_BUSDLiquidity, 128.8288288),
             },
             {
               deposit: "PLACE-RGP",
               liquidity: PLACE_RGPLiquidity,
-              apy: calculateApy(RGPprice, PLACE_RGPLiquidity, 340.48),
+              apy: calculateApy(RGPprice, PLACE_RGPLiquidity, 257.6576577),
             },
             {
               deposit: "MHT-RGP",
               liquidity: MHT_RGPLiquidity,
-              apy: calculateApy(RGPprice, MHT_RGPLiquidity, 340.48),
+              apy: calculateApy(RGPprice, MHT_RGPLiquidity, 257.6576577),
             },
             {
-              deposit: "RGP-SHIB",
+              deposit: "SHIB-RGP",
               liquidity: RGP_SHIBLiquidity,
-              apy: calculateApy(RGPprice, RGP_SHIBLiquidity, 340.48),
+              apy: calculateApy(RGPprice, RGP_SHIBLiquidity, 386.4864865),
             },
             {
-              deposit: "RGP-MBOX",
+              deposit: "MBOX-RGP",
               liquidity: RGP_MBOXLiquidity,
-              apy: calculateApy(RGPprice, RGP_MBOXLiquidity, 340.48),
+              apy: calculateApy(RGPprice, RGP_MBOXLiquidity, 257.6576577),
             },
+            {
+              deposit: "WARS-RGP",
+              liquidity: RGP_WARSLiquidity,
+              apy: calculateApy(RGPprice, RGP_WARSLiquidity, 257.6576577),
+            },
+            {
+              deposit: "METO-RGP",
+              liquidity: RGP_METOLiquidity,
+              apy: calculateApy(RGPprice, RGP_METOLiquidity, 257.6576577),
+            },
+
             {
               deposit: "RGP",
               liquidity: RGPLiquidityV2,
@@ -1228,9 +1292,8 @@ export function Index() {
   const getTokenStaked = async () => {
     try {
       if (
-        account &&
-        (Number(chainId) === Number(SupportedChainId.POLYGON) ||
-          Number(chainId) === Number(SupportedChainId.POLYGONTEST))
+        (account && Number(chainId) === Number(SupportedChainId.POLYGON)) ||
+        (account && Number(chainId) === Number(SupportedChainId.POLYGONTEST))
       ) {
         const masterChefV2 = await MasterChefV2Contract(
           MASTERCHEFV2ADDRESSES[chainId as number],
@@ -1421,6 +1484,8 @@ export function Index() {
           poolSevenEarned,
           poolEightEarned,
           poolNineEarned,
+          poolTwelveEarned,
+          poolThirteenEarned,
           poolOneStaked,
           poolTwoStaked,
           poolThreeStaked,
@@ -1430,6 +1495,8 @@ export function Index() {
           poolSevenStaked,
           poolEightStaked,
           poolNineStaked,
+          poolTwelveStaked,
+          poolThirteenStaked,
         ] = await Promise.all([
           masterChefV2.pendingRigel(1, account),
           masterChefV2.pendingRigel(2, account),
@@ -1440,6 +1507,8 @@ export function Index() {
           masterChefV2.pendingRigel(7, account),
           masterChefV2.pendingRigel(8, account),
           masterChefV2.pendingRigel(9, account),
+          masterChefV2.pendingRigel(12, account),
+          masterChefV2.pendingRigel(13, account),
           masterChefV2.userInfo(1, account),
           masterChefV2.userInfo(2, account),
           masterChefV2.userInfo(3, account),
@@ -1449,6 +1518,8 @@ export function Index() {
           masterChefV2.userInfo(7, account),
           masterChefV2.userInfo(8, account),
           masterChefV2.userInfo(9, account),
+          masterChefV2.userInfo(12, account),
+          masterChefV2.userInfo(13, account),
         ]);
 
         const RGPStakedEarned = await specialPoolStaked();
@@ -1521,6 +1592,14 @@ export function Index() {
               staked: formatBigNumber(poolNineStaked.amount),
               earned: formatBigNumber(poolNineEarned),
             },
+            {
+              staked: formatBigNumber(poolTwelveStaked.amount),
+              earned: formatBigNumber(poolTwelveEarned),
+            },
+            {
+              staked: formatBigNumber(poolThirteenStaked.amount),
+              earned: formatBigNumber(poolThirteenEarned),
+            },
             { staked: RGPStakedV2, earned: RGPEarnedV2, symbol: "RGP" },
           ])
         );
@@ -1528,6 +1607,14 @@ export function Index() {
         setInitialLoad(false);
       }
     } catch (error) {
+      if (error.code == -32603) {
+        dispatch(
+          setOpenModal({
+            message: `RPC URL Error. Failed to load accurate data.`,
+            trxState: TrxState.TransactionFailed,
+          })
+        );
+      }
       console.error(error, "getTokenStaked =>Farming v2");
     }
   };
@@ -2109,7 +2196,7 @@ export function Index() {
                     ? FarmData.contents.map((content: any, index: number) =>
                         Number(chainId) !== Number(SupportedChainId.POLYGON) &&
                         index !== 0 &&
-                        index !== 10 ? (
+                        index !== 12 ? (
                           <YieldFarm
                             farmDataLoading={farmDataLoading}
                             content={content}

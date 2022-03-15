@@ -437,7 +437,7 @@ export const usePricePerToken = (
 export const useAllowance = (
   CurrencyA: Currency | undefined,
   CurrencyB: Currency | undefined,
-  checkTokenApproval: boolean
+  checkTokenApproval: number
 ) => {
   const { account, chainId, library } = useActiveWeb3React();
   const [hasTokenABeenApproved, setHasTokenABeenApproved] = useState(false);
@@ -464,7 +464,6 @@ export const useAllowance = (
         ? true
         : allowanceB.toString() > 0;
 
-      // console.log(isTokenAApproved, isTokenBApproved);
       setHasTokenABeenApproved(isTokenAApproved);
       setHasTokenBBeenApproved(isTokenBApproved);
     }

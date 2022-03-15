@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { Field } from "../../state/mint/actions";
-import { RouteComponentProps, useParams } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 import TransactionSettings from "../../components/TransactionSettings";
 import {
   Box,
@@ -14,9 +14,9 @@ import {
   Divider,
   Center,
 } from "@chakra-ui/react";
+import {ZERO_ADDRESS} from "../../constants";
 import { TimeIcon, ArrowBackIcon, AddIcon } from "@chakra-ui/icons";
 import { useDerivedMintInfo, useMintState } from "../../state/mint/hooks";
-import { useWeb3React } from "@web3-react/core";
 import OutputCurrecy from "./AddLquidityInputs/OutputCurrecy";
 import InputCurrency from "./AddLquidityInputs/InputCurrency";
 import Joyride from "react-joyride";
@@ -24,7 +24,6 @@ import { tourSteps } from "../../components/Onboarding/AddLiquidityStep";
 import { useMintActionHandlers } from "../../state/mint/hooks";
 import {
   useIsPoolsAvailable,
-  usePoolShare,
   usePricePerToken,
   useAllowance,
   usePriceForNewPool,
@@ -38,7 +37,7 @@ import {
   formatAmountIn,
   getOutPutDataFromEvent,
 } from "../../utils/utilsFunctions";
-import { SMARTSWAPROUTER, WNATIVEADDRESSES } from "../../utils/addresses";
+import { SMARTSWAPROUTER } from "../../utils/addresses";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { useDispatch } from "react-redux";
 import { getExplorerLink, ExplorerDataType } from "../../utils/getExplorerLink";
@@ -51,7 +50,7 @@ import { Currency } from "@uniswap/sdk";
 import { SmartSwapRouter } from "../../utils/Contracts";
 import { ethers } from "ethers";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
-import { SupportedChainSymbols } from "../../utils/constants/chains";
+import { calculateGas } from "../Swap/components/sendToken";
 
 export default function AddLiquidity({
   match: {
@@ -69,12 +68,12 @@ export default function AddLiquidity({
   const approveButtonColor = useColorModeValue("#FFFFFF", "#F1F5F8");
 
   const { independentField, typedValue, otherTypedValue } = useMintState();
-  const [loading, setLoading] = useState(false);
+  //const [loading, setLoading] = useState(false);
   const [run, setRun] = useState(false);
   const bgColorRide = useColorModeValue("#319EF6", "#4CAFFF");
   const { onCurrencySelection, onUserInput, onCurrencyFor } =
     useMintActionHandlers();
-  const { currencies, getMaxValue, bestTrade, parsedAmount, showWrap } =
+  const { currencies, getMaxValue, bestTrade, parsedAmount, showWrap, address } =
     useDerivedMintInfo();
   const dependentField: Field =
     independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
@@ -90,8 +89,9 @@ export default function AddLiquidity({
   const [balanceA, setBalanceA] = useState("");
   const [balanceB, setBalanceB] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [checkTokenApproval, setCheckTokenApproval] = useState(false);
+  const [checkTokenApproval, setCheckTokenApproval] = useState(0);
 
+  const [isLoadingValue, setIsLoadingValue] = useState(false);
   const [userSlippageTolerance] = useUserSlippageTolerance();
   const [userDeadline] = useUserTransactionTTL();
 
@@ -213,7 +213,8 @@ export default function AddLiquidity({
             hash,
             ExplorerDataType.TRANSACTION
           );
-          setCheckTokenApproval(true);
+          setCheckTokenApproval(checkTokenApproval + 1);
+          console.log(checkTokenApproval);
           dispatch(
             setOpenModal({
               message: `${symbol} Approval Successful`,
@@ -263,34 +264,10 @@ export default function AddLiquidity({
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        // const gasCost = await smartswaprouter.estimateGas.addLiquidityETH(
-        //   currencyA.isNative ? currencyB.address : currencyA.address,
-        //   currencyA.isNative ? AmountBMin : AmountAMin,
-        //   currencyA.isNative
-        //     ? calculateSlippageAmount(
-        //         AmountBMin,
-        //         pairAvailable ? userSlippageTolerance : 0
-        //       )
-        //     : calculateSlippageAmount(
-        //         AmountAMin,
-        //         pairAvailable ? userSlippageTolerance : 0
-        //       ),
-        //   currencyA.isNative
-        //     ? calculateSlippageAmount(
-        //         AmountAMin,
-        //         pairAvailable ? userSlippageTolerance : 0
-        //       )
-        //     : calculateSlippageAmount(
-        //         AmountBMin,
-        //         pairAvailable ? userSlippageTolerance : 0
-        //       ),
-        //   account,
-        //   deadLine,
-        //   {
-        //     value: currencyA.isNative ? AmountAMin : AmountBMin,
-        //     // gasPrice: ethers.utils.parseUnits("10", "gwei"),
-        //   }
-        // );
+
+        const { format1, format2 } = await calculateGas();
+
+        const isEIP1559 = await library?.getFeeData();
 
         const data = await smartswaprouter.addLiquidityETH(
           currencyA.isNative ? currencyB.address : currencyA.address,
@@ -317,8 +294,14 @@ export default function AddLiquidity({
           deadLine,
           {
             value: currencyA.isNative ? AmountAMin : AmountBMin,
-            //  gasLimit: parseFloat(gasCost.toString()) * 2,
-            //  gasPrice: ethers.utils.parseUnits("10", "gwei"),
+            maxPriorityFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format1, 9).toString()
+                : null,
+            maxFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format2, 9).toString()
+                : null,
           }
         );
         const { confirmations, events } = await data.wait(3);
@@ -399,25 +382,10 @@ export default function AddLiquidity({
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        // const gasCost = await smartswaprouter.estimateGas.addLiquidity(
-        //   currencyA.address,
-        //   currencyB.address,
-        //   AmountAMin,
-        //   AmountBMin,
-        //   calculateSlippageAmount(
-        //     AmountAMin,
-        //     pairAvailable ? userSlippageTolerance : 0
-        //   ),
-        //   calculateSlippageAmount(
-        //     AmountBMin,
-        //     pairAvailable ? userSlippageTolerance : 0
-        //   ),
-        //   account,
-        //   deadLine,
-        //   {
-        //     // gasPrice: ethers.utils.parseUnits("10", "gwei"),
-        //   }
-        // );
+
+        const { format1, format2 } = await calculateGas();
+
+        const isEIP1559 = await library?.getFeeData();
 
         const data = await smartswaprouter.addLiquidity(
           currencyA.address,
@@ -437,6 +405,14 @@ export default function AddLiquidity({
           {
             // gasLimit: parseFloat(gasCost.toString()) * 2,
             // gasPrice: ethers.utils.parseUnits("10", "gwei"),
+            maxPriorityFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format1, 9).toString()
+                : null,
+            maxFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format2, 9).toString()
+                : null,
           }
         );
         const { confirmations, events } = await data.wait(3);
@@ -514,9 +490,12 @@ export default function AddLiquidity({
     }
   };
 
-  const [isLoadingValue, setIsLoadingValue] = useState(false);
+
   useEffect(() => {
-    if (formattedAmounts[Field.INPUT] && !formattedAmounts[Field.OUTPUT]) {
+    if (address === ZERO_ADDRESS) {
+      setIsLoadingValue(false)
+    }
+    else if (formattedAmounts[Field.INPUT] && !formattedAmounts[Field.OUTPUT]) {
       setIsLoadingValue(true);
     } else {
       setIsLoadingValue(false);
