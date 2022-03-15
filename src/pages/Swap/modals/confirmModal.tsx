@@ -209,7 +209,7 @@ const ConfirmModal: React.FC<IModal> = ({
               </Flex>
               <Flex justifyContent='space-between'>
                 <Box color={lightTextColor}>
-                  Gas Fee Increased By: <InfoOutlineIcon />
+                  Gas Fee Increased By <InfoOutlineIcon />
                 </Box>
                 <Text color={heavyTextColor}>{userGasPricePercentage}%</Text>
               </Flex>
