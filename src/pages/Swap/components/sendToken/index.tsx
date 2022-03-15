@@ -51,25 +51,46 @@ import { getERC20Token } from "../../../../utils/utilsFunctions";
 import { createAlchemyWeb3 } from "@alch/alchemy-web3";
 import { Percent } from "@uniswap/sdk-core";
 import JSBI from "jsbi";
+import { useUpdateUserGasPreference } from "../../../../state/gas/hooks";
+import { useUserGasPricePercentage } from "../../../../state/gas/hooks";
+import { Web3Provider } from "@ethersproject/providers";
 
-export const calculateGas = async (): Promise<{
+export const calculateGas = async (
+  percentage: number,
+  library: Web3Provider | undefined,
+  chainId: number
+): Promise<{
   format1: string;
   format2: string;
+  format3: string;
 }> => {
   const web3 = createAlchemyWeb3("https://polygon-rpc.com");
   const maxPriorityPerGas = await web3.eth.getMaxPriorityFeePerGas();
+  const GasPrice = (await library?.getGasPrice()).toString();
+
   const baseFee = await web3.eth.getBlock("pending");
   const baseFeeFormatted = web3.utils.hexToNumberString(baseFee.baseFeePerGas);
   const maxPriorityPerGasFormatted =
     web3.utils.hexToNumberString(maxPriorityPerGas);
 
-  const baseFeeThirtyPercent = new Percent("40", "100")
-    .multiply(maxPriorityPerGasFormatted)
+  const baseFeeThirtyPercent = new Percent(percentage.toString(), "100")
+    .multiply(
+      chainId === 137
+        ? maxPriorityPerGasFormatted
+        : chainId === 80001
+        ? maxPriorityPerGasFormatted
+        : GasPrice
+    )
     .quotient.toString();
 
   const addPriorityFee = JSBI.add(
     JSBI.BigInt(maxPriorityPerGasFormatted),
     JSBI.BigInt(baseFeeThirtyPercent)
+  );
+
+  const addGasFee = JSBI.add(
+    JSBI.BigInt(baseFeeThirtyPercent),
+    JSBI.BigInt(GasPrice)
   );
 
   const maxFee = JSBI.add(
@@ -79,7 +100,8 @@ export const calculateGas = async (): Promise<{
 
   const format1 = ethers.utils.formatUnits(addPriorityFee.toString(), 9);
   const format2 = ethers.utils.formatUnits(maxFee.toString(), 9);
-  return { format1, format2 };
+  const format3 = ethers.utils.formatUnits(addGasFee.toString(), 9);
+  return { format1, format2, format3 };
 };
 
 const SendToken = () => {
@@ -94,6 +116,10 @@ const SendToken = () => {
   ];
   const [dismissTokenWarning, setDismissTokenWarning] =
     useState<boolean>(false);
+
+  useUpdateUserGasPreference();
+  const [userGasPricePercentage, setUserGasPricePercentage] =
+    useUserGasPricePercentage();
 
   const urlLoadedTokens: Token[] = useMemo(
     () =>
@@ -364,7 +390,11 @@ const SendToken = () => {
         })
       );
 
-      const { format1, format2 } = await calculateGas();
+      const { format1, format2, format3 } = await calculateGas(
+        userGasPricePercentage,
+        library,
+        chainId as number
+      );
 
       const isEIP1559 = await library?.getFeeData();
 
@@ -386,8 +416,12 @@ const SendToken = () => {
             isEIP1559 && chainId === 137
               ? ethers.utils.parseUnits(format2, 9).toString()
               : null,
-          // gasLimit: 290000,
-          // gasPrice: ethers.utils.parseUnits("10", "gwei"),
+          gasPrice:
+            chainId === 137
+              ? null
+              : chainId === 80001
+              ? null
+              : ethers.utils.parseUnits(format3, 9).toString(),
         }
       );
       const { hash } = sendTransaction;
@@ -465,7 +499,11 @@ const SendToken = () => {
           trxState: TrxState.WaitingForConfirmation,
         })
       );
-      const { format1, format2 } = await calculateGas();
+      const { format1, format2, format3 } = await calculateGas(
+        userGasPricePercentage,
+        library,
+        chainId as number
+      );
 
       const isEIP1559 = await library?.getFeeData();
       const sendTransaction = await route.swapETHForExactTokens(
@@ -484,6 +522,12 @@ const SendToken = () => {
             isEIP1559 && chainId === 137
               ? ethers.utils.parseUnits(format2, 9).toString()
               : null,
+          gasPrice:
+            chainId === 137
+              ? null
+              : chainId === 80001
+              ? null
+              : ethers.utils.parseUnits(format3, 9).toString(),
         }
       );
       const { hash } = sendTransaction;
@@ -591,7 +635,11 @@ const SendToken = () => {
       // const format1 = ethers.utils.formatUnits(addPriorityFee.toString(), 9);
       // const format2 = ethers.utils.formatUnits(maxFee.toString(), 9);
 
-      const { format1, format2 } = await calculateGas();
+      const { format1, format2, format3 } = await calculateGas(
+        userGasPricePercentage,
+        library,
+        chainId as number
+      );
 
       const isEIP1559 = await library?.getFeeData();
       const sendTransaction = await route.swapExactTokensForETH(
@@ -601,14 +649,25 @@ const SendToken = () => {
         pathArray,
         account,
         dl,
-        isEIP1559 && chainId === 137
+        chainId === 137 || chainId === 80001
           ? {
-              maxPriorityFeePerGas: ethers.utils
-                .parseUnits(format1, 9)
-                .toString(),
-              maxFeePerGas: ethers.utils.parseUnits(format2, 9).toString(),
+              maxPriorityFeePerGas:
+                chainId === 137
+                  ? ethers.utils.parseUnits(format1, 9).toString()
+                  : null,
+              maxFeePerGas:
+                chainId === 137
+                  ? ethers.utils.parseUnits(format2, 9).toString()
+                  : null,
             }
-          : null
+          : {
+              gasPrice:
+                chainId === 137
+                  ? null
+                  : chainId === 80001
+                  ? null
+                  : ethers.utils.parseUnits(format3, 9).toString(),
+            }
       );
       const { confirmations, status } = await sendTransaction.wait(1);
       const { hash } = sendTransaction;
@@ -679,21 +738,36 @@ const SendToken = () => {
       })
     );
     try {
-      const { format1, format2 } = await calculateGas();
+      const { format1, format2, format3 } = await calculateGas(
+        userGasPricePercentage,
+        library,
+        chainId as number
+      );
 
       const isEIP1559 = await library?.getFeeData();
       const sendTransaction = await weth.deposit(
         {
           value: isExactIn ? parsedAmount : formatAmount,
         },
-        isEIP1559 && chainId === 137
+        chainId === 137 || chainId === 80001
           ? {
-              maxPriorityFeePerGas: ethers.utils
-                .parseUnits(format1, 9)
-                .toString(),
-              maxFeePerGas: ethers.utils.parseUnits(format2, 9).toString(),
+              maxPriorityFeePerGas:
+                chainId === 137
+                  ? ethers.utils.parseUnits(format1, 9).toString()
+                  : null,
+              maxFeePerGas:
+                chainId === 137
+                  ? ethers.utils.parseUnits(format2, 9).toString()
+                  : null,
             }
-          : null
+          : {
+              gasPrice:
+                chainId === 137
+                  ? null
+                  : chainId === 80001
+                  ? null
+                  : ethers.utils.parseUnits(format3, 9).toString(),
+            }
       );
       const { confirmations, status } = await sendTransaction.wait(1);
       const { hash } = sendTransaction;
@@ -749,19 +823,34 @@ const SendToken = () => {
       })
     );
     try {
-      const { format1, format2 } = await calculateGas();
+      const { format1, format2, format3 } = await calculateGas(
+        userGasPricePercentage,
+        library,
+        chainId as number
+      );
 
       const isEIP1559 = await library?.getFeeData();
       const sendTransaction = await weth.withdraw(
         isExactIn ? parsedAmount : formatAmount,
-        isEIP1559 && chainId === 137
+        chainId === 137 || chainId === 80001
           ? {
-              maxPriorityFeePerGas: ethers.utils
-                .parseUnits(format1, 9)
-                .toString(),
-              maxFeePerGas: ethers.utils.parseUnits(format2, 9).toString(),
+              maxPriorityFeePerGas:
+                chainId === 137
+                  ? ethers.utils.parseUnits(format1, 9).toString()
+                  : null,
+              maxFeePerGas:
+                chainId === 137
+                  ? ethers.utils.parseUnits(format2, 9).toString()
+                  : null,
             }
-          : null
+          : {
+              gasPrice:
+                chainId === 137
+                  ? null
+                  : chainId === 80001
+                  ? null
+                  : ethers.utils.parseUnits(format3, 9).toString(),
+            }
       );
       const { confirmations, status } = await sendTransaction.wait(3);
       const { hash } = sendTransaction;

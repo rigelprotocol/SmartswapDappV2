@@ -83,6 +83,7 @@ import CryptoJS from "crypto-js";
 import { shortenCode } from "../../utils";
 import { useLocation } from "react-router-dom";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
+import { useUpdateUserGasPreference } from "../../state/gas/hooks";
 
 export const BIG_TEN = new bigNumber(10);
 export const LIQUIDITY = "liquidity";
@@ -115,6 +116,8 @@ export function Index() {
   const hostName = window.location.href.split("?")[0];
   const { hasCopied, onCopy } = useClipboard(`${hostName}?ref=${referralCode}`);
   const [URLRefCode, setURLRefCode] = useState("");
+
+  useUpdateUserGasPreference();
 
   const handleTabsChange = (index: number) => {
     if (chainId !== SupportedChainId.OASISMAINNET) {

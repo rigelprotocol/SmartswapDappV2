@@ -13,6 +13,11 @@ import TransactionSettings from "../../components/TransactionSettings";
 import Joyride from "react-joyride";
 import { tourSteps } from "../../components/Onboarding/LiquiditySteps";
 import WelcomeModal from "../../components/Onboarding/WelcomeModal";
+import { useUpdateUserGasPreference } from "../../state/gas/hooks";
+import {
+  INITIAL_GASPRICE_INCREASE,
+  checkNetVersion,
+} from "../../utils/constants";
 
 const Index = () => {
   const mode = useColorModeValue("light", "dark");
@@ -23,6 +28,7 @@ const Index = () => {
   const [welcomeModal, setWelcomeModal] = useState(false); //false
   const [run, setRun] = useState(false);
   const bgColor = useColorModeValue("#319EF6", "#4CAFFF");
+  useUpdateUserGasPreference();
 
   useEffect(() => {
     let cancel = false;
@@ -76,7 +82,7 @@ const Index = () => {
         startToure={startWelcomeRide}
         openModal={welcomeModal}
         closeModal={() => setWelcomeModal((state) => !state)}
-        textHeader={'Welcome to RigelProtocol SmartSwap'}
+        textHeader={"Welcome to RigelProtocol SmartSwap"}
         welcomeText='With liquidity, you have the option of earning more by depositing tokens to join liquidity pools and receive LP tokens.'
       />
       <Flex

@@ -41,6 +41,10 @@ import CurrencyLogo from "../../components/currencyLogo";
 import { isAddress } from "../../utils";
 import TransactionSettings from "../../components/TransactionSettings";
 import { calculateGas } from "../Swap/components/sendToken";
+import {
+  useUpdateUserGasPreference,
+  useUserGasPricePercentage,
+} from "../../state/gas/hooks";
 
 const Remove = () => {
   const [isTabDevice] = useMediaQuery("(min-width: 990px)");
@@ -72,6 +76,9 @@ const Remove = () => {
   const { account, chainId, library } = useActiveWeb3React();
   const [userSlippageTolerance] = useUserSlippageTolerance();
   const [userDeadline] = useUserTransactionTTL();
+  useUpdateUserGasPreference();
+  const [userGasPricePercentage, setUserGasPricePercentage] =
+    useUserGasPricePercentage();
 
   const params = useParams();
   const dispatch = useDispatch();
@@ -176,7 +183,11 @@ const Remove = () => {
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        const { format1, format2 } = await calculateGas();
+        const { format1, format2, format3 } = await calculateGas(
+          userGasPricePercentage,
+          library,
+          chainId as number
+        );
 
         const isEIP1559 = await library?.getFeeData();
         const remove = await smartswaprouter.removeLiquidity(
@@ -197,6 +208,12 @@ const Remove = () => {
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           }
         );
         const { confirmations, events } = await remove.wait(1);
@@ -346,7 +363,11 @@ const Remove = () => {
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        const { format1, format2 } = await calculateGas();
+        const { format1, format2, format3 } = await calculateGas(
+          userGasPricePercentage,
+          library,
+          chainId as number
+        );
 
         const isEIP1559 = await library?.getFeeData();
         const remove = await smartswaprouter.removeLiquidityETH(
@@ -372,6 +393,12 @@ const Remove = () => {
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           }
         );
         const { confirmations, events } = await remove.wait(1);
