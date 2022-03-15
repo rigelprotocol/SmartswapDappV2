@@ -18,28 +18,27 @@ export const checkSideTab = (sideBarName: string): boolean => {
   }
 };
 
-export const changeFrequencyTodays = (frequency: string): { days: number, today: number, month: number } => {
-  let days = 1
+export const changeFrequencyTodays = (frequency: string): { today: number,interval:number,days:number} => {
+  let interval = 60*24 
   let date = new Date()
-  let today = date.getDay()
-  let month = date.getMonth()
+  let today = (date.getTime() /(1000*60))
+  let days = 1
+  console.log({today},typeof today)
   if (frequency === "daily") {
-    return { days, today, month }
+    return {today,interval,days}
   } else if (frequency === "weekly") {
-    days = 7
-    today = date.getDate()
-    return { days, today, month }
+    days= 7
+    interval = days * 24 * 60
+    return {today,interval,days}
   } else if (frequency === "monthly") {
-    days = 30
-    today = date.getMonth()
-    return { days, today, month }
+    days =30
+    interval = days * 24 * 60
+    return {today,interval,days}
   } else if (frequency === "30" || frequency === "5") {
-    let timeInMinutes = date.getMinutes()
-    days = parseInt(frequency)
-    today = timeInMinutes
-    return { days, today, month }
+    interval = parseInt(frequency)
+    return {today,interval,days}
   }
-  return { days, today, month }
+  return {today,interval,days}
 }
 
 export const provider = async () => {

@@ -62,7 +62,8 @@ interface DataIncoming {
     transactionHash: string,
     error: [],
     status: number,
-    currentToPrice?: string
+    currentToPrice?: string,
+    chainID?:string
 }
 let web3 = new Web3(Web3.givenProvider);
 export const formatAmount = (number: string, decimals: any) => {
@@ -143,7 +144,7 @@ const useAccountHistory = () => {
         }
     }, [location, chainId])
     useEffect(() => {
-        // setURL("http://localhost:7000")
+        setURL("http://localhost:7000")
 
 
         loadAccountHistory();
@@ -169,6 +170,7 @@ const useAccountHistory = () => {
                 const data = await fetch(uri);
                 const jsondata = await data.json();
                 const SwapTrx = jsondata.result.filter((item: any) => item.to == contractAddress);
+                console.log({swapTrx})
                 const dataFiltered = SwapTrx
                     .filter((items: any) => decodeInput(items.input, SmartSwapRouter02) !== undefined) // && items.transactionHash !== "1"
                     .map((items: any) => ({
@@ -178,7 +180,8 @@ const useAccountHistory = () => {
                         transactionFee: items.gasPrice * items.gasUsed,
                         // name: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).name,
                         transactionHash: items.transactionHash,
-                        status: 10
+                        status: 10,
+                        chainID:items.chainID 
                     }));
                 const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(0, 5) : dataFiltered;
                 userData = dataToUse.map((data: any) => ({
@@ -231,10 +234,9 @@ const useAccountHistory = () => {
                             data.amountToSwap,
                             [fromAddress, toAddress]
                         );
-                        console.log("oorororkoorkooro",data.currentToPrice)
                         return {
                             inputAmount: data.amountToSwap,
-                            outputAmount: data.typeOfTransaction === "Set Price" ? ethers.utils.parseEther("0.5").toString() : toPriceOut[1].toString(),
+                            outputAmount: data.typeOfTransaction === "Set Price" && (data.status === 1 || data.status === 0) ? ethers.utils.parseEther(data.currentToPrice).toString() : data.typeOfTransaction === "Set Price" ? ethers.utils.parseEther(data.percentageChange).toString() : toPriceOut[1].toString(),
                             tokenIn: data.swapFromToken,
                             tokenOut: data.swapToToken,
                             time: timeConverter(parseInt(data.time)),
@@ -244,7 +246,9 @@ const useAccountHistory = () => {
                             transactionHash: data.transactionHash,
                             error: data.errorArray,
                             status: data.status,
-                            currentToPrice: data.name === "Set Price" ? formatAmount(data.currentToPrice, data.tokenOut.decimals) : data.percentageChange
+                            currentToPrice: data.typeOfTransaction === "Set Price" ? data.currentToPrice : data.percentageChange,
+                            chainID:data.chainID 
+                            
                         }
                     })
                     )
@@ -277,7 +281,9 @@ const useAccountHistory = () => {
                     transactionHash: data.transactionHash,
                     error: data.error,
                     status: data.status,
-                    currentToPrice: data.currentToPrice
+                    currentToPrice: data.currentToPrice,
+                    chainID:data.chainID 
+                    
                 })),
             );
 
@@ -298,7 +304,8 @@ const useAccountHistory = () => {
                 transactionHash: data.transactionHash,
                 error: data.error,
                 status: data.status,
-                currentToPrice: data.currentToPrice
+                currentToPrice: data.currentToPrice,
+                chainID:data.chainID 
             }));
             setHistoryData(userSwapHistory);
 

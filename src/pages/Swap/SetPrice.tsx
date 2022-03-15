@@ -36,8 +36,9 @@ import { maxAmountSpend } from '../../utils/maxAmountSpend';
 import { autoSwapV2, rigelToken, SmartSwapRouter } from '../../utils/Contracts';
 import { RGPADDRESSES, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES, SMARTSWAPROUTER } from '../../utils/addresses';
 import { RGP } from '../../utils/addresses';
-import { useDispatch } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
+import { RootState } from "../../state";
 
 
 const SetPrice = () => {
@@ -99,7 +100,7 @@ const SetPrice = () => {
 
 
   useEffect(() => {
-    // setURL("http://localhost:7000")
+    setURL("http://localhost:7000")
     async function checkIfSignatureExists() {
 
       let user = await fetch(`${URL}/auto/data/${account}`)
@@ -126,7 +127,9 @@ const SetPrice = () => {
 
     }
   }, [account])
-
+  const deadline = useSelector<RootState, number>(
+    (state) => state.user.userDeadline
+  );
   const { independentField, typedValue } = useSwapState();
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
 
@@ -197,7 +200,6 @@ const SetPrice = () => {
       data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
 
         currencies[Field.OUTPUT]?.wrapped.address,
-        account,
         futureDate,
         signedTransaction?.mess,
         signedTransaction?.r,
@@ -244,7 +246,7 @@ const SetPrice = () => {
           frequency: "price",
           frequencyNumber: 1,
           presentDate: 0,
-          presentMonth: 0,
+          presentInterval: 0,
           fromAddress: currencies[Field.INPUT]?.isNative ? "native" : currencies[Field.INPUT]?.wrapped.address,
           toAddress: currencies[Field.OUTPUT]?.isNative ? "native" : currencies[Field.OUTPUT]?.wrapped.address,
           signature: signedTransaction,

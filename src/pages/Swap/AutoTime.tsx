@@ -35,14 +35,13 @@ import {
   Select
 } from '@chakra-ui/react';
 import AutoTimeModal from './modals/autoTimeModal';
-import {
-  ChevronDownIcon
-} from "@chakra-ui/icons";
-import { useDispatch } from "react-redux";
+import { useSelector,useDispatch } from 'react-redux';
+import { RootState } from "../../state";
 import { autoSwapV2, rigelToken, SmartSwapRouter, otherMarketPriceContract } from '../../utils/Contracts';
 import { RGPADDRESSES, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES, SMARTSWAPROUTER, OTHERMARKETADDRESSES } from '../../utils/addresses';
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { changeFrequencyTodays } from '../../utils/utilsFunctions';
+
 
 
 const SetPrice = () => {
@@ -107,7 +106,7 @@ const SetPrice = () => {
     [onUserInput]
   );
   useEffect(() => {
-    // setURL("http://localhost:7000")
+    setURL("http://localhost:7000")
     async function runCheck() {
       if (account) {
 
@@ -146,7 +145,9 @@ const SetPrice = () => {
   // const checkIfSignatureExists = async () => {
   //   await if
   // }
-
+  const deadline = useSelector<RootState, number>(
+    (state) => state.user.userDeadline
+  );
   useMemo(async () => {
     if (currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
       const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
@@ -289,11 +290,11 @@ const SetPrice = () => {
           );
 
           arr.length > 1 ? setApproval([arr[1]]) : setApproval([])
-        } else {
-          // setRGPApproval(true)
-        }
-        if (approval[0] === currencies[Field.INPUT]?.name) {
+        } 
+        console.log(approval[0],currencies[Field.INPUT]?.symbol)
+        if (approval[0] === currencies[Field.INPUT]?.symbol) {
           const address = currencies[Field.INPUT]?.wrapped.address;
+          console.log({address})
           const token = await getERC20Token(address, library);
           const walletBal = (await token.balanceOf(account)) + 4e18;
           const approveTransaction = await token.approve(
@@ -303,6 +304,7 @@ const SetPrice = () => {
               from: account,
             }
           );
+          console.log(approveTransaction)
           const { confirmations } = await approveTransaction.wait(1);
           if (confirmations >= 1) {
             dispatch(
@@ -337,15 +339,13 @@ const SetPrice = () => {
         trxState: TrxState.WaitingForConfirmation,
       })
     );
-    let minutesToAdd = 20;
     let currentDate = new Date();
-    let futureDate = currentDate.getTime() + minutesToAdd;
+    let futureDate = currentDate.getTime() + deadline;
     let data, response
     if (currencies[Field.INPUT]?.isNative) {
+      
       data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
-
         currencies[Field.OUTPUT]?.wrapped.address,
-        account,
         futureDate,
         signedTransaction?.mess,
         signedTransaction?.r,
@@ -391,7 +391,7 @@ const SetPrice = () => {
           frequency: selectedFrequency,
           frequencyNumber: changeFrequencyToday.days,
           presentDate: changeFrequencyToday.today,
-          presentMonth: changeFrequencyToday.month,
+          presentInterval: changeFrequencyToday.interval,
           fromAddress: currencies[Field.INPUT]?.isNative ? "native" : currencies[Field.INPUT]?.wrapped.address,
           toAddress: currencies[Field.OUTPUT]?.isNative ? "native" : currencies[Field.OUTPUT]?.wrapped.address,
           signature: signedTransaction,
@@ -518,7 +518,7 @@ const SetPrice = () => {
                     <Text fontSize="24px" color={textColorOne} isTruncated width="160px" textAlign="right">
                       {isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT])}
                     </Text>
-                    <Text fontSize="14px" color={color} textAlign="right">
+                    <Text fontSize="14px" color={color} textAlign="right" width="160px">
                       -2.56
                     </Text>
                   </VStack>
@@ -535,7 +535,7 @@ const SetPrice = () => {
                       <Text fontSize="24px" color={textColorOne} isTruncated width="160px" textAlign="right">
                         {otherMarketprice}
                       </Text>
-                      <Text fontSize="14px" color={color}>
+                      <Text fontSize="14px" color={color}  width="160px">
                         -2.67
                       </Text>
                     </VStack>
@@ -719,14 +719,14 @@ const SetPrice = () => {
                     <Text fontSize="24px" color={textColorOne} isTruncated width="160px" textAlign="right">
                       {isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT])}
                     </Text>
-                    <Text fontSize="14px" color={color} textAlign="right">
+                    <Text fontSize="14px" color={color} textAlign="right"  width="160px">
                       -2.56
                     </Text>
                   </VStack>
                 </Box>
                 <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2}>
                   <Flex>
-                    <Select variant='unstyled' width="110px" cursor="pointer" onChange={(e) => setMarketType(e.target.value)} textAlign="right">
+                    <Select variant='unstyled' width="110px" cursor="pointer" onChange={(e) => setMarketType(e.target.value)} textAlign="right" >
                       <option value='pancakeswap'>Pancakeswap</option>
                       <option value='sushiswap'>Sushiswap</option>
                     </Select>
@@ -736,7 +736,7 @@ const SetPrice = () => {
                       <Text fontSize="24px" color={textColorOne} textAlign="right" isTruncated width="160px" >
                         {otherMarketprice}
                       </Text>
-                      <Text fontSize="14px" color={color}>
+                      <Text fontSize="14px" color={color}  width="160px" textAlign="right">
                         -2.67
                       </Text>
                     </VStack>

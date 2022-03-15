@@ -2,7 +2,8 @@ import { Flex, Grid, Text, Box, useColorModeValue, Button, Tooltip } from '@chak
 import React from 'react';
 import { ArrowRightIcon } from '../../../../theme/components/Icons';
 import TokenIcon from '../../../../assets/Null-24.svg';
-
+import { ExplorerDataType, getExplorerLink } from '../../../../utils/getExplorerLink';
+import { Link } from 'react-router-dom';
 export interface TokenDetails {
   name: string,
   symbol: string,
@@ -24,11 +25,11 @@ export interface DataType {
   transactionHash: string,
   error: [],
   status: number,
-  currentToPrice?: string
+  currentToPrice?: string,
+  chainID?: string,
 }
 
 const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: any }) => {
-
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
   const nonActiveTabColor = useColorModeValue('#666666', '#4A739B');
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
@@ -68,7 +69,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
           <Flex ml={4}>
             <img src={data.token2Icon || TokenIcon} width={25} height={25} alt="logo" />
             <Text fontSize="sm" color={activeTabColor} ml={2}>
-              {data.amountOut} <span>{data.token2.symbol}</span>
+            {data.amountOut} <span>{data.token2.symbol}</span>
             </Text>
           </Flex>
         </Flex>
@@ -97,22 +98,25 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
                     fontSize="12px"
                     lineHeight="0"
                     mb="8px"
+                    cursor="pointer"
                   >
-                    CO{data.token2.symbol[0]}
+                    C{data.token2.symbol[0]}O
                   </Text>
                 </Tooltip>
-
-                <Text color={activeTabColor} fontSize="14px" fontWeight="regular">
-                  {data.currentToPrice}
+                <Tooltip label={data.currentToPrice}>
+                <Text color={activeTabColor} fontSize="14px" fontWeight="regular" cursor="pointer">
+                  {data.currentToPrice && parseFloat(data.currentToPrice).toFixed(2)}
                 </Text>
+                </Tooltip>
               </> :
               <>
-                <Tooltip labele="If Price(Above)">
+                <Tooltip label="If Price(Above)">
                   <Text
                     color={nonActiveTabColor}
                     fontSize="12px"
                     lineHeight="0"
                     mb="8px"
+                    cursor="pointer"
                   >
                     IPA
                   </Text>
@@ -201,8 +205,18 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
             }
 
           </Box>
-
+           
         </Grid>
+        {data?.chainID &&
+            <Flex justifyContent="right">
+                  <Box cursor="pointer">
+                  <a href={getExplorerLink(parseInt(data?.chainID), data.transactionHash, ExplorerDataType.TRANSACTION)} target="_blank">
+                    <ArrowRightIcon />
+                    </a>
+                  </Box>
+            </Flex>
+        }
+        
       </Box>
     </Flex>
   )
