@@ -144,9 +144,7 @@ const useAccountHistory = () => {
         }
     }, [location, chainId])
     useEffect(() => {
-        setURL("http://localhost:7000")
-
-
+        // setURL("http://localhost:7000")
         loadAccountHistory();
     }, [chainId, account, contractAddress]);
 

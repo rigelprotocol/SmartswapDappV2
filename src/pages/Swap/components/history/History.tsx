@@ -41,7 +41,7 @@ const History = () => {
 
 
   useEffect(() => {
-    setURL("http://localhost:7000")
+    // setURL("http://localhost:7000")
     const isActive = checkSideTab('history');
     dispatch(transactionTab({ removeSideTab: isActive }))
 

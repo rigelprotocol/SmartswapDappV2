@@ -106,7 +106,7 @@ const SetPrice = () => {
     [onUserInput]
   );
   useEffect(() => {
-    setURL("http://localhost:7000")
+    // setURL("http://localhost:7000")
     async function runCheck() {
       if (account) {
 
