@@ -27,9 +27,12 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
 
     const [ purchaseModal,setOpenPerchaseModal] = useState(false)
 
+  const textColor = useColorModeValue("#333333", "#F1F5F8");
+  const lightTextColor = useColorModeValue("#666666", "grey");
+
     return (
         <>
-        <Text color={'#333333'} fontWeight={700} py={10} fontSize={24}>
+        <Text color={textColor} fontWeight={700} py={10} fontSize={24}>
             Featured NFT
           </Text>
             <Center py={8}>
@@ -56,18 +59,18 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
                         flex={1}
                         pl={10}
                     >
-                        <Text fontWeight={700} color={'#333333'}  fontSize={38} pt={'25%'}>
+                        <Text fontWeight={700} color={textColor}  fontSize={38} pt={'25%'}>
                             Featured NFT Name
                         </Text>
-                        <Text align={'left'} pt={10} textColor={"#666666"}>
+                        <Text align={'left'} pt={10} textColor={lightTextColor}>
                             Price
                         </Text>
 
-                        <Text color={'#333333'}  fontWeight={700} fontSize={28}>
+                        <Text color={textColor}  fontWeight={700} fontSize={28}>
                             7,500 USD
                         </Text>
 
-                        <Text align={'left'}  textColor={"#666666"}>
+                        <Text align={'left'}  textColor={lightTextColor}>
                             500.91 RGP
                         </Text>
 
@@ -82,8 +85,6 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
                                 width={'45%'}
                             >
                                 <Link to="/nfts/123">View NFT</Link>
-                                
-                                
                                 </Button>
                         </Flex>
 

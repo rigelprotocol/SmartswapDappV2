@@ -11,6 +11,7 @@ const ClaimNFTModal = ({ isOpen, close }: comfirmPurchaseModalProps) => {
 
   
   const textColor = useColorModeValue("#333333", "#F1F5F8");
+  const lightTextColor = useColorModeValue("#666666", "grey");
 
   return (
         <Modal isOpen={isOpen} onClose={close}>
@@ -27,6 +28,7 @@ const ClaimNFTModal = ({ isOpen, close }: comfirmPurchaseModalProps) => {
                         borderColor={'#DEE5ED'}
                         padding="25px 0"
                         fontWeight="normal"
+                        borderRadius={8}
                     >
                         <Flex
                             flexDirection="column"
@@ -37,7 +39,7 @@ const ClaimNFTModal = ({ isOpen, close }: comfirmPurchaseModalProps) => {
                             <Image width={54} height={54} src='https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png' alt="logo" />
                             <Text paddingTop={3} fontSize={20} color={textColor} >NFT Name</Text>
 
-                            <Text color={textColor} paddingTop={2} > <span style={{color: '#666666'}}>Created by:</span>  RigelProtocol</Text>
+                            <Text color={textColor} paddingTop={2} > <span style={{color: lightTextColor}}>Created by:</span>  RigelProtocol</Text>
                         </Flex>
                     </Box>
                     <Box
@@ -46,13 +48,14 @@ const ClaimNFTModal = ({ isOpen, close }: comfirmPurchaseModalProps) => {
                         borderColor={'#DEE5ED'}
                         fontWeight="normal"
                         marginTop={4}
+                        borderRadius={8}
                     >
                         <Flex mt="1" justifyContent="space-between" alignContent="center">
-                            <Text color={'#666666'} >Investment required to claim:</Text>
+                            <Text color={lightTextColor} >Investment required to claim:</Text>
                             <Text color={textColor}>3000 USD</Text>
                         </Flex>
                         <Flex mt="1" justifyContent="space-between" alignContent="center">
-                            <Text color={'#666666'} >Current investement level:</Text>
+                            <Text color={lightTextColor} >Current investement level:</Text>
                             <Text color={textColor}> 3000 USD </Text>
                         </Flex>
                     </Box>

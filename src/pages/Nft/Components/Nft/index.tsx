@@ -24,7 +24,8 @@ type NftProps = {
 
 export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, isFeatured = false }: NftProps) {
 
- 
+  const textColor = useColorModeValue("#333333", "#F1F5F8");
+  const lightTextColor = useColorModeValue("#666666", "grey");
   const [ purchaseModal,setOpenPerchaseModal] = useState(false)
    
   return (
@@ -49,23 +50,23 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
             <Box d="flex" alignItems="baseline">
             <Text
             py={2} 
-            color={'#333333'}
+            color={textColor}
               >
                 {nftName}
               </Text>
             </Box>
             <Flex mt="2" justifyContent="space-between" alignContent="center">
-              <Text textColor={'#666666'}>Number:</Text>
-              <Text  color={'#333333'}>#179 of 500</Text>
+              <Text textColor={lightTextColor}>Number:</Text>
+              <Text  color={textColor}>#179 of 500</Text>
             </Flex>
   
             <Flex mt="2" justifyContent="space-between" alignContent="center">
-              <Text textColor={'#666666'}>Price:</Text>
-              <Text  color={'#333333'}>250 USD</Text>
+              <Text textColor={lightTextColor}>Price:</Text>
+              <Text  color={textColor}>250 USD</Text>
             </Flex>
             <Flex mt="2" justifyContent="space-between" alignContent="center">
               <Text></Text>
-              <Text textColor={'#666666'} >≈ 5000.91 RGP</Text>
+              <Text textColor={lightTextColor} >≈ 5000.91 RGP</Text>
             </Flex>
             <Flex mt="2" pt={2} justifyContent="space-between" alignContent="center">
               <Button onClick={()=>setOpenPerchaseModal(true) } width={40} variant={'brand'}>Buy NFT</Button>

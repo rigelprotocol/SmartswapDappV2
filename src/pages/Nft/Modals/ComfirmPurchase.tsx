@@ -9,12 +9,13 @@ type comfirmPurchaseModalProps = {
 
 const ComfirmPurchase = ({ isOpen, close }: comfirmPurchaseModalProps) => {
     const textColor = useColorModeValue("#333333", "#F1F5F8");
+    const lightTextColor = useColorModeValue("#666666", "grey");
 
   return (
         <Modal isOpen={isOpen} onClose={close}>
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader textColor={'#333333'}>Confirm Purchase</ModalHeader>
+                <ModalHeader textColor={textColor}>Confirm Purchase</ModalHeader>
                 <ModalCloseButton />
                 <Divider marginTop={'-1.5'}  borderColor={'#DEE5ED'} />
                 <ModalBody>
@@ -25,6 +26,7 @@ const ComfirmPurchase = ({ isOpen, close }: comfirmPurchaseModalProps) => {
                         borderColor={'#DEE5ED'}
                         padding="25px 0"
                         fontWeight="normal"
+                        borderRadius={8}
                     >
                         <Flex
                             flexDirection="column"
@@ -35,7 +37,7 @@ const ComfirmPurchase = ({ isOpen, close }: comfirmPurchaseModalProps) => {
                             <Image width={54} height={54} src='https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png' alt="logo" />
                             <Text paddingTop={3} fontSize={20} color={textColor} >NFT Name</Text>
 
-                            <Text paddingTop={2} textColor={'#333333'} > <span style={{color: '#666666'}}>Created by:</span>  RigelProtocol</Text>
+                            <Text paddingTop={2} textColor={textColor} > <span style={{color: lightTextColor}}>Created by:</span>  RigelProtocol</Text>
                         </Flex>
                     </Box>
                     <Box
@@ -44,11 +46,12 @@ const ComfirmPurchase = ({ isOpen, close }: comfirmPurchaseModalProps) => {
                         borderColor={'#DEE5ED'}
                         fontWeight="normal"
                         marginTop={4}
+                        borderRadius={8}
                     >
                         <Flex mt="1" justifyContent="space-between" alignContent="center">
 
 
-                            <Text color={'#666666'} >Choose token to pay with</Text>
+                            <Text color={lightTextColor} >Choose token to pay with</Text>
                             <Image width={5} height={5} src='/images/DownVector.svg' />
 
                         </Flex>
@@ -60,14 +63,15 @@ const ComfirmPurchase = ({ isOpen, close }: comfirmPurchaseModalProps) => {
                         borderColor={'#DEE5ED'}
                         fontWeight="normal"
                         marginTop={4}
+                        borderRadius={8}
                     >
                         <Flex mt="1" justifyContent="space-between" alignContent="center">
-                            <Text color={'#666666'} >Price</Text>
-                            <Text textColor={'#333333'}>250 USD</Text>
+                            <Text color={lightTextColor} >Price</Text>
+                            <Text textColor={textColor}>250 USD</Text>
                         </Flex>
                         <Flex mt="1" justifyContent="space-between" alignContent="center">
                             <Text ></Text>
-                            <Text color={'#666666'} > ≈ </Text>
+                            <Text color={lightTextColor} > ≈ </Text>
                         </Flex>
                     </Box>
                     <Button

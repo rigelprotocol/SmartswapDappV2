@@ -1,4 +1,4 @@
-import React, { Container, Grid, SimpleGrid, Text } from "@chakra-ui/react"
+import React, { Container, Grid, SimpleGrid, Text, useColorModeValue } from "@chakra-ui/react"
 import { createBreakpoints } from '@chakra-ui/theme-tools'
 import Masonry from "react-masonry-css"
 
@@ -7,6 +7,8 @@ import Nft from "../Nft"
 
 const NftList = () => {
 
+  
+  const textColor = useColorModeValue("#333333", "#F1F5F8");
     const breakpointColumnsObj = {
         default: 4,
         1100: 3,
@@ -15,7 +17,7 @@ const NftList = () => {
       };
     return (
 <>
-<Text color={'#333333'} fontWeight={700} py={10} fontSize={24}>
+<Text color={textColor} fontWeight={700} py={10} fontSize={24}>
             NFTs
           </Text>
             
