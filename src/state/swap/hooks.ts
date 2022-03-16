@@ -173,6 +173,7 @@ export function useDerivedSwapInfo(): {
     }
   };
 
+
   let inputError: string | undefined;
   if (!account) {
     inputError = "Connect Wallet";
@@ -203,7 +204,7 @@ export function useDerivedSwapInfo(): {
     pathArray,
     pathSymbol,
     isExactIn,
-    formatAmount,
+    formatAmount
   };
 }
 

@@ -35,6 +35,7 @@ export type IModal = {
   outputLogo: string;
   handleSwap: () => void;
   pathSymbol: string;
+  showNewChangesText:boolean
 };
 
 const ConfirmModal: React.FC<IModal> = ({
@@ -54,6 +55,7 @@ const ConfirmModal: React.FC<IModal> = ({
   outputLogo,
   handleSwap,
   pathSymbol,
+  showNewChangesText
 }) => {
   const bgColor = useColorModeValue("#FFF", "#15202B");
   const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
@@ -152,6 +154,9 @@ const ConfirmModal: React.FC<IModal> = ({
                 <Text color={heavyTextColor}>{toDeposited}</Text>
               </Flex>
             </Box>
+          {showNewChangesText===true &&   <Box my="2" color="red.200">
+            <InfoOutlineIcon /> Price changed 
+            </Box>}
             <Box my='5'>
               <Flex justifyContent='space-between' fontSize='14px'>
                 <Text color={lightTextColor}>Price</Text>

@@ -133,4 +133,4 @@ const CurrencyLogo: FunctionComponent<CurrencyLogoProps> = ({
   );
 };
 
-export default CurrencyLogo;
+export default React.memo(CurrencyLogo);
