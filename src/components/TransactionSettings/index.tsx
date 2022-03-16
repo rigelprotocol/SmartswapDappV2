@@ -489,23 +489,7 @@ const TransactionSettings = () => {
                 />
               </InputGroup>
             </Flex>
-            {!!slippageError && (
-              <Text
-                fontSize='14px'
-                color={
-                  slippageError === SlippageError.InvalidInput
-                    ? "#E53E3E"
-                    : "#DD6B20"
-                }
-                mb='8px'
-              >
-                {slippageError === SlippageError.InvalidInput
-                  ? "Enter a valid slippage percentage"
-                  : slippageError === SlippageError.RiskyLow
-                  ? "Your transaction may fail"
-                  : "Your transaction may be frontrun"}
-              </Text>
-            )}
+
             <Flex mb={3}>
               <Text fontSize='14px' mr={2} color={textColorTwo}>
                 Transaction Deadline
