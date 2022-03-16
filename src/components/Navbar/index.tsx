@@ -101,6 +101,8 @@ const Index = () => {
                   <SwapDropdown />
                   <Nav label="Liquidity" to="/pool" />
                   <Nav label="Farming" to="/farming-v2" />
+                  
+                  <Nav label="NFT" to="/nft" />
                   <Link href="#">
                     Analytics
                   </Link>
