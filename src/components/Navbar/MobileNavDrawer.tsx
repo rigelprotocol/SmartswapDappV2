@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Flex,
   useDisclosure,
@@ -11,36 +11,37 @@ import {
   Text,
   Link,
   Collapse,
-  useMediaQuery, MenuItem,
-} from '@chakra-ui/react';
+  useMediaQuery,
+  MenuItem,
+} from "@chakra-ui/react";
 import {
   HamburgerIcon,
   ChevronDownIcon,
   ExternalLinkIcon,
   ChevronUpIcon,
-} from '@chakra-ui/icons';
-import { CloseIcon } from '../../theme/components/Icons';
-import { NavLink } from 'react-router-dom';
-import useToggle from '../../utils/hooks/useToggle';
-import {SupportedChainId} from "../../constants/chains";
-import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
+} from "@chakra-ui/icons";
+import { CloseIcon } from "../../theme/components/Icons";
+import { NavLink } from "react-router-dom";
+import useToggle from "../../utils/hooks/useToggle";
+import { SupportedChainId } from "../../constants/chains";
+import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 
 const MobileNavDrawer = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isOn, toggleIsOn] = useToggle();
-  const HamburgerIconBorderColor = useColorModeValue('#DEE5ED', '#213345');
-  const HamburgerIconColor = useColorModeValue('#333333', '#F1F5F8');
-  const SwapBgColor = useColorModeValue('#F2F5F8', '#213345');
-  const closeButtonBorder = useColorModeValue('#666666', '#DCE5EF');
-  const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
+  const HamburgerIconBorderColor = useColorModeValue("#DEE5ED", "#213345");
+  const HamburgerIconColor = useColorModeValue("#333333", "#F1F5F8");
+  const SwapBgColor = useColorModeValue("#F2F5F8", "#213345");
+  const closeButtonBorder = useColorModeValue("#666666", "#DCE5EF");
+  const [isMobileDevice] = useMediaQuery("(max-width: 750px)");
 
-  const {chainId} = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
 
   const Nav = ({ to, label }: { to: string; label: string }) => (
     <NavLink
       to={to}
       activeStyle={{
-        color: '#319EF6',
+        color: "#319EF6",
       }}
     >
       {label}
@@ -61,7 +62,7 @@ const MobileNavDrawer = () => {
         <HamburgerIcon
           color={HamburgerIconColor}
           onClick={onOpen}
-          cursor={'pointer'}
+          cursor={"pointer"}
           w="24px"
           h="24px"
         />
@@ -94,7 +95,7 @@ const MobileNavDrawer = () => {
 
                 <NavLink
                   activeStyle={{
-                    color: '#319EF6',
+                    color: "#319EF6",
                   }}
                   to="/swap"
                 >
@@ -105,7 +106,7 @@ const MobileNavDrawer = () => {
                     h="40px"
                     justifyContent="space-between"
                     onClick={toggleIsOn}
-                    bgColor={isOn ? SwapBgColor : 'transparent'}
+                    bgColor={isOn ? SwapBgColor : "transparent"}
                   >
                     <Flex ml={6}>
                       <Nav label="Swap" to="/swap" />
@@ -119,21 +120,46 @@ const MobileNavDrawer = () => {
                 </NavLink>
                 <Collapse animateOpacity in={isOn}>
                   <Flex
-                    display={isOn ? '' : 'none'}
+                    display={isOn ? "" : "none"}
                     flexDirection="column"
                     ml={10}
                     mb={3}
                   >
-                    <Text _hover={{ color: '#319EF6' }} mb={2} onClick={onClose}>
+                    <Text
+                      _hover={{ color: "#319EF6" }}
+                      mb={2}
+                      onClick={onClose}
+                    >
                       <Nav label="Straight Swap" to="/swap" />
                     </Text>
-                    <Text _hover={{ color: '#319EF6' }} mb={2} onClick={onClose}>
-                      <Nav label="Auto-Time" to={chainId === SupportedChainId.BINANCETEST ? '/auto-time' : '#'} />
+                    <Text
+                      _hover={{ color: "#319EF6" }}
+                      mb={2}
+                      onClick={onClose}
+                    >
+                      <Nav
+                        label="Auto-Time"
+                        to={
+                          chainId === SupportedChainId.BINANCETEST
+                            ? "/auto-time"
+                            : "#"
+                        }
+                      />
                     </Text>
-                    <Text _hover={{ color: '#319EF6' }} mb={2} onClick={onClose}>
-                      <Nav label="Set Price" to={chainId === SupportedChainId.BINANCETEST ? '/set-price' : '#'} />
+                    <Text
+                      _hover={{ color: "#319EF6" }}
+                      mb={2}
+                      onClick={onClose}
+                    >
+                      <Nav
+                        label="Set Price"
+                        to={
+                          chainId === SupportedChainId.BINANCETEST
+                            ? "/set-price"
+                            : "#"
+                        }
+                      />
                     </Text>
-
                   </Flex>
                 </Collapse>
                 <Flex ml={6} mb={3}>
@@ -143,9 +169,12 @@ const MobileNavDrawer = () => {
                   <Nav label="Farming" to="/farming-v2" />
                 </Flex>
 
-                <Flex ml={6} mb={3}>
-                  <Nav label="NFT" to="/nft" />
-                </Flex>
+                {(window as any).location.hostname !==
+                "smartswap.rigelprotocol.com" ? (
+                  <Flex ml={6} mb={3}>
+                    <Nav label="NFT" to="/nft" />
+                  </Flex>
+                ) : null}
 
                 <Flex ml={6} mb={3}>
                   <Link href="#" isExternal>
