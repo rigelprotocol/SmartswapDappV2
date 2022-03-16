@@ -20,6 +20,7 @@ import {
   Tooltip,
   IconButton,
   useClipboard,
+  AlertDialogBody,
 } from "@chakra-ui/react";
 import { CopyIcon } from "../../theme/components/Icons";
 import { useHistory, useRouteMatch } from "react-router-dom";
@@ -83,6 +84,7 @@ import CryptoJS from "crypto-js";
 import { shortenCode } from "../../utils";
 import { useLocation } from "react-router-dom";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
+import { useUpdateUserGasPreference } from "../../state/gas/hooks";
 
 export const BIG_TEN = new bigNumber(10);
 export const LIQUIDITY = "liquidity";
@@ -115,6 +117,8 @@ export function Index() {
   const hostName = window.location.href.split("?")[0];
   const { hasCopied, onCopy } = useClipboard(`${hostName}?ref=${referralCode}`);
   const [URLRefCode, setURLRefCode] = useState("");
+
+  useUpdateUserGasPreference();
 
   const handleTabsChange = (index: number) => {
     if (chainId !== SupportedChainId.OASISMAINNET) {
@@ -1835,7 +1839,7 @@ export function Index() {
       >
         <TabList borderBottom={0}>
           <Tab
-            isDisabled={switchTab}
+            // isDisabled={switchTab}
             display='flex'
             flex-direction='row'
             justify-content='center'
@@ -1871,6 +1875,7 @@ export function Index() {
             // minWidth={{ base: "none", md: "200px", lg: "200px" }}
             value={LIQUIDITY}
             onClick={() => handleSelect(LIQUIDITY)}
+            // onClick={() => alert("yes")}
             borderColor={
               mode === LIGHT_THEME && selected === LIQUIDITY
                 ? "#F2F5F8 !important"
@@ -1916,7 +1921,6 @@ export function Index() {
                 border=' 1px solid #008DFF'
                 box-sizing='border-box'
                 borderRadius='50px'
-                /* Inside auto layout */
                 width={isMobileDevice ? undefined : "fit-content"}
                 flex='none'
                 order='1'
@@ -2269,7 +2273,7 @@ export function Index() {
                     <Text />
                   </Flex>
                   {FarmData.contents.map((content: any, index: number) =>
-                    index === 10 ? (
+                     content.id==="13" ? (
                       <YieldFarm
                         farmDataLoading={farmDataLoading}
                         content={content}
