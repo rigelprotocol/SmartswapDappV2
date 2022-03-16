@@ -355,16 +355,18 @@ const SendToken = () => {
       );
     }
   };
-
+  console.log({isExactIn})
   const [sendingTrx, setSendingTrx] = useState(false);
   const outputToken = useCallback((): any => {
     if (parsedAmounts[Field.OUTPUT]) {
-      return isExactIn
+      const data = isExactIn
         ? ethers.utils.parseUnits(
             parsedAmounts[Field.OUTPUT] as string,
             currencies[Field.OUTPUT]?.decimals
           )
         : parsedAmounts[Field.OUTPUT];
+        console.log({data})
+        return data
     }
   }, [parsedAmounts]);
 
@@ -401,7 +403,8 @@ const SendToken = () => {
       const sendTransaction = await route.swapExactTokensForTokens(
         isExactIn ? parsedAmount : formatAmount,
         // parsedAmount,
-        outputToken(),
+        // outputToken(),
+        parsedOutput(currencies[Field.OUTPUT]?.decimals as number),
         // [from, to],
         pathArray,
         account,
