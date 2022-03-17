@@ -118,10 +118,6 @@ export const useSwap = (
               tokenTwoAddress,
             ]);
 
-<<<<<<< HEAD
-
-=======
->>>>>>> develop
             const amountsIn =
               independentFieldString === "INPUT"
                 ? undefined
