@@ -1691,6 +1691,7 @@ export function Index() {
     setRun(true);
   }
 
+  console.log(FarmData.contents)
   return (
     <Box>
       <Joyride

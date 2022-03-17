@@ -1102,7 +1102,7 @@ const ShowYieldFarmDetails = ({
               })
             );
           }
-        } else if (id === 13) {
+        } else if (id === 10793) {
           const specialPool = await RGPSpecialPool2(
             RGPSPECIALPOOLADDRESSES2[chainId as number],
             library
