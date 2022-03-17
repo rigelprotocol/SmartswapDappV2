@@ -1354,7 +1354,7 @@ const ShowYieldFarmDetails = ({
 
   //Deposit
   const confirmDeposit = async (val: any) => {
-    console.log("deposit", val);
+    console.log("deposit",{ val,content});
     setDepositValue("Pending Confirmation");
     dispatch(
       setOpenModal({
@@ -1364,9 +1364,10 @@ const ShowYieldFarmDetails = ({
     );
     try {
       if (account) {
+        alert(account)
         if (val === "RGP" && Number(content.id) === 1) {
           await RGPuseStake(depositTokenValue);
-        } else if (val === "RGP" && Number(content.id) === 11) {
+        } else if (val === "RGP" && Number(content.id) === 13) {
           await RGPuseStakeV2(depositTokenValue, referrerAddress);
         } else if (
           val === "RGP-BNB" ||
@@ -1485,32 +1486,41 @@ const ShowYieldFarmDetails = ({
           RGPSPECIALPOOLADDRESSES2[chainId as number],
           library
         );
-        const { format1, format2, format3 } = await calculateGas(
-          userGasPricePercentage,
-          library,
-          chainId as number
-        );
+        // const { format1, format2, format3 } = await calculateGas(
+        //   userGasPricePercentage,
+        //   library,
+        //   chainId as number
+        // );
 
-        const isEIP1559 = await library?.getFeeData();
+        // const isEIP1559 = await library?.getFeeData();
+        // const data = await specialPool.stake(
+        //   ethers.utils.parseEther(depositTokenValue.toString()),
+        //   referrerAddress,
+        //   {
+        //     from: account,
+        //     maxPriorityFeePerGas:
+        //       isEIP1559 && chainId === 137
+        //         ? ethers.utils.parseUnits(format1, 9).toString()
+        //         : null,
+        //     maxFeePerGas:
+        //       isEIP1559 && chainId === 137
+        //         ? ethers.utils.parseUnits(format2, 9).toString()
+        //         : null,
+        //     gasPrice:
+        //       chainId === 137
+        //         ? null
+        //         : chainId === 80001
+        //         ? null
+        //         : ethers.utils.parseUnits(format3, 9).toString(),
+        //   }
+        // );
         const data = await specialPool.stake(
           ethers.utils.parseEther(depositTokenValue.toString()),
           referrerAddress,
           {
             from: account,
-            maxPriorityFeePerGas:
-              isEIP1559 && chainId === 137
-                ? ethers.utils.parseUnits(format1, 9).toString()
-                : null,
-            maxFeePerGas:
-              isEIP1559 && chainId === 137
-                ? ethers.utils.parseUnits(format2, 9).toString()
-                : null,
-            gasPrice:
-              chainId === 137
-                ? null
-                : chainId === 80001
-                ? null
-                : ethers.utils.parseUnits(format3, 9).toString(),
+            gasLimit: 200000,
+            gasPrice: ethers.utils.parseUnits("20", "gwei"),
           }
         );
         const { confirmations, status } = await fetchTransactionData(data);
@@ -1523,7 +1533,8 @@ const ShowYieldFarmDetails = ({
         );
         // callRefreshFarm(confirmations, status);
       } catch (error) {
-        console.log(error);
+
+        console.log(error,9290202);
         dispatch(
           setOpenModal({
             message: `Transaction failed`,
