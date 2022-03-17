@@ -1168,7 +1168,6 @@ export function Index() {
           )
           .toString();
 
-        console.log("log", RGP_WARSLiquidity);
 
         const RGP_METOLiquidity = ethers.utils
           .formatUnits(
@@ -1691,7 +1690,6 @@ export function Index() {
     setRun(true);
   }
 
-  console.log(FarmData.contents)
   return (
     <Box>
       <Joyride
