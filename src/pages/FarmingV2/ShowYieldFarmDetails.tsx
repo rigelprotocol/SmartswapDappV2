@@ -197,8 +197,9 @@ const ShowYieldFarmDetails = ({
       if (content.deposit === "RGP" && Number(content.id) === 1) {
         const specialPoolV1Approval = await specialPoolV1Allowance(rgp);
         changeApprovalButton(true, specialPoolV1Approval);
-      } else if (content.deposit === "RGP" && Number(content.id) === 11) {
+      } else if (content.deposit === "RGP" && Number(content.id) === 13) {
         const specialPoolV2Approval = await specialPoolV2Allowance(rgp);
+        console.log({specialPoolV2Approval,content})
         changeApprovalButton(true, specialPoolV2Approval);
       } else if (
         content.deposit === "RGP-BNB" ||
@@ -600,7 +601,7 @@ const ShowYieldFarmDetails = ({
         await RGPSpecialPoolV1Approval();
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
-      } else if (val === "RGP" && Number(content.id) === 11) {
+      } else if (val === "RGP" && Number(content.id) === 13) {
         await RGPSpecialPoolV2Approval();
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
@@ -908,7 +909,7 @@ const ShowYieldFarmDetails = ({
       if (account) {
         if (val === "RGP" && Number(content.id) === 1) {
           await RGPUnstake();
-        } else if (val === "RGP" && Number(content.id) === 11) {
+        } else if (val === "RGP" && Number(content.id) === 13) {
           await RGPUnstakeV2();
         } else if (
           val === "RGP-BNB" ||
@@ -1364,7 +1365,6 @@ const ShowYieldFarmDetails = ({
     );
     try {
       if (account) {
-        alert(account)
         if (val === "RGP" && Number(content.id) === 1) {
           await RGPuseStake(depositTokenValue);
         } else if (val === "RGP" && Number(content.id) === 13) {
