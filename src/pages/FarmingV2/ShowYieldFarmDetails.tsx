@@ -192,6 +192,7 @@ const ShowYieldFarmDetails = ({
     };
 
     const checkForApproval = async () => {
+      console.log({content})
       const rgp = await rigelToken(RGP[chainId as number], library);
       const rgpApproval = await poolAllowance(rgp);
       if (content.deposit === "RGP" && Number(content.id) === 1) {
@@ -1101,7 +1102,7 @@ const ShowYieldFarmDetails = ({
               })
             );
           }
-        } else if (id === 12) {
+        } else if (id === 13) {
           const specialPool = await RGPSpecialPool2(
             RGPSPECIALPOOLADDRESSES2[chainId as number],
             library
