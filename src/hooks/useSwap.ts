@@ -39,7 +39,6 @@ export function tryParseAmount<T extends Currency>(
       .parseUnits(value, decimals)
       .toString();
 
-    console.log(typedValueParsed);
     if (typedValueParsed !== "0") {
       return typedValueParsed;
     }
@@ -90,7 +89,7 @@ export const useSwap = (
   if (SMARTSWAPFACTORYADDRESSES[chainId as number] !== "0x") {
     validSmartAddress = SMARTSWAPFACTORYADDRESSES[chainId as number];
   }
-
+ 
   useEffect(() => {
     const getPairs = async () => {
       try {
@@ -119,7 +118,10 @@ export const useSwap = (
               tokenTwoAddress,
             ]);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> develop
             const amountsIn =
               independentFieldString === "INPUT"
                 ? undefined
@@ -127,7 +129,6 @@ export const useSwap = (
                   tokenOneAddress,
                   tokenTwoAddress,
                 ]);
-
 
             const output = formatAmount(amountOut[1], currencyB.decimals);
 
@@ -474,10 +475,18 @@ export const useSwap = (
       }
     };
 
-    getPairs();
+    var interval:any
+      if(tokenOneAddress && tokenTwoAddress&& (amountIn ) ){
+        interval = setInterval(()=>
+          getPairs(),2000)
+      }
+ getPairs();
+    return () => clearInterval(interval)
+
+   
   }, [
-    currencyA,
-    currencyB,
+    // currencyA,
+    // currencyB,
     address,
     amountIn,
     wrap,
@@ -487,6 +496,6 @@ export const useSwap = (
     tokenB,
     independentFieldString,
   ]);
-
+  
   return [address, wrap, amount, pathArray, pathSymbol];
 };

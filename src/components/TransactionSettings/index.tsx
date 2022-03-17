@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Text,
   Flex,
@@ -15,109 +15,151 @@ import {
   Button,
   IconButton,
   Tooltip,
-}
-  from '@chakra-ui/react';
-import { TimeIcon } from '@chakra-ui/icons';
-import { SettingsIcon } from '../../theme/components/Icons';
-import { ExclamationIcon } from '../../theme/components/Icons';
-import { useUserSlippageTolerance, useUserTransactionTTL } from '../../state/user/hooks'
-import { escapeRegExp } from '../../utils'
+} from "@chakra-ui/react";
+import { TimeIcon } from "@chakra-ui/icons";
+import { SettingsIcon } from "../../theme/components/Icons";
+import { ExclamationIcon } from "../../theme/components/Icons";
+import {
+  useUserSlippageTolerance,
+  useUserTransactionTTL,
+} from "../../state/user/hooks";
+import { escapeRegExp } from "../../utils";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state";
 import { detailsTab, transactionTab } from "../../state/transaction/actions";
 import { removeSideTab } from "../../utils/utilsFunctions";
+import { useUserGasPricePercentage } from "../../state/gas/hooks";
 
 enum SlippageError {
-  InvalidInput = 'InvalidInput',
-  RiskyLow = 'RiskyLow',
-  RiskyHigh = 'RiskyHigh',
+  InvalidInput = "InvalidInput",
+  RiskyLow = "RiskyLow",
+  RiskyHigh = "RiskyHigh",
 }
 
 enum DeadlineError {
-  InvalidInput = 'InvalidInput',
+  InvalidInput = "InvalidInput",
 }
 
 const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`);
 
 const TransactionSettings = () => {
-  const textColor = useColorModeValue('#333333', '#F1F5F8');
-  const iconColor = useColorModeValue('#666666', '#DCE5EF');
-  const bgColor = useColorModeValue('#ffffff', '#15202B');
-  const buttonBgcolor = useColorModeValue('#F2F5F8', '#213345');
-  const buttonBgColorTwo = useColorModeValue('#F2F5F8', '#324D68');
-  const textColorTwo = useColorModeValue('#666666', '#DCE6EF');
-  const borderColor = useColorModeValue('#DEE6ED', '#324D68');
+  const textColor = useColorModeValue("#333333", "#F1F5F8");
+  const iconColor = useColorModeValue("#666666", "#DCE5EF");
+  const bgColor = useColorModeValue("#ffffff", "#15202B");
+  const buttonBgcolor = useColorModeValue("#FFFFFF", "#213345");
+  const buttonBgColorTwo = useColorModeValue("#F2F5F8", "#324D68");
+  const textColorTwo = useColorModeValue("#666666", "#DCE6EF");
+  const borderColor = useColorModeValue("#DEE6ED", "#324D68");
   const activeButtonColor = useColorModeValue("#319EF6", "#4CAFFF");
+  const inputRightAddOnBgColor = useColorModeValue("#F2F5F8", "");
   const [slippageValue, setSlippageValue] = useState("");
   const handleClick = (e) => {
     e.preventDefault();
-    setSlippageValue(e.target.value)
+    setSlippageValue(e.target.value);
   };
-  const [userSlippageTolerance, setUserSlippageTolerance] = useUserSlippageTolerance();
-  const [slippageInput, setSlippageInput] = useState('');
+  const [userSlippageTolerance, setUserSlippageTolerance] =
+    useUserSlippageTolerance();
+  const [slippageInput, setSlippageInput] = useState("");
+  const [userGasInput, setUserGasInput] = useState("");
   const [ttl, setTtl] = useUserTransactionTTL();
-  const [deadlineInput, setDeadlineInput] = useState('');
+  const [deadlineInput, setDeadlineInput] = useState("");
   const dispatch = useDispatch<AppDispatch>();
+  const [userGasPricePercentage, setUserGasPricePercentage] =
+    useUserGasPricePercentage();
 
-  const transactionState = useSelector((state: RootState) => state.transactions.removeSideTab);
-  const detailsState = useSelector((state: RootState) => state.transactions.removeDetailsTab);
+  const transactionState = useSelector(
+    (state: RootState) => state.transactions.removeSideTab
+  );
+  const detailsState = useSelector(
+    (state: RootState) => state.transactions.removeDetailsTab
+  );
+
+  const userGasPricePercent = useSelector(
+    (state: RootState) => state.gas.userGasPrice
+  );
 
   const showTransactionTab = () => {
     dispatch(transactionTab({ removeSideTab: false }));
-    window.localStorage.removeItem('history');
+    window.localStorage.removeItem("history");
   };
 
   const hideTransactionTab = () => {
     dispatch(transactionTab({ removeSideTab: true }));
-    removeSideTab('history');
+    removeSideTab("history");
   };
 
   const showDetails = () => {
     dispatch(detailsTab({ removeDetailsTab: false }));
-    window.localStorage.removeItem('details');
+    window.localStorage.removeItem("details");
   };
 
   const hideDetails = () => {
     dispatch(detailsTab({ removeDetailsTab: true }));
-    removeSideTab('details');
+    removeSideTab("details");
   };
 
-
   const slippageInputIsValid =
-    slippageInput === '' || (userSlippageTolerance / 100).toFixed(2) === Number.parseFloat(slippageInput).toFixed(2);
+    slippageInput === "" ||
+    (userSlippageTolerance / 100).toFixed(2) ===
+      Number.parseFloat(slippageInput).toFixed(2);
 
   let slippageError: SlippageError | undefined;
-  if (slippageInput !== '' && !slippageInputIsValid) {
-    slippageError = SlippageError.InvalidInput
+  if (slippageInput !== "" && !slippageInputIsValid) {
+    slippageError = SlippageError.InvalidInput;
   } else if (slippageInputIsValid && userSlippageTolerance < 50) {
-    slippageError = SlippageError.RiskyLow
+    slippageError = SlippageError.RiskyLow;
   } else if (slippageInputIsValid && userSlippageTolerance > 500) {
-    slippageError = SlippageError.RiskyHigh
+    slippageError = SlippageError.RiskyHigh;
   } else {
-    slippageError = undefined
+    slippageError = undefined;
   }
 
-  const parseCustomSlippage = (value: string) => {
-    if (value === '' || inputRegex.test(escapeRegExp(value))) {
-      setSlippageInput(value);
+  const parseCustomGas = (value: string) => {
+    if (value === "" || inputRegex.test(escapeRegExp(value))) {
+      setUserGasInput(value);
 
       try {
-        const valueAsIntFromRoundedFloat = Number.parseInt((Number.parseFloat(value) * 100).toString());
-        if (!Number.isNaN(valueAsIntFromRoundedFloat) && valueAsIntFromRoundedFloat < 5000) {
-          setUserSlippageTolerance(valueAsIntFromRoundedFloat)
+        const valueAsIntFromRoundedFloat = Number.parseInt(value);
+        if (
+          !Number.isNaN(valueAsIntFromRoundedFloat) &&
+          valueAsIntFromRoundedFloat < 5000
+        ) {
+          // setUserSlippageTolerance(valueAsIntFromRoundedFloat);
+          setUserGasPricePercentage(valueAsIntFromRoundedFloat);
         }
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
     }
   };
 
-  const deadlineInputIsValid = deadlineInput === '' || (ttl / 60).toString() === deadlineInput;
+  const parseCustomSlippage = (value: string) => {
+    if (value === "" || inputRegex.test(escapeRegExp(value))) {
+      setSlippageInput(value);
+
+      try {
+        const valueAsIntFromRoundedFloat = Number.parseInt(
+          (Number.parseFloat(value) * 100).toString()
+        );
+        if (
+          !Number.isNaN(valueAsIntFromRoundedFloat) &&
+          valueAsIntFromRoundedFloat < 5000
+        ) {
+          setUserSlippageTolerance(valueAsIntFromRoundedFloat);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  const deadlineInputIsValid =
+    deadlineInput === "" || (ttl / 60).toString() === deadlineInput;
   let deadlineError: DeadlineError | undefined;
-  if (deadlineInput !== '' && !deadlineInputIsValid) {
-    deadlineError = DeadlineError.InvalidInput
+  if (deadlineInput !== "" && !deadlineInputIsValid) {
+    deadlineError = DeadlineError.InvalidInput;
   } else {
-    deadlineError = undefined
+    deadlineError = undefined;
   }
 
   const parseCustomDeadline = (value: string) => {
@@ -126,205 +168,423 @@ const TransactionSettings = () => {
     try {
       const valueAsInt: number = Number.parseInt(value) * 60;
       if (!Number.isNaN(valueAsInt) && valueAsInt > 0) {
-        setTtl(valueAsInt)
+        setTtl(valueAsInt);
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   };
 
   return (
-    <Flex alignItems="center" fontWeight="bold" rounded={100} className='Setting' >
-      <Popover  >
+    <Flex
+      alignItems='center'
+      fontWeight='bold'
+      rounded={100}
+      className='Setting'
+    >
+      <Popover>
         <PopoverTrigger>
           <IconButton
-            bg="transparent"
+            bg='transparent'
             icon={<SettingsIcon />}
             _hover={{ background: "transparent" }}
             _focus={{ background: "transparent !important" }}
           />
         </PopoverTrigger>
-        <PopoverContent borderRadius="6px" bg={bgColor} borderColor={borderColor} mt="0px">
-          <PopoverHeader color={textColor} fontSize="14px" borderBottom="none">Settings</PopoverHeader>
+        <PopoverContent
+          borderRadius='6px'
+          bg={bgColor}
+          borderColor={borderColor}
+          mt='0px'
+        >
+          <PopoverHeader color={textColor} fontSize='14px' borderBottom='none'>
+            Settings
+          </PopoverHeader>
           <PopoverCloseButton
-            bg="none"
-            size={'sm'}
+            bg='none'
+            size={"sm"}
             mt={2}
             mr={3}
-            cursor="pointer"
-            _focus={{ outline: 'none' }}
-            p={'7px'}
-            border={'1px solid'}
+            cursor='pointer'
+            _focus={{ outline: "none" }}
+            p={"7px"}
+            border={"1px solid"}
             borderColor={textColorTwo}
           />
           <PopoverBody>
             <Flex mb={3}>
-              <Text fontSize="14px" mr={2} color={textColorTwo}>Slippage Tolerance</Text>
+              <Text fontSize='14px' mr={2} color={textColorTwo}>
+                Slippage Tolerance
+              </Text>
               <Tooltip
                 hasArrow
-                label="Your transactions will revert if the price changes unfavorably by more than this percentage."
-                aria-label="A tooltip"
-                placement="right-end"
+                label='Your transactions will revert if the price changes unfavorably by more than this percentage.'
+                aria-label='A tooltip'
+                placement='right-end'
               >
-                <IconButton aria-label="Icon button" icon={<ExclamationIcon color={textColorTwo} />} colorScheme="ghost" h="auto" minWidth="10px" />
+                <IconButton
+                  aria-label='Icon button'
+                  icon={<ExclamationIcon color={textColorTwo} />}
+                  colorScheme='ghost'
+                  h='auto'
+                  minWidth='10px'
+                />
               </Tooltip>
             </Flex>
-            <Flex mb={8}>
+            <Flex w='100%' mb={8}>
               <Button
                 value='0.1'
                 onClick={() => {
-                  setSlippageInput('');
-                  setUserSlippageTolerance(10)
+                  setSlippageInput("");
+                  setUserSlippageTolerance(10);
                 }}
                 mr={2}
                 bgColor={buttonBgcolor}
-                borderWidth="1px"
+                borderWidth='1px'
                 borderColor={borderColor}
                 color={textColorTwo}
-                pl={6}
-                pr={6}
-                _hover={{ border: `1px solid ${activeButtonColor}`, color: `${activeButtonColor}`, background: `$buttonBgColorTwo` }}
-                _focus={{ border: `1px solid ${activeButtonColor}`, color: `${activeButtonColor}`, background: `$buttonBgColorTwo` }}
+                // pl={6}
+                // pr={6}
+                _hover={{
+                  border: `1px solid ${activeButtonColor}`,
+                  color: `${activeButtonColor}`,
+                  background: `$buttonBgColorTwo`,
+                }}
+                _focus={{
+                  border: `1px solid ${activeButtonColor}`,
+                  color: `${activeButtonColor}`,
+                  background: `$buttonBgColorTwo`,
+                }}
               >
                 0.1%
               </Button>
               <Button
                 value='0.5'
                 onClick={() => {
-                  setSlippageInput('');
-                  setUserSlippageTolerance(50)
+                  setSlippageInput("");
+                  setUserSlippageTolerance(50);
                 }}
                 mr={2}
                 bgColor={buttonBgcolor}
-                borderWidth="1px"
+                borderWidth='1px'
                 borderColor={borderColor}
                 color={textColorTwo}
-                pl={6}
-                pr={6}
-                _hover={{ border: `1px solid ${activeButtonColor}`, color: `${activeButtonColor}`, background: `$buttonBgColorTwo` }}
-                _focus={{ border: `1px solid ${activeButtonColor}`, color: `${activeButtonColor}`, background: `$buttonBgColorTwo` }}
+                // pl={6}
+                // pr={6}
+                _hover={{
+                  border: `1px solid ${activeButtonColor}`,
+                  color: `${activeButtonColor}`,
+                  background: `$buttonBgColorTwo`,
+                }}
+                _focus={{
+                  border: `1px solid ${activeButtonColor}`,
+                  color: `${activeButtonColor}`,
+                  background: `$buttonBgColorTwo`,
+                }}
               >
                 0.5%
               </Button>
               <Button
                 value='1.0'
                 onClick={() => {
-                  setSlippageInput('');
-                  setUserSlippageTolerance(100)
+                  setSlippageInput("");
+                  setUserSlippageTolerance(100);
                 }}
                 mr={2}
                 bgColor={buttonBgcolor}
-                borderWidth="1px"
+                borderWidth='1px'
                 borderColor={borderColor}
                 color={textColorTwo}
-                pl={6}
-                pr={6}
-                _hover={{ border: `1px solid ${activeButtonColor}`, color: `${activeButtonColor}`, background: `$buttonBgColorTwo` }}
-                _focus={{ border: `1px solid ${activeButtonColor}`, color: `${activeButtonColor}`, background: `$buttonBgColorTwo` }}
+                // pl={6}
+                // pr={6}
+                _hover={{
+                  border: `1px solid ${activeButtonColor}`,
+                  color: `${activeButtonColor}`,
+                  background: `$buttonBgColorTwo`,
+                }}
+                _focus={{
+                  border: `1px solid ${activeButtonColor}`,
+                  color: `${activeButtonColor}`,
+                  background: `$buttonBgColorTwo`,
+                }}
               >
                 1.0%
               </Button>
 
-              <InputGroup>
+              <InputGroup w='150%'>
                 <Input
                   placeholder={(userSlippageTolerance / 100).toFixed(2)}
                   value={slippageInput}
                   onBlur={() => {
-                    parseCustomSlippage((userSlippageTolerance / 100).toFixed(2))
+                    parseCustomSlippage(
+                      (userSlippageTolerance / 100).toFixed(2)
+                    );
                   }}
                   onChange={(event) => {
                     if (event.currentTarget.validity.valid) {
-                      parseCustomSlippage(event.target.value.replace(/,/g, '.'))
+                      parseCustomSlippage(
+                        event.target.value.replace(/,/g, ".")
+                      );
                     }
                   }}
-                  textAlign="right"
+                  textAlign='right'
                   p={1}
-                  borderRight="none"
-                  borderRadius="4px"
+                  borderRight='none'
+                  color={textColor}
+                  borderRadius='4px'
                   borderColor={borderColor}
-                  borderWidth="1px"
+                  borderWidth='1px'
                 />
                 <InputRightAddon
-                  children="%"
-                  bg="ghost"
+                  children='%'
+                  bg='ghost'
                   p={1}
                   borderColor={borderColor}
-                  borderWidth="1px"
+                  borderWidth='1px'
                 />
               </InputGroup>
             </Flex>
             {!!slippageError && (
-              <Text fontSize="14px" color={slippageError === SlippageError.InvalidInput ? '#E53E3E' : '#DD6B20'} mb="8px">
+              <Text
+                fontSize='14px'
+                color={
+                  slippageError === SlippageError.InvalidInput
+                    ? "#E53E3E"
+                    : "#DD6B20"
+                }
+                mb='8px'
+              >
                 {slippageError === SlippageError.InvalidInput
-                  ? 'Enter a valid slippage percentage'
+                  ? "Enter a valid slippage percentage"
                   : slippageError === SlippageError.RiskyLow
-                    ? 'Your transaction may fail'
-                    : 'Your transaction may be frontrun'}
+                  ? "Your transaction may fail"
+                  : "Your transaction may be frontrun"}
               </Text>
             )}
             <Flex mb={3}>
-              <Text fontSize="14px" mr={2} color={textColorTwo}>Transaction Deadline</Text>
+              <Text fontSize='14px' mr={2} color={textColorTwo}>
+                Increase Gas Fee By
+              </Text>
               <Tooltip
                 hasArrow
-                label="Your transaction will revert if it is pending for more than this period of time."
-                aria-label="A tooltip"
-                placement="right-end"
+                label='Increase Gas Fee for transaction.'
+                aria-label='A tooltip'
+                placement='right-end'
               >
-                <IconButton aria-label="Icon button" icon={<ExclamationIcon color={textColorTwo} />} colorScheme="ghost" h="auto" minWidth="10px" />
+                <IconButton
+                  aria-label='Icon button'
+                  icon={<ExclamationIcon color={textColorTwo} />}
+                  colorScheme='ghost'
+                  h='auto'
+                  minWidth='10px'
+                />
               </Tooltip>
             </Flex>
-            <InputGroup mb={3} w="68%">
+            <Flex w='100%' mb={8}>
+              <Button
+                value='0.1'
+                onClick={() => {
+                  setUserGasInput("");
+                  setUserGasPricePercentage(10);
+                }}
+                mr={2}
+                bgColor={buttonBgcolor}
+                borderWidth='1px'
+                borderColor={borderColor}
+                color={textColorTwo}
+                // pl={6}
+                // pr={6}
+                _hover={{
+                  border: `1px solid ${activeButtonColor}`,
+                  color: `${activeButtonColor}`,
+                  background: `$buttonBgColorTwo`,
+                }}
+                _focus={{
+                  border: `1px solid ${activeButtonColor}`,
+                  color: `${activeButtonColor}`,
+                  background: `$buttonBgColorTwo`,
+                }}
+              >
+                10%
+              </Button>
+              <Button
+                value='0.5'
+                onClick={() => {
+                  setUserGasInput("");
+                  setUserGasPricePercentage(50);
+                }}
+                mr={2}
+                bgColor={buttonBgcolor}
+                borderWidth='1px'
+                borderColor={borderColor}
+                color={textColorTwo}
+                // pl={6}
+                // pr={6}
+                _hover={{
+                  border: `1px solid ${activeButtonColor}`,
+                  color: `${activeButtonColor}`,
+                  background: `$buttonBgColorTwo`,
+                }}
+                _focus={{
+                  border: `1px solid ${activeButtonColor}`,
+                  color: `${activeButtonColor}`,
+                  background: `$buttonBgColorTwo`,
+                }}
+              >
+                50%
+              </Button>
+              <Button
+                value='1.0'
+                onClick={() => {
+                  setUserGasInput("");
+                  setUserGasPricePercentage(100);
+                }}
+                mr={2}
+                bgColor={buttonBgcolor}
+                borderWidth='1px'
+                borderColor={borderColor}
+                color={textColorTwo}
+                // pl={6}
+                // pr={6}
+                _hover={{
+                  border: `1px solid ${activeButtonColor}`,
+                  color: `${activeButtonColor}`,
+                  background: `$buttonBgColorTwo`,
+                }}
+                _focus={{
+                  border: `1px solid ${activeButtonColor}`,
+                  color: `${activeButtonColor}`,
+                  background: `$buttonBgColorTwo`,
+                }}
+              >
+                100%
+              </Button>
+
+              <InputGroup w='150%'>
+                <Input
+                  placeholder={userGasPricePercent.toString()}
+                  value={userGasInput}
+                  onBlur={() => {
+                    parseCustomGas(userGasPricePercent.toString());
+                  }}
+                  onChange={(event) => {
+                    if (event.currentTarget.validity.valid) {
+                      parseCustomGas(event.target.value.replace(/[^0-9]/g, ""));
+                    }
+                  }}
+                  textAlign='right'
+                  color={textColor}
+                  p={1}
+                  borderRight='none'
+                  borderRadius='4px'
+                  borderColor={borderColor}
+                  borderWidth='1px'
+                />
+                <InputRightAddon
+                  children='%'
+                  bg='ghost'
+                  p={1}
+                  borderColor={borderColor}
+                  borderWidth='1px'
+                />
+              </InputGroup>
+            </Flex>
+
+            <Flex mb={3}>
+              <Text fontSize='14px' mr={2} color={textColorTwo}>
+                Transaction Deadline
+              </Text>
+              <Tooltip
+                hasArrow
+                label='Your transaction will revert if it is pending for more than this period of time.'
+                aria-label='A tooltip'
+                placement='right-end'
+              >
+                <IconButton
+                  aria-label='Icon button'
+                  icon={<ExclamationIcon color={textColorTwo} />}
+                  colorScheme='ghost'
+                  h='auto'
+                  minWidth='10px'
+                />
+              </Tooltip>
+            </Flex>
+            <InputGroup mb={3} w='68%'>
               <Input
-                textAlign="right"
-                borderRight="none"
-                borderRadius="4px"
+                textAlign='left'
+                borderRight='none'
+                borderRadius='4px'
                 p={1}
                 borderColor={borderColor}
-                borderWidth="1px"
-                inputMode="numeric"
-                pattern="^[0-9]+$"
-                color={deadlineError ? 'red' : undefined}
+                borderWidth='1px'
+                inputMode='numeric'
+                pattern='^[0-9]+$'
+                color={deadlineError ? "red" : undefined}
                 onBlur={() => {
-                  parseCustomDeadline((ttl / 60).toString())
+                  parseCustomDeadline((ttl / 60).toString());
                 }}
                 placeholder={(ttl / 60).toString()}
                 value={deadlineInput}
                 onChange={(event) => {
                   if (event.currentTarget.validity.valid) {
-                    parseCustomDeadline(event.target.value)
+                    parseCustomDeadline(event.target.value);
                   }
                 }}
               />
               <InputRightAddon
-                children="Min"
-                bg="ghost"
+                children='Min'
+                bg='ghost'
                 p={1}
+                bgColor={inputRightAddOnBgColor}
                 borderColor={borderColor}
-                borderWidth="1px"
+                borderWidth='1px'
               />
             </InputGroup>
-            <Button
-              onClick={transactionState ? showTransactionTab : hideTransactionTab}
-              bgColor={buttonBgcolor}
-              borderColor={borderColor}
-              color={textColorTwo}
-              _hover={{ border: `1px solid ${activeButtonColor}`, color: `${activeButtonColor}`, background: `$buttonBgColorTwo` }}
-              _focus={{ border: `1px solid ${activeButtonColor}`, color: `${activeButtonColor}`, background: `$buttonBgColorTwo` }}
-            >
-              {transactionState ? 'Show History Tab' : 'Hide History Tab'}
-            </Button>
-
-            <Button
-              onClick={detailsState ? showDetails : hideDetails}
-              bgColor={buttonBgcolor}
-              borderColor={borderColor}
-              color={textColorTwo}
-              my={3}
-              _hover={{ border: `1px solid ${activeButtonColor}`, color: `${activeButtonColor}`, background: `$buttonBgColorTwo` }}
-              _focus={{ border: `1px solid ${activeButtonColor}`, color: `${activeButtonColor}`, background: `$buttonBgColorTwo` }}
-            >
-              {detailsState ? 'Show Details Tab' : 'Hide Details Tab'}
-            </Button>
+            <Flex>
+              <Button
+                onClick={detailsState ? showDetails : hideDetails}
+                border='1px solid'
+                bgColor={buttonBgcolor}
+                borderColor={activeButtonColor}
+                color={activeButtonColor}
+                // my={3}
+                mr={2}
+                _hover={{
+                  border: `1px solid ${activeButtonColor}`,
+                  color: `${activeButtonColor}`,
+                  background: `$buttonBgColorTwo`,
+                }}
+                _focus={{
+                  border: `1px solid ${activeButtonColor}`,
+                  color: `${activeButtonColor}`,
+                  background: `$buttonBgColorTwo`,
+                }}
+              >
+                {detailsState ? "Show Details Tab" : "Hide Details Tab"}
+              </Button>
+              <Button
+                onClick={
+                  transactionState ? showTransactionTab : hideTransactionTab
+                }
+                ml={2}
+                border='1px solid'
+                bgColor={buttonBgcolor}
+                borderColor={activeButtonColor}
+                color={activeButtonColor}
+                _hover={{
+                  border: `1px solid ${activeButtonColor}`,
+                  color: `${activeButtonColor}`,
+                  background: `$buttonBgColorTwo`,
+                }}
+                _focus={{
+                  border: `1px solid ${activeButtonColor}`,
+                  color: `${activeButtonColor}`,
+                  background: `$buttonBgColorTwo`,
+                }}
+              >
+                {transactionState ? "Show History Tab" : "Hide History Tab"}
+              </Button>
+            </Flex>
           </PopoverBody>
         </PopoverContent>
       </Popover>

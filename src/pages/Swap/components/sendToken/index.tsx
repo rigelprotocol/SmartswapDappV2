@@ -51,25 +51,46 @@ import { getERC20Token } from "../../../../utils/utilsFunctions";
 import { createAlchemyWeb3 } from "@alch/alchemy-web3";
 import { Percent } from "@uniswap/sdk-core";
 import JSBI from "jsbi";
+import { useUpdateUserGasPreference } from "../../../../state/gas/hooks";
+import { useUserGasPricePercentage } from "../../../../state/gas/hooks";
+import { Web3Provider } from "@ethersproject/providers";
 
-export const calculateGas = async (): Promise<{
+export const calculateGas = async (
+  percentage: number,
+  library: Web3Provider | undefined,
+  chainId: number
+): Promise<{
   format1: string;
   format2: string;
+  format3: string;
 }> => {
   const web3 = createAlchemyWeb3("https://polygon-rpc.com");
   const maxPriorityPerGas = await web3.eth.getMaxPriorityFeePerGas();
+  const GasPrice = (await library?.getGasPrice()).toString();
+
   const baseFee = await web3.eth.getBlock("pending");
   const baseFeeFormatted = web3.utils.hexToNumberString(baseFee.baseFeePerGas);
   const maxPriorityPerGasFormatted =
     web3.utils.hexToNumberString(maxPriorityPerGas);
 
-  const baseFeeThirtyPercent = new Percent("40", "100")
-    .multiply(maxPriorityPerGasFormatted)
+  const baseFeeThirtyPercent = new Percent(percentage.toString(), "100")
+    .multiply(
+      chainId === 137
+        ? maxPriorityPerGasFormatted
+        : chainId === 80001
+        ? maxPriorityPerGasFormatted
+        : GasPrice
+    )
     .quotient.toString();
 
   const addPriorityFee = JSBI.add(
     JSBI.BigInt(maxPriorityPerGasFormatted),
     JSBI.BigInt(baseFeeThirtyPercent)
+  );
+
+  const addGasFee = JSBI.add(
+    JSBI.BigInt(baseFeeThirtyPercent),
+    JSBI.BigInt(GasPrice)
   );
 
   const maxFee = JSBI.add(
@@ -79,7 +100,8 @@ export const calculateGas = async (): Promise<{
 
   const format1 = ethers.utils.formatUnits(addPriorityFee.toString(), 9);
   const format2 = ethers.utils.formatUnits(maxFee.toString(), 9);
-  return { format1, format2 };
+  const format3 = ethers.utils.formatUnits(addGasFee.toString(), 9);
+  return { format1, format2, format3 };
 };
 
 const SendToken = () => {
@@ -94,6 +116,10 @@ const SendToken = () => {
   ];
   const [dismissTokenWarning, setDismissTokenWarning] =
     useState<boolean>(false);
+
+  useUpdateUserGasPreference();
+  const [userGasPricePercentage, setUserGasPricePercentage] =
+    useUserGasPricePercentage();
 
   const urlLoadedTokens: Token[] = useMemo(
     () =>
@@ -127,6 +153,8 @@ const SendToken = () => {
   const buttonBgcolor = useColorModeValue("#319EF6", "#4CAFFF");
 
   const [showModal, setShowModal] = useState(false);
+  const [currentToPrice, setCurrentToPrice] = useState("");
+  const [showNewChangesText, setShowNewChangesText] = useState(false);
 
   const { onCurrencySelection, onUserInput, onSwitchTokens } =
     useSwapActionHandlers();
@@ -140,7 +168,7 @@ const SendToken = () => {
     pathSymbol,
     pathArray,
     isExactIn,
-    formatAmount,
+    formatAmount
   } = useDerivedSwapInfo();
   const { independentField, typedValue } = useSwapState();
   const dependentField: Field =
@@ -224,7 +252,25 @@ const SendToken = () => {
   const [balance] = GetAddressTokenBalance(
     currencies[Field.INPUT] ?? undefined
   );
-
+  useMemo(()=>{
+    if(currentToPrice && receivedAmount){
+      if(receivedAmount !== currentToPrice){
+        setShowNewChangesText(true)
+      }
+    }
+  },[currentToPrice,receivedAmount])
+  useEffect(()=>{
+    let interval
+    if(showNewChangesText){
+     interval = setInterval(()=>setShowNewChangesText(false),3000)
+    //  return clearInterval(interval)
+    } 
+    if(!showModal){
+      setShowNewChangesText(false)
+      setCurrentToPrice("")
+    }
+    
+  },[showNewChangesText,showModal])
   useEffect(() => {
     if (balance < parseFloat(formattedAmounts[Field.INPUT])) {
       setInsufficientBalance(true);
@@ -329,16 +375,18 @@ const SendToken = () => {
       );
     }
   };
-
+  console.log({isExactIn})
   const [sendingTrx, setSendingTrx] = useState(false);
   const outputToken = useCallback((): any => {
     if (parsedAmounts[Field.OUTPUT]) {
-      return isExactIn
+      const data = isExactIn
         ? ethers.utils.parseUnits(
             parsedAmounts[Field.OUTPUT] as string,
             currencies[Field.OUTPUT]?.decimals
           )
         : parsedAmounts[Field.OUTPUT];
+        console.log({data})
+        return data
     }
   }, [parsedAmounts]);
 
@@ -362,14 +410,19 @@ const SendToken = () => {
         })
       );
 
-      const { format1, format2 } = await calculateGas();
+      const { format1, format2, format3 } = await calculateGas(
+        userGasPricePercentage,
+        library,
+        chainId as number
+      );
 
       const isEIP1559 = await library?.getFeeData();
 
       const sendTransaction = await route.swapExactTokensForTokens(
         isExactIn ? parsedAmount : formatAmount,
         // parsedAmount,
-        outputToken(),
+        // outputToken(),
+        parsedOutput(currencies[Field.OUTPUT]?.decimals as number),
         // [from, to],
         pathArray,
         account,
@@ -384,8 +437,12 @@ const SendToken = () => {
             isEIP1559 && chainId === 137
               ? ethers.utils.parseUnits(format2, 9).toString()
               : null,
-          // gasLimit: 290000,
-          // gasPrice: ethers.utils.parseUnits("10", "gwei"),
+          gasPrice:
+            chainId === 137
+              ? null
+              : chainId === 80001
+              ? null
+              : ethers.utils.parseUnits(format3, 9).toString(),
         }
       );
       const { hash } = sendTransaction;
@@ -427,6 +484,7 @@ const SendToken = () => {
           })
         );
         onUserInput(Field.INPUT, "");
+        setShowNewChangesText(false)
       }
     } catch (e) {
       console.log(e);
@@ -460,7 +518,11 @@ const SendToken = () => {
           trxState: TrxState.WaitingForConfirmation,
         })
       );
-      const { format1, format2 } = await calculateGas();
+      const { format1, format2, format3 } = await calculateGas(
+        userGasPricePercentage,
+        library,
+        chainId as number
+      );
 
       const isEIP1559 = await library?.getFeeData();
       const sendTransaction = await route.swapETHForExactTokens(
@@ -479,6 +541,12 @@ const SendToken = () => {
             isEIP1559 && chainId === 137
               ? ethers.utils.parseUnits(format2, 9).toString()
               : null,
+          gasPrice:
+            chainId === 137
+              ? null
+              : chainId === 80001
+              ? null
+              : ethers.utils.parseUnits(format3, 9).toString(),
         }
       );
       const { hash } = sendTransaction;
@@ -582,7 +650,11 @@ const SendToken = () => {
       // const format1 = ethers.utils.formatUnits(addPriorityFee.toString(), 9);
       // const format2 = ethers.utils.formatUnits(maxFee.toString(), 9);
 
-      const { format1, format2 } = await calculateGas();
+      const { format1, format2, format3 } = await calculateGas(
+        userGasPricePercentage,
+        library,
+        chainId as number
+      );
 
       const isEIP1559 = await library?.getFeeData();
       const sendTransaction = await route.swapExactTokensForETH(
@@ -592,14 +664,25 @@ const SendToken = () => {
         pathArray,
         account,
         dl,
-        isEIP1559 && chainId === 137
+        chainId === 137 || chainId === 80001
           ? {
-              maxPriorityFeePerGas: ethers.utils
-                .parseUnits(format1, 9)
-                .toString(),
-              maxFeePerGas: ethers.utils.parseUnits(format2, 9).toString(),
+              maxPriorityFeePerGas:
+                chainId === 137
+                  ? ethers.utils.parseUnits(format1, 9).toString()
+                  : null,
+              maxFeePerGas:
+                chainId === 137
+                  ? ethers.utils.parseUnits(format2, 9).toString()
+                  : null,
             }
-          : null
+          : {
+              gasPrice:
+                chainId === 137
+                  ? null
+                  : chainId === 80001
+                  ? null
+                  : ethers.utils.parseUnits(format3, 9).toString(),
+            }
       );
       const { confirmations, status } = await sendTransaction.wait(1);
       const { hash } = sendTransaction;
@@ -667,21 +750,36 @@ const SendToken = () => {
       })
     );
     try {
-      const { format1, format2 } = await calculateGas();
+      const { format1, format2, format3 } = await calculateGas(
+        userGasPricePercentage,
+        library,
+        chainId as number
+      );
 
       const isEIP1559 = await library?.getFeeData();
       const sendTransaction = await weth.deposit(
         {
           value: isExactIn ? parsedAmount : formatAmount,
         },
-        isEIP1559 && chainId === 137
+        chainId === 137 || chainId === 80001
           ? {
-              maxPriorityFeePerGas: ethers.utils
-                .parseUnits(format1, 9)
-                .toString(),
-              maxFeePerGas: ethers.utils.parseUnits(format2, 9).toString(),
+              maxPriorityFeePerGas:
+                chainId === 137
+                  ? ethers.utils.parseUnits(format1, 9).toString()
+                  : null,
+              maxFeePerGas:
+                chainId === 137
+                  ? ethers.utils.parseUnits(format2, 9).toString()
+                  : null,
             }
-          : null
+          : {
+              gasPrice:
+                chainId === 137
+                  ? null
+                  : chainId === 80001
+                  ? null
+                  : ethers.utils.parseUnits(format3, 9).toString(),
+            }
       );
       const { confirmations, status } = await sendTransaction.wait(1);
       const { hash } = sendTransaction;
@@ -735,19 +833,34 @@ const SendToken = () => {
       })
     );
     try {
-      const { format1, format2 } = await calculateGas();
+      const { format1, format2, format3 } = await calculateGas(
+        userGasPricePercentage,
+        library,
+        chainId as number
+      );
 
       const isEIP1559 = await library?.getFeeData();
       const sendTransaction = await weth.withdraw(
         isExactIn ? parsedAmount : formatAmount,
-        isEIP1559 && chainId === 137
+        chainId === 137 || chainId === 80001
           ? {
-              maxPriorityFeePerGas: ethers.utils
-                .parseUnits(format1, 9)
-                .toString(),
-              maxFeePerGas: ethers.utils.parseUnits(format2, 9).toString(),
+              maxPriorityFeePerGas:
+                chainId === 137
+                  ? ethers.utils.parseUnits(format1, 9).toString()
+                  : null,
+              maxFeePerGas:
+                chainId === 137
+                  ? ethers.utils.parseUnits(format2, 9).toString()
+                  : null,
             }
-          : null
+          : {
+              gasPrice:
+                chainId === 137
+                  ? null
+                  : chainId === 80001
+                  ? null
+                  : ethers.utils.parseUnits(format3, 9).toString(),
+            }
       );
       const { confirmations, status } = await sendTransaction.wait(3);
       const { hash } = sendTransaction;
@@ -926,7 +1039,7 @@ const SendToken = () => {
         pl={3}
         pr={3}
       >
-        <SwapSettings />
+        <SwapSettings/>
         <From
           onUserInput={handleTypeInput}
           onCurrencySelection={onCurrencySelection}
@@ -1020,7 +1133,9 @@ const SendToken = () => {
               fontSize='18px'
               boxShadow={lightmode ? "base" : "lg"}
               _hover={{ bgColor: buttonBgcolor }}
-              onClick={() => setShowModal(!showModal)}
+              onClick={() => {
+                setCurrentToPrice(receivedAmount)
+                setShowModal(!showModal)}}
             >
               Swap Tokens
             </Button>
@@ -1039,6 +1154,7 @@ const SendToken = () => {
           fromDeposited={formattedAmounts[Field.INPUT]}
           toDeposited={receivedAmount}
           handleSwap={swapTokens}
+          showNewChangesText={showNewChangesText}
           fee={LPFee}
           priceImpact={priceImpact}
           pathSymbol={pathSymbol}

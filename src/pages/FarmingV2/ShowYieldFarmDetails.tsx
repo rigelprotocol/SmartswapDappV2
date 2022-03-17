@@ -46,6 +46,8 @@ import {
   smartSwapLPTokenV2PoolSeven,
   smartSwapLPTokenV2PoolEight,
   smartSwapLPTokenV2PoolNine,
+  smartSwapLPTokenV2PoolTwelve,
+  smartSwapLPTokenV2PoolThirteen,
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
@@ -58,6 +60,8 @@ import {
   SMARTSWAPLP_TOKEN7ADDRESSES,
   SMARTSWAPLP_TOKEN8ADDRESSES,
   SMARTSWAPLP_TOKEN9ADDRESSES,
+  SMARTSWAPLP_TOKEN12ADDRESSES,
+  SMARTSWAPLP_TOKEN13ADDRESSES,
   RGP,
   RGPADDRESSES,
   RGPSPECIALPOOLADDRESSES,
@@ -73,6 +77,7 @@ import { Web3Provider } from "@ethersproject/providers";
 import { Contract } from "@ethersproject/contracts";
 import { getERC20Token } from "../../utils/utilsFunctions";
 import { calculateGas } from "../Swap/components/sendToken";
+import { useUserGasPricePercentage } from "../../state/gas/hooks";
 
 const ShowYieldFarmDetails = ({
   content,
@@ -134,6 +139,7 @@ const ShowYieldFarmDetails = ({
   const closeModal = () => {
     modal2Disclosure.onClose();
   };
+  const [userGasPricePercentage] = useUserGasPricePercentage();
   const handleSetReferralField = () => {
     if (showReferrerField === true && URLReferrerAddress === "") {
       setShowReferrerField(false);
@@ -269,6 +275,21 @@ const ShowYieldFarmDetails = ({
       } else if (content.deposit === "MBOX-RGP") {
         const poolNine = await smartSwapLPTokenV2PoolNine(
           SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
+          library
+        );
+        const approveForRGPMBOX = await poolAllowance(poolNine);
+        changeApprovalButton(approveForRGPMBOX, rgpApproval);
+      } else if (content.deposit === "WARS-RGP") {
+        console.log("here 2");
+        const poolNine = await smartSwapLPTokenV2PoolNine(
+          SMARTSWAPLP_TOKEN12ADDRESSES[chainId as number],
+          library
+        );
+        const approveForRGPMBOX = await poolAllowance(poolNine);
+        changeApprovalButton(approveForRGPMBOX, rgpApproval);
+      } else if (content.deposit === "METO-RGP") {
+        const poolNine = await smartSwapLPTokenV2PoolNine(
+          SMARTSWAPLP_TOKEN13ADDRESSES[chainId as number],
           library
         );
         const approveForRGPMBOX = await poolAllowance(poolNine);
@@ -545,6 +566,36 @@ const ShowYieldFarmDetails = ({
         }
         setApproveValueForOtherToken(true);
         setApproveValueForRGP(true);
+      } else if (val === "WARS-RGP") {
+        const poolNine = await smartSwapLPTokenV2PoolNine(
+          SMARTSWAPLP_TOKEN12ADDRESSES[chainId as number],
+          library
+        );
+        if (!approveValueForOtherToken && !approveValueForRGP) {
+          await RGPApproval();
+          await LPApproval(poolNine);
+        } else if (!approveValueForRGP) {
+          await RGPApproval();
+        } else {
+          await LPApproval(poolNine);
+        }
+        setApproveValueForOtherToken(true);
+        setApproveValueForRGP(true);
+      } else if (val === "METO-RGP") {
+        const poolNine = await smartSwapLPTokenV2PoolNine(
+          SMARTSWAPLP_TOKEN13ADDRESSES[chainId as number],
+          library
+        );
+        if (!approveValueForOtherToken && !approveValueForRGP) {
+          await RGPApproval();
+          await LPApproval(poolNine);
+        } else if (!approveValueForRGP) {
+          await RGPApproval();
+        } else {
+          await LPApproval(poolNine);
+        }
+        setApproveValueForOtherToken(true);
+        setApproveValueForRGP(true);
       } else if (val === "RGP" && Number(content.id) === 1) {
         await RGPSpecialPoolV1Approval();
         setApproveValueForOtherToken(true);
@@ -610,6 +661,8 @@ const ShowYieldFarmDetails = ({
           pool7,
           pool8,
           pool9,
+          pool12,
+          pool13,
         ] = await Promise.all([
           rigelToken(RGP[chainId as number], library),
           smartSwapLPTokenPoolOne(
@@ -648,6 +701,14 @@ const ShowYieldFarmDetails = ({
             SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
             library
           ),
+          smartSwapLPTokenV2PoolTwelve(
+            SMARTSWAPLP_TOKEN12ADDRESSES[chainId as number],
+            library
+          ),
+          smartSwapLPTokenV2PoolThirteen(
+            SMARTSWAPLP_TOKEN13ADDRESSES[chainId as number],
+            library
+          ),
         ]);
 
         const [
@@ -660,6 +721,8 @@ const ShowYieldFarmDetails = ({
           pool7Allowance,
           pool8Allowance,
           pool9Allowance,
+          pool12Allowance,
+          pool13Allowance,
         ] = await Promise.all([
           allowance(pool1),
           allowance(pool2),
@@ -670,6 +733,8 @@ const ShowYieldFarmDetails = ({
           allowance(pool7),
           allowance(pool8),
           allowance(pool9),
+          allowance(pool12),
+          allowance(pool13),
         ]);
         let rigelAllowance;
         if (RGPSPECIALPOOLADDRESSES[chainId as number]) {
@@ -693,6 +758,8 @@ const ShowYieldFarmDetails = ({
               pool7Allowance,
               pool8Allowance,
               pool9Allowance,
+              pool12Allowance,
+              pool13Allowance,
             ])
           );
         } else {
@@ -708,6 +775,8 @@ const ShowYieldFarmDetails = ({
               pool7Allowance,
               pool8Allowance,
               pool9Allowance,
+              pool12Allowance,
+              pool13Allowance,
             ])
           );
         }
@@ -873,6 +942,10 @@ const ShowYieldFarmDetails = ({
           await tokensWithdrawal(8);
         } else if (val === "MBOX-RGP") {
           await tokensWithdrawal(9);
+        } else if (val === "WARS-RGP") {
+          await tokensWithdrawal(12);
+        } else if (val === "METO-RGP") {
+          await tokensWithdrawal(13);
         }
       }
     } catch (err) {
@@ -904,7 +977,11 @@ const ShowYieldFarmDetails = ({
           library
         );
 
-        const { format1, format2 } = await calculateGas();
+        const { format1, format2, format3 } = await calculateGas(
+          userGasPricePercentage,
+          library,
+          chainId as number
+        );
 
         const isEIP1559 = await library?.getFeeData();
         const data = await lpTokens.withdraw(
@@ -920,6 +997,12 @@ const ShowYieldFarmDetails = ({
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           }
         );
         const { confirmations, status, logs } = await fetchTransactionData(
@@ -974,7 +1057,11 @@ const ShowYieldFarmDetails = ({
           })
         );
         if (id === 0) {
-          const { format1, format2 } = await calculateGas();
+          const { format1, format2, format3 } = await calculateGas(
+            userGasPricePercentage,
+            library,
+            chainId as number
+          );
 
           const isEIP1559 = await library?.getFeeData();
           const specialPool = await RGPSpecialPool(
@@ -990,6 +1077,12 @@ const ShowYieldFarmDetails = ({
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           });
           const { confirmations, status, logs } = await fetchTransactionData(
             specialWithdraw
@@ -1007,12 +1100,16 @@ const ShowYieldFarmDetails = ({
               })
             );
           }
-        } else if (id === 10) {
+        } else if (id === 12) {
           const specialPool = await RGPSpecialPool2(
             RGPSPECIALPOOLADDRESSES2[chainId as number],
             library
           );
-          const { format1, format2 } = await calculateGas();
+          const { format1, format2, format3 } = await calculateGas(
+            userGasPricePercentage,
+            library,
+            chainId as number
+          );
 
           const isEIP1559 = await library?.getFeeData();
           const specialWithdraw = await specialPool.unStake(0, {
@@ -1024,6 +1121,12 @@ const ShowYieldFarmDetails = ({
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           });
           const { confirmations, status, logs } = await fetchTransactionData(
             specialWithdraw
@@ -1046,7 +1149,11 @@ const ShowYieldFarmDetails = ({
             MASTERCHEFV2ADDRESSES[chainId as number],
             library
           );
-          const { format1, format2 } = await calculateGas();
+          const { format1, format2, format3 } = await calculateGas(
+            userGasPricePercentage,
+            library,
+            chainId as number
+          );
 
           const isEIP1559 = await library?.getFeeData();
           console.log({ lpTokens });
@@ -1059,6 +1166,12 @@ const ShowYieldFarmDetails = ({
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           });
           const { confirmations, status, logs } = await fetchTransactionData(
             withdraw
@@ -1138,7 +1251,11 @@ const ShowYieldFarmDetails = ({
               MASTERCHEFV2ADDRESSES[chainId as number],
               library
             );
-            const { format1, format2 } = await calculateGas();
+            const { format1, format2, format3 } = await calculateGas(
+              userGasPricePercentage,
+              library,
+              chainId as number
+            );
 
             const isEIP1559 = await library?.getFeeData();
 
@@ -1155,6 +1272,12 @@ const ShowYieldFarmDetails = ({
                   isEIP1559 && chainId === 137
                     ? ethers.utils.parseUnits(format2, 9).toString()
                     : null,
+                gasPrice:
+                  chainId === 137
+                    ? null
+                    : chainId === 80001
+                    ? null
+                    : ethers.utils.parseUnits(format3, 9).toString(),
               }
             );
             const { confirmations, status, logs } = await fetchTransactionData(
@@ -1178,7 +1301,11 @@ const ShowYieldFarmDetails = ({
             library
           );
 
-          const { format1, format2 } = await calculateGas();
+          const { format1, format2, format3 } = await calculateGas(
+            userGasPricePercentage,
+            library,
+            chainId as number
+          );
 
           const isEIP1559 = await library?.getFeeData();
 
@@ -1195,6 +1322,12 @@ const ShowYieldFarmDetails = ({
                 isEIP1559 && chainId === 137
                   ? ethers.utils.parseUnits(format2, 9).toString()
                   : null,
+              gasPrice:
+                chainId === 137
+                  ? null
+                  : chainId === 80001
+                  ? null
+                  : ethers.utils.parseUnits(format3, 9).toString(),
             }
           );
           // const { confirmations, status } = await fetchTransactionData(data);
@@ -1267,6 +1400,10 @@ const ShowYieldFarmDetails = ({
           await LPDeposit(8);
         } else if (val === "MBOX-RGP") {
           await LPDeposit(9);
+        } else if (val === "WARS-RGP") {
+          await LPDeposit(12);
+        } else if (val === "METO-RGP") {
+          await LPDeposit(13);
         }
       }
     } catch (error) {
@@ -1292,7 +1429,11 @@ const ShowYieldFarmDetails = ({
           library
         );
 
-        const { format1, format2 } = await calculateGas();
+        const { format1, format2, format3 } = await calculateGas(
+          userGasPricePercentage,
+          library,
+          chainId as number
+        );
 
         const isEIP1559 = await library?.getFeeData();
 
@@ -1308,6 +1449,12 @@ const ShowYieldFarmDetails = ({
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           }
         );
         const { confirmations, status } = await fetchTransactionData(data);
@@ -1338,7 +1485,11 @@ const ShowYieldFarmDetails = ({
           RGPSPECIALPOOLADDRESSES2[chainId as number],
           library
         );
-        const { format1, format2 } = await calculateGas();
+        const { format1, format2, format3 } = await calculateGas(
+          userGasPricePercentage,
+          library,
+          chainId as number
+        );
 
         const isEIP1559 = await library?.getFeeData();
         const data = await specialPool.stake(
@@ -1354,6 +1505,12 @@ const ShowYieldFarmDetails = ({
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           }
         );
         const { confirmations, status } = await fetchTransactionData(data);
@@ -1385,7 +1542,11 @@ const ShowYieldFarmDetails = ({
           RGPSPECIALPOOLADDRESSES[chainId as number],
           library
         );
-        const { format1, format2 } = await calculateGas();
+        const { format1, format2, format3 } = await calculateGas(
+          userGasPricePercentage,
+          library,
+          chainId as number
+        );
 
         const isEIP1559 = await library?.getFeeData();
         const data = await specialPool.unStake(
@@ -1400,6 +1561,12 @@ const ShowYieldFarmDetails = ({
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           }
         );
         const { confirmations, status } = await fetchTransactionData(data);
@@ -1431,7 +1598,11 @@ const ShowYieldFarmDetails = ({
           RGPSPECIALPOOLADDRESSES2[chainId as number],
           library
         );
-        const { format1, format2 } = await calculateGas();
+        const { format1, format2, format3 } = await calculateGas(
+          userGasPricePercentage,
+          library,
+          chainId as number
+        );
 
         const isEIP1559 = await library?.getFeeData();
         const data = await specialPool.unStake(
@@ -1446,6 +1617,12 @@ const ShowYieldFarmDetails = ({
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           }
         );
         const { confirmations, status } = await fetchTransactionData(data);
@@ -1590,6 +1767,20 @@ const ShowYieldFarmDetails = ({
           library
         );
         LPApproval(poolNine);
+        break;
+      case "WARS-RGP":
+        const poolTwelve = await smartSwapLPTokenV2PoolTwelve(
+          SMARTSWAPLP_TOKEN12ADDRESSES[chainId as number],
+          library
+        );
+        LPApproval(poolTwelve);
+        break;
+      case "METO-RGP":
+        const poolThirteen = await smartSwapLPTokenV2PoolThirteen(
+          SMARTSWAPLP_TOKEN13ADDRESSES[chainId as number],
+          library
+        );
+        LPApproval(poolThirteen);
         break;
       default:
         RGPApproval();

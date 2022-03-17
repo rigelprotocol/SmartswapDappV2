@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Flex,
   Spacer,
@@ -11,26 +11,26 @@ import {
   Image,
   useColorModeValue,
   useMediaQuery,
-} from '@chakra-ui/react';
-import { NavLink } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
-import { ColorModeSwitcher } from '../ColorModeSwitcher';
-import SocialMedia from './SocialMedia';
-import DappsDropdown from './DappsDropdown';
-import WalletConnection from './WalletConnection';
-import SwapDropdown from './SwapDropdown';
-import LightLogo from './../../assets/logo/logo-light.svg';
-import DarkLogo from './../../assets/logo/logo-dark.svg';
-import MetamaskLogo from './../../assets/metamaskLogo.png';
-import MobileNavDrawer from './MobileNavDrawer';
-import NetworkConnector from '../NetworkConnector';
-import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
+} from "@chakra-ui/react";
+import { NavLink } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { ColorModeSwitcher } from "../ColorModeSwitcher";
+import SocialMedia from "./SocialMedia";
+import DappsDropdown from "./DappsDropdown";
+import WalletConnection from "./WalletConnection";
+import SwapDropdown from "./SwapDropdown";
+import LightLogo from "./../../assets/logo/logo-light.svg";
+import DarkLogo from "./../../assets/logo/logo-dark.svg";
+import MetamaskLogo from "./../../assets/metamaskLogo.png";
+import MobileNavDrawer from "./MobileNavDrawer";
+import NetworkConnector from "../NetworkConnector";
+import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 
 const Nav = ({ to, label }: { to: string; label: string }) => (
   <NavLink
     to={to}
     activeStyle={{
-      color: '#319EF6',
+      color: "#319EF6",
     }}
   >
     {label}
@@ -38,22 +38,24 @@ const Nav = ({ to, label }: { to: string; label: string }) => (
 );
 
 const Index = () => {
-  const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
+  const [isMobileDevice] = useMediaQuery("(max-width: 750px)");
   const location = useLocation().pathname;
   const Logo = useColorModeValue(LightLogo, DarkLogo);
-  const mobileNavColor = useColorModeValue('#FFFFFF', '#15202B');
-  const mobileNavBorderColor = useColorModeValue('#DEE5ED', '#324D68');
+  const mobileNavColor = useColorModeValue("#FFFFFF", "#15202B");
+  const mobileNavBorderColor = useColorModeValue("#DEE5ED", "#324D68");
   const { library } = useActiveWeb3React();
   return (
     <>
-      {location === "/" ? null :
-        <Flex px={6} py={2} boxShadow="sm" >
+      {location === "/" ? null : (
+        <Flex px={6} py={2} boxShadow="sm">
           {isMobileDevice ? (
             <>
               <Flex w="100%" justifyContent="space-between" h="10">
                 <Box mr={6}>
-                  <NavLink to='/'> <Img src={Logo} /></NavLink>
-
+                  <NavLink to="/">
+                    {" "}
+                    <Img src={Logo} />
+                  </NavLink>
                 </Box>
                 <MobileNavDrawer />
               </Flex>
@@ -75,7 +77,7 @@ const Index = () => {
                   <WalletConnection />
                 </Flex>
                 <Flex mr={4}>
-                   <NetworkConnector />
+                  <NetworkConnector />
                   <ColorModeSwitcher />
                   <SocialMedia />
                 </Flex>
@@ -85,7 +87,10 @@ const Index = () => {
             <>
               <Flex h="10">
                 <Box mr={4}>
-                  <NavLink to='/'> <Img src={Logo} /> </NavLink>
+                  <NavLink to="/">
+                    {" "}
+                    <Img src={Logo} />{" "}
+                  </NavLink>
                 </Box>
                 <DappsDropdown />
 
@@ -96,22 +101,24 @@ const Index = () => {
                   align="center"
                   justify="space-around"
                   fontSize="14px"
-                  className='HeaderRide'
+                  className="HeaderRide"
                 >
                   <SwapDropdown />
                   <Nav label="Liquidity" to="/pool" />
                   <Nav label="Farming" to="/farming-v2" />
-                  <Link href="#">
-                    Analytics
-                  </Link>
+
+                  {(window as any).location.hostname !==
+                  "smartswap.rigelprotocol.com" ? (
+                    <Nav label="NFT" to="/nft" />
+                  ) : null}
+                  <Link href="#">Analytics</Link>
                 </Flex>
               </Flex>
               <Spacer />
 
-              <Flex h="8" justify="flex-end" >
-
+              <Flex h="8" justify="flex-end">
                 <NetworkConnector />
-                <Flex h="8" justify="flex-end" className='Wallet'>
+                <Flex h="8" justify="flex-end" className="Wallet">
                   <WalletConnection />
                 </Flex>
                 <SocialMedia />
@@ -120,10 +127,8 @@ const Index = () => {
             </>
           )}
         </Flex>
-      }
+      )}
     </>
-
-
   );
 };
 

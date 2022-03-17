@@ -14,7 +14,7 @@ import {
   Divider,
   Center,
 } from "@chakra-ui/react";
-import {ZERO_ADDRESS} from "../../constants";
+import { ZERO_ADDRESS } from "../../constants";
 import { TimeIcon, ArrowBackIcon, AddIcon } from "@chakra-ui/icons";
 import { useDerivedMintInfo, useMintState } from "../../state/mint/hooks";
 import OutputCurrecy from "./AddLquidityInputs/OutputCurrecy";
@@ -51,6 +51,10 @@ import { SmartSwapRouter } from "../../utils/Contracts";
 import { ethers } from "ethers";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import { calculateGas } from "../Swap/components/sendToken";
+import {
+  useUserGasPricePercentage,
+  useUpdateUserGasPreference,
+} from "../../state/gas/hooks";
 
 export default function AddLiquidity({
   match: {
@@ -73,8 +77,14 @@ export default function AddLiquidity({
   const bgColorRide = useColorModeValue("#319EF6", "#4CAFFF");
   const { onCurrencySelection, onUserInput, onCurrencyFor } =
     useMintActionHandlers();
-  const { currencies, getMaxValue, bestTrade, parsedAmount, showWrap, address } =
-    useDerivedMintInfo();
+  const {
+    currencies,
+    getMaxValue,
+    bestTrade,
+    parsedAmount,
+    showWrap,
+    address,
+  } = useDerivedMintInfo();
   const dependentField: Field =
     independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
 
@@ -86,12 +96,16 @@ export default function AddLiquidity({
     currencies[Field.OUTPUT]
   );
 
+  useUpdateUserGasPreference();
+  const [userGasPricePercentage, setUserGasPricePercentage] =
+    useUserGasPricePercentage();
+
   const [balanceA, setBalanceA] = useState("");
   const [balanceB, setBalanceB] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [checkTokenApproval, setCheckTokenApproval] = useState(false);
-  const [isLoadingValue, setIsLoadingValue] = useState(false);
+  const [checkTokenApproval, setCheckTokenApproval] = useState(0);
 
+  const [isLoadingValue, setIsLoadingValue] = useState(false);
   const [userSlippageTolerance] = useUserSlippageTolerance();
   const [userDeadline] = useUserTransactionTTL();
 
@@ -213,7 +227,8 @@ export default function AddLiquidity({
             hash,
             ExplorerDataType.TRANSACTION
           );
-          setCheckTokenApproval(true);
+          setCheckTokenApproval(checkTokenApproval + 1);
+          console.log(checkTokenApproval);
           dispatch(
             setOpenModal({
               message: `${symbol} Approval Successful`,
@@ -264,7 +279,11 @@ export default function AddLiquidity({
           })
         );
 
-        const { format1, format2 } = await calculateGas();
+        const { format1, format2, format3 } = await calculateGas(
+          userGasPricePercentage,
+          library,
+          chainId as number
+        );
 
         const isEIP1559 = await library?.getFeeData();
 
@@ -301,6 +320,13 @@ export default function AddLiquidity({
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            // gasLimit: 290000,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           }
         );
         const { confirmations, events } = await data.wait(3);
@@ -382,7 +408,11 @@ export default function AddLiquidity({
           })
         );
 
-        const { format1, format2 } = await calculateGas();
+        const { format1, format2, format3 } = await calculateGas(
+          userGasPricePercentage,
+          library,
+          chainId as number
+        );
 
         const isEIP1559 = await library?.getFeeData();
 
@@ -402,8 +432,6 @@ export default function AddLiquidity({
           account,
           deadLine,
           {
-            // gasLimit: parseFloat(gasCost.toString()) * 2,
-            // gasPrice: ethers.utils.parseUnits("10", "gwei"),
             maxPriorityFeePerGas:
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format1, 9).toString()
@@ -412,6 +440,12 @@ export default function AddLiquidity({
               isEIP1559 && chainId === 137
                 ? ethers.utils.parseUnits(format2, 9).toString()
                 : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
           }
         );
         const { confirmations, events } = await data.wait(3);
@@ -489,12 +523,13 @@ export default function AddLiquidity({
     }
   };
 
-
   useEffect(() => {
     if (address === ZERO_ADDRESS) {
-      setIsLoadingValue(false)
-    }
-    else if (formattedAmounts[Field.INPUT] && !formattedAmounts[Field.OUTPUT]) {
+      setIsLoadingValue(false);
+    } else if (
+      formattedAmounts[Field.INPUT] &&
+      !formattedAmounts[Field.OUTPUT]
+    ) {
       setIsLoadingValue(true);
     } else {
       setIsLoadingValue(false);

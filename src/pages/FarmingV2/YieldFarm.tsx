@@ -28,7 +28,6 @@ const YieldFarm = ({content, farmDataLoading, wallet, URLReferrerAddress}: {
 }) => {
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
   const { chainId, library } = useWeb3React();
-
   const active = chainId && library;
   const [showYieldfarm, setShowYieldFarm] = useState(false);
 
