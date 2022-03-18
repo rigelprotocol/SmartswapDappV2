@@ -170,7 +170,9 @@ export default function AddLiquidity({
   const { hasTokenABeenApproved, hasTokenBBeenApproved } = useAllowance(
     currencies[Field.INPUT],
     currencies[Field.OUTPUT],
-    checkTokenApproval
+    checkTokenApproval,
+    formattedAmounts[Field.INPUT],
+    formattedAmounts[Field.OUTPUT]
   );
 
   const { minted, poolShare } = useMintedLiquidity(
