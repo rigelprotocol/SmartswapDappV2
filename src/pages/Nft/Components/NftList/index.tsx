@@ -34,6 +34,6 @@ const NftList = () => {
            </Masonry>
            </>
     )
-}
+};
 
 export default NftList

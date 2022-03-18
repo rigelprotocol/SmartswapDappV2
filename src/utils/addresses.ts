@@ -33,6 +33,28 @@ export const SMARTSWAPROUTER: { [key: string]: string } = {
   "42262": "0xFf672dB2558c8A78813EA3F61303460fcec656F7",
 };
 
+//SmartSwapNFT
+
+export const SMARTSWAPNFT: { [key: string]: string } = {
+  "1": "0x",
+  "3": "0x",
+  "56": "0x",
+  "97": "0x9c91684353ffFe2109f339040dB578dF4659390E",
+  "137": "0x",
+  "80001": "0x"
+};
+
+//SmartSwapNFTTwo
+
+export const SMARTSWAPNFTTWO: { [key: string]: string } = {
+  "1": "0x",
+  "3": "0x",
+  "56": "0x",
+  "97": "0x5BE1d480B696E46FdE74EC599b0472fCA1A67f5D",
+  "137": "0x",
+  "80001": "0x"
+};
+
 //Native Wrapped
 export const WNATIVEADDRESSES: { [key: string]: string } = {
   "1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",

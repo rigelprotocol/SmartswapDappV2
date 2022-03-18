@@ -6,24 +6,24 @@ export const NFTsMockData = [
         priceRGP: 500.93,
         image: 'https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png',
         isFeature: false,
-        id: 1223,
-        number: '109 of 300'
+        id: 1,
+        number: '1-17'
     }, {
         nftName: "NFT Name",
         priceUSD: 7500,
         priceRGP: 500.93,
         image: 'https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png',
         isFeature: false,
-        id: 1223,
-        number: '109 of 300'
+        id: 2,
+        number: '26-42'
     }, {
         nftName: "NFT Name",
         priceUSD: 7500,
         priceRGP: 500.93,
         image: 'https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png',
         isFeature: false,
-        id: 1223,
-        number: '109 of 300'
+        id: 3,
+        number: '51-67'
     },
     {
         nftName: "NFT Name",
@@ -31,44 +31,96 @@ export const NFTsMockData = [
         priceRGP: 500.93,
         image: 'https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png',
         isFeature: false,
-        id: 1223,
-        number: '109 of 300'
+        id: 4,
+        number: '76-255'
     }, {
         nftName: "NFT Name",
         priceUSD: 7500,
         priceRGP: 500.93,
         image: 'https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png',
         isFeature: false,
-        id: 1223,
-        number: '109 of 300'
+        id: 5,
+        number: '376-555'
     }, {
         nftName: "NFT Name",
         priceUSD: 7500,
         priceRGP: 500.93,
         image: 'https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png',
         isFeature: false,
-        id: 1223,
-        number: '109 of 300'
+        id: 6,
+        number: '676-1025'
     }, {
         nftName: "NFT Name",
         priceUSD: 7500,
         priceRGP: 500.93,
         image: 'https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png',
         isFeature: false,
-        id: 1223,
-        number: '109 of 300'
+        id: 7,
+        number: '1176-1475'
     }, {
         nftName: "NFT Name",
         priceUSD: 7500,
         priceRGP: 500.93,
         image: 'https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png',
         isFeature: false,
-        id: 1223,
-        number: '109 of 300'
+        id: 8,
+        number: '1676-1975'
     },
-
-
-]
+    {
+        nftName: "NFT Name",
+        priceUSD: 7500,
+        priceRGP: 500.93,
+        image: 'https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png',
+        isFeature: false,
+        id: 9,
+        number: '2176-2875'
+    },
+    {
+        nftName: "NFT Name",
+        priceUSD: 7500,
+        priceRGP: 500.93,
+        image: 'https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png',
+        isFeature: false,
+        id: 10,
+        number: '3176-3875'
+    },
+    {
+        nftName: "NFT Name",
+        priceUSD: 7500,
+        priceRGP: 500.93,
+        image: 'https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png',
+        isFeature: false,
+        id: 11,
+        number: '4176-4875'
+    },
+    {
+        nftName: "NFT Name",
+        priceUSD: 7500,
+        priceRGP: 500.93,
+        image: 'https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png',
+        isFeature: false,
+        id: 12,
+        number: '5176-5875'
+    },
+    {
+        nftName: "NFT Name",
+        priceUSD: 7500,
+        priceRGP: 500.93,
+        image: 'https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png',
+        isFeature: false,
+        id: 13,
+        number: '6176-6875'
+    },
+    {
+        nftName: "NFT Name",
+        priceUSD: 7500,
+        priceRGP: 500.93,
+        image: 'https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png',
+        isFeature: false,
+        id: 14,
+        number: '7176-7875'
+    }
+];
 
 
 export const feturedNFTsMockData = {
@@ -79,7 +131,7 @@ export const feturedNFTsMockData = {
     isFeature: true,
     id: 1223,
     number: '109 of 300'
-}
+};
 
 
 export const slides = [
@@ -127,4 +179,4 @@ export const slides = [
         backgroundImage: "/images/slides/slide1.png",
     }
 
-]
+];

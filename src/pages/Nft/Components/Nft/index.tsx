@@ -5,8 +5,7 @@ import {
     Button,
     useColorModeValue,
     Image,
-    Flex,
-    Heading,
+    Flex
   } from '@chakra-ui/react';
 import ComfirmPurchase from '../../Modals/ComfirmPurchase';
 import { Link } from 'react-router-dom';
@@ -26,7 +25,7 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
 
   const textColor = useColorModeValue("#333333", "#F1F5F8");
   const lightTextColor = useColorModeValue("#666666", "grey");
-  const [ purchaseModal,setOpenPerchaseModal] = useState(false)
+  const [ purchaseModal,setOpenPerchaseModal] = useState(false);
    
   return (
          <Box
@@ -40,7 +39,7 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
             <Box p={2.5}>
           <Image
             src={image}
-            alt={`Picture `}
+            alt={`Picture`}
             roundedTop="lg"
             //maxHeight={246}
             rounded="lg"
@@ -57,19 +56,24 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
             </Box>
             <Flex mt="2" justifyContent="space-between" alignContent="center">
               <Text textColor={lightTextColor}>Number:</Text>
-              <Text  color={textColor}>#179 of 500</Text>
+              <Text  color={textColor}>{number}</Text>
             </Flex>
+
+              <Flex mt="2" justifyContent="space-between" alignContent="center">
+                  <Text textColor={lightTextColor}>NFT ID:</Text>
+                  <Text  color={textColor}>{id}</Text>
+              </Flex>
   
             <Flex mt="2" justifyContent="space-between" alignContent="center">
               <Text textColor={lightTextColor}>Price:</Text>
               <Text  color={textColor}>250 USD</Text>
             </Flex>
             <Flex mt="2" justifyContent="space-between" alignContent="center">
-              <Text></Text>
+              <Text/>
               <Text textColor={lightTextColor} >≈ 5000.91 RGP</Text>
             </Flex>
             <Flex mt="2" pt={2} justifyContent="space-between" alignContent="center">
-              <Button onClick={()=>setOpenPerchaseModal(true) } width={40} variant={'brand'}>Buy NFT</Button>
+              <Button onClick={() => setOpenPerchaseModal(true) } width={40} variant={'brand'}>Buy NFT</Button>
               <Button 
               ml={2}
               textColor={'#319EF6'}
@@ -79,13 +83,13 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
               variant='outline'
               width={40}
               >
-                     <Link to="/nfts/123">View NFT</Link></Button>
+                     <Link to={`/nfts/${id}`}>View NFT</Link></Button>
             </Flex>
             
           </Box>
-          <ComfirmPurchase isOpen={purchaseModal} close={()=>setOpenPerchaseModal(false) } />
+          <ComfirmPurchase isOpen={purchaseModal} close={()=>setOpenPerchaseModal(false)} id={id} />
      
         </Box>
     )
-}
+};
 export default Nft 
