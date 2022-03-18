@@ -276,7 +276,7 @@ export const initialState: farmStateInterface = {
       tokenPrice: 0,
       totalVolumePerPool: 0,
       farmingFee: 0,
-      pId: 10,
+      pId: 10793,
       poolAllowance: "",
       poolVersion: "2",
     },
