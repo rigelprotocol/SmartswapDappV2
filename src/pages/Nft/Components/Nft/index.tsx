@@ -36,15 +36,15 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
           borderColor={'#DEE5ED'}
           position="relative"
           >
-            <Box p={2.5}>
-          <Image
-            src={image}
-            alt={`Picture`}
-            roundedTop="lg"
-            //maxHeight={246}
-            rounded="lg"
-          />
-  </Box>
+            <Box p={2.5} height={'300px'}>
+              <Image
+                src={image}
+                alt={`Picture`}
+                roundedTop="lg"
+                height={'300px'}
+                rounded="lg"
+              />
+            </Box>
           <Box p="3">
             <Box d="flex" alignItems="baseline">
             <Text
