@@ -15,13 +15,12 @@ import {
 } from '@chakra-ui/react';
 import ComfirmPurchase from "./Modals/ComfirmPurchase";
 import ClaimNFTModal from "./Modals/ClaimNFTModal";
-import { useParams } from 'react-router-dom';
 
 type NftProps = {
     nftName?: string,
     image?: string
     isFeatured?: boolean,
-    id1?: number,
+    id?: number,
     priceUSD?: number,
     priceRGP?: number,
     number?: string
@@ -29,13 +28,12 @@ type NftProps = {
 
 
 
-export const ViewNFT = function ({ nftName, image, number, id1, priceUSD, priceRGP, isFeatured = false }: NftProps) {
+export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRGP, isFeatured = false }: NftProps) {
     const [purchaseModal, setOpenPerchaseModal] = useState(false);
     const [clamModal, setOpenClamModal] = useState(false);
 
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     const lightTextColor = useColorModeValue("#666666", "grey");
-    const {id} = useParams();
     return (
         <>
             <Center py={8} marginBottom={8}>
@@ -140,7 +138,7 @@ export const ViewNFT = function ({ nftName, image, number, id1, priceUSD, priceR
                     </Stack>
                 </Stack>
             </Center>
-            <ComfirmPurchase isOpen={purchaseModal} close={() => setOpenPerchaseModal(false)} id={id} />
+            <ComfirmPurchase isOpen={purchaseModal} close={() => setOpenPerchaseModal(false)} id={9} />
             <ClaimNFTModal isOpen={clamModal} close={() => setOpenClamModal(false)} />
 
         </>

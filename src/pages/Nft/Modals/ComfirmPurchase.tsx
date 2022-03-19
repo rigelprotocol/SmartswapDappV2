@@ -88,7 +88,7 @@ const ComfirmPurchase = ({ isOpen, close, id }: comfirmPurchaseModalProps) => {
        };
        fetchNftData();
 
-     }, [chainId, account, isOpen, stateChanged]);
+     }, [chainId, account, isOpen]);
 
      const [error, setError] = useState('');
 
@@ -168,7 +168,6 @@ const ComfirmPurchase = ({ isOpen, close, id }: comfirmPurchaseModalProps) => {
                     })
                 );
                 const nftContract = await RigelNFT(SMARTSWAPNFT[chainId as number], library);
-                console.log(firstToken.address);
                 const data = await nftContract.buy(unsoldItems, currency === 'BUSD' ? firstToken.address : secondToken.address);
 
                 const { confirmations } = await data.wait(3);

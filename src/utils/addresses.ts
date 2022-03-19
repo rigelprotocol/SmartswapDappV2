@@ -39,7 +39,7 @@ export const SMARTSWAPNFT: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
   "56": "0x",
-  "97": "0x9c91684353ffFe2109f339040dB578dF4659390E",
+  "97": "0x4aEFdbed61128de1483D2B9e739251466DCa29Bb",
   "137": "0x",
   "80001": "0x"
 };
