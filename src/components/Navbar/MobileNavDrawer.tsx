@@ -162,29 +162,29 @@ const MobileNavDrawer = () => {
                     </Text>
                   </Flex>
                 </Collapse>
-                <Flex ml={6} mb={3}>
+                <Flex ml={6} mb={3} onClick={onClose}>
                   <Nav label="Liquidity" to="/pool" />
                 </Flex>
-                <Flex ml={6} mb={3}>
+                <Flex ml={6} mb={3} onClick={onClose}>
                   <Nav label="Farming" to="/farming-v2" />
                 </Flex>
 
                 {(window as any).location.hostname !==
                 "smartswap.rigelprotocol.com" ? (
-                  <Flex ml={6} mb={3}>
+                  <Flex ml={6} mb={3} onClick={onClose}>
                     <Nav label="NFT" to="/nft" />
                   </Flex>
                 ) : null}
 
                 <Flex ml={6} mb={3}>
-                  <Link href="#" isExternal>
+                  <Link href="#" isExternal onClick={onClose}>
                     Analytics <ExternalLinkIcon mx="2px" />
                   </Link>
                 </Flex>
                 <Text ml={6} color="#999999" mt={5} fontSize="12px" mb={2}>
                   DAPPS
                 </Text>
-                <Flex mb={3} alignItems="center" ml={6}>
+                <Flex mb={3} alignItems="center" ml={6} onClick={onClose}>
                   <Nav label="SmartSwap" to="/swap" />
                 </Flex>
                 <Flex ml={6} mb={3}>
