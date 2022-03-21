@@ -81,7 +81,10 @@ const Index = () => {
       <WelcomeModal
         startToure={startWelcomeRide}
         openModal={welcomeModal}
-        closeModal={() => setWelcomeModal((state) => !state)}
+        closeModal={() => {
+      window.localStorage.setItem("firstLiquidtyVisit", "2")
+          setWelcomeModal((state) => !state)
+        }}
         textHeader={"Welcome to RigelProtocol SmartSwap"}
         welcomeText='With liquidity, you have the option of earning more by depositing tokens to join liquidity pools and receive LP tokens.'
       />

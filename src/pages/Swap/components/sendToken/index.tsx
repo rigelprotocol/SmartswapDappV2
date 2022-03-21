@@ -153,6 +153,8 @@ const SendToken = () => {
   const buttonBgcolor = useColorModeValue("#319EF6", "#4CAFFF");
 
   const [showModal, setShowModal] = useState(false);
+  const [currentToPrice, setCurrentToPrice] = useState("");
+  const [showNewChangesText, setShowNewChangesText] = useState(false);
 
   const { onCurrencySelection, onUserInput, onSwitchTokens } =
     useSwapActionHandlers();
@@ -166,7 +168,7 @@ const SendToken = () => {
     pathSymbol,
     pathArray,
     isExactIn,
-    formatAmount,
+    formatAmount
   } = useDerivedSwapInfo();
   const { independentField, typedValue } = useSwapState();
   const dependentField: Field =
@@ -250,7 +252,25 @@ const SendToken = () => {
   const [balance] = GetAddressTokenBalance(
     currencies[Field.INPUT] ?? undefined
   );
-
+  useMemo(()=>{
+    if(currentToPrice && receivedAmount){
+      if(receivedAmount !== currentToPrice){
+        setShowNewChangesText(true)
+      }
+    }
+  },[currentToPrice,receivedAmount])
+  useEffect(()=>{
+    let interval
+    if(showNewChangesText){
+     interval = setInterval(()=>setShowNewChangesText(false),3000)
+    //  return clearInterval(interval)
+    } 
+    if(!showModal){
+      setShowNewChangesText(false)
+      setCurrentToPrice("")
+    }
+    
+  },[showNewChangesText,showModal])
   useEffect(() => {
     if (balance < parseFloat(formattedAmounts[Field.INPUT])) {
       setInsufficientBalance(true);
@@ -355,16 +375,18 @@ const SendToken = () => {
       );
     }
   };
-
+  console.log({isExactIn})
   const [sendingTrx, setSendingTrx] = useState(false);
   const outputToken = useCallback((): any => {
     if (parsedAmounts[Field.OUTPUT]) {
-      return isExactIn
+      const data = isExactIn
         ? ethers.utils.parseUnits(
             parsedAmounts[Field.OUTPUT] as string,
             currencies[Field.OUTPUT]?.decimals
           )
         : parsedAmounts[Field.OUTPUT];
+        console.log({data})
+        return data
     }
   }, [parsedAmounts]);
 
@@ -401,7 +423,8 @@ const SendToken = () => {
       const sendTransaction = await route.swapExactTokensForTokens(
         isExactIn ? parsedAmount : formatAmount,
         // parsedAmount,
-        outputToken(),
+        // outputToken(),
+        parsedOutput(currencies[Field.OUTPUT]?.decimals as number),
         // [from, to],
         pathArray,
         account,
@@ -464,6 +487,7 @@ const SendToken = () => {
           })
         );
         onUserInput(Field.INPUT, "");
+        setShowNewChangesText(false)
       }
     } catch (e) {
       console.log(e);
@@ -1030,7 +1054,7 @@ const SendToken = () => {
         pl={3}
         pr={3}
       >
-        <SwapSettings />
+        <SwapSettings/>
         <From
           onUserInput={handleTypeInput}
           onCurrencySelection={onCurrencySelection}
@@ -1124,7 +1148,9 @@ const SendToken = () => {
               fontSize='18px'
               boxShadow={lightmode ? "base" : "lg"}
               _hover={{ bgColor: buttonBgcolor }}
-              onClick={() => setShowModal(!showModal)}
+              onClick={() => {
+                setCurrentToPrice(receivedAmount)
+                setShowModal(!showModal)}}
             >
               Swap Tokens
             </Button>
@@ -1143,6 +1169,7 @@ const SendToken = () => {
           fromDeposited={formattedAmounts[Field.INPUT]}
           toDeposited={receivedAmount}
           handleSwap={swapTokens}
+          showNewChangesText={showNewChangesText}
           fee={LPFee}
           priceImpact={priceImpact}
           pathSymbol={pathSymbol}

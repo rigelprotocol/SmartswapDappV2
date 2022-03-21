@@ -121,9 +121,13 @@ export default function AddLiquidity({
   }
   useEffect(() => {
     const visits = window.localStorage.getItem("continueLiquidtyVisit");
+    const liquidityVisits = window.localStorage.getItem("firstLiquidtyVisit");
     if (!visits) {
       window.localStorage.setItem("continueLiquidtyVisit", "1");
+    }
+    if (!visits && liquidityVisits!=="2") {
       startWelcomeRide();
+      window.localStorage.setItem("firstYieldVisit", "1");
     }
   }, []);
 
