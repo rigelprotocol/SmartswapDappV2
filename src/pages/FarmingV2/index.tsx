@@ -1710,7 +1710,10 @@ export function Index() {
       <WelcomeModal
         startToure={strartWelcomeRide}
         openModal={welcomeModal}
-        closeModal={() => setWelcomeModal((state) => !state)}
+        closeModal={() => {
+          window.localStorage.setItem("firstFarmVisit", "2");
+          setWelcomeModal((state) => !state)
+        }}
         textHeader={"Welcome to SmartSwap Farming"}
         welcomeText='With farming, you can maximize the rate of return on capital and generate rewards on your cryptocurrency holdings.'
       />
