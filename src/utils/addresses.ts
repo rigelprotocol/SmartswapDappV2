@@ -41,7 +41,7 @@ export const SMARTSWAPNFT: { [key: string]: string } = {
   "56": "0x",
   "97": "0x4aEFdbed61128de1483D2B9e739251466DCa29Bb",
   "137": "0x",
-  "80001": "0x"
+  "80001": "0x0963B3b05d12f49b3955033a2bA00c5D66d4A466"
 };
 
 //SmartSwapNFTTwo
@@ -52,7 +52,7 @@ export const SMARTSWAPNFTTWO: { [key: string]: string } = {
   "56": "0x",
   "97": "0x5BE1d480B696E46FdE74EC599b0472fCA1A67f5D",
   "137": "0x",
-  "80001": "0x"
+  "80001": "0x92d67F33c88d477dFffb1e7c65f58e19FB25f766"
 };
 
 //Native Wrapped

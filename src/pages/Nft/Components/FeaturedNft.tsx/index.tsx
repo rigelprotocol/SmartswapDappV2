@@ -1,10 +1,8 @@
 import React, { useState } from "react"
 import {
-    Badge,
     Button,
     Center,
     Flex,
-    Heading,
     Image,
     Stack,
     Text,
@@ -12,12 +10,13 @@ import {
 } from '@chakra-ui/react';
 import ComfirmPurchase from "../../Modals/ComfirmPurchase";
 import { Link } from "react-router-dom";
+import {useNft, useNftName} from "../../../../hooks/useNFT";
 
 type NftProps = {
     nftName?: string,
     image?: string
     isFeatured?: boolean,
-    id?: number,
+    id: number,
     priceUSD?: number,
     priceRGP?: number,
     number?: string
@@ -25,10 +24,14 @@ type NftProps = {
 }
 export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, priceRGP, isFeatured = false }: NftProps) {
 
-    const [ purchaseModal,setOpenPerchaseModal] = useState(false)
+    const [ purchaseModal,setOpenPerchaseModal] = useState(false);
 
   const textColor = useColorModeValue("#333333", "#F1F5F8");
   const lightTextColor = useColorModeValue("#666666", "grey");
+
+    const { firstToken, secondToken ,prices, unsoldItems , nftId} = useNft(id, purchaseModal);
+
+    const {name, nftImage} = useNftName(id);
 
     return (
         <>
@@ -43,16 +46,15 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
                     // maxWidth={900}
                     direction={{ base: 'column', md: 'row' }}
                     bg={useColorModeValue('white', 'gray.900')}
+                    p={2}
                     
                 >
-                    <Flex flex={1} >
+                    <Flex flex={1}>
                         <Image
                             objectFit="cover"
                             boxSize="100%"
                             borderRadius={6}
-                            src={
-                                'https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png'
-                            }
+                            src={nftImage}
                         />
                     </Flex>
                     <Stack
@@ -60,18 +62,18 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
                         pl={10}
                     >
                         <Text fontWeight={700} color={textColor}  fontSize={38} pt={'25%'}>
-                            Featured NFT Name
+                            {name}
                         </Text>
                         <Text align={'left'} pt={10} textColor={lightTextColor}>
                             Price
                         </Text>
 
                         <Text color={textColor}  fontWeight={700} fontSize={28}>
-                            7,500 USD
+                            {prices.secondTokenPrice} USD
                         </Text>
 
                         <Text align={'left'}  textColor={lightTextColor}>
-                            500.91 RGP
+                            {(100.54 * parseFloat(prices.firstTokenPrice)).toFixed(2)} RGP
                         </Text>
 
                         <Flex  pt={20} alignContent="center" >
@@ -84,16 +86,16 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
                                 variant='outline'
                                 width={'45%'}
                             >
-                                <Link to="/nfts/123">View NFT</Link>
+                                <Link to={`/nfts/${id}`}>View NFT</Link>
                                 </Button>
                         </Flex>
 
                     </Stack>
                 </Stack>
             </Center>
-            <ComfirmPurchase isOpen={purchaseModal} close={()=>setOpenPerchaseModal(false) } />
+            <ComfirmPurchase isOpen={purchaseModal} close={()=>setOpenPerchaseModal(false)} id={1} image={nftImage} />
         </>
     )
-}
+};
 export default FeaturedNft
 

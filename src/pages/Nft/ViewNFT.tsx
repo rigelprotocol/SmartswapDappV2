@@ -1,20 +1,19 @@
 import React, { useState } from "react"
 import {
-    Badge,
     Button,
     Center,
     Flex,
     Grid,
     GridItem,
-    Heading,
     Image,
-    Link,
     Stack,
     Text,
     useColorModeValue,
 } from '@chakra-ui/react';
 import ComfirmPurchase from "./Modals/ComfirmPurchase";
 import ClaimNFTModal from "./Modals/ClaimNFTModal";
+
+import { Link, useParams } from 'react-router-dom';
 
 type NftProps = {
     nftName?: string,
@@ -32,16 +31,18 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
     const [purchaseModal, setOpenPerchaseModal] = useState(false);
     const [clamModal, setOpenClamModal] = useState(false);
 
+    const {nftId} = useParams();
+
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     const lightTextColor = useColorModeValue("#666666", "grey");
     return (
         <>
             <Center py={8} marginBottom={8}>
                 <Stack
-
                     w={{ sm: '100%', md: '540px', lg: '950px' }}
                     direction={{ base: 'column', md: 'row' }}
                     bg={useColorModeValue('white', 'gray.900')}
+                    p={2}
                 >
                     <Flex flex={1} >
                         <Image
@@ -58,7 +59,7 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
                         pl={10}
                         paddingRight={5}
                     >
-                        <Text color={'#319EF6'}>You own 1 of these NFTs.</Text>
+                        {/*<Text color={'#319EF6'}>You own 1 of these NFTs.</Text>*/}
                         <Text color={textColor} fontSize={30} fontWeight={700}>
                             NFT Name
                         </Text>
@@ -78,7 +79,7 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
                                 justifyContent="center"
                             >
                                 <Text color={lightTextColor}>Number</Text>
-                                <Text color={textColor}>{id}</Text>
+                                <Text color={textColor}>{nftId}</Text>
                             </Flex>
                         </Flex>
                         <Text color={textColor} py={3}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sociis iuop ullamcorper morbi ut amet.</Text>
@@ -138,7 +139,7 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
                     </Stack>
                 </Stack>
             </Center>
-            <ComfirmPurchase isOpen={purchaseModal} close={() => setOpenPerchaseModal(false)} id={9} />
+            <ComfirmPurchase isOpen={purchaseModal} close={() => setOpenPerchaseModal(false)} id={9} image={'https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png'} />
             <ClaimNFTModal isOpen={clamModal} close={() => setOpenClamModal(false)} />
 
         </>

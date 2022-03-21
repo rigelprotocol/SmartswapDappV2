@@ -9,11 +9,11 @@ const Index = () => {
     <>
       <Container pt={5} maxW='container.xs'>
         <Carousel />
-           <FeaturedNft />
-          <NftList />
+        <FeaturedNft id={1} />
+        <NftList />
       </Container>
     </>
   )
 };
 
-export default Index
+export default Index;

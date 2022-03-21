@@ -644,6 +644,7 @@ export function Index() {
         );
 
         const rgpPrice = totalUSDT2 / totalRGP2;
+        console.log(rgpPrice);
 
         const RGPprice: number | any = ethers.utils.formatUnits(
           pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
@@ -1167,8 +1168,6 @@ export function Index() {
             21
           )
           .toString();
-
-        console.log("log", RGP_WARSLiquidity);
 
         const RGP_METOLiquidity = ethers.utils
           .formatUnits(

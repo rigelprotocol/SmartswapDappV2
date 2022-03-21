@@ -7,7 +7,7 @@ export const NFTsMockData = [
         image: 'https://ipfs.io/ipfs/QmdzcAhadxhjuWdkWoEzyL1opGwCH3J3TU7pegtpsGUSUH/1.png',
         isFeature: false,
         id: 1,
-        number: '1-17'
+        number: '17'
     }, {
         nftName: "NFT Name",
         priceUSD: 7500,
@@ -15,7 +15,7 @@ export const NFTsMockData = [
         image: 'https://ipfs.io/ipfs/QmSxjkXTQNztAJVJENezzQc3etsZCbwCPpqmoskciiPsGH/26.png',
         isFeature: false,
         id: 2,
-        number: '26-42'
+        number: '42'
     }, {
         nftName: "NFT Name",
         priceUSD: 7500,
@@ -23,7 +23,7 @@ export const NFTsMockData = [
         image: 'https://ipfs.io/ipfs/QmS9MMnyJYjFGjgfJtqooMA6cbqzxMb1mmhFbw9vnrWHo1/51.png',
         isFeature: false,
         id: 3,
-        number: '51-67'
+        number: '67'
     },
     {
         nftName: "NFT Name",
@@ -32,7 +32,7 @@ export const NFTsMockData = [
         image: 'https://ipfs.io/ipfs/QmWbTJS7QfVKmA8MHz6STVXwvESqaGB5fd8w66kYyT6ciz/76.png',
         isFeature: false,
         id: 4,
-        number: '76-255'
+        number: '255'
     }, {
         nftName: "NFT Name",
         priceUSD: 7500,
@@ -40,7 +40,7 @@ export const NFTsMockData = [
         image: 'https://ipfs.io/ipfs/QmU9hZqvWraVqFswx5Vpvo4jPQqWDC23GzyjdVv8K2CV5c/376.png',
         isFeature: false,
         id: 5,
-        number: '376-555'
+        number: '555'
     }, {
         nftName: "NFT Name",
         priceUSD: 7500,
@@ -48,7 +48,7 @@ export const NFTsMockData = [
         image: 'https://ipfs.io/ipfs/QmekhK1GxzK8FF1hEFF1FuXeV27HLED1EFEPH9pPrDbG8v/676.png',
         isFeature: false,
         id: 6,
-        number: '676-1025'
+        number: '1025'
     }, {
         nftName: "NFT Name",
         priceUSD: 7500,
@@ -64,7 +64,7 @@ export const NFTsMockData = [
         image: 'https://ipfs.io/ipfs/Qmd2xDJjXQXMRdDx6mqsJTdruHF7M6fJNQerZcvLct38RA/1676.png',
         isFeature: false,
         id: 8,
-        number: '1676-1975'
+        number: '1975'
     },
     {
         nftName: "NFT Name",
@@ -73,7 +73,7 @@ export const NFTsMockData = [
         image: 'https://ipfs.io/ipfs/QmdUakbhM4NdH59uwXdTB3tycFzubYfMMGpM8vYbkrAEpM/2176.png',
         isFeature: false,
         id: 9,
-        number: '2176-2875'
+        number: '2875'
     },
     {
         nftName: "NFT Name",
@@ -82,7 +82,7 @@ export const NFTsMockData = [
         image: 'https://ipfs.io/ipfs/QmfLMPfyhTiT3fEQHbutmMQfDhZJeoHwWGGyftFZVndLBB/3176.png',
         isFeature: false,
         id: 10,
-        number: '3176-3875'
+        number: '3875'
     },
     {
         nftName: "NFT Name",
@@ -91,7 +91,7 @@ export const NFTsMockData = [
         image: 'https://ipfs.io/ipfs/QmT2gWJUCEHvURf8zJcf5KXPL2ZVX2uRVTUSWnjHn5egNG/4176.png',
         isFeature: false,
         id: 11,
-        number: '4176-4875'
+        number: '4875'
     },
     {
         nftName: "NFT Name",
@@ -100,7 +100,7 @@ export const NFTsMockData = [
         image: 'https://ipfs.io/ipfs/QmaETjBJmx2zgaJ5UFWoqV4pmsyGYrJiTUxg75bKQmZp1X/5176.png',
         isFeature: false,
         id: 12,
-        number: '5176-5875'
+        number: '5875'
     },
     {
         nftName: "NFT Name",
@@ -109,7 +109,7 @@ export const NFTsMockData = [
         image: 'https://ipfs.io/ipfs/QmTCMs4m8EQ1YpYedCqLg7AcRUat37ckqdSCARydMKWgeZ/6176.png',
         isFeature: false,
         id: 13,
-        number: '6176-6875'
+        number: '6875'
     },
     {
         nftName: "NFT Name",
@@ -118,7 +118,7 @@ export const NFTsMockData = [
         image: 'https://ipfs.io/ipfs/QmZEWagvtH4WkjKVwfbAgfRoGEKdojbxoVQHBX8BoRHwku/7176.png',
         isFeature: false,
         id: 14,
-        number: '7176-7875'
+        number: '7875'
     }
 ];
 

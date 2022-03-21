@@ -3,92 +3,39 @@ import { Box, Button, Divider,
     ModalContent, ModalHeader, ModalOverlay,
     Select, Text, useColorModeValue } from '@chakra-ui/react'
 import React, {useEffect, useState} from 'react';
-import { useNFTAllowance, TokenProps} from "../../../hooks/useNFT";
+import {useNft, useNFTAllowance} from "../../../hooks/useNFT";
 import {getERC20Token} from "../../../utils/utilsFunctions";
 import {setOpenModal, TrxState} from "../../../state/application/reducer";
-import {BUSD, SMARTSWAPNFT} from "../../../utils/addresses";
+import {SMARTSWAPNFT} from "../../../utils/addresses";
 import {ExplorerDataType, getExplorerLink} from "../../../utils/getExplorerLink";
 import {addToast} from "../../../components/Toast/toastSlice";
 import {useActiveWeb3React} from "../../../utils/hooks/useActiveWeb3React";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {RigelNFT} from "../../../utils/Contracts";
-import {getNftToken} from "../../../state/nft/hooks";
-import {RootState} from "../../../state";
-import {formatAmount} from "../../../utils/hooks/useAccountHistory";
-import {ethers} from "ethers";
 
 
 type comfirmPurchaseModalProps = {
     isOpen: boolean,
     close: () => void,
-    id: number
+    id: number,
+    image: string
 }
 
-const ComfirmPurchase = ({ isOpen, close, id }: comfirmPurchaseModalProps) => {
+const ComfirmPurchase = ({ isOpen,
+                             close, id, image }:
+                             comfirmPurchaseModalProps) => {
     const { chainId, library, account } = useActiveWeb3React();
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     const lightTextColor = useColorModeValue("#666666", "grey");
     const [currency, setCurrency] = useState('');
     const [checkTokenApproval, setCheckTokenApproval] = useState(0);
-    const [firstToken, setFirstToken] = useState<TokenProps>({symbol: '', balance: '', address: ''});
-    const [secondToken, setSecondToken] = useState<TokenProps>({symbol: '', balance: '', address: ''});
-    const [prices, setPrices] = useState({firstTokenPrice: '', secondTokenPrice: ''});
-    const [unsoldItems, setUnsoldItems] = useState<number>();
-    const [nftId, setNftId] = useState<number[]>([]);
     const dispatch = useDispatch();
 
-    const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
-    const stateChanged : boolean = trxState === 2;
+    const {firstToken, secondToken, prices, unsoldItems, nftId} = useNft(id, isOpen);
 
-     useEffect(() => {
-       const nftArray = getNftToken(id);
-       setNftId(nftArray);
 
-       const fetchNftData = async () => {
-           try {
-               const nftContract = await RigelNFT(SMARTSWAPNFT[chainId as number], library);
-
-               const purchaseData = await nftContract.nftPurchaseData(nftArray[0]);
-               console.log(purchaseData);
-
-               setPrices({firstTokenPrice: formatAmount(purchaseData.token1Price, 18),
-                   secondTokenPrice: formatAmount(purchaseData.token2Price, 18)});
-
-               const tokenOne = await getERC20Token(purchaseData.token1, library);
-               const [tokenOneSymbol, tokenOneBalance] = await Promise.all(
-                   [tokenOne.symbol(), tokenOne.balanceOf(account)]);
-               setFirstToken({symbol: tokenOneSymbol,
-                   balance: parseFloat(ethers.utils.formatEther(tokenOneBalance)).toFixed(4),
-                   address: purchaseData.token1});
-
-               const tokenTwo = await getERC20Token(purchaseData.token2, library);
-               const [tokenTwoSymbol, tokenTwoBalance] = await Promise.all(
-                   [tokenTwo.symbol(), tokenTwo.balanceOf(account)]);
-               setSecondToken({symbol: tokenTwoSymbol,
-                   balance: parseFloat(ethers.utils.formatEther(tokenTwoBalance)).toFixed(4),
-                   address: purchaseData.token2});
-
-               const allID = nftArray;
-               console.log(allID[0]);
-               console.log(allID.slice(-1)[0]);
-
-               for (let i = allID[0]; i <= allID.slice(-1)[0]; i++) {
-                   const views = await nftContract.sold(i);
-                   if (!views) {
-                       setUnsoldItems(i);
-                       console.log(i);
-                       break;
-                   }
-               }
-
-           } catch (e) {
-               console.log(e.message)
-           }
-
-       };
-       fetchNftData();
-
-     }, [chainId, account, isOpen]);
+    const {hasTokenABeenApproved, hasTokenBBeenApproved} = useNFTAllowance(checkTokenApproval, prices.firstTokenPrice,
+        prices.secondTokenPrice, currency, nftId[0]);
 
      const [error, setError] = useState('');
 
@@ -102,9 +49,6 @@ const ComfirmPurchase = ({ isOpen, close, id }: comfirmPurchaseModalProps) => {
          }
      }, [currency]);
 
-
-    const {hasTokenABeenApproved, hasTokenBBeenApproved} = useNFTAllowance(checkTokenApproval, prices.firstTokenPrice,
-        prices.secondTokenPrice, currency, nftId[0]);
 
     const approveTokens = async (address: string, symbol: string) => {
         if (account) {
@@ -168,7 +112,8 @@ const ComfirmPurchase = ({ isOpen, close, id }: comfirmPurchaseModalProps) => {
                     })
                 );
                 const nftContract = await RigelNFT(SMARTSWAPNFT[chainId as number], library);
-                const data = await nftContract.buy(unsoldItems, currency === 'BUSD' ? firstToken.address : secondToken.address);
+
+                const data = await nftContract.buy(unsoldItems, currency === 'USDT' ?  secondToken.address : firstToken.address);
 
                 const { confirmations } = await data.wait(3);
                 const { hash } = data;
@@ -192,6 +137,7 @@ const ComfirmPurchase = ({ isOpen, close, id }: comfirmPurchaseModalProps) => {
                             URL: explorerLink,
                         })
                     );
+                    close();
                 }
 
 
@@ -230,7 +176,7 @@ const ComfirmPurchase = ({ isOpen, close, id }: comfirmPurchaseModalProps) => {
                             justifyContent="center"
                         >
 
-                            <Image width={54} height={54} src='https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png' alt="logo" />
+                            <Image width={54} height={54} src={image} alt="logo" />
                             <Text paddingTop={3} fontSize={20} color={textColor} >NFT Name</Text>
 
                             <Text paddingTop={3} fontSize={20} color={textColor} >NFT ID: {id}</Text>
@@ -266,7 +212,7 @@ const ComfirmPurchase = ({ isOpen, close, id }: comfirmPurchaseModalProps) => {
                         marginTop={4}
                         borderRadius={8}
                     >
-                        {currency === 'BUSD' ?
+                        {currency !== 'USDT' ?
                             <Flex mt="1" justifyContent="space-between" alignContent="center">
                                 <Text color={lightTextColor} >Price</Text>
                                 <Text textColor={textColor}>{prices.firstTokenPrice} {firstToken.symbol}</Text>
