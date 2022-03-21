@@ -1850,7 +1850,11 @@ const ShowYieldFarmDetails = ({
 
   useEffect(() => {
     const visits = window.localStorage.getItem("firstYieldVisit");
+    const farmVisits = window.localStorage.getItem("firstFarmVisit");
     if (!visits) {
+      window.localStorage.setItem("firstYieldVisit", "1");
+    }
+    if (!visits && farmVisits!=="2") {
       setRun(true);
       window.localStorage.setItem("firstYieldVisit", "1");
     }

@@ -7,7 +7,12 @@ import NextBtn from "./components/NextBtn"
 import SkipBtn from "./components/SkipBtn"
 import TitleBox from "./components/TitleBox"
 
-
+const skipAllTours = ()=>{
+    const visits = window.localStorage.getItem("firstFarmVisit");
+    if (visits) {
+      window.localStorage.setItem("firstFarmVisit", "2");
+    }
+}
 export const steps = [
     {
         target: '.Null',
@@ -24,7 +29,7 @@ export const steps = [
             back: <BackBtn />,
             close: <CloseBtn />,
             last: <DoneBtn />,
-            skip: <SkipBtn />
+            skip: <SkipBtn skipAllTours={skipAllTours}/>
 
         },
 
@@ -40,7 +45,7 @@ export const steps = [
             back: <BackBtn />,
             close: <CloseBtn />,
             last: <DoneBtn />,
-            skip: <SkipBtn />
+            skip: <SkipBtn  skipAllTours={skipAllTours}/>
 
         },
     },
@@ -54,7 +59,7 @@ export const steps = [
             back: <BackBtn />,
             close: <CloseBtn />,
             last: <DoneBtn />,
-            skip: <SkipBtn />
+            skip: <SkipBtn  skipAllTours={skipAllTours}/>
 
         },
     },
@@ -68,7 +73,7 @@ export const steps = [
             back: <BackBtn />,
             close: <CloseBtn />,
             last: <DoneBtn />,
-            skip: <SkipBtn />
+            skip: <SkipBtn  skipAllTours={skipAllTours}/>
 
         },
     },
@@ -83,7 +88,7 @@ export const steps = [
             back: <BackBtn />,
             close: <CloseBtn />,
             last: <DoneBtn />,
-            skip: <SkipBtn />
+            skip: <SkipBtn  skipAllTours={skipAllTours}/>
 
         },
     }
