@@ -1087,8 +1087,8 @@ const SendToken = () => {
               p='5px'
               mt={1}
               disabled={false}
-              color={inputError ? color : "#FFFFFF"}
-              bgColor={inputError ? switchBgcolor : buttonBgcolor}
+              color={color}
+              bgColor={switchBgcolor}
               fontSize='18px'
               boxShadow={lightmode ? "base" : "lg"}
               _hover={{ bgColor: buttonBgcolor, color: "#FFFFFF" }}
