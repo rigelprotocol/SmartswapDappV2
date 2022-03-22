@@ -54,6 +54,7 @@ import JSBI from "jsbi";
 import { useUpdateUserGasPreference } from "../../../../state/gas/hooks";
 import { useUserGasPricePercentage } from "../../../../state/gas/hooks";
 import { Web3Provider } from "@ethersproject/providers";
+import NetworkModal from "./../../../../components/Navbar/modals/networkModal";
 
 export const calculateGas = async (
   percentage: number,
@@ -248,6 +249,7 @@ const SendToken = () => {
   };
   const [hasBeenApproved, setHasBeenApproved] = useState(false);
   const [insufficientBalance, setInsufficientBalance] = useState(false);
+  const [displayNetwork, setDisplayNetwork] = useState(false);
 
   const [balance] = GetAddressTokenBalance(
     currencies[Field.INPUT] ?? undefined
@@ -264,12 +266,12 @@ const SendToken = () => {
     if(showNewChangesText){
      interval = setInterval(()=>setShowNewChangesText(false),3000)
     //  return clearInterval(interval)
-    } 
+    }
     if(!showModal){
       setShowNewChangesText(false)
       setCurrentToPrice("")
     }
-    
+
   },[showNewChangesText,showModal])
   useEffect(() => {
     if (balance < parseFloat(formattedAmounts[Field.INPUT])) {
@@ -1075,7 +1077,7 @@ const SendToken = () => {
         />
 
         <Flex alignItems='center' className='SwapToken'>
-          {insufficientBalance || inputError ? (
+          {!account ? (
             <Button
               w='100%'
               borderRadius='6px'
@@ -1084,77 +1086,100 @@ const SendToken = () => {
               h='48px'
               p='5px'
               mt={1}
-              disabled={inputError !== undefined || insufficientBalance}
+              disabled={false}
               color={inputError ? color : "#FFFFFF"}
               bgColor={inputError ? switchBgcolor : buttonBgcolor}
               fontSize='18px'
               boxShadow={lightmode ? "base" : "lg"}
-              _hover={{ bgColor: buttonBgcolor }}
-            >
-              {inputError
-                ? inputError
-                : `Insufficient ${currencies[Field.INPUT]?.symbol} Balance`}
-            </Button>
-          ) : !hasBeenApproved ? (
-            <Button
-              w='100%'
-              borderRadius='6px'
-              border={lightmode ? "2px" : "none"}
-              borderColor={borderColor}
-              h='48px'
-              p='5px'
-              mt={1}
-              disabled={inputError !== undefined || insufficientBalance}
-              color={inputError ? color : "#FFFFFF"}
-              bgColor={inputError ? switchBgcolor : buttonBgcolor}
-              fontSize='18px'
-              boxShadow={lightmode ? "base" : "lg"}
-              _hover={{ bgColor: buttonBgcolor }}
+              _hover={{ bgColor: buttonBgcolor, color: "#FFFFFF" }}
               onClick={() => {
-                approveSwap();
+                setDisplayNetwork(state => !state);
+                localStorage.removeItem('walletconnect')
               }}
             >
-              Approve Transaction
+              Connect Wallet
             </Button>
-          ) : inputError ? (
-            <Button
-              w='100%'
-              borderRadius='6px'
-              border={lightmode ? "2px" : "none"}
-              borderColor={borderColor}
-              h='48px'
-              p='5px'
-              mt={1}
-              disabled={true}
-              bgColor={inputError ? switchBgcolor : buttonBgcolor}
-              fontSize='18px'
-              boxShadow={lightmode ? "base" : "lg"}
-              _hover={{ bgColor: buttonBgcolor }}
-            >
-              {inputError}
-            </Button>
-          ) : (
-            <Button
-              w='100%'
-              borderRadius='6px'
-              border={lightmode ? "2px" : "none"}
-              borderColor={borderColor}
-              h='48px'
-              p='5px'
-              mt={1}
-              disabled={inputError !== undefined || insufficientBalance}
-              color={inputError ? color : "#FFFFFF"}
-              bgColor={inputError ? switchBgcolor : buttonBgcolor}
-              fontSize='18px'
-              boxShadow={lightmode ? "base" : "lg"}
-              _hover={{ bgColor: buttonBgcolor }}
-              onClick={() => {
-                setCurrentToPrice(receivedAmount)
-                setShowModal(!showModal)}}
-            >
-              Swap Tokens
-            </Button>
-          )}
+          ) : insufficientBalance || inputError ? (
+              <Button
+                w='100%'
+                borderRadius='6px'
+                border={lightmode ? "2px" : "none"}
+                borderColor={borderColor}
+                h='48px'
+                p='5px'
+                mt={1}
+                disabled={inputError !== undefined || insufficientBalance}
+                color={inputError ? color : "#FFFFFF"}
+                bgColor={inputError ? switchBgcolor : buttonBgcolor}
+                fontSize='18px'
+                boxShadow={lightmode ? "base" : "lg"}
+                _hover={{ bgColor: buttonBgcolor }}
+              >
+                {inputError
+                  ? inputError
+                  : `Insufficient ${currencies[Field.INPUT]?.symbol} Balance`}
+              </Button>
+            ) : !hasBeenApproved ? (
+              <Button
+                w='100%'
+                borderRadius='6px'
+                border={lightmode ? "2px" : "none"}
+                borderColor={borderColor}
+                h='48px'
+                p='5px'
+                mt={1}
+                disabled={inputError !== undefined || insufficientBalance}
+                color={inputError ? color : "#FFFFFF"}
+                bgColor={inputError ? switchBgcolor : buttonBgcolor}
+                fontSize='18px'
+                boxShadow={lightmode ? "base" : "lg"}
+                _hover={{ bgColor: buttonBgcolor }}
+                onClick={() => {
+                  approveSwap();
+                }}
+              >
+                Approve Transaction
+              </Button>
+            ) : inputError ? (
+              <Button
+                w='100%'
+                borderRadius='6px'
+                border={lightmode ? "2px" : "none"}
+                borderColor={borderColor}
+                h='48px'
+                p='5px'
+                mt={1}
+                disabled={true}
+                bgColor={inputError ? switchBgcolor : buttonBgcolor}
+                fontSize='18px'
+                boxShadow={lightmode ? "base" : "lg"}
+                _hover={{ bgColor: buttonBgcolor }}
+              >
+                {inputError}
+              </Button>
+            ) : (
+              <Button
+                w='100%'
+                borderRadius='6px'
+                border={lightmode ? "2px" : "none"}
+                borderColor={borderColor}
+                h='48px'
+                p='5px'
+                mt={1}
+                disabled={inputError !== undefined || insufficientBalance}
+                color={inputError ? color : "#FFFFFF"}
+                bgColor={inputError ? switchBgcolor : buttonBgcolor}
+                fontSize='18px'
+                boxShadow={lightmode ? "base" : "lg"}
+                _hover={{ bgColor: buttonBgcolor }}
+                onClick={() => {
+                  setCurrentToPrice(receivedAmount)
+                  setShowModal(!showModal)}}
+              >
+                Swap Tokens
+              </Button>
+            )}
+            <NetworkModal displayNetwork={displayNetwork} setDisplayNetwork={setDisplayNetwork} />
         </Flex>
         <ConfirmModal
           showModal={showModal}
