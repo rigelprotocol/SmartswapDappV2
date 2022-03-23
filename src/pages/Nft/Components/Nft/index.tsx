@@ -30,9 +30,9 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
 
   const { firstToken, secondToken ,prices, unsoldItems , nftId} = useNft(id, purchaseModal);
 
-  const {name, nftImage, loading}= useNftName(id);
+  const {name, nftImage, loading} = useNftName(id);
 
-
+  console.log(unsoldItems, nftId[0]);
    
   return (
          <Box
@@ -64,8 +64,8 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
               </Text>
             </Box>
             <Flex mt="2" justifyContent="space-between" alignContent="center">
-              <Text textColor={lightTextColor}>Number:</Text>
-              <Text  color={textColor}>{unsoldItems} of {number}</Text>
+              <Text textColor={lightTextColor}>Sold:</Text>
+              <Text  color={textColor}>{unsoldItems - nftId[0]} of {nftId.length}</Text>
             </Flex>
   
             <Flex mt="2" justifyContent="space-between" alignContent="center">
@@ -96,6 +96,7 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
                                close={()=>setOpenPerchaseModal(false)}
                                id={id}
                                image={nftImage}
+                               name={name}
               />
         </Box>
     )

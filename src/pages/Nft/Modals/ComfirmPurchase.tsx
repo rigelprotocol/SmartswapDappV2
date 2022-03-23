@@ -18,11 +18,12 @@ type comfirmPurchaseModalProps = {
     isOpen: boolean,
     close: () => void,
     id: number,
-    image: string
+    image: string,
+    name: string
 }
 
 const ComfirmPurchase = ({ isOpen,
-                             close, id, image }:
+                             close, id, image, name }:
                              comfirmPurchaseModalProps) => {
     const { chainId, library, account } = useActiveWeb3React();
     const textColor = useColorModeValue("#333333", "#F1F5F8");
@@ -177,7 +178,7 @@ const ComfirmPurchase = ({ isOpen,
                         >
 
                             <Image width={54} height={54} src={image} alt="logo" />
-                            <Text paddingTop={3} fontSize={20} color={textColor} >NFT Name</Text>
+                            <Text paddingTop={3} fontSize={20} color={textColor} >{name}</Text>
 
                             <Text paddingTop={3} fontSize={20} color={textColor} >NFT ID: {id}</Text>
 

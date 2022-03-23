@@ -56,7 +56,7 @@ export const NFTsMockData = [
         image: 'https://ipfs.io/ipfs/QmWBk1xFWRbgArKUAZYgNSpnbk92KYaNP7GXTT1iNBGK8F/1176.png',
         isFeature: false,
         id: 7,
-        number: '1176-1475'
+        number: '1475'
     }, {
         nftName: "NFT Name",
         priceUSD: 7500,
