@@ -3,7 +3,7 @@
 import { Box, Flex } from "@chakra-ui/layout";
 import { Button } from "@chakra-ui/button";
 import { Text } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import Liquidities from "./liquidities";
 import { RefreshIcon, LightRefreshIcon } from "./Icons";
 import { useColorModeValue } from "@chakra-ui/react";
@@ -18,9 +18,13 @@ import {
   INITIAL_GASPRICE_INCREASE,
   checkNetVersion,
 } from "../../utils/constants";
+import { clearSearchResult } from "../../state/farming/action";
+import { useDispatch } from "react-redux";
+import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 
 const Index = () => {
   const mode = useColorModeValue("light", "dark");
+  const { chainId } = useActiveWeb3React();
   const factory = useGetUserLiquidities();
   const [liquidities, setLiquidities] = useState<any[] | undefined>([]);
   const [liquidityLength, setLiquidityLength] = useState(0);
@@ -28,7 +32,16 @@ const Index = () => {
   const [welcomeModal, setWelcomeModal] = useState(false); //false
   const [run, setRun] = useState(false);
   const bgColor = useColorModeValue("#319EF6", "#4CAFFF");
+  const dispatch = useDispatch();
   useUpdateUserGasPreference();
+
+  const clearSearchedData = useCallback(() => {
+    dispatch(clearSearchResult());
+  }, []);
+
+  useMemo(() => {
+    clearSearchedData();
+  }, [chainId]);
 
   useEffect(() => {
     let cancel = false;

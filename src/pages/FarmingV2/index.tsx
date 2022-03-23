@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { Box, Flex, Text } from "@chakra-ui/layout";
 import {
   Alert,
@@ -21,6 +21,10 @@ import {
   IconButton,
   useClipboard,
   AlertDialogBody,
+  InputGroup,
+  InputLeftAddon,
+  Input,
+  Icon,
 } from "@chakra-ui/react";
 import { CopyIcon } from "../../theme/components/Icons";
 import { useHistory, useRouteMatch } from "react-router-dom";
@@ -85,6 +89,22 @@ import { shortenCode } from "../../utils";
 import { useLocation } from "react-router-dom";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { useUpdateUserGasPreference } from "../../state/gas/hooks";
+import { FiFilter } from "react-icons/fi";
+import { SearchIcon } from "@chakra-ui/icons";
+import Filter from "../../components/Farming/Modals/Filter";
+import { filterFarms } from "../../utils/utilsFunctions";
+import { farmStateInterface } from "../../state/farm/reducer";
+import {
+  useFarmSearch,
+  usePrevious,
+  useSearch,
+  useFilterFarms,
+  useSearchResults,
+} from "../../state/farming/hooks";
+import {
+  clearSearchResult,
+  updateSearchResult,
+} from "../../state/farming/action";
 
 export const BIG_TEN = new bigNumber(10);
 export const LIQUIDITY = "liquidity";
@@ -101,6 +121,9 @@ export const MAINNET = 56;
 export function Index() {
   const history = useHistory();
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
+  const filterBorderColor = useColorModeValue("#DEE5ED", "#324D68");
+  const placeholderTextColor = useColorModeValue("#333333", "#DCE5EF");
+  const titleColor = useColorModeValue("#333333", "#ffffff");
   const [selected, setSelected] = useState(LIQUIDITY);
   const [isActive, setIsActive] = useState(V2);
   const [showAlert, setShowAlert] = useState(true);
@@ -117,8 +140,46 @@ export function Index() {
   const hostName = window.location.href.split("?")[0];
   const { hasCopied, onCopy } = useClipboard(`${hostName}?ref=${referralCode}`);
   const [URLRefCode, setURLRefCode] = useState("");
+  const [newestToOldest, setNewestToOldest] = useState(true);
+  const [oldestToNewest, setOldestToNewest] = useState(false);
+  const [range0, setRange0] = useState<number | string>(0);
+  const [range1, setRange1] = useState<number | string>(10000);
+  const [searchedFarmData, setSearchedFarmData] =
+    useState<farmStateInterface>();
+
+  const [showPopOver, setShowPopover] = useState(false);
+  const [saveChanges, setSavedChanges] = useState(false);
+  const [keyword, setKeyword] = useState("");
+  // 👇 look here
+  const previousKeyword = usePrevious(keyword);
+
+  const filter = useSearch();
+
+  console.log(keyword, previousKeyword);
+
+  const [searchedDataResult] = useFarmSearch({
+    keyword,
+    previousKeyword,
+    searchData: filter,
+  });
+
+  // console.log(count);
+
+  // useMemo(() => {
+  //   if (searchedDataResult !== undefined) {
+  //     setSearchedFarmData(searchedDataResult);
+  //   }
+  // }, [searchedDataResult]);
 
   useUpdateUserGasPreference();
+
+  useFilterFarms({
+    newestToOldest,
+    min: range0 as number,
+    max: range1 as number,
+    setSavedChanges,
+    saveChanges,
+  });
 
   const handleTabsChange = (index: number) => {
     if (chainId !== SupportedChainId.OASISMAINNET) {
@@ -158,6 +219,27 @@ export function Index() {
   let match = useRouteMatch("/farming-V2/staking-RGPv2");
   const FarmData = useFarms();
 
+  const clearSearchedData = useCallback(() => {
+    dispatch(clearSearchResult());
+  }, []);
+
+  useMemo(() => {
+    clearSearchedData();
+    setKeyword("");
+  }, [chainId]);
+
+  const handleUpdateSearch = useCallback((searchedDataResult) => {
+    dispatch(
+      updateSearchResult({
+        farmData: searchedDataResult,
+      })
+    );
+  }, []);
+
+  useMemo(() => {
+    handleUpdateSearch(searchedDataResult);
+  }, [searchedDataResult]);
+
   const [Balance, Symbol] = useNativeBalance();
   const wallet = {
     balance: Balance,
@@ -166,6 +248,8 @@ export function Index() {
     signer: library?.getSigner(),
     chainId: chainId,
   };
+
+  const searchResults = useSearchResults();
 
   const trxState = useSelector<RootState>(
     (state) => state.application.modal?.trxState
@@ -278,6 +362,18 @@ export function Index() {
     };
     handleURLRefCode();
   }, [account]);
+
+  const FilterFarm = () => {
+    filterFarms(
+      newestToOldest,
+      FarmData,
+      range0 as number,
+      range1 as number,
+      setSearchedFarmData,
+      chainId as number
+    );
+    setShowPopover(false);
+  };
 
   const getFarmTokenBalance = async () => {
     if (account) {
@@ -1809,7 +1905,10 @@ export function Index() {
         </Box>
       )}
 
-      <Flex justifyContent='flex-end'>
+      <Flex
+        display={isMobileDevice ? undefined : "none"}
+        justifyContent='flex-end'
+      >
         <Link
           href='https://docs.google.com/forms/d/e/1FAIpQLSdJGAuABrJd6d0WSprUWB140we9hGqa-IwIbonx9ZJhxN2zsg/viewform'
           position={{ base: "relative", md: "absolute" }}
@@ -1839,244 +1938,315 @@ export function Index() {
         my={4}
         isFitted={isMobileDevice ? true : false}
       >
-        <TabList borderBottom={0}>
-          <Tab
-            // isDisabled={switchTab}
-            display='flex'
-            flex-direction='row'
-            justify-content='center'
-            align-items='center'
-            flexWrap={isMobileDevice ? "wrap" : undefined}
-            padding='4px 12px'
-            border='1px solid #DEE5ED !important'
-            borderRadius='10px 0px 0px 10px'
-            background={
-              mode === LIGHT_THEME && selected === STAKING
-                ? "#FFFFFF !important"
-                : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#213345 !important"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#15202B !important"
-                : mode === LIGHT_THEME && selected === LIQUIDITY
-                ? "#DEE5ED !important"
-                : "#DEE5ED !important"
-            }
-            color={
-              mode === LIGHT_THEME && selected === LIQUIDITY
-                ? "#333333"
-                : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#F1F5F8"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#F1F5F8"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#333333"
-                : "#333333"
-            }
-            // px={5}
-            // py={4}
-            // minWidth={{ base: "none", md: "200px", lg: "200px" }}
-            value={LIQUIDITY}
-            onClick={() => handleSelect(LIQUIDITY)}
-            // onClick={() => alert("yes")}
-            borderColor={
-              mode === LIGHT_THEME && selected === LIQUIDITY
-                ? "#F2F5F8 !important"
-                : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#324D68 !important"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#324D68 !important"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#F2F5F8 !important"
-                : "#F2F5F8 !important"
-            }
-          >
-            <Text className={"liquidity"}>Liquidity Pools</Text>
-            {Number(chainId) === Number(SupportedChainId.POLYGON) ||
-            Number(chainId) === Number(SupportedChainId.POLYGONTEST) ||
-            Number(chainId) === Number(SupportedChainId.OASISMAINNET) ? null : (
-              <Select
-                borderColor={
-                  mode === LIGHT_THEME && selected === LIQUIDITY
-                    ? "#F2F5F8 !important"
-                    : mode === DARK_THEME && selected === LIQUIDITY
-                    ? "#324D68 !important"
-                    : mode === DARK_THEME && selected === STAKING
-                    ? "#324D68 !important"
-                    : mode === LIGHT_THEME && selected === STAKING
-                    ? "#F2F5F8 !important"
-                    : "#F2F5F8 !important"
-                }
-                color={
-                  mode === LIGHT_THEME && selected === LIQUIDITY
-                    ? "#333333"
-                    : mode === DARK_THEME && selected === LIQUIDITY
-                    ? "#F1F5F8"
-                    : mode === DARK_THEME && selected === STAKING
-                    ? "#F1F5F8"
-                    : mode === LIGHT_THEME && selected === STAKING
-                    ? "#333333"
-                    : "#333333"
-                }
-                onChange={handleLiquidityTab}
-                background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
-                cursor='pointer'
-                border=' 1px solid #008DFF'
-                box-sizing='border-box'
-                borderRadius='50px'
-                width={isMobileDevice ? undefined : "fit-content"}
-                flex='none'
-                order='1'
-                flex-grow='0'
-                margin='10px 16px'
-              >
-                <option value={0}>V2</option>
-                <option value={2}>V1</option>
-              </Select>
-            )}
-          </Tab>
-          <Tab
-            display='flex'
-            flex-direction='row'
-            justify-content='center'
-            align-items='center'
-            flexWrap={isMobileDevice ? "wrap" : undefined}
-            padding='4px 12px'
-            borderRadius='0px 0px 0px 0px'
-            border='1px solid #DEE5ED'
-            background={
-              mode === LIGHT_THEME && selected === LIQUIDITY
-                ? "#FFFFFF !important"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#213345 !important"
-                : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#15202B !important"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#DEE5ED !important"
-                : "#DEE5ED !important"
-            }
-            color={
-              mode === LIGHT_THEME && selected === LIQUIDITY
-                ? "#333333"
-                : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#F1F5F8"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#F1F5F8"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#333333"
-                : "#333333"
-            }
-            borderColor={
-              mode === LIGHT_THEME && selected === LIQUIDITY
-                ? "#F2F5F8 !important"
-                : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#324D68 !important"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#324D68 !important"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#F2F5F8 !important"
-                : "#F2F5F8 !important"
-            }
-            // px={5}
-            // py={4}
-            // minWidth={{ base: "none", md: "200px", lg: "200px" }}
+        <Flex justifyContent='space-between' mt={10}>
+          <TabList h={isMobileDevice ? undefined : 14} borderBottom={0}>
+            <Tab
+              // isDisabled={switchTab}
+              display='flex'
+              flex-direction='row'
+              justify-content='center'
+              align-items='center'
+              flexWrap={isMobileDevice ? "wrap" : undefined}
+              padding={isMobileDevice ? "2px 4px" : undefined}
+              // padding={0}
+              border='1px solid #DEE5ED !important'
+              background={
+                mode === LIGHT_THEME && selected === STAKING
+                  ? "#FFFFFF !important"
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                  ? "#213345 !important"
+                  : mode === DARK_THEME && selected === STAKING
+                  ? "#15202B !important"
+                  : mode === LIGHT_THEME && selected === LIQUIDITY
+                  ? "#DEE5ED !important"
+                  : "#DEE5ED !important"
+              }
+              color={
+                mode === LIGHT_THEME && selected === LIQUIDITY
+                  ? "#333333"
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                  ? "#F1F5F8"
+                  : mode === DARK_THEME && selected === STAKING
+                  ? "#F1F5F8"
+                  : mode === LIGHT_THEME && selected === STAKING
+                  ? "#333333"
+                  : "#333333"
+              }
+              // px={5}
+              // py={4}
+              // minWidth={{ base: "none", md: "200px", lg: "200px" }}
+              value={LIQUIDITY}
+              onClick={() => handleSelect(LIQUIDITY)}
+              // onClick={() => alert("yes")}
+              borderRadius={isMobileDevice ? "10px 0px 0px 10px" : 0}
+              borderColor={
+                mode === LIGHT_THEME && selected === LIQUIDITY
+                  ? "#F2F5F8 !important"
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                  ? "#324D68 !important"
+                  : mode === DARK_THEME && selected === STAKING
+                  ? "#324D68 !important"
+                  : mode === LIGHT_THEME && selected === STAKING
+                  ? "#F2F5F8 !important"
+                  : "#F2F5F8 !important"
+              }
+            >
+              <Text className={"liquidity"} color={titleColor}>
+                Liquidity Pools
+              </Text>
+              {Number(chainId) === Number(SupportedChainId.POLYGON) ||
+              Number(chainId) === Number(SupportedChainId.POLYGONTEST) ||
+              Number(chainId) ===
+                Number(SupportedChainId.OASISMAINNET) ? null : (
+                <Select
+                  size={isMobileDevice ? undefined : "sm"}
+                  borderColor={
+                    mode === LIGHT_THEME && selected === LIQUIDITY
+                      ? "#0760A8 !important"
+                      : mode === DARK_THEME && selected === LIQUIDITY
+                      ? "#008DFF !important"
+                      : mode === DARK_THEME && selected === STAKING
+                      ? "#324D68 !important"
+                      : mode === LIGHT_THEME && selected === STAKING
+                      ? "#0760A8 !important"
+                      : "#F2F5F8 !important"
+                  }
+                  color={
+                    mode === LIGHT_THEME && selected === LIQUIDITY
+                      ? "#0760A8"
+                      : mode === DARK_THEME && selected === LIQUIDITY
+                      ? "#008DFF"
+                      : mode === DARK_THEME && selected === STAKING
+                      ? "#F1F5F8"
+                      : mode === LIGHT_THEME && selected === STAKING
+                      ? "#0760A8"
+                      : "#333333"
+                  }
+                  onChange={handleLiquidityTab}
+                  background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
+                  cursor='pointer'
+                  border=' 1px solid #008DFF'
+                  box-sizing='border-box'
+                  borderRadius='50px'
+                  width={isMobileDevice ? undefined : "fit-content"}
+                  flex='none'
+                  order='1'
+                  flex-grow='0'
+                  margin='10px 16px'
+                >
+                  <option value={0}>V2</option>
+                  <option value={2}>V1</option>
+                </Select>
+              )}
+            </Tab>
+            <Tab
+              display='flex'
+              flex-direction='row'
+              justify-content='center'
+              align-items='center'
+              flexWrap={isMobileDevice ? "wrap" : undefined}
+              padding={isMobileDevice ? "4px 12px" : undefined}
+              border='1px solid #DEE5ED'
+              borderRadius={0}
+              background={
+                mode === LIGHT_THEME && selected === LIQUIDITY
+                  ? "#FFFFFF !important"
+                  : mode === DARK_THEME && selected === STAKING
+                  ? "#213345 !important"
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                  ? "#15202B !important"
+                  : mode === LIGHT_THEME && selected === STAKING
+                  ? "#DEE5ED !important"
+                  : "#DEE5ED !important"
+              }
+              color={
+                mode === LIGHT_THEME && selected === LIQUIDITY
+                  ? "#333333"
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                  ? "#F1F5F8"
+                  : mode === DARK_THEME && selected === STAKING
+                  ? "#F1F5F8"
+                  : mode === LIGHT_THEME && selected === STAKING
+                  ? "#333333"
+                  : "#333333"
+              }
+              borderColor={
+                mode === LIGHT_THEME && selected === LIQUIDITY
+                  ? "#F2F5F8 !important"
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                  ? "#324D68 !important"
+                  : mode === DARK_THEME && selected === STAKING
+                  ? "#324D68 !important"
+                  : mode === LIGHT_THEME && selected === STAKING
+                  ? "#F2F5F8 !important"
+                  : "#F2F5F8 !important"
+              }
+              // px={5}
+              // py={4}
+              // minWidth={{ base: "none", md: "200px", lg: "200px" }}
 
-            onClick={() => {
-              handleSelect(STAKING);
-            }}
-          >
-            <Text className={"staking"}>Staking</Text>
-            {Number(chainId) === Number(SupportedChainId.POLYGON) ||
-            Number(chainId) === Number(SupportedChainId.POLYGONTEST) ||
-            Number(chainId) === Number(SupportedChainId.OASISMAINNET) ? null : (
-              <Select
-                borderColor={
-                  mode === LIGHT_THEME && selected === LIQUIDITY
-                    ? "#F2F5F8 !important"
-                    : mode === DARK_THEME && selected === LIQUIDITY
-                    ? "#324D68 !important"
-                    : mode === DARK_THEME && selected === STAKING
-                    ? "#324D68 !important"
-                    : mode === LIGHT_THEME && selected === STAKING
-                    ? "#F2F5F8 !important"
-                    : "#F2F5F8 !important"
-                }
-                cursor='pointer'
-                color={
-                  mode === LIGHT_THEME && selected === LIQUIDITY
-                    ? "#333333"
-                    : mode === DARK_THEME && selected === LIQUIDITY
-                    ? "#F1F5F8"
-                    : mode === DARK_THEME && selected === STAKING
-                    ? "#F1F5F8"
-                    : mode === LIGHT_THEME && selected === STAKING
-                    ? "#333333"
-                    : "#333333"
-                }
-                onChange={handleStakingTab}
-                background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
-                /* Dark Mode / Blue / 1 */
+              onClick={() => {
+                handleSelect(STAKING);
+              }}
+            >
+              <Text className={"staking"} color={titleColor}>
+                Staking
+              </Text>
+              {Number(chainId) === Number(SupportedChainId.POLYGON) ||
+              Number(chainId) === Number(SupportedChainId.POLYGONTEST) ||
+              Number(chainId) ===
+                Number(SupportedChainId.OASISMAINNET) ? null : (
+                <Select
+                  size={isMobileDevice ? undefined : "sm"}
+                  borderColor={
+                    mode === LIGHT_THEME && selected === LIQUIDITY
+                      ? "#0760A8 !important"
+                      : mode === DARK_THEME && selected === LIQUIDITY
+                      ? "#008DFF !important"
+                      : mode === DARK_THEME && selected === STAKING
+                      ? "#324D68 !important"
+                      : mode === LIGHT_THEME && selected === STAKING
+                      ? "#0760A8 !important"
+                      : "#F2F5F8 !important"
+                  }
+                  cursor='pointer'
+                  color={
+                    mode === LIGHT_THEME && selected === LIQUIDITY
+                      ? "#0760A8"
+                      : mode === DARK_THEME && selected === LIQUIDITY
+                      ? "#008DFF"
+                      : mode === DARK_THEME && selected === STAKING
+                      ? "#F1F5F8"
+                      : mode === LIGHT_THEME && selected === STAKING
+                      ? "#0760A8"
+                      : "#333333"
+                  }
+                  onChange={handleStakingTab}
+                  background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
+                  /* Dark Mode / Blue / 1 */
 
-                border=' 1px solid #008DFF'
-                box-sizing='border-box'
-                borderRadius='50px'
-                /* Inside auto layout */
-                width={isMobileDevice ? undefined : "fit-content"}
-                flex='none'
-                order='1'
-                flex-grow='0'
-                margin='10px 16px'
-              >
-                <option value={1}>V2</option>
-                <option value={3}>V1</option>
-              </Select>
-            )}
-          </Tab>
-          <Tab
-            isDisabled={true}
-            borderRadius='0px 10px 10px 0px'
-            border='1px solid #DEE5ED'
-            background={
-              mode === LIGHT_THEME && selected === LIQUIDITY
-                ? "#FFFFFF !important"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#213345 !important"
-                : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#15202B !important"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#DEE5ED !important"
-                : "#DEE5ED !important"
-            }
-            color={
-              mode === LIGHT_THEME && selected === LIQUIDITY
-                ? "#333333"
-                : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#F1F5F8"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#F1F5F8"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#333333"
-                : "#333333"
-            }
-            borderColor={
-              mode === LIGHT_THEME && selected === LIQUIDITY
-                ? "#F2F5F8 !important"
-                : mode === DARK_THEME && selected === LIQUIDITY
-                ? "#324D68 !important"
-                : mode === DARK_THEME && selected === STAKING
-                ? "#324D68 !important"
-                : mode === LIGHT_THEME && selected === STAKING
-                ? "#F2F5F8 !important"
-                : "#F2F5F8 !important"
-            }
-            // px={5}
-            // py={4}
-            // minWidth={{ base: "none", md: "200px", lg: "200px" }}
-            // onClick={() => handleSelect(OTHER_FARMS)}
+                  border=' 1px solid #008DFF'
+                  box-sizing='border-box'
+                  borderRadius='50px'
+                  /* Inside auto layout */
+                  width={isMobileDevice ? undefined : "fit-content"}
+                  flex='none'
+                  order='1'
+                  flex-grow='0'
+                  margin='10px 16px'
+                >
+                  <option value={1}>V2</option>
+                  <option value={3}>V1</option>
+                </Select>
+              )}
+            </Tab>
+            <Tab
+              isDisabled={true}
+              border='1px solid #DEE5ED'
+              borderRadius={0}
+              background={
+                mode === LIGHT_THEME && selected === LIQUIDITY
+                  ? "#FFFFFF !important"
+                  : mode === DARK_THEME && selected === STAKING
+                  ? "#213345 !important"
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                  ? "#15202B !important"
+                  : mode === LIGHT_THEME && selected === STAKING
+                  ? "#DEE5ED !important"
+                  : "#DEE5ED !important"
+              }
+              color={
+                mode === LIGHT_THEME && selected === LIQUIDITY
+                  ? "#333333"
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                  ? "#F1F5F8"
+                  : mode === DARK_THEME && selected === STAKING
+                  ? "#F1F5F8"
+                  : mode === LIGHT_THEME && selected === STAKING
+                  ? "#333333"
+                  : "#333333"
+              }
+              borderColor={
+                mode === LIGHT_THEME && selected === LIQUIDITY
+                  ? "#F2F5F8 !important"
+                  : mode === DARK_THEME && selected === LIQUIDITY
+                  ? "#324D68 !important"
+                  : mode === DARK_THEME && selected === STAKING
+                  ? "#324D68 !important"
+                  : mode === LIGHT_THEME && selected === STAKING
+                  ? "#F2F5F8 !important"
+                  : "#F2F5F8 !important"
+              }
+              // px={5}
+              // py={4}
+              // minWidth={{ base: "none", md: "200px", lg: "200px" }}
+              // onClick={() => handleSelect(OTHER_FARMS)}
+            >
+              <Text className={"other"} color={titleColor}>
+                Other Farms
+              </Text>
+            </Tab>
+          </TabList>
+          <Divider display={isMobileDevice ? undefined : "none"} my='4' />
+          <Flex
+            ml={5}
+            display={isMobileDevice ? "none" : undefined}
+            justifyContent='space-between'
           >
-            <Text className={"other"}>Other Farms</Text>
-          </Tab>
-        </TabList>
-        <Divider my='4' />
+            <Filter
+              oldestToNewest={oldestToNewest}
+              setOldestToNewset={setOldestToNewest}
+              setNewestToOldest={setNewestToOldest}
+              newestToOldest={newestToOldest}
+              range0={range0}
+              range1={range1}
+              setRange0={setRange0}
+              setRange1={setRange1}
+              FilterFarm={() => FilterFarm()}
+              showPopOver={showPopOver}
+              setShowPopover={setShowPopover}
+              setSavedChanges={setSavedChanges}
+            />
+
+            <InputGroup w='40%'>
+              <InputLeftAddon
+                bgColor='transparent'
+                borderColor={filterBorderColor}
+                // border={0}
+                w='2%'
+                children={<SearchIcon mr={4} />}
+              />
+              <Input
+                textAlign='left'
+                fontSize='14px'
+                placeholder='Search for farms'
+                _placeholder={{ color: placeholderTextColor }}
+                value={keyword}
+                onChange={(e) => {
+                  const formattedValue = e.target.value.toUpperCase();
+                  setKeyword(formattedValue);
+                }}
+                borderLeft={0}
+                borderColor={filterBorderColor}
+                _focus={{ borderColor: "none" }}
+              />
+            </InputGroup>
+            <Button
+              background='#4CAFFF'
+              boxShadow='0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)'
+              borderRadius='6px'
+              // mx={[5, 10, 15, 20]}
+              padding=' 12px 32px'
+              // mt={3}
+              variant='brand'
+              display={isMobileDevice ? "none" : undefined}
+              className={"list"}
+            >
+              List your project
+            </Button>
+          </Flex>
+        </Flex>
+
         <TabPanels padding='0px'>
           <TabPanel padding='0px'>
             <Flex
@@ -2158,7 +2328,39 @@ export function Index() {
                     //   />
                     // ) */}
 
-                  {Number(chainId) === Number(SupportedChainId.OASISTEST)
+                  {keyword && searchResults.searchResult === undefined
+                    ? null
+                    : Number(chainId) === Number(SupportedChainId.OASISTEST) &&
+                      keyword &&
+                      searchResults.searchResult !== undefined
+                    ? searchResults.searchResult.map(
+                        (content: any, index: number) =>
+                          Number(chainId) ===
+                            Number(SupportedChainId.OASISTEST) && (
+                            <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content={content}
+                              key={content.pid}
+                              wallet={wallet}
+                            />
+                          )
+                      )
+                    : Number(chainId) === Number(SupportedChainId.OASISTEST) &&
+                      searchResults.filterResult !== undefined
+                    ? searchResults.filterResult.map(
+                        (content: any, index: number) =>
+                          Number(chainId) ===
+                            Number(SupportedChainId.OASISTEST) && (
+                            <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content={content}
+                              key={content.pid}
+                              wallet={wallet}
+                            />
+                          )
+                      )
+                    : Number(chainId) === Number(SupportedChainId.OASISTEST) &&
+                      searchResults.filterResult === undefined
                     ? FarmData.contents.map((content: any, index: number) =>
                         Number(chainId) ===
                           Number(SupportedChainId.OASISTEST) &&
@@ -2172,7 +2374,40 @@ export function Index() {
                           />
                         ) : null
                       )
-                    : Number(chainId) === Number(SupportedChainId.OASISMAINNET)
+                    : Number(chainId) ===
+                        Number(SupportedChainId.OASISMAINNET) &&
+                      keyword &&
+                      searchResults.searchResult !== undefined
+                    ? searchResults.searchResult.map(
+                        (content: any, index: number) =>
+                          Number(chainId) ===
+                            Number(SupportedChainId.OASISMAINNET) && (
+                            <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content={content}
+                              key={content.pid}
+                              wallet={wallet}
+                            />
+                          )
+                      )
+                    : Number(chainId) ===
+                        Number(SupportedChainId.OASISMAINNET) &&
+                      searchResults.filterResult !== undefined
+                    ? searchResults.filterResult.map(
+                        (content: any, index: number) =>
+                          Number(chainId) ===
+                            Number(SupportedChainId.OASISMAINNET) && (
+                            <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content={content}
+                              key={content.pid}
+                              wallet={wallet}
+                            />
+                          )
+                      )
+                    : Number(chainId) ===
+                        Number(SupportedChainId.OASISMAINNET) &&
+                      searchResults.filterResult === undefined
                     ? FarmData.contents.map((content: any, index: number) =>
                         Number(chainId) ===
                           Number(SupportedChainId.OASISMAINNET) &&
@@ -2186,10 +2421,45 @@ export function Index() {
                           />
                         ) : null
                       )
-                    : Number(chainId) === Number(SupportedChainId.POLYGON) ||
-                      Number(chainId) === Number(SupportedChainId.POLYGONTEST)
+                    : Number(chainId) ===
+                        Number(SupportedChainId.POLYGONTEST) &&
+                      keyword &&
+                      searchResults.searchResult !== undefined
+                    ? searchResults.searchResult.map(
+                        (content: any, index: number) =>
+                          Number(chainId) ===
+                            Number(SupportedChainId.POLYGONTEST) && (
+                            <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content={content}
+                              key={content.pid}
+                              wallet={wallet}
+                            />
+                          )
+                      )
+                    : Number(chainId) ===
+                        Number(SupportedChainId.POLYGONTEST) &&
+                      searchResults.filterResult !== undefined
+                    ? searchResults.filterResult.map(
+                        (content: any, index: number) =>
+                          Number(chainId) ===
+                            Number(SupportedChainId.POLYGONTEST) && (
+                            <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content={content}
+                              key={content.pid}
+                              wallet={wallet}
+                            />
+                          )
+                      )
+                    : Number(chainId) ===
+                        Number(SupportedChainId.POLYGONTEST) &&
+                      searchResults.filterResult === undefined
                     ? FarmData.contents.map((content: any, index: number) =>
-                        index !== 0 && index < 4 ? (
+                        Number(chainId) ===
+                          Number(SupportedChainId.POLYGONTEST) &&
+                        index !== 0 &&
+                        index < 4 ? (
                           <YieldFarm
                             farmDataLoading={farmDataLoading}
                             content={content}
@@ -2198,7 +2468,106 @@ export function Index() {
                           />
                         ) : null
                       )
-                    : Number(chainId) !== Number(SupportedChainId.POLYGON)
+                    : Number(chainId) === Number(SupportedChainId.POLYGON) &&
+                      keyword &&
+                      searchResults.searchResult !== undefined
+                    ? searchResults.searchResult.map(
+                        (content: any, index: number) =>
+                          Number(chainId) ===
+                            Number(SupportedChainId.POLYGON) && (
+                            <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content={content}
+                              key={content.pid}
+                              wallet={wallet}
+                            />
+                          )
+                      )
+                    : Number(chainId) === Number(SupportedChainId.POLYGON) &&
+                      searchResults.filterResult !== undefined
+                    ? searchResults.filterResult.map(
+                        (content: any, index: number) =>
+                          Number(chainId) ===
+                            Number(SupportedChainId.POLYGON) && (
+                            <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content={content}
+                              key={content.pid}
+                              wallet={wallet}
+                            />
+                          )
+                      )
+                    : Number(chainId) === Number(SupportedChainId.POLYGON) &&
+                      searchResults.filterResult === undefined
+                    ? FarmData.contents.map((content: any, index: number) =>
+                        Number(chainId) === Number(SupportedChainId.POLYGON) &&
+                        index !== 0 &&
+                        index < 4 ? (
+                          <YieldFarm
+                            farmDataLoading={farmDataLoading}
+                            content={content}
+                            key={content.pid}
+                            wallet={wallet}
+                          />
+                        ) : null
+                      )
+                    : // : Number(chainId) === Number(SupportedChainId.POLYGON) ||
+                    //       (Number(chainId) ===
+                    //         Number(SupportedChainId.POLYGONTEST) &&
+                    //         searchedFarmData !== undefined)
+                    //     ? searchedFarmData?.map((content: any, index: number) => (
+                    //         <YieldFarm
+                    //           farmDataLoading={farmDataLoading}
+                    //           content={content}
+                    //           key={content.pid}
+                    //           wallet={wallet}
+                    //         />
+                    //       ))
+                    //     : (Number(chainId) === Number(SupportedChainId.POLYGON) ||
+                    //         Number(chainId) ===
+                    //           Number(SupportedChainId.POLYGONTEST)) &&
+                    //       searchedFarmData === undefined
+                    //     ? FarmData.contents.map((content: any, index: number) =>
+                    //         index !== 0 && index < 4 ? (
+                    //           <YieldFarm
+                    //             farmDataLoading={farmDataLoading}
+                    //             content={content}
+                    //             key={content.pid}
+                    //             wallet={wallet}
+                    //           />
+                    //         ) : null
+                    //       )
+                    Number(chainId) !== Number(SupportedChainId.POLYGON) &&
+                      keyword &&
+                      searchResults.searchResult !== undefined
+                    ? searchResults.searchResult.map(
+                        (content: any, index: number) =>
+                          Number(chainId) !==
+                            Number(SupportedChainId.POLYGON) && (
+                            <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content={content}
+                              key={content.pid}
+                              wallet={wallet}
+                            />
+                          )
+                      )
+                    : Number(chainId) !== Number(SupportedChainId.POLYGON) &&
+                      searchResults.filterResult !== undefined
+                    ? searchResults.filterResult.map(
+                        (content: any, index: number) =>
+                          Number(chainId) !==
+                            Number(SupportedChainId.POLYGON) && (
+                            <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content={content}
+                              key={content.pid}
+                              wallet={wallet}
+                            />
+                          )
+                      )
+                    : Number(chainId) !== Number(SupportedChainId.POLYGON) &&
+                      searchResults.filterResult === undefined
                     ? FarmData.contents.map((content: any, index: number) =>
                         Number(chainId) !== Number(SupportedChainId.POLYGON) &&
                         index !== 0 &&
@@ -2275,7 +2644,7 @@ export function Index() {
                     <Text />
                   </Flex>
                   {FarmData.contents.map((content: any, index: number) =>
-                     content.id==="13" ? (
+                    content.id === "13" ? (
                       <YieldFarm
                         farmDataLoading={farmDataLoading}
                         content={content}
