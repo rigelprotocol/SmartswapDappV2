@@ -49,7 +49,7 @@ export const useFilterFarms = ({
   );
 
   useMemo(() => {
-    if (newestToOldest && saveChanges) {
+    if (!newestToOldest && saveChanges) {
       let dataArray = [...farmData.contents];
 
       const arrayLength = dataArray.length;
@@ -76,7 +76,7 @@ export const useFilterFarms = ({
 
       handleUpdateSearch(editSearch);
       setSavedChanges(false);
-    } else if (!newestToOldest && saveChanges) {
+    } else if (newestToOldest && saveChanges) {
       let dataArray = [...farmData.contents];
 
       let normal = [...farmData.contents];

@@ -140,8 +140,8 @@ export function Index() {
   const hostName = window.location.href.split("?")[0];
   const { hasCopied, onCopy } = useClipboard(`${hostName}?ref=${referralCode}`);
   const [URLRefCode, setURLRefCode] = useState("");
-  const [newestToOldest, setNewestToOldest] = useState(true);
-  const [oldestToNewest, setOldestToNewest] = useState(false);
+  const [newestToOldest, setNewestToOldest] = useState(false);
+  const [oldestToNewest, setOldestToNewest] = useState(true);
   const [range0, setRange0] = useState<number | string>(0);
   const [range1, setRange1] = useState<number | string>(10000);
   const [searchedFarmData, setSearchedFarmData] =
