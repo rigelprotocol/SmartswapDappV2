@@ -175,10 +175,7 @@ export function useDerivedSwapInfo(): {
 
 
   let inputError: string | undefined;
-  if (!account) {
-    inputError = "Connect Wallet";
-  }
-
+  
   if (
     (inputCurrency && outputCurrency && !typedValue) ||
     (inputCurrency && outputCurrency && typedValue == 0)
