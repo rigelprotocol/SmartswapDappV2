@@ -2187,7 +2187,7 @@ export function Index() {
               </Text>
             </Tab>
           </TabList>
-          <Divider display={isMobileDevice ? undefined : "none"} my='4' />
+          {/* <Divider display={isMobileDevice ? undefined : "none"} my='4' /> */}
           <Flex
             ml={5}
             display={isMobileDevice ? "none" : undefined}
