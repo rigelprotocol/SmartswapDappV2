@@ -21,7 +21,7 @@ const SwapSettings = () => {
         </Text>
         <Flex alignItems="center" fontWeight="bold" rounded={100} bg="#">
           <TransactionSettings />
-          <TimeIcon w="28px" color={iconColor} padding="2px" mb={3} h="28px" />
+          <TimeIcon w="28px" color={iconColor} padding="2px" mb={3} h="28px"/>
         </Flex>
       </Flex>
     </Box>

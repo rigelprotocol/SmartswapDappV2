@@ -173,11 +173,9 @@ export function useDerivedSwapInfo(): {
     }
   };
 
-  let inputError: string | undefined;
-  if (!account) {
-    inputError = "Connect Wallet";
-  }
 
+  let inputError: string | undefined;
+  
   if (
     (inputCurrency && outputCurrency && !typedValue) ||
     (inputCurrency && outputCurrency && typedValue == 0)
@@ -203,7 +201,7 @@ export function useDerivedSwapInfo(): {
     pathArray,
     pathSymbol,
     isExactIn,
-    formatAmount,
+    formatAmount
   };
 }
 

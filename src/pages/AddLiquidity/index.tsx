@@ -55,6 +55,7 @@ import {
   useUserGasPricePercentage,
   useUpdateUserGasPreference,
 } from "../../state/gas/hooks";
+import { clearSearchResult } from "../../state/farming/action";
 
 export default function AddLiquidity({
   match: {
@@ -121,9 +122,13 @@ export default function AddLiquidity({
   }
   useEffect(() => {
     const visits = window.localStorage.getItem("continueLiquidtyVisit");
+    const liquidityVisits = window.localStorage.getItem("firstLiquidtyVisit");
     if (!visits) {
       window.localStorage.setItem("continueLiquidtyVisit", "1");
+    }
+    if (!visits && liquidityVisits!=="2") {
       startWelcomeRide();
+      window.localStorage.setItem("firstYieldVisit", "1");
     }
   }, []);
 
@@ -131,6 +136,14 @@ export default function AddLiquidity({
     currencies[Field.INPUT],
     currencies[Field.OUTPUT]
   );
+
+  const clearSearchedData = useCallback(() => {
+    dispatch(clearSearchResult());
+  }, []);
+
+  useMemo(() => {
+    clearSearchedData();
+  }, [chainId]);
 
   const parsedAmounts = useMemo(
     () =>

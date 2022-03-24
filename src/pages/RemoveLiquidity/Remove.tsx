@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Flex,
   Box,
@@ -45,6 +45,7 @@ import {
   useUpdateUserGasPreference,
   useUserGasPricePercentage,
 } from "../../state/gas/hooks";
+import { clearSearchResult } from "../../state/farming/action";
 
 const Remove = () => {
   const [isTabDevice] = useMediaQuery("(min-width: 990px)");
@@ -83,6 +84,14 @@ const Remove = () => {
   const params = useParams();
   const dispatch = useDispatch();
   const history = useHistory();
+
+  const clearSearchedData = useCallback(() => {
+    dispatch(clearSearchResult());
+  }, []);
+
+  useMemo(() => {
+    clearSearchedData();
+  }, [chainId]);
 
   const data = useGetLiquidityById(
     params.currencyIdA,

@@ -4,6 +4,7 @@ import AddLiquidity from "./AddLiquidity";
 import Pool from "./Pool";
 import RemoveLiquidity from "./RemoveLiquidity";
 import Swap from "./Swap";
+import Nft from './Nft'
 import FarmingV1 from "./FarmingV1";
 import FarmingV2 from "./FarmingV2";
 import Fonts from "./../theme/fonts";
@@ -19,6 +20,7 @@ import Index from "./index";
 import useConnectWallet from "../utils/hooks/useConnectWallet";
 import {useActiveWeb3React} from "../utils/hooks/useActiveWeb3React";
 import {SupportedChainId} from "../constants/chains";
+import ViewNFT from "./Nft/ViewNFT";
 
 export default function App() {
   useConnectWallet();
@@ -42,6 +44,10 @@ export default function App() {
               <Route exact strict path="/pool" component={Pool} />
 
               <Route exact strict path="/find" component={FindPool} />
+              
+              <Route exact strict path="/nft" component={Nft} />
+              
+              <Route exact strict path="/nfts/:id" component={ViewNFT} />
               <Route exact path="/add" component={AddLiquidity} />
               <Route
                 exact
