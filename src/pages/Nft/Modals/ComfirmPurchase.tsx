@@ -1,7 +1,9 @@
-import { Box, Button, Divider,
+import {
+    Box, Button, Divider,
     Flex, Image, Modal, ModalBody, ModalCloseButton,
     ModalContent, ModalHeader, ModalOverlay,
-    Select, Text, useColorModeValue } from '@chakra-ui/react'
+    Select, Spinner, Text, useColorModeValue
+} from '@chakra-ui/react'
 import React, {useEffect, useState} from 'react';
 import {useNft, useNFTAllowance} from "../../../hooks/useNFT";
 import {getERC20Token} from "../../../utils/utilsFunctions";
@@ -32,10 +34,10 @@ const ComfirmPurchase = ({ isOpen,
     const [checkTokenApproval, setCheckTokenApproval] = useState(0);
     const dispatch = useDispatch();
 
-    const {firstToken, secondToken, prices, unsoldItems, nftId} = useNft(id, isOpen);
+    const {firstToken, secondToken, prices, unsoldItems, nftId} = useNft(id);
 
 
-    const {hasTokenABeenApproved, hasTokenBBeenApproved} = useNFTAllowance(checkTokenApproval, prices.firstTokenPrice,
+    const {hasTokenABeenApproved, hasTokenBBeenApproved, loadInfo} = useNFTAllowance(checkTokenApproval, prices.firstTokenPrice,
         prices.secondTokenPrice, currency, nftId[0]);
 
      const [error, setError] = useState('');
@@ -225,7 +227,7 @@ const ComfirmPurchase = ({ isOpen,
                             </Flex>
                         }
                         <Flex mt="1" justifyContent="space-between" alignContent="center">
-                            <Text></Text>
+                            <Text/>
                             <Text color={lightTextColor} > ≈ </Text>
                         </Flex>
                     </Box>
@@ -257,7 +259,21 @@ const ComfirmPurchase = ({ isOpen,
                             >
                                  Approve {secondToken.symbol}
                             </Button>
-                            :
+                            : loadInfo ?
+                                <Button
+                                    mt={5}
+                                    mb={2}
+                                    w={'full'}
+                                    variant='brand'
+                                    color={'white'}
+                                    disabled={currency === '' || error !== ''}
+                                    boxShadow={'0 5px 20px 0px rgba(24, 39, 75, 0.06),'}
+                                    _hover={{bg: 'blue.500'}}
+                                    _focus={{bg: 'blue.500'}}
+                                >
+                                    <Spinner speed="0.65s" />
+                                </Button>
+                                :
                             <Button
                                 mt={5}
                                 mb={2}

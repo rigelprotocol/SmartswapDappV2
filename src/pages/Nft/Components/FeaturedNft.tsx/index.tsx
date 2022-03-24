@@ -3,7 +3,7 @@ import {
     Button,
     Center,
     Flex,
-    Image,
+    Image, Spinner,
     Stack,
     Text,
     useColorModeValue,
@@ -29,9 +29,9 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
   const textColor = useColorModeValue("#333333", "#F1F5F8");
   const lightTextColor = useColorModeValue("#666666", "grey");
 
-    const { firstToken, secondToken ,prices, unsoldItems , nftId} = useNft(id, purchaseModal);
+    const { firstToken, secondToken ,prices, unsoldItems , nftId} = useNft(id);
 
-    const {name, nftImage} = useNftName(id);
+    const {name, nftImage, loading} = useNftName(nftId[0]);
 
     return (
         <>
@@ -49,13 +49,15 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
                     p={2}
                     
                 >
-                    <Flex flex={1}>
+                    <Flex flex={1} justifyContent={'center'} alignItems={'center'}>
+                        {loading ? <Spinner speed="0.65s" color="#333333" /> :
                         <Image
                             objectFit="cover"
                             boxSize="100%"
                             borderRadius={6}
                             src={nftImage}
                         />
+                        }
                     </Flex>
                     <Stack
                         flex={1}
@@ -93,7 +95,7 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
                     </Stack>
                 </Stack>
             </Center>
-            <ComfirmPurchase isOpen={purchaseModal} close={()=>setOpenPerchaseModal(false)} id={1} image={nftImage} />
+            <ComfirmPurchase isOpen={purchaseModal} close={()=>setOpenPerchaseModal(false)} id={1} image={nftImage} name={name} />
         </>
     )
 };

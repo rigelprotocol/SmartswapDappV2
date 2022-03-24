@@ -28,11 +28,9 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
   const lightTextColor = useColorModeValue("#666666", "grey");
   const [ purchaseModal,setOpenPerchaseModal] = useState(false);
 
-  const { firstToken, secondToken ,prices, unsoldItems , nftId} = useNft(id, purchaseModal);
+  const { firstToken, secondToken ,prices, unsoldItems , nftId} = useNft(id);
 
-  const {name, nftImage, loading} = useNftName(id);
-
-  console.log(unsoldItems, nftId[0]);
+  const {name, nftImage, loading} = useNftName(nftId[0]);
    
   return (
          <Box
