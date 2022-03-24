@@ -55,6 +55,7 @@ import { useUpdateUserGasPreference } from "../../../../state/gas/hooks";
 import { useUserGasPricePercentage } from "../../../../state/gas/hooks";
 import { Web3Provider } from "@ethersproject/providers";
 import NetworkModal from "./../../../../components/Navbar/modals/networkModal";
+import { clearSearchResult } from "../../../../state/farming/action";
 
 export const calculateGas = async (
   percentage: number,
@@ -169,7 +170,7 @@ const SendToken = () => {
     pathSymbol,
     pathArray,
     isExactIn,
-    formatAmount
+    formatAmount,
   } = useDerivedSwapInfo();
   const { independentField, typedValue } = useSwapState();
   const dependentField: Field =
@@ -199,6 +200,14 @@ const SendToken = () => {
 
   const { chainId, account, library } = useActiveWeb3React();
   // const [priceImpact, setPriceImpact] = useState(0);
+
+  const clearSearchedData = useCallback(() => {
+    dispatch(clearSearchResult());
+  }, []);
+
+  useMemo(() => {
+    clearSearchedData();
+  }, [chainId]);
 
   const handleMaxInput = async () => {
     const value = await getMaxValue(currencies[Field.INPUT], library);
@@ -254,25 +263,24 @@ const SendToken = () => {
   const [balance] = GetAddressTokenBalance(
     currencies[Field.INPUT] ?? undefined
   );
-  useMemo(()=>{
-    if(currentToPrice && receivedAmount){
-      if(receivedAmount !== currentToPrice){
-        setShowNewChangesText(true)
+  useMemo(() => {
+    if (currentToPrice && receivedAmount) {
+      if (receivedAmount !== currentToPrice) {
+        setShowNewChangesText(true);
       }
     }
-  },[currentToPrice,receivedAmount])
-  useEffect(()=>{
-    let interval
-    if(showNewChangesText){
-     interval = setInterval(()=>setShowNewChangesText(false),3000)
-    //  return clearInterval(interval)
+  }, [currentToPrice, receivedAmount]);
+  useEffect(() => {
+    let interval;
+    if (showNewChangesText) {
+      interval = setInterval(() => setShowNewChangesText(false), 3000);
+      //  return clearInterval(interval)
     }
-    if(!showModal){
-      setShowNewChangesText(false)
-      setCurrentToPrice("")
+    if (!showModal) {
+      setShowNewChangesText(false);
+      setCurrentToPrice("");
     }
-
-  },[showNewChangesText,showModal])
+  }, [showNewChangesText, showModal]);
   useEffect(() => {
     if (balance < parseFloat(formattedAmounts[Field.INPUT])) {
       setInsufficientBalance(true);
@@ -377,7 +385,7 @@ const SendToken = () => {
       );
     }
   };
-  console.log({isExactIn})
+  console.log({ isExactIn });
   const [sendingTrx, setSendingTrx] = useState(false);
   const outputToken = useCallback((): any => {
     if (parsedAmounts[Field.OUTPUT]) {
@@ -387,8 +395,8 @@ const SendToken = () => {
             currencies[Field.OUTPUT]?.decimals
           )
         : parsedAmounts[Field.OUTPUT];
-        console.log({data})
-        return data
+      console.log({ data });
+      return data;
     }
   }, [parsedAmounts]);
 
@@ -489,7 +497,7 @@ const SendToken = () => {
           })
         );
         onUserInput(Field.INPUT, "");
-        setShowNewChangesText(false)
+        setShowNewChangesText(false);
       }
     } catch (e) {
       console.log(e);
@@ -1056,7 +1064,7 @@ const SendToken = () => {
         pl={3}
         pr={3}
       >
-        <SwapSettings/>
+        <SwapSettings />
         <From
           onUserInput={handleTypeInput}
           onCurrencySelection={onCurrencySelection}
@@ -1093,93 +1101,97 @@ const SendToken = () => {
               boxShadow={lightmode ? "base" : "lg"}
               _hover={{ bgColor: buttonBgcolor, color: "#FFFFFF" }}
               onClick={() => {
-                setDisplayNetwork(state => !state);
-                localStorage.removeItem('walletconnect')
+                setDisplayNetwork((state) => !state);
+                localStorage.removeItem("walletconnect");
               }}
             >
               Connect Wallet
             </Button>
           ) : insufficientBalance || inputError ? (
-              <Button
-                w='100%'
-                borderRadius='6px'
-                border={lightmode ? "2px" : "none"}
-                borderColor={borderColor}
-                h='48px'
-                p='5px'
-                mt={1}
-                disabled={inputError !== undefined || insufficientBalance}
-                color={inputError ? color : "#FFFFFF"}
-                bgColor={inputError ? switchBgcolor : buttonBgcolor}
-                fontSize='18px'
-                boxShadow={lightmode ? "base" : "lg"}
-                _hover={{ bgColor: buttonBgcolor }}
-              >
-                {inputError
-                  ? inputError
-                  : `Insufficient ${currencies[Field.INPUT]?.symbol} Balance`}
-              </Button>
-            ) : !hasBeenApproved ? (
-              <Button
-                w='100%'
-                borderRadius='6px'
-                border={lightmode ? "2px" : "none"}
-                borderColor={borderColor}
-                h='48px'
-                p='5px'
-                mt={1}
-                disabled={inputError !== undefined || insufficientBalance}
-                color={inputError ? color : "#FFFFFF"}
-                bgColor={inputError ? switchBgcolor : buttonBgcolor}
-                fontSize='18px'
-                boxShadow={lightmode ? "base" : "lg"}
-                _hover={{ bgColor: buttonBgcolor }}
-                onClick={() => {
-                  approveSwap();
-                }}
-              >
-                Approve Transaction
-              </Button>
-            ) : inputError ? (
-              <Button
-                w='100%'
-                borderRadius='6px'
-                border={lightmode ? "2px" : "none"}
-                borderColor={borderColor}
-                h='48px'
-                p='5px'
-                mt={1}
-                disabled={true}
-                bgColor={inputError ? switchBgcolor : buttonBgcolor}
-                fontSize='18px'
-                boxShadow={lightmode ? "base" : "lg"}
-                _hover={{ bgColor: buttonBgcolor }}
-              >
-                {inputError}
-              </Button>
-            ) : (
-              <Button
-                w='100%'
-                borderRadius='6px'
-                border={lightmode ? "2px" : "none"}
-                borderColor={borderColor}
-                h='48px'
-                p='5px'
-                mt={1}
-                disabled={inputError !== undefined || insufficientBalance}
-                color={inputError ? color : "#FFFFFF"}
-                bgColor={inputError ? switchBgcolor : buttonBgcolor}
-                fontSize='18px'
-                boxShadow={lightmode ? "base" : "lg"}
-                _hover={{ bgColor: buttonBgcolor }}
-                onClick={() => {
-                  setCurrentToPrice(receivedAmount)
-                  setShowModal(!showModal)}}
-              >
-                Swap Tokens
-              </Button>
-            )}
-            <NetworkModal displayNetwork={displayNetwork} setDisplayNetwork={setDisplayNetwork} />
+            <Button
+              w='100%'
+              borderRadius='6px'
+              border={lightmode ? "2px" : "none"}
+              borderColor={borderColor}
+              h='48px'
+              p='5px'
+              mt={1}
+              disabled={inputError !== undefined || insufficientBalance}
+              color={inputError ? color : "#FFFFFF"}
+              bgColor={inputError ? switchBgcolor : buttonBgcolor}
+              fontSize='18px'
+              boxShadow={lightmode ? "base" : "lg"}
+              _hover={{ bgColor: buttonBgcolor }}
+            >
+              {inputError
+                ? inputError
+                : `Insufficient ${currencies[Field.INPUT]?.symbol} Balance`}
+            </Button>
+          ) : !hasBeenApproved ? (
+            <Button
+              w='100%'
+              borderRadius='6px'
+              border={lightmode ? "2px" : "none"}
+              borderColor={borderColor}
+              h='48px'
+              p='5px'
+              mt={1}
+              disabled={inputError !== undefined || insufficientBalance}
+              color={inputError ? color : "#FFFFFF"}
+              bgColor={inputError ? switchBgcolor : buttonBgcolor}
+              fontSize='18px'
+              boxShadow={lightmode ? "base" : "lg"}
+              _hover={{ bgColor: buttonBgcolor }}
+              onClick={() => {
+                approveSwap();
+              }}
+            >
+              Approve Transaction
+            </Button>
+          ) : inputError ? (
+            <Button
+              w='100%'
+              borderRadius='6px'
+              border={lightmode ? "2px" : "none"}
+              borderColor={borderColor}
+              h='48px'
+              p='5px'
+              mt={1}
+              disabled={true}
+              bgColor={inputError ? switchBgcolor : buttonBgcolor}
+              fontSize='18px'
+              boxShadow={lightmode ? "base" : "lg"}
+              _hover={{ bgColor: buttonBgcolor }}
+            >
+              {inputError}
+            </Button>
+          ) : (
+            <Button
+              w='100%'
+              borderRadius='6px'
+              border={lightmode ? "2px" : "none"}
+              borderColor={borderColor}
+              h='48px'
+              p='5px'
+              mt={1}
+              disabled={inputError !== undefined || insufficientBalance}
+              color={inputError ? color : "#FFFFFF"}
+              bgColor={inputError ? switchBgcolor : buttonBgcolor}
+              fontSize='18px'
+              boxShadow={lightmode ? "base" : "lg"}
+              _hover={{ bgColor: buttonBgcolor }}
+              onClick={() => {
+                setCurrentToPrice(receivedAmount);
+                setShowModal(!showModal);
+              }}
+            >
+              Swap Tokens
+            </Button>
+          )}
+          <NetworkModal
+            displayNetwork={displayNetwork}
+            setDisplayNetwork={setDisplayNetwork}
+          />
         </Flex>
         <ConfirmModal
           showModal={showModal}

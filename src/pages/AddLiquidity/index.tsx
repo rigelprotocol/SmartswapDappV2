@@ -55,6 +55,7 @@ import {
   useUserGasPricePercentage,
   useUpdateUserGasPreference,
 } from "../../state/gas/hooks";
+import { clearSearchResult } from "../../state/farming/action";
 
 export default function AddLiquidity({
   match: {
@@ -135,6 +136,14 @@ export default function AddLiquidity({
     currencies[Field.INPUT],
     currencies[Field.OUTPUT]
   );
+
+  const clearSearchedData = useCallback(() => {
+    dispatch(clearSearchResult());
+  }, []);
+
+  useMemo(() => {
+    clearSearchedData();
+  }, [chainId]);
 
   const parsedAmounts = useMemo(
     () =>
