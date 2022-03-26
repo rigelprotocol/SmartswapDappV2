@@ -152,11 +152,10 @@ export const useNftName =  (id: number) => {
     }
 
     useEffect(() => {
-
+        setLoading(true);
         const fetchDetails = async () => {
             if (id) {
                     try {
-                        setLoading(true);
                         const nftContract = await RigelNFTTwo(validSmartAddress, library);
 
                         const nftDetails = await nftContract.uri(id);
