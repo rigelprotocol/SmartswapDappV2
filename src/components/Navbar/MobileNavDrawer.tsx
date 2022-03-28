@@ -141,7 +141,7 @@ const MobileNavDrawer = () => {
                         label="Auto-Time"
                         to={
                           chainId === SupportedChainId.BINANCETEST
-                            ? "/auto-time"
+                            ? "#"
                             : "#"
                         }
                       />
@@ -155,7 +155,7 @@ const MobileNavDrawer = () => {
                         label="Set Price"
                         to={
                           chainId === SupportedChainId.BINANCETEST
-                            ? "/set-price"
+                            ? "#"
                             : "#"
                         }
                       />
