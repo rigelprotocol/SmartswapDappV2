@@ -11,6 +11,7 @@ import transactions from "./transaction/reducer";
 import mint from "./mint/reducer";
 import farms from "./farm/reducer";
 import gas from "./gas/reducer";
+import farming from "./farming/reducer";
 
 const PERSISTED_KEYS: string[] = ["user", "lists", "gas"];
 
@@ -31,6 +32,7 @@ const store = configureStore({
 
     farms,
     gas,
+    farming,
   },
   middleware: [
     ...getDefaultMiddleware({ thunk: true }),

@@ -207,7 +207,8 @@ const AutoTimeModal: React.FC<IModal> = ({
                             fontSize='14px'
                             margin='15px 0'
                         >
-                            <Text>Signing this transaction means you are giving us access to swap on your behalf. The swapping will be done based on the parameters you inputted. The swap will occur   <Text as='span' color={textColor}>{frequency === "5" || frequency === "30" ? `${frequency} minutes` : `${frequency}`}</Text> only when the <Text as='span' color={textColor}>{to}</Text> price is greater than or equal to the current <Text as='span' color={textColor}>{to}</Text>  price plus <Text as='span' color={textColor}>{percentageChange}</Text>  % of the <Text as='span' color={textColor}>{to}</Text>  price.</Text>
+                            <Text>Signing this transaction means you are giving us access to swap on your behalf. The swapping will be done based on the parameters you inputted. </Text>
+                            <Text>The swap will occur   <Text as='span' color={textColor}>{frequency === "5" || frequency === "30" ? `${frequency} minutes` : `${frequency}`}</Text> only when the <Text as='span' color={textColor}>{to}</Text> price is greater than or equal to the current <Text as='span' color={textColor}>{to}</Text>  price plus <Text as='span' color={textColor}>{percentageChange}</Text>  % of the <Text as='span' color={textColor}>{to}</Text>  price.</Text>
                         </Box>
                         <Box mb="1">
                             <Checkbox size='sm' colorScheme={textColor} checked={checkedItem} onChange={(e) => setCheckedItem(e.target.checked)}>

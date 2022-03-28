@@ -54,6 +54,8 @@ import JSBI from "jsbi";
 import { useUpdateUserGasPreference } from "../../../../state/gas/hooks";
 import { useUserGasPricePercentage } from "../../../../state/gas/hooks";
 import { Web3Provider } from "@ethersproject/providers";
+import NetworkModal from "./../../../../components/Navbar/modals/networkModal";
+import { clearSearchResult } from "../../../../state/farming/action";
 
 export const calculateGas = async (
   percentage: number,
@@ -168,7 +170,7 @@ const SendToken = () => {
     pathSymbol,
     pathArray,
     isExactIn,
-    formatAmount
+    formatAmount,
   } = useDerivedSwapInfo();
   const { independentField, typedValue } = useSwapState();
   const dependentField: Field =
@@ -198,6 +200,14 @@ const SendToken = () => {
 
   const { chainId, account, library } = useActiveWeb3React();
   // const [priceImpact, setPriceImpact] = useState(0);
+
+  const clearSearchedData = useCallback(() => {
+    dispatch(clearSearchResult());
+  }, []);
+
+  useMemo(() => {
+    clearSearchedData();
+  }, [chainId]);
 
   const handleMaxInput = async () => {
     const value = await getMaxValue(currencies[Field.INPUT], library);
@@ -248,29 +258,29 @@ const SendToken = () => {
   };
   const [hasBeenApproved, setHasBeenApproved] = useState(false);
   const [insufficientBalance, setInsufficientBalance] = useState(false);
+  const [displayNetwork, setDisplayNetwork] = useState(false);
 
   const [balance] = GetAddressTokenBalance(
     currencies[Field.INPUT] ?? undefined
   );
-  useMemo(()=>{
-    if(currentToPrice && receivedAmount){
-      if(receivedAmount !== currentToPrice){
-        setShowNewChangesText(true)
+  useMemo(() => {
+    if (currentToPrice && receivedAmount) {
+      if (receivedAmount !== currentToPrice) {
+        setShowNewChangesText(true);
       }
     }
-  },[currentToPrice,receivedAmount])
-  useEffect(()=>{
-    let interval
-    if(showNewChangesText){
-     interval = setInterval(()=>setShowNewChangesText(false),3000)
-    //  return clearInterval(interval)
-    } 
-    if(!showModal){
-      setShowNewChangesText(false)
-      setCurrentToPrice("")
+  }, [currentToPrice, receivedAmount]);
+  useEffect(() => {
+    let interval;
+    if (showNewChangesText) {
+      interval = setInterval(() => setShowNewChangesText(false), 3000);
+      //  return clearInterval(interval)
     }
-    
-  },[showNewChangesText,showModal])
+    if (!showModal) {
+      setShowNewChangesText(false);
+      setCurrentToPrice("");
+    }
+  }, [showNewChangesText, showModal]);
   useEffect(() => {
     if (balance < parseFloat(formattedAmounts[Field.INPUT])) {
       setInsufficientBalance(true);
@@ -375,7 +385,7 @@ const SendToken = () => {
       );
     }
   };
-  console.log({isExactIn})
+  console.log({ isExactIn });
   const [sendingTrx, setSendingTrx] = useState(false);
   const outputToken = useCallback((): any => {
     if (parsedAmounts[Field.OUTPUT]) {
@@ -385,8 +395,8 @@ const SendToken = () => {
             currencies[Field.OUTPUT]?.decimals
           )
         : parsedAmounts[Field.OUTPUT];
-        console.log({data})
-        return data
+      console.log({ data });
+      return data;
     }
   }, [parsedAmounts]);
 
@@ -484,7 +494,7 @@ const SendToken = () => {
           })
         );
         onUserInput(Field.INPUT, "");
-        setShowNewChangesText(false)
+        setShowNewChangesText(false);
       }
     } catch (e) {
       console.log(e);
@@ -1039,7 +1049,7 @@ const SendToken = () => {
         pl={3}
         pr={3}
       >
-        <SwapSettings/>
+        <SwapSettings />
         <From
           onUserInput={handleTypeInput}
           onCurrencySelection={onCurrencySelection}
@@ -1060,7 +1070,29 @@ const SendToken = () => {
         />
 
         <Flex alignItems='center' className='SwapToken'>
-          {insufficientBalance || inputError ? (
+          {!account ? (
+            <Button
+              w='100%'
+              borderRadius='6px'
+              border={lightmode ? "2px" : "none"}
+              borderColor={borderColor}
+              h='48px'
+              p='5px'
+              mt={1}
+              disabled={false}
+              color={color}
+              bgColor={switchBgcolor}
+              fontSize='18px'
+              boxShadow={lightmode ? "base" : "lg"}
+              _hover={{ bgColor: buttonBgcolor, color: "#FFFFFF" }}
+              onClick={() => {
+                setDisplayNetwork((state) => !state);
+                localStorage.removeItem("walletconnect");
+              }}
+            >
+              Connect Wallet
+            </Button>
+          ) : insufficientBalance || inputError ? (
             <Button
               w='100%'
               borderRadius='6px'
@@ -1134,12 +1166,17 @@ const SendToken = () => {
               boxShadow={lightmode ? "base" : "lg"}
               _hover={{ bgColor: buttonBgcolor }}
               onClick={() => {
-                setCurrentToPrice(receivedAmount)
-                setShowModal(!showModal)}}
+                setCurrentToPrice(receivedAmount);
+                setShowModal(!showModal);
+              }}
             >
               Swap Tokens
             </Button>
           )}
+          <NetworkModal
+            displayNetwork={displayNetwork}
+            setDisplayNetwork={setDisplayNetwork}
+          />
         </Flex>
         <ConfirmModal
           showModal={showModal}

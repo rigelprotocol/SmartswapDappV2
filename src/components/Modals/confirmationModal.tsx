@@ -17,7 +17,7 @@ import { ArrowUpIcon } from '@chakra-ui/icons'
 
 type IModal = {
     text: String;
-    funct: Function;
+    deleteDataFromDatabase: Function;
     showModal: boolean,
     setShowModal: Function
 }
@@ -25,7 +25,7 @@ type IModal = {
 
 const ConfirmationModal: React.FC<IModal> = ({
     text,
-    funct,
+    deleteDataFromDatabase,
     showModal,
     setShowModal
 }) => {
@@ -39,9 +39,8 @@ const ConfirmationModal: React.FC<IModal> = ({
     const { onClose } = useDisclosure();
 
     function continueTransaction() {
-        // dispatch(setCloseModal())
         onClose()
-        funct()
+        deleteDataFromDatabase()
     }
     return (
         <>
@@ -97,7 +96,7 @@ const ConfirmationModal: React.FC<IModal> = ({
                                 background={closeButtonBgColour}
                                 color="#FFFFFF"
                                 cursor="pointer"
-                                onClick={onClose}
+                                onClick={()=>setShowModal(false)}
                             >
                                 Close
                             </Button>

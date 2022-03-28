@@ -12,6 +12,7 @@ import {
   Text,
   Button,
   Image,
+  Tooltip,
 } from "@chakra-ui/react";
 import { InfoOutlineIcon, ArrowDownIcon } from "@chakra-ui/icons";
 import RGPImage from "./../../../assets/tokens/RGP.svg";
@@ -176,13 +177,17 @@ const ConfirmModal: React.FC<IModal> = ({
             >
               <Flex justifyContent='space-between'>
                 <Box color={lightTextColor}>
-                  Minimum received <InfoOutlineIcon />
+                  Minimum received <Tooltip hasArrow label='Your transaction will revert if there is a large, unfavorable price movement before it is confirmed.' bg={bgColor} color={lightTextColor}>
+  <InfoOutlineIcon />
+</Tooltip>
                 </Box>
                 <Text color={heavyTextColor}>{minRecieved}</Text>
               </Flex>
               <Flex justifyContent='space-between' my='4'>
                 <Box color={lightTextColor}>
-                  Route <InfoOutlineIcon />
+                  Route <Tooltip hasArrow label='We picked the best route which your transaction will go to, to minimize gas fee' bg={bgColor} color={lightTextColor}>
+  <InfoOutlineIcon />
+</Tooltip>
                 </Box>
                 <Text color={heavyTextColor} fontWeight='500'>
                   {pathSymbol}
@@ -190,13 +195,17 @@ const ConfirmModal: React.FC<IModal> = ({
               </Flex>
               <Flex justifyContent='space-between'>
                 <Box color={lightTextColor}>
-                  Allowed Slippage <InfoOutlineIcon />
+                  Allowed Slippage <Tooltip hasArrow label='Your transactions will revert if the price changes unfavorably by more than this percentage.' bg={bgColor} color={lightTextColor}>
+  <InfoOutlineIcon />
+</Tooltip>
                 </Box>
                 <Text color={heavyTextColor}>{slippage}%</Text>
               </Flex>
               <Flex justifyContent='space-between' my='4'>
                 <Box color={lightTextColor}>
-                  Price Impact <InfoOutlineIcon />
+                  Price Impact <Tooltip hasArrow label='The difference between the market price and your price due to trade size.' bg={bgColor} color={lightTextColor}>
+  <InfoOutlineIcon />
+</Tooltip>
                 </Box>
                 <Text
                   color={(priceImpact as number) < -5 ? "red" : heavyTextColor}
@@ -206,7 +215,9 @@ const ConfirmModal: React.FC<IModal> = ({
               </Flex>
               <Flex justifyContent='space-between' my='4'>
                 <Box color={lightTextColor}>
-                  Liquidity Provider Fee <InfoOutlineIcon />
+                  Liquidity Provider Fee <Tooltip hasArrow label='For each trade a 0.3% fee is paid' bg={bgColor} color={lightTextColor}>
+  <InfoOutlineIcon />
+</Tooltip>
                 </Box>
                 <Text color={heavyTextColor}>
                   {fee} {from}
@@ -214,7 +225,9 @@ const ConfirmModal: React.FC<IModal> = ({
               </Flex>
               <Flex justifyContent='space-between'>
                 <Box color={lightTextColor}>
-                  Gas Fee Increased By <InfoOutlineIcon />
+                  Gas Fee Increased By <Tooltip hasArrow label='Value of increase in gas fee, to prevent transaction from falling' bg={bgColor} color={lightTextColor}>
+  <InfoOutlineIcon />
+</Tooltip>
                 </Box>
                 <Text color={heavyTextColor}>{userGasPricePercentage}%</Text>
               </Flex>

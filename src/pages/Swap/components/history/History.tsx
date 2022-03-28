@@ -204,8 +204,8 @@ const History = () => {
       <ConfirmationModal
         showModal={showModal}
         setShowModal={setShowModal}
-        funct={deleteDataFromDatabase}
-        text={`You are about to ${data?.frequency === "price" ? "suspend" : "delete"} an ${data?.name} transaction. This will prevent future transaction from been auto enabled for you. Do you want to continue`}
+        deleteDataFromDatabase={deleteDataFromDatabase}
+        text={`You are about to ${data?.frequency === "price" && data?.status===3 ? "resume" : data?.frequency === "price" && data?.status===2 ? "suspend" : "delete"} an ${data?.name} transaction. This will prevent future transaction from been auto enabled for you. Do you want to continue`}
       />
     </Flex>
   );

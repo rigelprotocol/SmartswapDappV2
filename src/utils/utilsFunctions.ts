@@ -4,9 +4,128 @@ import ERC20Token from "./abis/erc20.json";
 import { SupportedChainSymbols, WrappedSymbols } from "./constants/chains";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { ethers } from "ethers";
+import { escapeRegExp } from ".";
+import { inputRegex } from "../components/Farming/Modals/Filter";
+import { farmStateInterface } from "../state/farm/reducer";
 
 export const removeSideTab = (sideBarName: string): void => {
   localStorage.setItem(sideBarName, "removed");
+};
+
+export const handleRangeChange = (
+  setRange: React.Dispatch<React.SetStateAction<string | number>>,
+  e: React.ChangeEvent<HTMLInputElement>,
+  max: boolean
+) => {
+  if (
+    e.target.value !== "" &&
+    inputRegex.test(escapeRegExp(e.target.value.replace(/,/g, ".")))
+  ) {
+    if (
+      max
+        ? parseFloat(e.target.value) >= 10000
+        : parseFloat(e.target.value) <= 0
+    ) {
+      setRange(max ? 10000 : 0);
+    } else {
+      setRange(parseFloat(e.target.value));
+    }
+  } else if (e.target.value === "") {
+    setRange("");
+  }
+};
+
+export const handleNewestToOldest = (
+  setNewestToOldest: React.Dispatch<React.SetStateAction<boolean>>,
+  setOldestToNewset: React.Dispatch<React.SetStateAction<boolean>>,
+  oldestToNewest: boolean
+) => {
+  if (oldestToNewest) {
+    setOldestToNewset(false);
+    setNewestToOldest(true);
+  } else {
+    setNewestToOldest(true);
+  }
+};
+
+export const handleOldestToNewest = (
+  setNewestToOldest: React.Dispatch<React.SetStateAction<boolean>>,
+  setOldestToNewset: React.Dispatch<React.SetStateAction<boolean>>,
+  newestToOldest: boolean
+) => {
+  if (newestToOldest) {
+    setNewestToOldest(false);
+    setOldestToNewset(true);
+  } else {
+    setOldestToNewset(true);
+  }
+};
+
+export const filterFarms = (
+  newestToOldest: boolean,
+
+  farmData: farmStateInterface,
+  min: number,
+  max: number,
+  setSearchedFarmData: React.Dispatch<
+    React.SetStateAction<farmStateInterface | undefined>
+  >,
+  chainId: number
+) => {
+  if (newestToOldest && farmData.contents) {
+    let dataArray = [...farmData.contents];
+
+    const arrayLength = dataArray.length;
+    const firstItem = dataArray.splice(0, 1);
+    console.log(dataArray);
+    const lastItem = dataArray.splice(
+      chainId === 80001 ||
+        chainId === 137 ||
+        chainId === 42261 ||
+        chainId === 42262
+        ? 3
+        : arrayLength - 2,
+      chainId === 80001 ||
+        chainId === 137 ||
+        chainId === 42261 ||
+        chainId === 42262
+        ? 10
+        : 1
+    );
+
+    const searchResult = dataArray.filter(
+      (item, idx) => item.ARYValue > min && item.ARYValue < max
+    );
+    const editSearch = [...searchResult];
+    // editSearch.unshift(firstItem[0]);
+    // editSearch.push(lastItem[0]);
+    console.log(editSearch);
+    setSearchedFarmData(editSearch);
+    return editSearch;
+  } else if (!newestToOldest && farmData.contents) {
+    let dataArray = [...farmData.contents];
+
+    let normal = [...farmData.contents];
+    let resortedArray = dataArray.reverse();
+    const arrayLength = dataArray.length;
+    const firstItem = dataArray.splice(
+      0,
+      chainId === 80001 ||
+        chainId === 137 ||
+        chainId === 42261 ||
+        chainId === 42262
+        ? 9
+        : 1
+    );
+    const lastItem = dataArray.splice(dataArray.length - 1, 1);
+    const searchResult = dataArray.filter(
+      (item) => item.ARYValue > min && item.ARYValue < max
+    );
+    const editSearch = [...searchResult];
+
+    setSearchedFarmData(searchResult);
+    return editSearch;
+  }
 };
 
 export const checkSideTab = (sideBarName: string): boolean => {
