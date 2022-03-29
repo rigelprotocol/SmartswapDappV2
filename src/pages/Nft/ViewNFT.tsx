@@ -5,33 +5,42 @@ import {
     Flex,
     Grid,
     GridItem,
-    Image,
+    Image, Link,
     Stack,
     Text,
     useColorModeValue,
 } from '@chakra-ui/react';
 import ComfirmPurchase from "./Modals/ComfirmPurchase";
 import ClaimNFTModal from "./Modals/ClaimNFTModal";
+import PolygonImage from '../../assets/polygon-logo.svg';
 
-import { Link, useParams } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
+import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
+import {SupportedChainId} from "../../constants/chains";
 
-type NftProps = {
-    nftName?: string,
-    image?: string
+export type NftProps = {
+    nftName: string,
+    image: string,
     isFeatured?: boolean,
-    id?: number,
-    priceUSD?: number,
-    priceRGP?: number,
-    number?: string
-}
+    id: number,
+    priceUSD?: string,
+    priceRGP?: string,
+    number?: string,
+    total: number,
+    unsold: number
+};
 
 
 
-export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRGP, isFeatured = false }: NftProps) {
+export const ViewNFT = function () {
     const [purchaseModal, setOpenPerchaseModal] = useState(false);
     const [clamModal, setOpenClamModal] = useState(false);
 
-    const {nftId} = useParams();
+    const { chainId } = useActiveWeb3React();
+
+    const location = useLocation();
+    const state: NftProps = location.state;
+    console.log(state);
 
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     const lightTextColor = useColorModeValue("#666666", "grey");
@@ -49,9 +58,7 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
                             borderRadius="lg"
                             objectFit="cover"
                             boxSize="100%"
-                            src={
-                                'https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png'
-                            }
+                            src={state.image}
                         />
                     </Flex>
                     <Stack
@@ -59,9 +66,8 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
                         pl={10}
                         paddingRight={5}
                     >
-                        {/*<Text color={'#319EF6'}>You own 1 of these NFTs.</Text>*/}
                         <Text color={textColor} fontSize={30} fontWeight={700}>
-                            NFT Name
+                           {state.nftName}
                         </Text>
                         <Flex mt="1" justifyContent="space-between" alignContent="center">
 
@@ -79,36 +85,50 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
                                 justifyContent="center"
                             >
                                 <Text color={lightTextColor}>Number</Text>
-                                <Text color={textColor}>{nftId}</Text>
+                                <Text color={textColor}>{state.unsold}</Text>
                             </Flex>
                         </Flex>
-                        <Text color={textColor} py={3}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sociis iuop ullamcorper morbi ut amet.</Text>
+                        <Text mt={2}>
+                            The Rigelprotocol NFTs enable users to earn  high dispute fee up to tier B from our platform!
+                            These NFTs also give its holders the ability to mine various popular cryptos like MOBOX, SXP, SHIB, CAKE.
+                            Find out more :  <Link href="https://www.rigelprotocol.com" isExternal>www.rigelprotocol.com</Link>
+                         </Text>
 
                         <Grid pt={4} templateColumns='repeat(5, 2fr)' gap={0}>
                             <GridItem colSpan={1}   >
                                 <Text color={lightTextColor}>Blockchain</Text>
                             </GridItem>
-                            <GridItem colStart={3} colEnd={6}   >   <Text color={lightTextColor}>Investment to claim</Text>
+                            <GridItem colStart={3} colEnd={6}>   <Text color={lightTextColor}>Investment to claim</Text>
                             </GridItem>
                             <GridItem colSpan={1} >
-                                <Flex mt="1" alignContent="center">
-                                    <Text fontWeight={400} color={textColor} >BSC</Text>
-                                    <Image ml={2} alt="bsc" src="/images/binance.svg" />
-                                </Flex>
+                                {
+                                    chainId === SupportedChainId.BINANCETEST ? (
+                                        <Flex mt="1" alignContent="center">
+                                            <Text fontWeight={400} color={textColor} >BSC</Text>
+                                            <Image ml={2} alt="bsc" src="/images/binance.svg" />
+                                        </Flex>
+                                    ) : (
+                                        <Flex mt="1" alignItems="center">
+                                            <Text fontWeight={400} color={textColor}>Polygon</Text>
+                                            <Image boxSize={'25px'} alt="polygon" src={PolygonImage} />
+                                        </Flex>
+                                    )
+
+                            }
                             </GridItem>
                             <GridItem colStart={3} colEnd={6}>
-                                <Text fontWeight={400} color={textColor} >2,500 USD</Text>
+                                <Text fontWeight={400} color={textColor}>NIL</Text>
                             </GridItem>
                             <GridItem colSpan={2} pt={2} >
                                 <Text color={lightTextColor}>Appraised Value</Text>
                             </GridItem>
-                            <GridItem colStart={3} pt={2} colEnd={6}><Text color={lightTextColor}>Number in circulation</Text>
+                            <GridItem colStart={3} pt={2} colEnd={6}><Text color={lightTextColor}>Total Supply</Text>
                             </GridItem>
 
                             <GridItem colSpan={2} >
                                 <Text color={textColor} fontWeight={400}>750 USD</Text>
                             </GridItem>
-                            <GridItem  color={textColor} colStart={3} colEnd={6}><Text fontWeight={400} >300</Text>
+                            <GridItem  color={textColor} colStart={3} colEnd={6}><Text fontWeight={400} >{state.total}</Text>
                             </GridItem>
                         </Grid>
                         <Flex pt={5} mt="1" justifyContent="space-between" alignContent="center">
@@ -117,10 +137,10 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
                         </Flex>
                         <Flex mt="1" justifyContent="space-between" alignContent="center">
                             <Text color={textColor} fontWeight={700} fontSize={28}>
-                                250 USD
+                                {state.priceUSD} USD
                             </Text>
                             <Text color={lightTextColor}>
-                                500.91 RGP
+                                {state.priceRGP} RGP
                             </Text>
                         </Flex>
                         <Flex t="1" pt={3} justifyContent="space-between" alignContent="center">
@@ -132,6 +152,7 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
                                 variant='outline'
                                 width={'45%'}
                                 onClick={() => setOpenClamModal(true)}
+                                disabled={true}
                             >
                                 Claim NFT</Button>
                         </Flex>
@@ -139,7 +160,7 @@ export const ViewNFT = function ({ nftName, image, number, id, priceUSD, priceRG
                     </Stack>
                 </Stack>
             </Center>
-            <ComfirmPurchase isOpen={purchaseModal} close={() => setOpenPerchaseModal(false)} id={9} image={'https://academy-public.coinmarketcap.com/optimized-uploads/6baf17f9b6d84e6992c8d6f220a53d18.png'} />
+            <ComfirmPurchase isOpen={purchaseModal} close={() => setOpenPerchaseModal(false)} id={state.id} image={state.image} name={state.nftName}/>
             <ClaimNFTModal isOpen={clamModal} close={() => setOpenClamModal(false)} />
 
         </>

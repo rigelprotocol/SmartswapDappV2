@@ -10,16 +10,7 @@ import {
 import ComfirmPurchase from '../../Modals/ComfirmPurchase';
 import { Link } from 'react-router-dom';
 import { useNft, useNftName} from "../../../../hooks/useNFT";
-
-type NftProps = {
-    nftName: string,
-    image: string,
-    isFeatured?: boolean,
-    id: number,
-    priceUSD?: number,
-    priceRGP?: number,
-    number?: string
-};
+import {NftProps} from "../../ViewNFT";
 
 
 export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, isFeatured = false }: NftProps) {
@@ -31,6 +22,18 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
   const { firstToken, secondToken ,prices, unsoldItems , nftId} = useNft(id);
 
   const {name, nftImage, loading} = useNftName(nftId[0]);
+
+  const rgpPrice = (100.54 * parseFloat(prices.firstTokenPrice)).toFixed(2);
+
+  const data : NftProps = {
+      nftName: name,
+      image: nftImage,
+      priceUSD: prices.firstTokenPrice,
+      id: id,
+      priceRGP: rgpPrice,
+      total: nftId.length,
+      unsold: unsoldItems
+  };
    
   return (
          <Box
@@ -72,7 +75,7 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
             </Flex>
             <Flex mt="2" justifyContent="space-between" alignContent="center">
               <Text/>
-              <Text textColor={lightTextColor} >≈ {(100.54 * parseFloat(prices.firstTokenPrice)).toFixed(2)} RGP</Text>
+              <Text textColor={lightTextColor} >≈ {rgpPrice} RGP</Text>
             </Flex>
             <Flex mt="2" pt={2} justifyContent="space-between" alignContent="center">
               <Button onClick={() => setOpenPerchaseModal(true) } width={40} variant={'brand'}>Buy NFT</Button>
@@ -85,7 +88,10 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
                   variant='outline'
                   width={40}
               >
-                  <Link to={`/nfts/${id}`}>View NFT</Link>
+                  <Link to={{
+                      pathname: `/nfts/${id}`,
+                      state: data
+                  }}>View NFT</Link>
               </Button>
             </Flex>
             

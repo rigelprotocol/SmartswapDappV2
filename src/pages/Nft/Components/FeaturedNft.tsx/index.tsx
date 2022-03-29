@@ -11,17 +11,9 @@ import {
 import ComfirmPurchase from "../../Modals/ComfirmPurchase";
 import { Link } from "react-router-dom";
 import {useNft, useNftName} from "../../../../hooks/useNFT";
+import {NftProps} from "../../ViewNFT";
 
-type NftProps = {
-    nftName?: string,
-    image?: string
-    isFeatured?: boolean,
-    id: number,
-    priceUSD?: number,
-    priceRGP?: number,
-    number?: string
 
-}
 export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, priceRGP, isFeatured = false }: NftProps) {
 
     const [ purchaseModal,setOpenPerchaseModal] = useState(false);
@@ -33,12 +25,24 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
 
     const {name, nftImage, loading} = useNftName(nftId[0]);
 
+    const rgpPrice = (100.54 * parseFloat(prices.firstTokenPrice)).toFixed(2);
+
+    const data : NftProps = {
+        nftName: name,
+        image: nftImage,
+        priceUSD: prices.firstTokenPrice,
+        id: unsoldItems,
+        priceRGP: rgpPrice,
+        total: nftId.length,
+        unsold: unsoldItems
+    };
+
     return (
         <>
-        <Text color={textColor} fontWeight={700} py={10} fontSize={24}>
+        <Text color={textColor} fontWeight={700} py={6} fontSize={24}>
             Featured NFT
           </Text>
-            <Center py={8}>
+            <Center py={5}>
                 <Stack
                     borderRadius="lg"
                     w={{ sm: '100%', md: '540px', lg: '900px' }}
@@ -88,7 +92,10 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
                                 variant='outline'
                                 width={'45%'}
                             >
-                                <Link to={`/nfts/${id}`}>View NFT</Link>
+                                <Link to={{
+                                    pathname: `/nfts/${id}`,
+                                    state: data
+                                }}>View NFT</Link>
                                 </Button>
                         </Flex>
 

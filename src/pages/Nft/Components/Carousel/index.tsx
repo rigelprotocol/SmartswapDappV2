@@ -34,7 +34,7 @@ export default function Carousel() {
   return (
     <Box
       position={'relative'}
-      height={'600px'}
+      height={'550px'}
       width={'full'}
       rounded="xl"
       overflow={'hidden'}
@@ -92,7 +92,7 @@ export default function Carousel() {
             backgroundSize="cover"
             backgroundImage={`url(${card.backgroundImage})`}>
         
-            <Container size="container.lg" height="600px"  position="relative">
+            <Container size="container.lg" height="550px"  position="relative">
               <Stack
                 mt={'30%'}
                 spacing={6}
