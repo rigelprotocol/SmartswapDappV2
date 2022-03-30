@@ -2031,6 +2031,7 @@ export function Index() {
                   width={isMobileDevice ? undefined : "fit-content"}
                   flex='none'
                   order='1'
+                  onClick={(e)=>e.stopPropagation()}
                   flex-grow='0'
                   margin='10px 16px'
                 >
@@ -2123,8 +2124,7 @@ export function Index() {
                   }
                   onChange={handleStakingTab}
                   background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
-                  /* Dark Mode / Blue / 1 */
-
+                  onClick={(e)=>e.stopPropagation()}
                   border=' 1px solid #008DFF'
                   box-sizing='border-box'
                   borderRadius='50px'
