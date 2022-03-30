@@ -121,8 +121,8 @@ export const useNFTAllowance = (
                             tokenB.allowance(account, SMARTSWAPNFTSALES[chainId as number]),
                         ]);
 
-                        const isTokenAApproved = allowanceA.toString() > ethers.utils.parseEther(token1Price).toString();
-                        const isTokenBApproved = allowanceB.toString() > ethers.utils.parseEther(token2Price).toString();
+                        const isTokenAApproved = allowanceA.toString() > parseFloat(ethers.utils.parseEther(token1Price).toString());
+                        const isTokenBApproved = allowanceB.toString() > parseFloat(ethers.utils.parseEther(token2Price).toString());
 
                         setHasTokenABeenApproved(isTokenAApproved);
                         setHasTokenBBeenApproved(isTokenBApproved);
