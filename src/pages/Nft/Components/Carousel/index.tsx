@@ -21,7 +21,7 @@ import apeKing from '../../../../assets/Ape-King.png';
 import Exchange from '../../../../assets/exchange.svg';
 import art from '../../../../assets/art-slider.png';
 import rent from '../../../../assets/rent.png';
-import woman from '../../../../assets/business-woman.svg';
+import woman from '../../../../assets/work.png';
 import pool from '../../../../assets/pool.png';
 
 
