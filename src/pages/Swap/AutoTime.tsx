@@ -32,7 +32,9 @@ import {
   MenuButton,
   useColorModeValue,
   useMediaQuery,
-  Select
+  Select,
+  MenuList,
+  MenuItem
 } from '@chakra-ui/react';
 import AutoTimeModal from './modals/autoTimeModal';
 import { useSelector,useDispatch } from 'react-redux';
@@ -41,6 +43,7 @@ import { autoSwapV2, rigelToken, SmartSwapRouter, otherMarketPriceContract } fro
 import { RGPADDRESSES, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES, SMARTSWAPROUTER, OTHERMARKETADDRESSES } from '../../utils/addresses';
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { changeFrequencyTodays } from '../../utils/utilsFunctions';
+import { ChevronDownIcon } from '@chakra-ui/icons';
 
 
 
@@ -71,11 +74,11 @@ const SetPrice = () => {
   const [signatureFromDataBase, setSignatureFromDataBase] = useState(false)
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [selectedFrequency, setSelectedFrequency] = useState("5")
-  const [marketType, setMarketType] = useState("pancakeswap")
+  const [marketType, setMarketType] = useState("smartswap")
   const [percentageChange, setPercentageChange] = useState<string>("0")
   const [priceOut, setPriceOut] = useState<string>("")
   const [otherMarketprice, setOtherMarketprice] = useState<string>("0")
-  const [approval, setApproval] = useState<string[] | undefined>([])
+  const [approval, setApproval] = useState<string[]>([])
   const [showModal, setShowModal] = useState(false)
 
   const [checkedItem, setCheckedItem] = useState(false)
@@ -106,7 +109,7 @@ const SetPrice = () => {
     [onUserInput]
   );
   useEffect(() => {
-    // setURL("http://localhost:7000")
+    setURL("http://localhost:7000")
     async function runCheck() {
       if (account) {
 
@@ -117,7 +120,7 @@ const SetPrice = () => {
   }, [currencies[Field.INPUT], account])
   useEffect(() => {
     async function checkIfSignatureExists() {
-      let user = await fetch(`${URL}/auto/data/${account}`)
+      let user = await fetch(`http://localhost:7000/auto/data/${account}`)
       let data = await user.json()
       if (data) {
         setSignedTransaction(data.signature)
@@ -148,57 +151,6 @@ const SetPrice = () => {
   const deadline = useSelector<RootState, number>(
     (state) => state.user.userDeadline
   );
-  useMemo(async () => {
-    if (currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
-      const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
-      const routeAddress = currencies[Field.INPUT]?.isNative ? [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
-        currencies[Field.OUTPUT]?.isNative ? [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
-          [currencies[Field.INPUT]?.wrapped.address, currencies[Field.OUTPUT]?.wrapped.address]
-      const priceOutput = await rout.getAmountsOut(
-        '1000000000000000000',
-        routeAddress
-      );
-      setPriceOut(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
-    }
-  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue])
-
-
-  useMemo(async () => {
-    if (chainId === 56 && currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
-      const rout = await otherMarketPriceContract(OTHERMARKETADDRESSES[marketType], library);
-      const routeAddress = currencies[Field.INPUT]?.isNative ? [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
-        currencies[Field.OUTPUT]?.isNative ? [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
-          [currencies[Field.INPUT]?.wrapped.address, currencies[Field.OUTPUT]?.wrapped.address]
-      if (typedValue) {
-        const priceOutput = await rout.getAmountsOut(
-          Web3.utils.toWei(typedValue, 'ether'),
-          routeAddress
-        );
-        setOtherMarketprice(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
-      }
-    }
-  }, [chainId, currencies[Field.INPUT], currencies[Field.OUTPUT], marketType, typedValue])
-  const checkForApproval = async () => {
-
-    const autoSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
-    // check approval for RGP and the other token
-    const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
-    const tokenBalance = currencies[Field.INPUT]?.isNative ? "1" : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
-    const amountToApprove = await autoSwapV2Contract.fee()
-    const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
-    if (parseFloat(RGPBalance) >= parseFloat(fee) && parseFloat(tokenBalance) > 0) {
-      setHasBeenApproved(true)
-    } else if (parseFloat(RGPBalance) < parseFloat(fee) && parseFloat(tokenBalance) <= 0 && currencies[Field.INPUT]?.wrapped.symbol !== "RGP") {
-      setHasBeenApproved(false)
-      setApproval(["RGP", currencies[Field.INPUT]?.wrapped.symbol])
-    } else if (parseFloat(tokenBalance) <= 0) {
-      setHasBeenApproved(false)
-      setApproval([currencies[Field.INPUT].wrapped.symbol])
-    } else if (parseFloat(RGPBalance) < parseFloat(fee)) {
-      setHasBeenApproved(false)
-      setApproval(["RGP"])
-    }
-  }
 
   const parsedAmounts = useMemo(
     () =>
@@ -225,6 +177,57 @@ const SetPrice = () => {
       : parsedAmounts[dependentField] ?? "", //?.toSignificant(6) ?? '',
   };
 
+  useMemo(async () => {
+    if (currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
+      const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
+      const routeAddress = currencies[Field.INPUT]?.isNative ? [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
+        currencies[Field.OUTPUT]?.isNative ? [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
+          [currencies[Field.INPUT]?.wrapped.address, currencies[Field.OUTPUT]?.wrapped.address]
+      const priceOutput = await rout.getAmountsOut(
+        '1000000000000000000',
+        routeAddress
+      );
+      setPriceOut(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
+    }
+  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue])
+
+
+  useEffect(async () => {
+    if (chainId === 56 && currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
+      const rout = await otherMarketPriceContract(OTHERMARKETADDRESSES[marketType], library);
+      const routeAddress = currencies[Field.INPUT]?.isNative ? [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
+        currencies[Field.OUTPUT]?.isNative ? [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
+          [currencies[Field.INPUT]?.wrapped.address, currencies[Field.OUTPUT]?.wrapped.address]
+      if (typedValue) {
+        const priceOutput = await rout.getAmountsOut(
+          Web3.utils.toWei(typedValue, 'ether'),
+          routeAddress
+        );
+        setOtherMarketprice(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
+      }
+    }
+  }, [chainId, currencies[Field.INPUT], currencies[Field.OUTPUT],  typedValue,marketType])
+  const checkForApproval = async () => {
+
+    const autoSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
+    // check approval for RGP and the other token
+    const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
+    const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
+    const amountToApprove = await autoSwapV2Contract.fee()
+    const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
+    if (parseFloat(RGPBalance) >= parseFloat(fee) && parseFloat(tokenBalance) > 0) {
+      setHasBeenApproved(true)
+    } else if (parseFloat(RGPBalance) < parseFloat(fee) && parseFloat(tokenBalance) <= 0 && currencies[Field.INPUT]?.wrapped.symbol !== "RGP") {
+      setHasBeenApproved(false)
+      setApproval(["RGP", currencies[Field.INPUT]?.wrapped.symbol])
+    } else if (parseFloat(tokenBalance) <= 0) {
+      setHasBeenApproved(false)
+      setApproval([currencies[Field.INPUT].wrapped.symbol])
+    } else if (parseFloat(RGPBalance) < parseFloat(fee)) {
+      setHasBeenApproved(false)
+      setApproval(["RGP"])
+    }
+  }
 
   const signTransaction = async () => {
     if (account !== undefined) {
@@ -289,9 +292,8 @@ const SetPrice = () => {
             }
           );
 
-          arr.length > 1 ? setApproval([arr[1]]) : setApproval([])
+          arr && arr.length > 1 ? setApproval(arr && [arr[1]]) : setApproval([])
         } 
-        console.log(approval[0],currencies[Field.INPUT]?.symbol)
         if (approval[0] === currencies[Field.INPUT]?.symbol) {
           const address = currencies[Field.INPUT]?.wrapped.address;
           console.log({address})
@@ -495,9 +497,9 @@ const SetPrice = () => {
               <Flex justifyContent="center" onClick={onSwitchTokens}>
                 <SwitchIcon />
               </Flex>
-              <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" p={3} mt={4}>
+              <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px"  px={3} py={3}  mt={4}>
 
-                <Box display="flex" justifyContent="space-between" alignItems="center" mb={5} width="100%">
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={1} width="100%">
                   <To
                     onUserOutput={handleTypeOutput}
                     onCurrencySelection={onCurrencySelection}
@@ -509,7 +511,7 @@ const SetPrice = () => {
                   />
                 </Box>
 
-                <Box display="flex" pt={4} pb={4} pr={4} pl={4} borderColor={borderTwo} borderWidth="2px" borderRadius="2px" bg={buttonBgcolor}>
+                {/* <Box display="flex" pt={4} pb={4} pr={4} pl={4} borderColor={borderTwo} borderWidth="2px" borderRadius="2px" bg={buttonBgcolor}>
                   <Text color={textColorOne} fontSize="16px">
                     RigelProtocol
                   </Text>
@@ -522,18 +524,41 @@ const SetPrice = () => {
                       -2.56
                     </Text>
                   </VStack>
-                </Box>
-                <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2}>
+                </Box> */}
+                <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={buttonBgcolor}>
                   <Flex>
-                    <Select variant='unstyled' width="110px" cursor="pointer" onChange={(e) => setMarketType(e.target.value)}>
-                      <option value='pancakeswap'>Pancakeswap</option>
-                      <option value='sushiswap'>Sushiswap</option>
-                    </Select>
+                  <Menu>
+      <MenuButton
+        variant="ghost"
+        as={Button}
+        transition="all 0.2s"
+        rightIcon={<ChevronDownIcon />}
+        fontWeight={200}
+        _focus={{ color: "#319EF6" }}
+        fontSize="13px"
+        textTransform={'capitalize'}
+        border ="1px solid white"
+      >
+       {marketType}
+      </MenuButton>
+      <MenuList>
+        {["Smartswap","Pancakeswap","Sushiswap"].map((item:string,index)=>(
+          <MenuItem key={index} _focus={{ color: "#319EF6" }} onClick={(e) => setMarketType(item)} fontSize="13px">
+         {item}
+        </MenuItem>
+        ))
+
+        }
+        
+      </MenuList>
+    </Menu>
 
                     <Spacer />
                     <VStack>
                       <Text fontSize="24px" color={textColorOne} isTruncated width="160px" textAlign="right">
-                        {otherMarketprice}
+                        {marketType==="smartswap"?
+                        isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT])
+                        : otherMarketprice}
                       </Text>
                       <Text fontSize="14px" color={color}  width="160px">
                         -2.67
@@ -587,13 +612,31 @@ const SetPrice = () => {
                     </Text>
                     <ExclamationIcon />
                   </Flex>
-                  <Select onChange={(e) => setSelectedFrequency(e.target.value)}>
-                    <option value='5'>5 minutes</option>
-                    <option value='30'>30 minutes</option>
-                    <option value='daily'>Daily</option>
-                    <option value='weekly'>Weekly</option>
-                    <option value='monthly'>Monthly</option>
-                  </Select>
+                  <Menu>
+      <MenuButton
+        variant="ghost"
+        as={Button}
+        transition="all 0.2s"
+        rightIcon={<ChevronDownIcon />}
+        fontWeight={200}
+        _focus={{ color: "#319EF6" }}
+        fontSize="13px"
+        textTransform={'capitalize'}
+        border ="1px solid white"
+      >
+      5 minutes
+      </MenuButton>
+      <MenuList>
+        {["5","30","daily","weekly","monthly"].map((item:string,index)=>(
+          <MenuItem key={index} _focus={{ color: "#319EF6" }} onClick={(e) => setSelectedFrequency(item)} fontSize="13px">
+         {parseInt(item) ? `${item} minutes` : item}
+        </MenuItem>
+        ))
+
+        }
+        
+      </MenuList>
+    </Menu>
                 </VStack>
               </Box>
               <Box mt={5}>
@@ -696,9 +739,9 @@ const SetPrice = () => {
                 <SwitchIcon />
               </Flex>
 
-              <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" p={3} mt={4}>
+              <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" px={3} py={3} mt={4}>
 
-                <Box display="flex" justifyContent="space-between" alignItems="center" mb={5}>
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
 
                   <To
                     onUserOutput={handleTypeOutput}
@@ -710,7 +753,7 @@ const SetPrice = () => {
                   />
                 </Box>
 
-                <Box display="flex" pt={4} pb={4} pr={4} pl={4} borderColor={borderTwo} borderWidth="2px" borderRadius="2px" bg={buttonBgcolor}>
+                {/* <Box display="flex" pt={4} pb={4} pr={4} pl={4} borderColor={borderTwo} borderWidth="2px" borderRadius="2px" bg={buttonBgcolor}>
                   <Text color={textColorOne} fontSize="16px" mt="2" >
                     RigelProtocol
                   </Text>
@@ -723,18 +766,41 @@ const SetPrice = () => {
                       -2.56
                     </Text>
                   </VStack>
-                </Box>
-                <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2}>
+                </Box> */}
+                <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={buttonBgcolor}>
                   <Flex>
-                    <Select variant='unstyled' width="110px" cursor="pointer" onChange={(e) => setMarketType(e.target.value)} textAlign="right" >
-                      <option value='pancakeswap'>Pancakeswap</option>
-                      <option value='sushiswap'>Sushiswap</option>
-                    </Select>
+                  <Menu>
+      <MenuButton
+        variant="ghost"
+        as={Button}
+        transition="all 0.2s"
+        rightIcon={<ChevronDownIcon />}
+        fontWeight={200}
+        _focus={{ color: "#319EF6" }}
+        fontSize="13px"
+        textTransform={'capitalize'}
+        border ="1px solid white"
+      >
+       {marketType}
+      </MenuButton>
+      <MenuList>
+        {["Smartswap","Pancakeswap","Sushiswap"].map((item:string,index)=>(
+          <MenuItem key={index} _focus={{ color: "#319EF6" }} onClick={(e) => setMarketType(item)} fontSize="13px">
+         {item}
+        </MenuItem>
+        ))
+
+        }
+        
+      </MenuList>
+    </Menu>
 
                     <Spacer />
                     <VStack>
                       <Text fontSize="24px" color={textColorOne} textAlign="right" isTruncated width="160px" >
-                        {otherMarketprice}
+                      {marketType==="smartswap"?
+                        isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT])
+                        : otherMarketprice}
                       </Text>
                       <Text fontSize="14px" color={color}  width="160px" textAlign="right">
                         -2.67
@@ -789,13 +855,31 @@ const SetPrice = () => {
                     </Text>
                     <ExclamationIcon />
                   </Flex>
-                  <Select onChange={(e) => setSelectedFrequency(e.target.value)}>
-                    <option value='5'>5 minutes</option>
-                    <option value='30'>30 minutes</option>
-                    <option value='daily'>Daily</option>
-                    <option value='weekly'>Weekly</option>
-                    <option value='monthly'>Monthly</option>
-                  </Select>
+                  <Menu>
+      <MenuButton
+        variant="ghost"
+        as={Button}
+        transition="all 0.2s"
+        rightIcon={<ChevronDownIcon />}
+        fontWeight={200}
+        _focus={{ color: "#319EF6" }}
+        fontSize="13px"
+        textTransform={'capitalize'}
+        border ="1px solid white"
+      >
+      5 minutes
+      </MenuButton>
+      <MenuList>
+        {["5","30","daily","weekly","monthly"].map((item:string,index)=>(
+          <MenuItem key={index} _focus={{ color: "#319EF6" }} onClick={(e) => setSelectedFrequency(item)} fontSize="13px">
+         {parseInt(item) ? `${item} minutes` : item}
+        </MenuItem>
+        ))
+
+        }
+        
+      </MenuList>
+    </Menu>
                 </VStack>
               </Box>
               <Box mt={5}>

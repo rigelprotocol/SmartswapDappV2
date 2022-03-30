@@ -23,7 +23,7 @@ export interface DataType {
   frequency: string,
   id: string,
   transactionHash: string,
-  error: [],
+  error: [String],
   status: number,
   currentToPrice?: string,
   chainID?: string,
@@ -155,7 +155,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
               Time
             </Text>
             <Text color={activeTabColor} fontSize="14px" fontWeight="regular">
-              {data.time}
+              {data.time ? data.time :"-"}
             </Text>
           </Box>
           <Box>
@@ -171,7 +171,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
               {/* Completed */}
               {data.status === 1 || data.status === 10 ? "Completed" : data.status === 0 ? "Failed" : data.status === 2 ? "Pending" : data.status === 3 ? "Suspended" : ""}
             </Text>
-            {data.name === "auto time" && data.id && data.status !== 4 ? <Button
+            {data.name === "Auto Time" && data.id && data.status !== 4 && data.status !== 1 ? <Button
               border=" 1px solid #CC334F" box-shadow="0px 1px 7px -2px rgba(24, 39, 75, 0.06), 0px 2px 2px rgba(24, 39, 75, 0.06)"
               border-radius="6px" backgroundColor="transparent" mt="2" onClick={() => deleteData(data)}>
               Cancel

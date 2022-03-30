@@ -67,7 +67,6 @@ interface DataIncoming {
 }
 let web3 = new Web3(Web3.givenProvider);
 export const formatAmount = (number: string, decimals: any) => {
-    console.log(number)
     const num = ethers.BigNumber.from(number).toString();
     let res = ethers.utils.formatUnits(num, decimals)
     res = ParseFloat(res, 5)
@@ -93,7 +92,7 @@ const useAccountHistory = () => {
     const [loading, setLoading] = useState(false);
     const [historyData, setHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
-    const [locationData, setLocationData] = useState(account)
+    const [locationData, setLocationData] = useState("swap")
     const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const tokenList = async (addressName: string) => {
@@ -120,15 +119,11 @@ const useAccountHistory = () => {
         let decoder = abiDecoder.decodeMethod(input);
         return decoder
     }
-
-    const testNetwork = chainId === 97;
-    // setContractAddress(SMARTSWAPROUTER[chainId as number]);
-    const api = APIENDPOINT[chainId as number];
-    const apikey = APIKEY[chainId as number];
-    const refreshPage = useSelector((state: RootState) => state.transactions.refresh);
+   const refreshPage = useSelector((state: RootState) => state.transactions.refresh);
     const location = useLocation().pathname;
     const [, Symbol, Name,] = useNativeBalance()
     useEffect(() => {
+        console.log({location})
         if (location === "/auto-time") {
             setLocationData("auto")
             setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
@@ -142,18 +137,16 @@ const useAccountHistory = () => {
             setStateAccount(account)
             setContractAddress(SMARTSWAPROUTER[chainId as number])
         }
-    }, [location, chainId])
-    useEffect(() => {
-        // setURL("http://localhost:7000")
+        setURL("http://localhost:7000")
         loadAccountHistory();
-    }, [chainId, account, contractAddress,refreshPage]);
+    }, [chainId, account,location, contractAddress,refreshPage,locationData]);
 
     const getTransactionFromDatabase = async (address: string) => {
-        const data = await fetch(`${URL}/auto/data/all/${address}`)
-        const trans = await fetch(`${URL}/auto`)
+        console.log({URL})
+        const data = await fetch(`http://localhost:7000/auto/data/all/${address}`)
+        const trans = await fetch(`http://localhost:7000/auto`)
         const transaction = await data.json()
         const database = await trans.json()
-
         return { transaction, database }
     }
     const loadAccountHistory = async () => {
@@ -161,7 +154,7 @@ const useAccountHistory = () => {
             setLoading(true);
             // try {
             let userData = []
-            if (locationData === "swap") {
+            if (location === "/swap") {
                 const uri = `https://api-testnet.bscscan.com/api?module=account&action=txlist&address=${stateAccount}&startblock=0
                         &endblock=latest&sort=desc&apikey=AATZWFQ47VX3Y1DN7M97BJ5FEJR6MGRQSD`;
 
@@ -204,13 +197,13 @@ const useAccountHistory = () => {
                     error: [],
                     status: data.status
                 }));
-            } else if ((AUTOSWAPV2ADDRESSES[chainId as number] && locationData === "price") || AUTOSWAPV2ADDRESSES[chainId as number] && locationData === "auto") {
+            } else if ( location === "/auto-time" || location === "/set-price") {
                 const { transaction, database } = await getTransactionFromDatabase(account)
                 if (transaction.length > 0) {
                     const collapsedTransaction = transaction[0].transaction
                     let result = []
                     if (locationData === "auto") {
-                        result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "auto time").sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
+                        result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "Auto Time")
                         let newArray: any = []
                         result.forEach((val: any) => {
                             if (database.every((e: any) => e._id !== val.id)) {
@@ -221,7 +214,8 @@ const useAccountHistory = () => {
 
                         result = newArray
                     } else if (locationData === "price") {
-                        result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "Set Price").sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
+                        result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "Set Price")
+                        // .sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
                     }
                     userData = await Promise.all(result.map(async (data: any) => {
                         let fromAddress = data.swapFromToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapFromToken
@@ -236,7 +230,7 @@ const useAccountHistory = () => {
                             outputAmount: data.typeOfTransaction === "Set Price" && (data.status === 1 || data.status === 0) ? ethers.utils.parseEther(data.currentToPrice).toString() : data.typeOfTransaction === "Set Price" ? ethers.utils.parseEther(data.percentageChange).toString() : toPriceOut[1].toString(),
                             tokenIn: data.swapFromToken,
                             tokenOut: data.swapToToken,
-                            time: timeConverter(parseInt(data.time)),
+                            time: data.time && timeConverter(parseInt(data.time)),
                             name: data ? data.typeOfTransaction : "",
                             frequency: data ? data.frequency : "--",
                             id: data ? data.id : "",
@@ -254,7 +248,7 @@ const useAccountHistory = () => {
 
 
             }
-
+            console.log(userData,94994900409)
             const swapDataForWallet = await Promise.all(
                 userData.map(async (data: DataIncoming) => ({
                     tokenIn: data.tokenIn === "native" ? {
@@ -324,7 +318,7 @@ const useAccountHistory = () => {
             console.log('Wallet disconnected')
         }
     };
-    return { historyData, loading }
+    return { historyData, loading, locationData }
 };
 
 export default useAccountHistory;

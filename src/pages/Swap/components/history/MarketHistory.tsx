@@ -1,11 +1,12 @@
-import { Flex,Grid, Text, Box,useColorModeValue } from '@chakra-ui/react'
+import { Flex,Grid, Text, Box,useColorModeValue, Tooltip } from '@chakra-ui/react'
 import React from 'react'
 import { ArrowRightIcon } from '../../../../theme/components/Icons';
 import {DataType} from "./TransactionHistory";
 import TokenIcon from '../../../../assets/Null-24.svg';
+import { ExplorerDataType, getExplorerLink } from '../../../../utils/getExplorerLink';
 
 const MarketHistory = ({data} : {data: DataType}) => {
-
+console.log({data})
     const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
     const nonActiveTabColor = useColorModeValue('#CCCCCC', '#4A739B');
     const borderColor = useColorModeValue('#DEE5ED', '#324D68');
@@ -48,50 +49,74 @@ const MarketHistory = ({data} : {data: DataType}) => {
               </Text>
             </Flex>
           </Flex>
-
-          
-            
           <Grid templateColumns="repeat(3, 2fr)" gap={7} py={2}>
-              <Box>
-                <Text
-                  fontSize="12px"
-                  lineHeight="0"
-                  color={nonActiveTabColor}
-                  mb="8px"
-                >
-                  Type
+          <Box>
+            <Text
+              fontSize="12px"
+              lineHeight="0"
+              color={nonActiveTabColor}
+              mb="8px"
+            >
+              Type
+            </Text>
+            <Text color={activeTabColor} fontSize="14px" fontWeight="regular">
+              {data.name ? data.name : "Straight Swap"}
+            </Text>
+          </Box>
+          <Box>
+            {data.name === "Set Price" ?
+              <>
+                <Tooltip label={`current ${data.token2.symbol} output`}>
+                  <Text
+                    color={nonActiveTabColor}
+                    fontSize="12px"
+                    lineHeight="0"
+                    mb="8px"
+                    cursor="pointer"
+                  >
+                    C{data.token2.symbol[0]}O
+                  </Text>
+                </Tooltip>
+                <Tooltip label={data.currentToPrice}>
+                <Text color={activeTabColor} fontSize="14px" fontWeight="regular" cursor="pointer">
+                  {data.currentToPrice && parseFloat(data.currentToPrice).toFixed(2)}
                 </Text>
-                <Text    color={activeTabColor} fontSize="14px" fontWeight="regular">
-                  Straight Swap
+                </Tooltip>
+              </> :
+              <>
+                <Tooltip label="If Price(Above)">
+                  <Text
+                    color={nonActiveTabColor}
+                    fontSize="12px"
+                    lineHeight="0"
+                    mb="8px"
+                    cursor="pointer"
+                  >
+                    IPA
+                  </Text>
+                </Tooltip>
+
+                <Text color={activeTabColor} fontSize="14px" fontWeight="regular">
+                  {data.currentToPrice}%
                 </Text>
-              </Box>
-              <Box>
-                <Text
-                  color={nonActiveTabColor}
-                  fontSize="12px"
-                  lineHeight="0"
-                  mb="8px"
-                >
-                  If Price(Above)
-                </Text>
-                <Text    color={activeTabColor} fontSize="14px" fontWeight="regular">
-                  @ 0.004500
-                </Text>
-              </Box>
-              <Box>
-                <Text
-                  color={nonActiveTabColor}
-                  fontSize="12px"
-                  lineHeight="0"
-                  mb="8px"
-                >
-                  Interval
-                </Text>
-                <Text    color={activeTabColor} fontSize="14px" fontWeight="regular">
-                  --
-                </Text>
-              </Box>
-            </Grid>
+              </>
+            }
+
+          </Box>
+          <Box>
+            <Text
+              color={nonActiveTabColor}
+              fontSize="12px"
+              lineHeight="0"
+              mb="8px"
+            >
+              Interval
+            </Text>
+            <Text color={activeTabColor} fontSize="14px" fontWeight="regular">
+              {data.frequency && (data.frequency === "5" || data.frequency === "30") ? `${data.frequency} minutes` : data.frequency}
+            </Text>
+          </Box>
+        </Grid>
             
           <Grid templateColumns="repeat(3, 2fr)" gap={7} py={2}>
               <Box>
@@ -104,7 +129,7 @@ const MarketHistory = ({data} : {data: DataType}) => {
                   Time
                 </Text>
                 <Text    color={activeTabColor} fontSize="14px" fontWeight="regular">
-                  {data.time}
+                {data.time ? data.time :"-"}
                 </Text>
               </Box>
               <Box>
@@ -122,7 +147,16 @@ const MarketHistory = ({data} : {data: DataType}) => {
               </Box>
               
             </Grid>
-          
+            {data?.chainID && data.transactionHash &&
+            <Flex justifyContent="right">
+                  <Box cursor="pointer">
+                  <a href={getExplorerLink(parseInt(data?.chainID), data.transactionHash, ExplorerDataType.TRANSACTION)} target="_blank">
+                    <ArrowRightIcon />
+                    </a>
+                  </Box>
+            </Flex>
+        }
+        
           
           </Box>
           

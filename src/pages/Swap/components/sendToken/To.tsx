@@ -41,9 +41,9 @@ const To: React.FC<ToProps> = ({
   return (
     <>
       <Box
-        h="102px"
+        h={display ?"30px":"102px"}
         mb={4}
-        mt={4}
+        mt={display ? 0 : 4}
         borderRadius="6px"
         border={display ? "0" : "1px"}
         borderColor={borderColor}

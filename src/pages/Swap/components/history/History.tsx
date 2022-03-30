@@ -31,7 +31,7 @@ const History = () => {
 
   const sideBarRemoved = useSelector((state: RootState) => state.transactions.removeSideTab);
 
-  const { historyData, loading } = useAccountHistory();
+  const { historyData, loading, locationData } = useAccountHistory();
   const { marketHistoryData, loadMarketData } = useMarketHistory();
 
   const userData = Object.keys(historyData).map((i) => historyData[i]);
@@ -41,14 +41,14 @@ const History = () => {
 
 
   useEffect(() => {
-    // setURL("http://localhost:7000")
+    setURL("http://localhost:7000")
     const isActive = checkSideTab('history');
     dispatch(transactionTab({ removeSideTab: isActive }))
 
   }, []);
 
   const deleteDataFromDatabase = async () => {
-    if (data && data.name === "auto time") {
+    if (data && data.name === "Auto Time") {
       setOpenModal({
         message: "Deleting Transaction...",
         trxState: TrxState.WaitingForConfirmation,
@@ -121,7 +121,7 @@ const History = () => {
                 setShowMarketHistory(false);
               }}
             >
-              Transaction History
+              {locationData==="swap" ?"Transaction History" : "Open Orders"}
             </Text>
             <Text fontWeight="400" cursor="pointer" fontSize="16px" color={showMarketHistory ? activeTabColor : nonActiveTabColor} onClick={() => {
               setShowMarketHistory(true);
@@ -193,8 +193,8 @@ const History = () => {
           {show && loadMarketData || show && loading && <Spinner my={3} size={'md'} />}
         </Flex>
 
-        {show && showMarketHistory && marketHistoryData && historyArray.map((data: DataType) => (
-          <MarketHistory key={data.time} data={data} />
+        {show && showMarketHistory && marketHistoryData && historyArray.map((data: DataType,index) => (
+          <MarketHistory key={index} data={data} />
         ))}
 
         {show && !showMarketHistory && historyData && userData.map((data: DataType, index) => (
