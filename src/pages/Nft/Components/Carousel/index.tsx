@@ -1,16 +1,29 @@
 import React from 'react';
 import Slider from "react-slick";
 import {
-  Box,
-  IconButton,
-  useBreakpointValue,
-  Stack,
-  Heading,
-  Text,
-  Container,
+    Box,
+    IconButton,
+    useBreakpointValue,
+    Stack,
+    Heading,
+    Text,
+    Container, useMediaQuery,
 } from '@chakra-ui/react';
 import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
 import { slides } from '../../mockData';
+import SliderTab from "./Slider";
+import CoverImg from '../../../../assets/SwapMagician.png';
+import CryptoImg from '../../../../assets/rigel-crypto.svg';
+import Gift from '../../../../assets/GiftBox.svg';
+import BackImage from '../../../../assets/tiles.png';
+import gamepad from '../../../../assets/gamescreen.png';
+import apeKing from '../../../../assets/Ape-King.png';
+import Exchange from '../../../../assets/exchange.svg';
+import art from '../../../../assets/art-slider.png';
+import rent from '../../../../assets/rent.png';
+import woman from '../../../../assets/business-woman.svg';
+import pool from '../../../../assets/pool.png';
+
 
 const settings = {
   dots: true,
@@ -30,14 +43,16 @@ export default function Carousel() {
   const [slider, setSlider] = React.useState<Slider | null>(null);
   const top = useBreakpointValue({ base: '90%', md: '50%' });
   const side = useBreakpointValue({ base: '30%', md: '40px' });
+  const [isMobileDeviceSm] = useMediaQuery("(max-width: 450px)");
 
   return (
     <Box
       position={'relative'}
-      height={'550px'}
+      height={'580px'}
       width={'full'}
       rounded="xl"
       overflow={'hidden'}
+      display={isMobileDeviceSm ? 'none' : 'block'}
       >
       {/* CSS files for react-slick */}
       <link
@@ -59,6 +74,7 @@ export default function Carousel() {
         position="absolute"
         left={side}
         top={top}
+        cursor={'pointer'}
         transform={'translate(0%, -50%)'}
         zIndex={2}
         onClick={() => slider?.slickPrev()}>
@@ -80,39 +96,48 @@ export default function Carousel() {
       </IconButton>
       {/* Slider */}
       <Slider {...settings} ref={(slider : any) => setSlider(slider)}>
-        {slides.map((card, index) => (
-     
-         <Box
-            key={index}
-            height={'6xl'}
-            position="relative"
-            backgroundPosition="center"
-            backgroundRepeat="no-repeat"
-            rounded="xl"
-            backgroundSize="cover"
-            backgroundImage={`url(${card.backgroundImage})`}>
+          <SliderTab title={'BACKED BY PROOF OF WORK'} sideImage={CryptoImg} background={CoverImg}/>
+          <SliderTab title={'USE NFTs TO WORK AT RIGEL JOBS.'} sideImage={woman}/>
+          <SliderTab title={'EARN REWARDS ON NFTs.'} sideImage={Gift} background={BackImage}/>
+          <SliderTab title={'NFTs WILL FEATURE IN OUR GAMES.'} background={gamepad} widthSize={'65%'}/>
+          <SliderTab title={'AUTOMATED LIQUIDITY FOR NFTs'} sideImage={Exchange} background={apeKing} smallText={'Easy sell for cash'}  widthSize={'65%'}/>
+          <SliderTab title={'ART GETTING FEATURES IN OUR METAVERSE WORLD.'} background={art} widthSize={'75%'}/>
+          <SliderTab title={'RENT NFTs'} background={rent} />
+          <SliderTab title={'FARMING POOL AVAILABLE FOR NFTs'} background={pool} widthSize={'65%'}/>
+
+        {/*{slides.map((card, index) => (*/}
+
+        {/* <Box*/}
+        {/*    key={index}*/}
+        {/*    height={'6xl'}*/}
+        {/*    position="relative"*/}
+        {/*    backgroundPosition="center"*/}
+        {/*    backgroundRepeat="no-repeat"*/}
+        {/*    rounded="xl"*/}
+        {/*    backgroundSize="cover"*/}
+        {/*    backgroundImage={`url(${card.backgroundImage})`}>*/}
         
-            <Container size="container.lg" height="550px"  position="relative">
-              <Stack
-                mt={'30%'}
-                spacing={6}
-                rounded="xl"
-                w={'full'}
-                maxW={'lg'}
-                padding={10}
-                position="relative"
-                top="50%"
-                opacity={90}
-                backgroundColor={'rgba(0, 0, 0, 0.9)'}
-                transform="translate(0, -50%)">
-                <Text color={'white'} fontSize={20} align={"center"}>
-                  {card.tittle}
-                </Text>
-                
-              </Stack>
-            </Container>
-          </Box>
-        ))}
+        {/*    <Container size="container.lg" height="550px"  position="relative">*/}
+        {/*      <Stack*/}
+        {/*        mt={'30%'}*/}
+        {/*        spacing={6}*/}
+        {/*        rounded="xl"*/}
+        {/*        w={'full'}*/}
+        {/*        maxW={'lg'}*/}
+        {/*        padding={10}*/}
+        {/*        position="relative"*/}
+        {/*        top="50%"*/}
+        {/*        opacity={90}*/}
+        {/*        backgroundColor={'rgba(0, 0, 0, 0.9)'}*/}
+        {/*        transform="translate(0, -50%)">*/}
+        {/*        <Text color={'white'} fontSize={20} align={"center"}>*/}
+        {/*          {card.tittle}*/}
+        {/*        </Text>*/}
+        {/*        */}
+        {/*      </Stack>*/}
+        {/*    </Container>*/}
+        {/*  </Box>*/}
+        {/*))}*/}
       </Slider>
     </Box>
   );

@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 import {RigelNFT, RigelNFTTwo} from "../utils/Contracts";
-import { SMARTSWAPNFT, SMARTSWAPNFTTWO} from "../utils/addresses";
+import { SMARTSWAPNFTSALES, SMARTSWAPNFTTWO} from "../utils/addresses";
 import {useActiveWeb3React} from "../utils/hooks/useActiveWeb3React";
 import {getERC20Token} from "../utils/utilsFunctions";
 import {useSelector} from "react-redux";
@@ -31,8 +31,8 @@ export const useNft = (id: number) => {
     const stateChanged : boolean = trxState === 2;
 
     let validSmartAddress: string;
-    if (SMARTSWAPNFT[chainId as number] !== "0x") {
-        validSmartAddress = SMARTSWAPNFT[chainId as number];
+    if (SMARTSWAPNFTSALES[chainId as number] !== "0x") {
+        validSmartAddress = SMARTSWAPNFTSALES[chainId as number];
     }
 
 
@@ -107,7 +107,7 @@ export const useNFTAllowance = (
             if (account) {
                 try {
                     setLoadInfo(true);
-                    const nftContract = await RigelNFT(SMARTSWAPNFT[chainId as number], library);
+                    const nftContract = await RigelNFT(SMARTSWAPNFTSALES[chainId as number], library);
                     const nftToken = await nftContract.nftPurchaseData(id);
 
                     if (nftToken.token1 && nftToken.token2) {
@@ -117,12 +117,12 @@ export const useNFTAllowance = (
                         ]);
 
                         const [allowanceA, allowanceB] = await Promise.all([
-                            tokenA.allowance(account, SMARTSWAPNFT[chainId as number]),
-                            tokenB.allowance(account, SMARTSWAPNFT[chainId as number]),
+                            tokenA.allowance(account, SMARTSWAPNFTSALES[chainId as number]),
+                            tokenB.allowance(account, SMARTSWAPNFTSALES[chainId as number]),
                         ]);
 
-                        const isTokenAApproved = allowanceA.toString() > parseFloat(token1Price);
-                        const isTokenBApproved = allowanceB.toString() > parseFloat(token2Price);
+                        const isTokenAApproved = allowanceA.toString() > ethers.utils.parseEther(token1Price).toString();
+                        const isTokenBApproved = allowanceB.toString() > ethers.utils.parseEther(token2Price).toString();
 
                         setHasTokenABeenApproved(isTokenAApproved);
                         setHasTokenBBeenApproved(isTokenBApproved);

@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import {
+    Box,
     Button,
     Center,
     Flex,
@@ -31,7 +32,7 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
         nftName: name,
         image: nftImage,
         priceUSD: prices.firstTokenPrice,
-        id: unsoldItems,
+        id: id,
         priceRGP: rgpPrice,
         total: nftId.length,
         unsold: unsoldItems
@@ -45,12 +46,15 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
             <Center py={5}>
                 <Stack
                     borderRadius="lg"
+                    borderWidth="1px"
+                    rounded="lg"
+                    borderColor={'#DEE5ED'}
                     w={{ sm: '100%', md: '540px', lg: '900px' }}
                     // height={{ sm: '476px', md: '20rem', lg: '900px' }}
                     // maxWidth={900}
                     direction={{ base: 'column', md: 'row' }}
                     bg={useColorModeValue('white', 'gray.900')}
-                    p={2}
+                    p={3}
                     
                 >
                     <Flex flex={1} justifyContent={'center'} alignItems={'center'}>

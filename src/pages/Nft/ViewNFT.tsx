@@ -5,14 +5,16 @@ import {
     Flex,
     Grid,
     GridItem,
-    Image, Link,
+    Image,
     Stack,
     Text,
     useColorModeValue,
 } from '@chakra-ui/react';
+import {ArrowBackIcon} from "@chakra-ui/icons";
 import ComfirmPurchase from "./Modals/ComfirmPurchase";
 import ClaimNFTModal from "./Modals/ClaimNFTModal";
 import PolygonImage from '../../assets/polygon-logo.svg';
+import {Link} from 'react-router-dom';
 
 import { useLocation } from "react-router-dom";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
@@ -46,6 +48,13 @@ export const ViewNFT = function () {
     const lightTextColor = useColorModeValue("#666666", "grey");
     return (
         <>
+            <Link to={'/nft'}>
+                <Flex alignItems={'center'} p={'40px'}>
+                    <ArrowBackIcon w={6} h={6}/>
+                    <Text fontSize={'20px'}>Back</Text>
+                </Flex>
+            </Link>
+
             <Center py={8} marginBottom={8}>
                 <Stack
                     w={{ sm: '100%', md: '540px', lg: '950px' }}

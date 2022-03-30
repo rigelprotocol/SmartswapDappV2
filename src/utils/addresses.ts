@@ -35,7 +35,7 @@ export const SMARTSWAPROUTER: { [key: string]: string } = {
 
 //SmartSwapNFT
 
-export const SMARTSWAPNFT: { [key: string]: string } = {
+export const SMARTSWAPNFTSALES: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
   "56": "0x",

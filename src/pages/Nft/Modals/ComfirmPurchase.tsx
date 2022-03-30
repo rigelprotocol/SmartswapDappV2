@@ -8,7 +8,7 @@ import React, {useEffect, useState} from 'react';
 import {useNft, useNFTAllowance} from "../../../hooks/useNFT";
 import {getERC20Token} from "../../../utils/utilsFunctions";
 import {setOpenModal, TrxState} from "../../../state/application/reducer";
-import {SMARTSWAPNFT} from "../../../utils/addresses";
+import {SMARTSWAPNFTSALES} from "../../../utils/addresses";
 import {ExplorerDataType, getExplorerLink} from "../../../utils/getExplorerLink";
 import {addToast} from "../../../components/Toast/toastSlice";
 import {useActiveWeb3React} from "../../../utils/hooks/useActiveWeb3React";
@@ -63,9 +63,9 @@ const ComfirmPurchase = ({ isOpen,
                         trxState: TrxState.WaitingForConfirmation,
                     })
                 );
-                const walletBal = (await token.balanceOf(account)) + 4e18;
+                const walletBal = (await token.balanceOf(account));
                 const approval = await token.approve(
-                    SMARTSWAPNFT[chainId as number],
+                    SMARTSWAPNFTSALES[chainId as number],
                     walletBal,
                     {
                         from: account,
@@ -114,7 +114,7 @@ const ComfirmPurchase = ({ isOpen,
                         trxState: TrxState.WaitingForConfirmation,
                     })
                 );
-                const nftContract = await RigelNFT(SMARTSWAPNFT[chainId as number], library);
+                const nftContract = await RigelNFT(SMARTSWAPNFTSALES[chainId as number], library);
 
                 const data = await nftContract.buy(unsoldItems, currency === 'USDT' ?  secondToken.address : firstToken.address);
 
