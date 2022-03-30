@@ -161,7 +161,13 @@ export const useNftName =  (id: number) => {
                         const nftDetails = await nftContract.uri(id);
                         const newArray = nftDetails.split('/');
 
-                        const url = `https://ipfs.io/ipfs/${newArray[2]}/${id}.json`;
+                        let url;
+
+                        if (chainId === SupportedChainId.BINANCETEST) {
+                            url = `https://ipfs.io/ipfs/${newArray[2]}/${id}.json`;
+                        } else {
+                            url = `https://ipfs.io/ipfs/${newArray[2]}/RigelJson/${id}.json`;
+                        }
                         const data = await fetch(url);
                         const jsonData = await data.json();
 
@@ -169,7 +175,13 @@ export const useNftName =  (id: number) => {
                         setName(nftName);
 
                         const imageArr = jsonData.image.split('/');
-                        const imageUrl = `https://ipfs.io/ipfs/${imageArr[2]}/${id}.png`;
+                        let imageUrl;
+
+                        if (chainId === SupportedChainId.BINANCETEST) {
+                            imageUrl = `https://ipfs.io/ipfs/${imageArr[2]}/${id}.png`;
+                        } else {
+                            imageUrl = `https://ipfs.io/ipfs/${imageArr[2]}/Rigel/${id}.png`;
+                        }
                         setNftImage(imageUrl);
                         setLoading(false);
 

@@ -1,5 +1,5 @@
 import React from "react";
-import {Box, Container, HStack, Text, Image, Flex, useMediaQuery} from "@chakra-ui/react";
+import {Box, HStack, Text, Image, Flex, useMediaQuery} from "@chakra-ui/react";
 import Logo from '../../../../assets/logo2.svg';
 
 export type SliderProps = {
@@ -16,13 +16,11 @@ const SliderTab = ({title, sideImage, background, smallText, widthSize}: SliderP
 
     return (
         <Box
-            //height={'6xl'}
             position="relative"
             backgroundPosition="center"
             backgroundRepeat="no-repeat"
             rounded="xl"
             backgroundSize="cover"
-            //opacity={0.05}
             background={'#000C15'}
             backgroundImage={background}>
 

@@ -4,13 +4,9 @@ import {
     Box,
     IconButton,
     useBreakpointValue,
-    Stack,
-    Heading,
-    Text,
-    Container, useMediaQuery,
+    useMediaQuery,
 } from '@chakra-ui/react';
 import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
-import { slides } from '../../mockData';
 import SliderTab from "./Slider";
 import CoverImg from '../../../../assets/SwapMagician.png';
 import CryptoImg from '../../../../assets/rigel-crypto.svg';
@@ -104,40 +100,6 @@ export default function Carousel() {
           <SliderTab title={'ART GETTING FEATURES IN OUR METAVERSE WORLD.'} background={art} widthSize={'75%'}/>
           <SliderTab title={'RENT NFTs'} background={rent} />
           <SliderTab title={'FARMING POOL AVAILABLE FOR NFTs'} background={pool} widthSize={'65%'}/>
-
-        {/*{slides.map((card, index) => (*/}
-
-        {/* <Box*/}
-        {/*    key={index}*/}
-        {/*    height={'6xl'}*/}
-        {/*    position="relative"*/}
-        {/*    backgroundPosition="center"*/}
-        {/*    backgroundRepeat="no-repeat"*/}
-        {/*    rounded="xl"*/}
-        {/*    backgroundSize="cover"*/}
-        {/*    backgroundImage={`url(${card.backgroundImage})`}>*/}
-        
-        {/*    <Container size="container.lg" height="550px"  position="relative">*/}
-        {/*      <Stack*/}
-        {/*        mt={'30%'}*/}
-        {/*        spacing={6}*/}
-        {/*        rounded="xl"*/}
-        {/*        w={'full'}*/}
-        {/*        maxW={'lg'}*/}
-        {/*        padding={10}*/}
-        {/*        position="relative"*/}
-        {/*        top="50%"*/}
-        {/*        opacity={90}*/}
-        {/*        backgroundColor={'rgba(0, 0, 0, 0.9)'}*/}
-        {/*        transform="translate(0, -50%)">*/}
-        {/*        <Text color={'white'} fontSize={20} align={"center"}>*/}
-        {/*          {card.tittle}*/}
-        {/*        </Text>*/}
-        {/*        */}
-        {/*      </Stack>*/}
-        {/*    </Container>*/}
-        {/*  </Box>*/}
-        {/*))}*/}
       </Slider>
     </Box>
   );
