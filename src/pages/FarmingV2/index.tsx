@@ -105,6 +105,7 @@ import {
   clearSearchResult,
   updateSearchResult,
 } from "../../state/farming/action";
+import { useGetFarmData } from "../../utils/hooks/useGetFarmData";
 
 export const BIG_TEN = new bigNumber(10);
 export const LIQUIDITY = "liquidity";
@@ -218,6 +219,7 @@ export function Index() {
   const dispatch = useDispatch();
   let match = useRouteMatch("/farming-V2/staking-RGPv2");
   const FarmData = useFarms();
+  useGetFarmData();
 
   const clearSearchedData = useCallback(() => {
     dispatch(clearSearchResult());
@@ -1264,7 +1266,6 @@ export function Index() {
           )
           .toString();
 
-
         const RGP_METOLiquidity = ethers.utils
           .formatUnits(
             pool13Reserve[1].mul(Math.floor(Number(RGPprice) * 1000 * 2)),
@@ -1808,7 +1809,7 @@ export function Index() {
         openModal={welcomeModal}
         closeModal={() => {
           window.localStorage.setItem("firstFarmVisit", "2");
-          setWelcomeModal((state) => !state)
+          setWelcomeModal((state) => !state);
         }}
         textHeader={"Welcome to SmartSwap Farming"}
         welcomeText='With farming, you can maximize the rate of return on capital and generate rewards on your cryptocurrency holdings.'
