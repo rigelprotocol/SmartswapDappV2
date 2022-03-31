@@ -57,14 +57,14 @@ export const useNft = (id: number) => {
                         [tokenOne.symbol(), tokenOne.balanceOf(account), tokenOne.decimals()]);
 
                     setFirstToken({symbol: tokenOneSymbol,
-                        balance: parseFloat(ethers.utils.formatEther(tokenOneBalance)).toFixed(4),
+                        balance: parseFloat(ethers.utils.formatUnits(tokenOneBalance, tokenOneDecimals)).toFixed(4),
                         address: purchaseData.token1});
 
                     const tokenTwo = await getERC20Token(purchaseData.token2, library);
                     const [tokenTwoSymbol, tokenTwoBalance, tokenTwoDecimals] = await Promise.all(
                         [tokenTwo.symbol(), tokenTwo.balanceOf(account), tokenTwo.decimals()]);
                     setSecondToken({symbol: tokenTwoSymbol,
-                        balance: parseFloat(ethers.utils.formatEther(tokenTwoBalance)).toFixed(4),
+                        balance: parseFloat(ethers.utils.formatUnits(tokenTwoBalance, tokenTwoDecimals)).toFixed(4),
                         address: purchaseData.token2});
 
                     setPrices({firstTokenPrice: formatAmount(purchaseData.token1Price, tokenOneDecimals),

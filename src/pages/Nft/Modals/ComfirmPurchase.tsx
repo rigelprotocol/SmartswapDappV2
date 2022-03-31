@@ -52,8 +52,6 @@ const ComfirmPurchase = ({ isOpen,
          }
      }, [currency]);
 
-     console.log(unsoldItems, nftId[0]);
-
 
     const approveTokens = async (address: string, symbol: string) => {
         if (account) {
@@ -190,7 +188,6 @@ const ComfirmPurchase = ({ isOpen,
                         </Flex>
                     </Box>
                     <Box
-                       // padding={3}
                         borderWidth="1px"
                         borderColor={'#DEE5ED'}
                         fontWeight="normal"
