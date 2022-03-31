@@ -116,13 +116,15 @@ export const useNFTAllowance = (
                             getERC20Token(nftToken.token2 as string, library),
                         ]);
 
-                        const [allowanceA, allowanceB] = await Promise.all([
+                        const [allowanceA, allowanceB, decimalsA, decimalsB] = await Promise.all([
                             tokenA.allowance(account, SMARTSWAPNFTSALES[chainId as number]),
                             tokenB.allowance(account, SMARTSWAPNFTSALES[chainId as number]),
+                            tokenA.decimals(),
+                            tokenB.decimals()
                         ]);
 
-                        const isTokenAApproved = allowanceA.toString() > parseFloat(ethers.utils.parseEther(token1Price).toString());
-                        const isTokenBApproved = allowanceB.toString() > parseFloat(ethers.utils.parseEther(token2Price).toString());
+                        const isTokenAApproved = allowanceA.toString() > parseFloat(ethers.utils.parseUnits(token1Price, decimalsA).toString());
+                        const isTokenBApproved = allowanceB.toString() > parseFloat(ethers.utils.parseUnits(token2Price, decimalsB).toString());
 
                         setHasTokenABeenApproved(isTokenAApproved);
                         setHasTokenBBeenApproved(isTokenBApproved);
