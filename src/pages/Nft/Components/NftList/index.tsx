@@ -21,17 +21,15 @@ const NftList = () => {
             <Text color={textColor} fontWeight={700} py={10} fontSize={24}>
                 NFTs
             </Text>
-            <Box mb={isMobileDevice && '80px'}>
+            <Box mb={isMobileDevice ? '80px': '40px'}>
                 <Masonry
                     breakpointCols={breakpointColumnsObj}
                     className="my-masonry-grid"
                     columnClassName="my-masonry-grid_column"
                 >
 
-                    {Number(chainId) === Number(SupportedChainId.BINANCETEST)
+                    {Number(chainId) === Number(SupportedChainId.BINANCETEST) || Number(chainId) === Number(SupportedChainId.BINANCE)
                         ? NFTsMockData.map((nft: any, index: number) =>
-                            Number(chainId) ===
-                            Number(SupportedChainId.BINANCETEST) &&
                             index !== -1 &&
                             index < 15 ? (
                                 <Box key={index}>
@@ -39,10 +37,8 @@ const NftList = () => {
                                 </Box>
                             ) : null
                         ) :
-                        Number(chainId) === Number(SupportedChainId.POLYGONTEST)
+                        Number(chainId) === Number(SupportedChainId.POLYGONTEST) || chainId === Number(SupportedChainId.POLYGON)
                             ? NFTsMockData.map((nft: any, index: number) =>
-                                Number(chainId) ===
-                                Number(SupportedChainId.POLYGONTEST) &&
                                 index !== -1 &&
                                 index < 12 ? (
                                     <Box key={index}>

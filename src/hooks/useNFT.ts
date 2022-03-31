@@ -38,10 +38,10 @@ export const useNft = (id: number) => {
 
     useEffect(() => {
 
-        if (chainId === SupportedChainId.POLYGONTEST) {
+        if (chainId === SupportedChainId.POLYGONTEST || chainId === Number(SupportedChainId.POLYGON)) {
             const nftArray = getNftTokenPolygon(id);
             setNftId(nftArray);
-        } else if (chainId === SupportedChainId.BINANCETEST) {
+        } else if (chainId === SupportedChainId.BINANCETEST || chainId === Number(SupportedChainId.BINANCE)) {
             const nftArray = getNftToken(id);
             setNftId(nftArray);
         }

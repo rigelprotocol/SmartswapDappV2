@@ -38,9 +38,9 @@ export const SMARTSWAPROUTER: { [key: string]: string } = {
 export const SMARTSWAPNFTSALES: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
-  "56": "0x",
+  "56": "0x473180395D9CC0DeDd9d18806048FB649049bE9A",
   "97": "0x4aEFdbed61128de1483D2B9e739251466DCa29Bb",
-  "137": "0x",
+  "137": "0x2EC17a1AECbf0392bCC7e4eD021Bbc9B6a17c7CF",
   "80001": "0xB15f7A4bA76B702e49FA3233FD455C5F13CB01d8"
 };
 
@@ -49,9 +49,9 @@ export const SMARTSWAPNFTSALES: { [key: string]: string } = {
 export const SMARTSWAPNFTTWO: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
-  "56": "0x",
+  "56": "0x5DaD579b5774bdcf3160Ef4ee0fAf670d60b731E",
   "97": "0x5BE1d480B696E46FdE74EC599b0472fCA1A67f5D",
-  "137": "0x",
+  "137": "0xf035E39613F1760f46bECA10b4BE04772472B25b",
   "80001": "0x4798a90d74ba3Fef77D38B0a07E8172FC5602629"
 };
 

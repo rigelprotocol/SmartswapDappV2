@@ -52,6 +52,8 @@ const ComfirmPurchase = ({ isOpen,
          }
      }, [currency]);
 
+     console.log(unsoldItems, nftId[0]);
+
 
     const approveTokens = async (address: string, symbol: string) => {
         if (account) {

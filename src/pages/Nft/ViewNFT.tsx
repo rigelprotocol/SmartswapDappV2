@@ -8,6 +8,7 @@ import {
     Image,
     Stack,
     Text,
+    Link as LinkRoute,
     useColorModeValue,
 } from '@chakra-ui/react';
 import {ArrowBackIcon} from "@chakra-ui/icons";
@@ -100,7 +101,7 @@ export const ViewNFT = function () {
                         <Text mt={2}>
                             The Rigelprotocol NFTs enable users to earn  high dispute fee up to tier B from our platform!
                             These NFTs also give its holders the ability to mine various popular cryptos like MOBOX, SXP, SHIB, CAKE.
-                            Find out more :  <Link href="https://www.rigelprotocol.com" isExternal>www.rigelprotocol.com</Link>
+                            Find out more :  <LinkRoute href="https://www.rigelprotocol.com" isExternal>www.rigelprotocol.com</LinkRoute>
                          </Text>
 
                         <Grid pt={4} templateColumns='repeat(5, 2fr)' gap={0}>
@@ -111,7 +112,7 @@ export const ViewNFT = function () {
                             </GridItem>
                             <GridItem colSpan={1} >
                                 {
-                                    chainId === SupportedChainId.BINANCETEST ? (
+                                    chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE ? (
                                         <Flex mt="1" alignContent="center">
                                             <Text fontWeight={400} color={textColor} >BSC</Text>
                                             <Image ml={2} alt="bsc" src="/images/binance.svg" />
