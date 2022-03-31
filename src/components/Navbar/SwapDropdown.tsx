@@ -56,10 +56,10 @@ function SwapDropdown() {
           <Nav label="Straight Swap" to="/swap" />
         </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
-          <Nav label="Auto-Time" to={chainId === SupportedChainId.BINANCETEST ? '/auto-time' : '#'} />
+          <Nav label="Auto-Time" to={chainId === SupportedChainId.BINANCETEST ? '#' : '#'} />
         </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
-          <Nav label="Set Price" to={chainId === SupportedChainId.BINANCETEST ? '/set-price' : '#'} />
+          <Nav label="Set Price" to={chainId === SupportedChainId.BINANCETEST ? '#' : '#'} />
         </MenuItem>
       </MenuList>
     </Menu>

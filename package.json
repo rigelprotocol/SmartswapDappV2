@@ -55,6 +55,7 @@
     "react-slick": "^0.28.1",
     "react-spring": "^9.3.0",
     "react-switch": "^6.0.0",
+    "react-usestateref": "^1.0.8",
     "redux-localstorage-simple": "^2.4.1",
     "save-dev": "^0.0.1-security",
     "typescript": "^3.9.5",

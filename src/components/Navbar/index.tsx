@@ -106,11 +106,7 @@ const Index = () => {
                   <SwapDropdown />
                   <Nav label="Liquidity" to="/pool" />
                   <Nav label="Farming" to="/farming-v2" />
-
-                  {(window as any).location.hostname !==
-                  "smartswap.rigelprotocol.com" ? (
-                    <Nav label="NFT" to="/nft" />
-                  ) : null}
+                  <Nav label="NFT" to="/nft" />
                   <Link href="#">Analytics</Link>
                 </Flex>
               </Flex>

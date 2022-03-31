@@ -140,9 +140,7 @@ const MobileNavDrawer = () => {
                       <Nav
                         label="Auto-Time"
                         to={
-                          chainId === SupportedChainId.BINANCETEST
-                            ? "/auto-time"
-                            : "#"
+                          chainId === SupportedChainId.BINANCETEST ? "#" : "#"
                         }
                       />
                     </Text>
@@ -154,9 +152,7 @@ const MobileNavDrawer = () => {
                       <Nav
                         label="Set Price"
                         to={
-                          chainId === SupportedChainId.BINANCETEST
-                            ? "/set-price"
-                            : "#"
+                          chainId === SupportedChainId.BINANCETEST ? "#" : "#"
                         }
                       />
                     </Text>
@@ -168,14 +164,9 @@ const MobileNavDrawer = () => {
                 <Flex ml={6} mb={3} onClick={onClose}>
                   <Nav label="Farming" to="/farming-v2" />
                 </Flex>
-
-                {(window as any).location.hostname !==
-                "smartswap.rigelprotocol.com" ? (
-                  <Flex ml={6} mb={3} onClick={onClose}>
-                    <Nav label="NFT" to="/nft" />
-                  </Flex>
-                ) : null}
-
+                <Flex ml={6} mb={3} onClick={onClose}>
+                  <Nav label="NFT" to="/nft" />
+                </Flex>
                 <Flex ml={6} mb={3}>
                   <Link href="#" isExternal onClick={onClose}>
                     Analytics <ExternalLinkIcon mx="2px" />
