@@ -11,6 +11,7 @@ interface ToProps {
   currency: Currency | undefined,
   otherCurrency: Currency | undefined,
   value: string,
+  placeholder?: string,
   display?: boolean,
   disable?: boolean,
 }
@@ -23,7 +24,8 @@ const To: React.FC<ToProps> = ({
   onUserOutput,
   value,
   display,
-  disable
+  disable,
+  placeholder
 }) => {
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   const [tokenModal, setTokenModal] = useState(false);
@@ -60,7 +62,8 @@ const To: React.FC<ToProps> = ({
           onUserInput={onUserOutput}
           value={value}
           max={false}
-          disable={disable} />
+          disable={disable}
+          placeholder={placeholder} />
 
       </Box>
     </>

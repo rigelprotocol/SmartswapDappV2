@@ -27,6 +27,9 @@ export interface DataType {
   status: number,
   currentToPrice?: string,
   chainID?: string,
+  initialFromPrice?:string,
+  initialToPrice?:string
+
 }
 
 const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: any }) => {
@@ -129,7 +132,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
             }
 
           </Box>
-          <Box>
+         {data.frequency && data.frequency!=="price" ? <Box>
             <Text
               color={nonActiveTabColor}
               fontSize="12px"
@@ -141,7 +144,19 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
             <Text color={activeTabColor} fontSize="14px" fontWeight="regular">
               {data.frequency && (data.frequency === "5" || data.frequency === "30") ? `${data.frequency} minutes` : data.frequency}
             </Text>
-          </Box>
+          </Box> : <Box>
+            <Text
+              color={nonActiveTabColor}
+              fontSize="12px"
+              lineHeight="0"
+              mb="8px"
+            >
+              E / Price...
+            </Text>
+            <Text color={activeTabColor} fontSize="11px" fontWeight="regular">
+              {data.initialFromPrice} {data.token1.symbol} &#8594; {data.initialToPrice} {data.token2.symbol}
+            </Text>
+          </Box>} 
         </Grid>
 
         <Grid templateColumns="repeat(3, 2fr)" gap={7} py={2}>

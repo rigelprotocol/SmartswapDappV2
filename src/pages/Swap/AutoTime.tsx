@@ -37,6 +37,7 @@ import {
   MenuItem
 } from '@chakra-ui/react';
 import AutoTimeModal from './modals/autoTimeModal';
+import { useUserSlippageTolerance } from "../../state/user/hooks";
 import { useSelector,useDispatch } from 'react-redux';
 import { RootState } from "../../state";
 import { autoSwapV2, rigelToken, SmartSwapRouter, otherMarketPriceContract } from '../../utils/Contracts';
@@ -44,6 +45,7 @@ import { RGPADDRESSES, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES, SMARTSWAPROUTER, O
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { changeFrequencyTodays } from '../../utils/utilsFunctions';
 import { ChevronDownIcon } from '@chakra-ui/icons';
+import { refreshTransactionTab } from '../../state/transaction/actions';
 
 
 
@@ -80,9 +82,11 @@ const SetPrice = () => {
   const [otherMarketprice, setOtherMarketprice] = useState<string>("0")
   const [approval, setApproval] = useState<string[]>([])
   const [showModal, setShowModal] = useState(false)
-
+  const [totalNumberOfTransaction,setTotalNumberOfTransaction] = useState(4)
+  const [situation,setSituation] = useState("above")
   const [checkedItem, setCheckedItem] = useState(false)
   const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
+  const [expectedPrice, setExpectedPrice] = useState(0)
 
   const { onCurrencySelection, onUserInput, onSwitchTokens } = useSwapActionHandlers();
 
@@ -112,12 +116,11 @@ const SetPrice = () => {
     setURL("http://localhost:7000")
     async function runCheck() {
       if (account) {
-
         await checkForApproval()
       }
     }
     runCheck()
-  }, [currencies[Field.INPUT], account])
+  }, [currencies[Field.INPUT],typedValue, account])
   useEffect(() => {
     async function checkIfSignatureExists() {
       let user = await fetch(`http://localhost:7000/auto/data/${account}`)
@@ -148,9 +151,11 @@ const SetPrice = () => {
   // const checkIfSignatureExists = async () => {
   //   await if
   // }
+  
   const deadline = useSelector<RootState, number>(
     (state) => state.user.userDeadline
   );
+  const [allowedSlippage] = useUserSlippageTolerance();
 
   const parsedAmounts = useMemo(
     () =>
@@ -167,7 +172,6 @@ const SetPrice = () => {
         },
     [independentField, parsedAmount, showWrap, bestTrade]
   );
-
   const dependentField: Field =
     independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
   const formattedAmounts = {
@@ -177,8 +181,13 @@ const SetPrice = () => {
       : parsedAmounts[dependentField] ?? "", //?.toSignificant(6) ?? '',
   };
 
+
   useMemo(async () => {
     if (currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
+      let price = (parseFloat(percentageChange) /100)* Number(formattedAmounts[Field.OUTPUT]) + Number(formattedAmounts[Field.OUTPUT])
+      console.log({price})
+      setExpectedPrice(price)
+
       const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
       const routeAddress = currencies[Field.INPUT]?.isNative ? [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
         currencies[Field.OUTPUT]?.isNative ? [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
@@ -190,9 +199,36 @@ const SetPrice = () => {
       setPriceOut(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
     }
   }, [currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue])
+  useEffect(() => {
+    if(percentageChange>0){
+      let price = (parseFloat(percentageChange) /100)* Number(formattedAmounts[Field.OUTPUT]) + Number(formattedAmounts[Field.OUTPUT])
+      console.log({price})
+      setExpectedPrice(price) 
+    }else{
+      setExpectedPrice(Number(formattedAmounts[Field.OUTPUT]))
+    }
+           
+  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue,percentageChange])
 
-
-  useEffect(async () => {
+  const minimumAmountToReceive = useCallback(
+    () =>{
+      let data
+      if(percentageChange && expectedPrice){
+       data = ((100 - Number(allowedSlippage / 100)) / 100) * expectedPrice
+      }else{
+       data = ((100 - Number(allowedSlippage / 100)) / 100) *
+      Number(formattedAmounts[Field.OUTPUT])
+      
+      }
+      return data
+    },      
+    [allowedSlippage, bestTrade]
+  );
+  const minimum = minimumAmountToReceive().toFixed(
+    currencies[Field.OUTPUT]?.decimals
+  );
+  
+    useEffect(async () => {
     if (chainId === 56 && currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
       const rout = await otherMarketPriceContract(OTHERMARKETADDRESSES[marketType], library);
       const routeAddress = currencies[Field.INPUT]?.isNative ? [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
@@ -208,25 +244,40 @@ const SetPrice = () => {
     }
   }, [chainId, currencies[Field.INPUT], currencies[Field.OUTPUT],  typedValue,marketType])
   const checkForApproval = async () => {
-
     const autoSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
     // check approval for RGP and the other token
     const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
     const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
     const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
-    if (parseFloat(RGPBalance) >= parseFloat(fee) && parseFloat(tokenBalance) > 0) {
+    console.log(parseFloat(RGPBalance),parseFloat(tokenBalance),parseFloat(fee),Number(formattedAmounts[Field.INPUT]),parseFloat(RGPBalance) > parseFloat(fee),currencies[Field.INPUT]?.wrapped.symbol,parseFloat(tokenBalance) >= Number(formattedAmounts[Field.INPUT]))
+    if (parseFloat(RGPBalance) >= parseFloat(fee)) {
       setHasBeenApproved(true)
-    } else if (parseFloat(RGPBalance) < parseFloat(fee) && parseFloat(tokenBalance) <= 0 && currencies[Field.INPUT]?.wrapped.symbol !== "RGP") {
-      setHasBeenApproved(false)
-      setApproval(["RGP", currencies[Field.INPUT]?.wrapped.symbol])
-    } else if (parseFloat(tokenBalance) <= 0) {
-      setHasBeenApproved(false)
-      setApproval([currencies[Field.INPUT].wrapped.symbol])
-    } else if (parseFloat(RGPBalance) < parseFloat(fee)) {
+      console.log(7777777777771)
+    }else{
       setHasBeenApproved(false)
       setApproval(["RGP"])
     }
+    if(parseFloat(tokenBalance) >= Number(formattedAmounts[Field.INPUT])){
+      setHasBeenApproved(true)
+      console.log(8888888) 
+    } 
+    if (parseFloat(tokenBalance) < Number(formattedAmounts[Field.INPUT]) && currencies[Field.INPUT]?.wrapped.symbol !== "RGP") {
+      console.log(2,currencies[Field.INPUT].wrapped.symbol)
+      setHasBeenApproved(false)
+      setApproval([currencies[Field.INPUT].wrapped.symbol])
+    }
+    if (parseFloat(RGPBalance) < parseFloat(fee) || (currencies[Field.INPUT]?.wrapped.symbol === "RGP" && parseFloat(tokenBalance) < Number(formattedAmounts[Field.INPUT]))) {
+      console.log(5)
+      setHasBeenApproved(false)
+      console.log([...approval,'RGP'])
+      setApproval([...approval,'RGP'])
+    }
+    // else if (parseFloat(RGPBalance) < parseFloat(fee) && parseFloat(tokenBalance) <= Number(formattedAmounts[Field.INPUT]) && currencies[Field.INPUT]?.wrapped.symbol !== "RGP") {
+    //   setHasBeenApproved(false)
+    //   setApproval(["RGP", currencies[Field.INPUT]?.wrapped.symbol])
+    // } 
+    
   }
 
   const signTransaction = async () => {
@@ -278,7 +329,7 @@ const SetPrice = () => {
           })
         );
         let arr = approval
-        if (arr[0] === "RGP") {
+        if (arr[0] === "RGP" || arr[1]==="RGP") {
           const address = RGPADDRESSES[chainId as number];
           const rgp = await rigelToken(RGP[chainId as number], library);
           const token = await getERC20Token(address, library);
@@ -294,7 +345,7 @@ const SetPrice = () => {
 
           arr && arr.length > 1 ? setApproval(arr && [arr[1]]) : setApproval([])
         } 
-        if (approval[0] === currencies[Field.INPUT]?.symbol) {
+        if ((arr[0] === currencies[Field.INPUT]?.symbol || arr[1] === currencies[Field.INPUT]?.symbol) && (arr[0] !== "RGP" || arr[1]!=="RGP")) {
           const address = currencies[Field.INPUT]?.wrapped.address;
           console.log({address})
           const token = await getERC20Token(address, library);
@@ -402,7 +453,11 @@ const SetPrice = () => {
           fromPrice: typedValue,
           currentToPrice: formattedAmounts[Field.OUTPUT],
           orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1,
-          type: "Auto Time"
+          type: "Auto Time",
+          totalNumberOfTransaction,
+          slippage:Number(allowedSlippage / 100),
+          minimum,
+          situation
 
         })
       })
@@ -413,6 +468,7 @@ const SetPrice = () => {
           trxState: TrxState.TransactionSuccessful,
         })
       );
+      dispatch(refreshTransactionTab({ refresh:Math.random() }))
       onUserInput(Field.INPUT, "");
       setApproval([])
       setSignatureFromDataBase(true)
@@ -914,7 +970,7 @@ const SetPrice = () => {
                     _hover={{ bgColor: buttonBgcolor }}
                   >
                     Sign Wallet
-                  </Button> : approval.length > 0 ? <Button
+                  </Button> : approval.length > 0 || hasBeenApproved===false ? <Button
                     w="100%"
                     borderRadius="6px"
                     border={lightmode ? '2px' : 'none'}
@@ -973,8 +1029,11 @@ const SetPrice = () => {
         signSignature={signatureFromDataBase ? sendTransactionToDatabase : signTransaction}
         setCheckedItem={setCheckedItem}
         checkedItem={checkedItem}
-        // priceImpact={priceImpact}
+        minimumAmountToRecieve={minimum}
+        expectedPrice={expectedPrice}
+        slippage={Number(allowedSlippage / 100)}
         pathSymbol={pathSymbol}
+        situation={situation}
       />
     </Box>
   )

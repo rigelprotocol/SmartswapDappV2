@@ -25,7 +25,9 @@ export type IModal = {
     to?: string | undefined;
     fromDeposited?: string;
     toDeposited?: string;
-    slippage?: number;
+    slippage: number;
+    expectedPrice: number;
+    minimumAmountToRecieve?: string;
     showModal: boolean;
     setShowModal: Function;
     inputLogo: string;
@@ -34,6 +36,7 @@ export type IModal = {
     signSignature: () => void;
     frequency: string;
     percentageChange: string;
+    situation: string;
     buttonText: string,
     setCheckedItem: Function,
     checkedItem: boolean
@@ -54,9 +57,13 @@ const AutoTimeModal: React.FC<IModal> = ({
     signSignature,
     frequency,
     percentageChange,
+    situation,
     buttonText,
     setCheckedItem,
-    checkedItem
+    checkedItem,
+    slippage,
+    minimumAmountToRecieve,
+    expectedPrice
 }) => {
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
@@ -188,6 +195,38 @@ const AutoTimeModal: React.FC<IModal> = ({
                                 </Box>
                                 <Text color={heavyTextColor} fontWeight='500'>
                                     {pathSymbol}
+                                </Text>
+                            </Flex>
+                            <Flex justifyContent='space-between' my='4'>
+                                <Box color={lightTextColor}>
+                                    Slippage <InfoOutlineIcon />
+                                </Box>
+                                <Text color={heavyTextColor} fontWeight='500'>
+                                    {slippage}
+                                </Text>
+                            </Flex>
+                            <Flex justifyContent='space-between' my='4'>
+                                <Box color={lightTextColor}>
+                                    Expected price <InfoOutlineIcon />
+                                </Box>
+                                <Text color={heavyTextColor} fontWeight='500'>
+                                    {situation==="above" ? ">" :"<" }{expectedPrice}
+                                </Text>
+                            </Flex>
+                            <Flex justifyContent='space-between' my='4'>
+                                <Box color={lightTextColor}>
+                                    Slippage <InfoOutlineIcon />
+                                </Box>
+                                <Text color={heavyTextColor} fontWeight='500'>
+                                    {slippage}%
+                                </Text>
+                            </Flex>
+                            <Flex justifyContent='space-between' my='4'>
+                                <Box color={lightTextColor}>
+                                    Minimum Amount to recieve <InfoOutlineIcon />
+                                </Box>
+                                <Text color={heavyTextColor} fontWeight='500'>
+                                    {minimumAmountToRecieve}
                                 </Text>
                             </Flex>
                             <Flex justifyContent='space-between'>

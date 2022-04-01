@@ -28,6 +28,7 @@ type InputSelectorProps = {
   value: string | undefined,
   display?: boolean,
   disable?: boolean
+  placeholder?: string
 };
 
 const InputSelector = ({
@@ -41,7 +42,8 @@ const InputSelector = ({
   onUserInput,
   display,
   value,
-  disable
+  disable,
+  placeholder
 }: InputSelectorProps) => {
   const inputColor = useColorModeValue('#333333', '#F1F5F8');
   const balanceColor = useColorModeValue('#666666', '#DCE5EF');
@@ -66,13 +68,13 @@ const InputSelector = ({
           min="0"
           border="none"
           color={inputColor}
-
           isRequired
-          placeholder="0.0"
+          placeholder={placeholder}
           value={value}
           onChange={(event) => {
             enforcer(event.target.value.replace(/,/g, '.'))
           }}
+          title={disable===true ? "Please fill the input below, they control the input here":""}
           disabled={disable ? true : false}
           focusBorderColor="none"
         />}

@@ -40,6 +40,7 @@ import { useDispatch,useSelector } from "react-redux";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { RootState } from "../../state";
 import { refreshTransactionTab, transactionTab } from '../../state/transaction/actions';
+import { useUserSlippageTolerance } from '../../state/user/hooks';
 
 
 const SetPrice = () => {
@@ -133,7 +134,7 @@ const SetPrice = () => {
   );
   const { independentField, typedValue } = useSwapState();
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
-
+  const [allowedSlippage] = useUserSlippageTolerance();
   useEffect(() => {
     if (parseFloat(initialToPrice) > 0 && parseFloat(initialFromPrice) > 0) {
       setDisableInput(false)
@@ -146,8 +147,6 @@ const SetPrice = () => {
       setDisableInput(true)
     }
   }, [initialToPrice, initialFromPrice, typedValue])
-  const data2 =ethers.utils.parseEther("0.4".toString()).toString()
-  console.log({data2})
   useMemo(async () => {
     if (currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
       const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
@@ -184,7 +183,18 @@ const SetPrice = () => {
       ? parsedAmounts[independentField] ?? '' //?.toExact() ?? ''
       : parsedAmounts[dependentField] ?? '', //?.toSignificant(6) ?? '',
   };
-
+  const minimumAmountToReceive = useCallback(
+    () =>{
+      let data = ((100 - Number(allowedSlippage / 100)) / 100) *
+      toPrice
+      
+      return data
+    },      
+    [allowedSlippage, bestTrade]
+  );
+  const minimum = minimumAmountToReceive().toFixed(
+    currencies[Field.OUTPUT]?.decimals
+  );
   const sendTransactionToDatabase = async () => {
     const autoSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
     dispatch(
@@ -256,7 +266,12 @@ const SetPrice = () => {
           fromPrice: typedValue,
           currentToPrice: formattedAmounts[Field.OUTPUT],
           orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1,
-          type: "Set Price"
+          type: "Set Price",
+          initialToPrice,
+          initialFromPrice,
+          totalNumberOfTransaction:1,
+          slippage:Number(allowedSlippage / 100),
+          minimum
         })
       })
       const res = await response.json()
@@ -489,47 +504,33 @@ const SetPrice = () => {
             onMax={handleMaxInput}
             value={formattedAmounts[Field.INPUT]}
             disable={disableInput}
+            placeholder="3"
           />
           <Flex justifyContent="center" onClick={onSwitchTokens}>
             <SwitchIcon />
           </Flex>
           <To
+          onUserOutput={()=>{}}
             onCurrencySelection={onCurrencySelection}
             currency={currencies[Field.OUTPUT]}
             otherCurrency={currencies[Field.INPUT]}
-            value={toPrice}
+            value={toPrice===0 ?"": `${toPrice}`}
             disable={disableInput}
+            placeholder="6"
           />
-          <Flex>
+          
+
+          <Flex my={5}>
+            {/* <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px">
+              <VectorIcon />
+            </Center> */}
+            {/* <Flex>
             <Text fontSize="14px" color={iconColor} mr={2}>
               Set Price
             </Text>
             <ExclamationIcon />
           </Flex>
-
-          {/* <Input placeholder="0.00" size="lg" borderRadius={4} borderColor={borderColor} /> */}
-          <HStack>
-            <CInput
-              currency={currencies[Field.INPUT]}
-              initialFromPrice={initialFromPrice}
-              setInitialPrice={setInitialFromPrice}
-            />
-            <Flex justifyContent="center">
-              <RightIcon />
-            </Flex>
-            <CInput
-              currency={currencies[Field.OUTPUT]}
-              initialFromPrice={initialToPrice}
-              setInitialPrice={setInitialToPrice}
-            />
-          </HStack>
-
-
-          <Flex mt={5}>
-            <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px">
-              <VectorIcon />
-            </Center>
-            <Spacer />
+            <Spacer /> */}
             {currencies[Field.INPUT]?.symbol && currencies[Field.OUTPUT]?.symbol &&
               <Text fontSize="14px" mr={2} color={textColorOne}>
                 1 {currencies[Field.INPUT]?.symbol} = {priceOut} {currencies[Field.OUTPUT]?.symbol}
@@ -538,6 +539,26 @@ const SetPrice = () => {
 
             <ExclamationIcon />
           </Flex>
+          {/* <Input placeholder="0.00" size="lg" borderRadius={4} borderColor={borderColor} /> */}
+          <HStack>
+            <CInput
+              currency={currencies[Field.INPUT]}
+              initialFromPrice={initialFromPrice}
+              setInitialPrice={setInitialFromPrice}
+              placeholder="1"
+            />
+            <Flex justifyContent="center">
+              <RightIcon />
+            </Flex>
+            <CInput
+              currency={currencies[Field.OUTPUT]}
+              initialFromPrice={initialToPrice}
+              setInitialPrice={setInitialToPrice}
+              placeholder="2"
+            />
+          </HStack>
+
+
 
           <Box mt={5}>
             {inputError ?
@@ -631,6 +652,8 @@ const SetPrice = () => {
         checkedItem={checkedItem}
         fromPrice={typedValue}
         pathSymbol={pathSymbol}
+        minimumAmountToRecieve={minimum}
+        slippage={Number(allowedSlippage / 100)}
       />
     </Box>
   )

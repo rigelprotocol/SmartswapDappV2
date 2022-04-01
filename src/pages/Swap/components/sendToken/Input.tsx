@@ -10,19 +10,21 @@ import { Currency } from '@uniswap/sdk';
 interface CProps {
     initialFromPrice: string,
     currency?: Currency,
-    setInitialPrice: Function
+    setInitialPrice: Function,
+    placeholder:string
 }
 
 const CInput: React.FC<CProps> = ({
     initialFromPrice,
     currency,
-    setInitialPrice
+    setInitialPrice,
+    placeholder,
 }) => {
 
     const tokenListTrgiggerBgColor = useColorModeValue('', '#ffffff');
     return (
         <InputGroup size='sm' width="250px">
-            <Input placeholder='0' height="40px" value={initialFromPrice} onChange={(e) => setInitialPrice(e.target.value)} />
+            <Input placeholder={placeholder} height="40px" value={initialFromPrice} onChange={(e) => setInitialPrice(e.target.value)} />
             <InputRightAddon children={(currency?.symbol && currency?.symbol && currency?.symbol.length > 4
                 ? currency?.symbol.slice(0, 4) +
                 '...'

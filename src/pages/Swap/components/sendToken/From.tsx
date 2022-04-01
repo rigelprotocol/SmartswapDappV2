@@ -5,13 +5,14 @@ import { Field } from '../../../../state/swap/actions';
 import { Currency } from "@uniswap/sdk-core";
 
 interface FromProps {
-  onUserInput: string,
+  onUserInput: (value: string) => void,
   onCurrencySelection: Function,
   currency: Currency | undefined,
   otherCurrency: Currency | undefined,
   onMax: () => void,
   value: string,
-  disable?: boolean
+  disable?: boolean,
+  placeholder?: string
 }
 
 const From: React.FC<FromProps> = ({
@@ -21,7 +22,8 @@ const From: React.FC<FromProps> = ({
   otherCurrency,
   onMax,
   value,
-  disable
+  disable,
+  placeholder
 }) => {
 
 
@@ -57,7 +59,8 @@ const From: React.FC<FromProps> = ({
           setToken={() => setTokenModal((state) => !state)}
           value={value}
           max
-          disable={disable} />
+          disable={disable} 
+          placeholder={placeholder}/>
       </Box>
     </>
   );

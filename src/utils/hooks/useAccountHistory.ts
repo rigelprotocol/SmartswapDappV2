@@ -63,7 +63,9 @@ interface DataIncoming {
     error: [],
     status: number,
     currentToPrice?: string,
-    chainID?:string
+    chainID?:string,
+    initialFromPrice?:string,
+    initialToPrice?:string
 }
 let web3 = new Web3(Web3.givenProvider);
 export const formatAmount = (number: string, decimals: any) => {
@@ -221,13 +223,14 @@ const useAccountHistory = () => {
                         let fromAddress = data.swapFromToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapFromToken
                         let toAddress = data.swapToToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapToToken
                         const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
-                        const toPriceOut = await rout.getAmountsOut(
-                            data.amountToSwap,
-                            [fromAddress, toAddress]
-                        );
+                        console.log({data})
                         return {
                             inputAmount: data.amountToSwap,
-                            outputAmount: data.typeOfTransaction === "Set Price" && (data.status === 1 || data.status === 0) ? ethers.utils.parseEther(data.currentToPrice).toString() : data.typeOfTransaction === "Set Price" ? ethers.utils.parseEther(data.percentageChange).toString() : toPriceOut[1].toString(),
+                            outputAmount: data.typeOfTransaction==="Set Price" && data.status!==1 ?
+                            parseFloat(data.percentageChange).toFixed(4) :
+                            data.typeOfTransaction==="Auto Time" && data.status!==1 ?
+                            parseFloat(data.currentToPrice).toFixed(4) :
+                            parseFloat(data.actualToPrice).toFixed(4),
                             tokenIn: data.swapFromToken,
                             tokenOut: data.swapToToken,
                             time: data.time && timeConverter(parseInt(data.time)),
@@ -238,8 +241,9 @@ const useAccountHistory = () => {
                             error: data.errorArray,
                             status: data.status,
                             currentToPrice: data.typeOfTransaction === "Set Price" ? data.currentToPrice : data.percentageChange,
-                            chainID:data.chainID 
-                            
+                            chainID:data.chainID ,
+                            initialFromPrice:data.initialFromPrice,
+                            initialToPrice:data.initialToPrice
                         }
                     })
                     )
@@ -248,7 +252,6 @@ const useAccountHistory = () => {
 
 
             }
-            console.log(userData,94994900409)
             const swapDataForWallet = await Promise.all(
                 userData.map(async (data: DataIncoming) => ({
                     tokenIn: data.tokenIn === "native" ? {
@@ -273,11 +276,12 @@ const useAccountHistory = () => {
                     error: data.error,
                     status: data.status,
                     currentToPrice: data.currentToPrice,
-                    chainID:data.chainID 
-                    
+                    chainID:data.chainID,initialFromPrice:data.initialFromPrice,
+                    initialToPrice:data.initialToPrice
+              
                 })),
             );
-
+            console.log({swapDataForWallet})
             const userSwapHistory = swapDataForWallet.map((data: any) => ({
                 token1Icon:
                     getTokenSymbol(data.tokenIn.symbol),
@@ -286,7 +290,8 @@ const useAccountHistory = () => {
                 token1: data.tokenIn,
                 token2: data.tokenOut,
                 amountIn: formatAmount(data.amountIn, data.tokenIn.decimals),
-                amountOut: formatAmount(data.amountOut, data.tokenOut.decimals),
+                amountOut:  data.name==="Set Price" || data.name==="Auto Time" ? data.amountOut : 
+                formatAmount(data.amountOut, data.tokenOut.decimals),
 
                 time: data.time,
                 name: data.name,
@@ -296,8 +301,12 @@ const useAccountHistory = () => {
                 error: data.error,
                 status: data.status,
                 currentToPrice: data.currentToPrice,
-                chainID:data.chainID 
+                chainID:data.chainID,
+                initialFromPrice:data.initialFromPrice,
+                initialToPrice:data.initialToPrice
+          
             }));
+            console.log({userSwapHistory})
             setHistoryData(userSwapHistory);
 
 

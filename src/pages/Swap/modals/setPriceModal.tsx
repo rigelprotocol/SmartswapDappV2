@@ -33,6 +33,7 @@ export type IModal = {
     signSignature: () => void;
     toPrice: number;
     fromPrice: string;
+    minimumAmountToRecieve: string;
     buttonText: string,
     setCheckedItem: Function,
     checkedItem: boolean
@@ -52,9 +53,11 @@ const SetPriceModal: React.FC<IModal> = ({
     signSignature,
     toPrice,
     fromPrice,
+    minimumAmountToRecieve,
     buttonText,
     setCheckedItem,
-    checkedItem
+    checkedItem,
+    slippage
 }) => {
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
@@ -183,11 +186,33 @@ const SetPriceModal: React.FC<IModal> = ({
                                     {pathSymbol}
                                 </Text>
                             </Flex>
-                            <Flex justifyContent='space-between'>
+                            <Flex justifyContent='space-between' my="4">
                                 <Box color={lightTextColor}>
-                                    From Price<InfoOutlineIcon />
+                                    From Price <InfoOutlineIcon />
                                 </Box>
                                 <Text color={heavyTextColor}>{fromPrice}</Text>
+                            </Flex>
+                            <Flex justifyContent='space-between' my="4">
+                                <Box color={lightTextColor}>
+                                    To Price <InfoOutlineIcon />
+                                </Box>
+                                <Text color={heavyTextColor}>{toPrice}</Text>
+                            </Flex>
+                            <Flex justifyContent='space-between' my='4'>
+                                <Box color={lightTextColor}>
+                                    Slippage <InfoOutlineIcon />
+                                </Box>
+                                <Text color={heavyTextColor} fontWeight='500'>
+                                    {slippage}%
+                                </Text>
+                            </Flex>
+                            <Flex justifyContent='space-between' my='4'>
+                                <Box color={lightTextColor}>
+                                    Minimum Amount to recieve <InfoOutlineIcon />
+                                </Box>
+                                <Text color={heavyTextColor} fontWeight='500'>
+                                    {minimumAmountToRecieve}
+                                </Text>
                             </Flex>
 
                         </Box>

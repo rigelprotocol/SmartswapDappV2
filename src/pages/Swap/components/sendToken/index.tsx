@@ -1057,6 +1057,7 @@ const SendToken = () => {
           otherCurrency={currencies[Field.OUTPUT]}
           onMax={handleMaxInput}
           value={formattedAmounts[Field.INPUT]}
+          placeholder="0.0"
         />
         <Flex justifyContent='center' onClick={onSwitchTokens}>
           <SwitchIcon />
@@ -1067,6 +1068,7 @@ const SendToken = () => {
           otherCurrency={currencies[Field.INPUT]}
           value={formattedAmounts[Field.OUTPUT]}
           onUserOutput={handleTypeOutput}
+          placeholder="0.0"
         />
 
         <Flex alignItems='center' className='SwapToken'>
