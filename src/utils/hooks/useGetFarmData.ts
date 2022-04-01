@@ -32,6 +32,7 @@ export const useGetFarmData = () => {
   };
 
   const calculateRigelPrice = async () => {
+    //this function calculates the price of RGP in BNB
     try {
       const rgp = "1000000000000000000";
       const pair = await smartFactory(
@@ -67,6 +68,7 @@ export const useGetFarmData = () => {
   };
 
   const getLpTokenReserve = async (address: string) => {
+    //this function gets the reserves of an LP token, it takes the LP token address as an argument
     try {
       const LpTokenContract = await LiquidityPairInstance(address, library);
       const totalReserves = await LpTokenContract.getReserves();
@@ -80,6 +82,7 @@ export const useGetFarmData = () => {
   };
 
   const getLpTokenTotalSupply = async (address: string) => {
+    //this function gets the LP token total supply
     try {
       const LpTokenContract = await LiquidityPairInstance(address, library);
       const totalSupply = await LpTokenContract.totalSupply();
@@ -90,6 +93,7 @@ export const useGetFarmData = () => {
   };
 
   const calculateLpTokenPrice = async () => {
+    //this function calculates LP token price
     let rewardTokenPrice;
 
     rewardTokenPrice = await calculateRigelPrice();
@@ -122,18 +126,18 @@ export const useGetFarmData = () => {
 
   const calculateAPY = async () => {
     try {
-      const BLOCKS_PER_YEAR = 29000 * 365;
+      const BLOCKS_PER_YEAR = 29000 * 365; //Blocks per year for bsc mainnet
       let rewardTokenPrice;
 
       rewardTokenPrice = await calculateRigelPrice();
 
-      const RIGEL_PER_BLOCK = ethers.utils.formatEther("164367816100000000");
+      const RIGEL_PER_BLOCK = ethers.utils.formatEther("164367816100000000"); //reward per block on bsc mainnet
 
       const totalRewardPricePerYear = new BigNumber(rewardTokenPrice as string)
         .times(RIGEL_PER_BLOCK)
         .times(BLOCKS_PER_YEAR);
 
-      const Lpdposit = ethers.utils.formatEther("889064178683307019711");
+      const Lpdposit = ethers.utils.formatEther("889064178683307019711"); //total lp deposited in masterchef
 
       const lpPrice = await calculateLpTokenPrice();
 
@@ -150,6 +154,29 @@ export const useGetFarmData = () => {
       console.log(err);
     }
   };
+
+  // const getTokenStakedandEarned = async (i: number) => {
+  //   const masterchef = await MasterChefV2Contract(
+  //     MASTERCHEFV2ADDRESSES[chainId as number],
+  //     library
+  //   );
+
+  //   const [tokenEarned, tokenStaked] = await Promise.all([
+  //     masterchef.pendingRigel(i, account),
+  //     masterchef.userInfo(i, account),
+  //   ]);
+
+  //   return [
+  //     ethers.utils.formatEther(tokenEarned.toString()),
+  //     ethers.utils.formatEther(tokenStaked.amount.toString()),
+  //   ];
+  // };
+
+  // const getFarmTokenBalance = async (address: string) => {
+  //   const LpTokenContract = await LiquidityPairInstance(address, library);
+  //   const poolBalance = await LpTokenContract.balanceOf(account);
+  //   return ethers.utils.formatEther(poolBalance.toString());
+  // };
 
   useMemo(async () => {
     if (account) {
