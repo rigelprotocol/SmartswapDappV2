@@ -75,6 +75,7 @@ const SelectToken:React.FC<IModal> = ({
     const filteredTokens: Token[] = useMemo(() => {
       return filterTokens(Object.values(allTokens), debouncedQuery)
     }, [allTokens, debouncedQuery]);
+    
 
     const filteredTokenListWithETH = useMemo(():Currency[]=>{
       const s = debouncedQuery.toLowerCase().trim();

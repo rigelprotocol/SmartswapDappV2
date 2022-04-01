@@ -519,6 +519,7 @@ const SetPrice = () => {
             placeholder="6"
           />
           
+          
 
           <Flex my={5}>
             {/* <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px">
