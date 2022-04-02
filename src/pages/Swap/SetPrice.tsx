@@ -350,16 +350,17 @@ const SetPrice = () => {
       setHasBeenApproved(true);
       setApproval(approval.filter(t => t !== currencies[Field.INPUT]?.name))
     }
-    if (approval.length > 0) {
+    let setArr = Array.from(new Set(approval))
+    console.log({setArr})
+    if (setArr.length > 0) {
       try {
         dispatch(
           setOpenModal({
-            message: `Approve Tokens for Swap`,
+            message: `Approve Token for Swap`,
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        let arr = approval
-        if (arr[0] === "RGP") {
+        if (setArr[0] === "RGP" || setArr[1]==="RGP") {
           const address = RGPADDRESSES[chainId as number];
           const rgp = await rigelToken(RGP[chainId as number], library);
           const token = await getERC20Token(address, library);
@@ -372,13 +373,22 @@ const SetPrice = () => {
               from: account,
             }
           );
-
-          arr.length > 1 ? setApproval([arr[1]]) : setApproval([])
-        } else {
-          // setRGPApproval(true)
-        }
-        if (approval[0] === currencies[Field.INPUT]?.name) {
+          const { confirmations } = await approveTransaction.wait(1);
+          if (confirmations >= 1) {
+            dispatch(
+              setOpenModal({
+                message: `Approval Successful.`,
+                trxState: TrxState.TransactionSuccessful,
+              })
+            );
+          }
+            setArr =setArr.filter(item=>item!=="RGP")
+          setArr && setApproval(setArr)
+        } 
+        console.log({setArr})
+        if ((setArr[0] === currencies[Field.INPUT]?.symbol || setArr[1] === currencies[Field.INPUT]?.symbol) && (setArr[0] !== "RGP" || setArr[1]!=="RGP")) {
           const address = currencies[Field.INPUT]?.wrapped.address;
+          console.log({address})
           const token = await getERC20Token(address, library);
           const walletBal = (await token.balanceOf(account)) + 4e18;
           const approveTransaction = await token.approve(
@@ -397,41 +407,50 @@ const SetPrice = () => {
               })
             );
           }
-          setApproval([])
-        } else {
-          // setOtherTokenApproval(true)
+          setArr && setApproval(setArr.filter(item=>item!==currencies[Field.INPUT]?.wrapped.symbol))
         }
-        dispatch(
-          setOpenModal({
-            message: `Approval Successful.`,
-            trxState: TrxState.TransactionSuccessful,
-          })
-        );
+        
       } catch (e) {
         console.log(e)
       }
-    } else return
+    } else {
+      dispatch(
+        setOpenModal({
+          message: `Approval Failed.`,
+          trxState: TrxState.TransactionFailed,
+        })
+      );
+    }
 
   }
   const checkForApproval = async () => {
-
     const autoSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
+    // check approval for RGP and the other token
     const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
-    const tokenBalance = currencies[Field.INPUT]?.isNative ? "1" : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
+    const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
     const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
-    if (parseFloat(RGPBalance) >= parseFloat(fee) && parseFloat(tokenBalance) > 0) {
+  
+    let approvalArray=[]
+    if (parseFloat(RGPBalance) >= parseFloat(fee)) {
       setHasBeenApproved(true)
-    } else if (parseFloat(RGPBalance) < parseFloat(fee) && parseFloat(tokenBalance) <= 0 && currencies[Field.INPUT]?.wrapped.symbol !== "RGP") {
-      setHasBeenApproved(false)
-      setApproval(["RGP", currencies[Field.INPUT]?.wrapped.symbol])
-    } else if (parseFloat(tokenBalance) <= 0) {
-      setHasBeenApproved(false)
-      setApproval([currencies[Field.INPUT].wrapped.symbol])
-    } else if (parseFloat(RGPBalance) < parseFloat(fee)) {
-      setHasBeenApproved(false)
-      setApproval(["RGP"])
+      approvalArray=[]
     }
+    if(parseFloat(tokenBalance) >= Number(formattedAmounts[Field.INPUT])){
+      setHasBeenApproved(true)
+      approvalArray=[]
+    } 
+    if (parseFloat(RGPBalance) < parseFloat(fee) || (parseFloat(tokenBalance) < Number(formattedAmounts[Field.INPUT]) && currencies[Field.INPUT]?.wrapped.symbol === "RGP")) {
+      setHasBeenApproved(false)
+      approvalArray.push("RGP")
+    }
+    if (parseFloat(tokenBalance) < Number(formattedAmounts[Field.INPUT]) && currencies[Field.INPUT]?.wrapped.symbol !== "RGP") {
+      setHasBeenApproved(false)
+      approvalArray.push(currencies[Field.INPUT]?.wrapped?.symbol)
+    }
+   
+    setApproval(Array.from(new Set(approvalArray)))
+    
   }
 
   const checkApproval = async (tokenAddress: string) => {

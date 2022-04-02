@@ -205,6 +205,7 @@ export function useDerivedSwapInfo(): {
   };
 }
 
+
 function parseTokenAmountURLParameter(urlParam: any): string {
   // eslint-disable-next-line no-restricted-globals
   return typeof urlParam === "string" && !isNaN(parseFloat(urlParam))

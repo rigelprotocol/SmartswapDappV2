@@ -145,14 +145,17 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
               {data.frequency && (data.frequency === "5" || data.frequency === "30") ? `${data.frequency} minutes` : data.frequency}
             </Text>
           </Box> : <Box>
+          <Tooltip label="Execution price">
             <Text
               color={nonActiveTabColor}
               fontSize="12px"
               lineHeight="0"
               mb="8px"
             >
+              
               E / Price...
             </Text>
+            </Tooltip>
             <Text color={activeTabColor} fontSize="11px" fontWeight="regular">
               {data.initialFromPrice} {data.token1.symbol} &#8594; {data.initialToPrice} {data.token2.symbol}
             </Text>

@@ -158,10 +158,12 @@ const useMarketHistory = () => {
                     if (transaction.length > 0) {
                         let result = []
                         if (locationData === "auto") {
-                            result = transaction.filter((data: any) => data.typeOfTransaction === "Auto Time")
+                            let data = transaction.filter((data: any) => data.typeOfTransaction === "Auto Time")
+                            result = data.filter((item:any)=>item.status===1)
                         }else if (locationData === "price") {
-                            result = transaction.filter((data: any) => data.typeOfTransaction === "Set Price")
+                            let data = transaction.filter((data: any) => data.typeOfTransaction === "Set Price")
                             // .sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
+                            result = data.filter((item:any)=>item.status===1)
                         }
                         console.log({result})
                         dataToUse = await Promise.all(result.map(async (data: any) => {
@@ -174,7 +176,7 @@ const useMarketHistory = () => {
                             );
                             return {
                                 inputAmount: data.amountToSwap,
-                                outputAmount: data.typeOfTransaction === "Set Price" && (data.status === 1 || data.status === 0) ? ethers.utils.parseEther(data.currentToPrice).toString() : data.typeOfTransaction === "Set Price" ? ethers.utils.parseEther(data.percentageChange).toString() : toPriceOut[1].toString(),
+                                outputAmount:data.actualToPrice,
                                 tokenIn: data.swapFromToken,
                                 tokenOut: data.swapToToken,
                                 time: data.time && timeConverter(parseInt(data.time)),
@@ -228,7 +230,7 @@ const useMarketHistory = () => {
                         token1: data.tokenIn,
                         token2: data.tokenOut,
                         amountIn: formatAmount(data.amountIn, data.tokenIn.decimals),
-                        amountOut: formatAmount(data.amountOut, data.tokenOut.decimals),
+                        amountOut: data.name ==="Set Price" || data.name==="Auto Time" ? parseFloat(data.amountOut).toFixed(4) : formatAmount(data.amountOut, data.tokenOut.decimals),
         
                         time: data.time,
                         name: data.name,
