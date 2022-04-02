@@ -15,6 +15,8 @@ import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers";
 import { AddressZero } from "@ethersproject/constants";
 import { getAddress } from "@ethersproject/address";
 import AUTOSWAPV2 from './abis/autoswap.json'
+import NFTAbi from './abis/nft.json';
+import NFTTwoAbi from './abis/nftTwo.json';
 
 export function isAddress(value: any): string | false {
   try {
@@ -112,6 +114,14 @@ export const MasterChefV2Contract = async (address: string, library: Web3Provide
     masterChefV2,
     library?.getSigner()
   );
+};
+
+export const RigelNFT = async (address: string, library: Web3Provider | undefined) => {
+  return new Contract(address, NFTAbi, library?.getSigner())
+};
+
+export const RigelNFTTwo = async (address: string, library: Web3Provider | undefined) => {
+  return new Contract(address, NFTTwoAbi, library?.getSigner())
 };
 
 // contract for special pool
