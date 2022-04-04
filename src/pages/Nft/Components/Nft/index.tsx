@@ -11,6 +11,9 @@ import ComfirmPurchase from '../../Modals/ComfirmPurchase';
 import { Link } from 'react-router-dom';
 import { useNft, useNftName} from "../../../../hooks/useNFT";
 import {NftProps} from "../../ViewNFT";
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import {useActiveWeb3React} from "../../../../utils/hooks/useActiveWeb3React";
+import {SupportedChainId} from "../../../../constants/chains";
 
 
 export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, isFeatured = false }: NftProps) {
@@ -20,6 +23,7 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
   const [ purchaseModal,setOpenPerchaseModal] = useState(false);
 
   const { firstToken, secondToken ,prices, unsoldItems , nftId} = useNft(id);
+    const { chainId } = useActiveWeb3React();
 
   const {name, nftImage, loading} = useNftName(nftId[0]);
 
@@ -44,8 +48,8 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
           borderColor={'#DEE5ED'}
           position="relative"
           >
-            <Box p={2.5} height={'300px'} display={'flex'} justifyContent={'center'} alignItems={'center'}>
-                {loading ? <Spinner speed="0.65s" color="#333333" /> :
+            <Flex p={2.5} height={'320px'} justifyContent={'center'} alignItems={'center'}>
+                {loading ? <Spinner speed="0.65s" color="#333333" /> :  chainId === Number(SupportedChainId.BINANCETEST) || chainId === Number(SupportedChainId.POLYGONTEST) ? (
                     <Image
                         src={nftImage}
                         alt={`Picture`}
@@ -53,8 +57,11 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
                         boxSize={'100%'}
                         rounded="lg"
                     />
+                    ) : (
+                        <LazyLoadImage src={nftImage} alt={`Picture`} style={{borderRadius: '5%'}} width={'300px'} height={'300px'}/>
+                )
                 }
-            </Box>
+            </Flex>
           <Box p="3">
             <Box d="flex" alignItems="baseline">
             <Text
