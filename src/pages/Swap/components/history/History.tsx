@@ -41,7 +41,7 @@ const History = () => {
 
 
   useEffect(() => {
-    // setURL("http://localhost:7000")
+    setURL("http://localhost:7000")
     const isActive = checkSideTab('history');
     dispatch(transactionTab({ removeSideTab: isActive }))
 
@@ -53,7 +53,7 @@ const History = () => {
         message: "Deleting Transaction...",
         trxState: TrxState.WaitingForConfirmation,
       })
-      const result = await fetch(`${URL}/auto/data/${data.id}`, { method: 'DELETE' })
+      const result = await fetch(`http://localhost:7000/auto/data/${data.id}`, { method: 'DELETE' })
       const res = await result.json()
       if (res === "success") {
         dispatch(
