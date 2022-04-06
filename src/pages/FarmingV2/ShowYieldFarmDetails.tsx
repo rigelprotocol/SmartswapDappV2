@@ -48,6 +48,7 @@ import {
   smartSwapLPTokenV2PoolNine,
   smartSwapLPTokenV2PoolTwelve,
   smartSwapLPTokenV2PoolThirteen,
+  LiquidityPairInstance,
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
@@ -78,10 +79,12 @@ import { Contract } from "@ethersproject/contracts";
 import { getERC20Token } from "../../utils/utilsFunctions";
 import { calculateGas } from "../Swap/components/sendToken";
 import { useUserGasPricePercentage } from "../../state/gas/hooks";
+import { useGetFarmData } from "../../utils/hooks/useGetFarmData";
 
 const ShowYieldFarmDetails = ({
   content,
   wallet,
+  content2,
   URLReferrerAddress,
 }: {
   content: {
@@ -98,6 +101,19 @@ const ShowYieldFarmDetails = ({
     poolAllowance: any;
     RGPEarned: string;
     poolVersion: number | string;
+  };
+  content2: {
+    id: number;
+    img: string;
+    deposit: string;
+    earn: string;
+    type: string;
+    totalLiquidity: number;
+    APY: number;
+    tokenStaked: string[];
+    RGPEarned: string;
+    availableToken: string;
+    allowance: string;
   };
   wallet: any;
 }) => {
@@ -140,6 +156,9 @@ const ShowYieldFarmDetails = ({
     modal2Disclosure.onClose();
   };
   const [userGasPricePercentage] = useUserGasPricePercentage();
+  const [reload, setReload] = useState(false);
+  useGetFarmData(reload, setReload);
+
   const handleSetReferralField = () => {
     if (showReferrerField === true && URLReferrerAddress === "") {
       setShowReferrerField(false);
@@ -155,6 +174,8 @@ const ShowYieldFarmDetails = ({
       setIsReferrerCheck(false);
     }
   };
+
+  const poolVersion = 2;
 
   useEffect(() => {
     const poolAllowance = async (contract: Contract) => {
@@ -191,8 +212,27 @@ const ShowYieldFarmDetails = ({
       }
     };
 
+    const checkforApproval = async () => {
+      const rgp = await rigelToken(RGP[chainId as number], library);
+      const rgpApproval = await poolAllowance(rgp);
+      if (content2?.type === "LP") {
+        const pool = await LiquidityPairInstance(content2?.address, library);
+        const approval = await poolAllowance(pool);
+        changeApprovalButton(approval, rgpApproval);
+      } else {
+        if (content2?.id === 100) {
+          const specialPoolV1Approval = await specialPoolV1Allowance(rgp);
+          changeApprovalButton(true, specialPoolV1Approval);
+        } else {
+          const specialPoolV2Approval = await specialPoolV2Allowance(rgp);
+          console.log({ specialPoolV2Approval, content });
+          changeApprovalButton(true, specialPoolV2Approval);
+        }
+      }
+    };
+
     const checkForApproval = async () => {
-      console.log({content})
+      // console.log({content})
       const rgp = await rigelToken(RGP[chainId as number], library);
       const rgpApproval = await poolAllowance(rgp);
       if (content.deposit === "RGP" && Number(content.id) === 1) {
@@ -200,7 +240,7 @@ const ShowYieldFarmDetails = ({
         changeApprovalButton(true, specialPoolV1Approval);
       } else if (content.deposit === "RGP" && Number(content.id) === 13) {
         const specialPoolV2Approval = await specialPoolV2Allowance(rgp);
-        console.log({specialPoolV2Approval,content})
+        console.log({ specialPoolV2Approval, content });
         changeApprovalButton(true, specialPoolV2Approval);
       } else if (
         content.deposit === "RGP-BNB" ||
@@ -318,7 +358,7 @@ const ShowYieldFarmDetails = ({
     setApproveValueForOtherToken(false);
 
     if (account) {
-      checkForApproval();
+      checkforApproval();
     }
   }, [wallet, content, account]);
 
@@ -413,11 +453,27 @@ const ShowYieldFarmDetails = ({
   };
 
   const setApprove = (val: string) => {
-    console.log(content.deposit);
     if (approveValueForOtherToken && approveValueForRGP) {
       modal2Disclosure.onOpen();
     } else {
-      checkUser(val);
+      CheckUser();
+    }
+  };
+
+  const CheckUser = async () => {
+    if (account) {
+      const pool = await LiquidityPairInstance(content2?.address, library);
+
+      if (!approveValueForOtherToken && !approveValueForRGP) {
+        await RGPApproval();
+        await LPApproval(pool);
+      } else if (!approveValueForRGP) {
+        await RGPApproval();
+      } else {
+        await LPApproval(pool);
+      }
+      setApproveValueForOtherToken(true);
+      setApproveValueForRGP(true);
     }
   };
 
@@ -868,7 +924,7 @@ const ShowYieldFarmDetails = ({
         setErrorButtonText("Invalid Input");
         return;
       }
-      if (parseFloat(unstakeToken) > parseFloat(content.tokensStaked[1])) {
+      if (parseFloat(unstakeToken) > parseFloat(content2?.tokenStaked[1])) {
         setInputHasError(true);
         setErrorButtonText("Insufficient Balance");
       }
@@ -908,47 +964,59 @@ const ShowYieldFarmDetails = ({
       );
 
       if (account) {
-        if (val === "RGP" && Number(content.id) === 1) {
-          await RGPUnstake();
-        } else if (val === "RGP" && Number(content.id) === 13) {
-          await RGPUnstakeV2();
-        } else if (
-          val === "RGP-BNB" ||
-          val === "RGP-USDT" ||
-          val === "USDT-RGP"
-        ) {
-          await tokensWithdrawal(2);
-        } else if (
-          val === "RGP-BUSD" ||
-          val === "MATIC-RGP" ||
-          val === "RGP-MATIC" ||
-          val === "RGP-ROSE" ||
-          val === "ROSE-RGP"
-        ) {
-          await tokensWithdrawal(1);
-        } else if (
-          val === "BNB-BUSD" ||
-          val === "RGP-USDC" ||
-          val === "ROSE-USDT"
-        ) {
-          await tokensWithdrawal(3);
-        } else if (val === "AXS-RGP") {
-          await tokensWithdrawal(4);
-        } else if (val === "AXS-BUSD") {
-          await tokensWithdrawal(5);
-        } else if (val === "PLACE-RGP") {
-          await tokensWithdrawal(6);
-        } else if (val === "MHT-RGP") {
-          await tokensWithdrawal(7);
-        } else if (val === "SHIB-RGP") {
-          await tokensWithdrawal(8);
-        } else if (val === "MBOX-RGP") {
-          await tokensWithdrawal(9);
-        } else if (val === "WARS-RGP") {
-          await tokensWithdrawal(12);
-        } else if (val === "METO-RGP") {
-          await tokensWithdrawal(13);
+        if (content2?.type === "LP") {
+          await tokensWithdrawal(content2?.id);
+          setReload(true);
+        } else {
+          if (content2?.id === 100) {
+            await RGPUnstake();
+            setReload(true);
+          } else {
+            await RGPUnstakeV2();
+            setReload(true);
+          }
         }
+        // if (val === "RGP" && Number(content.id) === 1) {
+        //   await RGPUnstake();
+        // } else if (val === "RGP" && Number(content.id) === 13) {
+        //   await RGPUnstakeV2();
+        // } else if (
+        //   val === "RGP-BNB" ||
+        //   val === "RGP-USDT" ||
+        //   val === "USDT-RGP"
+        // ) {
+        //   await tokensWithdrawal(2);
+        // } else if (
+        //   val === "RGP-BUSD" ||
+        //   val === "MATIC-RGP" ||
+        //   val === "RGP-MATIC" ||
+        //   val === "RGP-ROSE" ||
+        //   val === "ROSE-RGP"
+        // ) {
+        //   await tokensWithdrawal(1);
+        // } else if (
+        //   val === "BNB-BUSD" ||
+        //   val === "RGP-USDC" ||
+        //   val === "ROSE-USDT"
+        // ) {
+        //   await tokensWithdrawal(3);
+        // } else if (val === "AXS-RGP") {
+        //   await tokensWithdrawal(4);
+        // } else if (val === "AXS-BUSD") {
+        //   await tokensWithdrawal(5);
+        // } else if (val === "PLACE-RGP") {
+        //   await tokensWithdrawal(6);
+        // } else if (val === "MHT-RGP") {
+        //   await tokensWithdrawal(7);
+        // } else if (val === "SHIB-RGP") {
+        //   await tokensWithdrawal(8);
+        // } else if (val === "MBOX-RGP") {
+        //   await tokensWithdrawal(9);
+        // } else if (val === "WARS-RGP") {
+        //   await tokensWithdrawal(12);
+        // } else if (val === "METO-RGP") {
+        //   await tokensWithdrawal(13);
+        // }
       }
     } catch (err) {
       console.log(err);
@@ -1058,7 +1126,7 @@ const ShowYieldFarmDetails = ({
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        if (id === 0) {
+        if (id === 100) {
           const { format1, format2, format3 } = await calculateGas(
             userGasPricePercentage,
             library,
@@ -1102,7 +1170,8 @@ const ShowYieldFarmDetails = ({
               })
             );
           }
-        } else if (id === 10793) {
+          setReload(true);
+        } else if (id === 101) {
           const specialPool = await RGPSpecialPool2(
             RGPSPECIALPOOLADDRESSES2[chainId as number],
             library
@@ -1146,6 +1215,7 @@ const ShowYieldFarmDetails = ({
               })
             );
           }
+          setReload(true);
         } else {
           const lpTokens = await MasterChefV2Contract(
             MASTERCHEFV2ADDRESSES[chainId as number],
@@ -1207,6 +1277,7 @@ const ShowYieldFarmDetails = ({
             })
           );
         }
+        setReload(true);
       } catch (e) {
         console.log(e);
         dispatch(
@@ -1222,13 +1293,9 @@ const ShowYieldFarmDetails = ({
   // deposit for the Liquidity Provider tokens for all pools
   const LPDeposit = async (pid: any) => {
     if (account) {
-      console.log(
-        { staked: content.tokensStaked[1] },
-        typeof content.tokensStaked[1]
-      );
       try {
         console.log({ RGPBalance, farmingFee });
-        if (parseFloat(content.tokensStaked[1]) == 0) {
+        if (parseFloat(content2?.tokenStaked[1]) == 0) {
           if (parseFloat(RGPBalance) < parseFloat(farmingFee)) {
             // alert({
             //   title: "Insufficient Balance",
@@ -1356,7 +1423,7 @@ const ShowYieldFarmDetails = ({
 
   //Deposit
   const confirmDeposit = async (val: any) => {
-    console.log("deposit",{ val,content});
+    console.log("deposit", { val, content });
     setDepositValue("Pending Confirmation");
     dispatch(
       setOpenModal({
@@ -1366,47 +1433,60 @@ const ShowYieldFarmDetails = ({
     );
     try {
       if (account) {
-        if (val === "RGP" && Number(content.id) === 1) {
-          await RGPuseStake(depositTokenValue);
-        } else if (val === "RGP" && Number(content.id) === 13) {
-          await RGPuseStakeV2(depositTokenValue, referrerAddress);
-        } else if (
-          val === "RGP-BNB" ||
-          val === "RGP-USDT" ||
-          val === "USDT-RGP"
-        ) {
-          await LPDeposit(2);
-        } else if (
-          val === "BNB-BUSD" ||
-          val === "RGP-USDC" ||
-          val === "ROSE-USDT"
-        ) {
-          await LPDeposit(3);
-        } else if (
-          val === "RGP-BUSD" ||
-          val === "MATIC-RGP" ||
-          val === "RGP-MATIC" ||
-          val === "RGP-ROSE" ||
-          val === "ROSE-RGP"
-        ) {
-          await LPDeposit(1);
-        } else if (val === "AXS-RGP") {
-          await LPDeposit(4);
-        } else if (val === "AXS-BUSD") {
-          await LPDeposit(5);
-        } else if (val === "PLACE-RGP") {
-          await LPDeposit(6);
-        } else if (val === "MHT-RGP") {
-          await LPDeposit(7);
-        } else if (val === "SHIB-RGP") {
-          await LPDeposit(8);
-        } else if (val === "MBOX-RGP") {
-          await LPDeposit(9);
-        } else if (val === "WARS-RGP") {
-          await LPDeposit(12);
-        } else if (val === "METO-RGP") {
-          await LPDeposit(13);
+        if (content2?.type === "LP") {
+          await LPDeposit(content2?.id);
+          setReload(true);
+        } else {
+          if (content2?.id === 100) {
+            await RGPuseStake(depositTokenValue);
+            setReload(true);
+          } else {
+            await RGPuseStakeV2(depositTokenValue, referrerAddress);
+            setReload(true);
+          }
         }
+
+        // if (val === "RGP" && Number(content.id) === 1) {
+        //   await RGPuseStake(depositTokenValue);
+        // } else if (val === "RGP" && Number(content.id) === 13) {
+        //   await RGPuseStakeV2(depositTokenValue, referrerAddress);
+        // } else if (
+        //   val === "RGP-BNB" ||
+        //   val === "RGP-USDT" ||
+        //   val === "USDT-RGP"
+        // ) {
+        //   await LPDeposit(2);
+        // } else if (
+        //   val === "BNB-BUSD" ||
+        //   val === "RGP-USDC" ||
+        //   val === "ROSE-USDT"
+        // ) {
+        //   await LPDeposit(3);
+        // } else if (
+        //   val === "RGP-BUSD" ||
+        //   val === "MATIC-RGP" ||
+        //   val === "RGP-MATIC" ||
+        //   val === "RGP-ROSE" ||
+        //   val === "ROSE-RGP"
+        // ) {
+        //   await LPDeposit(1);
+        // } else if (val === "AXS-RGP") {
+        //   await LPDeposit(4);
+        // } else if (val === "AXS-BUSD") {
+        //   await LPDeposit(5);
+        // } else if (val === "PLACE-RGP") {
+        //   await LPDeposit(6);
+        // } else if (val === "MHT-RGP") {
+        //   await LPDeposit(7);
+        // } else if (val === "SHIB-RGP") {
+        //   await LPDeposit(8);
+        // } else if (val === "MBOX-RGP") {
+        //   await LPDeposit(9);
+        // } else if (val === "WARS-RGP") {
+        //   await LPDeposit(12);
+        // } else if (val === "METO-RGP") {
+        //   await LPDeposit(13);
+        // }
       }
     } catch (error) {
       console.log(error);
@@ -1534,8 +1614,7 @@ const ShowYieldFarmDetails = ({
         );
         // callRefreshFarm(confirmations, status);
       } catch (error) {
-
-        console.log(error,9290202);
+        console.log(error, 9290202);
         dispatch(
           setOpenModal({
             message: `Transaction failed`,
@@ -1854,11 +1933,13 @@ const ShowYieldFarmDetails = ({
     if (!visits) {
       window.localStorage.setItem("firstYieldVisit", "1");
     }
-    if (!visits && farmVisits!=="2") {
+    if (!visits && farmVisits !== "2") {
       setRun(true);
       window.localStorage.setItem("firstYieldVisit", "1");
     }
   }, []);
+
+  console.log(content2);
 
   const approvalButton = (LPToken: any) => (
     <Button
@@ -1897,7 +1978,7 @@ const ShowYieldFarmDetails = ({
           },
         }}
       />
-      {Number(content.poolVersion) === 2 ? (
+      {Number(poolVersion) === 2 ? (
         <Flex
           flexDirection={["column", "column", "row"]}
           color={mode === DARK_THEME ? "#F1F5F8" : "#333333"}
@@ -1926,18 +2007,18 @@ const ShowYieldFarmDetails = ({
                 >
                   <Tooltip
                     hasArrow
-                    label={content.tokensStaked[1]}
+                    label={content2?.tokenStaked[1]}
                     bg='gray.300'
                     color='black'
                   >
-                    {parseFloat(content.tokensStaked[1]).toFixed(4)}
+                    {parseFloat(content2?.tokenStaked[1]).toFixed(4)}
                   </Tooltip>
                 </Text>
                 <Text
                   fontSize='16px'
                   color={mode === DARK_THEME ? "#DCE5EF" : "#333333"}
                 >
-                  {content.deposit} Tokens Staked
+                  {content2?.deposit} Tokens Staked
                 </Text>
               </Flex>
 
@@ -1954,11 +2035,11 @@ const ShowYieldFarmDetails = ({
                   disabled={
                     approveValueForRGP &&
                     approveValueForOtherToken &&
-                    parseFloat(content.tokensStaked[1]) <= 0
+                    parseFloat(content2?.tokenStaked[1]) <= 0
                   }
                   padding='10px 40px'
                   cursor='pointer'
-                  onClick={() => setApprove(content.deposit)}
+                  onClick={() => setApprove(content2?.deposit)}
                   className={
                     approveValueForRGP && approveValueForOtherToken
                       ? "unstake"
@@ -2017,7 +2098,7 @@ const ShowYieldFarmDetails = ({
                     textAlign='center'
                     fontWeight='bold'
                   >
-                    {content.RGPEarned}
+                    {content2?.RGPEarned}
                   </Text>{" "}
                   <Text color={mode === DARK_THEME ? "#DCE5EF" : "#333333"}>
                     RGP Earned
@@ -2035,9 +2116,9 @@ const ShowYieldFarmDetails = ({
                   mr='2'
                   cursor='pointer'
                   _hover={{ color: "white" }}
-                  disabled={parseFloat(content.RGPEarned) <= 0}
+                  disabled={parseFloat(content2?.RGPEarned) <= 0}
                   onClick={() => {
-                    harvestTokens(content.pId);
+                    harvestTokens(content2?.id);
                   }}
                   className={"harvest"}
                 >
@@ -2054,7 +2135,7 @@ const ShowYieldFarmDetails = ({
                     textAlign='center'
                     fontWeight='bold'
                   >
-                    {content.RGPEarned}
+                    {content2?.RGPEarned}
                   </Text>{" "}
                   <Text color={mode === DARK_THEME ? "#DCE5EF" : "#333333"}>
                     RGP Earned
@@ -2072,9 +2153,9 @@ const ShowYieldFarmDetails = ({
                   mr='2'
                   cursor='pointer'
                   _hover={{ color: "white" }}
-                  disabled={parseFloat(content.RGPEarned) <= 0}
+                  disabled={parseFloat(content?.RGPEarned) <= 0}
                   onClick={() => {
-                    harvestTokens(content.pId);
+                    harvestTokens(content2?.id);
                   }}
                   className={"harvest"}
                 >
@@ -2153,18 +2234,18 @@ const ShowYieldFarmDetails = ({
                 >
                   <Tooltip
                     hasArrow
-                    label={content.tokensStaked[1]}
+                    label={content2?.tokenStaked[1]}
                     bg='gray.300'
                     color='black'
                   >
-                    {parseFloat(content.tokensStaked[1]).toFixed(4)}
+                    {parseFloat(content2?.tokenStaked[1]).toFixed(4)}
                   </Tooltip>
                 </Text>
                 <Text
                   fontSize='16px'
                   color={mode === DARK_THEME ? "#DCE5EF" : "#333333"}
                 >
-                  {content.deposit} Tokens Staked
+                  {content2?.deposit} Tokens Staked
                 </Text>
               </Flex>
 
@@ -2181,11 +2262,11 @@ const ShowYieldFarmDetails = ({
                   disabled={
                     approveValueForRGP &&
                     approveValueForOtherToken &&
-                    parseFloat(content.tokensStaked[1]) <= 0
+                    parseFloat(content2?.tokenStaked[1]) <= 0
                   }
                   padding='10px 40px'
                   cursor='pointer'
-                  onClick={() => setApprove(content.deposit)}
+                  onClick={() => setApprove(content2?.deposit)}
                   className={
                     approveValueForRGP && approveValueForOtherToken
                       ? "unstake"
@@ -2244,7 +2325,7 @@ const ShowYieldFarmDetails = ({
                     textAlign='center'
                     fontWeight='bold'
                   >
-                    {content.RGPEarned}
+                    {content2?.RGPEarned}
                   </Text>{" "}
                   <Text color={mode === DARK_THEME ? "#DCE5EF" : "#333333"}>
                     RGP Earned
@@ -2262,9 +2343,9 @@ const ShowYieldFarmDetails = ({
                   mr='2'
                   cursor='pointer'
                   _hover={{ color: "white" }}
-                  disabled={parseFloat(content.RGPEarned) <= 0}
+                  disabled={parseFloat(content2?.RGPEarned) <= 0}
                   onClick={() => {
-                    harvestTokens(content.pId);
+                    harvestTokens(content2?.id);
                   }}
                   className={"harvest"}
                 >
@@ -2281,7 +2362,7 @@ const ShowYieldFarmDetails = ({
                     textAlign='center'
                     fontWeight='bold'
                   >
-                    {content.RGPEarned}
+                    {content2?.RGPEarned}
                   </Text>{" "}
                   <Text color={mode === DARK_THEME ? "#DCE5EF" : "#333333"}>
                     RGP Earned
@@ -2299,9 +2380,9 @@ const ShowYieldFarmDetails = ({
                   mr='2'
                   cursor='pointer'
                   _hover={{ color: "white" }}
-                  disabled={parseFloat(content.RGPEarned) <= 0}
+                  disabled={parseFloat(content2?.RGPEarned) <= 0}
                   onClick={() => {
-                    harvestTokens(content.pId);
+                    harvestTokens(content2?.id);
                   }}
                   className={"harvest"}
                 >
@@ -2462,14 +2543,15 @@ const ShowYieldFarmDetails = ({
                     cursor='pointer'
                     background='none'
                     _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
-                    onClick={() => showMaxValue(content.deposit, "deposit")}
+                    onClick={() => showMaxValue(content2?.deposit, "deposit")}
                   >
                     MAX
                   </Button>
                 </InputRightElement>
               </InputGroup>
               <Text color={modalTextColor2} fontSize='14px' mb={5} mt={3}>
-                RGP Available: {content.availableToken} {content.deposit}
+                RGP Available: {content2?.availableToken} {content2?.deposit}
+                Test
               </Text>
               <Box display={showReferrerField ? "block" : "none"}>
                 <Text color={modalTextColor} fontSize='14px' mb={3}>
@@ -2544,8 +2626,8 @@ const ShowYieldFarmDetails = ({
                 ) : (
                   <>
                     {enoughApproval(
-                      content.poolAllowance,
-                      content.availableToken
+                      content2?.allowance,
+                      content2?.availableToken
                     ) ? (
                       <Button
                         my='2'
@@ -2569,12 +2651,12 @@ const ShowYieldFarmDetails = ({
                             ? { background: "rgba(64, 186, 213, 0.15)" }
                             : { background: "#444159" }
                         }
-                        onClick={() => confirmDeposit(content.deposit)}
+                        onClick={() => confirmDeposit(content2?.deposit)}
                       >
                         {depositValue}
                       </Button>
                     ) : (
-                      approvalButton(content.deposit)
+                      approvalButton(content2?.deposit)
                     )}
                   </>
                 )}
@@ -2597,7 +2679,7 @@ const ShowYieldFarmDetails = ({
             minHeight='40vh'
           >
             <ModalHeader fontSize='18px' fontWeight='regular' align='center'>
-              Deposit {content.deposit} Tokens
+              Deposit {content2?.deposit} Tokens
             </ModalHeader>
 
             <ModalCloseButton
@@ -2612,7 +2694,7 @@ const ShowYieldFarmDetails = ({
             />
             <ModalBody py={2}>
               <Text color='gray.400' align='right' mb={3}>
-                {content.availableToken} {content.deposit} Available
+                {content2?.availableToken} {content2?.deposit} Available
               </Text>
               <InputGroup size='md'>
                 <Input
@@ -2636,7 +2718,7 @@ const ShowYieldFarmDetails = ({
                     height='20px'
                     cursor='pointer'
                     _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
-                    onClick={() => showMaxValue(content.deposit, "deposit")}
+                    onClick={() => showMaxValue(content2?.deposit, "deposit")}
                   >
                     MAX
                   </Button>
@@ -2684,7 +2766,7 @@ const ShowYieldFarmDetails = ({
                   <>
                     {enoughApproval(
                       content.poolAllowance,
-                      content.availableToken
+                      content2?.availableToken
                     ) ? (
                       <Button
                         my='2'
@@ -2703,12 +2785,12 @@ const ShowYieldFarmDetails = ({
                             ? { background: "rgba(64, 186, 213, 0.15)" }
                             : { background: "#444159" }
                         }
-                        onClick={() => confirmDeposit(content.deposit)}
+                        onClick={() => confirmDeposit(content2?.deposit)}
                       >
                         {depositValue}
                       </Button>
                     ) : (
-                      approvalButton(content.deposit)
+                      approvalButton(content2?.deposit)
                     )}
                     <Button
                       my='2'
@@ -2743,7 +2825,7 @@ const ShowYieldFarmDetails = ({
           minHeight='40vh'
         >
           <ModalHeader fontSize='18px' fontWeight='regular' align='center'>
-            Unstake {content.deposit} Tokens
+            Unstake {content2?.deposit} Tokens
           </ModalHeader>
 
           <ModalCloseButton
@@ -2759,8 +2841,8 @@ const ShowYieldFarmDetails = ({
 
           <ModalBody py={2}>
             <Text color='gray.400' align='right' mb={3}>
-              {`${content.tokensStaked[1]}
-               ${content.deposit} Staked `}
+              {`${content2?.tokenStaked[1]}
+               ${content2?.deposit} Staked `}
             </Text>
 
             <InputGroup size='md'>
@@ -2785,7 +2867,7 @@ const ShowYieldFarmDetails = ({
                   height='20px'
                   cursor='pointer'
                   _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
-                  onClick={() => showMaxValue(content.deposit, "unstake")}
+                  onClick={() => showMaxValue(content2?.deposit, "unstake")}
                 >
                   MAX
                 </Button>
@@ -2853,7 +2935,7 @@ const ShowYieldFarmDetails = ({
                         ? { background: "rgba(64, 186, 213, 0.15)" }
                         : { background: "#444159" }
                     }
-                    onClick={() => confirmUnstakeDeposit(content.deposit)}
+                    onClick={() => confirmUnstakeDeposit(content2?.deposit)}
                   >
                     {unstakeButtonValue}
                   </Button>

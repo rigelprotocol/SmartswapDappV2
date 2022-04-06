@@ -25,6 +25,7 @@ import {
   InputLeftAddon,
   Input,
   Icon,
+  Spinner,
 } from "@chakra-ui/react";
 import { CopyIcon } from "../../theme/components/Icons";
 import { useHistory, useRouteMatch } from "react-router-dom";
@@ -106,6 +107,9 @@ import {
   updateSearchResult,
 } from "../../state/farming/action";
 import { useGetFarmData } from "../../utils/hooks/useGetFarmData";
+
+import { useFarmData } from "../../state/newfarm/hooks";
+import { contents } from "./mock";
 
 export const BIG_TEN = new bigNumber(10);
 export const LIQUIDITY = "liquidity";
@@ -219,7 +223,11 @@ export function Index() {
   const dispatch = useDispatch();
   let match = useRouteMatch("/farming-V2/staking-RGPv2");
   const FarmData = useFarms();
-  useGetFarmData();
+  const { farmdata, loadingState } = useGetFarmData();
+
+  const data = useFarmData();
+
+  console.log(data);
 
   const clearSearchedData = useCallback(() => {
     dispatch(clearSearchResult());
@@ -257,7 +265,7 @@ export function Index() {
     (state) => state.application.modal?.trxState
   );
   const stateChanged: boolean = trxState === 2;
-
+  console.log(searchResults.searchResult);
   //temporary
   useEffect(() => {
     getFarmData();
@@ -747,6 +755,8 @@ export function Index() {
           pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
           3
         );
+
+        console.log("rgpPrice", rgpPrice);
 
         const RGP_USDTLiq = totalUSDT2 * 2;
         const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
@@ -2319,17 +2329,7 @@ export function Index() {
                     <Text />
                   </Flex>
 
-                  {/* {/* // ) : index !== 0 &&
-                    //   Number(chainId) !== Number(SupportedChainId.POLYGON) ? (
-                    //   <YieldFarm
-                    //     farmDataLoading={farmDataLoading}
-                    //     content={content}
-                    //     key={content.pid}
-                    //     wallet={wallet}
-                    //   />
-                    // ) */}
-
-                  {keyword && searchResults.searchResult === undefined
+                  {/* {keyword && searchResults.searchResult === undefined
                     ? null
                     : Number(chainId) === Number(SupportedChainId.OASISTEST) &&
                       keyword &&
@@ -2512,32 +2512,7 @@ export function Index() {
                           />
                         ) : null
                       )
-                    : // : Number(chainId) === Number(SupportedChainId.POLYGON) ||
-                    //       (Number(chainId) ===
-                    //         Number(SupportedChainId.POLYGONTEST) &&
-                    //         searchedFarmData !== undefined)
-                    //     ? searchedFarmData?.map((content: any, index: number) => (
-                    //         <YieldFarm
-                    //           farmDataLoading={farmDataLoading}
-                    //           content={content}
-                    //           key={content.pid}
-                    //           wallet={wallet}
-                    //         />
-                    //       ))
-                    //     : (Number(chainId) === Number(SupportedChainId.POLYGON) ||
-                    //         Number(chainId) ===
-                    //           Number(SupportedChainId.POLYGONTEST)) &&
-                    //       searchedFarmData === undefined
-                    //     ? FarmData.contents.map((content: any, index: number) =>
-                    //         index !== 0 && index < 4 ? (
-                    //           <YieldFarm
-                    //             farmDataLoading={farmDataLoading}
-                    //             content={content}
-                    //             key={content.pid}
-                    //             wallet={wallet}
-                    //           />
-                    //         ) : null
-                    //       )
+                    :                     
                     Number(chainId) !== Number(SupportedChainId.POLYGON) &&
                       keyword &&
                       searchResults.searchResult !== undefined
@@ -2568,20 +2543,127 @@ export function Index() {
                           )
                       )
                     : Number(chainId) !== Number(SupportedChainId.POLYGON) &&
-                      searchResults.filterResult === undefined
-                    ? FarmData.contents.map((content: any, index: number) =>
-                        Number(chainId) !== Number(SupportedChainId.POLYGON) &&
-                        index !== 0 &&
-                        index !== 12 ? (
-                          <YieldFarm
-                            farmDataLoading={farmDataLoading}
-                            content={content}
-                            key={content.pid}
-                            wallet={wallet}
-                          />
-                        ) : null
+                      searchResults.filterResult === undefined &&
+                      data.contents !== undefined
+                    ? data.contents?.map(
+                        (content: any, index: number) =>
+                          Number(chainId) !==
+                            Number(SupportedChainId.POLYGON) &&
+                          Number(data.contents?.length) - 1 !== index &&
+                          Number(data.contents?.length) - 2 !== index && (
+                            <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content={content}
+                              content2={content}
+                              key={content.pid}
+                              wallet={wallet}
+                            />
+                          )
                       )
-                    : null}
+                    : null} */}
+                  {/* {keyword && searchResults.searchResult === undefined
+                    ? null
+                    : searchResults.filterResult === undefined &&
+                      searchResults.searchResult === undefined &&
+                      data.contents !== undefined
+                    ? data.contents?.map(
+                        (content: any, index: number) =>
+                          Number(data.contents?.length) - 1 !== index &&
+                          Number(data.contents?.length) -
+                            (Number(chainId) === 56 && Number(chainId) === 97
+                              ? 2
+                              : 1) !==
+                            index && (
+                            <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content={content}
+                              content2={content}
+                              key={index}
+                              wallet={wallet}
+                            />
+                          )
+                      )
+                    : keyword && searchResults.searchResult !== undefined
+                    ? searchResults.searchResult.map(
+                        (content: any, index: number) =>
+                          Number(searchResults.searchResult.length) - 1 !==
+                            index &&
+                          Number(searchResults.searchResult.length) -
+                            (Number(chainId) === 56 && Number(chainId) === 97
+                              ? 2
+                              : 1) !==
+                            index && (
+                            <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content={content}
+                              content2={content}
+                              key={index}
+                              wallet={wallet}
+                            />
+                          )
+                      )
+                    : searchResults.filterResult !== undefined
+                    ? searchResults.filterResult.map(
+                        (content: any, index: number) =>
+                          Number(searchResults.filterResult.length) - 1 !==
+                            index &&
+                          Number(searchResults.filterResult.length) -
+                            (Number(chainId) === 56 && Number(chainId) === 97
+                              ? 2
+                              : 1) !==
+                            index && (
+                            <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content={content}
+                              content2={content}
+                              key={index}
+                              wallet={wallet}
+                            />
+                          )
+                      )
+                    : null} */}
+
+                  {data.loading === true ? (
+                    <Flex mt={5} color='#4CAFFE' justifyContent='center'>
+                      <Spinner />
+                    </Flex>
+                  ) : keyword &&
+                    searchResults.searchResult === undefined ? null : keyword &&
+                    searchResults.searchResult !== undefined ? (
+                    searchResults.searchResult.map(
+                      (content: any, index: number) => (
+                        <YieldFarm
+                          farmDataLoading={farmDataLoading}
+                          content={content}
+                          content2={content}
+                          key={content.pid}
+                          wallet={wallet}
+                        />
+                      )
+                    )
+                  ) : searchResults.filterResult !== undefined ? (
+                    searchResults.filterResult.map(
+                      (content: any, index: number) => (
+                        <YieldFarm
+                          farmDataLoading={farmDataLoading}
+                          content2={content}
+                          content={content}
+                          key={content.pid}
+                          wallet={wallet}
+                        />
+                      )
+                    )
+                  ) : searchResults.filterResult === undefined ? (
+                    data.contents?.map((content: any, index: number) => (
+                      <YieldFarm
+                        farmDataLoading={farmDataLoading}
+                        content2={content}
+                        content={content}
+                        key={content.pid}
+                        wallet={wallet}
+                      />
+                    ))
+                  ) : null}
                 </Box>
               </Box>
             </Flex>
@@ -2644,17 +2726,17 @@ export function Index() {
                     <Text>Total Liquidity</Text>
                     <Text />
                   </Flex>
-                  {FarmData.contents.map((content: any, index: number) =>
-                    content.id === "13" ? (
-                      <YieldFarm
-                        farmDataLoading={farmDataLoading}
-                        content={content}
-                        key={content.pid}
-                        wallet={wallet}
-                        URLReferrerAddress={refAddress}
-                      />
-                    ) : null
-                  )}
+                  {chainId === 97 ||
+                  chainId === 56 ||
+                  chainId === 137 ||
+                  (chainId === 80001 && data.specialPool) ? (
+                    <YieldFarm
+                      farmDataLoading={farmDataLoading}
+                      content2={data.specialPool && data.specialPool[1]}
+                      wallet={wallet}
+                      URLReferrerAddress={refAddress}
+                    />
+                  ) : null}
                 </Box>
               </Box>
             </Flex>
@@ -2807,16 +2889,13 @@ export function Index() {
                     <Text>Total Liquidity</Text>
                     <Text />
                   </Flex>
-                  {FarmData.contents.map((content: any, index: number) =>
-                    index === 0 ? (
-                      <YieldFarm
-                        farmDataLoading={farmDataLoading}
-                        content={content}
-                        key={content.pid}
-                        wallet={wallet}
-                      />
-                    ) : null
-                  )}
+                  {chainId === 56 || (chainId === 97 && data.specialPool) ? (
+                    <YieldFarm
+                      farmDataLoading={farmDataLoading}
+                      content2={data.specialPool && data?.specialPool[0]}
+                      wallet={wallet}
+                    />
+                  ) : null}
                 </Box>
               </Box>
             </Flex>
