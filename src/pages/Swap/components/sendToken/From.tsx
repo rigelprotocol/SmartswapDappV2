@@ -9,7 +9,7 @@ interface FromProps {
   onCurrencySelection: Function,
   currency: Currency | undefined,
   otherCurrency: Currency | undefined,
-  onMax: () => void,
+  onMax?: () => void,
   value: string,
   disable?: boolean,
   placeholder?: string

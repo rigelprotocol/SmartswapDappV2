@@ -5,7 +5,7 @@ import {
   selectCurrency,
   typeInput,
   replaceSwapState,
-  switchCurrencies,
+  switchCurrencies
 } from "./actions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import { ParsedQs } from "qs";
@@ -94,7 +94,7 @@ export function useSwapActionHandlers(): {
   return {
     onCurrencySelection,
     onUserInput,
-    onSwitchTokens,
+    onSwitchTokens
   };
 }
 
@@ -117,7 +117,7 @@ export function useDerivedSwapInfo(): {
     typedValue,
     [Field.INPUT]: { currencyId: inputCurrencyId },
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
-    recipient,
+    recipient
   } = useSwapState();
   const inputCurrency = useCurrency(inputCurrencyId);
   const outputCurrency = useCurrency(outputCurrencyId);
@@ -133,6 +133,8 @@ export function useDerivedSwapInfo(): {
     typedValue,
     (isExactIn ? inputCurrency : outputCurrency) ?? undefined
   );
+
+  
 
   const [address, wrap, amount, pathArray, pathSymbol] = useSwap(
     // isExactIn ? inputCurrency : outputCurrency,

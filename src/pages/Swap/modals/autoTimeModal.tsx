@@ -24,9 +24,8 @@ export type IModal = {
     fromPrice?: string;
     to?: string | undefined;
     fromDeposited?: string;
-    toDeposited?: string;
+    toDeposited?: string | number;
     slippage: number;
-    expectedPrice: number;
     minimumAmountToRecieve?: string;
     showModal: boolean;
     setShowModal: Function;
@@ -39,7 +38,8 @@ export type IModal = {
     situation: string;
     buttonText: string,
     setCheckedItem: Function,
-    checkedItem: boolean
+    checkedItem: boolean,
+  showNewChangesText:boolean
 };
 
 const AutoTimeModal: React.FC<IModal> = ({
@@ -63,7 +63,7 @@ const AutoTimeModal: React.FC<IModal> = ({
     checkedItem,
     slippage,
     minimumAmountToRecieve,
-    expectedPrice
+    showNewChangesText
 }) => {
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
@@ -151,7 +151,7 @@ const AutoTimeModal: React.FC<IModal> = ({
                                 <Text fontSize='16px' color={lightTextColor}>
                                     To
                                 </Text>
-                                <Text fontSize='11px' mt='1'>current to price</Text>
+                                <Text fontSize='11px' mt='1'>{situation}</Text>
                             </Flex>
 
                             <Flex justifyContent='space-between' mt='2'>
@@ -167,6 +167,9 @@ const AutoTimeModal: React.FC<IModal> = ({
                             </Flex>
                         </Box>
                         <Box my='5'>
+                        {showNewChangesText===true &&   <Box my="2" color="red.200">
+            <InfoOutlineIcon /> Price changed 
+            </Box>}
                             <Flex justifyContent='space-between' fontSize='14px'>
                                 <Text color={lightTextColor}>Price</Text>
                                 <Text color={heavyTextColor} fontWeight='bold'>
@@ -207,14 +210,6 @@ const AutoTimeModal: React.FC<IModal> = ({
                             </Flex>
                             <Flex justifyContent='space-between' my='4'>
                                 <Box color={lightTextColor}>
-                                    Expected price <InfoOutlineIcon />
-                                </Box>
-                                <Text color={heavyTextColor} fontWeight='500'>
-                                    {situation==="above" ? ">" :"<" }{expectedPrice}
-                                </Text>
-                            </Flex>
-                            <Flex justifyContent='space-between' my='4'>
-                                <Box color={lightTextColor}>
                                     Slippage <InfoOutlineIcon />
                                 </Box>
                                 <Text color={heavyTextColor} fontWeight='500'>
@@ -233,7 +228,7 @@ const AutoTimeModal: React.FC<IModal> = ({
                                 <Box color={lightTextColor}>
                                     Percentage Change <InfoOutlineIcon />
                                 </Box>
-                                <Text color={heavyTextColor}>{percentageChange}</Text>
+                                <Text color={heavyTextColor}>{percentageChange}%</Text>
                             </Flex>
 
                         </Box>

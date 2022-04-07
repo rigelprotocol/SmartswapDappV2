@@ -21,7 +21,9 @@ import {
   InputGroup,
   InputAddonProps,
   InputRightAddon,
-  HStack
+  HStack,
+  VStack,
+  Input
 } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import { getERC20Token } from '../../utils/utilsFunctions';
@@ -98,6 +100,7 @@ const SetPrice = () => {
 
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
   const [priceOut, setPriceOut] = useState("")
+  const [totalNumberOfTransaction, setTotalNumberOfTransaction] = useState("1")
   const [approval, setApproval] = useState<String[]>([])
 
 
@@ -185,12 +188,15 @@ const SetPrice = () => {
   };
   const minimumAmountToReceive = useCallback(
     () =>{
-      let data = ((100 - Number(allowedSlippage / 100)) / 100) *
-      toPrice
-      
+      let data
+      if(toPrice){
+       data = ((100 - Number(allowedSlippage / 100)) / 100) * toPrice
+      }else{
+        data=0
+      }
       return data
     },      
-    [allowedSlippage, bestTrade]
+    [allowedSlippage, bestTrade,toPrice]
   );
   const minimum = minimumAmountToReceive().toFixed(
     currencies[Field.OUTPUT]?.decimals
@@ -261,7 +267,8 @@ const SetPrice = () => {
           fromAddress: currencies[Field.INPUT]?.isNative ? "native" : currencies[Field.INPUT]?.wrapped.address,
           toAddress: currencies[Field.OUTPUT]?.isNative ? "native" : currencies[Field.OUTPUT]?.wrapped.address,
           signature: signedTransaction,
-          percentageChange: toPrice,
+          userExpectedPrice: toPrice,
+          percentageChange:"",
           toNumberOfDecimals: currencies[Field.OUTPUT]?.isNative ? 18 : currencies[Field.OUTPUT]?.wrapped.decimals,
           fromPrice: typedValue,
           currentToPrice: formattedAmounts[Field.OUTPUT],
@@ -269,9 +276,9 @@ const SetPrice = () => {
           type: "Set Price",
           initialToPrice,
           initialFromPrice,
-          totalNumberOfTransaction:1,
+          totalNumberOfTransaction:parseInt(totalNumberOfTransaction),
           slippage:Number(allowedSlippage / 100),
-          minimum
+          minimum,
         })
       })
       const res = await response.json()
@@ -511,8 +518,8 @@ const SetPrice = () => {
         <Box
           mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}
           borderColor={borderColor} borderWidth="1px"
-          borderRadius="6px" pl={3} pr={3}
-          h="550px"
+          borderRadius="6px" pl={3} pr={3} pb={5}
+          // h="550px"
         >
           <SwapSettings />
           <From
@@ -577,7 +584,64 @@ const SetPrice = () => {
               placeholder="2"
             />
           </HStack>
-
+          <Box display="flex" mt={5}>
+                {/* <VStack>
+                  <Flex>
+                    <Text fontSize="14px" mr={2} ml="-63px">
+                      Range
+                    </Text>
+                    <ExclamationIcon />
+                  </Flex>
+                  <Box>
+                    <Tabs
+            colorScheme="#2D276A"
+            background="#F2F5F8"
+            borderRadius="4px"
+            // ml="-63px"
+          >
+            <TabList>
+              <Tab
+                // padding="8px 34px"
+                padding="7px"
+                background={situation==="above" ? "#319EF6" : ""}
+                color={situation!=="above" ? "#319EF6" : ""}
+                borderRadius="4px"
+                border="none"
+                onClick={() => setSituation('above')}
+              >
+                Above
+              </Tab>
+              <Tab
+                padding="7px"
+                background={situation==="below" ? "#319EF6" : ""}
+                color={situation!=="below" ? "#319EF6" : ""}
+                border="none"
+                borderRadius="4px"
+                onClick={() => setSituation('below')}
+              >
+                Below
+              </Tab>
+            </TabList>
+          </Tabs>
+                  </Box>
+                </VStack>
+                <Spacer /> */}
+                <VStack>
+                  <Flex>
+                    <Text fontSize="14px" mr={2}>
+                      Frequency
+                    </Text>
+                    <ExclamationIcon />
+                  </Flex>
+                  <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
+                    <Input placeholder="0" w="50px" value={totalNumberOfTransaction} type="number" onChange={e => {
+                      parseInt(e.target.value)<=0 ? setTotalNumberOfTransaction("1") :
+                      setTotalNumberOfTransaction(e.target.value)
+                    }} />
+                    <InputRightAddon children="times" fontSize="16px"padding="3px" />
+                  </InputGroup>
+                </VStack>
+              </Box>
 
 
           <Box mt={5}>
@@ -663,10 +727,9 @@ const SetPrice = () => {
         title="Confirm set price"
         inputLogo={currencies[Field.INPUT]?.logoURI}
         outputLogo={currencies[Field.OUTPUT]?.logoURI}
-        toPrice={toPrice}
         buttonText={signatureFromDataBase ? "Send Transaction" : "Sign Wallet"}
         fromDeposited={formattedAmounts[Field.INPUT]}
-        toDeposited={formattedAmounts[Field.OUTPUT]}
+        toDeposited={toPrice}
         signSignature={signatureFromDataBase ? sendTransactionToDatabase : signTransaction}
         setCheckedItem={setCheckedItem}
         checkedItem={checkedItem}

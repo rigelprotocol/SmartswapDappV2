@@ -1,4 +1,4 @@
-import { Flex,Grid, Text, Box,useColorModeValue, Tooltip } from '@chakra-ui/react'
+import { Flex,Grid, Text, Box,useColorModeValue, Tooltip, Link } from '@chakra-ui/react'
 import React from 'react'
 import { ArrowRightIcon } from '../../../../theme/components/Icons';
 import {DataType} from "./TransactionHistory";
@@ -150,9 +150,9 @@ console.log({data})
             {data?.chainID && data.transactionHash &&
             <Flex justifyContent="right">
                   <Box cursor="pointer">
-                  <a href={getExplorerLink(parseInt(data?.chainID), data.transactionHash, ExplorerDataType.TRANSACTION)} target="_blank">
-                    <ArrowRightIcon />
-                    </a>
+                  <Link href={getExplorerLink(parseInt(data?.chainID), data.transactionHash, ExplorerDataType.TRANSACTION)} target="_blank" isExternal textDecoration="underline" fontSize="13px">
+                    View Transaction
+                    </Link>
                   </Box>
             </Flex>
         }

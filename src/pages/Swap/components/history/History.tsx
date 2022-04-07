@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../state";
 import ConfirmationModal from '../../../../components/Modals/confirmationModal';
 import { TrxState, setOpenModal } from '../../../../state/application/reducer';
+import useOpenOrders from '../../../../utils/hooks/useOpenOrders';
 
 
 const History = () => {
@@ -26,16 +27,20 @@ const History = () => {
 
   // const [sideBarRemoved, setSideBarRemoved] = useState<Boolean>(false);
 
-  const [show, setShow] = useState<Boolean>(false);
+  const [show, setShow] = useState<Boolean>(true);
+  const [open, setOpen] = useState<Boolean>(false);
   const [showMarketHistory, setShowMarketHistory] = useState(false);
+  const [showOrder, setShowOrder] = useState(false);
 
   const sideBarRemoved = useSelector((state: RootState) => state.transactions.removeSideTab);
 
   const { historyData, loading, locationData } = useAccountHistory();
   const { marketHistoryData, loadMarketData } = useMarketHistory();
+  const { openOrderData, loadOpenOrders } = useOpenOrders();
 
   const userData = Object.keys(historyData).map((i) => historyData[i]);
   const historyArray = Object.keys(marketHistoryData).map((i) => marketHistoryData[i]);
+  const openOrderArray = Object.keys(openOrderData).map((i) => openOrderData[i]);
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -48,12 +53,13 @@ const History = () => {
   }, []);
 
   const deleteDataFromDatabase = async () => {
+    console.log({data},"030030")
     if (data && data.name === "Auto Time") {
       setOpenModal({
         message: "Deleting Transaction...",
         trxState: TrxState.WaitingForConfirmation,
       })
-      const result = await fetch(`http://localhost:7000/auto/data/${data.id}`, { method: 'DELETE' })
+      const result = await fetch(`http://localhost:7000/auto/data/${data._id}/${data.id}`, { method: 'DELETE' })
       const res = await result.json()
       if (res === "success") {
         dispatch(
@@ -108,20 +114,38 @@ const History = () => {
 
     >
       <Box w="100%" pl={3} my={4} pr={3}>
-        <Flex alignItems="center" justifyContent="space-between" px={4}>
+        <Flex alignItems="center" justifyContent="space-between" px={1}>
           <Flex>
+          {locationData!=="swap" &&   <Text
+              fontWeight="400"
+              mr={3}
+              fontSize="16px"
+              className='History'
+              color={!showMarketHistory && !show ? activeTabColor : nonActiveTabColor}
+              cursor="pointer"
+              onClick={() => {
+                setShowMarketHistory(false);
+                setShow(false);
+                setShowOrder(true)
+              }}
+            >
+              Open Orders
+            </Text>
+}
             <Text
               fontWeight="400"
               mr={3}
               fontSize="16px"
               className='History'
-              color={!showMarketHistory ? activeTabColor : nonActiveTabColor}
+              color={!showMarketHistory && !showOrder ? activeTabColor : nonActiveTabColor}
               cursor="pointer"
               onClick={() => {
                 setShowMarketHistory(false);
+                setShowOrder(false);
+                setShow(true)
               }}
             >
-              {locationData==="swap" ?"Transaction History" : "Open Orders"}
+              {locationData==="swap" ?"Transaction History" : "Orders"}
             </Text>
             <Text fontWeight="400" cursor="pointer" fontSize="16px" color={showMarketHistory ? activeTabColor : nonActiveTabColor} onClick={() => {
               setShowMarketHistory(true);
@@ -130,7 +154,7 @@ const History = () => {
             </Text>
           </Flex>
           <Flex alignItems="center" fontWeight="bold" rounded={100} bg="#">
-            {show ? (<Flex
+            {open ? (<Flex
               border="2px"
               alignItems="center"
               justifyContent="center"
@@ -141,7 +165,7 @@ const History = () => {
               h="22px"
               borderRadius="6px"
               onClick={() => {
-                setShow(false);
+                setOpen(false);
               }}
             >
               <RemoveIcon />
@@ -157,10 +181,10 @@ const History = () => {
               h="22px"
               borderRadius="6px"
               onClick={() => {
-                setShow(true);
+                setOpen(true);
               }}
             >
-              <AddIcon onClick={() => setShow(true)} />
+              <AddIcon onClick={() => setOpen(true)} />
 
 
             </Flex>)}
@@ -190,16 +214,23 @@ const History = () => {
         maxHeight={'80vh'}
       >
         <Flex justifyContent={'center'}>
-          {show && loadMarketData || show && loading && <Spinner my={3} size={'md'} />}
+          {open && loadMarketData || open && loading || open && loadOpenOrders && <Spinner my={3} size={'md'} />}
         </Flex>
-
-        {show && showMarketHistory && marketHistoryData && historyArray.map((data: DataType,index) => (
+              {/* market history */}
+        {open && showMarketHistory && marketHistoryData && historyArray.map((data: DataType,index) => (
           <MarketHistory key={index} data={data} />
         ))}
-
-        {show && !showMarketHistory && historyData && userData.map((data: DataType, index) => (
+  {/* all orders of user */}
+        {open && show && historyData && userData.map((data: DataType, index) => (
+          <TransactionHistory key={index} data={data} deleteData={confirmDeletion} /> 
+        ))
+      }
+      {/* pending user order */}
+        {open && showOrder && openOrderData.length >0 ? openOrderArray.map((data: DataType, index) => (
           <TransactionHistory key={index} data={data} deleteData={confirmDeletion} />
-        ))}
+        )): openOrderData.length===0 && showOrder && open &&
+        <Text pl={4} py={3}>No open order at the moment</Text>
+        }
       </Box>
       <ConfirmationModal
         showModal={showModal}

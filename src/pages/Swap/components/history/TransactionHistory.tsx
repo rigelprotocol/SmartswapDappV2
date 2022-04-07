@@ -1,9 +1,8 @@
-import { Flex, Grid, Text, Box, useColorModeValue, Button, Tooltip } from '@chakra-ui/react';
+import { Flex, Grid, Text, Box, useColorModeValue, Button, Tooltip,Link } from '@chakra-ui/react';
 import React from 'react';
 import { ArrowRightIcon } from '../../../../theme/components/Icons';
 import TokenIcon from '../../../../assets/Null-24.svg';
 import { ExplorerDataType, getExplorerLink } from '../../../../utils/getExplorerLink';
-import { Link } from 'react-router-dom';
 export interface TokenDetails {
   name: string,
   symbol: string,
@@ -22,13 +21,16 @@ export interface DataType {
   name: string,
   frequency: string,
   id: string,
+  _id?: string,
   transactionHash: string,
   error: [String],
   status: number,
   currentToPrice?: string,
   chainID?: string,
   initialFromPrice?:string,
-  initialToPrice?:string
+  initialToPrice?:string,
+  rate?:string,
+  situation?:string,
 
 }
 
@@ -39,6 +41,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
   const pendingColor = useColorModeValue('#c8d41b', '#c8d41b');
   const successColor = useColorModeValue('#22bb33', '#22bb33');
   const failedColor = useColorModeValue('#75f083', "#FF4243");
+  
   return (
     <Flex  >
       <Box
@@ -126,7 +129,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
                 </Tooltip>
 
                 <Text color={activeTabColor} fontSize="14px" fontWeight="regular">
-                  {data.currentToPrice}%
+                  {data.currentToPrice}%({data.situation})
                 </Text>
               </>
             }
@@ -176,6 +179,19 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
               {data.time ? data.time :"-"}
             </Text>
           </Box>
+         {data.status ===2 && <Box>
+            <Text
+              fontSize="12px"
+              lineHeight="0"
+              color={nonActiveTabColor}
+              mb="8px"
+            >
+              Number
+            </Text>
+            <Text color={activeTabColor} fontSize="14px" fontWeight="regular">
+              {data.rate}
+            </Text>
+          </Box>}
           <Box>
             <Text
               color={nonActiveTabColor}
@@ -228,9 +244,9 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
         {data?.chainID && data.transactionHash &&
             <Flex justifyContent="right">
                   <Box cursor="pointer">
-                  <a href={getExplorerLink(parseInt(data?.chainID), data.transactionHash, ExplorerDataType.TRANSACTION)} target="_blank">
-                    <ArrowRightIcon />
-                    </a>
+                  <Link href={getExplorerLink(parseInt(data?.chainID), data.transactionHash, ExplorerDataType.TRANSACTION)} target="_blank" isExternal textDecoration="underline" fontSize="13px">
+                    View Transaction
+                    </Link>
                   </Box>
             </Flex>
         }

@@ -31,8 +31,6 @@ export type IModal = {
     outputLogo: string;
     pathSymbol: string;
     signSignature: () => void;
-    toPrice: number;
-    fromPrice: string;
     minimumAmountToRecieve: string;
     buttonText: string,
     setCheckedItem: Function,
@@ -51,8 +49,6 @@ const SetPriceModal: React.FC<IModal> = ({
     outputLogo,
     pathSymbol,
     signSignature,
-    toPrice,
-    fromPrice,
     minimumAmountToRecieve,
     buttonText,
     setCheckedItem,
@@ -145,7 +141,7 @@ const SetPriceModal: React.FC<IModal> = ({
                                 <Text fontSize='16px' color={lightTextColor}>
                                     To
                                 </Text>
-                                <Text fontSize='11px' mt='1'>current to price</Text>
+                                {/* <Text fontSize='11px' mt='1'>current to price</Text> */}
                             </Flex>
 
                             <Flex justifyContent='space-between' mt='2'>
@@ -157,7 +153,7 @@ const SetPriceModal: React.FC<IModal> = ({
                                     />{" "}
                                     <Text>{to}</Text>
                                 </Flex>
-                                <Text color={heavyTextColor}>{toPrice}</Text>
+                                <Text color={heavyTextColor}>{toDeposited}</Text>
                             </Flex>
                         </Box>
                         <Box my='5'>
@@ -186,18 +182,6 @@ const SetPriceModal: React.FC<IModal> = ({
                                     {pathSymbol}
                                 </Text>
                             </Flex>
-                            <Flex justifyContent='space-between' my="4">
-                                <Box color={lightTextColor}>
-                                    From Price <InfoOutlineIcon />
-                                </Box>
-                                <Text color={heavyTextColor}>{fromPrice}</Text>
-                            </Flex>
-                            <Flex justifyContent='space-between' my="4">
-                                <Box color={lightTextColor}>
-                                    To Price <InfoOutlineIcon />
-                                </Box>
-                                <Text color={heavyTextColor}>{toPrice}</Text>
-                            </Flex>
                             <Flex justifyContent='space-between' my='4'>
                                 <Box color={lightTextColor}>
                                     Slippage <InfoOutlineIcon />
@@ -225,7 +209,7 @@ const SetPriceModal: React.FC<IModal> = ({
                             fontSize='14px'
                             margin='15px 0'
                         >
-                            <Text>Signing this transaction means you are giving us access to swap on your behalf. The swapping will be done based on the parameters you inputted. The swap will occur if and only if the price of <Text as='span' color={textColor}>{to}</Text> is greater than or equals to <Text as='span' color={textColor}>{toPrice}</Text></Text>
+                            <Text>Signing this transaction means you are giving us access to swap on your behalf. The swapping will be done based on the parameters you inputted. The swap will occur if and only if the price of <Text as='span' color={textColor}>{to}</Text> is greater than or equals to <Text as='span' color={textColor}>{toDeposited}</Text></Text>
                         </Box>
                         <Box mb="1">
                             <Checkbox size='sm' colorScheme={textColor} checked={checkedItem} onChange={(e) => setCheckedItem(e.target.checked)}>

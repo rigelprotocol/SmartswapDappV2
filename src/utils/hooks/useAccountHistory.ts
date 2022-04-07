@@ -65,7 +65,8 @@ interface DataIncoming {
     currentToPrice?: string,
     chainID?:string,
     initialFromPrice?:string,
-    initialToPrice?:string
+    initialToPrice?:string,
+    situation?:string
 }
 let web3 = new Web3(Web3.givenProvider);
 export const formatAmount = (number: string, decimals: any) => {
@@ -197,7 +198,8 @@ const useAccountHistory = () => {
                     id: "",
                     transactionHash: data.transactionHash,
                     error: [],
-                    status: data.status
+                    status: "",
+                    situation:""
                 }));
             } else if ( location === "/auto-time" || location === "/set-price") {
                 const { transaction, database } = await getTransactionFromDatabase(account)
@@ -206,24 +208,21 @@ const useAccountHistory = () => {
                     let result = []
                     if (locationData === "auto") {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "Auto Time")
-                        let newArray: any = []
-                        result.forEach((val: any) => {
-                            if (database.every((e: any) => e._id !== val.id)) {
-                                val.status = 4
-                                newArray.push(val)
-                            } else newArray.push(val)
-                        })
+                        result = result.filter((item:any)=> item.status === 1 || item.status === 0)
+                        // result.forEach((val: any) => {
+                        //     if (database.every((e: any) => e._id !== val.id)) {
+                        //         val.status = 4
+                        //         newArray.push(val)
+                        //     } else newArray.push(val)
+                        // })
 
-                        result = newArray
+                        // result = newArray
                     } else if (locationData === "price") {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "Set Price")
+                        result = result.filter((item:any)=> item.status === 1 || item.status === 0)
                         // .sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
                     }
                     userData = await Promise.all(result.map(async (data: any) => {
-                        let fromAddress = data.swapFromToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapFromToken
-                        let toAddress = data.swapToToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapToToken
-                        const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
-                        console.log({data})
                         return {
                             inputAmount: data.amountToSwap,
                             outputAmount: data.typeOfTransaction==="Set Price" && data.status!==1 ?
@@ -243,7 +242,8 @@ const useAccountHistory = () => {
                             currentToPrice: data.typeOfTransaction === "Set Price" ? data.currentToPrice : data.percentageChange,
                             chainID:data.chainID ,
                             initialFromPrice:data.initialFromPrice,
-                            initialToPrice:data.initialToPrice
+                            initialToPrice:data.initialToPrice,
+                            situation:data.situation
                         }
                     })
                     )
@@ -277,8 +277,8 @@ const useAccountHistory = () => {
                     status: data.status,
                     currentToPrice: data.currentToPrice,
                     chainID:data.chainID,initialFromPrice:data.initialFromPrice,
-                    initialToPrice:data.initialToPrice
-              
+                    initialToPrice:data.initialToPrice,
+                    situation:data.situation                                 
                 })),
             );
             console.log({swapDataForWallet})
@@ -303,7 +303,8 @@ const useAccountHistory = () => {
                 currentToPrice: data.currentToPrice,
                 chainID:data.chainID,
                 initialFromPrice:data.initialFromPrice,
-                initialToPrice:data.initialToPrice
+                initialToPrice:data.initialToPrice,
+                situation:data.situation
           
             }));
             console.log({userSwapHistory})

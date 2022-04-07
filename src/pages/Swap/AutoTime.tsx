@@ -7,7 +7,6 @@ import SwapSettings from './components/sendToken/SwapSettings';
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
 import { VectorIcon, ExclamationIcon, SwitchIcon } from '../../theme/components/Icons';
 import {
-  useAllowance,
   useDerivedSwapInfo,
   useSwapActionHandlers,
   useSwapState,
@@ -38,7 +37,8 @@ import {
   MenuItem,
   Tabs,
   TabList,
-  Tab
+  Tab,
+  Img
 } from '@chakra-ui/react';
 import AutoTimeModal from './modals/autoTimeModal';
 import { useUserSlippageTolerance } from "../../state/user/hooks";
@@ -67,30 +67,32 @@ const SetPrice = () => {
   const { account, library, chainId } = useActiveWeb3React()
 
   const { independentField, typedValue } = useSwapState();
-  const [signedTransaction, setSignedTransaction] = useState<{ r: string, s: string, _vs: string, mess: string, v: string, recoveryParam: string }>({
+  const [signedTransaction, setSignedTransaction] = useState<{ r: string, s: string, _vs: string, mess: string, v: number, recoveryParam: number }>({
     r: "",
     s: "",
     _vs: "",
     mess: "",
-    v: "",
-    recoveryParam: ""
+    v: 0,
+    recoveryParam: 0
   }
   )
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
   const [signatureFromDataBase, setSignatureFromDataBase] = useState(false)
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [selectedFrequency, setSelectedFrequency] = useState("5")
-  const [marketType, setMarketType] = useState("smartswap")
+  const [marketType, setMarketType] = useState("Smartswap")
   const [percentageChange, setPercentageChange] = useState<string>("0")
   const [priceOut, setPriceOut] = useState<string>("")
   const [otherMarketprice, setOtherMarketprice] = useState<string>("0")
   const [approval, setApproval] = useState<string[]>([])
   const [showModal, setShowModal] = useState(false)
-  const [totalNumberOfTransaction,setTotalNumberOfTransaction] = useState("0")
+  const [totalNumberOfTransaction,setTotalNumberOfTransaction] = useState("1")
   const [situation,setSituation] = useState("above")
   const [checkedItem, setCheckedItem] = useState(false)
   const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
-  const [expectedPrice, setExpectedPrice] = useState(0)
+  const [userOutputPrice, setUserOutputPrice] = useState<number>(0)
+  const [currentToPrice,setCurrentToPrice] = useState("0")
+  const [showNewChangesText,setShowNewChangesText] = useState(false)
 
 
   const { onCurrencySelection, onUserInput, onSwitchTokens } = useSwapActionHandlers();
@@ -140,8 +142,8 @@ const SetPrice = () => {
           s: "",
           _vs: "",
           mess: "",
-          v: "",
-          recoveryParam: ""
+          v: 0,
+          recoveryParam: 0
         })
         setTransactionSigned(false)
         setSignatureFromDataBase(false)
@@ -156,7 +158,6 @@ const SetPrice = () => {
   // const checkIfSignatureExists = async () => {
   //   await if
   // }
-  
   const deadline = useSelector<RootState, number>(
     (state) => state.user.userDeadline
   );
@@ -185,11 +186,62 @@ const SetPrice = () => {
       ? parsedAmounts[independentField] ?? "" //?.toExact() ?? ''
       : parsedAmounts[dependentField] ?? "", //?.toSignificant(6) ?? '',
   };
+  const receivedAmount = Number(formattedAmounts[Field.OUTPUT]).toFixed(4);
 
 
+  useMemo(() => {
+    console.log(parseFloat(formattedAmounts[Field.OUTPUT]),83883)
+    if(parseFloat(percentageChange) >0 && formattedAmounts[Field.OUTPUT]){
+      console.log(parseFloat(formattedAmounts[Field.OUTPUT]),111111)
+        const actualRecievedAmount = (parseFloat(percentageChange) / 100) * parseFloat(formattedAmounts[Field.OUTPUT]) + parseFloat(formattedAmounts[Field.OUTPUT])
+        console.log({actualRecievedAmount})
+        setUserOutputPrice(actualRecievedAmount)
+    }else  if(parseFloat(percentageChange) <=0 && formattedAmounts[Field.OUTPUT]){
+      setUserOutputPrice(parseFloat(formattedAmounts[Field.OUTPUT]))
+    }else{
+      setUserOutputPrice(0)
+    }
+    
+    
+  }, [percentageChange,formattedAmounts[Field.OUTPUT]]);
+  const minimumAmountToReceive = useCallback(
+    () =>{
+      let data
+      if(percentageChange && userOutputPrice){
+       data = ((100 - Number(allowedSlippage / 100)) / 100) * userOutputPrice
+      }else{
+        data=0
+      }
+      return data
+    },      
+    [allowedSlippage, bestTrade,userOutputPrice]
+  );
+  const minimum = minimumAmountToReceive().toFixed(
+    currencies[Field.OUTPUT]?.decimals
+  );
+
+  useMemo(() => {
+    if (currentToPrice && receivedAmount) {
+      if (receivedAmount !== currentToPrice) {
+        setShowNewChangesText(true);
+      }
+    }
+  }, [currentToPrice, receivedAmount]);
+  useEffect(() => {
+    let interval;
+    if (showNewChangesText) {
+      interval = setInterval(() => setShowNewChangesText(false), 3000);
+      //  return clearInterval(interval)
+    }
+    if (!showModal) {
+      setShowNewChangesText(false);
+      setCurrentToPrice("");
+    }
+  }, [showNewChangesText, showModal]);
   useMemo(async () => {
     try{
     if (currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
+      console.log(formattedAmounts[Field.OUTPUT])
       let price = (parseFloat(percentageChange) /100)* Number(formattedAmounts[Field.OUTPUT]) + Number(formattedAmounts[Field.OUTPUT])
       
 
@@ -208,33 +260,8 @@ const SetPrice = () => {
     console.log(e)
   }
   }, [currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue])
-  useEffect(() => {
-    if(parseInt(percentageChange)>0){
-      let price = (parseFloat(percentageChange) /100)* Number(formattedAmounts[Field.OUTPUT]) + Number(formattedAmounts[Field.OUTPUT])
-      setExpectedPrice(price) 
-    }else{
-      setExpectedPrice(Number(formattedAmounts[Field.OUTPUT]))
-    }
-           
-  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue,percentageChange])
 
-  const minimumAmountToReceive = useCallback(
-    () =>{
-      let data
-      if(percentageChange && expectedPrice){
-       data = ((100 - Number(allowedSlippage / 100)) / 100) * expectedPrice
-      }else{
-       data = ((100 - Number(allowedSlippage / 100)) / 100) *
-      Number(formattedAmounts[Field.OUTPUT])
-      
-      }
-      return data
-    },      
-    [allowedSlippage, bestTrade]
-  );
-  const minimum = minimumAmountToReceive().toFixed(
-    currencies[Field.OUTPUT]?.decimals
-  );
+ 
   
     useEffect(async () => {
     if (chainId === 56 && currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
@@ -260,7 +287,7 @@ const SetPrice = () => {
     const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
   
-    let approvalArray=[]
+    let approvalArray:any=[]
     if (parseFloat(RGPBalance) >= parseFloat(fee)) {
       setHasBeenApproved(true)
       approvalArray=[]
@@ -289,126 +316,23 @@ const SetPrice = () => {
         const permitHash = "0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9";
 
          const mess = web3.utils.soliditySha3(permitHash)
+        
+         if(account && mess){
+          let signature = await web3.eth.sign(mess, account);
+       var sig = ethers.utils.splitSignature(signature)
+        
+        setSignedTransaction({ ...sig, mess })
+        setTransactionSigned(true)
+         }
 
-        // let signature = await web3.eth.personal.sign(mess, account);
 
         // 
-        const provider =new ethers.providers.Web3Provider(window.ethereum) 
+        // const provider =new ethers.providers.Web3Provider(window.ethereum) 
         // const signer = provider.getSigner()
         // const signature= await signer.signMessage(permitHash)
         // console.log({signature})
-        // var sig = ethers.utils.splitSignature(signature)
         
-        // setSignedTransaction({ ...sig, permitHash })
-        // setTransactionSigned(true)
-        signTypedDataV4Button.addEventListener('click', function (event) {
-  event.preventDefault();
-
-  const msgParams = JSON.stringify({
-    domain: {
-      // Defining the chain aka Rinkeby testnet or Ethereum Main Net
-      chainId: 1,
-      // Give a user friendly name to the specific contract you are signing for.
-      name: 'Ether Mail',
-      // If name isn't enough add verifying contract to make sure you are establishing contracts with the proper entity
-      verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
-      // Just let's you know the latest version. Definitely make sure the field name is correct.
-      version: '1',
-    },
-
-    // Defining the message signing data content.
-    message: {
-      /*
-       - Anything you want. Just a JSON Blob that encodes the data you want to send
-       - No required fields
-       - This is DApp Specific
-       - Be as explicit as possible when building out the message schema.
-      */
-      contents: 'Hello, Bob!',
-      attachedMoneyInEth: 4.2,
-      from: {
-        name: 'Cow',
-        wallets: [
-          '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-          '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
-        ],
-      },
-      to: [
-        {
-          name: 'Bob',
-          wallets: [
-            '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-            '0xB0BdaBea57B0BDABeA57b0bdABEA57b0BDabEa57',
-            '0xB0B0b0b0b0b0B000000000000000000000000000',
-          ],
-        },
-      ],
-    },
-    // Refers to the keys of the *types* object below.
-    primaryType: 'Mail',
-    types: {
-      // TODO: Clarify if EIP712Domain refers to the domain the contract is hosted on
-      EIP712Domain: [
-        { name: 'name', type: 'string' },
-        { name: 'version', type: 'string' },
-        { name: 'chainId', type: 'uint256' },
-        { name: 'verifyingContract', type: 'address' },
-      ],
-      // Not an EIP712Domain definition
-      Group: [
-        { name: 'name', type: 'string' },
-        { name: 'members', type: 'Person[]' },
-      ],
-      // Refer to PrimaryType
-      Mail: [
-        { name: 'from', type: 'Person' },
-        { name: 'to', type: 'Person[]' },
-        { name: 'contents', type: 'string' },
-      ],
-      // Not an EIP712Domain definition
-      Person: [
-        { name: 'name', type: 'string' },
-        { name: 'wallets', type: 'address[]' },
-      ],
-    },
-  });
-
-  var from = web3.eth.accounts[0];
-
-  var params = [from, msgParams];
-  var method = 'eth_signTypedData_v4';
-
-  web3.currentProvider.sendAsync(
-    {
-      method,
-      params,
-      from,
-    },
-    function (err, result) {
-      if (err) return console.dir(err);
-      if (result.error) {
-        alert(result.error.message);
-      }
-      if (result.error) return console.error('ERROR', result);
-      console.log('TYPED SIGNED:' + JSON.stringify(result.result));
-
-      const recovered = sigUtil.recoverTypedSignature_v4({
-        data: JSON.parse(msgParams),
-        sig: result.result,
-      });
-
-      if (
-        ethUtil.toChecksumAddress(recovered) === ethUtil.toChecksumAddress(from)
-      ) {
-        alert('Successfully recovered signer as ' + from);
-      } else {
-        alert(
-          'Failed to verify signer when comparing ' + result + ' to ' + from
-        );
-      }
-    }
-  );
-});
+       
 
         // await checkForApproval()
       // } catch (e) {
@@ -476,9 +400,9 @@ const SetPrice = () => {
         if ((setArr[0] === currencies[Field.INPUT]?.symbol || setArr[1] === currencies[Field.INPUT]?.symbol) && (setArr[0] !== "RGP" || setArr[1]!=="RGP")) {
           const address = currencies[Field.INPUT]?.wrapped.address;
           console.log({address})
-          const token = await getERC20Token(address, library);
-          const walletBal = (await token.balanceOf(account)) + 4e18;
-          const approveTransaction = await token.approve(
+          const token = address && await getERC20Token(address, library);
+          const walletBal = (await token?.balanceOf(account)) + 4e18;
+          const approveTransaction = await token?.approve(
             AUTOSWAPV2ADDRESSES[chainId as number],
             walletBal,
             {
@@ -547,7 +471,6 @@ const SetPrice = () => {
 
     }
     let orderID = await autoSwapV2Contract.orderCount()
-
     if (response) {
       dispatch(
         setOpenModal({
@@ -581,6 +504,7 @@ const SetPrice = () => {
           currentToPrice: formattedAmounts[Field.OUTPUT],
           orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1,
           type: "Auto Time",
+          userExpectedPrice: userOutputPrice,
           totalNumberOfTransaction:parseInt(totalNumberOfTransaction),
           slippage:Number(allowedSlippage / 100),
           minimum,
@@ -600,6 +524,7 @@ const SetPrice = () => {
       setApproval([])
       setSignatureFromDataBase(true)
       setCheckedItem(false)
+      setShowNewChangesText(false);
     }
 
   }
@@ -656,7 +581,7 @@ const SetPrice = () => {
         flexWrap="wrap"
       >
         {isMobileDevice ? (
-          <>
+          <Box mb="90px">
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
               <ShowDetails />
             </Box>
@@ -693,21 +618,6 @@ const SetPrice = () => {
                     display={true}
                   />
                 </Box>
-
-                {/* <Box display="flex" pt={4} pb={4} pr={4} pl={4} borderColor={borderTwo} borderWidth="2px" borderRadius="2px" bg={buttonBgcolor}>
-                  <Text color={textColorOne} fontSize="16px">
-                    RigelProtocol
-                  </Text>
-                  <Spacer />
-                  <VStack>
-                    <Text fontSize="24px" color={textColorOne} isTruncated width="160px" textAlign="right">
-                      {isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT])}
-                    </Text>
-                    <Text fontSize="14px" color={color} textAlign="right" width="160px">
-                      -2.56
-                    </Text>
-                  </VStack>
-                </Box> */}
                 <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={buttonBgcolor}>
                   <Flex>
                   <Menu>
@@ -722,12 +632,15 @@ const SetPrice = () => {
         textTransform={'capitalize'}
         border ="1px solid white"
       >
-       {marketType}
+        <Flex>
+          <Img src={`./images/${marketType}.png`} width="25px" height="25px" mr="1" /> <Text mt="1">{marketType}</Text>
+        </Flex>
+       
       </MenuButton>
       <MenuList>
-        {["Smartswap","Pancakeswap","Sushiswap"].map((item:string,index)=>(
-          <MenuItem key={index} _focus={{ color: "#319EF6" }} onClick={(e) => setMarketType(item)} fontSize="13px">
-         {item}
+        {[{name:"Smartswap",image:"Smartswap.png"},{name:"Pancakeswap",image:"Pancakeswap.png"},{name:"Sushiswap",image:"Sushiswap.png"}].map((item:{name:string,image:string},index)=>(
+          <MenuItem key={index} _focus={{ color: "#319EF6" }} onClick={() => setMarketType(item.name)} fontSize="13px">
+         <Img src={`./images/${item.image}`} width="30px" height="30px" mr={2} />{item.name}
         </MenuItem>
         ))
 
@@ -739,13 +652,13 @@ const SetPrice = () => {
                     <Spacer />
                     <VStack>
                       <Text fontSize="24px" color={textColorOne} isTruncated width="160px" textAlign="right">
-                        {marketType==="smartswap"?
-                        isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT])
+                        {marketType==="Smartswap"?
+                        isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : userOutputPrice
                         : otherMarketprice}
                       </Text>
-                      <Text fontSize="14px" color={color}  width="160px">
+                      {/* <Text fontSize="14px" color={color}  width="160px">
                         -2.67
-                      </Text>
+                      </Text> */}
                     </VStack>
                   </Flex>
                 </Box>
@@ -902,7 +815,10 @@ const SetPrice = () => {
                     border={lightmode ? '2px' : 'none'}
                     borderColor={borderColor}
                     // onClick={signTransaction}
-                    onClick={() => setShowModal(!showModal)}
+                    onClick={() => {
+                      setCurrentToPrice(receivedAmount)
+                      setShowModal(!showModal)
+                    }}
                     h="48px"
                     p="5px"
                     color={color}
@@ -936,7 +852,13 @@ const SetPrice = () => {
                     p="5px"
                     color={color}
                     bgColor={buttonBgcolor}
-                    onClick={() => signatureFromDataBase ? setShowModal(!showModal) : sendTransactionToDatabase()}
+                    onClick={()=>
+                      {
+                      setCurrentToPrice(receivedAmount)
+                      signatureFromDataBase ? 
+                      setShowModal(!showModal)
+                     : sendTransactionToDatabase()
+                    }}
                     // onClick={sendTransactionToDatabase}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
@@ -952,7 +874,7 @@ const SetPrice = () => {
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
               <History />
             </Box>
-          </>
+          </Box>
         ) : (
           <>
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
@@ -994,20 +916,7 @@ const SetPrice = () => {
                   />
                 </Box>
 
-                {/* <Box display="flex" pt={4} pb={4} pr={4} pl={4} borderColor={borderTwo} borderWidth="2px" borderRadius="2px" bg={buttonBgcolor}>
-                  <Text color={textColorOne} fontSize="16px" mt="2" >
-                    RigelProtocol
-                  </Text>
-                  <Spacer />
-                  <VStack>
-                    <Text fontSize="24px" color={textColorOne} isTruncated width="160px" textAlign="right">
-                      {isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT])}
-                    </Text>
-                    <Text fontSize="14px" color={color} textAlign="right"  width="160px">
-                      -2.56
-                    </Text>
-                  </VStack>
-                </Box> */}
+              
                 <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={buttonBgcolor}>
                   <Flex>
                   <Menu>
@@ -1021,13 +930,17 @@ const SetPrice = () => {
         fontSize="13px"
         textTransform={'capitalize'}
         border ="1px solid white"
+        padding={1}
       >
-       {marketType}
+        <Flex>
+          <Img src={`./images/${marketType}.png`} width="25px" height="25px" mr="1" /> <Text mt="1">{marketType}</Text>
+        </Flex>
+       
       </MenuButton>
       <MenuList>
-        {["Smartswap","Pancakeswap","Sushiswap"].map((item:string,index)=>(
-          <MenuItem key={index} _focus={{ color: "#319EF6" }} onClick={(e) => setMarketType(item)} fontSize="13px">
-         {item}
+        {[{name:"Smartswap",image:"Smartswap.png"},{name:"Pancakeswap",image:"Pancakeswap.png"},{name:"Sushiswap",image:"Sushiswap.png"}].map((item:{name:string,image:string},index)=>(
+          <MenuItem key={index} _focus={{ color: "#319EF6" }} onClick={() => setMarketType(item.name)} fontSize="13px">
+         <Img src={`./images/${item.image}`} width="30px" height="30px" mr={2} />{item.name}
         </MenuItem>
         ))
 
@@ -1039,13 +952,13 @@ const SetPrice = () => {
                     <Spacer />
                     <VStack>
                       <Text fontSize="24px" color={textColorOne} textAlign="right" isTruncated width="160px" >
-                      {marketType==="smartswap"?
-                        isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : parseFloat(formattedAmounts[Field.OUTPUT])
+                      {marketType==="Smartswap"?
+                        isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : userOutputPrice
                         : otherMarketprice}
                       </Text>
-                      <Text fontSize="14px" color={color}  width="160px" textAlign="right">
+                      {/* <Text fontSize="14px" color={color}  width="160px" textAlign="right">
                         -2.67
-                      </Text>
+                      </Text> */}
                     </VStack>
                   </Flex>
                 </Box>
@@ -1107,6 +1020,7 @@ const SetPrice = () => {
         fontSize="13px"
         textTransform={'capitalize'}
         border ="1px solid white"
+        padding={1}
       >
       5 minutes
       </MenuButton>
@@ -1174,6 +1088,7 @@ const SetPrice = () => {
                   </Flex>
                   <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
                     <Input placeholder="0" w="50px" value={totalNumberOfTransaction} type="number" onChange={e => {
+                      parseInt(e.target.value)<=0 ? setTotalNumberOfTransaction("1") :
                       setTotalNumberOfTransaction(e.target.value)
                     }} />
                     <InputRightAddon children="times" fontSize="16px"padding="3px" />
@@ -1236,7 +1151,13 @@ const SetPrice = () => {
                     p="5px"
                     color={color}
                     bgColor={buttonBgcolor}
-                    onClick={() => signatureFromDataBase ? setShowModal(!showModal) : sendTransactionToDatabase()}
+                    onClick={()=>
+                      {
+                      setCurrentToPrice(receivedAmount)
+                      signatureFromDataBase ? 
+                      setShowModal(!showModal)
+                     : sendTransactionToDatabase()
+                    }}
                     // onClick={sendTransactionToDatabase}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
@@ -1267,13 +1188,13 @@ const SetPrice = () => {
         percentageChange={percentageChange}
         buttonText={signatureFromDataBase ? "Send Transaction" : "Sign Wallet"}
         fromDeposited={formattedAmounts[Field.INPUT]}
-        toDeposited={formattedAmounts[Field.OUTPUT]}
+        toDeposited={userOutputPrice.toString()}
         signSignature={signatureFromDataBase ? sendTransactionToDatabase : signTransaction}
         setCheckedItem={setCheckedItem}
         checkedItem={checkedItem}
         minimumAmountToRecieve={minimum}
-        expectedPrice={expectedPrice}
         slippage={Number(allowedSlippage / 100)}
+        showNewChangesText={showNewChangesText}
         pathSymbol={pathSymbol}
         situation={situation}
       />

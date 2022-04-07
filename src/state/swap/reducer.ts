@@ -4,7 +4,7 @@ import {
   selectCurrency,
   typeInput,
   replaceSwapState,
-  switchCurrencies,
+  switchCurrencies
 } from "./actions";
 export interface SwapState {
   readonly independentField: Field;
@@ -17,6 +17,7 @@ export interface SwapState {
   };
   // the typed recipient address or ENS name, or null if swap should go to sender
   readonly recipient: string | null;
+  readonly percentageChange: string | null;
 }
 
 const initialState: SwapState = {
@@ -29,6 +30,7 @@ const initialState: SwapState = {
     currencyId: "",
   },
   recipient: null,
+  percentageChange:"0"
 };
 
 export default createReducer<SwapState>(initialState, (builder) =>
@@ -57,6 +59,7 @@ export default createReducer<SwapState>(initialState, (builder) =>
           independentField: field,
           typedValue,
           recipient,
+          percentageChange:"0"
         };
       }
     )
