@@ -142,7 +142,7 @@ const ShowYieldFarmDetails = ({
   const [reload, setReload] = useState(false);
   const [contentid, setContentId] = useState(undefined);
 
-  const data = useGetFarmData();
+  const data = useGetFarmData(reload, setReload);
   // useUpdateArray(data.farmdata);
   const closeModal = () => {
     modal2Disclosure.onClose();
