@@ -21,6 +21,7 @@ import Medium from '../../assets/Vectormedium.svg';
 import Polygon from '../../assets/Platformpolygon.svg';
 import Close from '../../assets/closeSquare.svg';
 import Ethereum from '../../assets/Groupethereum.svg';
+import Oasis from '../../assets/Oasis.svg';
 import Binance from '../../assets/Groupbinance.svg';
 import { Link } from 'react-router-dom';
 import "./landingpage.css"
@@ -420,6 +421,9 @@ setMinNav3(!minNav3)
         </div>
         <div>
         <img src={Polygon} alt="Polygon" />
+        </div>
+        <div>
+        <img src={Oasis} alt="Oasis" />
         </div>
        </div>
        <div className="section__4__text">
