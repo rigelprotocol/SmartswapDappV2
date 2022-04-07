@@ -99,13 +99,11 @@ const SetPrice = () => {
 
   const {
     currencies,
-    getMaxValue,
     bestTrade,
     parsedAmount,
     inputError,
     showWrap,
-    pathSymbol,
-    pathArray,
+    pathSymbol
   } = useDerivedSwapInfo();
   const handleTypeInput = useCallback(
     (value: string) => {
@@ -120,7 +118,7 @@ const SetPrice = () => {
     [onUserInput]
   );
   useEffect(() => {
-    // setURL("http://localhost:7000")
+    // setURL("http://localhost:70")
     async function runCheck() {
       if (account) {
         await checkForApproval()
