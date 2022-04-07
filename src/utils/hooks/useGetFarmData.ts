@@ -59,13 +59,6 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
     [dispatch]
   );
 
-  const handleUpdateSpecialPool = useCallback(
-    (value) => {
-      dispatch(updateSpecialPool({ value }));
-    },
-    [dispatch]
-  );
-
   const handleLoading = useCallback(
     (value) => {
       dispatch(updateLoadingState({ value }));
@@ -86,7 +79,6 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
   };
 
   const calculateRigelPrice = async () => {
-    //this function calculates the price of RGP in BNB
     try {
       let rgpPrice;
       const pair = await smartFactory(
@@ -128,7 +120,6 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
         );
 
         rgpPrice = totalBUSD / totalRGP;
-        console.log("second", totalBUSD / totalRGP);
       } else {
         const pairAddress = await pair.getPair(
           RGPADDRESSES[chainId as number],
@@ -230,69 +221,6 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
     return formatted;
   };
 
-  const specialPoolStaked = async (address: string) => {
-    if (account) {
-      try {
-        const specialPool = await RGPSpecialPool2(address, library);
-        const [staked, earned] = await Promise.all([
-          specialPool.userData(account),
-          specialPool.calculateRewards(account),
-        ]);
-        return { staked, earned };
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
-
-  const RGPBalance = async (address: string) => {
-    const rgpContract = await getERC20Token(address, library);
-    console.log("rgpcontract", rgpContract);
-    const [balance, allowance] = await Promise.all([
-      rgpContract.balanceOf(account),
-      rgpContract.allowance(account, address),
-    ]);
-    return { balance, allowance };
-  };
-
-  const getSpecialPool = async (address: string, id: number) => {
-    try {
-      const specialPoolContract = await RGPSpecialPool2(address, library);
-      const rgpTotalStaking = await specialPoolContract.totalStaking();
-
-      const rgpPrice = await calculateRigelPrice();
-
-      const totalStaking =
-        parseFloat(ethers.utils.formatUnits(rgpTotalStaking.toString(), 18)) *
-        rgpPrice;
-
-      const { balance, allowance } = await RGPBalance(
-        RGPADDRESSES[chainId as number]
-      );
-      const stakedData = await specialPoolStaked(address);
-
-      return {
-        id: id,
-        img: "rgp.svg",
-        deposit: `RGP`,
-        earn: "RGP",
-        type: "RGP",
-        totalLiquidity: totalStaking,
-        APY: 8.756,
-        tokenStaked: [
-          `RGP`,
-          ethers.utils.formatEther(stakedData?.staked.tokenQuantity.toString()),
-        ],
-        RGPEarned: ethers.utils.formatEther(stakedData?.earned.toString()),
-        availableToken: ethers.utils.formatEther(balance.toString()),
-        allowance: ethers.utils.formatEther(allowance.toString()),
-        address: address,
-      };
-    } catch (err) {
-      console.log("special-error", err);
-    }
-  };
-
   const calculateLiquidityAndApy = async (
     address: string,
     pid?: number,
@@ -345,9 +273,6 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
         symbol1 === "USDC"
           ? parseFloat(totalStable) * 2
           : parseFloat(ethers.utils.formatEther(totalRGP)) * rgpPrice * 2;
-      // const poolInfo = await masterchef.poolInfo(pid);
-
-      // const totalAllocPoint = await masterchef.totalAllocPoint();
 
       const [poolInfo, totalAllocPoint] = await Promise.all([
         masterchef.poolInfo(pid),
@@ -359,9 +284,6 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
           parseFloat(totalAllocPoint.toString())) *
         reward;
       const APY = (rgpPrice * poolReward * 365 * 100) / totalLiquidity;
-
-      // const tokenEarned = await masterchef.pendingRigel(pid, account);
-      // const userInfo = await masterchef.userInfo(pid, account);
       const [tokenEarned, userInfo, FarmTokenBalance, allowance] =
         await Promise.all([
           masterchef.pendingRigel(pid, account),
@@ -373,7 +295,6 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
           ),
         ]);
       const tokenStaked = await userInfo.amount;
-      // const FarmTokenBalance = await LPInstance.balanceOf(account);
 
       return {
         id: pid,
@@ -391,7 +312,7 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
         ],
         RGPEarned: ethers.utils.formatEther(tokenEarned.toString()),
         availableToken: ethers.utils.formatEther(FarmTokenBalance.toString()),
-        allowance: ethers.utils.formatEther(allowance.toString()),
+        poolAllowance: ethers.utils.formatEther(allowance.toString()),
         address: address,
       };
     } catch (err) {
@@ -403,7 +324,17 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
     const data = [];
 
     for (let i = 0; i < LpAddress.length; i++) {
-      const farm = await calculateLiquidityAndApy(LpAddress[i], i, 4300);
+      const farm = await calculateLiquidityAndApy(
+        LpAddress[i],
+        i,
+        chainId === 137 || chainId === 80001
+          ? 2014.83125
+          : chainId === 56 || chainId === 97
+          ? 4300
+          : chainId === 42262 || chainId === 42261
+          ? 1343.220833
+          : undefined
+      );
       data.push(farm);
     }
 
@@ -427,20 +358,9 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
         const farms = await loopFarms(LpAddress);
 
         setLoading(false);
-        const specialPool = await getSpecialPool(
-          RGPSPECIALPOOLADDRESSES[chainId as number],
-          100
-        );
-        const specialPoolV2 = await getSpecialPool(
-          RGPSPECIALPOOLADDRESSES2[chainId as number],
-          101
-        );
 
-        const farmWithSpecialPools = [];
-        farmWithSpecialPools.push(specialPool, specialPoolV2);
-        console.log(farmWithSpecialPools);
         handleLoading(false);
-        handleUpdateSpecialPool(farmWithSpecialPools);
+
         handleUpdateFarms(farms);
         setFarmData(farms);
         setReload(false);

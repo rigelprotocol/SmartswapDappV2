@@ -1,5 +1,12 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { updateFarms, updateLoadingState, updateSpecialPool } from "./actions";
+import { stat } from "fs";
+import farm from "../farm";
+import {
+  updateAllowance,
+  updateFarms,
+  updateLoadingState,
+  updateSpecialPool,
+} from "./actions";
 
 export interface farmDataInterface {
   contents:

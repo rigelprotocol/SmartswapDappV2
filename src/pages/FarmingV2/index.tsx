@@ -2634,7 +2634,6 @@ export function Index() {
                       (content: any, index: number) => (
                         <YieldFarm
                           farmDataLoading={farmDataLoading}
-                          content={content}
                           content2={content}
                           key={content.pid}
                           wallet={wallet}
@@ -2647,7 +2646,6 @@ export function Index() {
                         <YieldFarm
                           farmDataLoading={farmDataLoading}
                           content2={content}
-                          content={content}
                           key={content.pid}
                           wallet={wallet}
                         />
@@ -2658,7 +2656,6 @@ export function Index() {
                       <YieldFarm
                         farmDataLoading={farmDataLoading}
                         content2={content}
-                        content={content}
                         key={content.pid}
                         wallet={wallet}
                       />
@@ -2726,17 +2723,17 @@ export function Index() {
                     <Text>Total Liquidity</Text>
                     <Text />
                   </Flex>
-                  {chainId === 97 ||
-                  chainId === 56 ||
-                  chainId === 137 ||
-                  (chainId === 80001 && data.specialPool) ? (
-                    <YieldFarm
-                      farmDataLoading={farmDataLoading}
-                      content2={data.specialPool && data.specialPool[1]}
-                      wallet={wallet}
-                      URLReferrerAddress={refAddress}
-                    />
-                  ) : null}
+                  {FarmData.contents.map((content: any, index: number) =>
+                    content.id === "13" ? (
+                      <YieldFarm
+                        farmDataLoading={farmDataLoading}
+                        content={content}
+                        key={content.pid}
+                        wallet={wallet}
+                        URLReferrerAddress={refAddress}
+                      />
+                    ) : null
+                  )}
                 </Box>
               </Box>
             </Flex>
@@ -2889,13 +2886,16 @@ export function Index() {
                     <Text>Total Liquidity</Text>
                     <Text />
                   </Flex>
-                  {chainId === 56 || (chainId === 97 && data.specialPool) ? (
-                    <YieldFarm
-                      farmDataLoading={farmDataLoading}
-                      content2={data.specialPool && data?.specialPool[0]}
-                      wallet={wallet}
-                    />
-                  ) : null}
+                  {FarmData.contents.map((content: any, index: number) =>
+                    index === 0 ? (
+                      <YieldFarm
+                        farmDataLoading={farmDataLoading}
+                        content={content}
+                        key={content.pid}
+                        wallet={wallet}
+                      />
+                    ) : null
+                  )}
                 </Box>
               </Box>
             </Flex>

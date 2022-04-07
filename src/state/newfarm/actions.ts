@@ -11,3 +11,7 @@ export const updateSpecialPool = createAction<{ value: any[] }>(
 export const updateLoadingState = createAction<{ value: boolean }>(
   "newfarm/updateLoadingState"
 );
+
+export const updateAllowance = createAction<{
+  value: any;
+}>("newfarm/updateAllowance");
