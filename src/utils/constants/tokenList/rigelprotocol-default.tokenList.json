@@ -362,6 +362,22 @@
       "decimals": 18,
       "chainId": 56,
       "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13105.png"
+    },
+    {
+      "name": "ArtKit",
+      "address": "0xAB9ed2C3D76a1877d959C0d7E8DE48a33c55205C",
+      "symbol": "ARTI",
+      "decimals": 18,
+      "chainId": 56,
+      "logoURI": "https://bscscan.com/token/images/artkit_32.png"
+    },
+    {
+      "name": "ArtKit",
+      "address": "0x404b05c9446e34d4b04570d17E862f7bDFb9a956",
+      "symbol": "ARTI",
+      "decimals": 18,
+      "chainId": 97,
+      "logoURI": "https://bscscan.com/token/images/artkit_32.png"
     }
   ]
 }

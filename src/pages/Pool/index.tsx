@@ -95,7 +95,7 @@ const Index = () => {
         startToure={startWelcomeRide}
         openModal={welcomeModal}
         closeModal={() => {
-      window.localStorage.setItem("firstLiquidtyVisit", "2")
+      window.localStorage.setItem("firstLiquidtyVisit", "2");
           setWelcomeModal((state) => !state)
         }}
         textHeader={"Welcome to RigelProtocol SmartSwap"}
