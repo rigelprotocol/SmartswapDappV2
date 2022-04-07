@@ -1,22 +1,13 @@
 import React, { useState } from "react"
-import {
-    Button,
-    Center,
-    Flex,
-    Grid,
-    GridItem,
-    Image,
-    Stack,
-    Text,
-    Link as LinkRoute,
-    useColorModeValue,
-} from '@chakra-ui/react';
+import {Button,
+    Center, Flex, Grid,
+    GridItem, Image, Stack,
+    Text, useColorModeValue } from '@chakra-ui/react';
 import {ArrowBackIcon} from "@chakra-ui/icons";
 import ComfirmPurchase from "./Modals/ComfirmPurchase";
 import ClaimNFTModal from "./Modals/ClaimNFTModal";
 import PolygonImage from '../../assets/polygon-logo.svg';
 import {Link} from 'react-router-dom';
-
 import { useLocation } from "react-router-dom";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 import {SupportedChainId} from "../../constants/chains";
@@ -101,7 +92,6 @@ export const ViewNFT = function () {
                         <Text mt={2}>
                             The Rigelprotocol NFTs enable users to earn  high dispute fee up to tier B from our platform!
                             These NFTs also give its holders the ability to mine various popular cryptos like MOBOX, SXP, SHIB, CAKE.
-                            Find out more :  <LinkRoute href="https://www.rigelprotocol.com" isExternal>www.rigelprotocol.com</LinkRoute>
                          </Text>
 
                         <Grid pt={4} templateColumns='repeat(5, 2fr)' gap={0}>
