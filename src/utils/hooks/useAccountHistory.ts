@@ -140,14 +140,14 @@ const useAccountHistory = () => {
             setStateAccount(account)
             setContractAddress(SMARTSWAPROUTER[chainId as number])
         }
-        setURL("http://localhost:7000")
+        // setURL("http://localhost:7000")
         loadAccountHistory();
     }, [chainId, account,location, contractAddress,refreshPage,locationData]);
 
     const getTransactionFromDatabase = async (address: string) => {
         console.log({URL})
-        const data = await fetch(`http://localhost:7000/auto/data/all/${address}`)
-        const trans = await fetch(`http://localhost:7000/auto`)
+        const data = await fetch(`${URL}/auto/data/all/${address}`)
+        const trans = await fetch(`${URL}/auto`)
         const transaction = await data.json()
         const database = await trans.json()
         return { transaction, database }

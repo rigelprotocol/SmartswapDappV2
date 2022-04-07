@@ -377,7 +377,7 @@ export const getOutPutDataFromEvent = async (
   eventsArray,
   decimal
 ) => {
-  const duplicateArray = [];
+  const duplicateArray:any = [];
   eventsArray.map((event) => {
     if (event.address.toLowerCase() === tokenAddress.toLowerCase()) {
       duplicateArray.push(event);

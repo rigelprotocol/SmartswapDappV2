@@ -64,7 +64,7 @@ const useOpenOrders = () => {
         }
     }, [location, chainId])
     useEffect(() => {
-        setURL("http://localhost:7000")
+        // setURL("http://localhost:7000")
         getMarketData();
     }, [chainId, account, contractAddress,refreshPage,locationData]);
 
@@ -86,11 +86,9 @@ const useOpenOrders = () => {
     
     const getTransactionFromDatabase = async (address: string) => {
         console.log({URL})
-        const data = await fetch(`http://localhost:7000/auto/data/all/${address}`)
+        const data = await fetch(`${URL}/auto/data/all/${address}`)
         const transaction = await data.json()
-        console.log(transaction[0].transaction)
         const transactions = transaction[0].transaction.filter((item:any)=>item.status===2)
-        console.log({transactions})
         return transactions
     }
 
