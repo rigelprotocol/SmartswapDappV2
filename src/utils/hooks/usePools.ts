@@ -12,6 +12,7 @@ import { WNATIVEADDRESSES } from "../addresses";
 import JSBI from "jsbi";
 import { useActiveWeb3React } from "./useActiveWeb3React";
 import { Web3Provider} from '@ethersproject/providers'
+import { convertFromWei } from "..";
 
 export const useGetUserLiquidities = async () => {
   const { account, chainId, library } = useActiveWeb3React();
@@ -437,12 +438,15 @@ export const usePricePerToken = (
 export const useAllowance = (
   CurrencyA: Currency | undefined,
   CurrencyB: Currency | undefined,
-  checkTokenApproval: number
+  checkTokenApproval: number,
+  inputA:string,
+  inputB:string
 ) => {
   const { account, chainId, library } = useActiveWeb3React();
   const [hasTokenABeenApproved, setHasTokenABeenApproved] = useState(false);
   const [hasTokenBBeenApproved, setHasTokenBBeenApproved] = useState(false);
   useMemo(async () => {
+    console.log({inputA,inputB})
     if (CurrencyA && CurrencyB && account) {
       const currencyAAddress = getAddress(CurrencyA);
       const currencyBAddress = getAddress(CurrencyB);
@@ -458,16 +462,15 @@ export const useAllowance = (
 
       const isTokenAApproved = CurrencyA.isNative
         ? true
-        : allowanceA.toString() > 0;
+        : parseFloat(inputA) > 0 ? convertFromWei(allowanceA.toString(),CurrencyA.decimals) > inputA :  allowanceA.toString() > 0;
 
       const isTokenBApproved = CurrencyB.isNative
         ? true
-        : allowanceB.toString() > 0;
-
+        : parseFloat(inputB) > 0 ? convertFromWei(allowanceB.toString(),CurrencyB.decimals) > inputB :   allowanceB.toString() > 0;
       setHasTokenABeenApproved(isTokenAApproved);
       setHasTokenBBeenApproved(isTokenBApproved);
     }
-  }, [CurrencyB, CurrencyA, account, chainId, checkTokenApproval]);
+  }, [CurrencyB, CurrencyA, account, chainId, checkTokenApproval,inputA,inputB]);
 
   return { hasTokenABeenApproved, hasTokenBBeenApproved };
 };
