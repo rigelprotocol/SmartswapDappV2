@@ -316,9 +316,10 @@ const SetPrice = () => {
          const mess = web3.utils.soliditySha3(permitHash)
         
          if(account && mess){
-          let signature = await web3.eth.sign(mess, account);
+          let signature = await web3.eth.personal.sign(mess, account,"12348844");
        var sig = ethers.utils.splitSignature(signature)
-        
+        const ecRec = await web3.eth.personal.ecRecover(mess,signature)
+        console.log({signature,sig,mess,ecRec})
         setSignedTransaction({ ...sig, mess })
         setTransactionSigned(true)
          }

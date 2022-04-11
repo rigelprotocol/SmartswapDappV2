@@ -35,6 +35,7 @@ export interface DataType {
 }
 
 const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: any }) => {
+  console.log({data})
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
   const nonActiveTabColor = useColorModeValue('#666666', '#4A739B');
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
@@ -179,7 +180,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
               {data.time ? data.time :"-"}
             </Text>
           </Box>
-         {data.status ===2 && <Box>
+         {(data.status ===2 || data.status===3) && <Box>
             <Text
               fontSize="12px"
               lineHeight="0"
@@ -201,27 +202,21 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
             >
               Status
             </Text>
-            <Text color={data.status === 0 ? failedColor : data.status === 2 ? pendingColor : successColor} fontSize="14px" fontWeight="regular">
+            <Text color={data.status === 0 ? failedColor : (data.status === 2 || data.status===3) ? pendingColor : successColor} fontSize="14px" fontWeight="regular">
               {/* Completed */}
               {data.status === 1 || data.status === 10 ? "Completed" : data.status === 0 ? "Failed" : data.status === 2 ? "Pending" : data.status === 3 ? "Suspended" : ""}
             </Text>
-            {data.name === "Auto Time" && data.id && data.status !== 4 && data.status !== 1 ? <Button
-              border=" 1px solid #CC334F" box-shadow="0px 1px 7px -2px rgba(24, 39, 75, 0.06), 0px 2px 2px rgba(24, 39, 75, 0.06)"
-              border-radius="6px" backgroundColor="transparent" mt="2" onClick={() => deleteData(data)}>
-              Cancel
-            </Button> : <></>}
-            {data.name === "Set Price" && data.id && data.status === 2 ? <Button
-              border=" 1px solid #CC334F" box-shadow="0px 1px 7px -2px rgba(24, 39, 75, 0.06), 0px 2px 2px rgba(24, 39, 75, 0.06)"
-              border-radius="6px" backgroundColor="transparent" mt="2" onClick={() => deleteData(data)}>
-              Pause
-            </Button> : data.id && data.status === 3 ? <Button
-              border=" 1px solid #CC334F" box-shadow="0px 1px 7px -2px rgba(24, 39, 75, 0.06), 0px 2px 2px rgba(24, 39, 75, 0.06)"
-              border-radius="6px" backgroundColor="transparent" mt="2" onClick={() => deleteData(data)}>
-              Resume
+            {(data.name === "Auto Time" || data.name==="Set Price") && data.id && (data.status ===2 || data.status ===3) ? <Button
+              border={`1px solid ${data.status===2 ?pendingColor : successColor}`}
+              border-radius="6px" backgroundColor="transparent" mt="2" onClick={() => deleteData(data,2)}>
+              {data.status===2 ? "Pause" : "Resume"}
             </Button> : <></>}
 
+            
+
           </Box>
-          <Box>
+          
+                 <Box>
             {data.error.length > 0 &&
               <>
                 <Text
@@ -239,16 +234,25 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
             }
 
           </Box>
-           
+          
         </Grid>
-        {data?.chainID && data.transactionHash &&
+        {data?.chainID && data.transactionHash ?
             <Flex justifyContent="right">
+              
                   <Box cursor="pointer">
                   <Link href={getExplorerLink(parseInt(data?.chainID), data.transactionHash, ExplorerDataType.TRANSACTION)} target="_blank" isExternal textDecoration="underline" fontSize="13px">
                     View Transaction
                     </Link>
                   </Box>
+            </Flex> : (data.status===2 || data.status===3) &&  
+            <Flex justifyContent="right">
+              <Box>
+             <Text fontSize="14px" textDecoration="underline" cursor="pointer" color="red.300" onClick={() => deleteData(data,1)}>
+              Delete
+            </Text>
+          </Box>
             </Flex>
+            
         }
         
       </Box>

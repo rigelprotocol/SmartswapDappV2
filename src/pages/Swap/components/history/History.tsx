@@ -21,15 +21,16 @@ const History = () => {
   const nonActiveTabColor = useColorModeValue('#CCCCCC', '#4A739B');
   const iconColor = useColorModeValue('#666666', '#DCE5EF');
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
-  const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
   const [data, setData] = useState<DataType | null>(null)
   const [showModal, setShowModal] = useState(false)
 
   // const [sideBarRemoved, setSideBarRemoved] = useState<Boolean>(false);
 
   const [show, setShow] = useState<Boolean>(true);
+  const [typeOfModal, setTypeOfModal] = useState(0);
   const [open, setOpen] = useState<Boolean>(false);
   const [showMarketHistory, setShowMarketHistory] = useState(false);
+  const [URL, setURL] = useState("http://localhost:7000");
   const [showOrder, setShowOrder] = useState(false);
 
   const sideBarRemoved = useSelector((state: RootState) => state.transactions.removeSideTab);
@@ -46,6 +47,7 @@ const History = () => {
 
 
   useEffect(() => {
+  
     // setURL("http://localhost:7000")
     const isActive = checkSideTab('history');
     dispatch(transactionTab({ removeSideTab: isActive }))
@@ -54,9 +56,10 @@ const History = () => {
 
   const deleteDataFromDatabase = async () => {
     console.log({data},"030030")
-    if (data && data.name === "Auto Time") {
-      setOpenModal({
-        message: "Deleting Transaction...",
+    // if (data && data.name === "Auto Time") {
+      if(data && typeOfModal===1){
+         setOpenModal({
+        message: "Deleting Order...",
         trxState: TrxState.WaitingForConfirmation,
       })
       const result = await fetch(`${URL}/auto/data/${data._id}/${data.id}`, { method: 'DELETE' })
@@ -64,18 +67,19 @@ const History = () => {
       if (res === "success") {
         dispatch(
           setOpenModal({
-            message: `Data deleted Successful.`,
+            message: `Order deleted Successful.`,
             trxState: TrxState.TransactionSuccessful,
           })
         );
       }
-      dispatch(refreshTransactionTab({ refresh:Math.random() }))
-    } else if (data && data.name === "Set Price") {
-      setOpenModal({
+   
+      } else if(data && typeOfModal ===2){
+          setOpenModal({
         message: data.status === 2 ? "Suspending Transaction..." : "Resuming Transaction",
         trxState: TrxState.WaitingForConfirmation,
       })
-      const result = await fetch(`${URL}/auto/update/${data.id}`, {
+
+        const result = await fetch(`${URL}/auto/update/${data.id}/${data._id}`, {
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
         credentials: 'same-origin', // include, *same-origin, omit
@@ -95,12 +99,44 @@ const History = () => {
           })
         );
       }
-      dispatch(refreshTransactionTab({ refresh:Math.random() }))
-    }
+
+      }
+
+     
+    // } else if (data && data.name === "Set Price") {
+    //   setOpenModal({
+    //     message: data.status === 2 ? "Suspending Transaction..." : "Resuming Transaction",
+    //     trxState: TrxState.WaitingForConfirmation,
+    //   })
+    //   const result = await fetch(`${URL}/auto/update/${data.id}`, {
+    //     mode: "cors",
+    //     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    //     credentials: 'same-origin', // include, *same-origin, omit
+    //     headers: {
+    //       'Content-Type': 'application/json'
+    //       // 'Content-Type': 'application/x-www-form-urlencoded',
+    //     },
+    //     method: "PUT",
+    //     body: data.status === 2 ? JSON.stringify({ status: 3 }) : JSON.stringify({ status: 2 })
+    //   })
+    //   const res = await result.json()
+    //   if (res === "success") {
+    //     dispatch(
+    //       setOpenModal({
+    //         message: `Data deleted Successful.`,
+    //         trxState: TrxState.TransactionSuccessful,
+    //       })
+    //     );
+    //   }
+    //   dispatch(refreshTransactionTab({ refresh:Math.random() }))
+    // }
     setShowModal(false)
+    
+    dispatch(refreshTransactionTab({ refresh:Math.random() }))
   }
-  const confirmDeletion = async (data: DataType) => {
+  const confirmDeletion = async (data: DataType,value:number) => {
     setData(data)
+    setTypeOfModal(value)
     setShowModal(true)
   }
 
@@ -236,7 +272,7 @@ const History = () => {
         showModal={showModal}
         setShowModal={setShowModal}
         deleteDataFromDatabase={deleteDataFromDatabase}
-        text={`You are about to ${data?.frequency === "price" && data?.status===3 ? "resume" : data?.frequency === "price" && data?.status===2 ? "suspend" : "delete"} an ${data?.name} transaction. This will prevent future transaction from been auto enabled for you. Do you want to continue`}
+        text={`You are about to ${ data?.status===3 ? "resume" :  data?.status===2 ? "suspend" : "delete"} an ${data?.name} transaction. ${data?.status===3 ?"This will continue running all transaction that was stopped." : "This will prevent future transaction from been auto enabled for you. Do you want to continue"}`}
       />
     </Flex>
   );

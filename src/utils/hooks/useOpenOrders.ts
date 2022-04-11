@@ -88,7 +88,7 @@ const useOpenOrders = () => {
         console.log({URL})
         const data = await fetch(`${URL}/auto/data/all/${address}`)
         const transaction = await data.json()
-        const transactions = transaction[0].transaction.filter((item:any)=>item.status===2)
+        const transactions = transaction[0].transaction.filter((item:any)=>item.status===2 || item.status===3)
         return transactions
     }
 
@@ -102,16 +102,18 @@ const useOpenOrders = () => {
                     const transaction = await getTransactionFromDatabase(account)
                     console.log({transaction})
                     if (transaction.length > 0) {
-                        let result = []
+                        let data = []
                         if (locationData === "auto") {
-                            let data = transaction.filter((data: any) => data.typeOfTransaction === "Auto Time")
+                            data = transaction.filter((data: any) => data.typeOfTransaction === "Auto Time")
                             console.log({data})
-                            result = data.filter((item:any)=>item.status===2 && item.errorArray.length===0 && item.transactionHash === "")
+                            // result = data.filter((item:any)=>item.status===2 && item.errorArray.length===0 && item.transactionHash === "")
                         }else if (locationData === "price") {
-                            let data = transaction.filter((data: any) => data.typeOfTransaction === "Set Price")
+                            data = transaction.filter((data: any) => data.typeOfTransaction === "Set Price")
+                            console.log({data})
                             // .sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
-                            result = data.filter((item:any)=>item.status===2 && item.errorArray.length===0 && item.transactionHash === "")
+                            
                         }
+                        const result = data.filter((item:any)=>item.errorArray.length===0 && item.transactionHash === "")
                         console.log({result})
                         dataToUse = await Promise.all(result.map(async (data: any) => {
                             
@@ -191,7 +193,6 @@ const useOpenOrders = () => {
                         situation:data.situation,
                         _id:data._id
                     }));
-
                     setopenOrderData(marketHistory);
                     setloadOpenOrders(false);
 
