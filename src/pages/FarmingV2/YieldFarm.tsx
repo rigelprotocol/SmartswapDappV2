@@ -9,11 +9,12 @@ import { useLocation} from 'react-router-dom';
 
 const YieldFarm = ({
   content,
+  content2,
   farmDataLoading,
   wallet,
   URLReferrerAddress
 }: {
-  content: {
+  content?: {
     pid: number;
     id: string;
     totalLiquidity: string;
@@ -29,6 +30,20 @@ const YieldFarm = ({
     poolVersion: number | string;
   };
   farmDataLoading: boolean;
+  content2?: {
+    id: number;
+    img: string;
+    deposit: string;
+    earn: string;
+    type: string;
+    totalLiquidity: number;
+    APY: number;
+    tokenStaked: string[];
+    RGPEarned: string;
+    availableToken: string;
+    allowance: string;
+    address: string;
+  };
   wallet: any;
   URLReferrerAddress: string;
 }) => {
@@ -54,7 +69,7 @@ const YieldFarm = ({
     if (farmDataLoading) return <Spinner speed='0.65s' color='#333333' />;
 
     if (content.totalLiquidity) {
-      return `$ ${formatAmount(content.totalLiquidity)}`;
+      return ` ${formatAmount(content.totalLiquidity)}`;
     }
   };
 
@@ -98,7 +113,7 @@ const YieldFarm = ({
             Deposit
           </Box>
           <Box marginTop='15px' align='left'>
-            {content.deposit}
+            {content?.type === "RGP" ? content.deposit : content2?.deposit}
           </Box>
         </Flex>
         <Flex justifyContent='space-between' width='100%'>
@@ -119,7 +134,9 @@ const YieldFarm = ({
           >
             {/* <RGPIcon />  */}
             <Img w='24px' src={Darklogo} />{" "}
-            <Text marginLeft='10px'>{content.earn}</Text>
+            <Text marginLeft='10px'>
+              {content?.type === "RGP" ? content.earn : content2?.earn}
+            </Text>
           </Flex>
         </Flex>
         <Flex justifyContent='space-between' width='100%'>
@@ -132,7 +149,9 @@ const YieldFarm = ({
             APY
           </Box>
           <Box marginTop='15px' paddingLeft='50px' align='left'>
-            {formatAmount(content.ARYValue)} %
+            {content?.type === "RGP"
+              ? `${formatAmount(content.ARYValue)}%`
+              : `${content2?.APY.toFixed(2)}%`}
           </Box>
         </Flex>
         <Flex
@@ -149,11 +168,14 @@ const YieldFarm = ({
             Total Liquidity
           </Box>
           <Box marginTop='15px' paddingLeft='65px' align='right'>
-            {totalLiquidityValue()}
+            ${" "}
+            {content?.type === "RGP"
+              ? totalLiquidityValue()
+              : content2?.totalLiquidity.toFixed(2)}
           </Box>
         </Flex>
         <Box align='right' mt={["4", "0"]} ml='2'>
-          {Number(content.pid) === 1 ? (
+          {/* {Number(content.pid) === 1 ? (
             <Button
               w={["100%", "100%", "146px"]}
               h='40px'
@@ -198,60 +220,61 @@ const YieldFarm = ({
               className={"unlock"}
             >
               Unlock
-            </Button>
-          ) : (
-
-                <Button
-                    w={["100%", "100%", "146px"]}
-                    h='40px'
-                    border='2px solid #319EF6'
-                    background={
-                      mode === LIGHT_THEME && active
-                          ? "#FFFFFF !important"
-                          : mode === DARK_THEME && active
-                          ? "#319EF6 !important"
-                          : mode === LIGHT_THEME && !active
-                              ? "#FFFFFF !important"
-                              : mode === DARK_THEME && !active
-                                  ? "#15202B !important"
-                                  : "#FFFFFF !important"
-                    }
-                    color={
-                      mode === LIGHT_THEME && active
-                          ? "#319EF6"
-                          : mode === DARK_THEME && active
-                          ? "#FFFFFF"
-                          : mode === LIGHT_THEME && !active
-                              ? "#319EF6"
-                              : mode === DARK_THEME && !active
-                                  ? "#4CAFFF"
-                                  : "#333333"
-                    }
-                    borderColor={
-                      mode === LIGHT_THEME && active
-                          ? "#4CAFFF !important"
-                          : mode === DARK_THEME && active
-                          ? "#319EF6 !important"
-                          : mode === LIGHT_THEME && !active
-                              ? "#4CAFFF !important"
-                              : mode === DARK_THEME && !active
-                                  ? "#4CAFFF !important"
-                                  : "#319EF6 !important"
-                    }
-                    borderRadius='6px'
-                    mb='4'
-                    _hover={{ color: "#423a85" }}
-                    onClick={() => setShowYieldFarm(!showYieldfarm)}
-                    className={"unlock"}
-                >
-                  Unlock
-                </Button>
-          )}
+            </Button> */}
+          {/* // ) : ( */}
+          <Button
+            w={["100%", "100%", "146px"]}
+            h='40px'
+            border='2px solid #319EF6'
+            background={
+              mode === LIGHT_THEME && active
+                ? "#FFFFFF !important"
+                : mode === DARK_THEME && active
+                ? "#319EF6 !important"
+                : mode === LIGHT_THEME && !active
+                ? "#FFFFFF !important"
+                : mode === DARK_THEME && !active
+                ? "#15202B !important"
+                : "#FFFFFF !important"
+            }
+            color={
+              mode === LIGHT_THEME && active
+                ? "#319EF6"
+                : mode === DARK_THEME && active
+                ? "#FFFFFF"
+                : mode === LIGHT_THEME && !active
+                ? "#319EF6"
+                : mode === DARK_THEME && !active
+                ? "#4CAFFF"
+                : "#333333"
+            }
+            borderColor={
+              mode === LIGHT_THEME && active
+                ? "#4CAFFF !important"
+                : mode === DARK_THEME && active
+                ? "#319EF6 !important"
+                : mode === LIGHT_THEME && !active
+                ? "#4CAFFF !important"
+                : mode === DARK_THEME && !active
+                ? "#4CAFFF !important"
+                : "#319EF6 !important"
+            }
+            borderRadius='6px'
+            mb='4'
+            _hover={{ color: "#423a85" }}
+            onClick={() => setShowYieldFarm(!showYieldfarm)}
+            className={"unlock"}
+          >
+            Unlock
+          </Button>
+          {/* )} */}
         </Box>
       </Flex>
       {showYieldfarm && (
         <ShowYieldFarmDetails
-          content={content}
+          content={content?.type === "RGP" ? content : content2}
+          // content2={content2}
+          // content2={content2}
           wallet={wallet}
           URLReferrerAddress={URLReferrerAddress}
         />
