@@ -30,7 +30,7 @@ const History = () => {
   const [typeOfModal, setTypeOfModal] = useState(0);
   const [open, setOpen] = useState<Boolean>(false);
   const [showMarketHistory, setShowMarketHistory] = useState(false);
-  const [URL, setURL] = useState("http://localhost:7000");
+  const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com");
   const [showOrder, setShowOrder] = useState(false);
 
   const sideBarRemoved = useSelector((state: RootState) => state.transactions.removeSideTab);
