@@ -1,17 +1,17 @@
-import React, { useState } from "react";
+import React, {useEffect, useState, useRef} from "react";
 import { Box, Flex, Button, Spinner, Text, Img } from "@chakra-ui/react";
 import ShowYieldFarmDetails from "./ShowYieldFarmDetails";
 import { useColorModeValue } from "@chakra-ui/react";
-import { RGPIcon } from "./Icon";
 import { LIGHT_THEME, DARK_THEME } from "./index";
 import { useWeb3React } from "@web3-react/core";
 import Darklogo from "../../assets/rgpdarklogo.svg";
+import { useLocation} from 'react-router-dom';
 
 const YieldFarm = ({
   content,
   farmDataLoading,
   wallet,
-  URLReferrerAddress,
+  URLReferrerAddress
 }: {
   content: {
     pid: number;
@@ -36,6 +36,17 @@ const YieldFarm = ({
   const { chainId, library } = useWeb3React();
   const active = chainId && library;
   const [showYieldfarm, setShowYieldFarm] = useState(false);
+  const params = useLocation().pathname;
+  const myRef = useRef(null);
+
+  const symbolName = params.split('/');
+
+  useEffect(() => {
+    if (symbolName[2] === content.deposit) {
+      myRef.current.scrollIntoView({behavior: 'smooth'});
+      setShowYieldFarm(true)
+    }
+  }, [symbolName, params]);
 
   const formatAmount = (value: any) => parseFloat(value).toLocaleString();
 
@@ -49,7 +60,7 @@ const YieldFarm = ({
 
   return (
     <>
-      <Flex
+      <Flex ref={myRef}
         justifyContent='space-between'
         flexDirection={["column", "column", "row"]}
         border='1px solid #DEE5ED'
@@ -189,51 +200,52 @@ const YieldFarm = ({
               Unlock
             </Button>
           ) : (
-            <Button
-              w={["100%", "100%", "146px"]}
-              h='40px'
-              border='2px solid #319EF6'
-              background={
-                mode === LIGHT_THEME && active
-                  ? "#FFFFFF !important"
-                  : mode === DARK_THEME && active
-                  ? "#319EF6 !important"
-                  : mode === LIGHT_THEME && !active
-                  ? "#FFFFFF !important"
-                  : mode === DARK_THEME && !active
-                  ? "#15202B !important"
-                  : "#FFFFFF !important"
-              }
-              color={
-                mode === LIGHT_THEME && active
-                  ? "#319EF6"
-                  : mode === DARK_THEME && active
-                  ? "#FFFFFF"
-                  : mode === LIGHT_THEME && !active
-                  ? "#319EF6"
-                  : mode === DARK_THEME && !active
-                  ? "#4CAFFF"
-                  : "#333333"
-              }
-              borderColor={
-                mode === LIGHT_THEME && active
-                  ? "#4CAFFF !important"
-                  : mode === DARK_THEME && active
-                  ? "#319EF6 !important"
-                  : mode === LIGHT_THEME && !active
-                  ? "#4CAFFF !important"
-                  : mode === DARK_THEME && !active
-                  ? "#4CAFFF !important"
-                  : "#319EF6 !important"
-              }
-              borderRadius='6px'
-              mb='4'
-              _hover={{ color: "#423a85" }}
-              onClick={() => setShowYieldFarm(!showYieldfarm)}
-              className={"unlock"}
-            >
-              Unlock
-            </Button>
+
+                <Button
+                    w={["100%", "100%", "146px"]}
+                    h='40px'
+                    border='2px solid #319EF6'
+                    background={
+                      mode === LIGHT_THEME && active
+                          ? "#FFFFFF !important"
+                          : mode === DARK_THEME && active
+                          ? "#319EF6 !important"
+                          : mode === LIGHT_THEME && !active
+                              ? "#FFFFFF !important"
+                              : mode === DARK_THEME && !active
+                                  ? "#15202B !important"
+                                  : "#FFFFFF !important"
+                    }
+                    color={
+                      mode === LIGHT_THEME && active
+                          ? "#319EF6"
+                          : mode === DARK_THEME && active
+                          ? "#FFFFFF"
+                          : mode === LIGHT_THEME && !active
+                              ? "#319EF6"
+                              : mode === DARK_THEME && !active
+                                  ? "#4CAFFF"
+                                  : "#333333"
+                    }
+                    borderColor={
+                      mode === LIGHT_THEME && active
+                          ? "#4CAFFF !important"
+                          : mode === DARK_THEME && active
+                          ? "#319EF6 !important"
+                          : mode === LIGHT_THEME && !active
+                              ? "#4CAFFF !important"
+                              : mode === DARK_THEME && !active
+                                  ? "#4CAFFF !important"
+                                  : "#319EF6 !important"
+                    }
+                    borderRadius='6px'
+                    mb='4'
+                    _hover={{ color: "#423a85" }}
+                    onClick={() => setShowYieldFarm(!showYieldfarm)}
+                    className={"unlock"}
+                >
+                  Unlock
+                </Button>
           )}
         </Box>
       </Flex>
