@@ -21,13 +21,22 @@ import useConnectWallet from "../utils/hooks/useConnectWallet";
 import {useActiveWeb3React} from "../utils/hooks/useActiveWeb3React";
 import {SupportedChainId} from "../constants/chains";
 import ViewNFT from "./Nft/ViewNFT";
-export default function App() {
+import ReactGA from 'react-ga'
+import RouteChangeTracker from "./RouteChangeTracker";
+
+ function App() {
   useConnectWallet();
 
   const {chainId} = useActiveWeb3React();
+  const TRACKING_ID = process.env.GOOGLE_TRACKING_ID
+  ReactGA.initialize("G-JRRW1SDM6G")
+  // useEffect(()=>{
+  //   ReactGA.pageview(window.location.pathname + window.location.search)
+  // })
   return (
     <Suspense fallback={null}>
       <Fonts />
+      <RouteChangeTracker />
       <AppWrapper>
         <HashRouter>
         <Switch>
@@ -80,3 +89,5 @@ export default function App() {
     </Suspense>
   );
 }
+
+export default App
