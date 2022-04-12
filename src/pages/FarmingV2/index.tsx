@@ -26,6 +26,8 @@ import {
   Input,
   Icon,
   Spinner,
+  Stack,
+  Skeleton,
 } from "@chakra-ui/react";
 import { CopyIcon } from "../../theme/components/Icons";
 import { useHistory, useRouteMatch } from "react-router-dom";
@@ -107,6 +109,7 @@ import {
   updateSearchResult,
 } from "../../state/farming/action";
 import { useGetFarmData } from "../../utils/hooks/useGetFarmData";
+import { useClearFarm } from "../../state/farming/hooks";
 
 import { useFarmData } from "../../state/newfarm/hooks";
 import { contents } from "./mock";
@@ -159,8 +162,7 @@ export function Index() {
   const previousKeyword = usePrevious(keyword);
 
   const filter = useSearch();
-
-  console.log(keyword, previousKeyword);
+  useClearFarm();
 
   const [searchedDataResult] = useFarmSearch({
     keyword,
@@ -226,6 +228,8 @@ export function Index() {
   const { farmdata, loadingState } = useGetFarmData();
 
   const data = useFarmData();
+  const farms = useSelector((state) => state.farming.content);
+  const searchSection = useSelector((state) => state.farming);
 
   console.log(data);
 
@@ -264,6 +268,8 @@ export function Index() {
   const trxState = useSelector<RootState>(
     (state) => state.application.modal?.trxState
   );
+
+  const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
   const stateChanged: boolean = trxState === 2;
   console.log(searchResults.searchResult);
   //temporary
@@ -756,8 +762,6 @@ export function Index() {
           pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
           3
         );
-
-        console.log("rgpPrice", rgpPrice);
 
         const RGP_USDTLiq = totalUSDT2 * 2;
         const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
@@ -2043,7 +2047,7 @@ export function Index() {
                   width={isMobileDevice ? undefined : "fit-content"}
                   flex='none'
                   order='1'
-                  onClick={(e)=>e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
                   flex-grow='0'
                   margin='10px 16px'
                 >
@@ -2136,7 +2140,7 @@ export function Index() {
                   }
                   onChange={handleStakingTab}
                   background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
-                  onClick={(e)=>e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
                   border=' 1px solid #008DFF'
                   box-sizing='border-box'
                   borderRadius='50px'
@@ -2330,337 +2334,96 @@ export function Index() {
                     <Text />
                   </Flex>
 
-                  {/* {keyword && searchResults.searchResult === undefined
-                    ? null
-                    : Number(chainId) === Number(SupportedChainId.OASISTEST) &&
-                      keyword &&
-                      searchResults.searchResult !== undefined
-                    ? searchResults.searchResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) ===
-                            Number(SupportedChainId.OASISTEST) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : Number(chainId) === Number(SupportedChainId.OASISTEST) &&
-                      searchResults.filterResult !== undefined
-                    ? searchResults.filterResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) ===
-                            Number(SupportedChainId.OASISTEST) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : Number(chainId) === Number(SupportedChainId.OASISTEST) &&
-                      searchResults.filterResult === undefined
-                    ? FarmData.contents.map((content: any, index: number) =>
-                        Number(chainId) ===
-                          Number(SupportedChainId.OASISTEST) &&
-                        index !== 0 &&
-                        index < 4 ? (
-                          <YieldFarm
-                            farmDataLoading={farmDataLoading}
-                            content={content}
-                            key={content.pid}
-                            wallet={wallet}
-                          />
-                        ) : null
-                      )
-                    : Number(chainId) ===
-                        Number(SupportedChainId.OASISMAINNET) &&
-                      keyword &&
-                      searchResults.searchResult !== undefined
-                    ? searchResults.searchResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) ===
-                            Number(SupportedChainId.OASISMAINNET) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : Number(chainId) ===
-                        Number(SupportedChainId.OASISMAINNET) &&
-                      searchResults.filterResult !== undefined
-                    ? searchResults.filterResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) ===
-                            Number(SupportedChainId.OASISMAINNET) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : Number(chainId) ===
-                        Number(SupportedChainId.OASISMAINNET) &&
-                      searchResults.filterResult === undefined
-                    ? FarmData.contents.map((content: any, index: number) =>
-                        Number(chainId) ===
-                          Number(SupportedChainId.OASISMAINNET) &&
-                        index !== 0 &&
-                        index < 4 ? (
-                          <YieldFarm
-                            farmDataLoading={farmDataLoading}
-                            content={content}
-                            key={content.pid}
-                            wallet={wallet}
-                          />
-                        ) : null
-                      )
-                    : Number(chainId) ===
-                        Number(SupportedChainId.POLYGONTEST) &&
-                      keyword &&
-                      searchResults.searchResult !== undefined
-                    ? searchResults.searchResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) ===
-                            Number(SupportedChainId.POLYGONTEST) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : Number(chainId) ===
-                        Number(SupportedChainId.POLYGONTEST) &&
-                      searchResults.filterResult !== undefined
-                    ? searchResults.filterResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) ===
-                            Number(SupportedChainId.POLYGONTEST) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : Number(chainId) ===
-                        Number(SupportedChainId.POLYGONTEST) &&
-                      searchResults.filterResult === undefined
-                    ? FarmData.contents.map((content: any, index: number) =>
-                        Number(chainId) ===
-                          Number(SupportedChainId.POLYGONTEST) &&
-                        index !== 0 &&
-                        index < 4 ? (
-                          <YieldFarm
-                            farmDataLoading={farmDataLoading}
-                            content={content}
-                            key={content.pid}
-                            wallet={wallet}
-                          />
-                        ) : null
-                      )
-                    : Number(chainId) === Number(SupportedChainId.POLYGON) &&
-                      keyword &&
-                      searchResults.searchResult !== undefined
-                    ? searchResults.searchResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) ===
-                            Number(SupportedChainId.POLYGON) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : Number(chainId) === Number(SupportedChainId.POLYGON) &&
-                      searchResults.filterResult !== undefined
-                    ? searchResults.filterResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) ===
-                            Number(SupportedChainId.POLYGON) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : Number(chainId) === Number(SupportedChainId.POLYGON) &&
-                      searchResults.filterResult === undefined
-                    ? FarmData.contents.map((content: any, index: number) =>
-                        Number(chainId) === Number(SupportedChainId.POLYGON) &&
-                        index !== 0 &&
-                        index < 4 ? (
-                          <YieldFarm
-                            farmDataLoading={farmDataLoading}
-                            content={content}
-                            key={content.pid}
-                            wallet={wallet}
-                          />
-                        ) : null
-                      )
-                    :                     
-                    Number(chainId) !== Number(SupportedChainId.POLYGON) &&
-                      keyword &&
-                      searchResults.searchResult !== undefined
-                    ? searchResults.searchResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) !==
-                            Number(SupportedChainId.POLYGON) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : Number(chainId) !== Number(SupportedChainId.POLYGON) &&
-                      searchResults.filterResult !== undefined
-                    ? searchResults.filterResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) !==
-                            Number(SupportedChainId.POLYGON) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : Number(chainId) !== Number(SupportedChainId.POLYGON) &&
-                      searchResults.filterResult === undefined &&
-                      data.contents !== undefined
-                    ? data.contents?.map(
-                        (content: any, index: number) =>
-                          Number(chainId) !==
-                            Number(SupportedChainId.POLYGON) &&
-                          Number(data.contents?.length) - 1 !== index &&
-                          Number(data.contents?.length) - 2 !== index && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              content2={content}
-                              key={content.pid}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : null} */}
-                  {/* {keyword && searchResults.searchResult === undefined
-                    ? null
-                    : searchResults.filterResult === undefined &&
-                      searchResults.searchResult === undefined &&
-                      data.contents !== undefined
-                    ? data.contents?.map(
-                        (content: any, index: number) =>
-                          Number(data.contents?.length) - 1 !== index &&
-                          Number(data.contents?.length) -
-                            (Number(chainId) === 56 && Number(chainId) === 97
-                              ? 2
-                              : 1) !==
-                            index && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              content2={content}
-                              key={index}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : keyword && searchResults.searchResult !== undefined
-                    ? searchResults.searchResult.map(
-                        (content: any, index: number) =>
-                          Number(searchResults.searchResult.length) - 1 !==
-                            index &&
-                          Number(searchResults.searchResult.length) -
-                            (Number(chainId) === 56 && Number(chainId) === 97
-                              ? 2
-                              : 1) !==
-                            index && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              content2={content}
-                              key={index}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : searchResults.filterResult !== undefined
-                    ? searchResults.filterResult.map(
-                        (content: any, index: number) =>
-                          Number(searchResults.filterResult.length) - 1 !==
-                            index &&
-                          Number(searchResults.filterResult.length) -
-                            (Number(chainId) === 56 && Number(chainId) === 97
-                              ? 2
-                              : 1) !==
-                            index && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              content2={content}
-                              key={index}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : null} */}
-
-                  {data.loading === true ? (
-                    <Flex mt={5} color='#4CAFFE' justifyContent='center'>
-                      <Spinner />
-                    </Flex>
+                  {ChainId !== chainId ? (
+                    <Stack mt={2}>
+                      <Skeleton height={20} />
+                      <Skeleton height={20} />
+                      <Skeleton height={20} />
+                      <Skeleton height={20} />
+                      <Skeleton height={20} />
+                    </Stack>
                   ) : keyword &&
                     searchResults.searchResult === undefined ? null : keyword &&
                     searchResults.searchResult !== undefined ? (
-                    searchResults.searchResult.map(
-                      (content: any, index: number) => (
-                        <YieldFarm
-                          farmDataLoading={farmDataLoading}
-                          content2={content}
-                          key={content.pid}
-                          wallet={wallet}
-                        />
+                    searchSection.newSearchResult === undefined ? (
+                      searchResults.searchResult.map(
+                        (content: any, index: number) => (
+                          <YieldFarm
+                            farmDataLoading={farmDataLoading}
+                            content2={content}
+                            key={content?.id}
+                            section={"search"}
+                            wallet={wallet}
+                            LoadingState={loadingState}
+                          />
+                        )
+                      )
+                    ) : (
+                      searchSection.newSearchResult.map(
+                        (content: any, index: number) => (
+                          <YieldFarm
+                            farmDataLoading={farmDataLoading}
+                            content2={content}
+                            key={content?.id}
+                            section={"search"}
+                            wallet={wallet}
+                            LoadingState={loadingState}
+                          />
+                        )
                       )
                     )
                   ) : searchResults.filterResult !== undefined ? (
-                    searchResults.filterResult.map(
-                      (content: any, index: number) => (
-                        <YieldFarm
-                          farmDataLoading={farmDataLoading}
-                          content2={content}
-                          key={content.pid}
-                          wallet={wallet}
-                        />
+                    searchSection.newFilterResult === undefined ? (
+                      searchResults.filterResult.map(
+                        (content: any, index: number) => (
+                          <YieldFarm
+                            farmDataLoading={farmDataLoading}
+                            content2={content}
+                            section={"filter"}
+                            key={content?.id}
+                            wallet={wallet}
+                            LoadingState={loadingState}
+                          />
+                        )
+                      )
+                    ) : (
+                      searchSection.newFilterResult.map(
+                        (content: any, index: number) => (
+                          <YieldFarm
+                            farmDataLoading={farmDataLoading}
+                            content2={content}
+                            key={content?.id}
+                            section={"filter"}
+                            wallet={wallet}
+                            LoadingState={loadingState}
+                          />
+                        )
                       )
                     )
                   ) : searchResults.filterResult === undefined ? (
-                    data.contents?.map((content: any, index: number) => (
-                      <YieldFarm
-                        farmDataLoading={farmDataLoading}
-                        content2={content}
-                        key={content.pid}
-                        wallet={wallet}
-                      />
-                    ))
+                    farms === undefined ? (
+                      data.contents?.map((content: any, index: number) => (
+                        <YieldFarm
+                          farmDataLoading={farmDataLoading}
+                          content2={content}
+                          key={content?.id}
+                          section={"normal"}
+                          wallet={wallet}
+                          LoadingState={loadingState}
+                        />
+                      ))
+                    ) : (
+                      farms.map((content: any, index: number) => (
+                        <YieldFarm
+                          farmDataLoading={farmDataLoading}
+                          content2={content}
+                          key={content?.id}
+                          section={"normal"}
+                          wallet={wallet}
+                          LoadingState={loadingState}
+                        />
+                      ))
+                    )
                   ) : null}
                 </Box>
               </Box>
