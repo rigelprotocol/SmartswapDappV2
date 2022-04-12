@@ -462,11 +462,11 @@ export const useAllowance = (
 
       const isTokenAApproved = CurrencyA.isNative
         ? true
-        : parseFloat(inputA) > 0 ? convertFromWei(allowanceA.toString(),CurrencyA.decimals) > inputA :  allowanceA.toString() > 0;
+        : parseFloat(inputA) > 0 ? parseFloat(convertFromWei(allowanceA.toString(),CurrencyA.decimals)) > parseFloat(inputA) :  parseFloat(convertFromWei(allowanceA.toString(),CurrencyA.decimals)) > 0;
 
       const isTokenBApproved = CurrencyB.isNative
         ? true
-        : parseFloat(inputB) > 0 ? convertFromWei(allowanceB.toString(),CurrencyB.decimals) > inputB :   allowanceB.toString() > 0;
+        : parseFloat(inputB) > 0 ? parseFloat(convertFromWei(allowanceB.toString(),CurrencyB.decimals)) > parseFloat(inputB) :   parseFloat(convertFromWei(allowanceB.toString(),CurrencyB.decimals)) > 0;
       setHasTokenABeenApproved(isTokenAApproved);
       setHasTokenBBeenApproved(isTokenBApproved);
     }
