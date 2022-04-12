@@ -36,9 +36,9 @@ import RouteChangeTracker from "./RouteChangeTracker";
   return (
     <Suspense fallback={null}>
       <Fonts />
-      <RouteChangeTracker />
       <AppWrapper>
         <HashRouter>
+      <RouteChangeTracker />
         <Switch>
               <Route exact strict path="/" component={Index} />
               </Switch>
