@@ -8638,6 +8638,11 @@ functional-red-black-tree@^1.0.1:
   resolved "https://registry.npmjs.org/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz"
   integrity sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
 
+ga-gtag@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/ga-gtag/-/ga-gtag-1.1.1.tgz#15b0c2b71c5e122cfd51cd38e33f9917bf6330f8"
+  integrity sha512-r+odwlYMzQTHPOW863by2K6NzvRoYfLAcSkI3bkQQYYL1MNwzno1ciyRCnpyw6vZsc5jpIYKSN/my5/H6R5aEg==
+
 gensync@^1.0.0-beta.1, gensync@^1.0.0-beta.2:
   version "1.0.0-beta.2"
   resolved "https://registry.npmjs.org/gensync/-/gensync-1.0.0-beta.2.tgz"
@@ -13482,6 +13487,11 @@ react-focus-lock@2.5.0:
     react-clientside-effect "^1.2.2"
     use-callback-ref "^1.2.1"
     use-sidecar "^1.0.1"
+
+react-ga@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/react-ga/-/react-ga-3.3.0.tgz#c91f407198adcb3b49e2bc5c12b3fe460039b3ca"
+  integrity sha512-o8RScHj6Lb8cwy3GMrVH6NJvL+y0zpJvKtc0+wmH7Bt23rszJmnqEQxRbyrqUzk9DTJIHoP42bfO5rswC9SWBQ==
 
 react-icons@^4.2.0:
   version "4.3.1"

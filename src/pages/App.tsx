@@ -21,12 +21,10 @@ import useConnectWallet from "../utils/hooks/useConnectWallet";
 import {useActiveWeb3React} from "../utils/hooks/useActiveWeb3React";
 import {SupportedChainId} from "../constants/chains";
 import ViewNFT from "./Nft/ViewNFT";
-
 export default function App() {
   useConnectWallet();
 
   const {chainId} = useActiveWeb3React();
-
   return (
     <Suspense fallback={null}>
       <Fonts />
