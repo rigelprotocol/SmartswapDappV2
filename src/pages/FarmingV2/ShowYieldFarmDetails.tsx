@@ -1590,11 +1590,41 @@ const ShowYieldFarmDetails = ({
     </Button>
   );
 
+  const mayo = 2;
+
   return (
     <>
       {loading ? (
-        <Box border='1px' borderColor={filterBorderColor}>
-          <SkeletonText mt='4' noOfLines={4} spacing='4' />
+        <Box p='6' border='1px' borderColor={filterBorderColor}>
+          <Flex
+            flexDirection={isMobileDevice ? "column" : "row"}
+            justifyContent={isMobileDevice ? "center" : "space-between"}
+            alignItems={isMobileDevice ? "center" : undefined}
+          >
+            <Flex flexDirection='column'>
+              <Skeleton mt='4' mb={2} height='20px' w='208px' />
+
+              <Flex>
+                <Skeleton mr={2} height='20px' w='100px' />
+                <Skeleton height='20px' w='100px' />
+              </Flex>
+            </Flex>
+
+            <Flex ml={2} flexDirection='column'>
+              <Skeleton mt='4' mb={2} height='20px' w='208px' />
+              <Skeleton height='20px' w='208px' />
+            </Flex>
+
+            <Flex ml={2} flexDirection='column'>
+              <Skeleton mt='4' mb={2} height='20px' w='208px' />
+              <Skeleton height='20px' w='208px' />
+            </Flex>
+
+            <Flex ml={2} flexDirection='column'>
+              <Skeleton mt='4' mb={2} height='20px' w='208px' />
+              <Skeleton height='20px' w='208px' />
+            </Flex>
+          </Flex>
         </Box>
       ) : (
         <Skeleton isLoaded={!loadingState ? true : false}>

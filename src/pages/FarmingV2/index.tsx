@@ -1787,6 +1787,8 @@ export function Index() {
     return AXS_BUSDLiquidity;
   };
 
+  const mayo = 2;
+
   const [welcomeModal, setWelcomeModal] = useState(false);
   const [run, setRun] = useState(false);
   const bgColor = useColorModeValue("#319EF6", "#4CAFFF");
@@ -2337,11 +2339,164 @@ export function Index() {
 
                   {!account ? null : ChainId !== chainId ? (
                     <Stack mt={2}>
-                      <Box border='1px' borderColor={filterBorderColor}>
-                        <SkeletonText mt='4' noOfLines={4} spacing='4' />
+                      <Box
+                        p='6'
+                        border='1px'
+                        h={20}
+                        borderColor={filterBorderColor}
+                      >
+                        <Flex
+                          flexDirection='row'
+                          justifyContent='space-between'
+                        >
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+                        </Flex>
+                      </Box>
+                      <Box
+                        p='6'
+                        border='1px'
+                        h={20}
+                        borderColor={filterBorderColor}
+                      >
+                        <Flex
+                          flexDirection='row'
+                          justifyContent='space-between'
+                        >
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+                        </Flex>
+                      </Box>
+                      <Box
+                        p='6'
+                        border='1px'
+                        h={20}
+                        borderColor={filterBorderColor}
+                      >
+                        <Flex
+                          flexDirection='row'
+                          justifyContent='space-between'
+                        >
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+                        </Flex>
+                      </Box>
+                      <Box
+                        p='6'
+                        border='1px'
+                        h={20}
+                        borderColor={filterBorderColor}
+                      >
+                        <Flex
+                          flexDirection='row'
+                          justifyContent='space-between'
+                        >
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+                        </Flex>
+                      </Box>
+                      <Box
+                        p='6'
+                        border='1px'
+                        h={20}
+                        borderColor={filterBorderColor}
+                      >
+                        <Flex
+                          flexDirection='row'
+                          justifyContent='space-between'
+                        >
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+
+                          <Flex ml={2} flexDirection='column'>
+                            <Skeleton height='20px' w='208px' />
+                          </Flex>
+                        </Flex>
                       </Box>
                     </Stack>
-                  ) : keyword &&
+                  ) : // </Stack>
+                  keyword &&
                     searchResults.searchResult === undefined ? null : keyword &&
                     searchResults.searchResult !== undefined ? (
                     searchSection.newSearchResult === undefined ? (
