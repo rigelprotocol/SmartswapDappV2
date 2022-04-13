@@ -470,6 +470,8 @@ export const useAllowance = (
 
       setHasTokenABeenApproved(isTokenOneApproved);
       setHasTokenBBeenApproved(isTokenTwoApproved);
+
+    }
       
   }, [CurrencyB, CurrencyA, account, chainId, checkTokenApproval,inputA,inputB]);
 
