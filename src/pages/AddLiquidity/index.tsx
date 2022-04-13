@@ -183,7 +183,9 @@ export default function AddLiquidity({
   const { hasTokenABeenApproved, hasTokenBBeenApproved } = useAllowance(
     currencies[Field.INPUT],
     currencies[Field.OUTPUT],
-    checkTokenApproval
+    checkTokenApproval,
+    formattedAmounts[Field.INPUT],
+    formattedAmounts[Field.OUTPUT]
   );
 
   const { minted, poolShare } = useMintedLiquidity(
@@ -224,7 +226,7 @@ export default function AddLiquidity({
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        const walletBal = (await token.balanceOf(account)) + 4e18;
+        const walletBal = (await token.balanceOf(account));
         const approval = await token.approve(
           SMARTSWAPROUTER[chainId as number],
           walletBal,

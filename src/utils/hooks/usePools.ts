@@ -12,6 +12,7 @@ import { WNATIVEADDRESSES } from "../addresses";
 import JSBI from "jsbi";
 import { useActiveWeb3React } from "./useActiveWeb3React";
 import { Web3Provider} from '@ethersproject/providers'
+import { convertFromWei } from "..";
 
 export const useGetUserLiquidities = async () => {
   const { account, chainId, library } = useActiveWeb3React();
@@ -437,12 +438,15 @@ export const usePricePerToken = (
 export const useAllowance = (
   CurrencyA: Currency | undefined,
   CurrencyB: Currency | undefined,
-  checkTokenApproval: number
+  checkTokenApproval: number,
+  inputA:string,
+  inputB:string
 ) => {
   const { account, chainId, library } = useActiveWeb3React();
   const [hasTokenABeenApproved, setHasTokenABeenApproved] = useState(false);
   const [hasTokenBBeenApproved, setHasTokenBBeenApproved] = useState(false);
   useMemo(async () => {
+    console.log({inputA,inputB});
     if (CurrencyA && CurrencyB && account) {
       const currencyAAddress = getAddress(CurrencyA);
       const currencyBAddress = getAddress(CurrencyB);
@@ -451,23 +455,25 @@ export const useAllowance = (
         getERC20Token(currencyBAddress as string, library),
       ]);
 
-      const [allowanceA, allowanceB] = await Promise.all([
+      const [allowanceA, allowanceB, decimalsA, decimalsB] = await Promise.all([
         tokenA.allowance(account, SMARTSWAPROUTER[chainId as number]),
         tokenB.allowance(account, SMARTSWAPROUTER[chainId as number]),
+        tokenA.decimals(),
+        tokenB.decimals()
       ]);
 
-      const isTokenAApproved = CurrencyA.isNative
-        ? true
-        : allowanceA.toString() > 0;
+      const isTokenOneApproved = CurrencyA.isNative ? true :
+          parseFloat(ethers.utils.formatUnits(allowanceA, decimalsA).toString()) > parseFloat(inputA);
 
-      const isTokenBApproved = CurrencyB.isNative
-        ? true
-        : allowanceB.toString() > 0;
+      const isTokenTwoApproved = CurrencyB.isNative ? true :
+          parseFloat(ethers.utils.formatUnits(allowanceB, decimalsB).toString()) > parseFloat(inputB);
 
-      setHasTokenABeenApproved(isTokenAApproved);
-      setHasTokenBBeenApproved(isTokenBApproved);
+      setHasTokenABeenApproved(isTokenOneApproved);
+      setHasTokenBBeenApproved(isTokenTwoApproved);
+
     }
-  }, [CurrencyB, CurrencyA, account, chainId, checkTokenApproval]);
+      
+  }, [CurrencyB, CurrencyA, account, chainId, checkTokenApproval,inputA,inputB]);
 
   return { hasTokenABeenApproved, hasTokenBBeenApproved };
 };

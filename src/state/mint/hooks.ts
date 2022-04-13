@@ -11,7 +11,7 @@ import { AppDispatch } from '../index';
 import { useNativeBalance } from '../../utils/hooks/useBalances';
 import { useCurrency } from '../../hooks/Tokens';
 import { getERC20Token } from '../../utils/utilsFunctions';
-import { isAddress } from '../../utils';
+import { isAddress, ParseFloat } from '../../utils';
 import { ethers } from 'ethers';
 import { parseUnits } from '@ethersproject/units';
 // import {useMint}
@@ -153,8 +153,9 @@ export function useDerivedMintInfo(): {
         currency.address ? currency.address : '', library
       );
       const [balance, decimals] = await Promise.all([token.balanceOf(account), token.decimals()]);
-      const amount = parseFloat(ethers.utils.formatUnits(balance.toString(), decimals));
-      return amount === 0 ? '0' :  amount.toFixed(4);
+      const amount = ParseFloat(ethers.utils.formatUnits(balance.toString(), decimals),4);
+      console.log({amount})
+      return amount === '0.0' ? '0' :  amount;
     }
   };
 
