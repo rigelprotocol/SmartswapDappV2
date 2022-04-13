@@ -1590,8 +1590,6 @@ const ShowYieldFarmDetails = ({
     </Button>
   );
 
-  const mayo = 2;
-
   return (
     <>
       {loading ? (

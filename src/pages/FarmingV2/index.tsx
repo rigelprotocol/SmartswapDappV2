@@ -1787,8 +1787,6 @@ export function Index() {
     return AXS_BUSDLiquidity;
   };
 
-  const mayo = 2;
-
   const [welcomeModal, setWelcomeModal] = useState(false);
   const [run, setRun] = useState(false);
   const bgColor = useColorModeValue("#319EF6", "#4CAFFF");
@@ -2340,157 +2338,347 @@ export function Index() {
                   {!account ? null : ChainId !== chainId ? (
                     <Stack mt={2}>
                       <Box
-                        p='6'
+                        p={isMobileDevice ? "3" : "6"}
+                        h={isMobileDevice ? undefined : 20}
                         border='1px'
-                        h={20}
                         borderColor={filterBorderColor}
                       >
                         <Flex
-                          flexDirection='row'
-                          justifyContent='space-between'
+                          flexDirection={isMobileDevice ? "column" : "row"}
+                          justifyContent={
+                            isMobileDevice ? "center" : "space-between"
+                          }
+                          alignItems={isMobileDevice ? "center" : undefined}
                         >
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
                         </Flex>
                       </Box>
                       <Box
-                        p='6'
+                        p={isMobileDevice ? "3" : "6"}
+                        h={isMobileDevice ? undefined : 20}
                         border='1px'
-                        h={20}
                         borderColor={filterBorderColor}
                       >
                         <Flex
-                          flexDirection='row'
-                          justifyContent='space-between'
+                          flexDirection={isMobileDevice ? "column" : "row"}
+                          justifyContent={
+                            isMobileDevice ? "center" : "space-between"
+                          }
+                          alignItems={isMobileDevice ? "center" : undefined}
                         >
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
                         </Flex>
                       </Box>
                       <Box
-                        p='6'
+                        p={isMobileDevice ? "3" : "6"}
+                        h={isMobileDevice ? undefined : 20}
                         border='1px'
-                        h={20}
                         borderColor={filterBorderColor}
                       >
                         <Flex
-                          flexDirection='row'
-                          justifyContent='space-between'
+                          flexDirection={isMobileDevice ? "column" : "row"}
+                          justifyContent={
+                            isMobileDevice ? "center" : "space-between"
+                          }
+                          alignItems={isMobileDevice ? "center" : undefined}
                         >
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
                         </Flex>
                       </Box>
                       <Box
-                        p='6'
+                        p={isMobileDevice ? "3" : "6"}
+                        h={isMobileDevice ? undefined : 20}
                         border='1px'
-                        h={20}
                         borderColor={filterBorderColor}
                       >
                         <Flex
-                          flexDirection='row'
-                          justifyContent='space-between'
+                          flexDirection={isMobileDevice ? "column" : "row"}
+                          justifyContent={
+                            isMobileDevice ? "center" : "space-between"
+                          }
+                          alignItems={isMobileDevice ? "center" : undefined}
                         >
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
                         </Flex>
                       </Box>
                       <Box
-                        p='6'
+                        p={isMobileDevice ? "3" : "6"}
+                        h={isMobileDevice ? undefined : 20}
                         border='1px'
-                        h={20}
                         borderColor={filterBorderColor}
                       >
                         <Flex
-                          flexDirection='row'
-                          justifyContent='space-between'
+                          flexDirection={isMobileDevice ? "column" : "row"}
+                          justifyContent={
+                            isMobileDevice ? "center" : "space-between"
+                          }
+                          alignItems={isMobileDevice ? "center" : undefined}
                         >
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
 
-                          <Flex ml={2} flexDirection='column'>
-                            <Skeleton height='20px' w='208px' />
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
                           </Flex>
                         </Flex>
                       </Box>
