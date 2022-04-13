@@ -30,6 +30,7 @@ import {
   updateNewFilterResult,
   updateNewSearchResult,
 } from "../farming/action";
+import { Web3Provider } from "@ethersproject/providers";
 
 export const useFarmData = (): farmDataInterface => {
   const farms = useSelector((state: State) => state.newfarm);
@@ -300,10 +301,17 @@ export const useUpdateFarm = ({
         setLoadingState(true);
         let newArray =
           section === "search"
-            ? [...searchSection.searchResult]
+            ? searchSection.newSearchResult !== undefined
+              ? [...searchSection.newSearchResult]
+              : [...searchSection.searchResult]
             : section === "filter"
-            ? [...searchSection.filterResult]
+            ? searchSection.newFilterResult !== undefined
+              ? [...searchSection.newFilterResult]
+              : [...searchSection.filterResult]
+            : searchSection.content !== undefined
+            ? [...searchSection.content]
             : [...data.contents];
+
         const updatedFarm = await calculateLiquidityAndApy(
           chainId === 137 || chainId === 80001
             ? 2014.83125
@@ -339,16 +347,20 @@ interface FetchYieldFarmDetails {
     address: string;
   };
   section: string;
+  loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const useFetchYieldFarmDetails = ({
   content,
   section,
+  loading,
+  setLoading,
 }: FetchYieldFarmDetails) => {
   const data = useFarmData();
   const searchSection = useSelector((state) => state.farming);
   const { account, chainId, library } = useWeb3React();
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
   const dispatch = useDispatch();
 
@@ -586,9 +598,15 @@ export const useFetchYieldFarmDetails = ({
       setLoading(true);
       let newArray =
         section === "search"
-          ? [...searchSection.searchResult]
+          ? searchSection.newSearchResult !== undefined
+            ? [...searchSection.newSearchResult]
+            : [...searchSection.searchResult]
           : section === "filter"
-          ? [...searchSection.filterResult]
+          ? searchSection.newFilterResult !== undefined
+            ? [...searchSection.newFilterResult]
+            : [...searchSection.filterResult]
+          : searchSection.content !== undefined
+          ? [...searchSection.content]
           : [...data.contents];
 
       const updatedFarm = await calculateLiquidityAndApy(
@@ -604,6 +622,8 @@ export const useFetchYieldFarmDetails = ({
 
       newArray[index] = updatedFarm;
 
+      console.log("updatedd", newArray);
+
       handleUpdateFarms(newArray);
 
       setLoading(false);
@@ -611,3 +631,7 @@ export const useFetchYieldFarmDetails = ({
   }, []);
   return { loading };
 };
+
+// const { account, chainId, library } = useWeb3React();
+
+// const dispatch = useDispatch();

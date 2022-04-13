@@ -28,6 +28,7 @@ import {
   Spinner,
   Stack,
   Skeleton,
+  SkeletonText,
 } from "@chakra-ui/react";
 import { CopyIcon } from "../../theme/components/Icons";
 import { useHistory, useRouteMatch } from "react-router-dom";
@@ -2334,13 +2335,11 @@ export function Index() {
                     <Text />
                   </Flex>
 
-                  {ChainId !== chainId ? (
+                  {!account ? null : ChainId !== chainId ? (
                     <Stack mt={2}>
-                      <Skeleton height={20} />
-                      <Skeleton height={20} />
-                      <Skeleton height={20} />
-                      <Skeleton height={20} />
-                      <Skeleton height={20} />
+                      <Box border='1px' borderColor={filterBorderColor}>
+                        <SkeletonText mt='4' noOfLines={4} spacing='4' />
+                      </Box>
                     </Stack>
                   ) : keyword &&
                     searchResults.searchResult === undefined ? null : keyword &&

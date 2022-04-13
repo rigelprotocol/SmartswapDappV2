@@ -24,6 +24,7 @@ import {
   useMediaQuery,
   Checkbox,
   Skeleton,
+  SkeletonText,
 } from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import { SupportedChainId } from "../../constants/chains";
@@ -79,9 +80,7 @@ import { Contract } from "@ethersproject/contracts";
 import { getERC20Token } from "../../utils/utilsFunctions";
 import { calculateGas } from "../Swap/components/sendToken";
 import { useUserGasPricePercentage } from "../../state/gas/hooks";
-import { updateAllowance } from "../../state/newfarm/actions";
 
-import { useGetFarmData } from "../../utils/hooks/useGetFarmData";
 import {
   useUpdateFarm,
   useFetchYieldFarmDetails,
@@ -93,6 +92,7 @@ const ShowYieldFarmDetails = ({
   URLReferrerAddress,
   LoadingState,
   section,
+  showYieldfarm,
 }: {
   content: {
     pid: number | string;
@@ -112,6 +112,7 @@ const ShowYieldFarmDetails = ({
   wallet: any;
   LoadingState: boolean;
   section: string;
+  showYieldfarm: boolean;
 }) => {
   const mode = useColorModeValue("light", DARK_THEME);
   const bgColor = useColorModeValue("#FFF", "#15202B");
@@ -121,6 +122,7 @@ const ShowYieldFarmDetails = ({
   const [checked, setChecked] = useState(true);
   const modal2Disclosure = useDisclosure();
   const modal1Disclosure = useDisclosure();
+  const filterBorderColor = useColorModeValue("#DEE5ED", "#324D68");
   const [unstakeButtonValue, setUnstakeButtonValue] = useState("Confirm");
   const [depositValue, setDepositValue] = useState("Confirm");
   const [unstakeToken, setUnstakeToken] = useState("");
@@ -150,11 +152,18 @@ const ShowYieldFarmDetails = ({
   const signer = library?.getSigner();
   const [reload, setReload] = useState(false);
   const [contentid, setContentId] = useState(undefined);
+  const [loading, setLoading] = useState(true);
 
   // const data = useGetFarmData(reload, setReload);
 
   const { loadingState } = useUpdateFarm({ reload, setReload, content });
-  const { loading } = useFetchYieldFarmDetails({ content, section });
+
+  useFetchYieldFarmDetails({
+    content,
+    section,
+    setLoading,
+    loading,
+  });
 
   const closeModal = () => {
     modal2Disclosure.onClose();
@@ -1498,6 +1507,8 @@ const ShowYieldFarmDetails = ({
     }
   };
 
+  console.log("contentss", content);
+
   const RGPApproval = async () => {
     if (account) {
       try {
@@ -1582,7 +1593,9 @@ const ShowYieldFarmDetails = ({
   return (
     <>
       {loading ? (
-        <Skeleton height={20} />
+        <Box border='1px' borderColor={filterBorderColor}>
+          <SkeletonText mt='4' noOfLines={4} spacing='4' />
+        </Box>
       ) : (
         <Skeleton isLoaded={!loadingState ? true : false}>
           <Joyride

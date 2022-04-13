@@ -16,6 +16,7 @@ import { RGPIcon } from "./Icon";
 import { LIGHT_THEME, DARK_THEME } from "./index";
 import { useWeb3React } from "@web3-react/core";
 import Darklogo from "../../assets/rgpdarklogo.svg";
+import { useFetchYieldFarmDetails } from "../../state/newfarm/hooks";
 // import { Skeleton } from "@chakra-ui/react";
 // import "react-loading-skeleton/dist/skeleton.css";
 
@@ -75,6 +76,8 @@ const YieldFarm = ({
       return ` ${formatAmount(content.totalLiquidity)}`;
     }
   };
+
+  // console.log(loading);
 
   return (
     <>
@@ -287,6 +290,7 @@ const YieldFarm = ({
           LoadingState={LoadingState}
           section={section}
           // content2={content2}
+          // showYieldfarm={loading}
           wallet={wallet}
           URLReferrerAddress={URLReferrerAddress}
         />
