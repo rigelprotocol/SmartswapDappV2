@@ -2248,19 +2248,28 @@ export function Index() {
                 _focus={{ borderColor: "none" }}
               />
             </InputGroup>
-            <Button
-              background='#4CAFFF'
-              boxShadow='0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)'
-              borderRadius='6px'
-              // mx={[5, 10, 15, 20]}
-              padding=' 12px 32px'
-              // mt={3}
-              variant='brand'
-              display={isMobileDevice ? "none" : undefined}
-              className={"list"}
+            <Link
+              href='https://docs.google.com/forms/d/e/1FAIpQLSdJGAuABrJd6d0WSprUWB140we9hGqa-IwIbonx9ZJhxN2zsg/viewform'
+              // position={{ base: "relative", md: "absolute" }}
+
+              _hover={{ textDecoration: "none" }}
+              _active={{ textDecoration: "none" }}
+              isExternal
             >
-              List your project
-            </Button>
+              <Button
+                background='#4CAFFF'
+                boxShadow='0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)'
+                borderRadius='6px'
+                // mx={[5, 10, 15, 20]}
+                padding=' 12px 32px'
+                // mt={3}
+                variant='brand'
+                display={isMobileDevice ? "none" : undefined}
+                className={"list"}
+              >
+                List your project
+              </Button>
+            </Link>
           </Flex>
         </Flex>
 
