@@ -67,15 +67,7 @@ const SetPrice = () => {
   const { account, library, chainId } = useActiveWeb3React()
 
   const { independentField, typedValue } = useSwapState();
-  const [signedTransaction, setSignedTransaction] = useState<{ r: string, s: string, _vs: string, mess: string, v: number, recoveryParam: number }>({
-    r: "",
-    s: "",
-    _vs: "",
-    mess: "",
-    v: 0,
-    recoveryParam: 0
-  }
-  )
+
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
   const [signatureFromDataBase, setSignatureFromDataBase] = useState(false)
   const [transactionSigned, setTransactionSigned] = useState(false)
@@ -93,6 +85,10 @@ const SetPrice = () => {
   const [userOutputPrice, setUserOutputPrice] = useState<number>(0)
   const [currentToPrice,setCurrentToPrice] = useState("0")
   const [showNewChangesText,setShowNewChangesText] = useState(false)
+  const [dataSignature,setDataSignature] = useState<{mess:string,signature:string}>({
+    mess:"",
+    signature:""
+  })
 
 
   const { onCurrencySelection, onUserInput, onSwitchTokens } = useSwapActionHandlers();
@@ -118,7 +114,6 @@ const SetPrice = () => {
     [onUserInput]
   );
   useEffect(() => {
-    // setURL("http://localhost:70")
     async function runCheck() {
       if (account) {
         await checkForApproval()
@@ -128,20 +123,16 @@ const SetPrice = () => {
   }, [currencies[Field.INPUT],typedValue, account])
   useEffect(() => {
     async function checkIfSignatureExists() {
-      let user = await fetch(`${URL}/auto/data/${account}`)
+      let user = await fetch(`https://rigelprotocol-autoswap.herokuapp.com/auto/data/${account}`)
       let data = await user.json()
       if (data) {
-        setSignedTransaction(data.signature)
+        setDataSignature(data.dataSignature)
         setTransactionSigned(true)
         setSignatureFromDataBase(true)
       } else {
-        setSignedTransaction({
-          r: "",
-          s: "",
-          _vs: "",
+        setDataSignature({
           mess: "",
-          v: 0,
-          recoveryParam: 0
+          signature:""
         })
         setTransactionSigned(false)
         setSignatureFromDataBase(false)
@@ -188,11 +179,8 @@ const SetPrice = () => {
 
 
   useMemo(() => {
-    console.log(parseFloat(formattedAmounts[Field.OUTPUT]),83883)
     if(parseFloat(percentageChange) >0 && formattedAmounts[Field.OUTPUT]){
-      console.log(parseFloat(formattedAmounts[Field.OUTPUT]),111111)
         const actualRecievedAmount = (parseFloat(percentageChange) / 100) * parseFloat(formattedAmounts[Field.OUTPUT]) + parseFloat(formattedAmounts[Field.OUTPUT])
-        console.log({actualRecievedAmount})
         setUserOutputPrice(actualRecievedAmount)
     }else  if(parseFloat(percentageChange) <=0 && formattedAmounts[Field.OUTPUT]){
       setUserOutputPrice(parseFloat(formattedAmounts[Field.OUTPUT]))
@@ -239,7 +227,6 @@ const SetPrice = () => {
   useMemo(async () => {
     try{
     if (currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
-      console.log(formattedAmounts[Field.OUTPUT])
       let price = (parseFloat(percentageChange) /100)* Number(formattedAmounts[Field.OUTPUT]) + Number(formattedAmounts[Field.OUTPUT])
       
 
@@ -319,29 +306,10 @@ const SetPrice = () => {
           let signature = await web3.eth.personal.sign(mess, account,"12348844");
        var sig = ethers.utils.splitSignature(signature)
         const ecRec = await web3.eth.personal.ecRecover(mess,signature)
-        console.log({signature,sig,mess,ecRec})
-        setSignedTransaction({ ...sig, mess })
+        setDataSignature({mess,signature})
         setTransactionSigned(true)
          }
 
-
-        // 
-        // const provider =new ethers.providers.Web3Provider(window.ethereum) 
-        // const signer = provider.getSigner()
-        // const signature= await signer.signMessage(permitHash)
-        // console.log({signature})
-        
-       
-
-        // await checkForApproval()
-      // } catch (e) {
-      //   dispatch(
-      //     setOpenModal({
-      //       message: "Signing wallet failed",
-      //       trxState: TrxState.TransactionFailed,
-      //     })
-      //   );
-      // }
 
     } else {
       dispatch(
@@ -360,7 +328,6 @@ const SetPrice = () => {
       setApproval(approval.filter(t => t !== currencies[Field.INPUT]?.name))
     }
     let setArr = Array.from(new Set(approval))
-    console.log({setArr})
     if (setArr.length > 0) {
       try {
         dispatch(
@@ -395,10 +362,8 @@ const SetPrice = () => {
             
           setArr && setApproval(setArr)
         } 
-        console.log({setArr})
         if ((setArr[0] === currencies[Field.INPUT]?.symbol || setArr[1] === currencies[Field.INPUT]?.symbol) && (setArr[0] !== "RGP" || setArr[1]!=="RGP")) {
           const address = currencies[Field.INPUT]?.wrapped.address;
-          console.log({address})
           const token = address && await getERC20Token(address, library);
           const walletBal = (await token?.balanceOf(account)) + 4e18;
           const approveTransaction = await token?.approve(
@@ -450,10 +415,10 @@ const SetPrice = () => {
       data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
         currencies[Field.OUTPUT]?.wrapped.address,
         futureDate,
-        signedTransaction?.mess,
-        signedTransaction?.r,
-        signedTransaction?.s,
-        signedTransaction?.v,
+        // signedTransaction?.mess,
+        // signedTransaction?.r,
+        // signedTransaction?.s,
+        // signedTransaction?.v,
         { value: Web3.utils.toWei(typedValue, 'ether') }
       )
       const fetchTransactionData = async (sendTransaction: any) => {
@@ -478,7 +443,7 @@ const SetPrice = () => {
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)
-      const response = await fetch(`${URL}/auto/add`, {
+      const response = await fetch(`https://rigelprotocol-autoswap.herokuapp.com/auto/add`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -496,7 +461,7 @@ const SetPrice = () => {
           presentInterval: changeFrequencyToday.interval,
           fromAddress: currencies[Field.INPUT]?.isNative ? "native" : currencies[Field.INPUT]?.wrapped.address,
           toAddress: currencies[Field.OUTPUT]?.isNative ? "native" : currencies[Field.OUTPUT]?.wrapped.address,
-          signature: signedTransaction,
+          dataSignature,
           percentageChange,
           toNumberOfDecimals: currencies[Field.OUTPUT]?.isNative ? 18 : currencies[Field.OUTPUT]?.wrapped.decimals,
           fromPrice: typedValue,

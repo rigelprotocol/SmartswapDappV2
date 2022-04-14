@@ -64,7 +64,6 @@ const useOpenOrders = () => {
         }
     }, [location, chainId])
     useEffect(() => {
-        // setURL("http://localhost:7000")
         getMarketData();
     }, [chainId, account, contractAddress,refreshPage,locationData]);
 

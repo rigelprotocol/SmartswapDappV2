@@ -140,7 +140,6 @@ const useAccountHistory = () => {
             setStateAccount(account)
             setContractAddress(SMARTSWAPROUTER[chainId as number])
         }
-        // setURL("http://localhost:7000")
         loadAccountHistory();
     }, [chainId, account,location, contractAddress,refreshPage,locationData]);
 

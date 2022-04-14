@@ -148,16 +148,16 @@ export const changeFrequencyTodays = (frequency: string): { today: number,interv
   } else if (frequency === "weekly") {
     days= 7
     interval = days * 24 * 60
-    // today=today+interval
+    today=today+interval
     return {today,interval,days}
   } else if (frequency === "monthly") {
     days =30
     interval = days * 24 * 60
-    // today=today+interval
+    today=today+interval
     return {today,interval,days}
   } else if (frequency === "30" || frequency === "5") {
     interval = parseInt(frequency)
-    // today=today+interval
+    today=today+interval
     return {today,interval,days}
   }
   return {today,interval,days}

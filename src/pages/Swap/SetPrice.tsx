@@ -88,40 +88,29 @@ const SetPrice = () => {
   const [toPrice, setToPrice] = useState(0)
   const [showModal, setShowModal] = useState(false)
   const [checkedItem, setCheckedItem] = useState(false)
-  const [signedTransaction, setSignedTransaction] = useState<{ r: string, s: string, _vs: string, mess: string, v: string, recoveryParam: string }>({
-    r: "",
-    s: "",
-    _vs: "",
-    mess: "",
-    v: "",
-    recoveryParam: ""
-  }
-  )
-
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
   const [priceOut, setPriceOut] = useState("")
   const [totalNumberOfTransaction, setTotalNumberOfTransaction] = useState("1")
   const [approval, setApproval] = useState<String[]>([])
+  const [dataSignature,setDataSignature] = useState<{mess:string,signature:string}>({
+    mess:"",
+    signature:""
+  })
 
 
   useEffect(() => {
-    // setURL("http://localhost:7000")
     async function checkIfSignatureExists() {
 
       let user = await fetch(`${URL}/auto/data/${account}`)
       let data = await user.json()
       if (data) {
-        setSignedTransaction(data.signature)
+        setDataSignature(data.dataSignature)
         setTransactionSigned(true)
         setSignatureFromDataBase(true)
       } else {
-        setSignedTransaction({
-          r: "",
-          s: "",
-          _vs: "",
-          mess: "",
-          v: "",
-          recoveryParam: ""
+        setDataSignature({
+          mess:"",
+          signature:""
         })
         setTransactionSigned(false)
         setSignatureFromDataBase(false)
@@ -218,10 +207,10 @@ const SetPrice = () => {
 
         currencies[Field.OUTPUT]?.wrapped.address,
         futureDate,
-        signedTransaction?.mess,
-        signedTransaction?.r,
-        signedTransaction?.s,
-        signedTransaction?.v,
+        // signedTransaction?.mess,
+        // signedTransaction?.r,
+        // signedTransaction?.s,
+        // signedTransaction?.v,
         { value: Web3.utils.toWei(typedValue, 'ether') }
       )
       const fetchTransactionData = async (sendTransaction: any) => {
@@ -266,7 +255,6 @@ const SetPrice = () => {
           presentInterval: 0,
           fromAddress: currencies[Field.INPUT]?.isNative ? "native" : currencies[Field.INPUT]?.wrapped.address,
           toAddress: currencies[Field.OUTPUT]?.isNative ? "native" : currencies[Field.OUTPUT]?.wrapped.address,
-          signature: signedTransaction,
           userExpectedPrice: toPrice,
           percentageChange:"",
           toNumberOfDecimals: currencies[Field.OUTPUT]?.isNative ? 18 : currencies[Field.OUTPUT]?.wrapped.decimals,
@@ -276,6 +264,7 @@ const SetPrice = () => {
           type: "Set Price",
           initialToPrice,
           initialFromPrice,
+          dataSignature,
           totalNumberOfTransaction:parseInt(totalNumberOfTransaction),
           slippage:Number(allowedSlippage / 100),
           minimum,
@@ -319,27 +308,40 @@ const SetPrice = () => {
 
   const signTransaction = async () => {
     if (account !== undefined) {
-      try {
+      // try {
         let web3 = new Web3(Web3.givenProvider);
         const permitHash = "0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9";
 
-        const mess = web3.utils.soliditySha3(permitHash)
-
-        let signature = await web3.eth.sign(mess, account);
-
-        var sig = ethers.utils.splitSignature(signature)
-        setSignedTransaction({ ...sig, mess })
+         const mess = web3.utils.soliditySha3(permitHash)
+        
+         if(account && mess){
+          let signature = await web3.eth.personal.sign(mess, account,"12348844");
+       var sig = ethers.utils.splitSignature(signature)
+        const ecRec = await web3.eth.personal.ecRecover(mess,signature)
+        console.log({signature,sig,mess,ecRec})
+        
+        setDataSignature({mess,signature})
         setTransactionSigned(true)
+         }
+
+
+        // 
+        // const provider =new ethers.providers.Web3Provider(window.ethereum) 
+        // const signer = provider.getSigner()
+        // const signature= await signer.signMessage(permitHash)
+        // console.log({signature})
+        
+       
 
         // await checkForApproval()
-      } catch (e) {
-        dispatch(
-          setOpenModal({
-            message: "Signing wallet failed",
-            trxState: TrxState.TransactionFailed,
-          })
-        );
-      }
+      // } catch (e) {
+      //   dispatch(
+      //     setOpenModal({
+      //       message: "Signing wallet failed",
+      //       trxState: TrxState.TransactionFailed,
+      //     })
+      //   );
+      // }
 
     } else {
       dispatch(
@@ -351,7 +353,6 @@ const SetPrice = () => {
     }
 
   }
-
   const approveOneOrTwoTokens = async () => {
     if (currencies[Field.INPUT]?.isNative) {
       setHasBeenApproved(true);
