@@ -25,6 +25,7 @@ import { JSBI } from "@uniswap/sdk";
 import { getERC20Token } from "../utilsFunctions";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  updateChainId,
   updateFarms,
   updateLoadingState,
   updateSpecialPool,
@@ -32,20 +33,18 @@ import {
 
 export const useGetFarmData = (reload?: boolean, setReload?: any) => {
   const { chainId, account, library } = useWeb3React();
-  const [loadingState, setLoading] = useState(false);
+  const [loadingState, setLoading] = useState(true);
   const [farmdata, setFarmData] = useState<
     Array<{
-      id: number;
+      id: number | undefined;
       img: string;
       deposit: string;
+      symbol0: string;
+      symbol1: string;
       earn: string;
       type: string;
       totalLiquidity: number;
       APY: number;
-      tokenStaked: string[];
-      RGPEarned: string;
-      availableToken: string;
-      allowance: string;
       address: string;
     }>
   >([]);
@@ -55,6 +54,13 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
   const handleUpdateFarms = useCallback(
     (value) => {
       dispatch(updateFarms({ value }));
+    },
+    [dispatch]
+  );
+
+  const handleUpdateChainId = useCallback(
+    (value) => {
+      dispatch(updateChainId({ value }));
     },
     [dispatch]
   );
@@ -221,8 +227,9 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
     return formatted;
   };
 
-  const calculateLiquidityAndApy = async (
+  const calculateLiquidityandApy = async (
     address: string,
+    rgpPrice: number | undefined,
     pid?: number,
     reward?: number,
     Lp?: boolean
@@ -253,7 +260,6 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
               reserves.decimals1
             )
         : "1";
-      const rgpPrice = await calculateRigelPrice();
       const [token0, token1] = await Promise.all([
         getERC20Token(reserves && reserves.tokenAddress0, library),
         getERC20Token(reserves && reserves.tokenAddress1, library),
@@ -284,17 +290,17 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
           parseFloat(totalAllocPoint.toString())) *
         reward;
       const APY = (rgpPrice * poolReward * 365 * 100) / totalLiquidity;
-      const [tokenEarned, userInfo, FarmTokenBalance, allowance] =
-        await Promise.all([
-          masterchef.pendingRigel(pid, account),
-          masterchef.userInfo(pid, account),
-          LPInstance.balanceOf(account),
-          LPInstance.allowance(
-            account,
-            MASTERCHEFV2ADDRESSES[chainId as number]
-          ),
-        ]);
-      const tokenStaked = await userInfo.amount;
+      // const [tokenEarned, userInfo, FarmTokenBalance, allowance] =
+      //   await Promise.all([
+      //     masterchef.pendingRigel(pid, account),
+      //     masterchef.userInfo(pid, account),
+      //     LPInstance.balanceOf(account),
+      //     LPInstance.allowance(
+      //       account,
+      //       MASTERCHEFV2ADDRESSES[chainId as number]
+      //     ),
+      //   ]);
+      // const tokenStaked = await userInfo.amount;
 
       return {
         id: pid,
@@ -302,17 +308,20 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
         deposit: `${await formatSymbol(symbol0)}-${await formatSymbol(
           symbol1
         )}`,
+        symbol0: await formatSymbol(symbol0),
+        symbol1: await formatSymbol(symbol1),
         earn: "RGP",
         type: "LP",
         totalLiquidity,
         APY,
-        tokenStaked: [
-          `${await formatSymbol(symbol0)}-${await formatSymbol(symbol1)}`,
-          ethers.utils.formatEther(tokenStaked.toString()),
-        ],
-        RGPEarned: ethers.utils.formatEther(tokenEarned.toString()),
-        availableToken: ethers.utils.formatEther(FarmTokenBalance.toString()),
-        poolAllowance: ethers.utils.formatEther(allowance.toString()),
+        allocPoint: parseFloat(allocPoint.toString()),
+        // tokenStaked: [
+        //   `${await formatSymbol(symbol0)}-${await formatSymbol(symbol1)}`,
+        //   ethers.utils.formatEther(tokenStaked.toString()),
+        // ],
+        // RGPEarned: ethers.utils.formatEther(tokenEarned.toString()),
+        // availableToken: ethers.utils.formatEther(FarmTokenBalance.toString()),
+        // poolAllowance: ethers.utils.formatEther(allowance.toString()),
         address: address,
       };
     } catch (err) {
@@ -320,12 +329,112 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
     }
   };
 
-  const loopFarms = async (LpAddress: any[]) => {
+  // const calculateLiquidityAndApy = async (
+  //   address: string,
+  //   pid?: number,
+  //   reward?: number,
+  //   Lp?: boolean
+  // ) => {
+  //   try {
+  //     const masterchef = await MasterChefV2Contract(
+  //       MASTERCHEFV2ADDRESSES[chainId as number],
+  //       library
+  //     );
+  //     const LPInstance = await LiquidityPairInstance(address, library);
+  //     const reserves = await getLpTokenReserve(address);
+  //     const totalRGP = reserves
+  //       ? RGPADDRESSES[chainId as number] === reserves.tokenAddress0
+  //         ? reserves.reserves0.toString()
+  //         : reserves.reserves1.toString()
+  //       : "1";
+
+  //     const totalStable = reserves
+  //       ? BUSD[chainId as number] === reserves.tokenAddress0 ||
+  //         USDT[chainId as number] === reserves.tokenAddress0 ||
+  //         USDC[chainId as number] === reserves.tokenAddress0
+  //         ? ethers.utils.formatUnits(
+  //             reserves.reserves0.toString(),
+  //             reserves.decimals0
+  //           )
+  //         : ethers.utils.formatUnits(
+  //             reserves.reserves1.toString(),
+  //             reserves.decimals1
+  //           )
+  //       : "1";
+  //     const rgpPrice = await calculateRigelPrice();
+  //     const [token0, token1] = await Promise.all([
+  //       getERC20Token(reserves && reserves.tokenAddress0, library),
+  //       getERC20Token(reserves && reserves.tokenAddress1, library),
+  //     ]);
+
+  //     const [symbol0, symbol1] = await Promise.all([
+  //       token0.symbol(),
+  //       token1.symbol(),
+  //     ]);
+
+  //     const totalLiquidity =
+  //       symbol0 === "BUSD" ||
+  //       symbol1 === "BUSD" ||
+  //       symbol0 === "USDT" ||
+  //       symbol1 === "USDT" ||
+  //       symbol0 === "USDC" ||
+  //       symbol1 === "USDC"
+  //         ? parseFloat(totalStable) * 2
+  //         : parseFloat(ethers.utils.formatEther(totalRGP)) * rgpPrice * 2;
+
+  //     const [poolInfo, totalAllocPoint] = await Promise.all([
+  //       masterchef.poolInfo(pid),
+  //       masterchef.totalAllocPoint(),
+  //     ]);
+  //     const allocPoint = await poolInfo.allocPoint;
+  //     const poolReward =
+  //       (parseFloat(allocPoint.toString()) /
+  //         parseFloat(totalAllocPoint.toString())) *
+  //       reward;
+  //     const APY = (rgpPrice * poolReward * 365 * 100) / totalLiquidity;
+  //     const [tokenEarned, userInfo, FarmTokenBalance, allowance] =
+  //       await Promise.all([
+  //         masterchef.pendingRigel(pid, account),
+  //         masterchef.userInfo(pid, account),
+  //         LPInstance.balanceOf(account),
+  //         LPInstance.allowance(
+  //           account,
+  //           MASTERCHEFV2ADDRESSES[chainId as number]
+  //         ),
+  //       ]);
+  //     const tokenStaked = await userInfo.amount;
+
+  //     return {
+  //       id: pid,
+  //       img: "rgp.svg",
+  //       deposit: `${await formatSymbol(symbol0)}-${await formatSymbol(
+  //         symbol1
+  //       )}`,
+  //       earn: "RGP",
+  //       type: "LP",
+  //       totalLiquidity,
+  //       APY,
+  //       tokenStaked: [
+  //         `${await formatSymbol(symbol0)}-${await formatSymbol(symbol1)}`,
+  //         ethers.utils.formatEther(tokenStaked.toString()),
+  //       ],
+  //       RGPEarned: ethers.utils.formatEther(tokenEarned.toString()),
+  //       availableToken: ethers.utils.formatEther(FarmTokenBalance.toString()),
+  //       poolAllowance: ethers.utils.formatEther(allowance.toString()),
+  //       address: address,
+  //     };
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+
+  const loopFarms = async (LpAddress: any[], rgpPrice: number | undefined) => {
     const data = [];
 
     for (let i = 0; i < LpAddress.length; i++) {
-      const farm = await calculateLiquidityAndApy(
+      const farm = await calculateLiquidityandApy(
         LpAddress[i],
+        rgpPrice,
         i,
         chainId === 137 || chainId === 80001
           ? 2014.83125
@@ -338,7 +447,9 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
       data.push(farm);
     }
 
-    const iterated = data.filter((item) => item !== undefined);
+    const iterated = data.filter(
+      (item) => item?.allocPoint !== 0 && item !== undefined
+    );
 
     return iterated;
   };
@@ -352,14 +463,18 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
           MASTERCHEFV2ADDRESSES[chainId as number],
           library
         );
+        const rgpPrice = await calculateRigelPrice();
 
         const farmLength = await masterchef.poolLength();
         const LpAddress = await getLpfarmAddresses(farmLength, masterchef);
-        const farms = await loopFarms(LpAddress);
+        const farms = await loopFarms(LpAddress, rgpPrice);
 
         setLoading(false);
 
+        console.log("farmss", farms);
+
         handleLoading(false);
+        handleUpdateChainId(chainId);
 
         handleUpdateFarms(farms);
         setFarmData(farms);
