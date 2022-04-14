@@ -1,11 +1,24 @@
 import React, { useState } from "react";
-import { Box, Flex, Button, Spinner, Text, Img } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Button,
+  Spinner,
+  Text,
+  Img,
+  Stack,
+  Skeleton,
+  SkeletonText,
+} from "@chakra-ui/react";
 import ShowYieldFarmDetails from "./ShowYieldFarmDetails";
 import { useColorModeValue } from "@chakra-ui/react";
 import { RGPIcon } from "./Icon";
 import { LIGHT_THEME, DARK_THEME } from "./index";
 import { useWeb3React } from "@web3-react/core";
 import Darklogo from "../../assets/rgpdarklogo.svg";
+import { useFetchYieldFarmDetails } from "../../state/newfarm/hooks";
+// import { Skeleton } from "@chakra-ui/react";
+// import "react-loading-skeleton/dist/skeleton.css";
 
 const YieldFarm = ({
   content,
@@ -13,6 +26,8 @@ const YieldFarm = ({
   farmDataLoading,
   wallet,
   URLReferrerAddress,
+  LoadingState,
+  section,
 }: {
   content?: {
     pid: number;
@@ -31,21 +46,21 @@ const YieldFarm = ({
   };
   farmDataLoading: boolean;
   content2?: {
-    id: number;
+    id: number | undefined;
     img: string;
     deposit: string;
+    symbol0: string;
+    symbol1: string;
     earn: string;
     type: string;
     totalLiquidity: number;
     APY: number;
-    tokenStaked: string[];
-    RGPEarned: string;
-    availableToken: string;
-    allowance: string;
     address: string;
   };
   wallet: any;
   URLReferrerAddress: string;
+  LoadingState: boolean;
+  section: string;
 }) => {
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
   const { chainId, library } = useWeb3React();
@@ -61,6 +76,8 @@ const YieldFarm = ({
       return ` ${formatAmount(content.totalLiquidity)}`;
     }
   };
+
+  // console.log(loading);
 
   return (
     <>
@@ -260,13 +277,24 @@ const YieldFarm = ({
         </Box>
       </Flex>
       {showYieldfarm && (
+        // <Stack>
+        //   <Skeleton height='20px' />
+        //   <Skeleton height='20px' />
+        //   <Skeleton height='20px' />
+        //   <Skeleton height='20px' />
+        // </Stack>
+        // <Skeleton>
         <ShowYieldFarmDetails
           content={content?.type === "RGP" ? content : content2}
           // content2={content2}
+          LoadingState={LoadingState}
+          section={section}
           // content2={content2}
+          // showYieldfarm={loading}
           wallet={wallet}
           URLReferrerAddress={URLReferrerAddress}
         />
+        // </Skeleton>
       )}
     </>
   );
