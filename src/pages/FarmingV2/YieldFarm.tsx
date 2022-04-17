@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Flex,
@@ -12,12 +12,11 @@ import {
 } from "@chakra-ui/react";
 import ShowYieldFarmDetails from "./ShowYieldFarmDetails";
 import { useColorModeValue } from "@chakra-ui/react";
-import { RGPIcon } from "./Icon";
 import { LIGHT_THEME, DARK_THEME } from "./index";
 import { useWeb3React } from "@web3-react/core";
 import Darklogo from "../../assets/rgpdarklogo.svg";
+import { useLocation} from 'react-router-dom';
 import { useFetchYieldFarmDetails } from "../../state/newfarm/hooks";
-// import { Skeleton } from "@chakra-ui/react";
 // import "react-loading-skeleton/dist/skeleton.css";
 
 const YieldFarm = ({
@@ -66,6 +65,23 @@ const YieldFarm = ({
   const { chainId, library } = useWeb3React();
   const active = chainId && library;
   const [showYieldfarm, setShowYieldFarm] = useState(false);
+  const params = useLocation().pathname;
+  const myRef = useRef(null);
+
+  const symbolName = params.split('/');
+
+  useEffect(() => {
+    const getSingleFarm = async () => {
+      await content2;
+      console.log(content2);
+      if (symbolName[2] === content2?.deposit || symbolName[2].toUpperCase() === content2?.deposit) {
+        myRef.current.scrollIntoView({behavior: 'smooth'});
+        setShowYieldFarm(true)
+      }
+    };
+    getSingleFarm();
+
+  }, [symbolName, params]);
 
   const formatAmount = (value: any) => parseFloat(value).toLocaleString();
 
@@ -81,7 +97,7 @@ const YieldFarm = ({
 
   return (
     <>
-      <Flex
+      <Flex ref={myRef}
         justifyContent='space-between'
         flexDirection={["column", "column", "row"]}
         border='1px solid #DEE5ED'
