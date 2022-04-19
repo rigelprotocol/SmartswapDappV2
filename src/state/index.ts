@@ -14,7 +14,7 @@ import gas from "./gas/reducer";
 import farming from "./farming/reducer";
 import newfarm from "./newfarm/reducer";
 
-const PERSISTED_KEYS: string[] = ["user", "lists", "gas"];
+const PERSISTED_KEYS: string[] = ["user", "lists", "gas", "newfarm"];
 
 const store = configureStore({
   reducer: {

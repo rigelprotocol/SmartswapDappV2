@@ -4,10 +4,12 @@ import {
   updateSearchResult,
   clearSearchResult,
   updateFilterResult,
+  clearAllFarms,
 } from "./action";
 import { useFarms } from "../farm/hooks";
 import { useFarmData } from "../newfarm/hooks";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
+import { useWeb3React } from "@web3-react/core";
 
 interface FilterFarms {
   newestToOldest: boolean;
@@ -204,6 +206,8 @@ export const useFarmSearch = ({
         console.log("farms", farms);
         setSearchedDataResult(searchResultArray[0]);
       }
+    } else {
+      setSearchedDataResult(undefined);
     }
   }, [keyword, searchData]);
 
@@ -217,3 +221,19 @@ export function usePrevious(value: any) {
   }, [value]); //this code will run when the value of 'value' changes
   return ref.current; //in the end, return the current ref value.
 }
+
+export const useClearFarm = () => {
+  const data = useFarmData();
+  const { chainId } = useWeb3React();
+  const dispatch = useDispatch();
+
+  const handleUpdateFarms = useCallback(() => {
+    dispatch(clearAllFarms());
+  }, [dispatch]);
+
+  useMemo(() => {
+    if (chainId !== data.chainId) {
+      handleUpdateFarms();
+    }
+  }, [chainId]);
+};
