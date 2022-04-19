@@ -501,7 +501,7 @@ const SendToken = () => {
         setShowNewChangesText(false);
       }
     } catch (e) {
-      console.log(e);
+      console.log(449404);
       setSendingTrx(false);
       dispatch(
         setOpenModal({
@@ -1117,9 +1117,7 @@ const SendToken = () => {
               h='48px'
               p='5px'
               mt={1}
-              // disabled={inputError !== undefined || insufficientBalance}
-              
-              onClick={()=>GApprovalClick()}
+              disabled={inputError !== undefined || insufficientBalance}
               color={inputError ? color : "#FFFFFF"}
               bgColor={inputError ? switchBgcolor : buttonBgcolor}
               fontSize='18px'
