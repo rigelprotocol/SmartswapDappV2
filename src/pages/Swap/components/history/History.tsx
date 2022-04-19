@@ -10,6 +10,7 @@ import MarketHistory from "./MarketHistory";
 import { transactionTab } from "../../../../state/transaction/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../state";
+import { GMarketHistoryTab } from '../../../../components/G-analytics/gIndex';
 
 const History = () => {
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
@@ -60,12 +61,14 @@ const History = () => {
               color={!showMarketHistory ? activeTabColor : nonActiveTabColor}
               cursor="pointer"
               onClick={() => {
+                GMarketHistoryTab()
                 setShowMarketHistory(false);
               }}
             >
               Transaction History
             </Text>
             <Text fontWeight="400" cursor="pointer" fontSize="16px" color={showMarketHistory ? activeTabColor : nonActiveTabColor} onClick={() => {
+              GMarketHistoryTab()
               setShowMarketHistory(true);
             }}>
               Market History
@@ -99,6 +102,7 @@ const History = () => {
               h="22px"
               borderRadius="6px"
               onClick={() => {
+                GMarketHistoryTab()
                 setShow(true);
               }}
             >
