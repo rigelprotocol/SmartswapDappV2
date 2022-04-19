@@ -446,7 +446,7 @@ export const useAllowance = (
   const [hasTokenABeenApproved, setHasTokenABeenApproved] = useState(false);
   const [hasTokenBBeenApproved, setHasTokenBBeenApproved] = useState(false);
   useMemo(async () => {
-    console.log({inputA,inputB})
+    console.log({inputA,inputB});
     if (CurrencyA && CurrencyB && account) {
       const currencyAAddress = getAddress(CurrencyA);
       const currencyBAddress = getAddress(CurrencyB);
@@ -455,21 +455,24 @@ export const useAllowance = (
         getERC20Token(currencyBAddress as string, library),
       ]);
 
-      const [allowanceA, allowanceB] = await Promise.all([
+      const [allowanceA, allowanceB, decimalsA, decimalsB] = await Promise.all([
         tokenA.allowance(account, SMARTSWAPROUTER[chainId as number]),
         tokenB.allowance(account, SMARTSWAPROUTER[chainId as number]),
+        tokenA.decimals(),
+        tokenB.decimals()
       ]);
 
-      const isTokenAApproved = CurrencyA.isNative
-        ? true
-        : parseFloat(inputA) > 0 ? parseFloat(convertFromWei(allowanceA.toString(),CurrencyA.decimals)) > parseFloat(inputA) :  parseFloat(convertFromWei(allowanceA.toString(),CurrencyA.decimals)) > 0;
+      const isTokenOneApproved = CurrencyA.isNative ? true :
+          parseFloat(ethers.utils.formatUnits(allowanceA, decimalsA).toString()) > parseFloat(inputA);
 
-      const isTokenBApproved = CurrencyB.isNative
-        ? true
-        : parseFloat(inputB) > 0 ? parseFloat(convertFromWei(allowanceB.toString(),CurrencyB.decimals)) > parseFloat(inputB) :   parseFloat(convertFromWei(allowanceB.toString(),CurrencyB.decimals)) > 0;
-      setHasTokenABeenApproved(isTokenAApproved);
-      setHasTokenBBeenApproved(isTokenBApproved);
+      const isTokenTwoApproved = CurrencyB.isNative ? true :
+          parseFloat(ethers.utils.formatUnits(allowanceB, decimalsB).toString()) > parseFloat(inputB);
+
+      setHasTokenABeenApproved(isTokenOneApproved);
+      setHasTokenBBeenApproved(isTokenTwoApproved);
+
     }
+      
   }, [CurrencyB, CurrencyA, account, chainId, checkTokenApproval,inputA,inputB]);
 
   return { hasTokenABeenApproved, hasTokenBBeenApproved };

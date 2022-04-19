@@ -6,6 +6,7 @@ import {
   updateFarms,
   updateLoadingState,
   updateSpecialPool,
+  updateChainId,
 } from "./actions";
 
 export interface farmDataInterface {
@@ -26,6 +27,7 @@ export interface farmDataInterface {
       }>
     | undefined;
   loading: boolean;
+  chainId: number | undefined;
   specialPool:
     | Array<{
         id: number;
@@ -48,6 +50,7 @@ const initialState: farmDataInterface = {
   loading: false,
   contents: undefined,
   specialPool: undefined,
+  chainId: undefined,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -73,6 +76,26 @@ export default createReducer(initialState, (builder) =>
         };
       }
     })
+
+    .addCase(updateChainId, (state, action) => {
+      const chainId = action.payload.value;
+
+      return {
+        ...state,
+        chainId: chainId,
+      };
+    })
+
+    // .addCase(updateSpecialPool, (state, action) => {
+    //   const farms = action.payload.value;
+    //   if (farms !== undefined) {
+    //     return {
+    //       ...state,
+    //       specialPool: farms,
+    //       loading: false,
+    //     };
+    //   }
+    // })
 
     .addCase(updateLoadingState, (state, action) => {
       if (state.contents !== undefined) {

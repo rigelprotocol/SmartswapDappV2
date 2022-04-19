@@ -26,7 +26,7 @@ import {
   smartFactory,
 } from "../../../../utils/Contracts";
 import { useActiveWeb3React } from "../../../../utils/hooks/useActiveWeb3React";
-import { SMARTSWAPROUTER, WNATIVEADDRESSES } from "../../../../utils/addresses";
+import {SMARTSWAPNFTSALES, SMARTSWAPROUTER, WNATIVEADDRESSES} from "../../../../utils/addresses";
 import {
   ExplorerDataType,
   getExplorerLink,
@@ -306,7 +306,7 @@ const SendToken = () => {
         from: account,
       }
     );
-    const approveBalance = ethers.utils.formatEther(check).toString();
+    const approveBalance = ethers.utils.formatUnits(check, currencies[Field.INPUT].decimals).toString();
     if (parseFloat(approveBalance) > Number(formattedAmounts[Field.INPUT])) {
       return setHasBeenApproved(true);
     }
@@ -317,7 +317,7 @@ const SendToken = () => {
     if (!inputError) {
       checkApproval();
     }
-  }, [inputError]);
+  }, [inputError, formattedAmounts[Field.INPUT], currencies[Field.INPUT]]);
 
   const { priceImpact } = useCalculatePriceImpact(
     pathArray,
@@ -345,7 +345,7 @@ const SendToken = () => {
       const swapApproval = await ApprovalRouter(address, library);
 
       const token = await getERC20Token(address, library);
-      const walletBal = (await token.balanceOf(account)) + 4e18;
+      const walletBal = (await token.balanceOf(account));
 
       const approveTransaction = await swapApproval.approve(
         SMARTSWAPROUTER[chainId as number],
@@ -386,7 +386,7 @@ const SendToken = () => {
       );
     }
   };
-  console.log({ isExactIn });
+
   const [sendingTrx, setSendingTrx] = useState(false);
   const outputToken = useCallback((): any => {
     if (parsedAmounts[Field.OUTPUT]) {

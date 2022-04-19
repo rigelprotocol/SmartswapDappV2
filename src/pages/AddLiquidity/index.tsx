@@ -226,7 +226,7 @@ export default function AddLiquidity({
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        const walletBal = (await token.balanceOf(account)) + 4e18;
+        const walletBal = (await token.balanceOf(account));
         const approval = await token.approve(
           SMARTSWAPROUTER[chainId as number],
           walletBal,
