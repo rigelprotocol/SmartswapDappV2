@@ -378,6 +378,7 @@ const SendToken = () => {
         );
       }
     } catch (e:any) {
+      console.log(e.message,"1838")
       GFailedTransaction("straight_swap","approval",e.message,currencies[Field.INPUT]?.symbol)
       console.log(e);
       dispatch(
@@ -752,8 +753,8 @@ const SendToken = () => {
         onUserInput(Field.INPUT, "");
       }
     } catch (e:any) {
-      GFailedTransaction("straight_swap","swapping",e.message,currencies[Field.INPUT]?.symbol, currencies[Field.OUTPUT]?.symbol)
       console.log(e?.message,"swapping",);
+      GFailedTransaction("straight_swap","swapping",e?.message,currencies[Field.INPUT]?.symbol, currencies[Field.OUTPUT]?.symbol)
 
       setSendingTrx(false);
       dispatch(

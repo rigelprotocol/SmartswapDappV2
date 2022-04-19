@@ -34,10 +34,11 @@ export const GFailedTransaction = (
   fromToken:string="null",
   toToken:string="null"
   ) => {
+    console.log({error})
     gtag('event', 'failed_transaction', {
+      poll_title: 'smartswap swap',
       page,
       error,
-      poll_title: 'smartswap swap',
       activityBeenPerformed,
       fromToken,
       toToken

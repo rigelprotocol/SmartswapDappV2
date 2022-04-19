@@ -86,5 +86,7 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/gtag.js": "0.0.10"
+  }
 }
