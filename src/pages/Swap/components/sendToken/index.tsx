@@ -56,7 +56,7 @@ import { useUserGasPricePercentage } from "../../../../state/gas/hooks";
 import { Web3Provider } from "@ethersproject/providers";
 import NetworkModal from "./../../../../components/Navbar/modals/networkModal";
 import { clearSearchResult } from "../../../../state/farming/action";
-import gtag from "ga-gtag"
+import { GApprovalClick } from "../../../../components/G-analytics/gStraightSwap";
 
 export const calculateGas = async (
   percentage: number,
@@ -1117,7 +1117,9 @@ const SendToken = () => {
               h='48px'
               p='5px'
               mt={1}
-              disabled={inputError !== undefined || insufficientBalance}
+              // disabled={inputError !== undefined || insufficientBalance}
+              
+              onClick={()=>GApprovalClick()}
               color={inputError ? color : "#FFFFFF"}
               bgColor={inputError ? switchBgcolor : buttonBgcolor}
               fontSize='18px'
@@ -1182,9 +1184,7 @@ const SendToken = () => {
               boxShadow={lightmode ? "base" : "lg"}
               _hover={{ bgColor: buttonBgcolor }}
               onClick={() => {
-                gtag('event', 'clicks_on_swap_button', {
-                  poll_title: 'smartswap swap',
-                })
+                GApprovalClick()
               
                 setCurrentToPrice(receivedAmount);
                 setShowModal(!showModal);

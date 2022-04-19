@@ -7,6 +7,7 @@ import BridgeCard from './components/bridgeCard';
 import WelcomeModal from '../../components/Onboarding/WelcomeModal';
 import Joyride from 'react-joyride'
 import { tourSteps } from '../../components/Onboarding/SwapSteps';
+import { GPageView } from '../../components/G-analytics/gIndex';
 
 const Swap = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
@@ -16,6 +17,7 @@ const Swap = () => {
 
   useEffect(() => {
     const visits = window.localStorage.getItem('fiirstSwapVisit');
+    GPageView("Damilola","/swap")
     if (!visits) {
       setWelcomeModal(true);
       window.localStorage.setItem('fiirstSwapVisit', '1');
