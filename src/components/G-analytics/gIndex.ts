@@ -1,13 +1,13 @@
 import gtag from "ga-gtag"
 
 
-// page view
-export const GPageView = (title:string,location:string ) =>{
-      gtag('config',  "G-JRRW1SDM6G", {
-        page_title: title,
-        page_location: `https://smartswap.rigelprotocol.com/#/${location}`, // The full URL is required.
-      });
-}
+// // page view
+// export const GPageView = (title:string,location:string ) =>{
+//       gtag('config',  "G-JRRW1SDM6G", {
+//         page_title: title,
+//         page_location: `https://smartswap.rigelprotocol.com/#/${location}`, // The full URL is required.
+//       });
+// }
 
 // button clicked
 export const GButtonClick = (
@@ -18,10 +18,10 @@ export const GButtonClick = (
   ) =>{
   gtag('event', 'button_clicked', {
       page,
-      poll_title: 'smartswap swap',
       activityBeenPerformed,
       fromToken,
-      toToken
+      toToken,
+      message:`${activityBeenPerformed} ${fromToken && fromToken} and ${toToken && toToken}`
     })
 }
 
@@ -36,12 +36,12 @@ export const GFailedTransaction = (
   ) => {
     console.log({error})
     gtag('event', 'failed_transaction', {
-      poll_title: 'smartswap swap',
       page,
       error,
       activityBeenPerformed,
       fromToken,
-      toToken
+      toToken,
+      message:`${activityBeenPerformed} ${fromToken && fromToken} and ${toToken && toToken}`
     })
   }
 
@@ -55,10 +55,10 @@ export const GSuccessfullyTransaction = (
   ) => {
     gtag('event', 'successfully_transaction', {
       page,
-      poll_title: 'smartswap swap',
       activityBeenPerformed,
       fromToken,
-      toToken
+      toToken,
+      message:`${activityBeenPerformed} ${fromToken && fromToken} and ${toToken && toToken}`
     })
   }
 
@@ -68,9 +68,9 @@ export const GTokenDetailsTab = (
   fromToken:string="null",
   toToken:string="null"
   ) => {
+    console.log({fromToken,toToken})
     gtag('event', 'token_detail_tab', {
       page:"details tab",
-      poll_title: 'smartswap swap',
       fromToken,
       toToken
     })
@@ -84,7 +84,6 @@ export const GTransactionSetting = (
   ) => {
     gtag('event', 'transaction_setting', {
       page:"transaction setting",
-      poll_title: 'smartswap swap',
       slippage: `${slippage}%`,
       deadline: `${deadline} minutes`,
       gasPrice
@@ -95,6 +94,5 @@ export const GTransactionSetting = (
 export const GMarketHistoryTab = () => {
     gtag('event', 'market_history', {
       page:"market tab",
-      poll_title: 'smartswap swap',
     })
   }

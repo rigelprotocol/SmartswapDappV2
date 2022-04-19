@@ -244,6 +244,7 @@ export function Index() {
   }, [chainId]);
 
   const handleUpdateSearch = useCallback((searchedDataResult) => {
+    console.log({searchedDataResult})
     dispatch(
       updateSearchResult({
         farmData: searchedDataResult,

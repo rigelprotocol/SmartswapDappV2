@@ -14,6 +14,7 @@ import {NftProps} from "../../ViewNFT";
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import {useActiveWeb3React} from "../../../../utils/hooks/useActiveWeb3React";
 import {SupportedChainId} from "../../../../constants/chains";
+import { GViewNFT } from '../../../../components/G-analytics/gNFTs';
 
 
 export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, isFeatured = false }: NftProps) {
@@ -94,6 +95,13 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
                   borderColor={'#319EF6'}
                   variant='outline'
                   width={40}
+                  onClick={()=>{
+                    GViewNFT(data.id, data.nftName,
+                      data.total,
+                      data.unsold,
+                      data.image,
+                      data.isFeatured)
+                  }}
               >
                   <Link to={{
                       pathname: `/nfts/${id}`,

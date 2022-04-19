@@ -1,10 +1,10 @@
 import gtag from "ga-gtag"
 
-// add liquidity
-// remove liquidty
-// find pool
+// add liquidity tokens
+// remove liquidty tokens
+// find pool tokens
 // failed transaction
-// sussfully transaction
+// successfully transaction
 
 
 export const GAddLiquidity = (
@@ -25,7 +25,7 @@ export const GRemoveLiquidity = (
     ) => {
       gtag('event', 'remove_liquidity', {
         page:"liquidity page",
-        poll_title: 'smartswap swap',
+        poll_title: 'remove liquidity',
         fromToken,
         toToken
       })
@@ -38,7 +38,7 @@ export const GFindLiquidity = (
     ) => {
       gtag('event', 'find_liquidity', {
         page:"liquidity page",
-        poll_title: 'smartswap swap',
+        poll_title: 'find liquidity',
         fromToken,
         toToken
       })
