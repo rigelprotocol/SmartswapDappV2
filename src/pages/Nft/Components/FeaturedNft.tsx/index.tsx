@@ -4,10 +4,10 @@ import {
     Button,
     Center,
     Flex,
-    Image, Spinner,
+    Image, Skeleton, Spinner,
     Stack,
     Text,
-    useColorModeValue,
+    useColorModeValue, useMediaQuery,
 } from '@chakra-ui/react';
 import ComfirmPurchase from "../../Modals/ComfirmPurchase";
 import { Link } from "react-router-dom";
@@ -19,10 +19,10 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
 
     const [ purchaseModal,setOpenPerchaseModal] = useState(false);
 
-  const textColor = useColorModeValue("#333333", "#F1F5F8");
-  const lightTextColor = useColorModeValue("#666666", "grey");
+    const textColor = useColorModeValue("#333333", "#F1F5F8");
+    const lightTextColor = useColorModeValue("#666666", "grey");
 
-    const { firstToken, secondToken ,prices, unsoldItems , nftId} = useNft(id);
+    const { firstToken, secondToken ,prices, unsoldItems , nftId, loadData} = useNft(id);
 
     const {name, nftImage, loading} = useNftName(nftId[0]);
 
@@ -58,7 +58,10 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
                     
                 >
                     <Flex flex={1} justifyContent={'center'} alignItems={'center'}>
-                        {loading ? <Spinner speed="0.65s" color="#333333" /> :
+                        {loading ? <Skeleton
+                                height='400px'
+                                w={"408px"}
+                            /> :
                         <Image
                             objectFit="cover"
                             boxSize="100%"
@@ -74,17 +77,22 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
                         <Text fontWeight={700} color={textColor}  fontSize={38} pt={'25%'}>
                             {name}
                         </Text>
+
                         <Text align={'left'} pt={10} textColor={lightTextColor}>
                             Price
                         </Text>
 
-                        <Text color={textColor}  fontWeight={700} fontSize={28}>
-                            {prices.secondTokenPrice} USD
-                        </Text>
+                        {loadData ? <Skeleton height={'30px'} w={'100px'}/> :
+                            <Text color={textColor}  fontWeight={700} fontSize={28}>
+                                {prices.secondTokenPrice} USD
+                            </Text>
+                        }
 
-                        <Text align={'left'}  textColor={lightTextColor}>
-                            {(100.54 * parseFloat(prices.firstTokenPrice)).toFixed(2)} RGP
-                        </Text>
+                        {loadData ?  <Skeleton height={'30px'} w={'100px'}/> :
+                            <Text align={'left'}  textColor={lightTextColor}>
+                                {(100.54 * parseFloat(prices.firstTokenPrice)).toFixed(2)} RGP
+                            </Text>
+                        }
 
                         <Flex  pt={20} alignContent="center" >
                             <Button  onClick={()=>setOpenPerchaseModal(true) } width={'45%'} variant={'brand'}>Buy NFT</Button>
