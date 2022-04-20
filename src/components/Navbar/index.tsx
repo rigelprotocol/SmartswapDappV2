@@ -21,7 +21,6 @@ import NetworkConnector from "../NetworkConnector";
 
 export const Nav = ({ to, label, active }: { to: string; label: string, active?:boolean }) => {
   const mobileNavColor = useColorModeValue("#FFFFFF", "#15202B");
-  console.log({active})
   return (
 
   <NavLink
