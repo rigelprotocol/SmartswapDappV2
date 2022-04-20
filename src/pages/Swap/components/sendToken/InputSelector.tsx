@@ -26,6 +26,7 @@ type InputSelectorProps = {
   onMax?: () => void;
   onUserInput: (value: string) => void;
   value: string | undefined;
+  display?:boolean
 };
 
 const InputSelector = ({
@@ -38,6 +39,7 @@ const InputSelector = ({
   onMax,
   onUserInput,
   value,
+  display
 }: InputSelectorProps) => {
   const inputColor = useColorModeValue("#333333", "#F1F5F8");
   const balanceColor = useColorModeValue("#666666", "#DCE5EF");
@@ -128,7 +130,7 @@ const InputSelector = ({
         ) : (
           <></>
         )}
-      </Flex>}
+      </Flex>
       <SelectToken
         onCurrencySelect={onCurrencySelect}
         tokenModal={tokenModal}

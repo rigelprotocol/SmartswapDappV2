@@ -13,9 +13,16 @@ import { AppDispatch, RootState } from "../../../../state";
 import ConfirmationModal from '../../../../components/Modals/confirmationModal';
 import { TrxState, setOpenModal } from '../../../../state/application/reducer';
 import useOpenOrders from '../../../../utils/hooks/useOpenOrders';
+import { io } from "socket.io-client";
 
 
 const History = () => {
+
+  const socket = io("http://localhost:7000/auto");
+  socket.on('success', function(msg) {
+    alert(1234)
+     console.log({msg})
+  }) 
 
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
   const nonActiveTabColor = useColorModeValue('#CCCCCC', '#4A739B');
