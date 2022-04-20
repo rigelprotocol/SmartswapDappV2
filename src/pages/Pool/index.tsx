@@ -14,10 +14,6 @@ import Joyride from "react-joyride";
 import { tourSteps } from "../../components/Onboarding/LiquiditySteps";
 import WelcomeModal from "../../components/Onboarding/WelcomeModal";
 import { useUpdateUserGasPreference } from "../../state/gas/hooks";
-import {
-  INITIAL_GASPRICE_INCREASE,
-  checkNetVersion,
-} from "../../utils/constants";
 import { clearSearchResult } from "../../state/farming/action";
 import { useDispatch } from "react-redux";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
@@ -95,7 +91,7 @@ const Index = () => {
         startToure={startWelcomeRide}
         openModal={welcomeModal}
         closeModal={() => {
-      window.localStorage.setItem("firstLiquidtyVisit", "2")
+      window.localStorage.setItem("firstLiquidtyVisit", "2");
           setWelcomeModal((state) => !state)
         }}
         textHeader={"Welcome to RigelProtocol SmartSwap"}
@@ -286,7 +282,6 @@ const Index = () => {
               </Flex>
             )}
           </Box>
-          {/* LIQUIDITY */}
         </Box>
       </Flex>
     </>

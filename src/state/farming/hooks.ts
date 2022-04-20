@@ -4,9 +4,12 @@ import {
   updateSearchResult,
   clearSearchResult,
   updateFilterResult,
+  clearAllFarms,
 } from "./action";
 import { useFarms } from "../farm/hooks";
+import { useFarmData } from "../newfarm/hooks";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
+import { useWeb3React } from "@web3-react/core";
 
 interface FilterFarms {
   newestToOldest: boolean;
@@ -34,6 +37,7 @@ export const useFilterFarms = ({
   saveChanges,
 }: FilterFarms) => {
   const farmData = useFarms();
+  const farms = useFarmData();
   const { chainId } = useActiveWeb3React();
   const dispatch = useDispatch();
 
@@ -50,50 +54,53 @@ export const useFilterFarms = ({
 
   useMemo(() => {
     if (!newestToOldest && saveChanges) {
-      let dataArray = [...farmData.contents];
+      let dataArray = [...farms?.contents];
 
       const arrayLength = dataArray.length;
-      const firstItem = dataArray.splice(0, 1);
-      const lastItem = dataArray.splice(
-        chainId === 80001 ||
-          chainId === 137 ||
-          chainId === 42261 ||
-          chainId === 42262
-          ? 3
-          : arrayLength - 2,
-        chainId === 80001 ||
-          chainId === 137 ||
-          chainId === 42261 ||
-          chainId === 42262
-          ? 10
-          : 1
-      );
+      // const firstItem = dataArray.splice(0, 1);
+      // const lastItem = dataArray.splice(
+      //   chainId === 80001 ||
+      //     chainId === 137 ||
+      //     chainId === 42261 ||
+      //     chainId === 42262
+      //     ? 3
+      //     : arrayLength - 2,
+      //   chainId === 80001 ||
+      //     chainId === 137 ||
+      //     chainId === 42261 ||
+      //     chainId === 42262
+      //     ? 10
+      //     : 1
+      // );
+
+      console.log(dataArray);
 
       const searchResult = dataArray.filter(
-        (item, idx) => item.ARYValue > min && item.ARYValue < max
+        (item, idx) => item.APY > min && item.APY < max
       );
       const editSearch = [...searchResult];
+      console.log(editSearch);
 
       handleUpdateSearch(editSearch);
       setSavedChanges(false);
     } else if (newestToOldest && saveChanges) {
-      let dataArray = [...farmData.contents];
+      let dataArray = [...farms.contents];
 
       let normal = [...farmData.contents];
       let resortedArray = dataArray.reverse();
       const arrayLength = dataArray.length;
-      const firstItem = dataArray.splice(
-        0,
-        chainId === 80001 ||
-          chainId === 137 ||
-          chainId === 42261 ||
-          chainId === 42262
-          ? 9
-          : 1
-      );
-      const lastItem = dataArray.splice(dataArray.length - 1, 1);
+      // const firstItem = dataArray.splice(
+      //   0,
+      //   chainId === 80001 ||
+      //     chainId === 137 ||
+      //     chainId === 42261 ||
+      //     chainId === 42262
+      //     ? 9
+      //     : 1
+      // );
+      // const lastItem = dataArray.splice(dataArray.length - 1, 1);
       const searchResult = dataArray.filter(
-        (item) => item.ARYValue > min && item.ARYValue < max
+        (item) => item.APY > min && item.APY < max
       );
       const editSearch = [...searchResult];
 
@@ -115,6 +122,7 @@ export const useFarmSearch = ({
   searchData,
 }: Args) => {
   const FarmData = useFarms();
+  const farms = useFarmData();
   const [searchedDataResult, setSearchedDataResult] = useState(undefined);
   const dispatch = useDispatch();
   const { chainId } = useActiveWeb3React();
@@ -161,25 +169,25 @@ export const useFarmSearch = ({
         setSearchedDataResult(searchResultArray[0]);
 
         // handleUpdateSearch(searchResultArray[0]);
-      } else if (FarmData.contents) {
+      } else if (farms.contents) {
         let searchResultArray = [];
-        const dataArray = [...FarmData.contents];
+        const dataArray = [...farms.contents];
         const arrayLength = dataArray.length;
-        const firstItem = dataArray.splice(0, 1);
-        const lastItem = dataArray.splice(
-          chainId === 80001 ||
-            chainId === 137 ||
-            chainId === 42261 ||
-            chainId === 42262
-            ? 3
-            : arrayLength - 2,
-          chainId === 80001 ||
-            chainId === 137 ||
-            chainId === 42261 ||
-            chainId === 42262
-            ? 10
-            : 1
-        );
+        // const firstItem = dataArray.splice(0, 1);
+        // const lastItem = dataArray.splice(
+        //   chainId === 80001 ||
+        //     chainId === 137 ||
+        //     chainId === 42261 ||
+        //     chainId === 42262
+        //     ? 3
+        //     : arrayLength - 2,
+        //   chainId === 80001 ||
+        //     chainId === 137 ||
+        //     chainId === 42261 ||
+        //     chainId === 42262
+        //     ? 10
+        //     : 1
+        // );
         const resultArray = dataArray.filter(
           (item) => item.deposit.search(keyword) !== -1
         );
@@ -195,8 +203,11 @@ export const useFarmSearch = ({
         } else {
           searchResultArray.push(secondResultSearch);
         }
+        console.log("farms", farms);
         setSearchedDataResult(searchResultArray[0]);
       }
+    } else {
+      setSearchedDataResult(undefined);
     }
   }, [keyword, searchData]);
 
@@ -210,3 +221,19 @@ export function usePrevious(value: any) {
   }, [value]); //this code will run when the value of 'value' changes
   return ref.current; //in the end, return the current ref value.
 }
+
+export const useClearFarm = () => {
+  const data = useFarmData();
+  const { chainId } = useWeb3React();
+  const dispatch = useDispatch();
+
+  const handleUpdateFarms = useCallback(() => {
+    dispatch(clearAllFarms());
+  }, [dispatch]);
+
+  useMemo(() => {
+    if (chainId !== data.chainId) {
+      handleUpdateFarms();
+    }
+  }, [chainId]);
+};

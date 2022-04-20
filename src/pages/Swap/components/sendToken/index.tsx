@@ -26,7 +26,11 @@ import {
   smartFactory,
 } from "../../../../utils/Contracts";
 import { useActiveWeb3React } from "../../../../utils/hooks/useActiveWeb3React";
-import { SMARTSWAPROUTER, WNATIVEADDRESSES } from "../../../../utils/addresses";
+import {
+  SMARTSWAPNFTSALES,
+  SMARTSWAPROUTER,
+  WNATIVEADDRESSES,
+} from "../../../../utils/addresses";
 import {
   ExplorerDataType,
   getExplorerLink,
@@ -56,6 +60,10 @@ import { useUserGasPricePercentage } from "../../../../state/gas/hooks";
 import { Web3Provider } from "@ethersproject/providers";
 import NetworkModal from "./../../../../components/Navbar/modals/networkModal";
 import { clearSearchResult } from "../../../../state/farming/action";
+import {
+  useTokenBalance,
+  useUpdateBalance,
+} from "../../../../utils/hooks/useUpdateBalances";
 
 export const calculateGas = async (
   percentage: number,
@@ -157,6 +165,7 @@ const SendToken = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentToPrice, setCurrentToPrice] = useState("");
   const [showNewChangesText, setShowNewChangesText] = useState(false);
+  // const [one, setOne] = useState([]);
 
   const { onCurrencySelection, onUserInput, onSwitchTokens } =
     useSwapActionHandlers();
@@ -253,6 +262,8 @@ const SendToken = () => {
   const receivedAmount = Number(formattedAmounts[Field.OUTPUT]).toFixed(4);
   const fromAmount = Number(formattedAmounts[Field.INPUT]);
 
+  // useUpdateBalance("");
+
   const parsedOutput = (decimal: number) => {
     return ethers.utils.parseUnits(minimum.toString(), decimal).toString();
   };
@@ -305,18 +316,20 @@ const SendToken = () => {
         from: account,
       }
     );
-    const approveBalance = ethers.utils.formatEther(check).toString();
+    const approveBalance = ethers.utils
+      .formatUnits(check, currencies[Field.INPUT].decimals)
+      .toString();
     if (parseFloat(approveBalance) > Number(formattedAmounts[Field.INPUT])) {
       return setHasBeenApproved(true);
     }
     return setHasBeenApproved(false);
   };
-
+  // useTokenBalance()
   useEffect(() => {
     if (!inputError) {
       checkApproval();
     }
-  }, [inputError]);
+  }, [inputError, formattedAmounts[Field.INPUT], currencies[Field.INPUT]]);
 
   const { priceImpact } = useCalculatePriceImpact(
     pathArray,
@@ -344,7 +357,7 @@ const SendToken = () => {
       const swapApproval = await ApprovalRouter(address, library);
 
       const token = await getERC20Token(address, library);
-      const walletBal = (await token.balanceOf(account)) + 4e18;
+      const walletBal = await token.balanceOf(account);
 
       const approveTransaction = await swapApproval.approve(
         SMARTSWAPROUTER[chainId as number],
@@ -385,7 +398,7 @@ const SendToken = () => {
       );
     }
   };
-  console.log({ isExactIn });
+
   const [sendingTrx, setSendingTrx] = useState(false);
   const outputToken = useCallback((): any => {
     if (parsedAmounts[Field.OUTPUT]) {

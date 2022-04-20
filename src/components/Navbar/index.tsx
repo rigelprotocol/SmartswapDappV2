@@ -4,16 +4,11 @@ import {
   Spacer,
   Box,
   Img,
-  Text,
-  Stack,
   Link,
-  Button,
-  Image,
   useColorModeValue,
   useMediaQuery,
 } from "@chakra-ui/react";
-import { NavLink } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { ColorModeSwitcher } from "../ColorModeSwitcher";
 import SocialMedia from "./SocialMedia";
 import DappsDropdown from "./DappsDropdown";
@@ -21,17 +16,16 @@ import WalletConnection from "./WalletConnection";
 import SwapDropdown from "./SwapDropdown";
 import LightLogo from "./../../assets/logo/logo-light.svg";
 import DarkLogo from "./../../assets/logo/logo-dark.svg";
-import MetamaskLogo from "./../../assets/metamaskLogo.png";
 import MobileNavDrawer from "./MobileNavDrawer";
 import NetworkConnector from "../NetworkConnector";
-import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 
-const Nav = ({ to, label }: { to: string; label: string }) => (
+export const Nav = ({ to, label, color }: { to: string; label: string, color?:string }) => (
   <NavLink
     to={to}
     activeStyle={{
       color: "#319EF6",
     }}
+    style={{color: color ? color : 'white'}}
   >
     {label}
   </NavLink>
@@ -43,7 +37,7 @@ const Index = () => {
   const Logo = useColorModeValue(LightLogo, DarkLogo);
   const mobileNavColor = useColorModeValue("#FFFFFF", "#15202B");
   const mobileNavBorderColor = useColorModeValue("#DEE5ED", "#324D68");
-  const { library } = useActiveWeb3React();
+
   return (
     <>
       {location === "/" ? null : (
@@ -104,7 +98,7 @@ const Index = () => {
                   className="HeaderRide"
                 >
                   <SwapDropdown />
-                  <Nav label="Liquidity" to="/pool" />
+                  <Nav label="Liquidity" to="/pool" color={location === '/add' || location === '/remove' ? "#319EF6" : 'white'} />
                   <Nav label="Farming" to="/farming-v2" />
                   <Nav label="NFT" to="/nft" />
                   <Link href="#">Analytics</Link>

@@ -39,9 +39,9 @@ export const SMARTSWAPROUTER: { [key: string]: string } = {
 export const SMARTSWAPNFTSALES: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
-  "56": "0x473180395D9CC0DeDd9d18806048FB649049bE9A",
+  "56": "0x6f3BB73e30a24412C1202f58439f4fe5Cb712979",
   "97": "0x4aEFdbed61128de1483D2B9e739251466DCa29Bb",
-  "137": "0x2EC17a1AECbf0392bCC7e4eD021Bbc9B6a17c7CF",
+  "137": "0xA5c488716f83A6C74bAC8712a457b7BeCF7C3DD5",
   "80001": "0xB15f7A4bA76B702e49FA3233FD455C5F13CB01d8"
 };
 
@@ -50,9 +50,9 @@ export const SMARTSWAPNFTSALES: { [key: string]: string } = {
 export const SMARTSWAPNFTTWO: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
-  "56": "0x5DaD579b5774bdcf3160Ef4ee0fAf670d60b731E",
+  "56": "0xb9494f0086e3004314d0fC7AEA4fA4476D0d281c",
   "97": "0x5BE1d480B696E46FdE74EC599b0472fCA1A67f5D",
-  "137": "0xf035E39613F1760f46bECA10b4BE04772472B25b",
+  "137": "0xCff5eb5f88b40905035310118B7dDF4bef8155dd",
   "80001": "0x4798a90d74ba3Fef77D38B0a07E8172FC5602629"
 };
 
@@ -258,9 +258,9 @@ export const RGP: { [key: string]: string } = {
 export const BUSD: { [key: string]: string } = {
   "1": "0x4Fabb145d64652a948d72533023f6E7A623C7C53",
   "3": "0xD848eD7f625165D7fFa9e3B3b0661d6074902FD4",
-  "56": "0xe9e7cea3dedca5984780bafc599bd69add087d56",
-  "97": "0x10249e900b919fdee9e2ed38b4cd83c4df857254",
-  "137": "0xdab529f40e671a1d4bf91361c21bf9f0c9712ab7",
+  "56": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+  "97": "0x10249E900B919FDEe9e2ED38b4cd83C4df857254",
+  "137": "0xdAb529f40E671A1D4bF91361c21bf9f0C9712ab7",
   "8001": "",
 };
 
@@ -273,6 +273,12 @@ export const USDT: { [key: string]: string } = {
   "137": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
   "80001": "0x7E1cF971de65eB065A72595B3Ac9e1b9Cc630564",
   "42262": "0xdC19A122e268128B5eE20366299fc7b5b199C8e3",
+  "42261": "0xa30b641533D2509089CeF6F097a5BFB62dF7BC8b",
+};
+
+export const USDC: { [key: string]: string } = {
+  "137": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+  "80001": "0xd22c5DbE967C2f9ac302729354fE32eB88b6B645",
 };
 
 //   '1': '0x',

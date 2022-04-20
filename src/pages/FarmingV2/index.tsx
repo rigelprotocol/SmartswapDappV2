@@ -25,6 +25,10 @@ import {
   InputLeftAddon,
   Input,
   Icon,
+  Spinner,
+  Stack,
+  Skeleton,
+  SkeletonText,
 } from "@chakra-ui/react";
 import { CopyIcon } from "../../theme/components/Icons";
 import { useHistory, useRouteMatch } from "react-router-dom";
@@ -105,6 +109,11 @@ import {
   clearSearchResult,
   updateSearchResult,
 } from "../../state/farming/action";
+import { useGetFarmData } from "../../utils/hooks/useGetFarmData";
+import { useClearFarm } from "../../state/farming/hooks";
+
+import { useFarmData } from "../../state/newfarm/hooks";
+import { contents } from "./mock";
 
 export const BIG_TEN = new bigNumber(10);
 export const LIQUIDITY = "liquidity";
@@ -154,8 +163,7 @@ export function Index() {
   const previousKeyword = usePrevious(keyword);
 
   const filter = useSearch();
-
-  console.log(keyword, previousKeyword);
+  useClearFarm();
 
   const [searchedDataResult] = useFarmSearch({
     keyword,
@@ -218,6 +226,13 @@ export function Index() {
   const dispatch = useDispatch();
   let match = useRouteMatch("/farming-V2/staking-RGPv2");
   const FarmData = useFarms();
+  const { farmdata, loadingState } = useGetFarmData();
+
+  const data = useFarmData();
+  const farms = useSelector((state) => state.farming.content);
+  const searchSection = useSelector((state) => state.farming);
+
+  console.log(data);
 
   const clearSearchedData = useCallback(() => {
     dispatch(clearSearchResult());
@@ -254,8 +269,10 @@ export function Index() {
   const trxState = useSelector<RootState>(
     (state) => state.application.modal?.trxState
   );
-  const stateChanged: boolean = trxState === 2;
 
+  const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
+  const stateChanged: boolean = trxState === 2;
+  console.log(searchResults.searchResult);
   //temporary
   useEffect(() => {
     getFarmData();
@@ -1808,7 +1825,7 @@ export function Index() {
         openModal={welcomeModal}
         closeModal={() => {
           window.localStorage.setItem("firstFarmVisit", "2");
-          setWelcomeModal((state) => !state)
+          setWelcomeModal((state) => !state);
         }}
         textHeader={"Welcome to SmartSwap Farming"}
         welcomeText='With farming, you can maximize the rate of return on capital and generate rewards on your cryptocurrency holdings.'
@@ -2031,7 +2048,7 @@ export function Index() {
                   width={isMobileDevice ? undefined : "fit-content"}
                   flex='none'
                   order='1'
-                  onClick={(e)=>e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
                   flex-grow='0'
                   margin='10px 16px'
                 >
@@ -2124,7 +2141,7 @@ export function Index() {
                   }
                   onChange={handleStakingTab}
                   background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
-                  onClick={(e)=>e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
                   border=' 1px solid #008DFF'
                   box-sizing='border-box'
                   borderRadius='50px'
@@ -2231,19 +2248,28 @@ export function Index() {
                 _focus={{ borderColor: "none" }}
               />
             </InputGroup>
-            <Button
-              background='#4CAFFF'
-              boxShadow='0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)'
-              borderRadius='6px'
-              // mx={[5, 10, 15, 20]}
-              padding=' 12px 32px'
-              // mt={3}
-              variant='brand'
-              display={isMobileDevice ? "none" : undefined}
-              className={"list"}
+            <Link
+              href='https://docs.google.com/forms/d/e/1FAIpQLSdJGAuABrJd6d0WSprUWB140we9hGqa-IwIbonx9ZJhxN2zsg/viewform'
+              // position={{ base: "relative", md: "absolute" }}
+
+              _hover={{ textDecoration: "none" }}
+              _active={{ textDecoration: "none" }}
+              isExternal
             >
-              List your project
-            </Button>
+              <Button
+                background='#4CAFFF'
+                boxShadow='0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)'
+                borderRadius='6px'
+                // mx={[5, 10, 15, 20]}
+                padding=' 12px 32px'
+                // mt={3}
+                variant='brand'
+                display={isMobileDevice ? "none" : undefined}
+                className={"list"}
+              >
+                List your project
+              </Button>
+            </Link>
           </Flex>
         </Flex>
 
@@ -2318,269 +2344,438 @@ export function Index() {
                     <Text />
                   </Flex>
 
-                  {/* {/* // ) : index !== 0 &&
-                    //   Number(chainId) !== Number(SupportedChainId.POLYGON) ? (
-                    //   <YieldFarm
-                    //     farmDataLoading={farmDataLoading}
-                    //     content={content}
-                    //     key={content.pid}
-                    //     wallet={wallet}
-                    //   />
-                    // ) */}
+                  {!account ? null : ChainId !== chainId ? (
+                    <Stack mt={2}>
+                      <Box
+                        p={isMobileDevice ? "3" : "6"}
+                        h={isMobileDevice ? undefined : 20}
+                        border='1px'
+                        borderColor={filterBorderColor}
+                      >
+                        <Flex
+                          flexDirection={isMobileDevice ? "column" : "row"}
+                          justifyContent={
+                            isMobileDevice ? "center" : "space-between"
+                          }
+                          alignItems={isMobileDevice ? "center" : undefined}
+                        >
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
 
-                  {keyword && searchResults.searchResult === undefined
-                    ? null
-                    : Number(chainId) === Number(SupportedChainId.OASISTEST) &&
-                      keyword &&
-                      searchResults.searchResult !== undefined
-                    ? searchResults.searchResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) ===
-                            Number(SupportedChainId.OASISTEST) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
                             />
-                          )
-                      )
-                    : Number(chainId) === Number(SupportedChainId.OASISTEST) &&
-                      searchResults.filterResult !== undefined
-                    ? searchResults.filterResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) ===
-                            Number(SupportedChainId.OASISTEST) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
+                          </Flex>
+
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
                             />
-                          )
-                      )
-                    : Number(chainId) === Number(SupportedChainId.OASISTEST) &&
-                      searchResults.filterResult === undefined
-                    ? FarmData.contents.map((content: any, index: number) =>
-                        Number(chainId) ===
-                          Number(SupportedChainId.OASISTEST) &&
-                        index !== 0 &&
-                        index < 4 ? (
+                          </Flex>
+
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+                        </Flex>
+                      </Box>
+                      <Box
+                        p={isMobileDevice ? "3" : "6"}
+                        h={isMobileDevice ? undefined : 20}
+                        border='1px'
+                        borderColor={filterBorderColor}
+                      >
+                        <Flex
+                          flexDirection={isMobileDevice ? "column" : "row"}
+                          justifyContent={
+                            isMobileDevice ? "center" : "space-between"
+                          }
+                          alignItems={isMobileDevice ? "center" : undefined}
+                        >
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+                        </Flex>
+                      </Box>
+                      <Box
+                        p={isMobileDevice ? "3" : "6"}
+                        h={isMobileDevice ? undefined : 20}
+                        border='1px'
+                        borderColor={filterBorderColor}
+                      >
+                        <Flex
+                          flexDirection={isMobileDevice ? "column" : "row"}
+                          justifyContent={
+                            isMobileDevice ? "center" : "space-between"
+                          }
+                          alignItems={isMobileDevice ? "center" : undefined}
+                        >
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+                        </Flex>
+                      </Box>
+                      <Box
+                        p={isMobileDevice ? "3" : "6"}
+                        h={isMobileDevice ? undefined : 20}
+                        border='1px'
+                        borderColor={filterBorderColor}
+                      >
+                        <Flex
+                          flexDirection={isMobileDevice ? "column" : "row"}
+                          justifyContent={
+                            isMobileDevice ? "center" : "space-between"
+                          }
+                          alignItems={isMobileDevice ? "center" : undefined}
+                        >
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+                        </Flex>
+                      </Box>
+                      <Box
+                        p={isMobileDevice ? "3" : "6"}
+                        h={isMobileDevice ? undefined : 20}
+                        border='1px'
+                        borderColor={filterBorderColor}
+                      >
+                        <Flex
+                          flexDirection={isMobileDevice ? "column" : "row"}
+                          justifyContent={
+                            isMobileDevice ? "center" : "space-between"
+                          }
+                          alignItems={isMobileDevice ? "center" : undefined}
+                        >
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+
+                          <Flex
+                            ml={isMobileDevice ? undefined : 2}
+                            mt={isMobileDevice ? 2 : undefined}
+                            flexDirection='column'
+                          >
+                            <Skeleton
+                              height='20px'
+                              w={isMobileDevice ? "320px" : "208px"}
+                            />
+                          </Flex>
+                        </Flex>
+                      </Box>
+                    </Stack>
+                  ) : // </Stack>
+                  keyword &&
+                    searchResults.searchResult === undefined ? null : keyword &&
+                    searchResults.searchResult !== undefined ? (
+                    searchSection.newSearchResult === undefined ? (
+                      searchResults.searchResult.map(
+                        (content: any, index: number) => (
                           <YieldFarm
                             farmDataLoading={farmDataLoading}
-                            content={content}
-                            key={content.pid}
+                            content2={content}
+                            key={content?.id}
+                            section={"search"}
                             wallet={wallet}
+                            LoadingState={loadingState}
                           />
-                        ) : null
+                        )
                       )
-                    : Number(chainId) ===
-                        Number(SupportedChainId.OASISMAINNET) &&
-                      keyword &&
-                      searchResults.searchResult !== undefined
-                    ? searchResults.searchResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) ===
-                            Number(SupportedChainId.OASISMAINNET) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : Number(chainId) ===
-                        Number(SupportedChainId.OASISMAINNET) &&
-                      searchResults.filterResult !== undefined
-                    ? searchResults.filterResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) ===
-                            Number(SupportedChainId.OASISMAINNET) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : Number(chainId) ===
-                        Number(SupportedChainId.OASISMAINNET) &&
-                      searchResults.filterResult === undefined
-                    ? FarmData.contents.map((content: any, index: number) =>
-                        Number(chainId) ===
-                          Number(SupportedChainId.OASISMAINNET) &&
-                        index !== 0 &&
-                        index < 4 ? (
+                    ) : (
+                      searchSection.newSearchResult.map(
+                        (content: any, index: number) => (
                           <YieldFarm
                             farmDataLoading={farmDataLoading}
-                            content={content}
-                            key={content.pid}
+                            content2={content}
+                            key={content?.id}
+                            section={"search"}
                             wallet={wallet}
+                            LoadingState={loadingState}
                           />
-                        ) : null
+                        )
                       )
-                    : Number(chainId) ===
-                        Number(SupportedChainId.POLYGONTEST) &&
-                      keyword &&
-                      searchResults.searchResult !== undefined
-                    ? searchResults.searchResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) ===
-                            Number(SupportedChainId.POLYGONTEST) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : Number(chainId) ===
-                        Number(SupportedChainId.POLYGONTEST) &&
-                      searchResults.filterResult !== undefined
-                    ? searchResults.filterResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) ===
-                            Number(SupportedChainId.POLYGONTEST) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : Number(chainId) ===
-                        Number(SupportedChainId.POLYGONTEST) &&
-                      searchResults.filterResult === undefined
-                    ? FarmData.contents.map((content: any, index: number) =>
-                        Number(chainId) ===
-                          Number(SupportedChainId.POLYGONTEST) &&
-                        index !== 0 &&
-                        index < 4 ? (
+                    )
+                  ) : searchResults.filterResult !== undefined ? (
+                    searchSection.newFilterResult === undefined ? (
+                      searchResults.filterResult.map(
+                        (content: any, index: number) => (
                           <YieldFarm
                             farmDataLoading={farmDataLoading}
-                            content={content}
-                            key={content.pid}
+                            content2={content}
+                            section={"filter"}
+                            key={content?.id}
                             wallet={wallet}
+                            LoadingState={loadingState}
                           />
-                        ) : null
+                        )
                       )
-                    : Number(chainId) === Number(SupportedChainId.POLYGON) &&
-                      keyword &&
-                      searchResults.searchResult !== undefined
-                    ? searchResults.searchResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) ===
-                            Number(SupportedChainId.POLYGON) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : Number(chainId) === Number(SupportedChainId.POLYGON) &&
-                      searchResults.filterResult !== undefined
-                    ? searchResults.filterResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) ===
-                            Number(SupportedChainId.POLYGON) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : Number(chainId) === Number(SupportedChainId.POLYGON) &&
-                      searchResults.filterResult === undefined
-                    ? FarmData.contents.map((content: any, index: number) =>
-                        Number(chainId) === Number(SupportedChainId.POLYGON) &&
-                        index !== 0 &&
-                        index < 4 ? (
+                    ) : (
+                      searchSection.newFilterResult.map(
+                        (content: any, index: number) => (
                           <YieldFarm
                             farmDataLoading={farmDataLoading}
-                            content={content}
-                            key={content.pid}
+                            content2={content}
+                            key={content?.id}
+                            section={"filter"}
                             wallet={wallet}
+                            LoadingState={loadingState}
                           />
-                        ) : null
+                        )
                       )
-                    : // : Number(chainId) === Number(SupportedChainId.POLYGON) ||
-                    //       (Number(chainId) ===
-                    //         Number(SupportedChainId.POLYGONTEST) &&
-                    //         searchedFarmData !== undefined)
-                    //     ? searchedFarmData?.map((content: any, index: number) => (
-                    //         <YieldFarm
-                    //           farmDataLoading={farmDataLoading}
-                    //           content={content}
-                    //           key={content.pid}
-                    //           wallet={wallet}
-                    //         />
-                    //       ))
-                    //     : (Number(chainId) === Number(SupportedChainId.POLYGON) ||
-                    //         Number(chainId) ===
-                    //           Number(SupportedChainId.POLYGONTEST)) &&
-                    //       searchedFarmData === undefined
-                    //     ? FarmData.contents.map((content: any, index: number) =>
-                    //         index !== 0 && index < 4 ? (
-                    //           <YieldFarm
-                    //             farmDataLoading={farmDataLoading}
-                    //             content={content}
-                    //             key={content.pid}
-                    //             wallet={wallet}
-                    //           />
-                    //         ) : null
-                    //       )
-                    Number(chainId) !== Number(SupportedChainId.POLYGON) &&
-                      keyword &&
-                      searchResults.searchResult !== undefined
-                    ? searchResults.searchResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) !==
-                            Number(SupportedChainId.POLYGON) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : Number(chainId) !== Number(SupportedChainId.POLYGON) &&
-                      searchResults.filterResult !== undefined
-                    ? searchResults.filterResult.map(
-                        (content: any, index: number) =>
-                          Number(chainId) !==
-                            Number(SupportedChainId.POLYGON) && (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content={content}
-                              key={content.pid}
-                              wallet={wallet}
-                            />
-                          )
-                      )
-                    : Number(chainId) !== Number(SupportedChainId.POLYGON) &&
-                      searchResults.filterResult === undefined
-                    ? FarmData.contents.map((content: any, index: number) =>
-                        Number(chainId) !== Number(SupportedChainId.POLYGON) &&
-                        index !== 0 &&
-                        index !== 12 ? (
-                          <YieldFarm
-                            farmDataLoading={farmDataLoading}
-                            content={content}
-                            key={content.pid}
-                            wallet={wallet}
-                          />
-                        ) : null
-                      )
-                    : null}
+                    )
+                  ) : searchResults.filterResult === undefined ? (
+                    farms === undefined ? (
+                      data.contents?.map((content: any, index: number) => (
+                        <YieldFarm
+                          farmDataLoading={farmDataLoading}
+                          content2={content}
+                          key={content?.id}
+                          section={"normal"}
+                          wallet={wallet}
+                          LoadingState={loadingState}
+                        />
+                      ))
+                    ) : (
+                      farms.map((content: any, index: number) => (
+                        <YieldFarm
+                          farmDataLoading={farmDataLoading}
+                          content2={content}
+                          key={content?.id}
+                          section={"normal"}
+                          wallet={wallet}
+                          LoadingState={loadingState}
+                        />
+                      ))
+                    )
+                  ) : null}
                 </Box>
               </Box>
             </Flex>
