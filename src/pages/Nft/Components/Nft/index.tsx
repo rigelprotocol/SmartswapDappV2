@@ -51,8 +51,9 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
           >
             <Flex p={2.5} height={'320px'} justifyContent={'center'} alignItems={'center'}>
                 {loading ?  <Skeleton
-                    height='300px'
-                    w={isMobileDevice ? "330px" : "208px"}
+                    height='100%'
+                    w={isMobileDevice ? "330px" : "100%"}
+                    rounded={'lg'}
                 /> :  chainId === Number(SupportedChainId.BINANCETEST) || chainId === Number(SupportedChainId.POLYGONTEST) ? (
                     <Image
                         src={nftImage}
