@@ -1908,7 +1908,7 @@ const ShowYieldFarmDetails = ({
                 justifyContent='space-around'
               >
                 <Box>
-                  {/* <Flex
+                   <Flex
                     my={2}
                     justify={{ base: "center", md: "none", lg: "none" }}
                   >
@@ -1941,8 +1941,7 @@ const ShowYieldFarmDetails = ({
                     >
                       {content.deposit} Tokens Staked
                     </Text>
-                  </Flex> */}
-
+                  </Flex> 
                   <Flex marginLeft={{ base: "20px", md: "none", lg: "none" }}>
                     <Button
                       w='45%'
