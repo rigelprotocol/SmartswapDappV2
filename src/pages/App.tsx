@@ -22,6 +22,7 @@ import {useActiveWeb3React} from "../utils/hooks/useActiveWeb3React";
 import {SupportedChainId} from "../constants/chains";
 import ViewNFT from "./Nft/ViewNFT";
 import YieldFarm from "./FarmingV2/YieldFarm";
+import SmartBid from "./SmartBid";
 
 export default function App() {
   useConnectWallet();
@@ -73,6 +74,7 @@ export default function App() {
               <Route exact path="/farming" component={FarmingV1} />
               <Route path="/farming-V2" component={FarmingV2} />
               <Route path="/farming-V2/:deposit" component={YieldFarm} />
+              <Route path={'/smartbid'} component={SmartBid}/>
               {/* <Route path="*">
                 <Redirect to="/swap" />
               </Route> */}
