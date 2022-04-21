@@ -114,6 +114,7 @@ import { useClearFarm } from "../../state/farming/hooks";
 
 import { useFarmData } from "../../state/newfarm/hooks";
 import { contents } from "./mock";
+import { GFarmingClickListYourProject, GFarmingInputSearchFarm, GOpenedSpecialPool } from "../../components/G-analytics/gFarming";
 
 export const BIG_TEN = new bigNumber(10);
 export const LIQUIDITY = "liquidity";
@@ -313,6 +314,7 @@ export function Index() {
     } else if (value === STAKING) {
       setSwitchTab(!switchTab);
       setSelected(STAKING);
+      GOpenedSpecialPool(tabIndex)
       if (tabIndex === 1) {
         setStakingIndex(1);
         changeVersion("/farming-v2/staking-RGPv2");
@@ -325,15 +327,7 @@ export function Index() {
     }
   };
 
-  const handleActive = (value: string) => {
-    if (value === V1) {
-      setIsActive(V1);
-      changeVersion("https://smartswap.rigelprotocol.com/farming", true);
-    } else if (value === V2) {
-      setIsActive(V2);
-      changeVersion("/farming-v2");
-    }
-  };
+  
 
   const showProject = () => {
     changeVersion(
@@ -1941,6 +1935,7 @@ export function Index() {
             mt={3}
             variant='brand'
             className={"list"}
+            onClick={()=>GFarmingClickListYourProject()}
           >
             List your project
           </Button>
@@ -2241,6 +2236,7 @@ export function Index() {
                 _placeholder={{ color: placeholderTextColor }}
                 value={keyword}
                 onChange={(e) => {
+                  GFarmingInputSearchFarm(true)
                   const formattedValue = e.target.value.toUpperCase();
                   setKeyword(formattedValue);
                 }}

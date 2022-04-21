@@ -85,7 +85,8 @@ import {
   useUpdateFarm,
   useFetchYieldFarmDetails,
 } from "../../state/newfarm/hooks";
-import { GFarmingFailedTransaction, GFarmingSuccessTransaction } from "../../components/G-analytics/gFarming";
+import { GButtonClicked, GButtonIntialized, GFarmingFailedTransaction, GFarmingSpecialPoolReferral, GFarmingSuccessTransaction } from "../../components/G-analytics/gFarming";
+import { ZERO_ADDRESS } from "../../constants";
 
 const ShowYieldFarmDetails = ({
   content,
@@ -167,6 +168,7 @@ const ShowYieldFarmDetails = ({
   });
 
   const closeModal = () => {
+    GButtonIntialized("close unstaked",content.deposit,"v2")
     modal2Disclosure.onClose();
   };
   // useUpdate(reload, setReload, contentid, setContentId);
@@ -360,14 +362,15 @@ const ShowYieldFarmDetails = ({
   const setApprove = (val: string) => {
     console.log(content.deposit);
     if (approveValueForOtherToken && approveValueForRGP) {
+      GButtonClicked("unstake",content.deposit,"v2")
       modal2Disclosure.onOpen();
     } else {
+      GButtonClicked("approval",content.deposit,"v2")
       checkUser(val);
     }
   };
 
   const checkUser = async (val :string) => {
-    alert(989999999)
     if (content.deposit === "RGP" && Number(content.id) === 1) {
       await RGPSpecialPoolV1Approval();
       setApproveValueForOtherToken(true);
@@ -393,12 +396,14 @@ const ShowYieldFarmDetails = ({
   };
 
   const openDepositeModal = () => {
+    GButtonClicked("stake",content.deposit,"v2")
     //if (approveValueForOtherToken && approveValueForRGP) {
     modal1Disclosure.onOpen();
     // }
   };
 
   const closeDepositeModal = () => {
+    GButtonClicked("close staked modal",content.deposit,"v2")
     modal1Disclosure.onClose();
   };
 
@@ -666,6 +671,7 @@ const ShowYieldFarmDetails = ({
   const showMaxValue = async (deposit: any, input: any) => {
     try {
       if (input === "deposit") {
+        GButtonClicked(`max_button for ${input}`,content.deposit,"v2")
         setDepositTokenValue(content.availableToken);
       } else if (input === "unstake") {
         setUnstakeToken(
@@ -695,6 +701,7 @@ const ShowYieldFarmDetails = ({
     console.log({val})
     try {
       setUnstakeButtonValue("Pending Confirmation");
+      GButtonIntialized("unstake",content.deposit,"v2")
       dispatch(
         setOpenModal({
           message: `Unstaking ${unstakeToken} ${val}`,
@@ -815,6 +822,8 @@ const ShowYieldFarmDetails = ({
   const harvestTokens = async (id: string | number) => {
     if (account) {
       try {
+        GButtonClicked("harvest",content.deposit,"v2")
+        GButtonIntialized("harvest",content.deposit,"v2")
         dispatch(
           setOpenModal({
             message: `Harvesting RGP ${content.RGPEarned} Tokens`,
@@ -1123,6 +1132,7 @@ const ShowYieldFarmDetails = ({
   const confirmDeposit = async (val: any) => {
     console.log("deposit", { val, content });
     setDepositValue("Pending Confirmation");
+    GButtonIntialized("deposit",content.deposit,"v2")
     dispatch(
       setOpenModal({
         message: `Staking ${depositTokenValue} ${val}`,
@@ -1289,7 +1299,7 @@ const ShowYieldFarmDetails = ({
           RGPSPECIALPOOLADDRESSES2[chainId as number],
           library
         );
-       
+       GFarmingSpecialPoolReferral(referrerAddress===ZERO_ADDRESS ? false:true)
         const data = await specialPool.stake(
           ethers.utils.parseEther(depositTokenValue.toString()),
           referrerAddress,
@@ -1309,7 +1319,8 @@ const ShowYieldFarmDetails = ({
         );
         // callRefreshFarm(confirmations, status);
       } catch (error:any) {
-        console.log(error, 9290202);GFarmingFailedTransaction("special pool", "stake", error.message, "RGP","v2")
+        console.log(error);
+        GFarmingFailedTransaction("special pool", "stake", error.message, "RGP","v2")
         dispatch(
           setOpenModal({
             message: `Transaction failed`,
@@ -1577,7 +1588,9 @@ const ShowYieldFarmDetails = ({
       height='50px'
       fontSize='16px'
       _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
-      onClick={() => approveLPToken(LPToken)}
+      onClick={() => {
+        GButtonIntialized("approval",content.deposit,"v2")
+        approveLPToken(LPToken)}}
     >
       {approvalLoading ? "Approving..." : "Approve"} {LPToken}
     </Button>
@@ -1698,7 +1711,8 @@ const ShowYieldFarmDetails = ({
                       }
                       padding='10px 40px'
                       cursor='pointer'
-                      onClick={() => setApprove(content.deposit)}
+                      onClick={() => {
+                        setApprove(content.deposit)}}
                       className={
                         approveValueForRGP && approveValueForOtherToken
                           ? "unstake"
@@ -1894,7 +1908,7 @@ const ShowYieldFarmDetails = ({
                 justifyContent='space-around'
               >
                 <Box>
-                  <Flex
+                  {/* <Flex
                     my={2}
                     justify={{ base: "center", md: "none", lg: "none" }}
                   >
@@ -1927,7 +1941,7 @@ const ShowYieldFarmDetails = ({
                     >
                       {content.deposit} Tokens Staked
                     </Text>
-                  </Flex>
+                  </Flex> */}
 
                   <Flex marginLeft={{ base: "20px", md: "none", lg: "none" }}>
                     <Button
@@ -2331,7 +2345,7 @@ const ShowYieldFarmDetails = ({
                               depositValue !== "Confirm" ||
                               !account ||
                               !depositTokenValue ||
-                              (setShowReferrerField && referrerAddress === "")
+                              (showReferrerField && referrerAddress === "")
                             }
                             cursor='pointer'
                             border='none'
@@ -2391,7 +2405,7 @@ const ShowYieldFarmDetails = ({
                 />
                 <ModalBody py={2}>
                   <Text color='gray.400' align='right' mb={3}>
-                    {content.availableToken} {content.deposit} Available1
+                    {content.availableToken} {content.deposit} Available
                   </Text>
                   <InputGroup size='md'>
                     <Input

@@ -9,7 +9,24 @@ export const GViewNFT = (
     image:string,
     isFeatured:boolean = false
     ) =>{
-    gtag('event', 'view_NFT', {
+    gtag('event', 'click_on_view_NFT', {
+       id,
+       nftName,
+       total,
+       unsold,
+       image,
+       isFeatured
+      })
+  }
+export const GBuyNFT = (
+    id:number,
+    nftName:string,
+    total:number,
+    unsold:number,
+    image:string,
+    isFeatured:boolean = false
+    ) =>{
+    gtag('event', 'click_on_buy_NFT', {
        id,
        nftName,
        total,
