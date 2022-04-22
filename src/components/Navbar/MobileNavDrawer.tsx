@@ -21,7 +21,8 @@ import {
   ChevronUpIcon,
 } from "@chakra-ui/icons";
 import { CloseIcon } from "../../theme/components/Icons";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
+import {Nav} from "./index"
 import useToggle from "../../utils/hooks/useToggle";
 import { SupportedChainId } from "../../constants/chains";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
@@ -36,17 +37,8 @@ const MobileNavDrawer = () => {
   const [isMobileDevice] = useMediaQuery("(max-width: 750px)");
 
   const { chainId } = useActiveWeb3React();
-
-  const Nav = ({ to, label }: { to: string; label: string }) => (
-    <NavLink
-      to={to}
-      activeStyle={{
-        color: "#319EF6",
-      }}
-    >
-      {label}
-    </NavLink>
-  );
+  const location = useLocation().pathname;
+  
   return (
     <>
       <Flex
@@ -159,7 +151,7 @@ const MobileNavDrawer = () => {
                   </Flex>
                 </Collapse>
                 <Flex ml={6} mb={3} onClick={onClose}>
-                  <Nav label="Liquidity" to="/pool" />
+                  <Nav label="Liquidity" to="/pool" active={location === '/add' || location === '/remove' ? true : false}/>
                 </Flex>
                 <Flex ml={6} mb={3} onClick={onClose}>
                   <Nav label="Farming" to="/farming-v2" />
