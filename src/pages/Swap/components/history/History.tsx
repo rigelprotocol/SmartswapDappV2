@@ -17,40 +17,47 @@ import { io } from "socket.io-client";
 
 
 const History = () => {
-
-  const socket = io("http://localhost:7000/auto");
-  socket.on('success', function(msg) {
-    alert(1234)
-     console.log({msg})
-  }) 
-
+  
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
   const nonActiveTabColor = useColorModeValue('#CCCCCC', '#4A739B');
   const iconColor = useColorModeValue('#666666', '#DCE5EF');
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   const [data, setData] = useState<DataType | null>(null)
   const [showModal, setShowModal] = useState(false)
-
+  const [socket,setSocket] = useState <any>(null)
   // const [sideBarRemoved, setSideBarRemoved] = useState<Boolean>(false);
+
+  useEffect(
+    () => {
+  setSocket(io("https://rigelprotocol-autoswap.herokuapp.com"));
+  
+    },
+    []
+  )
+ 
 
   const [show, setShow] = useState<Boolean>(true);
   const [typeOfModal, setTypeOfModal] = useState(0);
   const [open, setOpen] = useState<Boolean>(false);
   const [showMarketHistory, setShowMarketHistory] = useState(false);
+  const [notification, setNotification] = useState(0);
+  const [address, setAddress] = useState("");
   const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
   const [showOrder, setShowOrder] = useState(false);
 
   const sideBarRemoved = useSelector((state: RootState) => state.transactions.removeSideTab);
 
-  const { historyData, loading, locationData } = useAccountHistory();
-  const { marketHistoryData, loadMarketData } = useMarketHistory();
-  const { openOrderData, loadOpenOrders } = useOpenOrders();
+  const { historyData, loading, locationData } = useAccountHistory(socket);
+  const { marketHistoryData, loadMarketData } = useMarketHistory(socket);
+  const { openOrderData, loadOpenOrders } = useOpenOrders(socket);
 
   const userData = Object.keys(historyData).map((i) => historyData[i]);
   const historyArray = Object.keys(marketHistoryData).map((i) => marketHistoryData[i]);
   const openOrderArray = Object.keys(openOrderData).map((i) => openOrderData[i]);
 
   const dispatch = useDispatch<AppDispatch>();
+ const notifications = useSelector((state: RootState) => state.transactions.notification);
+ const addr = useSelector((state: RootState) => state.transactions.address);
 
 
   useEffect(() => {
@@ -59,9 +66,12 @@ const History = () => {
     dispatch(transactionTab({ removeSideTab: isActive }))
 
   }, []);
-
+  useEffect(() => {
+    setNotification(notifications)
+    setAddress(addr)
+  }, [notifications,addr]);
+ 
   const deleteDataFromDatabase = async () => {
-    console.log({data},"030030")
     // if (data && data.name === "Auto Time") {
       if(data && typeOfModal===1){
          setOpenModal({
@@ -181,13 +191,26 @@ const History = () => {
               className='History'
               color={!showMarketHistory && !showOrder ? activeTabColor : nonActiveTabColor}
               cursor="pointer"
+              position='relative'
               onClick={() => {
+                socket.emit("clear notification",address)
                 setShowMarketHistory(false);
                 setShowOrder(false);
                 setShow(true)
               }}
             >
-              {locationData==="swap" ?"Transaction History" : "Orders"}
+              {locationData==="swap" ?"Transaction History" : "Orders"} {locationData !=="swap" && notifications>0 && <Flex background={nonActiveTabColor}
+              width="20px" 
+              height="20px" 
+              borderRadius="50%" 
+              justifyContent="center" 
+              alignItems="center" 
+              position="absolute" 
+              top="-9px"
+              right="0px"
+              fontSize="12px">{notification}
+                </Flex>
+              }
             </Text>
             <Text fontWeight="400" cursor="pointer" fontSize="16px" color={showMarketHistory ? activeTabColor : nonActiveTabColor} onClick={() => {
               setShowMarketHistory(true);

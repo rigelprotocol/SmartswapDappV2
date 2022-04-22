@@ -9,7 +9,7 @@ import { RootState } from '../../state';
 import { useLocation } from 'react-router-dom';
 import { useNativeBalance } from './useBalances';
 import { SmartSwapRouter } from '../Contracts';
-import { ethers } from 'ethers';
+
 
 
 const abiDecoder = require('abi-decoder');
@@ -30,7 +30,7 @@ interface DataIncoming {
     chainID?:string
 }
 
-const useMarketHistory = () => {
+const useMarketHistory = (socket:any) => {
     const { account, chainId, library } = useWeb3React();
     const [loadMarketData, setLoadMarketData] = useState(false);
     const [marketHistoryData, setMarketHistoryData] = useState({} as any);
@@ -68,6 +68,13 @@ const useMarketHistory = () => {
         getMarketData();
     }, [chainId, account, contractAddress,refreshPage,locationData]);
 
+    useEffect(() => {
+        socket?.on("success",()=>{
+            getMarketData();
+        })
+        
+    }, [socket]);
+
     const tokenList = async (addressName: string) => {
         const token = await getERC20Token(addressName, library);
         const name = token.name();
@@ -84,7 +91,6 @@ const useMarketHistory = () => {
         return address !== '0x' ? resolveToken : null;
     };
     const getTransactionFromDatabase = async () => {
-        console.log({URL})
         const data = await fetch(`${URL}/auto/transactions`)
 
         const transaction = await data.json()
@@ -92,7 +98,6 @@ const useMarketHistory = () => {
             const successfullyTransaction = item.transaction.filter((x:any) => x.transactionHash !== "" && x.status===1)
             return [...array,...successfullyTransaction]
        },[]).reverse()
-       console.log({transactions})
         return transactions
     }
 
@@ -153,7 +158,6 @@ const useMarketHistory = () => {
     
                 }else if ( location === "/auto-time" || location === "/set-price"){
                     const transaction = await getTransactionFromDatabase()
-                    console.log({transaction})
                     if (transaction.length > 0) {
                         let result = []
                         if (locationData === "auto") {
@@ -164,7 +168,6 @@ const useMarketHistory = () => {
                             // .sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
                             result = data.filter((item:any)=>item.status===1)
                         }
-                        console.log({result})
                         dataToUse = await Promise.all(result.map(async (data: any) => {
                             let fromAddress = data.swapFromToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapFromToken
                             let toAddress = data.swapToToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapToToken
@@ -193,7 +196,6 @@ const useMarketHistory = () => {
                         )
                     }
                 }
-                console.log({dataToUse})
                 const marketSwap = await Promise.all(
                     dataToUse.map(async (data: any) => ({
                         tokenIn: data.tokenIn === "native" ? {

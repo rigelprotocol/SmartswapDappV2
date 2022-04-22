@@ -6,7 +6,6 @@ import TokenIcon from '../../../../assets/Null-24.svg';
 import { ExplorerDataType, getExplorerLink } from '../../../../utils/getExplorerLink';
 
 const MarketHistory = ({data} : {data: DataType}) => {
-console.log({data})
     const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
     const nonActiveTabColor = useColorModeValue('#CCCCCC', '#4A739B');
     const borderColor = useColorModeValue('#DEE5ED', '#324D68');

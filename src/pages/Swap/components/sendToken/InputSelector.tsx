@@ -27,6 +27,7 @@ type InputSelectorProps = {
   onUserInput: (value: string) => void;
   value: string | undefined;
   display?:boolean
+  disable?:boolean
 };
 
 const InputSelector = ({
@@ -39,7 +40,8 @@ const InputSelector = ({
   onMax,
   onUserInput,
   value,
-  display
+  display,
+  disable
 }: InputSelectorProps) => {
   const inputColor = useColorModeValue("#333333", "#F1F5F8");
   const balanceColor = useColorModeValue("#666666", "#DCE5EF");
@@ -68,6 +70,8 @@ const InputSelector = ({
           isRequired
           placeholder='0.0'
           value={value}
+          disabled={disable}
+          title={disable && "please fill the input box below, they control this input"}
           onChange={(event) => {
             enforcer(event.target.value.replace(/,/g, "."));
           }}
@@ -107,11 +111,11 @@ const InputSelector = ({
         </Flex>
       </Flex>
       <Flex mt={3} alignItems='center'>
-        <Text ml={4} color={balanceColor} fontSize='14px'>
+       {!display && <Text ml={4} color={balanceColor} fontSize='14px'>
           Balance:{" "}
           {balance.currency?.isToken ? balance.toSignificant(6) : balance}{" "}
           {currency?.symbol}
-        </Text>
+        </Text>}
         {max ? (
           <Text
             ml={2}

@@ -32,7 +32,7 @@ interface DataIncoming {
     expectedUserPrice?:string
 }
 
-const useOpenOrders = () => {
+const useOpenOrders = (socket:any) => {
     const { account, chainId, library } = useWeb3React();
     const [loadOpenOrders, setloadOpenOrders] = useState(false);
     const [openOrderData, setopenOrderData] = useState({} as any);
@@ -49,6 +49,7 @@ const useOpenOrders = () => {
         return decoder
     }
     useEffect(() => {
+       
         if (location === "/auto-time") {
             setLocationData("auto")
             setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
@@ -66,6 +67,12 @@ const useOpenOrders = () => {
     useEffect(() => {
         getMarketData();
     }, [chainId, account, contractAddress,refreshPage,locationData]);
+    useEffect(() => {
+        socket?.on("success",()=>{
+            getMarketData();
+        })
+        
+    }, [socket]);
 
     const tokenList = async (addressName: string) => {
         const token = await getERC20Token(addressName, library);
@@ -84,7 +91,6 @@ const useOpenOrders = () => {
     };
     
     const getTransactionFromDatabase = async (address: string) => {
-        console.log({URL})
         const data = await fetch(`${URL}/auto/data/all/${address}`)
         const transaction = await data.json()
         const transactions = transaction[0].transaction.filter((item:any)=>item.status===2 || item.status===3)
@@ -99,21 +105,15 @@ const useOpenOrders = () => {
                 try {
                     let dataToUse =[]
                     const transaction = await getTransactionFromDatabase(account)
-                    console.log({transaction})
                     if (transaction.length > 0) {
                         let data = []
                         if (locationData === "auto") {
                             data = transaction.filter((data: any) => data.typeOfTransaction === "Auto Time")
-                            console.log({data})
-                            // result = data.filter((item:any)=>item.status===2 && item.errorArray.length===0 && item.transactionHash === "")
                         }else if (locationData === "price") {
                             data = transaction.filter((data: any) => data.typeOfTransaction === "Set Price")
-                            console.log({data})
-                            // .sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
                             
                         }
                         const result = data.filter((item:any)=>item.errorArray.length===0 && item.transactionHash === "")
-                        console.log({result})
                         dataToUse = await Promise.all(result.map(async (data: any) => {
                             
                             return {
@@ -138,7 +138,6 @@ const useOpenOrders = () => {
                         )
                     
                 }
-                console.log({dataToUse})
                 const marketSwap = await Promise.all(
                     dataToUse.map(async (data: any) => ({
                         tokenIn: data.tokenIn === "native" ? {

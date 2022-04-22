@@ -16,6 +16,7 @@ import { Field } from '../../state/swap/actions';
 import Web3 from 'web3';
 import { RGP } from '../../utils/addresses';
 import { ethers } from 'ethers';
+
 import {
   Box,
   Flex,
@@ -121,6 +122,7 @@ const SetPrice = () => {
     }
     runCheck()
   }, [currencies[Field.INPUT],typedValue, account])
+ 
   useEffect(() => {
     async function checkIfSignatureExists() {
       let user = await fetch(`https://rigelprotocol-autoswap.herokuapp.com/auto/data/${account}`)
@@ -249,8 +251,10 @@ const SetPrice = () => {
  
   
     useEffect(async () => {
-    if (chainId === 56 && currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
-      const rout = await otherMarketPriceContract(OTHERMARKETADDRESSES[marketType], library);
+    if (currencies[Field.INPUT] && currencies[Field.OUTPUT] &&marketType!=="Smartswap") {
+      console.log(OTHERMARKETADDRESSES[marketType][chainId as number],marketType,chainId)
+      // alert(marketType)
+      const rout = await otherMarketPriceContract(OTHERMARKETADDRESSES[marketType][chainId as number], library);
       const routeAddress = currencies[Field.INPUT]?.isNative ? [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
         currencies[Field.OUTPUT]?.isNative ? [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
           [currencies[Field.INPUT]?.wrapped.address, currencies[Field.OUTPUT]?.wrapped.address]
