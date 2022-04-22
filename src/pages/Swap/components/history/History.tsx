@@ -29,7 +29,7 @@ const History = () => {
 
   useEffect(
     () => {
-  setSocket(io("https://rigelprotocol-autoswap.herokuapp.com"));
+  setSocket(io("http://localhost:7000"));//https://rigelprotocol-autoswap.herokuapp.com
   
     },
     []
@@ -56,7 +56,9 @@ const History = () => {
   const openOrderArray = Object.keys(openOrderData).map((i) => openOrderData[i]);
 
   const dispatch = useDispatch<AppDispatch>();
- const notifications = useSelector((state: RootState) => state.transactions.notification);
+ const autoTimeNotification = useSelector((state: RootState) => state.transactions.autoTimeNotification);
+ console.log({autoTimeNotification})
+ const setPriceNotification = useSelector((state: RootState) => state.transactions.setPriceNotification);
  const addr = useSelector((state: RootState) => state.transactions.address);
 
 
@@ -67,9 +69,14 @@ const History = () => {
 
   }, []);
   useEffect(() => {
-    setNotification(notifications)
+    if(locationData ==="auto"){
+      setNotification(autoTimeNotification)
+    }else if(locationData==="price"){
+      setNotification(setPriceNotification)
+    }
+    
     setAddress(addr)
-  }, [notifications,addr]);
+  }, [setPriceNotification,autoTimeNotification,addr]);
  
   const deleteDataFromDatabase = async () => {
     // if (data && data.name === "Auto Time") {
@@ -193,13 +200,13 @@ const History = () => {
               cursor="pointer"
               position='relative'
               onClick={() => {
-                socket.emit("clear notification",address)
+                socket.emit("clear notification",address,locationData)
                 setShowMarketHistory(false);
                 setShowOrder(false);
                 setShow(true)
               }}
             >
-              {locationData==="swap" ?"Transaction History" : "Orders"} {locationData !=="swap" && notifications>0 && <Flex background={nonActiveTabColor}
+              {locationData==="swap" ?"Transaction History" : "Orders"} {locationData !=="swap" && notification>0 && <Flex background={nonActiveTabColor}
               width="20px" 
               height="20px" 
               borderRadius="50%" 
@@ -306,4 +313,4 @@ const History = () => {
     </Flex>
   );
 };
-export default History;
+export default React.memo(History);

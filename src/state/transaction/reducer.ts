@@ -37,7 +37,8 @@ export interface TransactionState {
     removeSideTab: boolean,
     removeDetailsTab: boolean,
     refresh:number,
-    notification:number,
+    setPriceNotification : number,
+    autoTimeNotification : number,
     address:string
 }
 
@@ -45,7 +46,8 @@ export const initialState: TransactionState = {
     removeSideTab: false,
     removeDetailsTab: false,
     refresh:0,
-    notification:0,
+    autoTimeNotification:0,
+    setPriceNotification:0,
     address:""
 };
 
@@ -100,9 +102,9 @@ export default createReducer(initialState, (builder) =>
     .addCase(refreshTransactionTab,(transactions,{payload:{refresh}}) => {
             transactions.refresh = refresh
         })
-    .addCase(notificationTab,(transactions,{payload:{notification,address}}) => {
-            transactions.notification = notification
-
-            transactions.address = address
+    .addCase(notificationTab,(transactions,{payload:{setPriceNotification,autoTimeNotification,address}}) => {
+            transactions.setPriceNotification = setPriceNotification ? setPriceNotification: transactions.setPriceNotification
+            transactions.autoTimeNotification= autoTimeNotification ?autoTimeNotification : transactions.autoTimeNotification
+            transactions.address = address ? address : transactions.address
         })
 )

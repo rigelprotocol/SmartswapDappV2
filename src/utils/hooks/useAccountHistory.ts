@@ -148,8 +148,14 @@ const useAccountHistory = (socket:any) => {
         socket?.on("success",()=>{
             loadAccountHistory();
         })
-        socket?.on("cleared",()=>{
-            dispatch(notificationTab({ notification:0,address:ZERO_ADDRESS }))
+        socket?.on("cleared",(page:string)=>{
+            console.log({page})
+            if(page==="auto"){
+               dispatch(notificationTab({ autoTimeNotification:0})) 
+            }else{
+                dispatch(notificationTab({ setPriceNotification:0})) 
+            }
+            
         })
         
     }, [socket]);
@@ -213,7 +219,10 @@ const useAccountHistory = (socket:any) => {
             } else if ( location === "/auto-time" || location === "/set-price") {
                 const { transaction, database } = await getTransactionFromDatabase(account)
                 if (transaction.length > 0) {
-                    dispatch(notificationTab({ notification:transaction[0].notification,address:transaction[0].address }))
+                    dispatch(notificationTab({ 
+                    autoTimeNotification:transaction[0].autoTimeNotification,
+                    setPriceNotification:transaction[0].setPriceNotification,
+                    address:transaction[0].address }))
                     const collapsedTransaction = transaction[0].transaction
                     let result = []
                     if (locationData === "auto") {

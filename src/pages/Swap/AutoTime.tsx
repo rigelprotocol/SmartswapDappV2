@@ -12,7 +12,7 @@ import {
   useSwapState,
 } from '../../state/swap/hooks';
 import { getERC20Token } from '../../utils/utilsFunctions';
-import { Field } from '../../state/swap/actions';
+import { Field, switchCurrencies } from '../../state/swap/actions';
 import Web3 from 'web3';
 import { RGP } from '../../utils/addresses';
 import { ethers } from 'ethers';
@@ -51,6 +51,7 @@ import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { changeFrequencyTodays } from '../../utils/utilsFunctions';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { refreshTransactionTab } from '../../state/transaction/actions';
+import { useLocation } from 'react-router-dom';
 
 
 
@@ -82,6 +83,8 @@ const SetPrice = () => {
   const [totalNumberOfTransaction,setTotalNumberOfTransaction] = useState("1")
   const [situation,setSituation] = useState("above")
   const [checkedItem, setCheckedItem] = useState(false)
+  const [routeAddr, setRouteAddr] = useState<(string | undefined)[]>([])
+  const [switched,setSwitched] = useState(false)
   const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
   const [userOutputPrice, setUserOutputPrice] = useState<number>(0)
   const [currentToPrice,setCurrentToPrice] = useState("0")
@@ -153,7 +156,7 @@ const SetPrice = () => {
     (state) => state.user.userDeadline
   );
   const [allowedSlippage] = useUserSlippageTolerance();
-
+  const location = useLocation().pathname;
   const parsedAmounts = useMemo(
     () =>
       showWrap
@@ -215,6 +218,7 @@ const SetPrice = () => {
       }
     }
   }, [currentToPrice, receivedAmount]);
+
   useEffect(() => {
     let interval;
     if (showNewChangesText) {
@@ -226,27 +230,56 @@ const SetPrice = () => {
       setCurrentToPrice("");
     }
   }, [showNewChangesText, showModal]);
-  useMemo(async () => {
+  useEffect(async () => {
+    console.log(100000000)
     try{
     if (currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
       let price = (parseFloat(percentageChange) /100)* Number(formattedAmounts[Field.OUTPUT]) + Number(formattedAmounts[Field.OUTPUT])
-      
+      let routeAddress:any;
 
       const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
-      const routeAddress = currencies[Field.INPUT]?.isNative ? [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
-        currencies[Field.OUTPUT]?.isNative ? [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
+      routeAddress = currencies[Field.INPUT]?.isNative ? 
+      [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
+        currencies[Field.OUTPUT]?.isNative ? 
+        [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
           [currencies[Field.INPUT]?.wrapped.address, currencies[Field.OUTPUT]?.wrapped.address]
+          if(switched){
+            // alert(123)
+            routeAddress.reverse()
+          }
+
       const priceOutput = await rout.getAmountsOut(
         '1000000000000000000',
         routeAddress
       );
       setPriceOut(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
+      let interval = setInterval(async()=>
+        {
+          const priceOutput = await rout.getAmountsOut(
+            '1000000000000000000',
+            routeAddress
+          );
+          setPriceOut(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
+        }
+      ,2000)
     }
-
+   
   }catch(e){
     console.log(e)
   }
-  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue])
+  }, [switched,typedValue,showNewChangesText,currencies[Field.INPUT], currencies[Field.OUTPUT]])
+  // useMemo(()=>{
+  //   console.log(12)
+  //   // if(location==="/auto-time"){
+  //     const routeAddress = currencies[Field.INPUT]?.isNative ? 
+  //     [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
+  //       currencies[Field.OUTPUT]?.isNative ? 
+  //       [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
+  //         [currencies[Field.INPUT]?.wrapped.address, currencies[Field.OUTPUT]?.wrapped.address]
+  //         setRouteAddr(routeAddress)
+  //   // }
+    
+  // },[currencies[Field.INPUT], currencies[Field.OUTPUT],location])
 
  
   
@@ -285,11 +318,11 @@ const SetPrice = () => {
       setHasBeenApproved(true)
       approvalArray=[]
     } 
-    if (parseFloat(RGPBalance) < parseFloat(fee) || (parseFloat(tokenBalance) < Number(formattedAmounts[Field.INPUT]) && currencies[Field.INPUT]?.wrapped.symbol === "RGP")) {
+    if (parseFloat(RGPBalance) < parseFloat(fee) || (parseFloat(tokenBalance) < Number(formattedAmounts[Field.INPUT]) && (!currencies[Field.INPUT]?.isNative && currencies[Field.INPUT]?.wrapped?.symbol === "RGP" ))) {
       setHasBeenApproved(false)
       approvalArray.push("RGP")
     }
-    if (parseFloat(tokenBalance) < Number(formattedAmounts[Field.INPUT]) && currencies[Field.INPUT]?.wrapped.symbol !== "RGP") {
+    if (parseFloat(tokenBalance) < Number(formattedAmounts[Field.INPUT]) && (!currencies[Field.INPUT]?.isNative &&currencies[Field.INPUT]?.wrapped.symbol !== "RGP")) {
       setHasBeenApproved(false)
       approvalArray.push(currencies[Field.INPUT]?.wrapped?.symbol)
     }
@@ -570,8 +603,8 @@ const SetPrice = () => {
                 otherCurrency={currencies[Field.OUTPUT]}
                 value={typedValue}
               />
-              <Flex justifyContent="center" onClick={onSwitchTokens}>
-                <SwitchIcon />
+              <Flex justifyContent="center">
+                <SwitchIcon onClick={switchCurrencies}/>
               </Flex>
               <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px"  px={3} py={3}  mt={4}>
 
@@ -633,14 +666,14 @@ const SetPrice = () => {
               </Box>
 
               <Flex mt={5}>
-                <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px">
+                <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px" cursor="pointer">
                   <VectorIcon />
                 </Center>
                 <Spacer />
                 {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
                   <>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.INPUT]?.symbol} = {priceOut} {currencies[Field.OUTPUT]?.symbol}
+                      1 {switched? currencies[Field.OUTPUT]?.symbol : currencies[Field.INPUT]?.symbol} = {priceOut} {switched ? currencies[Field.INPUT]?.symbol : currencies[Field.OUTPUT]?.symbol}
                     </Text>
                     <ExclamationIcon />
                   </>
@@ -866,7 +899,7 @@ const SetPrice = () => {
                 otherCurrency={currencies[Field.OUTPUT]}
                 value={typedValue}
               />
-              <Flex justifyContent="center" onClick={onSwitchTokens}>
+              <Flex justifyContent="center" >
                 <SwitchIcon />
               </Flex>
 
@@ -933,14 +966,16 @@ const SetPrice = () => {
               </Box>
 
               <Flex mt={5}>
-                <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px">
+                <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px" cursor="pointer" onClick={()=>{
+                    setSwitched(!switched)
+                }}>
                   <VectorIcon />
                 </Center>
                 <Spacer />
                 {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
                   <>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.INPUT]?.symbol} = {priceOut} {currencies[Field.OUTPUT]?.symbol}
+                    1 {switched? currencies[Field.OUTPUT]?.symbol : currencies[Field.INPUT]?.symbol} = {priceOut} {switched ? currencies[Field.INPUT]?.symbol : currencies[Field.OUTPUT]?.symbol}
                     </Text>
                     <ExclamationIcon />
                   </>

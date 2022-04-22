@@ -71,7 +71,7 @@ const InputSelector = ({
           placeholder='0.0'
           value={value}
           disabled={disable}
-          title={disable && "please fill the input box below, they control this input"}
+          title={disable ? "please fill the input box below, they control this input": undefined}
           onChange={(event) => {
             enforcer(event.target.value.replace(/,/g, "."));
           }}

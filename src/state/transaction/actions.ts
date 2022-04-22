@@ -42,4 +42,4 @@ export const transactionTab = createAction<{removeSideTab : boolean}>('transacti
 
 export const detailsTab = createAction<{removeDetailsTab : boolean}>('transactions/detailsTab');
 export const refreshTransactionTab = createAction<{refresh : number}>('transactions/refreshTab');
-export const notificationTab = createAction<{notification : number,address: string}>('transactions/notificationTab');
+export const notificationTab = createAction<{setPriceNotification? : number,autoTimeNotification? : number,address?: string}>('transactions/notificationTab');
