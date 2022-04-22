@@ -1,5 +1,5 @@
-import React, {Suspense, useEffect, useMemo, useState} from "react";
-import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
+import React, {Suspense} from "react";
+import { HashRouter, Route, Switch } from "react-router-dom";
 import AddLiquidity from "./AddLiquidity";
 import Pool from "./Pool";
 import RemoveLiquidity from "./RemoveLiquidity";
@@ -21,6 +21,7 @@ import useConnectWallet from "../utils/hooks/useConnectWallet";
 import {useActiveWeb3React} from "../utils/hooks/useActiveWeb3React";
 import {SupportedChainId} from "../constants/chains";
 import ViewNFT from "./Nft/ViewNFT";
+import YieldFarm from "./FarmingV2/YieldFarm";
 
 export default function App() {
   useConnectWallet();
@@ -71,6 +72,7 @@ export default function App() {
               />
               <Route exact path="/farming" component={FarmingV1} />
               <Route path="/farming-V2" component={FarmingV2} />
+              <Route path="/farming-V2/:deposit" component={YieldFarm} />
               {/* <Route path="*">
                 <Redirect to="/swap" />
               </Route> */}

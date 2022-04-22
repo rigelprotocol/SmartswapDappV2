@@ -12,6 +12,10 @@ export const updateLoadingState = createAction<{ value: boolean }>(
   "newfarm/updateLoadingState"
 );
 
+export const updateChainId = createAction<{ value: number }>(
+  "newfarm/updateChainId"
+);
+
 export const updateAllowance = createAction<{
   value: any;
 }>("newfarm/updateAllowance");
