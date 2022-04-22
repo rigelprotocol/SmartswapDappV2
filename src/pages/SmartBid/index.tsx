@@ -1,9 +1,9 @@
 import React from "react";
 import {Box, Text, Flex, useColorModeValue, Button, SimpleGrid, GridItem} from '@chakra-ui/react';
-import Carousel from "../Nft/Components/Carousel";
 import {AddIcon} from "@chakra-ui/icons";
 import SmartBidCard from "./Components/Card";
 import {SmartBidData} from "./Components/cardData";
+import BidCarousel from "./Components/BidCarousel";
 
 
 const SmartBid = () => {
@@ -12,7 +12,7 @@ const SmartBid = () => {
 
     return (
         <Box width={'95%'} margin={'30px auto'}>
-            <Carousel/>
+            <BidCarousel/>
             <Flex justifyContent={'space-between'} my={'30px'} alignItems={'center'} width={'100%'} mx={'auto'}>
                 <Text color={textColor} fontWeight={700} fontStyle={'bold'} fontSize={'40px'}>Events</Text>
                 <Flex>
