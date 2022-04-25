@@ -103,6 +103,7 @@ export default createReducer(initialState, (builder) =>
             transactions.refresh = refresh
         })
     .addCase(notificationTab,(transactions,{payload:{setPriceNotification,autoTimeNotification,address}}) => {
+        console.log({autoTimeNotification})
             transactions.setPriceNotification = setPriceNotification ? setPriceNotification: transactions.setPriceNotification
             transactions.autoTimeNotification= autoTimeNotification ?autoTimeNotification : transactions.autoTimeNotification
             transactions.address = address ? address : transactions.address

@@ -12,7 +12,7 @@ import {
   useSwapState,
 } from '../../state/swap/hooks';
 import { getERC20Token } from '../../utils/utilsFunctions';
-import { Field, switchCurrencies } from '../../state/swap/actions';
+import { Field } from '../../state/swap/actions';
 import Web3 from 'web3';
 import { RGP } from '../../utils/addresses';
 import { ethers } from 'ethers';
@@ -77,17 +77,16 @@ const SetPrice = () => {
   const [marketType, setMarketType] = useState("Smartswap")
   const [percentageChange, setPercentageChange] = useState<string>("0")
   const [priceOut, setPriceOut] = useState<string>("")
+  const [reversePriceOut, setReversePriceOut] = useState<string>("")
   const [otherMarketprice, setOtherMarketprice] = useState<string>("0")
   const [approval, setApproval] = useState<string[]>([])
   const [showModal, setShowModal] = useState(false)
   const [totalNumberOfTransaction,setTotalNumberOfTransaction] = useState("1")
   const [situation,setSituation] = useState("above")
   const [checkedItem, setCheckedItem] = useState(false)
-  const [routeAddr, setRouteAddr] = useState<(string | undefined)[]>([])
-  const [switched,setSwitched] = useState(false)
-  const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
   const [userOutputPrice, setUserOutputPrice] = useState<number>(0)
   const [currentToPrice,setCurrentToPrice] = useState("0")
+  const [routeAddr,setRouteAddr] = useState<(string | undefined)[]>([])
   const [showNewChangesText,setShowNewChangesText] = useState(false)
   const [dataSignature,setDataSignature] = useState<{mess:string,signature:string}>({
     mess:"",
@@ -103,7 +102,10 @@ const SetPrice = () => {
     parsedAmount,
     inputError,
     showWrap,
-    pathSymbol
+    pathSymbol,
+    formatAmount,
+    amounted,
+    amounted2
   } = useDerivedSwapInfo();
   const handleTypeInput = useCallback(
     (value: string) => {
@@ -230,56 +232,6 @@ const SetPrice = () => {
       setCurrentToPrice("");
     }
   }, [showNewChangesText, showModal]);
-  useEffect(async () => {
-    console.log(100000000)
-    try{
-    if (currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
-      let price = (parseFloat(percentageChange) /100)* Number(formattedAmounts[Field.OUTPUT]) + Number(formattedAmounts[Field.OUTPUT])
-      let routeAddress:any;
-
-      const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
-      routeAddress = currencies[Field.INPUT]?.isNative ? 
-      [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
-        currencies[Field.OUTPUT]?.isNative ? 
-        [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
-          [currencies[Field.INPUT]?.wrapped.address, currencies[Field.OUTPUT]?.wrapped.address]
-          if(switched){
-            // alert(123)
-            routeAddress.reverse()
-          }
-
-      const priceOutput = await rout.getAmountsOut(
-        '1000000000000000000',
-        routeAddress
-      );
-      setPriceOut(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
-      let interval = setInterval(async()=>
-        {
-          const priceOutput = await rout.getAmountsOut(
-            '1000000000000000000',
-            routeAddress
-          );
-          setPriceOut(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
-        }
-      ,2000)
-    }
-   
-  }catch(e){
-    console.log(e)
-  }
-  }, [switched,typedValue,showNewChangesText,currencies[Field.INPUT], currencies[Field.OUTPUT]])
-  // useMemo(()=>{
-  //   console.log(12)
-  //   // if(location==="/auto-time"){
-  //     const routeAddress = currencies[Field.INPUT]?.isNative ? 
-  //     [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
-  //       currencies[Field.OUTPUT]?.isNative ? 
-  //       [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
-  //         [currencies[Field.INPUT]?.wrapped.address, currencies[Field.OUTPUT]?.wrapped.address]
-  //         setRouteAddr(routeAddress)
-  //   // }
-    
-  // },[currencies[Field.INPUT], currencies[Field.OUTPUT],location])
 
  
   
@@ -603,8 +555,8 @@ const SetPrice = () => {
                 otherCurrency={currencies[Field.OUTPUT]}
                 value={typedValue}
               />
-              <Flex justifyContent="center">
-                <SwitchIcon onClick={switchCurrencies}/>
+              <Flex justifyContent="center" onClick={onSwitchTokens}>
+                <SwitchIcon />
               </Flex>
               <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px"  px={3} py={3}  mt={4}>
 
@@ -615,7 +567,7 @@ const SetPrice = () => {
                     currency={currencies[Field.OUTPUT]}
                     otherCurrency={currencies[Field.INPUT]}
                     value=""
-
+                    disable={true}
                     display={true}
                   />
                 </Box>
@@ -654,7 +606,7 @@ const SetPrice = () => {
                     <VStack>
                       <Text fontSize="24px" color={textColorOne} isTruncated width="160px" textAlign="right">
                         {marketType==="Smartswap"?
-                        isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : userOutputPrice
+                        isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : formattedAmounts[Field.OUTPUT]
                         : otherMarketprice}
                       </Text>
                       {/* <Text fontSize="14px" color={color}  width="160px">
@@ -665,7 +617,7 @@ const SetPrice = () => {
                 </Box>
               </Box>
 
-              <Flex mt={5}>
+              <Box mt={5}>
                 <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px" cursor="pointer">
                   <VectorIcon />
                 </Center>
@@ -673,14 +625,17 @@ const SetPrice = () => {
                 {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
                   <>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {switched? currencies[Field.OUTPUT]?.symbol : currencies[Field.INPUT]?.symbol} = {priceOut} {switched ? currencies[Field.INPUT]?.symbol : currencies[Field.OUTPUT]?.symbol}
+                      1 {currencies[Field.INPUT]?.symbol} = {amounted} {currencies[Field.OUTPUT]?.symbol}
+                    </Text>
+                    <Text fontSize="14px" mr={2} color={textColorOne}>
+                      1 {currencies[Field.OUTPUT]?.symbol} = {amounted2} {currencies[Field.INPUT]?.symbol}
                     </Text>
                     <ExclamationIcon />
                   </>
 
                 }
 
-              </Flex>
+              </Box>
               <Box display="flex" mt={5}>
                 <VStack>
                   <Flex>
@@ -899,7 +854,7 @@ const SetPrice = () => {
                 otherCurrency={currencies[Field.OUTPUT]}
                 value={typedValue}
               />
-              <Flex justifyContent="center" >
+              <Flex justifyContent="center" onClick={onSwitchTokens}>
                 <SwitchIcon />
               </Flex>
 
@@ -954,7 +909,7 @@ const SetPrice = () => {
                     <VStack>
                       <Text fontSize="24px" color={textColorOne} textAlign="right" isTruncated width="160px" >
                       {marketType==="Smartswap"?
-                        isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : userOutputPrice
+                        isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : formattedAmounts[Field.OUTPUT]
                         : otherMarketprice}
                       </Text>
                       {/* <Text fontSize="14px" color={color}  width="160px" textAlign="right">
@@ -965,17 +920,18 @@ const SetPrice = () => {
                 </Box>
               </Box>
 
-              <Flex mt={5}>
-                <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px" cursor="pointer" onClick={()=>{
-                    setSwitched(!switched)
-                }}>
+              <Box mt={5}>
+                {/* <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px" cursor="pointer">
                   <VectorIcon />
                 </Center>
-                <Spacer />
+                <Spacer /> */}
                 {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
                   <>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                    1 {switched? currencies[Field.OUTPUT]?.symbol : currencies[Field.INPUT]?.symbol} = {priceOut} {switched ? currencies[Field.INPUT]?.symbol : currencies[Field.OUTPUT]?.symbol}
+                    1 {currencies[Field.INPUT]?.symbol} = {amounted} {currencies[Field.OUTPUT]?.symbol}
+                    </Text>
+                    <Text fontSize="14px" mr={2} color={textColorOne}>
+                      1 {currencies[Field.OUTPUT]?.symbol} = {amounted2} {currencies[Field.INPUT]?.symbol}
                     </Text>
                     <ExclamationIcon />
                   </>
@@ -983,7 +939,7 @@ const SetPrice = () => {
                 }
 
 
-              </Flex>
+              </Box>
               <Box display="flex" mt={5}>
                 <VStack>
                   <Flex>

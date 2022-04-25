@@ -67,6 +67,8 @@ const SetPrice = () => {
     showWrap,
     pathSymbol,
     pathArray,
+    amounted,
+    amounted2
   } = useDerivedSwapInfo();
 
   useEffect(() => {
@@ -89,7 +91,6 @@ const SetPrice = () => {
   const [showModal, setShowModal] = useState(false)
   const [checkedItem, setCheckedItem] = useState(false)
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
-  const [priceOut, setPriceOut] = useState("")
   const [totalNumberOfTransaction, setTotalNumberOfTransaction] = useState("1")
   const [approval, setApproval] = useState<String[]>([])
   const [dataSignature,setDataSignature] = useState<{mess:string,signature:string}>({
@@ -139,20 +140,6 @@ const SetPrice = () => {
       setDisableInput(true)
     }
   }, [initialToPrice, initialFromPrice, typedValue])
-  useMemo(async () => {
-    if (currencies[Field.INPUT] && currencies[Field.OUTPUT]) {
-      const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
-      const routeAddress = currencies[Field.INPUT]?.isNative ? [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
-        currencies[Field.OUTPUT]?.isNative ? [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
-          [currencies[Field.INPUT]?.wrapped.address, currencies[Field.OUTPUT]?.wrapped.address]
-      const priceOutput = await rout.getAmountsOut(
-        '1000000000000000000',
-        routeAddress
-      );
-
-      setPriceOut(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
-    }
-  }, [currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue])
   const parsedAmounts = useMemo(
     () =>
       showWrap
@@ -548,7 +535,7 @@ const SetPrice = () => {
           
           
 
-          <Flex my={5}>
+          <Box my={5}>
             {/* <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px">
               <VectorIcon />
             </Center> */}
@@ -560,13 +547,19 @@ const SetPrice = () => {
           </Flex>
             <Spacer /> */}
             {currencies[Field.INPUT]?.symbol && currencies[Field.OUTPUT]?.symbol &&
-              <Text fontSize="14px" mr={2} color={textColorOne}>
-                1 {currencies[Field.INPUT]?.symbol} = {priceOut} {currencies[Field.OUTPUT]?.symbol}
+            <>
+             <Text fontSize="14px" mr={2} color={textColorOne}>
+                1 {currencies[Field.INPUT]?.symbol} = {amounted} {currencies[Field.OUTPUT]?.symbol}
               </Text>
+                <Text fontSize="14px" mr={2} color={textColorOne}>
+                1 {currencies[Field.OUTPUT]?.symbol} = {amounted2} {currencies[Field.INPUT]?.symbol}
+              </Text>
+            </>
+             
             }
 
             <ExclamationIcon />
-          </Flex>
+          </Box>
           {/* <Input placeholder="0.00" size="lg" borderRadius={4} borderColor={borderColor} /> */}
           <HStack>
             <CInput

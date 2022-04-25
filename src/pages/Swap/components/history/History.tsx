@@ -29,7 +29,7 @@ const History = () => {
 
   useEffect(
     () => {
-  setSocket(io("http://localhost:7000"));//https://rigelprotocol-autoswap.herokuapp.com
+  setSocket(io("https://rigelprotocol-autoswap.herokuapp.com"));//http://localhost:7000
   
     },
     []
@@ -70,6 +70,7 @@ const History = () => {
   }, []);
   useEffect(() => {
     if(locationData ==="auto"){
+      console.log({autoTimeNotification, locationData})
       setNotification(autoTimeNotification)
     }else if(locationData==="price"){
       setNotification(setPriceNotification)
@@ -200,13 +201,17 @@ const History = () => {
               cursor="pointer"
               position='relative'
               onClick={() => {
-                socket.emit("clear notification",address,locationData)
+                if(notification>0){
+                  socket.emit("clear notification",address,locationData)
+                }
+                
                 setShowMarketHistory(false);
                 setShowOrder(false);
                 setShow(true)
+                
               }}
             >
-              {locationData==="swap" ?"Transaction History" : "Orders"} {locationData !=="swap" && notification>0 && <Flex background={nonActiveTabColor}
+              {locationData==="swap" ?"Transaction History" : "Orders"} {locationData ==="swap" && autoTimeNotification>0 ? <Flex background={nonActiveTabColor}
               width="20px" 
               height="20px" 
               borderRadius="50%" 
@@ -215,7 +220,17 @@ const History = () => {
               position="absolute" 
               top="-9px"
               right="0px"
-              fontSize="12px">{notification}
+              fontSize="12px">{autoTimeNotification}
+                </Flex> : locationData ==="price" && setPriceNotification>0 && <Flex background={nonActiveTabColor}
+              width="20px" 
+              height="20px" 
+              borderRadius="50%" 
+              justifyContent="center" 
+              alignItems="center" 
+              position="absolute" 
+              top="-9px"
+              right="0px"
+              fontSize="12px">{setPriceNotification}
                 </Flex>
               }
             </Text>

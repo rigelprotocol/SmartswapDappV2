@@ -61,7 +61,7 @@ const InputSelector = ({
   return (
     <>
       <Flex alignItems='center' mt={3} justifyContent='space-between'>
-        <Input
+       {!display && <Input
           fontSize='2xl'
           type='text'
           min='0'
@@ -77,6 +77,8 @@ const InputSelector = ({
           }}
           focusBorderColor='none'
         />
+
+       } 
         <Flex>
           <Menu>
             <Button
@@ -146,4 +148,4 @@ const InputSelector = ({
   );
 };
 
-export default InputSelector;
+export default React.memo(InputSelector);

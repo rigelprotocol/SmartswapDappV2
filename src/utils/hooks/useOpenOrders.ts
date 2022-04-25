@@ -131,7 +131,9 @@ const useOpenOrders = (socket:any) => {
                                 currentToPrice: data.typeOfTransaction === "Set Price" ? data.currentToPrice : data.percentageChange,
                                 chainID:data.chainID ,
                                 rate:`${data.currentNumber} / ${data.totalNumberOfTransaction}`,
-                                situation: data.situation,
+                                initialFromPrice:data.initialFromPrice,
+                                initialToPrice:data.initialToPrice,
+                                situation:data.situation,
                                 _id:data._id
                             }
                         })
@@ -165,6 +167,8 @@ const useOpenOrders = (socket:any) => {
                         chainID:data.chainID,
                         rate:data.rate,
                         situation:data.situation,
+                        initialFromPrice:data.initialFromPrice,
+                        initialToPrice:data.initialToPrice,
                         _id:data._id
                     })),
                 );
@@ -189,6 +193,8 @@ const useOpenOrders = (socket:any) => {
                         chainID:data.chainID,
                         rate:data.rate,
                         situation:data.situation,
+                        initialFromPrice:data.initialFromPrice,
+                        initialToPrice:data.initialToPrice,
                         _id:data._id
                     }));
                     setopenOrderData(marketHistory);
