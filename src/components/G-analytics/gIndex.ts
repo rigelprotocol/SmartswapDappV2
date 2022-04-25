@@ -96,3 +96,8 @@ export const GMarketHistoryTab = () => {
       page:"market tab",
     })
   }
+export const GSocialMedia = (account:string) => {
+    gtag('event', 'social_media', {
+     account
+    })
+  }
