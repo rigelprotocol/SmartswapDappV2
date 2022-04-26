@@ -101,3 +101,31 @@ export const GSocialMedia = (account:string) => {
      account
     })
   }
+export const GWalletConnected = (wallet:string) => {
+    gtag('event', 'wallet_connected_to', {
+     wallet
+    })
+  }
+export const GRGPBreakdown = () => {
+    gtag('event', 'clicked_on_RGP_breakdown', {
+     clicked:true
+    })
+  }
+export const GDisconnectWallet = () => {
+    gtag('event', 'clicked_on_disconnect_wallet', {
+     clicked:true
+    })
+  }
+export const GSwitchWallet = () => {
+    gtag('event', 'clicked_on_switch_wallet', {
+     clicked:true
+    })
+  }
+export const GNetworkConnectedTo = (network:string ="null") => {
+  if(network!=="null"){
+   gtag('event', 'network_connected_to', {
+     network
+    }) 
+  }
+    
+  }

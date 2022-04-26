@@ -14,7 +14,7 @@ const RGPModal = ({showRGP, setShowRGP, RGPBalance, RGPPrice}: {
     showRGP: boolean;
     setShowRGP: Function;
     RGPBalance: string;
-    RGPPrice: number;
+    RGPPrice: string | number;
 }) => {
     const bgColor3 = useColorModeValue('#DEE6ED', '#4A739B');
     const shadow = useColorModeValue(

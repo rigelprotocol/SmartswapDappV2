@@ -3,7 +3,7 @@ import {Modal, ModalCloseButton, ModalContent, ModalOverlay, useColorModeValue,}
 import WalletOptions from '../WalletOptions';
 import {connectorKey, ConnectorNames} from '../../../connectors';
 import useAuth from '../../../utils/hooks/useAuth';
-import { GButtonClick } from '../../G-analytics/gIndex';
+import { GWalletConnected } from '../../G-analytics/gIndex';
 
 const NetworkModal = ({
   displayNetwork,
@@ -22,7 +22,7 @@ const NetworkModal = ({
   const { login } = useAuth();
 
   const connectWallet = (connectorID: ConnectorNames,name:string) => {
-    GButtonClick("connect_wallet",name)
+    GWalletConnected(name)
     login(connectorID);
     window.localStorage.setItem(connectorKey, connectorID);
     setDisplayNetwork(false);
