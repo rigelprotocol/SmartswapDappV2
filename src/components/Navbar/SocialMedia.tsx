@@ -12,6 +12,7 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import { IoEllipsisHorizontalOutline } from 'react-icons/io5';
+import { GSocialMedia } from '../G-analytics/gIndex';
 
 const SocialMediaLinks = () => {
   const [show, setShow] = useState(false);
@@ -40,21 +41,21 @@ const SocialMediaLinks = () => {
         </a>
 
         <a target="_blank" href="https://medium.com/rigelprotocol" rel="noreferrer">
-          <MenuItem>Medium</MenuItem>
+          <MenuItem onClick={()=>GSocialMedia("Medium")}>Medium</MenuItem>
         </a>
         <MenuDivider />
         <a target="_blank" href="https://www.t.me/rigelprotocol" rel="noreferrer">
-          <MenuItem>Telegram</MenuItem>
+          <MenuItem onClick={()=>GSocialMedia("Telegram")}>Telegram</MenuItem>
         </a>
         <a target="_blank" href="https://twitter.com/rigelprotocol" rel="noreferrer">
-          <MenuItem>Twitter</MenuItem>
+          <MenuItem onClick={()=>GSocialMedia("Twitter")}>Twitter</MenuItem>
         </a>
         <MenuDivider />
         <a target="_blank" href="https://github.com/rigelprotocol" rel="noreferrer">
-          <MenuItem>Github</MenuItem>
+          <MenuItem onClick={()=>GSocialMedia("Github")}>Github</MenuItem>
         </a>
         <a target="_blank" href="https://discord.gg/j86NH95GDD" rel="noreferrer">
-          <MenuItem>Discord</MenuItem>
+          <MenuItem onClick={()=>GSocialMedia("Discord")}>Discord</MenuItem>
         </a>
       </MenuList>
     </Menu>

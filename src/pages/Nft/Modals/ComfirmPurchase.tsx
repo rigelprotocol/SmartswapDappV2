@@ -14,6 +14,7 @@ import {addToast} from "../../../components/Toast/toastSlice";
 import {useActiveWeb3React} from "../../../utils/hooks/useActiveWeb3React";
 import {useDispatch} from "react-redux";
 import {RigelNFT} from "../../../utils/Contracts";
+import { GNFTFailedApprovalTransaction, GNFTFailedTransaction, GNFTSuccessfullyApprovalTransaction, GNFTSuccessfullyTransaction } from '../../../components/G-analytics/gNFTs';
 
 
 type comfirmPurchaseModalProps = {
@@ -80,12 +81,18 @@ const ComfirmPurchase = ({ isOpen,
                         ExplorerDataType.TRANSACTION
                     );
                     setCheckTokenApproval(checkTokenApproval + 1);
+                    GNFTSuccessfullyApprovalTransaction(
+                        "NFT",
+                        "approving token",
+                        symbol)
+
                     dispatch(
                         setOpenModal({
                             message: `${symbol} Approval Successful`,
                             trxState: TrxState.TransactionSuccessful,
                         })
                     );
+
                     dispatch(
                         addToast({
                             message: `Approve ${symbol}`,
@@ -93,8 +100,13 @@ const ComfirmPurchase = ({ isOpen,
                         })
                     );
                 }
-            } catch (err) {
+            } catch (err:any) {
                 console.log(err);
+                GNFTFailedApprovalTransaction(
+                    "NFT",
+                    "approving token",
+                    err.message,
+                    symbol)
                 dispatch(
                     setOpenModal({
                         message: `${symbol} Approval`,
@@ -134,6 +146,13 @@ const ComfirmPurchase = ({ isOpen,
                             trxState: TrxState.TransactionSuccessful,
                         })
                     );
+                    GNFTSuccessfullyTransaction(
+                        "NFT",
+                        "purchasing NFT",
+                        currency==="USDT"? "USDT": "BUSD",
+                        name,
+                        image)
+
                     dispatch(
                         addToast({
                             message: `Successfully Purchased RIGEL GIFT CARD ${unsoldItems} NFT`,
@@ -144,8 +163,15 @@ const ComfirmPurchase = ({ isOpen,
                 }
 
 
-            } catch (e) {
+            } catch (e:any) {
                 console.log(e);
+                GNFTFailedTransaction(
+                    "NFT",
+                    "purchasing NFT",
+                    e.message,
+                    currency==="USDT"? "USDT": "BUSD",
+                    name,
+                    image)
                 dispatch(
                     setOpenModal({
                         message: `Transaction Failed`,

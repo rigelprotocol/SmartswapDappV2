@@ -14,6 +14,7 @@ import {NftProps} from "../../ViewNFT";
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import {useActiveWeb3React} from "../../../../utils/hooks/useActiveWeb3React";
 import {SupportedChainId} from "../../../../constants/chains";
+import { GBuyNFT, GViewNFT } from '../../../../components/G-analytics/gNFTs';
 
 
 export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, isFeatured = false }: NftProps) {
@@ -85,7 +86,14 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
               <Text textColor={lightTextColor} >≈ {rgpPrice} RGP</Text>
             </Flex>
             <Flex mt="2" pt={2} justifyContent="space-between" alignContent="center">
-              <Button onClick={() => setOpenPerchaseModal(true) } width={40} variant={'brand'}>Buy NFT</Button>
+              <Button onClick={() => {
+                  GBuyNFT(data.id, data.nftName,
+                    data.total,
+                    data.unsold,
+                    data.image,
+                    data.isFeatured)
+                setOpenPerchaseModal(true)} 
+                } width={40} variant={'brand'}>Buy NFT</Button>
               <Button 
                   ml={2}
                   textColor={'#319EF6'}
@@ -94,6 +102,13 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
                   borderColor={'#319EF6'}
                   variant='outline'
                   width={40}
+                  onClick={()=>{
+                    GViewNFT(data.id, data.nftName,
+                      data.total,
+                      data.unsold,
+                      data.image,
+                      data.isFeatured)
+                  }}
               >
                   <Link to={{
                       pathname: `/nfts/${id}`,
