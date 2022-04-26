@@ -93,6 +93,7 @@ const SetPrice = () => {
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
   const [totalNumberOfTransaction, setTotalNumberOfTransaction] = useState("1")
   const [approval, setApproval] = useState<String[]>([])
+  const [shakeInput, setShakeInput] = useState<boolean>(false)
   const [dataSignature,setDataSignature] = useState<{mess:string,signature:string}>({
     mess:"",
     signature:""
@@ -131,6 +132,7 @@ const SetPrice = () => {
   useEffect(() => {
     if (parseFloat(initialToPrice) > 0 && parseFloat(initialFromPrice) > 0) {
       setDisableInput(false)
+      // setShakeInput
       let difference = parseFloat(initialToPrice) / parseFloat(initialFromPrice)
       setDifferenceInPrice(difference)
       if (typedValue) {
@@ -519,7 +521,7 @@ const SetPrice = () => {
             value={formattedAmounts[Field.INPUT]}
             disable={disableInput}
             placeholder="3"
-            onHover={()=>alert(123)}
+            onHover={()=>disableInput && setShakeInput(!shakeInput)}
           />
           <Flex justifyContent="center" onClick={onSwitchTokens}>
             <SwitchIcon />
@@ -532,6 +534,7 @@ const SetPrice = () => {
             value={toPrice===0 ?"": `${toPrice}`}
             disable={disableInput}
             placeholder="6"
+            onHover={()=>disableInput && setShakeInput(!shakeInput)}
           />
           
           
@@ -568,6 +571,7 @@ const SetPrice = () => {
               initialFromPrice={initialFromPrice}
               setInitialPrice={setInitialFromPrice}
               placeholder="1"
+              shakeInput={shakeInput}
             />
             <Flex justifyContent="center">
               <RightIcon />
@@ -577,6 +581,7 @@ const SetPrice = () => {
               initialFromPrice={initialToPrice}
               setInitialPrice={setInitialToPrice}
               placeholder="2"
+              shakeInput={shakeInput}
             />
           </HStack>
           <Box display="flex" mt={5}>

@@ -14,6 +14,7 @@ interface ToProps {
   placeholder?: string,
   display?: boolean,
   disable?: boolean,
+  onHover?:()=>void,
 }
 
 
@@ -25,7 +26,8 @@ const To: React.FC<ToProps> = ({
   value,
   display,
   disable,
-  placeholder
+  placeholder,
+  onHover
 }) => {
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   const [tokenModal, setTokenModal] = useState(false);
@@ -63,7 +65,9 @@ const To: React.FC<ToProps> = ({
           value={value}
           max={false}
           disable={disable}
-          placeholder={placeholder} />
+          placeholder={placeholder} 
+          onHover={onHover}
+          />
 
       </Box>
     </>

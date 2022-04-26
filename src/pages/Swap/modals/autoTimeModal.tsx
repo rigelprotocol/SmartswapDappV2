@@ -200,14 +200,7 @@ const AutoTimeModal: React.FC<IModal> = ({
                                     {pathSymbol}
                                 </Text>
                             </Flex>
-                            <Flex justifyContent='space-between' my='4'>
-                                <Box color={lightTextColor}>
-                                    Slippage <InfoOutlineIcon />
-                                </Box>
-                                <Text color={heavyTextColor} fontWeight='500'>
-                                    {slippage}
-                                </Text>
-                            </Flex>
+                          
                             <Flex justifyContent='space-between' my='4'>
                                 <Box color={lightTextColor}>
                                     Slippage <InfoOutlineIcon />

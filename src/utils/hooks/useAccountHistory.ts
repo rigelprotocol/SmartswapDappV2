@@ -73,7 +73,7 @@ let web3 = new Web3(Web3.givenProvider);
 export const formatAmount = (number: string, decimals: any) => {
     const num = ethers.BigNumber.from(number).toString();
     let res = ethers.utils.formatUnits(num, decimals)
-    res = ParseFloat(res, 5)
+    res = ParseFloat(res, 3)
     return res;
 };
 
@@ -180,9 +180,11 @@ const useAccountHistory = (socket:any) => {
                 const data = await fetch(uri);
                 const jsondata = await data.json();
                 const SwapTrx = jsondata.result.filter((item: any) => item.to == contractAddress);
+                
                 const dataFiltered = SwapTrx
                     .filter((items: any) => decodeInput(items.input, SmartSwapRouter02) !== undefined) // && items.transactionHash !== "1"
-                    .map((items: any) => ({
+                    .map((items: any) => (
+                        {
                         value: items.value,
                         transactionObj: decodeInput(items.input, SmartSwapRouter02).params,
                         timestamp: items.timeStamp,
@@ -193,6 +195,7 @@ const useAccountHistory = (socket:any) => {
                         chainID:items.chainID 
                     }));
                 const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(0, 5) : dataFiltered;
+                console.log({dataToUse})
                 userData = dataToUse.map((data: any) => ({
                     inputAmount:
                         Number(data.value) > 0 ? data.value : data.transactionObj[0].value,

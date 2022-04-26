@@ -29,6 +29,7 @@ type InputSelectorProps = {
   display?:boolean;
   onHover?:()=>void
   disable?:boolean
+  placeholder?:string
 };
 
 const InputSelector = ({
@@ -72,13 +73,14 @@ const InputSelector = ({
           isRequired
           placeholder='0.0'
           value={value}
-          disabled={disable}
+          // disabled={disable}
           title={disable ? "please fill the input box below, they control this input": undefined}
           onChange={(event) => {
-            enforcer(event.target.value.replace(/,/g, "."));
+             !disable && enforcer(event.target.value.replace(/,/g, "."));
           }}
           focusBorderColor='none'
-          onMouseEnter={onHover}
+          onMouseEnter={disable ? onHover : ""}
+          onMouseLeave={disable ? onHover : ""}
         />
 
        } 

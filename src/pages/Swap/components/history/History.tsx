@@ -29,7 +29,7 @@ const History = () => {
 
   useEffect(
     () => {
-  setSocket(io("http://localhost:7000"));//https://rigelprotocol-autoswap.herokuapp.com
+  setSocket(io("https://rigelprotocol-autoswap.herokuapp.com"));//http://localhost:7000
   
     },
     []

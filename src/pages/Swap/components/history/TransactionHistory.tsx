@@ -41,7 +41,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
   const pendingColor = useColorModeValue('#c8d41b', '#c8d41b');
   const successColor = useColorModeValue('#22bb33', '#22bb33');
   const failedColor = useColorModeValue('#75f083', "#FF4243");
-  
+  console.log({data})
   return (
     <Flex  >
       <Box
@@ -238,7 +238,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
           </Box>
           
         </Grid>
-        {data?.chainID && data.transactionHash ?
+        { data.transactionHash ?
             <Flex justifyContent="right">
               
                   <Box cursor="pointer">
