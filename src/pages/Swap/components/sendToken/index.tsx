@@ -26,7 +26,11 @@ import {
   smartFactory,
 } from "../../../../utils/Contracts";
 import { useActiveWeb3React } from "../../../../utils/hooks/useActiveWeb3React";
-import {SMARTSWAPNFTSALES, SMARTSWAPROUTER, WNATIVEADDRESSES} from "../../../../utils/addresses";
+import {
+  SMARTSWAPNFTSALES,
+  SMARTSWAPROUTER,
+  WNATIVEADDRESSES,
+} from "../../../../utils/addresses";
 import {
   ExplorerDataType,
   getExplorerLink,
@@ -57,6 +61,10 @@ import { Web3Provider } from "@ethersproject/providers";
 import NetworkModal from "./../../../../components/Navbar/modals/networkModal";
 import { clearSearchResult } from "../../../../state/farming/action";
 import { GButtonClick, GFailedTransaction, GSuccessfullyTransaction } from "../../../../components/G-analytics/gIndex";
+import {
+  useTokenBalance,
+  useUpdateBalance,
+} from "../../../../utils/hooks/useUpdateBalances";
 
 export const calculateGas = async (
   percentage: number,
@@ -158,6 +166,7 @@ const SendToken = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentToPrice, setCurrentToPrice] = useState("");
   const [showNewChangesText, setShowNewChangesText] = useState(false);
+  // const [one, setOne] = useState([]);
 
   const { onCurrencySelection, onUserInput, onSwitchTokens } =
     useSwapActionHandlers();
@@ -254,6 +263,8 @@ const SendToken = () => {
   const receivedAmount = Number(formattedAmounts[Field.OUTPUT]).toFixed(4);
   const fromAmount = Number(formattedAmounts[Field.INPUT]);
 
+  // useUpdateBalance("");
+
   const parsedOutput = (decimal: number) => {
     return ethers.utils.parseUnits(minimum.toString(), decimal).toString();
   };
@@ -306,13 +317,15 @@ const SendToken = () => {
         from: account,
       }
     );
-    const approveBalance = ethers.utils.formatUnits(check, currencies[Field.INPUT].decimals).toString();
+    const approveBalance = ethers.utils
+      .formatUnits(check, currencies[Field.INPUT].decimals)
+      .toString();
     if (parseFloat(approveBalance) > Number(formattedAmounts[Field.INPUT])) {
       return setHasBeenApproved(true);
     }
     return setHasBeenApproved(false);
   };
-
+  // useTokenBalance()
   useEffect(() => {
     if (!inputError) {
       checkApproval();
@@ -345,7 +358,7 @@ const SendToken = () => {
       const swapApproval = await ApprovalRouter(address, library);
 
       const token = await getERC20Token(address, library);
-      const walletBal = (await token.balanceOf(account));
+      const walletBal = await token.balanceOf(account);
 
       const approveTransaction = await swapApproval.approve(
         SMARTSWAPROUTER[chainId as number],

@@ -232,7 +232,6 @@ const ShowYieldFarmDetails = ({
         changeApprovalButton(true, specialPoolV1Approval);
       } else if (content.deposit === "RGP" && Number(content.id) === 13) {
         const specialPoolV2Approval = await specialPoolV2Allowance(rgp);
-        console.log({ specialPoolV2Approval, content });
         changeApprovalButton(true, specialPoolV2Approval);
       } else {
         const pool = await smartSwapLPTokenPoolTwo(content.address, library);
@@ -360,7 +359,6 @@ const ShowYieldFarmDetails = ({
   };
 
   const setApprove = (val: string) => {
-    console.log(content.deposit);
     if (approveValueForOtherToken && approveValueForRGP) {
       GButtonClicked("unstake",content.deposit,"v2")
       modal2Disclosure.onOpen();
@@ -932,7 +930,6 @@ const ShowYieldFarmDetails = ({
           );
 
           const isEIP1559 = await library?.getFeeData();
-          console.log({ lpTokens });
           const withdraw = await lpTokens.withdraw(id, 0, {
             maxPriorityFeePerGas:
               isEIP1559 && chainId === 137
@@ -953,7 +950,6 @@ const ShowYieldFarmDetails = ({
             withdraw
           );
           const amountOfRgb = convertToNumber(logs[1].data);
-          console.log({ withdraw, amountOfRgb });
           const { hash } = withdraw;
 
           if (confirmations >= 1 && status) {
@@ -999,7 +995,6 @@ const ShowYieldFarmDetails = ({
   const LPDeposit = async (pid: any,val:string) => {
     if (account) {
       try {
-        console.log({ RGPBalance, farmingFee ,pid});
         if (parseFloat(content.tokenStaked[1]) == 0) {
           if (parseFloat(RGPBalance) < parseFloat(farmingFee)) {
             // alert({
@@ -1130,7 +1125,6 @@ const ShowYieldFarmDetails = ({
   };
 
   const confirmDeposit = async (val: any) => {
-    console.log("deposit", { val, content });
     setDepositValue("Pending Confirmation");
     GButtonIntialized("deposit",content.deposit,"v2")
     dispatch(
@@ -1318,9 +1312,14 @@ const ShowYieldFarmDetails = ({
           })
         );
         // callRefreshFarm(confirmations, status);
+<<<<<<< HEAD
       } catch (error:any) {
         console.log(error);
         GFarmingFailedTransaction("special pool", "stake", error.message, "RGP","v2")
+=======
+      } catch (error) {
+        console.log(error);
+>>>>>>> develop
         dispatch(
           setOpenModal({
             message: `Transaction failed`,
@@ -1434,8 +1433,13 @@ const ShowYieldFarmDetails = ({
         );
         // dispatch the getTokenStaked action from here when data changes
         //  callRefreshFarm(confirmations, status);
+<<<<<<< HEAD
       } catch (error:any) {
         GFarmingFailedTransaction("special pool", "unstake", error.message, "RGP","v2")
+=======
+      } catch (e) {
+        console.log(e);
+>>>>>>> develop
         dispatch(
           setOpenModal({
             trxState: TrxState.TransactionFailed,
@@ -1496,7 +1500,6 @@ const ShowYieldFarmDetails = ({
   };
 
   const approveLPToken = async (LPToken: any) => {
-    console.log(LPToken, "tokens");
     switch (content?.type) {
       case "LP":
         const poolOne = await smartSwapLPTokenPoolOne(content.address, library);
@@ -1509,7 +1512,6 @@ const ShowYieldFarmDetails = ({
     }
   };
 
-  console.log("contentss", content);
 
   const RGPApproval = async () => {
     if (account) {
