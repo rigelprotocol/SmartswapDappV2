@@ -1,15 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import SmartSwapRouter02 from '../abis/swapAbiForDecoder.json';
-import { timeConverter, getTokenSymbol, formatAmount, APIENDPOINT, APIKEY } from "./useAccountHistory";
+import { timeConverter, getTokenSymbol, formatAmount,  } from "./useAccountHistory";
 import { AUTOSWAPV2ADDRESSES, SMARTSWAPROUTER, WNATIVEADDRESSES } from "../addresses";
 import { getERC20Token } from '../utilsFunctions';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../state';
 import { useLocation } from 'react-router-dom';
-import { useNativeBalance } from './useBalances';
-import { SmartSwapRouter } from '../Contracts';
-import { ethers } from 'ethers';
+import { useNativeBalance } from './useBalances';;
 
 
 const abiDecoder = require('abi-decoder');
@@ -65,11 +62,11 @@ const useOpenOrders = (socket:any) => {
         }
     }, [location, chainId])
     useEffect(() => {
-        getMarketData();
+        getOpenOrders();
     }, [chainId, account, contractAddress,refreshPage,locationData]);
     useEffect(() => {
         socket?.on("success",()=>{
-            getMarketData();
+            getOpenOrders();
         })
         
     }, [socket]);
@@ -99,7 +96,7 @@ const useOpenOrders = (socket:any) => {
 
 
 
-        const getMarketData = async () => {
+        const getOpenOrders = async () => {
             if ((account && contractAddress && locationData)) {
                 setloadOpenOrders(true);
                 try {
@@ -130,7 +127,7 @@ const useOpenOrders = (socket:any) => {
                                 status: data.status,
                                 currentToPrice: data.typeOfTransaction === "Set Price" ? data.currentToPrice : data.percentageChange,
                                 chainID:data.chainID ,
-                                rate:`${data.currentNumber} / ${data.totalNumberOfTransaction}`,
+                                rate:`${data.currentNumber -1} / ${data.totalNumberOfTransaction}`,
                                 initialFromPrice:data.initialFromPrice,
                                 initialToPrice:data.initialToPrice,
                                 situation:data.situation,

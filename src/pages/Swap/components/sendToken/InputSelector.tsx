@@ -26,7 +26,8 @@ type InputSelectorProps = {
   onMax?: () => void;
   onUserInput: (value: string) => void;
   value: string | undefined;
-  display?:boolean
+  display?:boolean;
+  onHover?:()=>void
   disable?:boolean
 };
 
@@ -41,7 +42,8 @@ const InputSelector = ({
   onUserInput,
   value,
   display,
-  disable
+  disable,
+  onHover
 }: InputSelectorProps) => {
   const inputColor = useColorModeValue("#333333", "#F1F5F8");
   const balanceColor = useColorModeValue("#666666", "#DCE5EF");
@@ -76,6 +78,7 @@ const InputSelector = ({
             enforcer(event.target.value.replace(/,/g, "."));
           }}
           focusBorderColor='none'
+          onMouseEnter={onHover}
         />
 
        } 

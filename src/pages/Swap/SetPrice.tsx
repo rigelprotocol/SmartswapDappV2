@@ -519,6 +519,7 @@ const SetPrice = () => {
             value={formattedAmounts[Field.INPUT]}
             disable={disableInput}
             placeholder="3"
+            onHover={()=>alert(123)}
           />
           <Flex justifyContent="center" onClick={onSwitchTokens}>
             <SwitchIcon />

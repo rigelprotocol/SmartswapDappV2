@@ -29,7 +29,7 @@ const History = () => {
 
   useEffect(
     () => {
-  setSocket(io("https://rigelprotocol-autoswap.herokuapp.com"));//http://localhost:7000
+  setSocket(io("http://localhost:7000"));//https://rigelprotocol-autoswap.herokuapp.com
   
     },
     []
@@ -38,7 +38,7 @@ const History = () => {
 
   const [show, setShow] = useState<Boolean>(true);
   const [typeOfModal, setTypeOfModal] = useState(0);
-  const [open, setOpen] = useState<Boolean>(false);
+  const [open, setOpen] = useState<Boolean>(true);
   const [showMarketHistory, setShowMarketHistory] = useState(false);
   const [notification, setNotification] = useState(0);
   const [address, setAddress] = useState("");
@@ -53,6 +53,7 @@ const History = () => {
 
   const userData = Object.keys(historyData).map((i) => historyData[i]);
   const historyArray = Object.keys(marketHistoryData).map((i) => marketHistoryData[i]);
+  console.log({historyArray})
   const openOrderArray = Object.keys(openOrderData).map((i) => openOrderData[i]);
 
   const dispatch = useDispatch<AppDispatch>();
@@ -201,9 +202,9 @@ const History = () => {
               cursor="pointer"
               position='relative'
               onClick={() => {
-                if(notification>0){
-                  socket.emit("clear notification",address,locationData)
-                }
+                // if(notification>0){
+                //   socket.emit("clear notification",address,locationData)
+                // }
                 
                 setShowMarketHistory(false);
                 setShowOrder(false);
@@ -211,7 +212,8 @@ const History = () => {
                 
               }}
             >
-              {locationData==="swap" ?"Transaction History" : "Orders"} {locationData ==="swap" && autoTimeNotification>0 ? <Flex background={nonActiveTabColor}
+              {locationData==="swap" ?"Transaction History" : "Orders"} 
+              {/* {locationData ==="swap" && autoTimeNotification>0 ? <Flex background={nonActiveTabColor}
               width="20px" 
               height="20px" 
               borderRadius="50%" 
@@ -232,7 +234,7 @@ const History = () => {
               right="0px"
               fontSize="12px">{setPriceNotification}
                 </Flex>
-              }
+              } */}
             </Text>
             <Text fontWeight="400" cursor="pointer" fontSize="16px" color={showMarketHistory ? activeTabColor : nonActiveTabColor} onClick={() => {
               setShowMarketHistory(true);
@@ -304,9 +306,11 @@ const History = () => {
           {open && loadMarketData || open && loading || open && loadOpenOrders && <Spinner my={3} size={'md'} />}
         </Flex>
               {/* market history */}
-        {open && showMarketHistory && marketHistoryData && historyArray.map((data: DataType,index) => (
+        {open && showMarketHistory && marketHistoryData && historyArray.map((data: DataType,index) =>{
+          console.log(data)
+          return (
           <MarketHistory key={index} data={data} />
-        ))}
+        )})}
   {/* all orders of user */}
         {open && show && historyData && userData.map((data: DataType, index) => (
           <TransactionHistory key={index} data={data} deleteData={confirmDeletion} /> 

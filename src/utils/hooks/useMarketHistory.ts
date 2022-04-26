@@ -168,6 +168,7 @@ const useMarketHistory = (socket:any) => {
                             // .sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
                             result = data.filter((item:any)=>item.status===1)
                         }
+                        console.log({result})
                         dataToUse = await Promise.all(result.map(async (data: any) => {
                             let fromAddress = data.swapFromToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapFromToken
                             let toAddress = data.swapToToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapToToken

@@ -12,6 +12,7 @@ interface FromProps {
   onMax?: () => void,
   value: string,
   disable?: boolean,
+  onHover?: ()=>void,
   placeholder?: string
 }
 
@@ -23,7 +24,8 @@ const From: React.FC<FromProps> = ({
   onMax,
   value,
   disable,
-  placeholder
+  placeholder,
+  onHover,
 }) => {
 
 
@@ -60,7 +62,9 @@ const From: React.FC<FromProps> = ({
           value={value}
           max
           disable={disable} 
-          placeholder={placeholder}/>
+          placeholder={placeholder}
+          onHover={onHover}
+          />
       </Box>
     </>
   );
