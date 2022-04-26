@@ -1312,14 +1312,9 @@ const ShowYieldFarmDetails = ({
           })
         );
         // callRefreshFarm(confirmations, status);
-<<<<<<< HEAD
       } catch (error:any) {
         console.log(error);
         GFarmingFailedTransaction("special pool", "stake", error.message, "RGP","v2")
-=======
-      } catch (error) {
-        console.log(error);
->>>>>>> develop
         dispatch(
           setOpenModal({
             message: `Transaction failed`,
@@ -1433,13 +1428,8 @@ const ShowYieldFarmDetails = ({
         );
         // dispatch the getTokenStaked action from here when data changes
         //  callRefreshFarm(confirmations, status);
-<<<<<<< HEAD
       } catch (error:any) {
         GFarmingFailedTransaction("special pool", "unstake", error.message, "RGP","v2")
-=======
-      } catch (e) {
-        console.log(e);
->>>>>>> develop
         dispatch(
           setOpenModal({
             trxState: TrxState.TransactionFailed,
