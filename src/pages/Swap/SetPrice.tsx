@@ -67,8 +67,8 @@ const SetPrice = () => {
     showWrap,
     pathSymbol,
     pathArray,
-    amounted,
-    amounted2
+    unitAmount,
+    oppositeAmount
   } = useDerivedSwapInfo();
 
   useEffect(() => {
@@ -80,7 +80,7 @@ const SetPrice = () => {
     }
     runCheck()
   }, [currencies[Field.INPUT], account])
-  const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
+  const [URL, setURL] = useState("http://localhost:7000")//https://rigelprotocol-autoswap.herokuapp.com
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [disableInput, setDisableInput] = useState(true)
   const [initialFromPrice, setInitialFromPrice] = useState("")
@@ -257,6 +257,8 @@ const SetPrice = () => {
           totalNumberOfTransaction:parseInt(totalNumberOfTransaction),
           slippage:Number(allowedSlippage / 100),
           minimum,
+          pathArray,
+          pathSymbol
         })
       })
       const res = await response.json()
@@ -553,10 +555,10 @@ const SetPrice = () => {
             {currencies[Field.INPUT]?.symbol && currencies[Field.OUTPUT]?.symbol &&
             <>
              <Text fontSize="14px" mr={2} color={textColorOne}>
-                1 {currencies[Field.INPUT]?.symbol} = {amounted} {currencies[Field.OUTPUT]?.symbol}
+                1 {currencies[Field.INPUT]?.symbol} = {unitAmount} {currencies[Field.OUTPUT]?.symbol}
               </Text>
                 <Text fontSize="14px" mr={2} color={textColorOne}>
-                1 {currencies[Field.OUTPUT]?.symbol} = {amounted2} {currencies[Field.INPUT]?.symbol}
+                1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount} {currencies[Field.INPUT]?.symbol}
               </Text>
             </>
              

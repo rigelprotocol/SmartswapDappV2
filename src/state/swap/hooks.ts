@@ -23,7 +23,6 @@ import { parseUnits } from "@ethersproject/units";
 import useParsedQueryString from "../../hooks/useParsedQueryString";
 import JSBI from "jsbi";
 import { Web3Provider } from "@ethersproject/providers";
-import { useSingleSwap } from "../../hooks/useSinglePrice";
 
 export function tryParseAmount<T extends Currency>(
   value?: string,
@@ -110,8 +109,8 @@ export function useDerivedSwapInfo(): {
   pathSymbol: string;
   isExactIn: boolean;
   formatAmount: string;
-  amounted: string;
-  amounted2: string;
+ unitAmount: string| undefined,
+ oppositeAmount: string | undefined
 } {
   const { account } = useActiveWeb3React();
   const [Balance] = useNativeBalance();
@@ -146,13 +145,14 @@ export function useDerivedSwapInfo(): {
     outputCurrency,
     parsedAmount
   );
-  const [amounted, amounted2] = useSingleSwap(
+const [,, unitAmount, ,,oppositeAmount ] = useSwap(
     // isExactIn ? inputCurrency : outputCurrency,
     inputCurrency,
     // isExactIn ? outputCurrency : inputCurrency,
     outputCurrency,
-  );
-  
+    "1000000000000000000",
+    "unit"
+  ); 
 
   const formatAmount = tryParseAmount(
     amount as string,
@@ -215,8 +215,8 @@ export function useDerivedSwapInfo(): {
     pathSymbol,
     isExactIn,
     formatAmount,
-    amounted,
-    amounted2
+    unitAmount,
+    oppositeAmount
   };
 }
 

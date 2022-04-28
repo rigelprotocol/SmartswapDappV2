@@ -35,7 +35,7 @@ const useOpenOrders = (socket:any) => {
     const [openOrderData, setopenOrderData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
+    const [URL, setURL] = useState("http://localhost:7000")
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const refreshPage = useSelector((state: RootState) => state.transactions.refresh);
     const location = useLocation().pathname;
@@ -112,7 +112,7 @@ const useOpenOrders = (socket:any) => {
                         }
                         const result = data.filter((item:any)=>item.errorArray.length===0 && item.transactionHash === "")
                         dataToUse = await Promise.all(result.map(async (data: any) => {
-                            
+                            console.log({data})
                             return {
                                 inputAmount: data.amountToSwap,
                                 outputAmount: data.userExpectedPrice,
@@ -131,7 +131,8 @@ const useOpenOrders = (socket:any) => {
                                 initialFromPrice:data.initialFromPrice,
                                 initialToPrice:data.initialToPrice,
                                 situation:data.situation,
-                                _id:data._id
+                                _id:data._id,
+                                pathSymbol:data.pathSymbol
                             }
                         })
                         )
@@ -166,17 +167,18 @@ const useOpenOrders = (socket:any) => {
                         situation:data.situation,
                         initialFromPrice:data.initialFromPrice,
                         initialToPrice:data.initialToPrice,
-                        _id:data._id
+                        _id:data._id,
+                        pathSymbol:data.pathSymbol
                     })),
                 );
                     const marketHistory = marketSwap.map((data) => ({
-                        token1Icon:
+                        token1Icon:data.tokenIn &&
                             getTokenSymbol(data.tokenIn.symbol),
                         token2Icon:
-                            getTokenSymbol(data.tokenOut.symbol),
+                            data.tokenOut && getTokenSymbol(data.tokenOut.symbol),
                         token1: data.tokenIn,
                         token2: data.tokenOut,
-                        amountIn: formatAmount(data.amountIn, data.tokenIn.decimals),
+                        amountIn: data.tokenIn && formatAmount(data.amountIn, data.tokenIn.decimals),
                         amountOut:  parseFloat(data.amountOut).toFixed(4),
         
                         time: data.time,
@@ -192,7 +194,8 @@ const useOpenOrders = (socket:any) => {
                         situation:data.situation,
                         initialFromPrice:data.initialFromPrice,
                         initialToPrice:data.initialToPrice,
-                        _id:data._id
+                        _id:data._id,
+                        pathSymbol:data.pathSymbol
                     }));
                     setopenOrderData(marketHistory);
                     setloadOpenOrders(false);

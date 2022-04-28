@@ -67,7 +67,8 @@ interface DataIncoming {
     chainID?:string,
     initialFromPrice?:string,
     initialToPrice?:string,
-    situation?:string
+    situation?:string,
+    pathSymbol?:string
 }
 let web3 = new Web3(Web3.givenProvider);
 export const formatAmount = (number: string, decimals: any) => {
@@ -97,7 +98,7 @@ const useAccountHistory = (socket:any) => {
     const [historyData, setHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
+    const [URL, setURL] = useState("http://localhost:7000")//https://rigelprotocol-autoswap.herokuapp.com
     const dispatch =useDispatch()
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const tokenList = async (addressName: string) => {
@@ -168,14 +169,16 @@ const useAccountHistory = (socket:any) => {
         const database = await trans.json()
         return { transaction, database }
     }
+    const api = APIENDPOINT[chainId as number];
+    const apikey = APIKEY[chainId as number];
     const loadAccountHistory = async () => {
         if (account && contractAddress && locationData) {
             setLoading(true);
-            // try {
+            try {
             let userData = []
             if (location === "/swap") {
-                const uri = `https://api-testnet.bscscan.com/api?module=account&action=txlist&address=${stateAccount}&startblock=0
-                        &endblock=latest&sort=desc&apikey=AATZWFQ47VX3Y1DN7M97BJ5FEJR6MGRQSD`;
+                const uri = `https://${api}?module=account&action=txlist&address=${account}&startblock=0
+                &endblock=latest&sort=desc&apikey=${apikey}`;
 
                 const data = await fetch(uri);
                 const jsondata = await data.json();
@@ -190,12 +193,12 @@ const useAccountHistory = (socket:any) => {
                         timestamp: items.timeStamp,
                         transactionFee: items.gasPrice * items.gasUsed,
                         // name: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).name,
-                        transactionHash: items.transactionHash,
+                        transactionHash: items.hash,
                         status: 10,
                         chainID:items.chainID 
                     }));
+
                 const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(0, 5) : dataFiltered;
-                console.log({dataToUse})
                 userData = dataToUse.map((data: any) => ({
                     inputAmount:
                         Number(data.value) > 0 ? data.value : data.transactionObj[0].value,
@@ -217,8 +220,9 @@ const useAccountHistory = (socket:any) => {
                     id: "",
                     transactionHash: data.transactionHash,
                     error: [],
-                    status: "",
-                    situation:""
+                    status: "10",
+                    situation:"",
+                    chainID:chainId
                 }));
             } else if ( location === "/auto-time" || location === "/set-price") {
                 const { transaction, database } = await getTransactionFromDatabase(account)
@@ -261,10 +265,10 @@ const useAccountHistory = (socket:any) => {
                             initialFromPrice:data.initialFromPrice,
                             initialToPrice:data.initialToPrice,
                             situation:data.situation,
+                            pathSymbol:data.pathSymbol
                         }
                     })
                     )
-                    console.log({userData})
                 }
 
 
@@ -296,7 +300,8 @@ const useAccountHistory = (socket:any) => {
                     currentToPrice: data.currentToPrice,
                     chainID:data.chainID,initialFromPrice:data.initialFromPrice,
                     initialToPrice:data.initialToPrice,
-                    situation:data.situation                                 
+                    situation:data.situation,
+                    pathSymbol:data.pathSymbol                       
                 })),
             );
             const userSwapHistory = swapDataForWallet.map((data: any) => ({
@@ -321,7 +326,8 @@ const useAccountHistory = (socket:any) => {
                 chainID:data.chainID,
                 initialFromPrice:data.initialFromPrice,
                 initialToPrice:data.initialToPrice,
-                situation:data.situation
+                situation:data.situation,
+                pathSymbol:data.pathSymbol
           
             }));
             setHistoryData(userSwapHistory);
@@ -330,11 +336,11 @@ const useAccountHistory = (socket:any) => {
             setLoading(false);
 
 
-            // } catch (e) {
-            //     console.log(e);
-            //     setLoading(false);
-            //     setHistoryData({})
-            // }
+            } catch (e) {
+                console.log(e);
+                setLoading(false);
+                setHistoryData({})
+            }
         } else {
             console.log('Wallet disconnected')
         }

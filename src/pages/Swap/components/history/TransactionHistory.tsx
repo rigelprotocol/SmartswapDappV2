@@ -24,24 +24,24 @@ export interface DataType {
   _id?: string,
   transactionHash: string,
   error: [String],
-  status: number,
+  status: number | string,
   currentToPrice?: string,
   chainID?: string,
   initialFromPrice?:string,
   initialToPrice?:string,
   rate?:string,
   situation?:string,
-
+  pathSymbol?:string
 }
 
 const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: any }) => {
+  console.log({data})
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
   const nonActiveTabColor = useColorModeValue('#666666', '#4A739B');
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
   const pendingColor = useColorModeValue('#c8d41b', '#c8d41b');
   const successColor = useColorModeValue('#22bb33', '#22bb33');
   const failedColor = useColorModeValue('#75f083', "#FF4243");
-  console.log({data})
   return (
     <Flex  >
       <Box
@@ -114,7 +114,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
                   {data.currentToPrice && parseFloat(data.currentToPrice).toFixed(2)}
                 </Text>
                 </Tooltip>
-              </> :
+              </> : data.name==="Auto Time" &&
               <>
                 <Tooltip label="If Price(Above)">
                   <Text
@@ -180,7 +180,22 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
             </Text>
           </Box>
          {(data.status ===2 || data.status===3) && <Box>
-           <Tooltip label="Number of transaction completed">
+           <Box mb="15px">
+<Text
+              fontSize="12px"
+              lineHeight="0"
+              color={nonActiveTabColor}
+              mb="8px"
+            >
+              Route
+            </Text>
+            
+            <Text color={activeTabColor} fontSize="13px" fontWeight="regular">
+              {data.pathSymbol}
+            </Text>
+           </Box>
+           <Box>
+              <Tooltip label="Number of transaction completed">
 <Text
               fontSize="12px"
               lineHeight="0"
@@ -194,6 +209,8 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
             <Text color={activeTabColor} fontSize="14px" fontWeight="regular">
               {data.rate}
             </Text>
+           </Box>
+          
           </Box>}
           <Box>
             <Text
@@ -206,19 +223,23 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
             </Text>
             <Text color={data.status === 0 ? failedColor : (data.status === 2 || data.status===3) ? pendingColor : successColor} fontSize="14px" fontWeight="regular">
               {/* Completed */}
-              {data.status === 1 || data.status === 10 ? "Completed" : data.status === 0 ? "Failed" : data.status === 2 ? "Pending" : data.status === 3 ? "Suspended" : ""}
+              {data.status === 1 || data.status === "10" ? "Completed" : data.status === 0 ? "Failed" : data.status === 2 ? "Pending" : data.status === 3 ? "Suspended" : ""}
             </Text>
             {(data.name === "Auto Time" || data.name==="Set Price") && data.id && (data.status ===2 || data.status ===3) ? <Button
               border={`1px solid ${data.status===2 ?pendingColor : successColor}`}
-              border-radius="6px" backgroundColor="transparent" mt="2" onClick={() => deleteData(data,2)}>
+              border-radius="6px" backgroundColor="transparent" 
+              mt="2" 
+              onClick={() => deleteData(data,2)} 
+              >
               {data.status===2 ? "Pause" : "Resume"}
             </Button> : <></>}
 
             
 
           </Box>
-          
+         
                  <Box>
+         
             {data.error.length > 0 &&
               <>
                 <Text
@@ -233,16 +254,16 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
                   {data.error[0]}
                 </Text>
               </>
-            }
+           }
 
           </Box>
           
         </Grid>
-        { data.transactionHash ?
+        { data.transactionHash && data.chainID ?
             <Flex justifyContent="right">
               
                   <Box cursor="pointer">
-                  <Link href={getExplorerLink(parseInt(data?.chainID), data.transactionHash, ExplorerDataType.TRANSACTION)} target="_blank" isExternal textDecoration="underline" fontSize="13px">
+                  <Link href={getExplorerLink(parseInt(data.chainID), data.transactionHash, ExplorerDataType.TRANSACTION)} target="_blank" isExternal textDecoration="underline" fontSize="13px">
                     View Transaction
                     </Link>
                   </Box>

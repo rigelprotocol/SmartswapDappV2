@@ -103,9 +103,9 @@ const SetPrice = () => {
     inputError,
     showWrap,
     pathSymbol,
-    formatAmount,
-    amounted,
-    amounted2
+    pathArray,
+    oppositeAmount,
+    unitAmount
   } = useDerivedSwapInfo();
   const handleTypeInput = useCallback(
     (value: string) => {
@@ -130,7 +130,7 @@ const SetPrice = () => {
  
   useEffect(() => {
     async function checkIfSignatureExists() {
-      let user = await fetch(`https://rigelprotocol-autoswap.herokuapp.com/auto/data/${account}`)
+      let user = await fetch(`http://localhost:7000/auto/data/${account}`)//https://rigelprotocol-autoswap.herokuapp.com
       let data = await user.json()
       if (data) {
         setDataSignature(data.dataSignature)
@@ -431,8 +431,8 @@ const SetPrice = () => {
           trxState: TrxState.WaitingForConfirmation,
         })
       );
-      const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)
-      const response = await fetch(`https://rigelprotocol-autoswap.herokuapp.com/auto/add`, {
+      const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)//https://rigelprotocol-autoswap.herokuapp.com
+      const response = await fetch(`http://localhost:7000/auto/add`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -460,9 +460,10 @@ const SetPrice = () => {
           userExpectedPrice: userOutputPrice,
           totalNumberOfTransaction:parseInt(totalNumberOfTransaction),
           slippage:Number(allowedSlippage / 100),
+          pathArray,
           minimum,
-          situation
-
+          situation,
+          pathSymbol
         })
       })
       const res = await response.json()
@@ -625,10 +626,10 @@ const SetPrice = () => {
                 {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
                   <>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.INPUT]?.symbol} = {amounted} {currencies[Field.OUTPUT]?.symbol}
+                      1 {currencies[Field.INPUT]?.symbol} = {unitAmount} {currencies[Field.OUTPUT]?.symbol}
                     </Text>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.OUTPUT]?.symbol} = {amounted2} {currencies[Field.INPUT]?.symbol}
+                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount} {currencies[Field.INPUT]?.symbol}
                     </Text>
                     <ExclamationIcon />
                   </>
@@ -928,10 +929,10 @@ const SetPrice = () => {
                 {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
                   <>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                    1 {currencies[Field.INPUT]?.symbol} = {amounted} {currencies[Field.OUTPUT]?.symbol}
+                    1 {currencies[Field.INPUT]?.symbol} = {unitAmount} {currencies[Field.OUTPUT]?.symbol}
                     </Text>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.OUTPUT]?.symbol} = {amounted2} {currencies[Field.INPUT]?.symbol}
+                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount} {currencies[Field.INPUT]?.symbol}
                     </Text>
                     <ExclamationIcon />
                   </>

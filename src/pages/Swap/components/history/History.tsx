@@ -29,7 +29,7 @@ const History = () => {
 
   useEffect(
     () => {
-  setSocket(io("https://rigelprotocol-autoswap.herokuapp.com"));//http://localhost:7000
+  setSocket(io("http://localhost:7000"));//https://rigelprotocol-autoswap.herokuapp.com
   
     },
     []
@@ -42,7 +42,7 @@ const History = () => {
   const [showMarketHistory, setShowMarketHistory] = useState(false);
   const [notification, setNotification] = useState(0);
   const [address, setAddress] = useState("");
-  const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
+  const [URL, setURL] = useState("http://localhost:7000")//https://rigelprotocol-autoswap.herokuapp.com
   const [showOrder, setShowOrder] = useState(false);
 
   const sideBarRemoved = useSelector((state: RootState) => state.transactions.removeSideTab);
@@ -53,12 +53,10 @@ const History = () => {
 
   const userData = Object.keys(historyData).map((i) => historyData[i]);
   const historyArray = Object.keys(marketHistoryData).map((i) => marketHistoryData[i]);
-  console.log({historyArray})
   const openOrderArray = Object.keys(openOrderData).map((i) => openOrderData[i]);
 
   const dispatch = useDispatch<AppDispatch>();
  const autoTimeNotification = useSelector((state: RootState) => state.transactions.autoTimeNotification);
- console.log({autoTimeNotification})
  const setPriceNotification = useSelector((state: RootState) => state.transactions.setPriceNotification);
  const addr = useSelector((state: RootState) => state.transactions.address);
 
@@ -71,7 +69,6 @@ const History = () => {
   }, []);
   useEffect(() => {
     if(locationData ==="auto"){
-      console.log({autoTimeNotification, locationData})
       setNotification(autoTimeNotification)
     }else if(locationData==="price"){
       setNotification(setPriceNotification)
@@ -307,7 +304,6 @@ const History = () => {
         </Flex>
               {/* market history */}
         {open && showMarketHistory && marketHistoryData && historyArray.map((data: DataType,index) =>{
-          console.log(data)
           return (
           <MarketHistory key={index} data={data} />
         )})}

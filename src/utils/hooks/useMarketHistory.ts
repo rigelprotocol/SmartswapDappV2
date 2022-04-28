@@ -36,7 +36,7 @@ const useMarketHistory = (socket:any) => {
     const [marketHistoryData, setMarketHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
+    const [URL, setURL] = useState("http://localhost:7000")//https://rigelprotocol-autoswap.herokuapp.com
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
 
     const api = APIENDPOINT[chainId as number];
@@ -190,7 +190,8 @@ const useMarketHistory = (socket:any) => {
                                 error: data.errorArray,
                                 status: data.status,
                                 currentToPrice: data.typeOfTransaction === "Set Price" ? data.currentToPrice : data.percentageChange,
-                                chainID:data.chainID 
+                                chainID:data.chainID ,
+                                pathSymbol:data.pathSymbol
                                 
                             }
                         })
@@ -221,7 +222,8 @@ const useMarketHistory = (socket:any) => {
                         error: data.error,
                         status: data.status,
                         currentToPrice: data.currentToPrice,
-                        chainID:data.chainID 
+                        chainID:data.chainID,
+                        pathSymbol:data.pathSymbol 
                     })),
                 );
                     const marketHistory = marketSwap.map((data) => ({
@@ -242,7 +244,8 @@ const useMarketHistory = (socket:any) => {
                         error: data.error,
                         status: data.status,
                         currentToPrice: data.currentToPrice,
-                        chainID:data.chainID 
+                        chainID:data.chainID,
+                        pathSymbol:data.pathSymbol 
                     }));
 
                     setMarketHistoryData(marketHistory);
