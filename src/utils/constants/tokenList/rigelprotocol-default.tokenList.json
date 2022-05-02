@@ -362,6 +362,22 @@
       "decimals": 18,
       "chainId": 56,
       "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13105.png"
+    },
+    {
+      "name": "BabySwap Token",
+      "address": "0x53E562b9B7E5E94b81f10e96Ee70Ad06df3D2657",
+      "symbol": "BABY",
+      "decimals": 18,
+      "chainId": 56,
+      "logoURI": "https://bscscan.com/token/images/babyswap_32.png"
+    },
+    {
+      "name": "BabySwap Token",
+      "address": "0xeAD5D41E481ca8014C68d52f571FE36E75449060",
+      "symbol": "BABY",
+      "decimals": 18,
+      "chainId": 97,
+      "logoURI": "https://bscscan.com/token/images/babyswap_32.png"
     }
   ]
 }
