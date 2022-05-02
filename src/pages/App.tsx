@@ -23,6 +23,10 @@ import {SupportedChainId} from "../constants/chains";
 import ViewNFT from "./Nft/ViewNFT";
 import YieldFarm from "./FarmingV2/YieldFarm";
 import SmartBid from "./SmartBid";
+import BidDetails from "./SmartBid/BidDetails";
+import BidHistory from "./SmartBid/Components/History";
+import BidNotification from "./SmartBid/Notifications";
+import Faq from "./SmartBid/Faq";
 
 export default function App() {
   useConnectWallet();
@@ -74,7 +78,11 @@ export default function App() {
               <Route exact path="/farming" component={FarmingV1} />
               <Route path="/farming-V2" component={FarmingV2} />
               <Route path="/farming-V2/:deposit" component={YieldFarm} />
-              <Route path={'/smartbid'} component={SmartBid}/>
+              <Route exact path={'/smartbid'} component={SmartBid}/>
+              <Route path={'/smartbid/:id'} component={BidDetails}/>
+              <Route exact path={'/smartbidhistory'} component={BidHistory}/>
+              <Route exact path={'/notifications'} component={BidNotification}/>
+              <Route exact path={'/faq'} component={Faq}/>
               {/* <Route path="*">
                 <Redirect to="/swap" />
               </Route> */}

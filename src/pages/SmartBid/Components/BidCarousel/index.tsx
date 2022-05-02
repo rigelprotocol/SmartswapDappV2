@@ -80,7 +80,7 @@ export default function BidCarousel() {
             </IconButton>
 
             <Slider {...settings} ref={(slider : any) => setSlider(slider)}>
-                <BidSlider title={'Smart Token Price Capture'} sideImage={BidImage} background={'#EDE8FD'} widthSize={'40%'} />
+                <BidSlider title={'Smart Token Price Capture'} sideImage={BidImage} background={'#EDE8FD'} widthSize={'45%'} />
             </Slider>
         </Box>
     );

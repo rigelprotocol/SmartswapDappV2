@@ -2,6 +2,7 @@ import cardbid from '../../../assets/smartbid/cardbid2.svg';
 import cardbid2 from '../../../assets/smartbid/cardbid3.svg';
 import cardbid3 from '../../../assets/smartbid/cardbid4.svg';
 import cardbid4 from '../../../assets/smartbid/cardbid5.svg';
+import bidLogo from '../../../assets/smartbid/bidRGP.svg';
 
 
 export const SmartBidData = [
@@ -76,4 +77,95 @@ export const SmartBidData = [
     bgColor: '#EDE8FD'
   }
 ];
+
+export const SmartBidActivity = [
+  {
+    time: "April 30, 2021 12:51pm",
+    image: bidLogo,
+    title: '2 RGP',
+    id: 1,
+    text: 'Bid placed by ',
+  },
+  {
+    time: "April 30, 2021 12:51pm",
+    image: bidLogo,
+    title: '2 RGP',
+    id: 2,
+    text: 'Bid placed by ',
+  },
+  {
+    time: "April 30, 2021 12:51pm",
+    image: bidLogo,
+    title: '2 RGP',
+    id: 3,
+    text: 'Bid placed by ',
+  },
+  {
+    time: "April 30, 2021 12:51pm",
+    image: bidLogo,
+    title: '2 RGP',
+    id: 4,
+    text: 'Bid placed by ',
+  },
+  {
+    time: "April 30, 2021 12:51pm",
+    image: bidLogo,
+    title: '2 RGP',
+    id: 5,
+    text: 'Bid placed by ',
+  }
+];
+
+export const SmartBidWinners = [
+  {
+    id: 1,
+    colors: ['#FDEB64', '#FED443', '#D4840E'],
+    price: '50 RGP'
+  },
+  {
+    id: 2,
+    colors: ['#E0E9F1', '#D2DCE5', '#728B9F'],
+    price: '50 RGP'
+  },
+  {
+    id: 3,
+    colors: ['#E7BA90', '#D4A982', '#9D5D21'],
+    price: '50 RGP'
+  },
+  {
+    id: 4,
+    colors: ['#ffffff', '#ffffff', '#333333'],
+    price: '-'
+  },
+
+];
+
+export const FaqText = [
+  {
+    id: 1,
+    header: 'Lorem ipsum dolor sit amet?',
+    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Eu laoreet sed sit adipiscing id. Sapien, nascetur nunc,vitae sed amet, hendrerit sagittis. At ultrices mattis lectus duis faucibus a vitae aliquam arcu.Sed viverra lorem tincidunt lobortis viverra sed blandit. Mattis consectetur hac integer faucibus consecteturNec augue et eu pretium felis sed. Nisi dui eget donec nascetur cursus."
+  },
+  {
+    id: 2,
+    header: 'Ante euisumod commodo felis urna?',
+    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Eu laoreet sed sit adipiscing id. Sapien, nascetur nunc,vitae sed amet, hendrerit sagittis. At ultrices mattis lectus duis faucibus a vitae aliquam arcu.Sed viverra lorem tincidunt lobortis viverra sed blandit. Mattis consectetur hac integer faucibus consecteturNec augue et eu pretium felis sed. Nisi dui eget donec nascetur cursus."
+  },
+  {
+    id: 3,
+    header: 'Egestas id sit elementum tempor?',
+    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Eu laoreet sed sit adipiscing id. Sapien, nascetur nunc,vitae sed amet, hendrerit sagittis. At ultrices mattis lectus duis faucibus a vitae aliquam arcu.Sed viverra lorem tincidunt lobortis viverra sed blandit. Mattis consectetur hac integer faucibus consecteturNec augue et eu pretium felis sed. Nisi dui eget donec nascetur cursus."
+  },
+  {
+    id: 4,
+    header: 'Arcu justo at nisl pellentesque maecenas?',
+    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Eu laoreet sed sit adipiscing id. Sapien, nascetur nunc,vitae sed amet, hendrerit sagittis. At ultrices mattis lectus duis faucibus a vitae aliquam arcu.Sed viverra lorem tincidunt lobortis viverra sed blandit. Mattis consectetur hac integer faucibus consecteturNec augue et eu pretium felis sed. Nisi dui eget donec nascetur cursus."
+  },
+  {
+    id: 5,
+    header: 'Ut cursus dictum?',
+    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Eu laoreet sed sit adipiscing id. Sapien, nascetur nunc,vitae sed amet, hendrerit sagittis. At ultrices mattis lectus duis faucibus a vitae aliquam arcu.Sed viverra lorem tincidunt lobortis viverra sed blandit. Mattis consectetur hac integer faucibus consecteturNec augue et eu pretium felis sed. Nisi dui eget donec nascetur cursus."
+  }
+];
+
 

@@ -74,7 +74,7 @@ const YieldFarm = ({
     const getSingleFarm = async () => {
       await content2;
       console.log(content2);
-      if (symbolName[2] === content2?.deposit || symbolName[2].toUpperCase() === content2?.deposit) {
+      if (symbolName[2] === content2?.deposit) {
         myRef.current.scrollIntoView({behavior: 'smooth'});
         setShowYieldFarm(true)
       }

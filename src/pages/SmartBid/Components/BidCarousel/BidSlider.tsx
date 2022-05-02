@@ -1,10 +1,11 @@
 import React from "react";
-import {Box, HStack, Text, Image, useMediaQuery} from "@chakra-ui/react";
+import {Box, HStack, Text, Image, useMediaQuery, Flex} from "@chakra-ui/react";
 import {SliderProps} from "../../../Nft/Components/Carousel/Slider";
 
 
 const BidSlider = ({title, sideImage, background, smallText, widthSize}: SliderProps) => {
     const [isMobileDevice] = useMediaQuery("(max-width: 950px)");
+    const [isMobileDeviceSm] = useMediaQuery("(max-width: 450px)");
 
     return (
         <Box
@@ -17,25 +18,24 @@ const BidSlider = ({title, sideImage, background, smallText, widthSize}: SliderP
             >
 
             <Box height="300px" position="relative" width={'100%'}>
-                <HStack justifyContent={'space-between'}>
-                    <Box width={widthSize ? widthSize : '50%'} position={'absolute'} top={'10%'} ml={'40px'}>
+                <Flex alignItems={'center'} justifyContent={'space-between'}>
+                    <Flex width={widthSize ? widthSize : '50%'} position={'absolute'} top={'10%'} left={'8%'} alignItems={'center'}>
                         <Text
                             color={'#0760A8'}
                             fontWeight={'700'}
                             fontFamily={'Inter, sans-serif'}
                             fontSize={isMobileDevice ? '30px' : '56px'}
                             lineHeight={isMobileDevice ? '34px' : '68px'}
-                            m={'30px 50px'}
-                            px={'40px'}
+                            my={'30px'}
                             zIndex={'100'}
-                        >{title}</Text>
-                    </Box>
-                    {sideImage &&
-                    <Box>
+                        >Smart Token <br/> Price Capture</Text>
+                    </Flex>
+                    {sideImage && !isMobileDeviceSm ?
+                        (<Box>
                         <Image boxSize={isMobileDevice && '350px'} position={'absolute'} top={'0px'} right={'2px'} src={sideImage}/>
-                    </Box>
+                    </Box>) : null
                     }
-                </HStack>
+                </Flex>
             </Box>
         </Box>
     )
