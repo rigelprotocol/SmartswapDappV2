@@ -80,9 +80,7 @@ export default function App() {
               <Route path="/farming-V2/:deposit" component={YieldFarm} />
               <Route exact path={'/smartbid'} component={SmartBid}/>
               <Route path={'/smartbid/:id'} component={BidDetails}/>
-              <Route exact path={'/smartbidhistory'} component={BidHistory}/>
-              <Route exact path={'/notifications'} component={BidNotification}/>
-              <Route exact path={'/faq'} component={Faq}/>
+
               {/* <Route path="*">
                 <Redirect to="/swap" />
               </Route> */}
