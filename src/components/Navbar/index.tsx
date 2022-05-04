@@ -59,7 +59,7 @@ const Index = () => {
               </Flex>
               <Flex
                 h="70px"
-                zIndex="2"
+                zIndex="200"
                 position="fixed"
                 left={0}
                 bottom={0}
@@ -105,7 +105,7 @@ const Index = () => {
                   <Nav label="Liquidity" to="/pool" active={location === '/add' || location === '/remove' ? true : false} />
                   <Nav label="Farming" to="/farming-v2"  />
                   <Nav label="NFT" to="/nft" />
-                  <Link href="#">Analytics</Link>
+                  <Nav label="Smart Bid" to={'/smartbid'}/>
                 </Flex>
               </Flex>
               <Spacer />
