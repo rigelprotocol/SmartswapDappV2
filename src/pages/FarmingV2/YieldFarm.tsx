@@ -17,6 +17,7 @@ import { useWeb3React } from "@web3-react/core";
 import Darklogo from "../../assets/rgpdarklogo.svg";
 import { useLocation} from 'react-router-dom';
 import { useFetchYieldFarmDetails } from "../../state/newfarm/hooks";
+import { GButtonClicked } from "../../components/G-analytics/gFarming";
 // import "react-loading-skeleton/dist/skeleton.css";
 
 const YieldFarm = ({
@@ -74,10 +75,12 @@ const YieldFarm = ({
     const getSingleFarm = async () => {
       await content2;
       console.log(content2);
+
       if (symbolName[2] === content2?.deposit) {
         myRef.current.scrollIntoView({behavior: 'smooth'});
         setShowYieldFarm(true)
       }
+
     };
     getSingleFarm();
 
@@ -284,7 +287,11 @@ const YieldFarm = ({
             borderRadius='6px'
             mb='4'
             _hover={{ color: "#423a85" }}
-            onClick={() => setShowYieldFarm(!showYieldfarm)}
+            onClick={() => {
+              if(!showYieldfarm){
+                GButtonClicked("unlock button",content?.deposit,"v2")
+              }
+              setShowYieldFarm(!showYieldfarm)}}
             className={"unlock"}
           >
             Unlock

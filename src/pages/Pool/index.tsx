@@ -17,6 +17,7 @@ import { useUpdateUserGasPreference } from "../../state/gas/hooks";
 import { clearSearchResult } from "../../state/farming/action";
 import { useDispatch } from "react-redux";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
+import { GClickedAddLiquidity, GClickedAddNewLiquidity } from "../../components/G-analytics/gLiquidity";
 
 const Index = () => {
   const mode = useColorModeValue("light", "dark");
@@ -167,6 +168,7 @@ const Index = () => {
                   borderRadius='6px'
                   _hover={{ outline: "none", background: "#319EF6" }}
                   _active={{ outline: "none", background: "#319EF6" }}
+                  onClick={()=>GClickedAddLiquidity()}
                 >
                   Add Liquidity
                 </Button>
@@ -188,6 +190,7 @@ const Index = () => {
                   bg='transparent'
                   border=' 2px solid #319EF6'
                   className='CreatePair'
+                  onClick={() => GClickedAddNewLiquidity()}
                 >
                   Create a pair
                 </Button>

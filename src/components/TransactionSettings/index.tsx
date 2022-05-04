@@ -29,6 +29,7 @@ import { AppDispatch, RootState } from "../../state";
 import { detailsTab, transactionTab } from "../../state/transaction/actions";
 import { removeSideTab } from "../../utils/utilsFunctions";
 import { useUserGasPricePercentage } from "../../state/gas/hooks";
+import { GTransactionSetting } from "../G-analytics/gIndex";
 
 enum SlippageError {
   InvalidInput = "InvalidInput",
@@ -210,6 +211,9 @@ const TransactionSettings = () => {
             p={"7px"}
             border={"1px solid"}
             borderColor={textColorTwo}
+            onClick= {() => {
+                GTransactionSetting(slippageValue ?? userSlippageTolerance,ttl ?? deadlineInput,userGasInput ?? 0)
+            }}
           />
           <PopoverBody>
             <Flex mb={3}>
@@ -314,7 +318,7 @@ const TransactionSettings = () => {
               <InputGroup w='150%'>
                 <Input
                   placeholder={(userSlippageTolerance / 100).toFixed(2)}
-                  value={slippageInput}
+                  value={slippageInput ?? userSlippageTolerance}
                   onBlur={() => {
                     parseCustomSlippage(
                       (userSlippageTolerance / 100).toFixed(2)

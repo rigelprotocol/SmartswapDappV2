@@ -19,17 +19,21 @@ import DarkLogo from "./../../assets/logo/logo-dark.svg";
 import MobileNavDrawer from "./MobileNavDrawer";
 import NetworkConnector from "../NetworkConnector";
 
-export const Nav = ({ to, label, color }: { to: string; label: string, color?:string }) => (
+export const Nav = ({ to, label, active }: { to: string; label: string, active?:boolean }) => {
+  const mobileNavColor = useColorModeValue("#FFFFFF", "#15202B");
+  return (
+
   <NavLink
     to={to}
     activeStyle={{
       color: "#319EF6",
     }}
-    style={{color: color ? color : 'white'}}
+    color={active ? "#319EF6" : mobileNavColor}
+    style={active ? {color:"#319EF6"}: {color:""}}
   >
     {label}
   </NavLink>
-);
+)};
 
 const Index = () => {
   const [isMobileDevice] = useMediaQuery("(max-width: 750px)");
@@ -98,8 +102,8 @@ const Index = () => {
                   className="HeaderRide"
                 >
                   <SwapDropdown />
-                  <Nav label="Liquidity" to="/pool" color={location === '/add' || location === '/remove' ? "#319EF6" : 'white'} />
-                  <Nav label="Farming" to="/farming-v2" />
+                  <Nav label="Liquidity" to="/pool" active={location === '/add' || location === '/remove' ? true : false} />
+                  <Nav label="Farming" to="/farming-v2"  />
                   <Nav label="NFT" to="/nft" />
                   <Nav label="Smart Bid" to={'/smartbid'}/>
                 </Flex>

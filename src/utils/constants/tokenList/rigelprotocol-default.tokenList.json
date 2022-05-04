@@ -131,6 +131,22 @@
       "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0/logo.png"
     },
     {
+      "name": "Dreamr Platform Token",
+      "address": "0x955CE23f20217a6Aa205620b40EdE4C9E83d325f",
+      "symbol": "DMR",
+      "decimals": 18,
+      "chainId": 137,
+      "logoURI": ""
+    },
+    {
+      "name": "Dreamr Platform Token",
+      "address": "0x4DDE4C82c47325d18A79309d0ac0d23a3e831867",
+      "symbol": "DMR",
+      "decimals": 18,
+      "chainId": 80001,
+      "logoURI": ""
+    },
+    {
       "name": "Rigel Token",
       "address": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
       "symbol": "RGP",
@@ -362,6 +378,22 @@
       "decimals": 18,
       "chainId": 56,
       "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13105.png"
+    },
+    {
+      "name": "BabySwap Token",
+      "address": "0x53E562b9B7E5E94b81f10e96Ee70Ad06df3D2657",
+      "symbol": "BABY",
+      "decimals": 18,
+      "chainId": 56,
+      "logoURI": "https://bscscan.com/token/images/babyswap_32.png"
+    },
+    {
+      "name": "BabySwap Token",
+      "address": "0xeAD5D41E481ca8014C68d52f571FE36E75449060",
+      "symbol": "BABY",
+      "decimals": 18,
+      "chainId": 97,
+      "logoURI": "https://bscscan.com/token/images/babyswap_32.png"
     }
   ]
 }

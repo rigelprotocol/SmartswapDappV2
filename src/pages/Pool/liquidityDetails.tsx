@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import { WNATIVEADDRESSES } from "../../utils/addresses";
 import { SupportedChainSymbols } from "../../utils/constants/chains";
 import { useWeb3React } from "@web3-react/core";
+import { GAddLiquidity, GRemoveLiquidity } from "../../components/G-analytics/gLiquidity";
 
 const LiquidityDetails = (props: LiquidityDetail) => {
   const borderColor = useColorModeValue("#DEE5ED", "#324D68");
@@ -103,12 +104,13 @@ const LiquidityDetails = (props: LiquidityDetail) => {
           mb={2}
           _hover={{ bgColor: addButtonBgColor, color: addButtonColor }}
           _active={{ bgColor: addButtonBgColor, color: addButtonColor }}
-          onClick={() =>
+          onClick={() =>{
+            GAddLiquidity(props.pair.path[0].token,props.pair.path[1].token)
             history.push(
               `/add/${checkCurrencyId(
                 props.pair.path[0].fromPath
               )}/${checkCurrencyId(props.pair.path[1].toPath)}`
-            )
+            )}
           }
         >
           Add
@@ -124,10 +126,11 @@ const LiquidityDetails = (props: LiquidityDetail) => {
           w='48%'
           mb={2}
           py={3}
-          onClick={() =>
+          onClick={() =>{
+            GRemoveLiquidity(props.pair.path[0].token,props.pair.path[1].token)
             history.push(
               `/remove/${props.pair.path[0].fromPath}/${props.pair.path[1].toPath}`
-            )
+            )}
           }
           // as={<Link to="/remove" />}
         >

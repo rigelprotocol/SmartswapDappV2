@@ -5,8 +5,8 @@ import {
     Button,
     useColorModeValue,
     Image,
-    Flex, Spinner
-  } from '@chakra-ui/react';
+    Flex, Spinner, Skeleton, useMediaQuery
+} from '@chakra-ui/react';
 import ComfirmPurchase from '../../Modals/ComfirmPurchase';
 import { Link } from 'react-router-dom';
 import { useNft, useNftName} from "../../../../hooks/useNFT";
@@ -14,6 +14,7 @@ import {NftProps} from "../../ViewNFT";
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import {useActiveWeb3React} from "../../../../utils/hooks/useActiveWeb3React";
 import {SupportedChainId} from "../../../../constants/chains";
+import { GBuyNFT, GViewNFT } from '../../../../components/G-analytics/gNFTs';
 
 
 export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, isFeatured = false }: NftProps) {
@@ -21,8 +22,9 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
   const textColor = useColorModeValue("#333333", "#F1F5F8");
   const lightTextColor = useColorModeValue("#666666", "grey");
   const [ purchaseModal,setOpenPerchaseModal] = useState(false);
+    const [isMobileDevice] = useMediaQuery("(max-width: 767px)");
 
-  const { firstToken, secondToken ,prices, unsoldItems , nftId} = useNft(id);
+  const { firstToken, secondToken ,prices, unsoldItems , nftId, loadData} = useNft(id);
     const { chainId } = useActiveWeb3React();
 
   const {name, nftImage, loading} = useNftName(nftId[0]);
@@ -49,7 +51,11 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
           position="relative"
           >
             <Flex p={2.5} height={'320px'} justifyContent={'center'} alignItems={'center'}>
-                {loading ? <Spinner speed="0.65s" color="#333333" /> :  chainId === Number(SupportedChainId.BINANCETEST) || chainId === Number(SupportedChainId.POLYGONTEST) ? (
+                {loading ?  <Skeleton
+                    height='100%'
+                    w={isMobileDevice ? "330px" : "100%"}
+                    rounded={'lg'}
+                /> :  chainId === Number(SupportedChainId.BINANCETEST) || chainId === Number(SupportedChainId.POLYGONTEST) ? (
                     <Image
                         src={nftImage}
                         alt={`Picture`}
@@ -64,28 +70,36 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
             </Flex>
           <Box p="3">
             <Box d="flex" alignItems="baseline">
-            <Text
-            py={2} 
-            color={textColor}
-              >
-                {name}
-              </Text>
+                <Text py={2} color={textColor}>
+                    {name}
+                </Text>
             </Box>
+
             <Flex mt="2" justifyContent="space-between" alignContent="center">
               <Text textColor={lightTextColor}>Sold:</Text>
-              <Text  color={textColor}>{unsoldItems - nftId[0]} of {nftId.length}</Text>
+                {loadData ?  <Skeleton height={'20px'} w={'80px'}/> :
+              <Text  color={textColor}>{unsoldItems - nftId[0]} of {nftId.length}</Text> }
             </Flex>
   
             <Flex mt="2" justifyContent="space-between" alignContent="center">
               <Text textColor={lightTextColor}>Price:</Text>
-              <Text  color={textColor}>{prices.secondTokenPrice} USD</Text>
+                {loadData ?  <Skeleton height={'20px'} w={'80px'}/> :
+                <Text  color={textColor}>{prices.secondTokenPrice} USD</Text> }
             </Flex>
             <Flex mt="2" justifyContent="space-between" alignContent="center">
               <Text/>
-              <Text textColor={lightTextColor} >≈ {rgpPrice} RGP</Text>
+                {loadData ?  <Skeleton height={'20px'} w={'80px'}/> :
+              <Text textColor={lightTextColor} >≈ {rgpPrice} RGP</Text> }
             </Flex>
             <Flex mt="2" pt={2} justifyContent="space-between" alignContent="center">
-              <Button onClick={() => setOpenPerchaseModal(true) } width={40} variant={'brand'}>Buy NFT</Button>
+              <Button onClick={() => {
+                  GBuyNFT(data.id, data.nftName,
+                    data.total,
+                    data.unsold,
+                    data.image,
+                    data.isFeatured)
+                setOpenPerchaseModal(true)} 
+                } width={40} variant={'brand'}>Buy NFT</Button>
               <Button 
                   ml={2}
                   textColor={'#319EF6'}
@@ -94,6 +108,13 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
                   borderColor={'#319EF6'}
                   variant='outline'
                   width={40}
+                  onClick={()=>{
+                    GViewNFT(data.id, data.nftName,
+                      data.total,
+                      data.unsold,
+                      data.image,
+                      data.isFeatured)
+                  }}
               >
                   <Link to={{
                       pathname: `/nfts/${id}`,

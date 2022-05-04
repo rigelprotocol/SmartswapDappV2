@@ -25,6 +25,7 @@ export const useNft = (id: number) => {
     const [prices, setPrices] = useState({firstTokenPrice: '', secondTokenPrice: ''});
     const [unsoldItems, setUnsoldItems] = useState<number>(0);
     const [nftId, setNftId, nftIdRef] = useState<number[]>([]);
+    const [loadData, setLoadData] = useState(false);
 
 
     const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
@@ -37,6 +38,7 @@ export const useNft = (id: number) => {
 
 
     useEffect(() => {
+        setLoadData(true);
 
         if (chainId === SupportedChainId.POLYGONTEST || chainId === Number(SupportedChainId.POLYGON)) {
             const nftArray = getNftTokenPolygon(id);
@@ -79,15 +81,17 @@ export const useNft = (id: number) => {
                             break;
                         }
                     }
+                    setLoadData(false);
                 } catch (e) {
-                    console.log(e.message)
+                    console.log(e.message);
+                    setLoadData(false);
                 }
             }
         };
         fetchNftData();
     }, [account, chainId, stateChanged]);
 
-    return {firstToken, secondToken, prices, unsoldItems, nftId}
+    return {firstToken, secondToken, prices, unsoldItems, nftId, loadData}
 };
 
 export const useNFTAllowance = (
