@@ -557,6 +557,7 @@ const SendToken = () => {
       );
 
       const isEIP1559 = await library?.getFeeData();
+      console.log({pathArray,parsedAmount,formatAmount,dl},parsedOutput(currencies[Field.OUTPUT]?.decimals as number))
       const sendTransaction = await route.swapETHForExactTokens(
         parsedOutput(currencies[Field.OUTPUT]?.decimals as number),
         // [from, to],
