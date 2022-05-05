@@ -31,6 +31,7 @@ import {
   handleRangeChange,
 } from "../../../utils/utilsFunctions";
 import { escapeRegExp } from "../../../utils";
+import { GFarmingFilterSearch } from "../../G-analytics/gFarming";
 
 export const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`);
 
@@ -138,13 +139,14 @@ const Filter = ({
                     justifyContent='space-between'
                     alignItems='center'
                     bgColor={buttonBgColor}
-                    onClick={() =>
+                    onClick={() =>{
+                      GFarmingFilterSearch(true)
                       handleNewestToOldest(
                         setNewestToOldest,
                         setOldestToNewset,
                         oldestToNewest
                       )
-                    }
+                    }}
                   >
                     <Text>Newest to Oldest</Text>
                     <CheckIcon
@@ -164,13 +166,14 @@ const Filter = ({
                     p={3}
                     justifyContent='space-between'
                     alignItems='center'
-                    onClick={() =>
+                    onClick={() =>{
+                      GFarmingFilterSearch(true)
                       handleOldestToNewest(
                         setNewestToOldest,
                         setOldestToNewset,
                         newestToOldest
                       )
-                    }
+                    }}
                   >
                     <Text>Oldest to Newest </Text>
                     <CheckIcon
@@ -183,6 +186,7 @@ const Filter = ({
 
                     <RangeSlider
                       onChange={(value) => {
+                          GFarmingFilterSearch(true)
                         console.log(value);
                         setRange0(value[0]);
                         setRange1(value[1]);

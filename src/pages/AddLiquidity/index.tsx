@@ -56,6 +56,7 @@ import {
   useUpdateUserGasPreference,
 } from "../../state/gas/hooks";
 import { clearSearchResult } from "../../state/farming/action";
+import { GFailedTransaction, GSuccessfullyTransaction } from "../../components/G-analytics/gIndex";
 
 export default function AddLiquidity({
   match: {
@@ -250,6 +251,7 @@ export default function AddLiquidity({
               trxState: TrxState.TransactionSuccessful,
             })
           );
+          GSuccessfullyTransaction("liquidity","liquidity approval token", symbol)
           dispatch(
             addToast({
               message: `Approve ${symbol}`,
@@ -265,6 +267,7 @@ export default function AddLiquidity({
             trxState: TrxState.TransactionFailed,
           })
         );
+        GFailedTransaction("liquidity","liquidity approval token", symbol)
       }
     }
   };
@@ -375,6 +378,7 @@ export default function AddLiquidity({
               trxState: TrxState.TransactionSuccessful,
             })
           );
+          GSuccessfullyTransaction("liquidity","liquidity supplied successful", currencyA.symbol,currencyB.symbol)
           dispatch(
             addToast({
               message: `Add ${parseFloat(inputValueForTokenA as string).toFixed(
@@ -386,14 +390,16 @@ export default function AddLiquidity({
             })
           );
         }
-      } catch (err) {
+      } catch (err:any) {
         console.log(err);
+        GFailedTransaction("liquidity","liquidity supplied failed",err.message, currencyA.symbol,currencyB.symbol)
         dispatch(
           setOpenModal({
             message: `Transaction Failed`,
             trxState: TrxState.TransactionFailed,
           })
         );
+        
       }
     }
   };
@@ -494,6 +500,7 @@ export default function AddLiquidity({
               trxState: TrxState.TransactionSuccessful,
             })
           );
+          GSuccessfullyTransaction("liquidity","liquidity supplied successfully",currencyA.symbol,currencyB.symbol)
           dispatch(
             addToast({
               message: `Add ${parseFloat(inputValueForTokenA as string).toFixed(
@@ -505,8 +512,9 @@ export default function AddLiquidity({
             })
           );
         }
-      } catch (err) {
+      } catch (err:any) {
         console.log(err);
+        GFailedTransaction("liquidity","liquidity supplied failed",err.message, currencyA.symbol,currencyB.symbol)
         dispatch(
           setOpenModal({
             message: `Transaction Failed`,

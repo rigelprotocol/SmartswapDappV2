@@ -40,6 +40,7 @@
     "crypto-js": "^4.1.1",
     "ethers": "^5.5.1",
     "framer-motion": "^4.0.0",
+    "ga-gtag": "^1.1.1",
     "jsbi": "^4.0.0",
     "multicodec": "^3.2.1",
     "multihashes": "^4.0.3",
@@ -84,5 +85,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/gtag.js": "0.0.10"
   }
 }

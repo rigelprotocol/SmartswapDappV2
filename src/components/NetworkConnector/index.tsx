@@ -10,7 +10,7 @@ import {
   useDisclosure,
   Img, Tooltip
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useEffect } from "react";
 import { BinanceIcon, EthereumIcon } from "./Icons";
 import { useColorModeValue } from "@chakra-ui/react";
 import { CHAIN_INFO } from "../../constants/chains";
@@ -18,6 +18,7 @@ import { switchNetwork } from "../../utils/utilsFunctions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import OASISLOGO from "../../assets/oasis.png";
 import MATICLOGO from "../../assets/maticlogo.png";
+import { GNetworkConnectedTo } from "../G-analytics/gIndex";
 
 function NetworkIndicator() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -27,7 +28,10 @@ function NetworkIndicator() {
   const textColor = useColorModeValue("#319EF6", "#4CAFFF");
 
   const info = chainId ? CHAIN_INFO[chainId] : undefined;
-
+  useEffect(()=>{
+    GNetworkConnectedTo(info?.label)
+  
+},[info])
   const networkConnected = window.localStorage.getItem('connectv2');
   console.log(networkConnected);
   const wallet: boolean = networkConnected === 'injected';
@@ -43,6 +47,7 @@ function NetworkIndicator() {
     return null;
   }
   console.log("infor", info);
+ 
   return (
     <>
       <Button
@@ -125,8 +130,8 @@ function NetworkIndicator() {
               cursor='pointer'
               textAlign={'left'}
               onClick={() => changeNetwork('0x3')}
-              background={!wallet && '#999999'}
-              opacity={!wallet && 0.4}
+              background={!wallet ? '#999999' : ""}
+              opacity={!wallet ? 0.4 : ""}
             >
               <Tooltip
                   hasArrow
@@ -171,8 +176,8 @@ function NetworkIndicator() {
               mb={4}
               cursor='pointer'
               onClick={() => changeNetwork('0x89')}
-              background={!wallet && '#999999'}
-              opacity={!wallet && 0.4}
+              background={!wallet ? '#999999' : ""}
+              opacity={!wallet ? 0.4 : ""}
             >
               <Tooltip
                   hasArrow
@@ -200,8 +205,8 @@ function NetworkIndicator() {
               mb={4}
               cursor="pointer"
               onClick={() => changeNetwork('0xa516')}
-              background={!wallet && '#999999'}
-              opacity={!wallet && 0.4}
+              background={!wallet ? '#999999' :""}
+              opacity={!wallet ? 0.4 : ""}
             >
               <Tooltip
                   hasArrow

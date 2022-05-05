@@ -13,6 +13,7 @@ import JSBI from "jsbi";
 import { useActiveWeb3React } from "./useActiveWeb3React";
 import { Web3Provider} from '@ethersproject/providers'
 import { convertFromWei } from "..";
+import { GFindLiquidity } from "../../components/G-analytics/gLiquidity";
 
 export const useGetUserLiquidities = async () => {
   const { account, chainId, library } = useActiveWeb3React();
@@ -230,6 +231,7 @@ export const filterPools = ({
   let tokenA = getAddress(TokenA);
   let tokenB = getAddress(TokenB);
 
+  GFindLiquidity(tokenA,tokenB)
   return liquidities?.filter(
     (liquidity) =>
       (liquidity.path[0].fromPath === tokenA &&
