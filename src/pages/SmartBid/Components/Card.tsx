@@ -1,7 +1,8 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Box, Text, Flex, Image, HStack, Icon} from '@chakra-ui/react';
 import {MdPeopleOutline, AiOutlineGift, RiMedalFill} from "react-icons/all";
 import {Link} from 'react-router-dom';
+import {useSmartBid} from "../../../hooks/useSmartBid";
 
 export type CardDetails = {
     exclusive: boolean,
@@ -13,7 +14,53 @@ export type CardDetails = {
 }
 
 
+export function timeConverter(UNIX_timestamp: any) {
+    const a = new Date(UNIX_timestamp * 1000);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const year = a.getFullYear();
+    const month = months[a.getMonth()];
+    const date = a.getDate();
+    const hour = a.getHours() < 10 ? `0${a.getHours()}` : a.getHours();
+    const min = a.getMinutes()<10 ? `0${a.getMinutes()}` : a.getMinutes();
+    const sec = a.getSeconds() < 10 ? `0${a.getSeconds()}` : a.getSeconds();
+    return `${month} ${date}, ${year} ${hour}:${min}:${sec}`;
+}
+
+export const countDownDate = (time: number) => (timeConverter(time));
+
+
 const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDetails) => {
+
+    const { loadData , bidTime } = useSmartBid(0);
+    const [time, setTime] = useState(2);
+    const [currentClock, setCurrentClock] = useState('');
+
+    useEffect(() => {
+        const timeFunction = setInterval(function() {
+
+            const now = new Date().getTime();
+            const bidDate = countDownDate(Number(bidTime));
+
+            const bidDeadline = new Date(bidDate).getTime();
+            const distance =  bidDeadline - now;
+            setTime(distance);
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            setCurrentClock(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+
+            if (distance < 0) {
+                clearInterval(timeFunction);
+                setCurrentClock(`00:00:00`)
+            }
+        }, 1000);
+    }, [bidTime]);
+
+
+
     return (
         <Link to={`/smartbid/${id}`}>
             <Box
@@ -38,14 +85,14 @@ const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDe
                      borderRadius={'20px'} background={'#FDFCFF'}>
                     <HStack justifyContent={'space-between'}>
                         <Box fontWeight={700} my={2}>
-                            <Text color={'#333333'} fontSize={'24px'}>08:41:29</Text>
+                            <Text color={'#333333'} fontSize={'24px'}>{currentClock}</Text>
                             <Text color={'#666666'} fontSize={'14px'}>50% RGP Token</Text>
                         </Box>
                         {
                             exclusive &&
                             <Flex background={tileColor} borderRadius={'4px'} padding={1} alignItems={'center'}>
                                 <Icon as={RiMedalFill} color={'#fff'} pr={1} w={6} h={6}/>
-                                <Text fontSize={'14px'} fontWieght={700}>Exclusive</Text>
+                                <Text fontSize={'14px'} fontWeight={700}>Exclusive</Text>
                             </Flex>
                         }
                     </HStack>

@@ -16,6 +16,8 @@ import { AddressZero } from "@ethersproject/constants";
 import { getAddress } from "@ethersproject/address";
 import NFTAbi from './abis/nft.json';
 import NFTTwoAbi from './abis/nftTwo.json';
+import BidAbi from './abis/smartBid.json';
+import BidAbiTwo from './abis/smartBidTwo.json';
 
 export function isAddress(value: any): string | false {
   try {
@@ -113,6 +115,15 @@ export const RigelNFT = async (address: string, library: Web3Provider | undefine
 
 export const RigelNFTTwo = async (address: string, library: Web3Provider | undefined) => {
   return new Contract(address, NFTTwoAbi, library?.getSigner())
+};
+
+export const RigelSmartBid = async (address: string, library: Web3Provider | undefined) => {
+  return new Contract(address, BidAbi, library?.getSigner())
+};
+
+
+export const RigelSmartBidTwo = async (address: string, library: Web3Provider | undefined) => {
+  return new Contract(address, BidAbiTwo, library?.getSigner())
 };
 
 // contract for special pool

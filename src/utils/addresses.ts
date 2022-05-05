@@ -55,6 +55,26 @@ export const SMARTSWAPNFTTWO: { [key: string]: string } = {
   "80001": "0x4798a90d74ba3Fef77D38B0a07E8172FC5602629"
 };
 
+//SmartBid
+export const SMARTBID1: { [key: string]: string } = {
+  "1": "0x",
+  "3": "0x",
+  "56": "0x",
+  "97": "0x72d7430e4652790b7cfeae493113613B1A64dcd7",
+  "137": "0x",
+  "80001": "0x"
+};
+
+export const SMARTBID2: { [key: string]: string } = {
+  "1": "0x",
+  "3": "0x",
+  "56": "0x",
+  "97": "0xdDb17d036377a73c05068381C49251FC3847838d",
+  "137": "0x",
+  "80001": "0x"
+};
+
+
 //Native Wrapped
 export const WNATIVEADDRESSES: { [key: string]: string } = {
   "1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",

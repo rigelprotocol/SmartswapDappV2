@@ -1,14 +1,22 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {Box, Text, Flex, useColorModeValue, Button, SimpleGrid, GridItem, useMediaQuery} from '@chakra-ui/react';
 import {AddIcon} from "@chakra-ui/icons";
 import SmartBidCard from "./Components/Card";
 import {SmartBidData} from "./Components/cardData";
 import BidCarousel from "./Components/BidCarousel";
+import {useSmartBid} from "../../hooks/useSmartBid";
+
+
+
 
 
 const SmartBid = () => {
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     const [isMobileDeviceSm] = useMediaQuery("(max-width: 450px)");
+
+    useEffect(() => {
+
+    }, []);
 
 
     return (
