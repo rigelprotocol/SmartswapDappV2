@@ -421,7 +421,7 @@
     },
     {
       "name": "Pitbull",
-      "address": "0xA56FC8b7Dd67DBd58326FfEf745A98feBC2C3F7C",
+      "address": "0xa56fc8b7dd67dbd58326ffef745a98febc2c3f7c",
       "symbol": "PIT",
       "decimals": 9,
       "chainId": 97,
