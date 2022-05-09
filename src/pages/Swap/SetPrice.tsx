@@ -23,7 +23,8 @@ import {
   InputRightAddon,
   HStack,
   VStack,
-  Input
+  Input,
+  Square
 } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import { getERC20Token } from '../../utils/utilsFunctions';
@@ -126,6 +127,13 @@ const SetPrice = () => {
   const deadline = useSelector<RootState, number>(
     (state) => state.user.userDeadline
   );
+  const changeValue = (val:number,sign:string)=>{
+   if(parseFloat(initialToPrice) >0){
+     let value = sign==="minus" ? parseFloat(initialToPrice) - val : parseFloat(initialToPrice) + val
+     value > 0 ? setInitialToPrice(value.toString()) : setInitialToPrice("0")
+     
+   } 
+  }
   const { independentField, typedValue } = useSwapState();
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
   const [allowedSlippage] = useUserSlippageTolerance();
@@ -552,21 +560,40 @@ const SetPrice = () => {
             <ExclamationIcon />
           </Flex>
             <Spacer /> */}
-            {currencies[Field.INPUT]?.symbol && currencies[Field.OUTPUT]?.symbol &&
-            <>
-             <Text fontSize="14px" mr={2} color={textColorOne}>
-                1 {currencies[Field.INPUT]?.symbol} = {unitAmount} {currencies[Field.OUTPUT]?.symbol}
-              </Text>
-                <Text fontSize="14px" mr={2} color={textColorOne}>
-                1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount} {currencies[Field.INPUT]?.symbol}
-              </Text>
-            </>
-             
-            }
+             {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
+                  <>
+                    <Text fontSize="14px" mr={2} color={textColorOne}>
+                      1 {currencies[Field.INPUT]?.symbol} = {unitAmount} {currencies[Field.OUTPUT]?.symbol}
+                    </Text>
+                    <Text fontSize="14px" mr={2} color={textColorOne}>
+                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount} {currencies[Field.INPUT]?.symbol}
+                    </Text>
+                    <ExclamationIcon />
+                  </>
+
+                }
 
             <ExclamationIcon />
           </Box>
           {/* <Input placeholder="0.00" size="lg" borderRadius={4} borderColor={borderColor} /> */}
+          <Flex justifyContent="flex-end">
+            <Flex mb="2">
+              {[10,20,30,40,50].map((item,index)=>{
+                return <Square 
+                key={index} 
+                size="25px" 
+                background={buttonBgcolor}
+                cursor="pointer"
+                border={`1px solid ${borderColor}`} 
+                borderRadius="4px" 
+                fontSize="12px"
+                onClick={()=>changeValue(item,"plus")}
+                mx="3px">
+                    +{item}
+                </Square>
+            })}  
+            </Flex>
+          </Flex>
           <HStack>
             <CInput
               currency={currencies[Field.INPUT]}
@@ -574,6 +601,7 @@ const SetPrice = () => {
               setInitialPrice={setInitialFromPrice}
               placeholder="1"
               shakeInput={shakeInput}
+              showButton={false}
             />
             <Flex justifyContent="center">
               <RightIcon />
@@ -583,67 +611,28 @@ const SetPrice = () => {
               initialFromPrice={initialToPrice}
               setInitialPrice={setInitialToPrice}
               placeholder="2"
+              showButton={true}
               shakeInput={shakeInput}
             />
           </HStack>
-          <Box display="flex" mt={5}>
-                {/* <VStack>
-                  <Flex>
-                    <Text fontSize="14px" mr={2} ml="-63px">
-                      Range
-                    </Text>
-                    <ExclamationIcon />
-                  </Flex>
-                  <Box>
-                    <Tabs
-            colorScheme="#2D276A"
-            background="#F2F5F8"
-            borderRadius="4px"
-            // ml="-63px"
-          >
-            <TabList>
-              <Tab
-                // padding="8px 34px"
-                padding="7px"
-                background={situation==="above" ? "#319EF6" : ""}
-                color={situation!=="above" ? "#319EF6" : ""}
-                borderRadius="4px"
-                border="none"
-                onClick={() => setSituation('above')}
-              >
-                Above
-              </Tab>
-              <Tab
-                padding="7px"
-                background={situation==="below" ? "#319EF6" : ""}
-                color={situation!=="below" ? "#319EF6" : ""}
-                border="none"
-                borderRadius="4px"
-                onClick={() => setSituation('below')}
-              >
-                Below
-              </Tab>
-            </TabList>
-          </Tabs>
-                  </Box>
-                </VStack>
-                <Spacer /> */}
-                <VStack>
-                  <Flex>
-                    <Text fontSize="14px" mr={2}>
-                      Frequency
-                    </Text>
-                    <ExclamationIcon />
-                  </Flex>
-                  <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
-                    <Input placeholder="0" w="50px" value={totalNumberOfTransaction} type="number" onChange={e => {
-                      parseInt(e.target.value)<=0 ? setTotalNumberOfTransaction("1") :
-                      setTotalNumberOfTransaction(e.target.value)
-                    }} />
-                    <InputRightAddon children="times" fontSize="16px"padding="3px" />
-                  </InputGroup>
-                </VStack>
-              </Box>
+          <Flex justifyContent="flex-end">
+            <Flex mt="2">
+              {[10,20,30,40,50].map((item,index)=>{
+                return <Square 
+                key={index} 
+                size="25px" 
+                background={buttonBgcolor}
+                cursor="pointer"
+                border={`1px solid ${borderColor}`} 
+                borderRadius="4px" 
+                fontSize="12px"
+                onClick={()=>changeValue(item,"minus")}
+                mx="3px">
+                    -{item}
+                </Square>
+            })}  
+            </Flex>
+          </Flex>
 
 
           <Box mt={5}>

@@ -3,7 +3,10 @@ import {
     InputGroup,
     Input,
     InputRightAddon,
-    useColorModeValue
+    useColorModeValue,
+    Square,
+    Box,
+    Flex
 } from '@chakra-ui/react'
 import { Currency } from '@uniswap/sdk';
 
@@ -12,7 +15,8 @@ interface CProps {
     currency?: Currency,
     setInitialPrice: Function,
     placeholder:string,
-    shakeInput:boolean
+    shakeInput:boolean,
+    showButton:boolean
 }
 
 const CInput: React.FC<CProps> = ({
@@ -20,12 +24,16 @@ const CInput: React.FC<CProps> = ({
     currency,
     setInitialPrice,
     placeholder,
-    shakeInput
+    shakeInput,
+    showButton
 }) => {
 
     const tokenListTrgiggerBgColor = useColorModeValue('', '#ffffff');
     return (
+        <>
+        
         <InputGroup size='sm' width="250px">
+            
             <Input placeholder={placeholder} height="40px" value={initialFromPrice} onChange={(e) => setInitialPrice(e.target.value)} 
             background={shakeInput ? "rgba(141, 137, 228, 0.312)": "transparent"}
             />
@@ -34,6 +42,8 @@ const CInput: React.FC<CProps> = ({
                 '...'
                 : currency?.symbol) || ""} height="40px" color={tokenListTrgiggerBgColor} />
         </InputGroup>
+        </>
+        
     )
 }
 

@@ -39,7 +39,8 @@ import {
   Tabs,
   TabList,
   Tab,
-  Img
+  Img,
+  AlertDescription
 } from '@chakra-ui/react';
 import AutoTimeModal from './modals/autoTimeModal';
 import { useUserSlippageTolerance } from "../../state/user/hooks";
@@ -80,6 +81,8 @@ const SetPrice = () => {
   const [reversePriceOut, setReversePriceOut] = useState<string>("")
   const [otherMarketprice, setOtherMarketprice] = useState<string>("0")
   const [approval, setApproval] = useState<string[]>([])
+  const [approvalForFee, setApprovalForFee] = useState("")
+  const [approvalForToken, setApprovalForToken] = useState("")
   const [showModal, setShowModal] = useState(false)
   const [totalNumberOfTransaction,setTotalNumberOfTransaction] = useState("1")
   const [situation,setSituation] = useState("above")
@@ -151,14 +154,10 @@ const SetPrice = () => {
     setCheckedItem(false)
   }, [account])
 
-  // const checkIfSignatureExists = async () => {
-  //   await if
-  // }
   const deadline = useSelector<RootState, number>(
     (state) => state.user.userDeadline
   );
   const [allowedSlippage] = useUserSlippageTolerance();
-  const location = useLocation().pathname;
   const parsedAmounts = useMemo(
     () =>
       showWrap
@@ -265,18 +264,33 @@ const SetPrice = () => {
     if (parseFloat(RGPBalance) >= parseFloat(fee)) {
       setHasBeenApproved(true)
       approvalArray=[]
+      setApprovalForFee("")
+      // setApprovalForToken("")
+      alert(4)
+    }else{
+      setApprovalForFee("RGP")
     }
-    if(parseFloat(tokenBalance) >= Number(formattedAmounts[Field.INPUT])){
+    if(parseFloat(tokenBalance) >= parseFloat(formattedAmounts[Field.INPUT])){
       setHasBeenApproved(true)
       approvalArray=[]
-    } 
+      // setApprovalForFee("")
+      setApprovalForToken("")
+      alert(3)
+    } else{
+      setApprovalForToken(currencies[Field.INPUT]?.wrapped?.symbol ?? "")
+    }
     if (parseFloat(RGPBalance) < parseFloat(fee) || (parseFloat(tokenBalance) < Number(formattedAmounts[Field.INPUT]) && (!currencies[Field.INPUT]?.isNative && currencies[Field.INPUT]?.wrapped?.symbol === "RGP" ))) {
+      alert(1)
       setHasBeenApproved(false)
       approvalArray.push("RGP")
+      setApprovalForFee("RGP")
+      setApprovalForToken("RGP")
     }
     if (parseFloat(tokenBalance) < Number(formattedAmounts[Field.INPUT]) && (!currencies[Field.INPUT]?.isNative &&currencies[Field.INPUT]?.wrapped.symbol !== "RGP")) {
+      alert(2)
       setHasBeenApproved(false)
       approvalArray.push(currencies[Field.INPUT]?.wrapped?.symbol)
+      setApprovalForToken(currencies[Field.INPUT]?.wrapped?.symbol ?? "")
     }
    
     setApproval(Array.from(new Set(approvalArray)))
@@ -311,21 +325,23 @@ const SetPrice = () => {
 
   }
 
-  const approveOneOrTwoTokens = async () => {
+  const approveOneOrTwoTokens = async (tokenApprovingFor:string) => {
+  console.log({approvalForFee,approvalForToken})
     if (currencies[Field.INPUT]?.isNative) {
       setHasBeenApproved(true);
       setApproval(approval.filter(t => t !== currencies[Field.INPUT]?.name))
     }
-    let setArr = Array.from(new Set(approval))
-    if (setArr.length > 0) {
+    console.log({tokenApprovingFor})
+    // let setArr = Array.from(new Set(approval))
+    // if (setArr.length > 0) {
       try {
         dispatch(
           setOpenModal({
-            message: `Approve Token for Swap`,
+            message: `Approve ${tokenApprovingFor} ${tokenApprovingFor ==="RGP" ? "for fee" : ""}`,
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        if (setArr[0] === "RGP" || setArr[1]==="RGP") {
+        if (tokenApprovingFor === "RGP") {
           const address = RGPADDRESSES[chainId as number];
           const rgp = await rigelToken(RGP[chainId as number], library);
           const token = await getERC20Token(address, library);
@@ -338,9 +354,9 @@ const SetPrice = () => {
               from: account,
             }
           );
-          setArr =setArr.filter(item=>item!=="RGP")
+          // setArr =setArr.filter(item=>item!=="RGP")
           const { confirmations } = await approveTransaction.wait(1);
-          if (confirmations >= 1 && setArr.length===0) {
+          if (confirmations >= 1 ) {
             dispatch(
               setOpenModal({
                 message: `Approval Successful.`,
@@ -348,10 +364,9 @@ const SetPrice = () => {
               })
             );
           }
-            
-          setArr && setApproval(setArr)
-        } 
-        if ((setArr[0] === currencies[Field.INPUT]?.symbol || setArr[1] === currencies[Field.INPUT]?.symbol) && (setArr[0] !== "RGP" || setArr[1]!=="RGP")) {
+            setApprovalForFee("")
+          // setArr && setApproval(setArr)
+        } else {
           const address = currencies[Field.INPUT]?.wrapped.address;
           const token = address && await getERC20Token(address, library);
           const walletBal = (await token?.balanceOf(account)) + 4e18;
@@ -371,20 +386,20 @@ const SetPrice = () => {
               })
             );
           }
-          setArr && setApproval(setArr.filter(item=>item!==currencies[Field.INPUT]?.wrapped.symbol))
+          // setArr && setApproval(setArr.filter(item=>item!==currencies[Field.INPUT]?.wrapped.symbol))
         }
-        
+        setApprovalForToken("")
       } catch (e) {
         console.log(e)
       }
-    } else {
-      dispatch(
-        setOpenModal({
-          message: `Approval Failed.`,
-          trxState: TrxState.TransactionFailed,
-        })
-      );
-    }
+    // } else {
+    //   dispatch(
+    //     setOpenModal({
+    //       message: `Approval Failed.`,
+    //       trxState: TrxState.TransactionFailed,
+    //     })
+    //   );
+    // }
 
   }
   const sendTransactionToDatabase = async () => {
@@ -399,15 +414,12 @@ const SetPrice = () => {
     let currentDate = new Date();
     let futureDate = currentDate.getTime() + deadline;
     let data, response
+    console.log({pathArray,futureDate},Web3.utils.toWei(typedValue, 'ether'))
     if (currencies[Field.INPUT]?.isNative) {
       
       data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
-        currencies[Field.OUTPUT]?.wrapped.address,
+        pathArray,
         futureDate,
-        // signedTransaction?.mess,
-        // signedTransaction?.r,
-        // signedTransaction?.s,
-        // signedTransaction?.v,
         { value: Web3.utils.toWei(typedValue, 'ether') }
       )
       const fetchTransactionData = async (sendTransaction: any) => {
@@ -432,6 +444,7 @@ const SetPrice = () => {
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)//https://rigelprotocol-autoswap.herokuapp.com
+      console.log({pathSymbol,pathArray})
       const response = await fetch(`http://localhost:7000/auto/add`, {
         method: "POST",
         mode: "cors",
@@ -484,7 +497,7 @@ const SetPrice = () => {
   }
 
 
-  const checkApproval = async (tokenAddress: string) => {
+  const checkApproval = async (tokenAddress: string):Promise<string | void> => {
     if (currencies[Field.INPUT]?.isNative) {
       return setHasBeenApproved(true);
     }
@@ -716,6 +729,7 @@ const SetPrice = () => {
                 borderRadius="4px"
                 border="none"
                 onClick={() => setSituation('above')}
+                                isDisabled ={parseFloat(percentageChange)<=0 || percentageChange ===""?true:false}
               >
                 Above
               </Tab>
@@ -726,6 +740,7 @@ const SetPrice = () => {
                 border="none"
                 borderRadius="4px"
                 onClick={() => setSituation('below')}
+                                isDisabled ={parseFloat(percentageChange)<=0 || percentageChange ===""?true:false}
               >
                 Below
               </Tab>
@@ -743,7 +758,7 @@ const SetPrice = () => {
                     <ExclamationIcon />
                   </Flex>
                   <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
-                    <Input placeholder="0" w="50px" value={totalNumberOfTransaction} type="number" onChange={e => {
+                    <Input placeholder="0" w="80px" value={totalNumberOfTransaction} type="number" onChange={e => {
                       setTotalNumberOfTransaction(e.target.value)
                     }} />
                     <InputRightAddon children="times" fontSize="16px"padding="3px" />
@@ -985,7 +1000,7 @@ const SetPrice = () => {
       5 minutes
       </MenuButton>
       <MenuList>
-        {["5","30","daily","weekly","monthly"].map((item:string,index)=>(
+        {["5","30","60","daily","weekly","monthly"].map((item:string,index)=>(
           <MenuItem key={index} _focus={{ color: "#319EF6" }} onClick={(e) => setSelectedFrequency(item)} fontSize="13px">
          {parseInt(item) ? `${item} minutes` : item}
         </MenuItem>
@@ -1021,6 +1036,7 @@ const SetPrice = () => {
                 borderRadius="4px"
                 border="none"
                 onClick={() => setSituation('above')}
+                                isDisabled ={parseFloat(percentageChange)<=0 || percentageChange ===""?true:false}
               >
                 Above
               </Tab>
@@ -1031,6 +1047,7 @@ const SetPrice = () => {
                 border="none"
                 borderRadius="4px"
                 onClick={() => setSituation('below')}
+                isDisabled ={parseFloat(percentageChange)<=0 || percentageChange ===""?true:false}
               >
                 Below
               </Tab>
@@ -1047,7 +1064,7 @@ const SetPrice = () => {
                     <ExclamationIcon />
                   </Flex>
                   <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
-                    <Input placeholder="0" w="50px" value={totalNumberOfTransaction} type="number" onChange={e => {
+                    <Input placeholder="0" w="80px" value={totalNumberOfTransaction} type="number" onChange={e => {
                       parseInt(e.target.value)<=0 ? setTotalNumberOfTransaction("1") :
                       setTotalNumberOfTransaction(e.target.value)
                     }} />
@@ -1087,22 +1104,37 @@ const SetPrice = () => {
                     _hover={{ bgColor: buttonBgcolor }}
                   >
                     Sign Wallet
-                  </Button> : approval.length > 0? <Button
+                  </Button> :  approvalForToken ? <Button
                     w="100%"
                     borderRadius="6px"
                     border={lightmode ? '2px' : 'none'}
                     borderColor={borderColor}
                     h="48px"
                     p="5px"
-                    onClick={approveOneOrTwoTokens}
+                    onClick={()=>approveOneOrTwoTokens(approvalForToken)}
                     color={color}
                     bgColor={buttonBgcolor}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
                     _hover={{ bgColor: buttonBgcolor }}
                   >
-                    Approve {approval.join(" and ")}
-                  </Button> : <Button
+                    Approve {approvalForToken}
+                  </Button> : approvalForFee ? <Button
+                    w="100%"
+                    borderRadius="6px"
+                    border={lightmode ? '2px' : 'none'}
+                    borderColor={borderColor}
+                    h="48px"
+                    p="5px"
+                    onClick={()=>approveOneOrTwoTokens(approvalForFee)}
+                    color={color}
+                    bgColor={buttonBgcolor}
+                    fontSize="18px"
+                    boxShadow={lightmode ? 'base' : 'lg'}
+                    _hover={{ bgColor: buttonBgcolor }}
+                  >
+                    Approve RGP for fee
+                  </Button> :<Button
                     w="100%"
                     borderRadius="6px"
                     border={lightmode ? '2px' : 'none'}
