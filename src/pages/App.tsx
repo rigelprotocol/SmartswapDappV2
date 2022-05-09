@@ -23,6 +23,11 @@ import {SupportedChainId} from "../constants/chains";
 import ViewNFT from "./Nft/ViewNFT";
 import gtag from "ga-gtag"
 import YieldFarm from "./FarmingV2/YieldFarm";
+import SmartBid from "./SmartBid";
+import BidDetails from "./SmartBid/BidDetails";
+import BidHistory from "./SmartBid/Components/History";
+import BidNotification from "./SmartBid/Notifications";
+import Faq from "./SmartBid/Faq";
 
  function App() {
   useConnectWallet();
@@ -82,6 +87,9 @@ import YieldFarm from "./FarmingV2/YieldFarm";
               <Route exact path="/farming" component={FarmingV1} />
               <Route path="/farming-V2" component={FarmingV2} />
               <Route path="/farming-V2/:deposit" component={YieldFarm} />
+              <Route exact path={'/smartbid'} component={SmartBid}/>
+              <Route path={'/smartbid/:id'} component={BidDetails}/>
+
               {/* <Route path="*">
                 <Redirect to="/swap" />
               </Route> */}
