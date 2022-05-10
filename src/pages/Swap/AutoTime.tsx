@@ -792,21 +792,36 @@ const SetPrice = () => {
                     _hover={{ bgColor: buttonBgcolor }}
                   >
                     Sign Wallet
-                  </Button> : approval.length > 0 ? <Button
+                  </Button> :  approvalForToken ? <Button
                     w="100%"
                     borderRadius="6px"
                     border={lightmode ? '2px' : 'none'}
                     borderColor={borderColor}
                     h="48px"
                     p="5px"
-                    onClick={approveOneOrTwoTokens}
+                    onClick={()=>approveOneOrTwoTokens(approvalForToken)}
                     color={color}
                     bgColor={buttonBgcolor}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
                     _hover={{ bgColor: buttonBgcolor }}
                   >
-                    Approve {approval.length > 0 && approval[0]} {approval.length > 1 && `and ${currencies[Field.INPUT]?.tokenInfo.name}`}
+                    Approve {approvalForToken}
+                  </Button> : approvalForFee ? <Button
+                    w="100%"
+                    borderRadius="6px"
+                    border={lightmode ? '2px' : 'none'}
+                    borderColor={borderColor}
+                    h="48px"
+                    p="5px"
+                    onClick={()=>approveOneOrTwoTokens(approvalForFee)}
+                    color={color}
+                    bgColor={buttonBgcolor}
+                    fontSize="18px"
+                    boxShadow={lightmode ? 'base' : 'lg'}
+                    _hover={{ bgColor: buttonBgcolor }}
+                  >
+                    Approve RGP for fee
                   </Button> : <Button
                     w="100%"
                     borderRadius="6px"
