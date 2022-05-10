@@ -394,6 +394,38 @@
       "decimals": 18,
       "chainId": 97,
       "logoURI": "https://bscscan.com/token/images/babyswap_32.png"
+    },
+    {
+      "name": "Project Galaxy",
+      "address": "0xe4Cc45Bb5DBDA06dB6183E8bf016569f40497Aa5",
+      "symbol": "GAL",
+      "decimals": 18,
+      "chainId": 56,
+      "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/11877.png"
+    },
+    {
+      "name": "Project Galaxy",
+      "address": "0x04f5c8591a799a5cc9490e159d36506769e4ebaf",
+      "symbol": "GAL",
+      "decimals": 18,
+      "chainId": 97,
+      "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/11877.png"
+    },
+    {
+      "name": "Pitbull",
+      "address": "0xA57ac35CE91Ee92CaEfAA8dc04140C8e232c2E50",
+      "symbol": "PIT",
+      "decimals": 9,
+      "chainId": 56,
+      "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/9177.png"
+    },
+    {
+      "name": "Pitbull",
+      "address": "0xa56fc8b7dd67dbd58326ffef745a98febc2c3f7c",
+      "symbol": "PIT",
+      "decimals": 9,
+      "chainId": 97,
+      "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/9177.png"
     }
   ]
 }
