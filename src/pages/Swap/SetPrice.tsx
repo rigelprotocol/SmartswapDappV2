@@ -584,7 +584,6 @@ const SetPrice = () => {
 
                 }
 
-            <ExclamationIcon />
           </Box>
           {/* <Input placeholder="0.00" size="lg" borderRadius={4} borderColor={borderColor} /> */}
           <Flex justifyContent="flex-end">
@@ -645,7 +644,21 @@ const SetPrice = () => {
             </Flex>
           </Flex>
 
-
+          <Box>
+                  <Flex>
+                    <Text fontSize="14px" mr={2} my={2}>
+                      Frequency <ExclamationIcon />
+                    </Text>
+                    
+                  </Flex>
+                  <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
+                    <Input placeholder="0" w="80px" value={totalNumberOfTransaction} type="number" onChange={e => {
+                      parseInt(e.target.value)<=0 ? setTotalNumberOfTransaction("1") :
+                      setTotalNumberOfTransaction(e.target.value)
+                    }} />
+                    <InputRightAddon children="times" fontSize="16px"padding="3px" />
+                  </InputGroup>
+                </Box>
           <Box mt={5}>
             {inputError ?
               <Button
@@ -678,22 +691,37 @@ const SetPrice = () => {
                 _hover={{ bgColor: buttonBgcolor }}
               >
                 Sign Wallet
-              </Button> : approval.length > 0 ? <Button
-                w="100%"
-                borderRadius="6px"
-                border={lightmode ? '2px' : 'none'}
-                borderColor={borderColor}
-                h="48px"
-                p="5px"
-                onClick={approveOneOrTwoTokens}
-                color={color}
-                bgColor={buttonBgcolor}
-                fontSize="18px"
-                boxShadow={lightmode ? 'base' : 'lg'}
-                _hover={{ bgColor: buttonBgcolor }}
-              >
-                Approve {approval.length > 0 && approval[0]} {approval.length > 1 && `and ${currencies[Field.INPUT]?.tokenInfo.name}`}
-              </Button> : <Button
+              </Button>  :  approvalForToken ? <Button
+                    w="100%"
+                    borderRadius="6px"
+                    border={lightmode ? '2px' : 'none'}
+                    borderColor={borderColor}
+                    h="48px"
+                    p="5px"
+                    onClick={()=>approveOneOrTwoTokens(approvalForToken)}
+                    color={color}
+                    bgColor={buttonBgcolor}
+                    fontSize="18px"
+                    boxShadow={lightmode ? 'base' : 'lg'}
+                    _hover={{ bgColor: buttonBgcolor }}
+                  >
+                    Approve {approvalForToken}
+                  </Button> : approvalForFee ? <Button
+                    w="100%"
+                    borderRadius="6px"
+                    border={lightmode ? '2px' : 'none'}
+                    borderColor={borderColor}
+                    h="48px"
+                    p="5px"
+                    onClick={()=>approveOneOrTwoTokens(approvalForFee)}
+                    color={color}
+                    bgColor={buttonBgcolor}
+                    fontSize="18px"
+                    boxShadow={lightmode ? 'base' : 'lg'}
+                    _hover={{ bgColor: buttonBgcolor }}
+                  >
+                    Approve RGP for fee
+                  </Button>  : <Button
                 w="100%"
                 borderRadius="6px"
                 border={lightmode ? '2px' : 'none'}
@@ -711,7 +739,7 @@ const SetPrice = () => {
                 Send Transaction
               </Button>
             }
-
+         
           </Box>
 
         </Box>
@@ -732,6 +760,7 @@ const SetPrice = () => {
         buttonText={signatureFromDataBase ? "Send Transaction" : "Sign Wallet"}
         fromDeposited={formattedAmounts[Field.INPUT]}
         toDeposited={toPrice}
+        frequency={totalNumberOfTransaction}
         signSignature={signatureFromDataBase ? sendTransactionToDatabase : signTransaction}
         setCheckedItem={setCheckedItem}
         checkedItem={checkedItem}

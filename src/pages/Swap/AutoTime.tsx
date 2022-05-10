@@ -1184,6 +1184,7 @@ const SetPrice = () => {
         inputLogo={currencies[Field.INPUT]?.logoURI}
         outputLogo={currencies[Field.OUTPUT]?.logoURI}
         frequency={selectedFrequency}
+        numberOfTransaction={totalNumberOfTransaction}
         percentageChange={percentageChange}
         buttonText={signatureFromDataBase ? "Send Transaction" : "Sign Wallet"}
         fromDeposited={formattedAmounts[Field.INPUT]}

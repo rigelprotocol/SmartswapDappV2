@@ -34,7 +34,8 @@ export type IModal = {
     minimumAmountToRecieve: string;
     buttonText: string,
     setCheckedItem: Function,
-    checkedItem: boolean
+    checkedItem: boolean,
+    frequency:string
 };
 
 const SetPriceModal: React.FC<IModal> = ({
@@ -53,7 +54,8 @@ const SetPriceModal: React.FC<IModal> = ({
     buttonText,
     setCheckedItem,
     checkedItem,
-    slippage
+    slippage,
+    frequency
 }) => {
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
@@ -180,6 +182,14 @@ const SetPriceModal: React.FC<IModal> = ({
                                 </Box>
                                 <Text color={heavyTextColor} fontWeight='500'>
                                     {pathSymbol}
+                                </Text>
+                            </Flex>
+                            <Flex justifyContent='space-between' my='4'>
+                                <Box color={lightTextColor}>
+                                    Number of transaction <InfoOutlineIcon />
+                                </Box>
+                                <Text color={heavyTextColor} fontWeight='500'>
+                                    {frequency}
                                 </Text>
                             </Flex>
                             <Flex justifyContent='space-between' my='4'>

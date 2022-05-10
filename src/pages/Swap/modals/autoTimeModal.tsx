@@ -36,10 +36,11 @@ export type IModal = {
     frequency: string;
     percentageChange: string;
     situation: string;
-    buttonText: string,
-    setCheckedItem: Function,
-    checkedItem: boolean,
-  showNewChangesText:boolean
+    buttonText: string;
+    setCheckedItem: Function;
+    checkedItem: boolean;
+  showNewChangesText:boolean;
+  numberOfTransaction:string
 };
 
 const AutoTimeModal: React.FC<IModal> = ({
@@ -63,7 +64,8 @@ const AutoTimeModal: React.FC<IModal> = ({
     checkedItem,
     slippage,
     minimumAmountToRecieve,
-    showNewChangesText
+    showNewChangesText,
+    numberOfTransaction
 }) => {
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
@@ -201,6 +203,14 @@ const AutoTimeModal: React.FC<IModal> = ({
                                 </Text>
                             </Flex>
                           
+                            <Flex justifyContent='space-between' my='4'>
+                                <Box color={lightTextColor}>
+                                    Number of transaction <InfoOutlineIcon />
+                                </Box>
+                                <Text color={heavyTextColor} fontWeight='500'>
+                                    {numberOfTransaction}
+                                </Text>
+                            </Flex>
                             <Flex justifyContent='space-between' my='4'>
                                 <Box color={lightTextColor}>
                                     Slippage <InfoOutlineIcon />
