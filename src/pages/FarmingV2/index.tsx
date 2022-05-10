@@ -20,15 +20,15 @@ import {
   Tooltip,
   IconButton,
   useClipboard,
-  AlertDialogBody,
   InputGroup,
   InputLeftAddon,
   Input,
-  Icon,
-  Spinner,
   Stack,
   Skeleton,
-  SkeletonText,
+  MenuList,
+  MenuItem,
+  Menu,
+  MenuButton,
 } from "@chakra-ui/react";
 import { CopyIcon } from "../../theme/components/Icons";
 import { useHistory, useRouteMatch } from "react-router-dom";
@@ -94,7 +94,7 @@ import { useLocation } from "react-router-dom";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { useUpdateUserGasPreference } from "../../state/gas/hooks";
 import { FiFilter } from "react-icons/fi";
-import { SearchIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon, SearchIcon } from "@chakra-ui/icons";
 import Filter from "../../components/Farming/Modals/Filter";
 import { filterFarms } from "../../utils/utilsFunctions";
 import { farmStateInterface } from "../../state/farm/reducer";
@@ -113,13 +113,12 @@ import { useGetFarmData } from "../../utils/hooks/useGetFarmData";
 import { useClearFarm } from "../../state/farming/hooks";
 
 import { useFarmData } from "../../state/newfarm/hooks";
-import { contents } from "./mock";
 import { GFarmingClickListYourProject, GFarmingInputSearchFarm, GOpenedSpecialPool } from "../../components/G-analytics/gFarming";
 
 export const BIG_TEN = new bigNumber(10);
 export const LIQUIDITY = "liquidity";
 export const STAKING = "staking";
-export const OTHER_FARMS = "other farms";
+export const PRODUCT_FARMS = "product farms";
 export const V1 = "v1";
 export const V2 = "v2";
 export const LIGHT_THEME = "light";
@@ -156,6 +155,7 @@ export function Index() {
   const [range1, setRange1] = useState<number | string>(10000);
   const [searchedFarmData, setSearchedFarmData] =
     useState<farmStateInterface>();
+    const [currentSelectedTab,setCurrentSelectedTab] = ("")
 
   const [showPopOver, setShowPopover] = useState(false);
   const [saveChanges, setSavedChanges] = useState(false);
@@ -2154,7 +2154,6 @@ export function Index() {
               )}
             </Tab>
             <Tab
-              isDisabled={true}
               border='1px solid #DEE5ED'
               borderRadius={0}
               background={
@@ -2193,11 +2192,63 @@ export function Index() {
               // px={5}
               // py={4}
               // minWidth={{ base: "none", md: "200px", lg: "200px" }}
-              // onClick={() => handleSelect(OTHER_FARMS)}
+              onClick={() => handleSelect(PRODUCT_FARMS)}
             >
-              <Text className={"other"} color={titleColor}>
-                Other Farms
-              </Text>
+              <Menu>
+        <MenuButton
+          mr={1}
+          variant="ghost"
+          as={Button}
+          transition="all 0.2s"
+          borderRadius="md"
+          _hover={{ bg: "gray.100" }}
+          _focus={{ boxShadow: "outline" }}
+          rightIcon={<ChevronDownIcon />}
+        >
+        
+        Product Farm
+        </MenuButton>
+        <MenuList>
+          <MenuItem>
+            <Stack direction={'column'} spacing={0} >
+              <Text>SmartSwap</Text>
+              <Text color={'gray.500'}>  Swap tokens directly.</Text>
+            </Stack>
+
+          </MenuItem>
+          <MenuItem>
+            <Link href="https://gift.rigelprotocol.com/" isExternal>
+              <Stack direction={'column'} spacing={0} >
+                <Text> GiftDApp</Text>
+                <Text color={'gray.500'}>  Gift tokens in a fun way.</Text>
+              </Stack>
+            </Link>
+          </MenuItem>
+          <MenuItem>
+
+            <Stack direction={'column'} spacing={0} >
+              <Text>  Smart Bid </Text>
+              <Text color={'gray.500'}>  Bid on tokens.</Text>
+            </Stack>
+
+
+          </MenuItem>
+          <MenuItem>
+
+            <Stack direction={'column'} spacing={0} >
+              <Text>  Leverage Exchange </Text>
+              <Text color={'gray.500'}>  Trade using decentralized tokens.</Text>
+            </Stack>
+
+          </MenuItem>
+          <MenuItem>
+            <Stack direction={'column'} spacing={0} >
+              <Text>  LaunchPad </Text>
+              <Text color={'gray.500'}>  Join projects hosted on RigelProtocol.</Text>
+            </Stack>
+          </MenuItem>
+        </MenuList>
+      </Menu>
             </Tab>
           </TabList>
           {/* <Divider display={isMobileDevice ? undefined : "none"} my='4' /> */}
