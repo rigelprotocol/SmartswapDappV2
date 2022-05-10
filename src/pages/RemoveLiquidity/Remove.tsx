@@ -46,6 +46,7 @@ import {
   useUserGasPricePercentage,
 } from "../../state/gas/hooks";
 import { clearSearchResult } from "../../state/farming/action";
+import { GFailedTransaction, GSuccessfullyTransaction } from "../../components/G-analytics/gIndex";
 
 const Remove = () => {
   const [isTabDevice] = useMediaQuery("(min-width: 990px)");
@@ -247,6 +248,7 @@ const Remove = () => {
             hash,
             ExplorerDataType.TRANSACTION
           );
+          GSuccessfullyTransaction("liquidity","remove liquidity", pool?.path[0].token, pool?.path[1].token)
           dispatch(
             setOpenModal({
               message: `${
@@ -283,8 +285,9 @@ const Remove = () => {
             })
           );
         }
-      } catch (err) {
+      } catch (err:any) {
         console.log(err);
+        GFailedTransaction("liquidity","remove liquidity",err?.message, pool?.path[0].token, pool?.path[1].token)
         dispatch(
           setOpenModal({
             message: `${
@@ -437,6 +440,7 @@ const Remove = () => {
               trxState: TrxState.TransactionSuccessful,
             })
           );
+          GSuccessfullyTransaction("liquidity","remove liquidity", pool?.path[0].token, pool?.path[1].token)
           dispatch(
             addToast({
               message: `Remove ${outPutValueForTokenA} ${
@@ -466,8 +470,9 @@ const Remove = () => {
             })
           );
         }
-      } catch (err) {
+      } catch (err:any) {
         console.log(err);
+        GFailedTransaction("liquidity","remove liquidity",err?.message, pool?.path[0].token, pool?.path[1].token)
         dispatch(
           setOpenModal({
             message: `${
@@ -556,6 +561,7 @@ const Remove = () => {
             hash,
             ExplorerDataType.TRANSACTION
           );
+          GSuccessfullyTransaction("liquidity","approve liquidity removal", pool?.path[0].token, pool?.path[1].token)
           dispatch(
             setOpenModal({
               message: `${
@@ -621,8 +627,9 @@ const Remove = () => {
             })
           );
         }
-      } catch (e) {
+      } catch (e:any) {
         console.log(e);
+        GFailedTransaction("liquidity","remove liquidity",e.message, pool?.path[0].token, pool?.path[1].token)
         dispatch(
           setOpenModal({
             message: `${
@@ -714,6 +721,7 @@ const Remove = () => {
             hash,
             ExplorerDataType.TRANSACTION
           );
+          GSuccessfullyTransaction("liquidity","approve liquidity removal", pool?.path[0].token, pool?.path[1].token)
           dispatch(
             setOpenModal({
               message: `Removing approval for ${
@@ -779,8 +787,9 @@ const Remove = () => {
             })
           );
         }
-      } catch (e) {
+      } catch (e:any) {
         console.log(e);
+        GFailedTransaction("liquidity","approve liquidity",e.message, pool?.path[0].token, pool?.path[1].token)
         dispatch(
           setOpenModal({
             message: `Removing approval for ${

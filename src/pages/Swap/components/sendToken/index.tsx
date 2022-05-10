@@ -60,6 +60,7 @@ import { useUserGasPricePercentage } from "../../../../state/gas/hooks";
 import { Web3Provider } from "@ethersproject/providers";
 import NetworkModal from "./../../../../components/Navbar/modals/networkModal";
 import { clearSearchResult } from "../../../../state/farming/action";
+import { GButtonClick, GFailedTransaction, GSuccessfullyTransaction } from "../../../../components/G-analytics/gIndex";
 import {
   useTokenBalance,
   useUpdateBalance,
@@ -381,6 +382,7 @@ const SendToken = () => {
             trxState: TrxState.TransactionSuccessful,
           })
         );
+        GSuccessfullyTransaction("straight_swap","approval",currencies[Field.INPUT]?.symbol)
         dispatch(
           addToast({
             message: `Swap approval successful`,
@@ -388,7 +390,9 @@ const SendToken = () => {
           })
         );
       }
-    } catch (e) {
+    } catch (e:any) {
+      console.log(e.message,"1838")
+      GFailedTransaction("straight_swap","approval",e.message,currencies[Field.INPUT]?.symbol)
       console.log(e);
       dispatch(
         setOpenModal({
@@ -510,7 +514,7 @@ const SendToken = () => {
         setShowNewChangesText(false);
       }
     } catch (e) {
-      console.log(e);
+      console.log(449404);
       setSendingTrx(false);
       dispatch(
         setOpenModal({
@@ -548,6 +552,7 @@ const SendToken = () => {
       );
 
       const isEIP1559 = await library?.getFeeData();
+      console.log({pathArray,parsedAmount,formatAmount,dl},parsedOutput(currencies[Field.OUTPUT]?.decimals as number))
       const sendTransaction = await route.swapETHForExactTokens(
         parsedOutput(currencies[Field.OUTPUT]?.decimals as number),
         // [from, to],
@@ -740,6 +745,7 @@ const SendToken = () => {
             trxState: TrxState.TransactionSuccessful,
           })
         );
+        GSuccessfullyTransaction("straight_swap","swapping",currencies[Field.INPUT]?.symbol, currencies[Field.OUTPUT]?.symbol)
         dispatch(
           addToast({
             message: `Swap ${inputAmount} ${currencies[Field.INPUT]?.symbol
@@ -749,8 +755,10 @@ const SendToken = () => {
         );
         onUserInput(Field.INPUT, "");
       }
-    } catch (e) {
-      console.log(e);
+    } catch (e:any) {
+      console.log(e?.message,"swapping",);
+      GFailedTransaction("straight_swap","swapping",e?.message,currencies[Field.INPUT]?.symbol, currencies[Field.OUTPUT]?.symbol)
+
       setSendingTrx(false);
       dispatch(
         setOpenModal({
@@ -823,6 +831,7 @@ const SendToken = () => {
           hash,
           ExplorerDataType.TRANSACTION
         );
+        GSuccessfullyTransaction("straight_swap","swapping",currencies[Field.INPUT]?.symbol, currencies[Field.OUTPUT]?.symbol)
         dispatch(
           addToast({
             message: `Swap ${typedValue} ${currencies[Field.INPUT]?.symbol
@@ -832,7 +841,8 @@ const SendToken = () => {
         );
         onUserInput(Field.INPUT, "");
       }
-    } catch (e) {
+    } catch (e:any) {
+      GFailedTransaction("straight_swap","swapping",e.message,currencies[Field.INPUT]?.symbol, currencies[Field.OUTPUT]?.symbol)
       console.log(e);
       setSendingTrx(false);
       dispatch(
@@ -911,9 +921,11 @@ const SendToken = () => {
             URL: explorerLink,
           })
         );
+        GSuccessfullyTransaction("straight_swap","swapping",currencies[Field.INPUT]?.symbol, currencies[Field.OUTPUT]?.symbol)
         onUserInput(Field.INPUT, "");
       }
-    } catch (e) {
+    } catch (e:any) {
+      GFailedTransaction("straight_swap","swapping",e.message,currencies[Field.INPUT]?.symbol, currencies[Field.OUTPUT]?.symbol)
       console.log(e);
       setSendingTrx(false);
       dispatch(
@@ -1143,6 +1155,7 @@ const SendToken = () => {
               boxShadow={lightmode ? "base" : "lg"}
               _hover={{ bgColor: buttonBgcolor }}
               onClick={() => {
+                GButtonClick("straight_swap","approve tokens",currencies[Field.INPUT]?.symbol)
                 approveSwap();
               }}
             >
@@ -1181,6 +1194,8 @@ const SendToken = () => {
               boxShadow={lightmode ? "base" : "lg"}
               _hover={{ bgColor: buttonBgcolor }}
               onClick={() => {
+                GButtonClick("straight_swap","swapping",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
+              
                 setCurrentToPrice(receivedAmount);
                 setShowModal(!showModal);
               }}

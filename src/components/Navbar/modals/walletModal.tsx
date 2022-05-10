@@ -25,6 +25,7 @@ import NetworkModal from "./networkModal";
 import ROUTESQUARELIGHT from '../../../assets/routesquare-light.svg';
 import ROUTESQUAREDARK from '../../../assets/routesquare-dark.svg';
 import useAuth from "../../../utils/hooks/useAuth";
+import { GDisconnectWallet, GSwitchWallet } from "../../G-analytics/gIndex";
 
 
 
@@ -52,6 +53,7 @@ const WalletModal: React.FC<IModal> = ({
   const { logout } = useAuth();
 
   const disconnectWallet = () => {
+    GDisconnectWallet()
     logout();
   };
   return (
@@ -137,7 +139,9 @@ const WalletModal: React.FC<IModal> = ({
                   color={activeButtonColor}
                   isFullWidth
                   _hover={{ background: `${activeButtonColor}`, color: "#fff" }}
-                  onClick={() => setDisplayNetwork(state => !state)}
+                  onClick={() => {
+                    GSwitchWallet()
+                    setDisplayNetwork(state => !state)}}
                 >
                   Switch Wallet
                 </Button>

@@ -18,6 +18,7 @@ import StatusIcon from './StatusIcon';
 import RGPModal from "./modals/RGPModal";
 import UnsupportNetwork from './UnsupportNetwork';
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
+import { GRGPBreakdown } from '../G-analytics/gIndex';
 
 export default function WalletConnection() {
   const [isMobileDevice] = useMediaQuery('(max-width: 1200px)');
@@ -38,7 +39,6 @@ export default function WalletConnection() {
   const [RGPPrice] = useRGPPrice();
   const [showRGP, setShowRGP] = useState(false);
   const [modalDisplay, setDisplayModal] = useState(false);
-
   if (account) {
     return (
       <>
@@ -46,7 +46,9 @@ export default function WalletConnection() {
           display={isMobileDevice ? 'none' : undefined}
           variant="rgpButton"
           bg={bgColor}
-          onClick={() => setShowRGP(true)}
+          onClick={() => {
+            GRGPBreakdown()
+            setShowRGP(true)}}
           fontSize="14px"
 
         >

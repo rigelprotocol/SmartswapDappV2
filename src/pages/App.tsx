@@ -21,13 +21,27 @@ import useConnectWallet from "../utils/hooks/useConnectWallet";
 import {useActiveWeb3React} from "../utils/hooks/useActiveWeb3React";
 import {SupportedChainId} from "../constants/chains";
 import ViewNFT from "./Nft/ViewNFT";
+import gtag from "ga-gtag"
 import YieldFarm from "./FarmingV2/YieldFarm";
+import SmartBid from "./SmartBid";
+import BidDetails from "./SmartBid/BidDetails";
+import BidHistory from "./SmartBid/Components/History";
+import BidNotification from "./SmartBid/Notifications";
+import Faq from "./SmartBid/Faq";
 
-export default function App() {
+ function App() {
   useConnectWallet();
 
   const {chainId} = useActiveWeb3React();
-
+ 
+  // useEffect(()=>{
+  //   ReactGA.pageview(window.location.pathname + window.location.search)
+  // })
+  gtag('config', "G-JRRW1SDM6G" , {
+    'page_title' : window.location.search,
+    'page_path': window.location.pathname,
+    'send_page_view' : true
+  });
   return (
     <Suspense fallback={null}>
       <Fonts />
@@ -73,6 +87,9 @@ export default function App() {
               <Route exact path="/farming" component={FarmingV1} />
               <Route path="/farming-V2" component={FarmingV2} />
               <Route path="/farming-V2/:deposit" component={YieldFarm} />
+              <Route exact path={'/smartbid'} component={SmartBid}/>
+              <Route path={'/smartbid/:id'} component={BidDetails}/>
+
               {/* <Route path="*">
                 <Redirect to="/swap" />
               </Route> */}
@@ -84,3 +101,5 @@ export default function App() {
     </Suspense>
   );
 }
+
+export default App

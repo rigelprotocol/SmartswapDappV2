@@ -10,11 +10,15 @@ import MarketHistory from "./MarketHistory";
 import { transactionTab,refreshTransactionTab } from "../../../../state/transaction/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../state";
+<<<<<<< HEAD
 import ConfirmationModal from '../../../../components/Modals/confirmationModal';
 import { TrxState, setOpenModal } from '../../../../state/application/reducer';
 import useOpenOrders from '../../../../utils/hooks/useOpenOrders';
 import { io } from "socket.io-client";
 
+=======
+import { GMarketHistoryTab } from '../../../../components/G-analytics/gIndex';
+>>>>>>> develop
 
 const History = () => {
   
@@ -199,10 +203,14 @@ const History = () => {
               cursor="pointer"
               position='relative'
               onClick={() => {
+<<<<<<< HEAD
                 // if(notification>0){
                 //   socket.emit("clear notification",address,locationData)
                 // }
                 
+=======
+                GMarketHistoryTab()
+>>>>>>> develop
                 setShowMarketHistory(false);
                 setShowOrder(false);
                 setShow(true)
@@ -234,6 +242,7 @@ const History = () => {
               } */}
             </Text>
             <Text fontWeight="400" cursor="pointer" fontSize="16px" color={showMarketHistory ? activeTabColor : nonActiveTabColor} onClick={() => {
+              GMarketHistoryTab()
               setShowMarketHistory(true);
             }}>
               Market History
@@ -267,7 +276,12 @@ const History = () => {
               h="22px"
               borderRadius="6px"
               onClick={() => {
+<<<<<<< HEAD
                 setOpen(true);
+=======
+                GMarketHistoryTab()
+                setShow(true);
+>>>>>>> develop
               }}
             >
               <AddIcon onClick={() => setOpen(true)} />

@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../../state';
 import { useDetails } from '../../../../utils/hooks/useDetails';
 import { detailsTab } from "../../../../state/transaction/actions";
+import { GTokenDetailsTab } from '../../../../components/G-analytics/gIndex';
 
 const ShowDetails = () => {
   const textColor = useColorModeValue('#333333', '#F1F5F8');
@@ -63,7 +64,10 @@ const ShowDetails = () => {
             >
               {viewInfo ?
                 <SubtractIcon onClick={() => setViewInfo(!viewInfo)} /> :
-                <AddIcon onClick={() => setViewInfo(!viewInfo)} />}
+                <AddIcon onClick={() => {
+                  GTokenDetailsTab(inputdetails[0]?.symbol,outputdetails[0]?.symbol)
+                  setViewInfo(!viewInfo)
+                }} />}
             </Flex>
             <Flex
               border="2px"

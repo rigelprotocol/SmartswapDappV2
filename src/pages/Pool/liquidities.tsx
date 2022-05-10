@@ -59,36 +59,7 @@ const Liquidities = (props: Liquidity) => {
               size={24}
               squared={true}
             />
-            {/* <Box>
-              {props.pair.path[0].token === 'RGP' ? (
-                <Img src={RGPImage} />
-              ) : props.pair.path[0].token === 'BUSD' ? (
-                <Img src={BUSDImage} />
-              ) : props.pair.path[0].token === 'WETH' ? (
-                <Img src={ETHImage} />
-              ) : props.pair.path[0].token === 'WBNB' ? (
-                <Img src={BNBImage} />
-              ) : props.pair.path[0].token === 'WMATIC' ? (
-                <Img w="24px" h="24px" src={MATICIMAGE} />
-              ) : (
-                <Img src={NullImage} />
-              )}{' '}
-            </Box>
-            <Box>
-              {props.pair.path[1].token === 'RGP' ? (
-                <Img src={RGPImage} />
-              ) : props.pair.path[1].token === 'BUSD' ? (
-                <Img src={BUSDImage} />
-              ) : props.pair.path[1].token === 'WBNB' ? (
-                <Img src={BNBImage} />
-              ) : props.pair.path[1].token === 'WETH' ? (
-                <Img src={ETHImage} />
-              ) : props.pair.path[1].token === 'WMATIC' ? (
-                <Img w="24px" h="24px" src={MATICIMAGE} />
-              ) : (
-                <Img src={NullImage} />
-              )}{' '}
-            </Box>*/}
+            
             <Box ml={3}>
               {props.pair.path[0].token == "WBNB"
                 ? "BNB"
