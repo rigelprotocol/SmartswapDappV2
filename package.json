@@ -87,13 +87,7 @@
       "last 1 safari version"
     ]
   },
-<<<<<<< HEAD
-  "resolutions": {
-    "//": "See https://github.com/facebook/create-react-app/issues/11773",
-    "react-error-overlay": "6.0.9"
-=======
   "devDependencies": {
     "@types/gtag.js": "0.0.10"
->>>>>>> develop
   }
 }

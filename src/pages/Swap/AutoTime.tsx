@@ -77,8 +77,6 @@ const SetPrice = () => {
   const [selectedFrequency, setSelectedFrequency] = useState("5")
   const [marketType, setMarketType] = useState("Smartswap")
   const [percentageChange, setPercentageChange] = useState<string>("0")
-  const [priceOut, setPriceOut] = useState<string>("")
-  const [reversePriceOut, setReversePriceOut] = useState<string>("")
   const [otherMarketprice, setOtherMarketprice] = useState<string>("0")
   const [approval, setApproval] = useState<string[]>([])
   const [approvalForFee, setApprovalForFee] = useState("")
@@ -89,7 +87,6 @@ const SetPrice = () => {
   const [checkedItem, setCheckedItem] = useState(false)
   const [userOutputPrice, setUserOutputPrice] = useState<number>(0)
   const [currentToPrice,setCurrentToPrice] = useState("0")
-  const [routeAddr,setRouteAddr] = useState<(string | undefined)[]>([])
   const [showNewChangesText,setShowNewChangesText] = useState(false)
   const [dataSignature,setDataSignature] = useState<{mess:string,signature:string}>({
     mess:"",
@@ -133,7 +130,7 @@ const SetPrice = () => {
  
   useEffect(() => {
     async function checkIfSignatureExists() {
-      let user = await fetch(`http://localhost:7000/auto/data/${account}`)//https://rigelprotocol-autoswap.herokuapp.com
+      let user = await fetch(`https://rigelprotocol-autoswap.herokuapp.com/auto/data/${account}`)//http://localhost:7000
       let data = await user.json()
       if (data) {
         setDataSignature(data.dataSignature)
@@ -307,7 +304,7 @@ const SetPrice = () => {
         setDataSignature({mess,signature})
         setTransactionSigned(true)
          }
-
+ 
 
     } else {
       dispatch(
@@ -438,9 +435,9 @@ const SetPrice = () => {
           trxState: TrxState.WaitingForConfirmation,
         })
       );
-      const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)//https://rigelprotocol-autoswap.herokuapp.com
+      const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)//
       console.log({pathSymbol,pathArray})
-      const response = await fetch(`http://localhost:7000/auto/add`, {
+      const response = await fetch(`https://rigelprotocol-autoswap.herokuapp.com/auto/add`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached

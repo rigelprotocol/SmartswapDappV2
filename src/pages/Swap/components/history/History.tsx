@@ -10,15 +10,12 @@ import MarketHistory from "./MarketHistory";
 import { transactionTab,refreshTransactionTab } from "../../../../state/transaction/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../state";
-<<<<<<< HEAD
 import ConfirmationModal from '../../../../components/Modals/confirmationModal';
 import { TrxState, setOpenModal } from '../../../../state/application/reducer';
 import useOpenOrders from '../../../../utils/hooks/useOpenOrders';
 import { io } from "socket.io-client";
 
-=======
 import { GMarketHistoryTab } from '../../../../components/G-analytics/gIndex';
->>>>>>> develop
 
 const History = () => {
   
@@ -33,7 +30,7 @@ const History = () => {
 
   useEffect(
     () => {
-  setSocket(io("http://localhost:7000"));//https://rigelprotocol-autoswap.herokuapp.com
+  setSocket(io("https://rigelprotocol-autoswap.herokuapp.com"));//http://localhost:7000
   
     },
     []
@@ -46,7 +43,7 @@ const History = () => {
   const [showMarketHistory, setShowMarketHistory] = useState(false);
   const [notification, setNotification] = useState(0);
   const [address, setAddress] = useState("");
-  const [URL, setURL] = useState("http://localhost:7000")//https://rigelprotocol-autoswap.herokuapp.com
+  const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")//http://localhost:7000
   const [showOrder, setShowOrder] = useState(false);
 
   const sideBarRemoved = useSelector((state: RootState) => state.transactions.removeSideTab);
@@ -203,14 +200,7 @@ const History = () => {
               cursor="pointer"
               position='relative'
               onClick={() => {
-<<<<<<< HEAD
-                // if(notification>0){
-                //   socket.emit("clear notification",address,locationData)
-                // }
-                
-=======
                 GMarketHistoryTab()
->>>>>>> develop
                 setShowMarketHistory(false);
                 setShowOrder(false);
                 setShow(true)
@@ -276,12 +266,9 @@ const History = () => {
               h="22px"
               borderRadius="6px"
               onClick={() => {
-<<<<<<< HEAD
                 setOpen(true);
-=======
                 GMarketHistoryTab()
                 setShow(true);
->>>>>>> develop
               }}
             >
               <AddIcon onClick={() => setOpen(true)} />
