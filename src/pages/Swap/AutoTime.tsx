@@ -237,7 +237,6 @@ const SetPrice = () => {
     useEffect(async () => {
     if (currencies[Field.INPUT] && currencies[Field.OUTPUT] &&marketType!=="Smartswap") {
       console.log(OTHERMARKETADDRESSES[marketType][chainId as number],marketType,chainId)
-      // alert(marketType)
       const rout = await otherMarketPriceContract(OTHERMARKETADDRESSES[marketType][chainId as number], library);
       const routeAddress = currencies[Field.INPUT]?.isNative ? [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
         currencies[Field.OUTPUT]?.isNative ? [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
@@ -266,7 +265,6 @@ const SetPrice = () => {
       approvalArray=[]
       setApprovalForFee("")
       // setApprovalForToken("")
-      alert(4)
     }else{
       setApprovalForFee("RGP")
     }
@@ -275,19 +273,16 @@ const SetPrice = () => {
       approvalArray=[]
       // setApprovalForFee("")
       setApprovalForToken("")
-      alert(3)
     } else{
       setApprovalForToken(currencies[Field.INPUT]?.wrapped?.symbol ?? "")
     }
     if (parseFloat(RGPBalance) < parseFloat(fee) || (parseFloat(tokenBalance) < Number(formattedAmounts[Field.INPUT]) && (!currencies[Field.INPUT]?.isNative && currencies[Field.INPUT]?.wrapped?.symbol === "RGP" ))) {
-      alert(1)
       setHasBeenApproved(false)
       approvalArray.push("RGP")
       setApprovalForFee("RGP")
       setApprovalForToken("RGP")
     }
     if (parseFloat(tokenBalance) < Number(formattedAmounts[Field.INPUT]) && (!currencies[Field.INPUT]?.isNative &&currencies[Field.INPUT]?.wrapped.symbol !== "RGP")) {
-      alert(2)
       setHasBeenApproved(false)
       approvalArray.push(currencies[Field.INPUT]?.wrapped?.symbol)
       setApprovalForToken(currencies[Field.INPUT]?.wrapped?.symbol ?? "")

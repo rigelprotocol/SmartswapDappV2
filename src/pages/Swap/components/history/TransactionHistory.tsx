@@ -179,7 +179,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
               {data.time ? data.time :"-"}
             </Text>
           </Box>
-         {(data.status ===2 || data.status===3) && <Box>
+         {(data.status <= 3) && <Box>
            <Box mb="15px">
 <Text
               fontSize="12px"

@@ -147,7 +147,6 @@ const useAccountHistory = (socket:any) => {
    
     useEffect(() => {
         socket?.on("success",()=>{
-            // alert("yes")
             loadAccountHistory();
         })
         socket?.on("cleared",(page:string)=>{
