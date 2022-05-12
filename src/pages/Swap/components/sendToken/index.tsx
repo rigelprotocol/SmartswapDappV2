@@ -953,7 +953,7 @@ const SendToken = () => {
   };
 
   const swapTokens = async () => {
-    if (chainId === SupportedChainId.POLYGONTEST || SupportedChainId.POLYGON) {
+    if (chainId === SupportedChainId.POLYGONTEST || chainId === SupportedChainId.POLYGON) {
       if (
         currencies[Field.INPUT]?.symbol === "MATIC" &&
         currencies[Field.OUTPUT]?.symbol === "WMATIC"
@@ -1207,7 +1207,7 @@ const SendToken = () => {
               _hover={{ bgColor: buttonBgcolor }}
               onClick={() => {
                 GButtonClick("straight_swap","swapping",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
-              
+
                 setCurrentToPrice(receivedAmount);
                 setShowModal(!showModal);
               }}
