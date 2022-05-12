@@ -7,6 +7,7 @@ import {
   updateNewFilterResult,
   updateNewSearchResult,
   clearAllFarms,
+  updateProductFarmDetails,
 } from "./action";
 
 export interface FarmingSearchState {
@@ -30,6 +31,20 @@ export interface FarmingSearchState {
         address: string;
       }>
     | undefined;
+  productFarm:
+    | Array<{
+      feature:string,
+      percentageProfitShare:string,
+      profitTimeLine:string,
+      totalLiquidity:string,
+      estimatedTotalProfit:string,
+      deposit: string,
+      pid:number,
+      poolAllowance: string,
+      type:string,
+      tokenStaked:string
+      }>
+    | undefined;
 }
 
 const initialState: FarmingSearchState = {
@@ -38,6 +53,7 @@ const initialState: FarmingSearchState = {
   filterResult: undefined,
   newFilterResult: undefined,
   content: undefined,
+  productFarm:undefined
 };
 
 export default createReducer(initialState, (builder) =>
@@ -78,6 +94,15 @@ export default createReducer(initialState, (builder) =>
         return {
           ...farming,
           content: value,
+        };
+      }
+    })
+    .addCase(updateProductFarmDetails, (farming, { payload: { value } }) => {
+      // const farms = action.payload.farmData;
+      if (value !== undefined) {
+        return {
+          ...farming,
+          productFarm: value,
         };
       }
     })

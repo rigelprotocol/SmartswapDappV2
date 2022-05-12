@@ -4,8 +4,11 @@ import {
   updateTokenStaked,
   updateTotalLiquidity,
   updateFarmAllowances,
+  updateFarmProductAllowances,
   updateFarmBalances,
   updatePoolId,
+  updateFarmProductLiquidity,
+  updateProductStaked,
 } from "./actions";
 
 export interface farmStateInterface {
@@ -30,6 +33,7 @@ export interface farmStateInterface {
     poolAllowance?: any;
     poolVersion?: string;
   }>;
+  productFarm?: any
 }
 
 export const initialState: farmStateInterface = {
@@ -281,6 +285,20 @@ export const initialState: farmStateInterface = {
       poolVersion: "2",
     },
   ],
+  productFarm :[
+    {
+      feature:"Auto Period",
+      percentageProfitShare:"25%",
+      profitTimeLine:"6 months",
+      totalLiquidity:"",
+      estimatedTotalProfit:"929020003",
+      deposit: "RGP",
+      pid:93903,
+      poolAllowance: "",
+      type:"AT",
+      RGPStaked:""
+    }
+  ]
 };
 
 export default createReducer(initialState, (builder) =>
@@ -305,6 +323,15 @@ export default createReducer(initialState, (builder) =>
         state.contents[index].deposit = item.deposit;
       });
     })
+    .addCase(updateFarmProductLiquidity, (state, action) => {
+      const totalLiquidity = action.payload;
+
+      totalLiquidity.forEach((item, index) => {
+        state.productFarm[index].totalLiquidity = item.liquidity;
+        // state.productFarm[index].ARYValue = item.apy;
+        state.productFarm[index].deposit = item.deposit;
+      });
+    })
 
     .addCase(updateTokenStaked, (state, action) => {
       const stakedToken = action.payload;
@@ -316,11 +343,30 @@ export default createReducer(initialState, (builder) =>
         state.contents[index].RGPEarned = item.earned;
       });
     })
+    .addCase(updateProductStaked, (state, action) => {
+      const stakedToken = action.payload;
+      console.log({stakedToken})
+      state.productFarm[0].RGPStaked = stakedToken[0].staked
+      // stakedToken.forEach((item, index) => {
+      //   state.contents[index].tokensStaked = [
+      //     state.contents[index].tokensStaked[0],
+      //     item.staked,
+      //   ];
+      //   state.contents[index].RGPEarned = item.earned;
+      // });
+    })
 
     .addCase(updateFarmAllowances, (state, action) => {
       const allowances = action.payload;
       allowances.forEach((item, index) => {
         state.contents[index].poolAllowance = item;
+      });
+    })
+
+    .addCase(updateFarmProductAllowances, (state, action) => {
+      const allowances = action.payload;
+      allowances.forEach((item, index) => {
+        state.productFarm[index].poolAllowance = item;
       });
     })
 

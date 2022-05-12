@@ -112,6 +112,7 @@ const ShowYieldFarmDetails = ({
     poolVersion: number | string;
   };
   wallet: any;
+  URLReferrerAddress:string;
   LoadingState: boolean;
   section: string;
   showYieldfarm: boolean;

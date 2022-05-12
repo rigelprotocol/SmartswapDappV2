@@ -23,6 +23,7 @@ import {
   InputGroup,
   InputLeftAddon,
   Input,
+  Grid,
   Stack,
   Skeleton,
   MenuList,
@@ -43,6 +44,8 @@ import {
   updatePoolId,
   updateTokenStaked,
   updateTotalLiquidity,
+  updateFarmProductLiquidity,
+  updateProductStaked
 } from "../../state/farm/actions";
 import { useFarms } from "../../state/farm/hooks";
 import {
@@ -62,6 +65,7 @@ import {
   smartSwapLPTokenV2PoolNine,
   smartSwapLPTokenV2PoolTwelve,
   smartSwapLPTokenV2PoolThirteen,
+  productStakingContract,
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
@@ -79,10 +83,12 @@ import {
   SMARTSWAPLP_TOKEN9ADDRESSES,
   SMARTSWAPLP_TOKEN12ADDRESSES,
   SMARTSWAPLP_TOKEN13ADDRESSES,
+  PRODUCTSTAKINGADDRESSES,
 } from "../../utils/addresses";
 import { formatBigNumber } from "../../utils";
 import { RootState } from "../../state";
 import { SupportedChainId } from "../../constants/chains";
+import ProductFarm from "./ProductFarm"
 import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import Joyride from "react-joyride";
@@ -131,6 +137,10 @@ export function Index() {
   const history = useHistory();
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
   const filterBorderColor = useColorModeValue("#DEE5ED", "#324D68");
+  const useNotSelectedBackgroundColor = useColorModeValue("#FFFFFF","#15202B")
+  const useSelectedBackgroundColor = useColorModeValue("#DEE5ED","#213345")
+  const borderColor = useColorModeValue("#F2F5F8","#324D68")
+  const useSelectedColor = useColorModeValue("#333333","#213345")
   const placeholderTextColor = useColorModeValue("#333333", "#DCE5EF");
   const titleColor = useColorModeValue("#333333", "#ffffff");
   const [selected, setSelected] = useState(LIQUIDITY);
@@ -155,7 +165,6 @@ export function Index() {
   const [range1, setRange1] = useState<number | string>(10000);
   const [searchedFarmData, setSearchedFarmData] =
     useState<farmStateInterface>();
-    const [currentSelectedTab,setCurrentSelectedTab] = ("")
 
   const [showPopOver, setShowPopover] = useState(false);
   const [saveChanges, setSavedChanges] = useState(false);
@@ -233,7 +242,7 @@ export function Index() {
   const farms = useSelector((state) => state.farming.content);
   const searchSection = useSelector((state) => state.farming);
 
-  console.log(data);
+  console.log({data});
 
   const clearSearchedData = useCallback(() => {
     dispatch(clearSearchResult());
@@ -311,6 +320,9 @@ export function Index() {
       setSwitchTab(!switchTab);
       setSelected(LIQUIDITY);
       changeVersion("/farming-v2");
+    }else if(value === PRODUCT_FARMS) {
+      setSelected(PRODUCT_FARMS)
+      setSwitchTab(!switchTab);
     } else if (value === STAKING) {
       setSwitchTab(!switchTab);
       setSelected(STAKING);
@@ -534,7 +546,7 @@ export function Index() {
             poolNine,
             poolTwelve,
             poolThirteen,
-            RGPToken2,
+            RGPToken2
           ] = await Promise.all([
             rigelToken(RGP[chainId as number], library),
             smartSwapLPTokenPoolOne(
@@ -581,7 +593,7 @@ export function Index() {
               SMARTSWAPLP_TOKEN13ADDRESSES[chainId as number],
               library
             ),
-            rigelToken(RGP[chainId as number], library),
+            rigelToken(RGP[chainId as number], library)
           ]);
 
           const [
@@ -613,6 +625,8 @@ export function Index() {
             poolThirteen.balanceOf(account),
             RGPToken2.balanceOf(account),
           ]);
+
+          
 
           dispatch(
             updateFarmBalances([
@@ -1137,6 +1151,7 @@ export function Index() {
           pool12,
           pool13,
           specialPool2,
+          farmProductContract
         ] = await Promise.all([
           RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library),
           smartSwapLPTokenPoolOne(
@@ -1184,6 +1199,10 @@ export function Index() {
             library
           ),
           RGPSpecialPool2(RGPSPECIALPOOLADDRESSES2[chainId as number], library),
+            productStakingContract(
+              PRODUCTSTAKINGADDRESSES[chainId as number],
+              library
+            )
         ]);
 
         const [
@@ -1200,6 +1219,7 @@ export function Index() {
           pool12Reserve,
           pool13Reserve,
           rgpTotalStakingV2,
+          farmProductTotalStaking
         ] = await Promise.all([
           await specialPool.totalStaking(),
           pool1.getReserves(),
@@ -1214,6 +1234,7 @@ export function Index() {
           pool12.getReserves(),
           pool13.getReserves(),
           await specialPool2.totalStaking(),
+          farmProductContract.totalStaking()
         ]);
         const RGPprice: number | any = ethers.utils.formatUnits(
           pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
@@ -1226,6 +1247,12 @@ export function Index() {
         const RGPLiquidityV2 = ethers.utils
           .formatUnits(rgpTotalStakingV2.mul(Math.floor(1000 * RGPprice)), 21)
           .toString();
+          const productFarmLiquidity = ethers.utils
+          .formatUnits(farmProductTotalStaking.mul(Math.floor(1000 * RGPprice)), 21)
+          .toString();
+
+          console.log({farmProductTotalStaking,productFarmLiquidity},farmProductTotalStaking.toString())
+
         const BUSD_RGPLiquidity = ethers.utils
           .formatEther(pool1Reserve[0].mul(2))
           .toString();
@@ -1354,6 +1381,12 @@ export function Index() {
             },
           ])
         );
+        dispatch(updateFarmProductLiquidity([
+          {
+            deposit:"RGP",
+            liquidity:productFarmLiquidity
+          }
+        ]))
       }
     } catch (error) {
       console.log(error, "get farm data");
@@ -1399,6 +1432,23 @@ export function Index() {
       }
     }
   };
+  const productFarmStaked = async () => {
+    if (account) {
+      try {
+        const productFarm = await productStakingContract(
+          PRODUCTSTAKINGADDRESSES[chainId as number],
+          library
+        );
+        const productFarmStakedEarned =  await Promise.all([
+          productFarm.userInfo(account),
+          productFarm.userData(account),
+        ]);
+        return productFarmStakedEarned;
+      } catch (error) {
+        return error;
+      }
+    }
+  };
 
   const getTokenStaked = async () => {
     try {
@@ -1435,7 +1485,7 @@ export function Index() {
         ]);
 
         const RGPStakedEarnedV2 = await specialPoolStakedV2();
-
+       
         let RGPStakedV2;
         let RGPEarnedV2;
 
@@ -1473,6 +1523,7 @@ export function Index() {
             { staked: RGPStakedV2, earned: RGPEarnedV2, symbol: "RGP" },
           ])
         );
+       
 
         setInitialLoad(false);
       } else if (
@@ -1643,7 +1694,16 @@ export function Index() {
 
         let RGPStakedV2;
         let RGPEarnedV2;
+        const productFarmStakedEarn = await productFarmStaked();
+        let productStakedValue
+        if(productFarmStakedEarn){
+          const [productStaked,productEarned] = productFarmStakedEarn
+          productStakedValue = formatBigNumber(productStaked.tokenQuantity)
 
+        }
+        dispatch(
+          updateProductStaked([{staked:productStakedValue}])
+        )
         if (RGPStakedEarned) {
           const [specialPoolStaked, specialPoolEarned] = RGPStakedEarned;
 
@@ -1962,29 +2022,10 @@ export function Index() {
               flexWrap={isMobileDevice ? "wrap" : undefined}
               padding={isMobileDevice ? "2px 4px" : undefined}
               // padding={0}
-              border='1px solid #DEE5ED !important'
-              background={
-                mode === LIGHT_THEME && selected === STAKING
-                  ? "#FFFFFF !important"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#213345 !important"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#15202B !important"
-                  : mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#DEE5ED !important"
-                  : "#DEE5ED !important"
-              }
-              color={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#333333"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#F1F5F8"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#F1F5F8"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#333333"
-                  : "#333333"
-              }
+              // border={`1px solid ${borderColor}`}
+              border='1px solid #DEE5ED'
+              background={selected === LIQUIDITY ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
+              color={useSelectedColor}
               // px={5}
               // py={4}
               // minWidth={{ base: "none", md: "200px", lg: "200px" }}
@@ -1992,17 +2033,6 @@ export function Index() {
               onClick={() => handleSelect(LIQUIDITY)}
               // onClick={() => alert("yes")}
               borderRadius={isMobileDevice ? "10px 0px 0px 10px" : 0}
-              borderColor={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#F2F5F8 !important"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#324D68 !important"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#324D68 !important"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#F2F5F8 !important"
-                  : "#F2F5F8 !important"
-              }
             >
               <Text className={"liquidity"} color={titleColor}>
                 Liquidity Pools
@@ -2062,39 +2092,9 @@ export function Index() {
               padding={isMobileDevice ? "4px 12px" : undefined}
               border='1px solid #DEE5ED'
               borderRadius={0}
-              background={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#FFFFFF !important"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#213345 !important"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#15202B !important"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#DEE5ED !important"
-                  : "#DEE5ED !important"
-              }
-              color={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#333333"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#F1F5F8"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#F1F5F8"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#333333"
-                  : "#333333"
-              }
-              borderColor={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#F2F5F8 !important"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#324D68 !important"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#324D68 !important"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#F2F5F8 !important"
-                  : "#F2F5F8 !important"
-              }
+              // border={`1px solid ${borderColor}`}
+              background={selected === STAKING ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
+              color={useSelectedColor}
               // px={5}
               // py={4}
               // minWidth={{ base: "none", md: "200px", lg: "200px" }}
@@ -2156,39 +2156,8 @@ export function Index() {
             <Tab
               border='1px solid #DEE5ED'
               borderRadius={0}
-              background={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#FFFFFF !important"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#213345 !important"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#15202B !important"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#DEE5ED !important"
-                  : "#DEE5ED !important"
-              }
-              color={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#333333"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#F1F5F8"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#F1F5F8"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#333333"
-                  : "#333333"
-              }
-              borderColor={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#F2F5F8 !important"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#324D68 !important"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#324D68 !important"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#F2F5F8 !important"
-                  : "#F2F5F8 !important"
-              }
+              background={selected === PRODUCT_FARMS ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
+              color={useSelectedColor}
               // px={5}
               // py={4}
               // minWidth={{ base: "none", md: "200px", lg: "200px" }}
@@ -2211,42 +2180,16 @@ export function Index() {
         <MenuList>
           <MenuItem>
             <Stack direction={'column'} spacing={0} >
-              <Text>SmartSwap</Text>
-              <Text color={'gray.500'}>  Swap tokens directly.</Text>
+              <Text my={2}>Product Farm</Text>
             </Stack>
 
           </MenuItem>
           <MenuItem>
-            <Link href="https://gift.rigelprotocol.com/" isExternal>
               <Stack direction={'column'} spacing={0} >
-                <Text> GiftDApp</Text>
-                <Text color={'gray.500'}>  Gift tokens in a fun way.</Text>
+                <Text my={2}>Other Farm</Text>
               </Stack>
-            </Link>
           </MenuItem>
-          <MenuItem>
-
-            <Stack direction={'column'} spacing={0} >
-              <Text>  Smart Bid </Text>
-              <Text color={'gray.500'}>  Bid on tokens.</Text>
-            </Stack>
-
-
-          </MenuItem>
-          <MenuItem>
-
-            <Stack direction={'column'} spacing={0} >
-              <Text>  Leverage Exchange </Text>
-              <Text color={'gray.500'}>  Trade using decentralized tokens.</Text>
-            </Stack>
-
-          </MenuItem>
-          <MenuItem>
-            <Stack direction={'column'} spacing={0} >
-              <Text>  LaunchPad </Text>
-              <Text color={'gray.500'}>  Join projects hosted on RigelProtocol.</Text>
-            </Stack>
-          </MenuItem>
+          
         </MenuList>
       </Menu>
             </Tab>
@@ -2394,7 +2337,9 @@ export function Index() {
 
                   {!account ? null : ChainId !== chainId ? (
                     <Stack mt={2}>
-                      <Box
+                       {new Array(5).fill("1").map((item,index)=>{
+                           return (
+                             <Box
                         p={isMobileDevice ? "3" : "6"}
                         h={isMobileDevice ? undefined : 20}
                         border='1px'
@@ -2407,338 +2352,28 @@ export function Index() {
                           }
                           alignItems={isMobileDevice ? "center" : undefined}
                         >
-                          <Flex
+                         {new Array(5).fill("1").map((item,index)=>{
+                           return (
+                            <Flex
                             ml={isMobileDevice ? undefined : 2}
                             mt={isMobileDevice ? 2 : undefined}
                             flexDirection='column'
                           >
                             <Skeleton
+                            background="red.300"
                               height='20px'
                               w={isMobileDevice ? "320px" : "208px"}
                             />
                           </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
+ 
+                           )
+                         })}
                         </Flex>
                       </Box>
-                      <Box
-                        p={isMobileDevice ? "3" : "6"}
-                        h={isMobileDevice ? undefined : 20}
-                        border='1px'
-                        borderColor={filterBorderColor}
-                      >
-                        <Flex
-                          flexDirection={isMobileDevice ? "column" : "row"}
-                          justifyContent={
-                            isMobileDevice ? "center" : "space-between"
-                          }
-                          alignItems={isMobileDevice ? "center" : undefined}
-                        >
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-                        </Flex>
-                      </Box>
-                      <Box
-                        p={isMobileDevice ? "3" : "6"}
-                        h={isMobileDevice ? undefined : 20}
-                        border='1px'
-                        borderColor={filterBorderColor}
-                      >
-                        <Flex
-                          flexDirection={isMobileDevice ? "column" : "row"}
-                          justifyContent={
-                            isMobileDevice ? "center" : "space-between"
-                          }
-                          alignItems={isMobileDevice ? "center" : undefined}
-                        >
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-                        </Flex>
-                      </Box>
-                      <Box
-                        p={isMobileDevice ? "3" : "6"}
-                        h={isMobileDevice ? undefined : 20}
-                        border='1px'
-                        borderColor={filterBorderColor}
-                      >
-                        <Flex
-                          flexDirection={isMobileDevice ? "column" : "row"}
-                          justifyContent={
-                            isMobileDevice ? "center" : "space-between"
-                          }
-                          alignItems={isMobileDevice ? "center" : undefined}
-                        >
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-                        </Flex>
-                      </Box>
-                      <Box
-                        p={isMobileDevice ? "3" : "6"}
-                        h={isMobileDevice ? undefined : 20}
-                        border='1px'
-                        borderColor={filterBorderColor}
-                      >
-                        <Flex
-                          flexDirection={isMobileDevice ? "column" : "row"}
-                          justifyContent={
-                            isMobileDevice ? "center" : "space-between"
-                          }
-                          alignItems={isMobileDevice ? "center" : undefined}
-                        >
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-                        </Flex>
-                      </Box>
+    )
+                         })}
+                     
+                     
                     </Stack>
                   ) : // </Stack>
                   keyword &&
@@ -2903,7 +2538,8 @@ export function Index() {
           </TabPanel>
 
           <TabPanel padding='0px'>
-            <Flex
+           
+            {/* <Flex
               justifyContent='center'
               alignItems='center'
               rounded='lg'
@@ -2988,6 +2624,78 @@ export function Index() {
                       Go to farming V1
                     </Button>
                   </Link>
+                </Box>
+              </Box>
+            </Flex> */}
+              <Flex
+              justifyContent='center'
+              alignItems='center'
+              rounded='lg'
+              mb={4}
+            >
+              <Box
+                bg='#120136'
+                minHeight='89vh'
+                w={["100%", "100%", "100%"]}
+                background={
+                  mode === LIGHT_THEME
+                    ? "#FFFFFF !important"
+                    : mode === DARK_THEME
+                    ? "#15202B !important"
+                    : "#FFFFFF !important"
+                }
+                rounded='lg'
+              >
+                <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
+                  <Grid
+                    // alignItems='center'
+                    // justifyContent='space-between'
+                    templateColumns={["repeat(1,1fr)","repeat(1,1fr)","repeat(6,1fr)"]}
+                    px={4}
+                    py={4}
+                    background={
+                      mode === DARK_THEME
+                        ? "#213345"
+                        : mode === LIGHT_THEME
+                        ? "#F2F5F8"
+                        : "#F2F5F8 !important"
+                    }
+                    color={
+                      mode === LIGHT_THEME
+                        ? "#333333"
+                        : mode === DARK_THEME
+                        ? "#F1F5F8"
+                        : "#333333"
+                    }
+                    w={["100%", "100%", "100%"]}
+                    align='left'
+                    border={
+                      mode === LIGHT_THEME
+                        ? "1px solid #DEE5ED !important"
+                        : mode === DARK_THEME
+                        ? "1px solid #324D68 !important"
+                        : "1px solid #324D68"
+                    }
+                    // display={{ base: "none", md: "flex", lg: "flex" }}
+                  >
+                     <Text fontSize="14px">{selected ===PRODUCT_FARMS ? "Auto-Period Product" : "Deposit"}</Text>
+                    <Text ml={4} fontSize="14px">{selected ===PRODUCT_FARMS ? "Percentage Profit Share" : "Earn"}</Text>
+                    <Text ml={4} fontSize="14px">{selected ===PRODUCT_FARMS ? "Profit Timeline" : "APY"}</Text>
+                    <Text ml={4} fontSize="14px">Total Liquidity</Text>
+                    {selected ===PRODUCT_FARMS && <Text ml={4} fontSize="14px">Estimated Total Profits</Text>}
+                    <Text />
+                  </Grid>
+                  {FarmData.productFarm.map((content: any, index: number) =>
+                    index === 0 ? (
+                      <ProductFarm
+                        farmDataLoading={farmDataLoading}
+                        content={content}
+                        key={content.pid}
+                        wallet={wallet}
+                        URLReferrerAddress={refAddress}
+                      />
+                    ) : null
+                  )}
                 </Box>
               </Box>
             </Flex>
