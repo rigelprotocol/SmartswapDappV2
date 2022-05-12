@@ -139,6 +139,11 @@ export function Index() {
   const filterBorderColor = useColorModeValue("#DEE5ED", "#324D68");
   const useNotSelectedBackgroundColor = useColorModeValue("#FFFFFF","#15202B")
   const useSelectedBackgroundColor = useColorModeValue("#DEE5ED","#213345")
+  const useNotSelectedBorderColor = useColorModeValue("#008DFF","#324D68")
+  const useSelectedBorderColor = useColorModeValue("#0760A8","#F2F5F8")
+  const useNotSelectedTextColor = useColorModeValue("#333333","#0760A8")
+  const useSelectedTextColor = useColorModeValue("#0760A8","#008DFF")
+  
   const borderColor = useColorModeValue("#F2F5F8","#324D68")
   const useSelectedColor = useColorModeValue("#333333","#213345")
   const placeholderTextColor = useColorModeValue("#333333", "#DCE5EF");
@@ -2043,28 +2048,30 @@ export function Index() {
                 Number(SupportedChainId.OASISMAINNET) ? null : (
                 <Select
                   size={isMobileDevice ? undefined : "sm"}
-                  borderColor={
-                    mode === LIGHT_THEME && selected === LIQUIDITY
-                      ? "#0760A8 !important"
-                      : mode === DARK_THEME && selected === LIQUIDITY
-                      ? "#008DFF !important"
-                      : mode === DARK_THEME && selected === STAKING
-                      ? "#324D68 !important"
-                      : mode === LIGHT_THEME && selected === STAKING
-                      ? "#0760A8 !important"
-                      : "#F2F5F8 !important"
-                  }
-                  color={
-                    mode === LIGHT_THEME && selected === LIQUIDITY
-                      ? "#0760A8"
-                      : mode === DARK_THEME && selected === LIQUIDITY
-                      ? "#008DFF"
-                      : mode === DARK_THEME && selected === STAKING
-                      ? "#F1F5F8"
-                      : mode === LIGHT_THEME && selected === STAKING
-                      ? "#0760A8"
-                      : "#333333"
-                  }
+                  // borderColor={
+                  //   mode === LIGHT_THEME && selected === LIQUIDITY
+                  //     ? "#0760A8 !important"
+                  //     : mode === DARK_THEME && selected === LIQUIDITY
+                  //     ? "#008DFF !important"
+                  //     : mode === DARK_THEME && selected === STAKING
+                  //     ? "#324D68 !important"
+                  //     : mode === LIGHT_THEME && selected === STAKING
+                  //     ? "#0760A8 !important"
+                  //     : "#F2F5F8 !important"
+                  // }
+                  borderColor={selected === LIQUIDITY ? useNotSelectedBorderColor : useSelectedBorderColor}
+                  color={selected === LIQUIDITY ? useNotSelectedTextColor : useSelectedTextColor}
+                  // color={
+                  //   mode === LIGHT_THEME && selected === LIQUIDITY
+                  //     ? "#0760A8"
+                  //     : mode === DARK_THEME && selected === LIQUIDITY
+                  //     ? "#008DFF"
+                  //     : mode === DARK_THEME && selected === STAKING
+                  //     ? "#F1F5F8"
+                  //     : mode === LIGHT_THEME && selected === STAKING
+                  //     ? "#0760A8"
+                  //     : "#333333"
+                  // }
                   onChange={handleLiquidityTab}
                   background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
                   cursor='pointer'
@@ -2112,29 +2119,31 @@ export function Index() {
                 Number(SupportedChainId.OASISMAINNET) ? null : (
                 <Select
                   size={isMobileDevice ? undefined : "sm"}
-                  borderColor={
-                    mode === LIGHT_THEME && selected === LIQUIDITY
-                      ? "#0760A8 !important"
-                      : mode === DARK_THEME && selected === LIQUIDITY
-                      ? "#008DFF !important"
-                      : mode === DARK_THEME && selected === STAKING
-                      ? "#324D68 !important"
-                      : mode === LIGHT_THEME && selected === STAKING
-                      ? "#0760A8 !important"
-                      : "#F2F5F8 !important"
-                  }
-                  cursor='pointer'
-                  color={
-                    mode === LIGHT_THEME && selected === LIQUIDITY
-                      ? "#0760A8"
-                      : mode === DARK_THEME && selected === LIQUIDITY
-                      ? "#008DFF"
-                      : mode === DARK_THEME && selected === STAKING
-                      ? "#F1F5F8"
-                      : mode === LIGHT_THEME && selected === STAKING
-                      ? "#0760A8"
-                      : "#333333"
-                  }
+                  // borderColor={
+                  //   mode === LIGHT_THEME && selected === LIQUIDITY
+                  //     ? "#0760A8 !important"
+                  //     : mode === DARK_THEME && selected === LIQUIDITY
+                  //     ? "#008DFF !important"
+                  //     : mode === DARK_THEME && selected === STAKING
+                  //     ? "#324D68 !important"
+                  //     : mode === LIGHT_THEME && selected === STAKING
+                  //     ? "#0760A8 !important"
+                  //     : "#F2F5F8 !important"
+                  // }
+                  // cursor='pointer'
+                  // color={
+                  //   mode === LIGHT_THEME && selected === LIQUIDITY
+                  //     ? "#0760A8"
+                  //     : mode === DARK_THEME && selected === LIQUIDITY
+                  //     ? "#008DFF"
+                  //     : mode === DARK_THEME && selected === STAKING
+                  //     ? "#F1F5F8"
+                  //     : mode === LIGHT_THEME && selected === STAKING
+                  //     ? "#0760A8"
+                  //     : "#333333"
+                  // }
+                  borderColor={selected === LIQUIDITY ? useNotSelectedBorderColor : useSelectedBorderColor}
+                  color={selected === LIQUIDITY ? useNotSelectedTextColor : useSelectedTextColor}
                   onChange={handleStakingTab}
                   background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
                   onClick={(e) => e.stopPropagation()}
@@ -2676,7 +2685,7 @@ export function Index() {
                         ? "1px solid #324D68 !important"
                         : "1px solid #324D68"
                     }
-                    // display={{ base: "none", md: "flex", lg: "flex" }}
+                    display={isMobileDevice ? "none" :"grid"}
                   >
                      <Text fontSize="14px">{selected ===PRODUCT_FARMS ? "Auto-Period Product" : "Deposit"}</Text>
                     <Text ml={4} fontSize="14px">{selected ===PRODUCT_FARMS ? "Percentage Profit Share" : "Earn"}</Text>

@@ -15,7 +15,7 @@ import ShowYieldFarmDetails from "./ShowYieldFarmDetails";
 import { useColorModeValue } from "@chakra-ui/react";
 import { LIGHT_THEME, DARK_THEME } from "./index";
 import { useWeb3React } from "@web3-react/core";
-import Darklogo from "../../assets/rgpdarklogo.svg";
+import Hot from "../../assets/hot.png"; 
 import { useLocation} from 'react-router-dom';
 import { useFetchYieldFarmDetails } from "../../state/newfarm/hooks";
 import { GButtonClicked } from "../../components/G-analytics/gFarming";
@@ -124,7 +124,7 @@ const ProductFarm = ({
             Product Feature
           </Box>
           <Box marginTop='15px' align='left'>
-            {content?.feature}
+            {content?.feature} <img src={Hot} />
           </Box>
         </Flex>
         <Flex justifyContent='space-between' width='100%'>
@@ -144,7 +144,7 @@ const ProductFarm = ({
             alignItems='center'
           >
             {/* <RGPIcon />  */}
-            <Text marginLeft='10px'>
+            <Text marginLeft='10px' mt={-5}>
               {content?.percentageProfitShare}
             </Text>
           </Flex>

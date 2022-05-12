@@ -291,7 +291,7 @@ export const initialState: farmStateInterface = {
       percentageProfitShare:"25%",
       profitTimeLine:"6 months",
       totalLiquidity:"",
-      estimatedTotalProfit:"929020003",
+      estimatedTotalProfit:"1774000",
       deposit: "RGP",
       pid:93903,
       poolAllowance: "",
