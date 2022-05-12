@@ -802,27 +802,23 @@ const SendToken = () => {
       const sendTransaction = await weth.deposit(
         {
           value: isExactIn ? parsedAmount : formatAmount,
-        },
-        chainId === 137 || chainId === 80001
-          ? {
-              maxPriorityFeePerGas:
-                chainId === 137
-                  ? ethers.utils.parseUnits(format1, 9).toString()
-                  : null,
-              maxFeePerGas:
-                chainId === 137
-                  ? ethers.utils.parseUnits(format2, 9).toString()
-                  : null,
-            }
-          : {
-              gasPrice:
-                chainId === 137
-                  ? null
-                  : chainId === 80001
-                  ? null
-                  : ethers.utils.parseUnits(format3, 9).toString(),
-            }
-      );
+          maxPriorityFeePerGas:
+            chainId === 137
+              ? ethers.utils.parseUnits(format1, 9).toString()
+              : null,
+          maxFeePerGas:
+            chainId === 137
+              ? ethers.utils.parseUnits(format2, 9).toString()
+              : null,
+          gasPrice:
+            chainId === 137
+              ? null
+              : chainId === 80001
+              ? null
+              : ethers.utils.parseUnits(format3, 9).toString(),
+          }
+        );
+
       const { confirmations, status } = await sendTransaction.wait(1);
       const { hash } = sendTransaction;
       if (
