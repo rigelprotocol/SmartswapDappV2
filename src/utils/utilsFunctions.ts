@@ -346,6 +346,9 @@ export function truncate(str: string, maxDecimalDigits: number) {
 
   return str;
 }
+
+export const formatAmount = (value: any) => parseFloat(value).toLocaleString();
+
 export const getOutPutDataFromEvent = async (
   tokenAddress,
   eventsArray,

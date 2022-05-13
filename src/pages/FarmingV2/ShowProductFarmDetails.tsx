@@ -25,6 +25,7 @@ import {
   Checkbox,
   Skeleton,
   SkeletonText,
+  HStack,
 } from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import { SupportedChainId } from "../../constants/chains";
@@ -59,7 +60,7 @@ import Joyride from "react-joyride";
 import { steps } from "../../components/Onboarding/YieldSteps";
 import { Web3Provider } from "@ethersproject/providers";
 import { Contract } from "@ethersproject/contracts";
-import { getERC20Token } from "../../utils/utilsFunctions";
+import { formatAmount, getERC20Token } from "../../utils/utilsFunctions";
 import { calculateGas } from "../Swap/components/sendToken";
 import { useUserGasPricePercentage } from "../../state/gas/hooks";
 
@@ -129,6 +130,37 @@ const ShowProductFarmDetails = ({
     loading,
   });
 
+
+  useEffect(() => {
+    setDepositInputHasError(false);
+    setDepositErrorButtonText("");
+    if (!account) {
+      setDepositValue("Connect wallet");
+    }
+    if (depositTokenValue !== "") {
+      if (
+        isNaN(parseFloat(depositTokenValue)) ||
+        !Math.sign(parseFloat(depositTokenValue)) ||
+        Math.sign(parseFloat(depositTokenValue)) == -1
+      ) {
+        setDepositInputHasError(true);
+        setDepositErrorButtonText("Invalid Input");
+        return;
+      } else if (
+        parseFloat(content.RGPStaked) <= 0 &&
+        Number(depositTokenValue) < Number(minimumStakeAmount)
+      ) {
+        setDepositInputHasError(true);
+        setDepositErrorButtonText(
+          `Minimum stake amount is ${minimumStakeAmount}`
+        );
+      }
+      if (parseFloat(depositTokenValue) > parseFloat(RGPBalance)) {
+        setDepositInputHasError(true);
+        setDepositErrorButtonText("Insufficient Balance");
+      }
+    }
+  }, [depositTokenValue]);
   useEffect(() => {
     const getMinimumStakeAmount = async () => {
       if (account) {
@@ -197,6 +229,25 @@ const ShowProductFarmDetails = ({
     }
   }, [wallet, content, account]);
 
+  
+  const showMaxValue = async (deposit: any, input: any) => {
+    try {
+      if (input === "deposit") {
+        // GButtonClicked(`max_button for ${input}`,content.deposit,"v2")
+        setDepositTokenValue(RGPBalance);
+      } else if (input === "unstake") {
+        // setUnstakeToken(
+        //   content.deposit === "RGP"
+        //     ? content.tokensStaked[1]
+        //     : content.tokenStaked[1]
+        // );
+      }
+    } catch (e) {
+      console.log(
+        "sorry there is a few error, you are most likely not logged in. Please login to your metamask extensition and try again."
+      );
+    }
+  };
   const openDepositeModal = () => {
     //if (approveValueForOtherToken && approveValueForRGP) {
     modal1Disclosure.onOpen();
@@ -644,9 +695,7 @@ return (
           mr='6'
           padding='10px 40px'
           cursor='pointer'
-          // disabled={
-          //   !approveValueForRGP || !approveValueForOtherToken
-          // }
+          disabled={!approveValueForRGP}
           onClick={openDepositeModal}
           className={"deposit"}
         >
@@ -781,7 +830,7 @@ return (
                           textAlign="center"
 
                         >
-                          {content.estimatedTotalProfit}
+                          $ {formatAmount(content.estimatedTotalProfit) }
                         </Text>{" "}
                       </Flex>
                     </Flex>
@@ -895,7 +944,7 @@ return (
                         cursor='pointer'
                         background='none'
                         _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
-                        // onClick={() => showMaxValue(content.deposit, "deposit")}
+                        onClick={() => showMaxValue(content.deposit, "deposit")}
                       >
                         MAX
                       </Button>
@@ -904,9 +953,17 @@ return (
                   <Text color={modalTextColor2} fontSize='14px' mb={5} mt={3}>
                     Minimum Stake: {minimumStakeAmount} RGP
                   </Text>
-                  <Text color={modalTextColor2} fontSize='14px' mb={5} mt={3}>
-                    RGP Available: {RGPBalance} RGP
-                  </Text>
+                  <Flex>
+                    <Box minWidth="50px" height="2px" backgroundColor="#DEE6ED" mt={6}></Box>
+                    <Flex fontSize='14px' mb={5} mt={3} mx={2}>
+                       <Text color={modalTextColor2}>
+                    Your Available RGP Balance:</Text> <Text color={modalTextColor}>{RGPBalance} RGP</Text> 
+                  
+                    </Flex>
+                   
+                  <Box minWidth="50px" height="2px" backgroundColor="#DEE6ED" mt={6}></Box>
+                  </Flex>
+                  
                   <Box display={showReferrerField ? "block" : "none"}>
                     <Text color={modalTextColor} fontSize='14px' mb={3}>
                       Referrer address

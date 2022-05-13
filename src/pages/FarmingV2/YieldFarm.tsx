@@ -10,6 +10,7 @@ import {
   Skeleton,
   SkeletonText,
 } from "@chakra-ui/react";
+import { formatAmount } from "../../utils/utilsFunctions";
 import ShowYieldFarmDetails from "./ShowYieldFarmDetails";
 import { useColorModeValue } from "@chakra-ui/react";
 import { LIGHT_THEME, DARK_THEME } from "./index";
@@ -86,7 +87,6 @@ const YieldFarm = ({
 
   }, [symbolName, params]);
 
-  const formatAmount = (value: any) => parseFloat(value).toLocaleString();
 
   const totalLiquidityValue = () => {
     if (farmDataLoading) return <Spinner speed='0.65s' color='#333333' />;
@@ -176,7 +176,7 @@ const YieldFarm = ({
           <Box marginTop='15px' paddingLeft='50px' align='left'>
             {content?.type === "RGP"
               ? `${formatAmount(content.ARYValue)}%`
-              : `${content2?.APY.toFixed(2)}%`}
+              : `${formatAmount(content2?.APY.toFixed(2))}%`}
           </Box>
         </Flex>
         <Flex
@@ -196,7 +196,7 @@ const YieldFarm = ({
             ${" "}
             {content?.type === "RGP"
               ? totalLiquidityValue()
-              : content2?.totalLiquidity.toFixed(2)}
+              : formatAmount(content2?.totalLiquidity.toFixed(2))}
           </Box>
         </Flex>
         <Box align='right' mt={["4", "0"]} ml='2'>

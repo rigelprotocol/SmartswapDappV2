@@ -20,6 +20,7 @@ import { useLocation} from 'react-router-dom';
 import { useFetchYieldFarmDetails } from "../../state/newfarm/hooks";
 import { GButtonClicked } from "../../components/G-analytics/gFarming";
 import ShowProductFarmDetails from "./ShowProductFarmDetails"
+import { formatAmount } from "../../utils/utilsFunctions";
 
 const ProductFarm = ({
   content,
@@ -70,8 +71,6 @@ const ProductFarm = ({
   //   getSingleFarm();
 
   // }, [symbolName, params]);
-
-  const formatAmount = (value: any) => parseFloat(value).toLocaleString();
 
   const totalLiquidityValue = () => {
     if (farmDataLoading) return <Spinner speed='0.65s' color='#FFF' />;
@@ -145,7 +144,7 @@ const ProductFarm = ({
           >
             {/* <RGPIcon />  */}
             <Text marginLeft='10px' mt={-5}>
-              {content?.percentageProfitShare}
+              {formatAmount(content?.percentageProfitShare)}%
             </Text>
           </Flex>
         </Flex>
@@ -173,7 +172,7 @@ const ProductFarm = ({
           </Box>
           <Box marginTop='15px' paddingLeft='50px' align='left'>
             {/* {totalLiquidityValue} */}
-              {content?.totalLiquidity && `${content?.totalLiquidity}%` } 
+              {content?.totalLiquidity && `${formatAmount(content?.totalLiquidity)}%` } 
           </Box>
         </Flex>
         <Flex
@@ -191,7 +190,7 @@ const ProductFarm = ({
           </Box>
           <Box marginTop='15px' paddingLeft='65px' align='right'>
             ${" "}
-            {content?.estimatedTotalProfit}
+            {formatAmount(content?.estimatedTotalProfit)}
           </Box>
         </Flex>
         <Box align='right' mt={["4", "0"]} ml='2'>
