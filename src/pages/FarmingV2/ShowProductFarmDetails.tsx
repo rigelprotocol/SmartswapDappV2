@@ -50,18 +50,15 @@ import {
 import {
   MASTERCHEFV2ADDRESSES,
   RGP,
-  PRODUCTSTAKINGADDRESSES
+  PRODUCTSTAKINGADDRESSES,
+  RGPADDRESSES
 } from "../../utils/addresses";
 import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
 import { useRGPBalance } from "../../utils/hooks/useBalances";
 import { updateFarmProductAllowances } from "../../state/farm/actions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
-import Joyride from "react-joyride";
-import { steps } from "../../components/Onboarding/YieldSteps";
-import { Web3Provider } from "@ethersproject/providers";
 import { Contract } from "@ethersproject/contracts";
 import { formatAmount, getERC20Token } from "../../utils/utilsFunctions";
-import { calculateGas } from "../Swap/components/sendToken";
 import { useUserGasPricePercentage } from "../../state/gas/hooks";
 
 import {
@@ -147,6 +144,7 @@ const ShowProductFarmDetails = ({
         parseFloat(content.RGPStaked) <= 0 &&
         Number(depositTokenValue) < Number(minimumStakeAmount)
       ) {
+        alert("less")
         setDepositInputHasError(true);
         setDepositErrorButtonText(
           `Minimum stake amount is ${minimumStakeAmount}`
@@ -343,7 +341,7 @@ const ShowProductFarmDetails = ({
         );
         
         const rgp = await rigelToken(RGP[chainId as number], library);
-        const walletBal = (await rgp.balanceOf(account)) + 400e18;
+        const walletBal = (await rgp.balanceOf(account));
         const data = await rgp.approve(
           PRODUCTSTAKINGADDRESSES[chainId as number],
           walletBal,
@@ -403,63 +401,62 @@ const ShowProductFarmDetails = ({
     modal1Disclosure.onClose();
   };
 
-  const approveLPToken = async (LPToken: any) => {
-    // switch (content?.type) {
-    //   case "LP":
-    //     const poolOne = await smartSwapLPTokenPoolOne(content.address, library);
-    //     LPApproval(poolOne,content.deposit);
-    //     break;
-
-    //   default:
-        RGPApproval();
-        // break;
-    // }
-  };
+ 
 
   const allowance = (contract: Contract) =>
-  contract.allowance(account, MASTERCHEFV2ADDRESSES[chainId as number]);
-
+  contract.allowance(account, PRODUCTSTAKINGADDRESSES[chainId as number]);
+ useEffect(() => {
+    getAllowances();
+  }, [account, depositTokenValue,unstakeToken]);
   const getAllowances = async () => {
     if (account) {
       try {
         const [
-          productStaking
+          RGPAllowances
         ] = await Promise.all([
-        
-          productStakingContract(
-            PRODUCTSTAKINGADDRESSES[chainId as number],
+          rigelToken(
+            RGPADDRESSES[chainId as number],
             library
           ),
         ]);
+        console.log({RGPAllowances})
 
         const [
           productStakingAllowance,
           ,
         ] = await Promise.all([
-          allowance(productStaking),
+          allowance(RGPAllowances),
         ]);
         let rigelAllowance;
           rigelAllowance = productStakingAllowance;
-        if (Number(chainId) === Number(SupportedChainId.BINANCE)) {
+          console.log({rigelAllowance,productStakingAllowance})
           dispatch(
             updateFarmProductAllowances([
               rigelAllowance,
             ])
           );
-        } 
+        
       } catch (error) {
         console.error(error, "something went wrong");
       }
     }
   };
+ 
   const enoughApproval = (allowance: any, balance: any) => {
     if (allowance && balance) {
-
-      return content.type === "RGP"
-        ? allowance.gt(ethers.utils.parseEther(balance))
+      console.log(
+        allowance.gt(ethers.utils.parseEther(balance)),
+        allowance.gt(ethers.utils.parseEther(balance)),
+        parseFloat(allowance.toString()) >= parseFloat(balance)
+        )
+      return content.type === "AT"
+        ? parseFloat(allowance.toString()) >= parseFloat(balance)
         : parseFloat(allowance) > parseFloat(balance);
+      // return content.type === "AT"
+      //   ? allowance.gte(ethers.utils.parseEther(balance))
+      //   : parseFloat(allowance) > parseFloat(balance);
     }
-    return true;
+    return false;
   };
 
   const RGPProductStake = async () => {
@@ -500,6 +497,11 @@ const ShowProductFarmDetails = ({
         );
       }
     }
+  };
+  const approveLPToken = async (LPToken: any) => {
+    console.log({LPToken})
+        checkUser(LPToken);
+
   };
 
   const confirmDeposit = async (val: any) => {
@@ -542,54 +544,6 @@ const ShowProductFarmDetails = ({
 
     return { confirmations, status, logs };
   };
-  const RGPApproval = async () => {
-    if (account) {
-      try {
-        dispatch(
-          setOpenModal({
-            message: `Approving RGP`,
-            trxState: TrxState.WaitingForConfirmation,
-          })
-        );
-        const rgp = await rigelToken(RGP[chainId as number], library);
-        const walletBal = (await rgp.balanceOf(account)) + 400e18;
-        const data = await rgp.approve(
-          MASTERCHEFV2ADDRESSES[chainId as number],
-          walletBal,
-          {
-            from: account,
-            // gasLimit: 150000,
-            // gasPrice: ethers.utils.parseUnits("20", "gwei"),
-          }
-        );
-        setApprovalLoading(true);
-        const { confirmations, status } = await fetchTransactionData(data);
-        if (confirmations >= 3) {
-          setApproveValueForRGP(true);
-          GFarmingSuccessTransaction("Product farm | auto period", "approval", "RGP","v1")
-          dispatch(
-            setOpenModal({
-              trxState: TrxState.TransactionSuccessful,
-              message: `Successful RGP Approval`,
-            })
-          );
-        }
-        getAllowances();
-        setReload(true);
-      } catch (error:any) {
-        console.error(error);
-        GFarmingFailedTransaction("Product farm | auto period", "approval", error.message ,"RGP","v2")
-        dispatch(
-          setOpenModal({
-            message: `Transaction failed`,
-            trxState: TrxState.TransactionFailed,
-          })
-        );
-      }
-      setApprovalLoading(false);
-    }
-  };
-
   const approvalButton = (LPToken: any) => (
     <Button
       my='2'
@@ -605,6 +559,8 @@ const ShowProductFarmDetails = ({
       fontSize='16px'
       _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
       onClick={() => {
+        alert(12388)
+        GButtonIntialized("approval",content.deposit,"v2")
         approveLPToken(LPToken)}}
     >
       {approvalLoading ? "Approving..." : "Approve"} {LPToken}
@@ -740,11 +696,7 @@ return (
           w='45%'
           h='40px'
           borderRadius='6px'
-          // bg={
-          //   mode === DARK_THEME && !approveValueForRGP
-          //     ? "#319EF6"
-          //     : "#4A739B"
-          // }
+          bg={mode === DARK_THEME ? "#4CAFFF" : "#319EF6"}
           color={mode === DARK_THEME ? "#FFFFFF" : "#FFFFFF"}
           border='0'
           mb='4'

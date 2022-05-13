@@ -248,7 +248,6 @@ export function Index() {
   const farms = useSelector((state) => state.farming.content);
   const searchSection = useSelector((state) => state.farming);
 
-  console.log({data});
 
   const clearSearchedData = useCallback(() => {
     dispatch(clearSearchResult());
@@ -260,7 +259,6 @@ export function Index() {
   }, [chainId]);
 
   const handleUpdateSearch = useCallback((searchedDataResult) => {
-    console.log({searchedDataResult})
     dispatch(
       updateSearchResult({
         farmData: searchedDataResult,
@@ -289,7 +287,6 @@ export function Index() {
 
   const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
   const stateChanged: boolean = trxState === 2;
-  console.log(searchResults.searchResult);
   //temporary
   useEffect(() => {
     getFarmData();
@@ -772,7 +769,6 @@ export function Index() {
         );
 
         const rgpPrice = totalUSDT2 / totalRGP2;
-        console.log(rgpPrice);
 
         const RGPprice: number | any = ethers.utils.formatUnits(
           pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
@@ -1257,7 +1253,6 @@ export function Index() {
           .formatUnits(farmProductTotalStaking.mul(Math.floor(1000 * RGPprice)), 21)
           .toString();
 
-          console.log({farmProductTotalStaking,productFarmLiquidity},farmProductTotalStaking.toString())
 
         const BUSD_RGPLiquidity = ethers.utils
           .formatEther(pool1Reserve[0].mul(2))
@@ -2190,10 +2185,13 @@ export function Index() {
             </Stack>
 
           </MenuItem>
-          <MenuItem>
-              <Stack direction={'column'} spacing={0} >
-                <Text my={2}>Other Farm</Text>
+          <MenuItem disabled={true} cursor="not-allowed">
+            <Tooltip label="launching soon">
+               <Stack direction={'column'} spacing={0} >
+                <Text my={2} color={placeholderTextColor}>Other Farm</Text>
               </Stack>
+            </Tooltip>
+             
           </MenuItem>
           
         </MenuList>

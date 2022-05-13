@@ -105,6 +105,7 @@ export default function ProductModal({
                 opacity='0.5'
                 h='50px'
                 borderRadius='6px'
+                type="number"
                 name='availableToken'
                 value={depositTokenValue}
                 onChange={(e) =>setDepositTokenValue(e.target.value)}
@@ -145,7 +146,7 @@ export default function ProductModal({
             </>}
             
             
-          {showReferrerField  && isReferrerCheck &&  <Box display={showReferrerField ? "block" : "none"}>
+          {showReferrerField &&  <Box display={showReferrerField ? "block" : "none"}>
               <Text color={modalTextColor} fontSize='14px' mb={3}>
                 Referrer address
               </Text>
@@ -163,7 +164,7 @@ export default function ProductModal({
                 />
               </InputGroup>
             </Box>}
-           {URLReferrerAddress && <Checkbox
+           {showReferrerField && <Checkbox
               mt={3}
               onChange={handleSetReferralField}
               isChecked={isReferrerCheck}
