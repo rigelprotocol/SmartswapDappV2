@@ -2017,27 +2017,21 @@ export function Index() {
         my={4}
         isFitted={isMobileDevice ? true : false}
       >
-        <Flex justifyContent='space-between' mt={10}>
+        <Flex justifyContent='space-between' mt={10} >
           <TabList h={isMobileDevice ? undefined : 14} borderBottom={0}>
             <Tab
-              // isDisabled={switchTab}
               display='flex'
               flex-direction='row'
               justify-content='center'
               align-items='center'
               flexWrap={isMobileDevice ? "wrap" : undefined}
               padding={isMobileDevice ? "2px 4px" : undefined}
-              // padding={0}
-              border={`1px solid ${borderColor}`}
-              // border='1px solid #DEE5ED'
+              border='1px solid #DEE5ED'
               background={selected === LIQUIDITY ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
               color={useSelectedColor}
-              // px={5}
-              // py={4}
-              // minWidth={{ base: "none", md: "200px", lg: "200px" }}
               value={LIQUIDITY}
+              fontSize="15px"
               onClick={() => handleSelect(LIQUIDITY)}
-              // onClick={() => alert("yes")}
               borderRadius={isMobileDevice ? "10px 0px 0px 10px" : 0}
             >
               <Text className={"liquidity"} color={titleColor}>
@@ -2103,6 +2097,7 @@ export function Index() {
               // border={`1px solid ${borderColor}`}
               background={selected === STAKING ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
               color={useSelectedColor}
+              fontSize="15px"
               // px={5}
               // py={4}
               // minWidth={{ base: "none", md: "200px", lg: "200px" }}
@@ -2175,13 +2170,14 @@ export function Index() {
             >
               <Menu>
         <MenuButton
-          mr={1}
+          // mr={1}
           variant="ghost"
+          fontSize="15px"
           as={Button}
           transition="all 0.2s"
           borderRadius="md"
-          _hover={{ bg: "gray.100" }}
-          _focus={{ boxShadow: "outline" }}
+          _hover={{ bg: "none" }}
+          _focus={{ boxShadow: "none" }}
           rightIcon={<ChevronDownIcon />}
         >
         

@@ -157,7 +157,7 @@ const ProductFarm = ({
           >
            Profile Timeline
           </Box>
-          <Box marginTop='15px' paddingLeft='50px' align='left'>
+          <Box marginTop='15px' paddingLeft='20px' align='left'>
             {content?.profitTimeLine}
           </Box>
         </Flex>
@@ -170,7 +170,7 @@ const ProductFarm = ({
           >
            Total Liquidity
           </Box>
-          <Box marginTop='15px' paddingLeft='50px' align='left'>
+          <Box marginTop='15px' paddingLeft='20px' align='left'>
             {/* {totalLiquidityValue} */}
               {content?.totalLiquidity && `${formatAmount(content?.totalLiquidity)}%` } 
           </Box>
@@ -188,59 +188,13 @@ const ProductFarm = ({
           >
             Estimated Total Profits
           </Box>
-          <Box marginTop='15px' paddingLeft='65px' align='right'>
+          <Box marginTop='15px' paddingLeft='35px' align='right'>
             ${" "}
             {formatAmount(content?.estimatedTotalProfit)}
           </Box>
         </Flex>
         <Box align='right' mt={["4", "0"]} ml='2'>
-          {/* {Number(content.pid) === 1 ? (
-            <Button
-              w={["100%", "100%", "146px"]}
-              h='40px'
-              border='2px solid #319EF6'
-              background={
-                mode === LIGHT_THEME && active
-                  ? "#FFFFFF !important"
-                  : mode === DARK_THEME && active
-                  ? "#319EF6 !important"
-                  : mode === LIGHT_THEME && !active
-                  ? "#FFFFFF !important"
-                  : mode === DARK_THEME && !active
-                  ? "#15202B !important"
-                  : "#FFFFFF !important"
-              }
-              color={
-                mode === LIGHT_THEME && active
-                  ? "#319EF6"
-                  : mode === DARK_THEME && active
-                  ? "#FFFFFF"
-                  : mode === LIGHT_THEME && !active
-                  ? "#319EF6"
-                  : mode === DARK_THEME && !active
-                  ? "#4CAFFF"
-                  : "#333333"
-              }
-              borderColor={
-                mode === LIGHT_THEME && active
-                  ? "#4CAFFF !important"
-                  : mode === DARK_THEME && active
-                  ? "#319EF6 !important"
-                  : mode === LIGHT_THEME && !active
-                  ? "#4CAFFF !important"
-                  : mode === DARK_THEME && !active
-                  ? "#4CAFFF !important"
-                  : "#319EF6 !important"
-              }
-              borderRadius='6px'
-              mb='4'
-              _hover={{ color: "#423a85" }}
-              onClick={() => setShowYieldFarm(!showYieldfarm)}
-              className={"unlock"}
-            >
-              Unlock
-            </Button> */}
-          {/* // ) : ( */}
+         
           <Button
             w={["100%", "100%", "146px"]}
             h='40px'
