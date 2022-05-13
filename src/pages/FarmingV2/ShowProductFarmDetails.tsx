@@ -66,7 +66,6 @@ import { useUserGasPricePercentage } from "../../state/gas/hooks";
 
 import {
   useUpdateFarm,
-  useFetchYieldFarmDetails,
   useProductFarmDetails,
 } from "../../state/newfarm/hooks";
 import { GButtonClicked, GButtonIntialized, GFarmingFailedTransaction, GFarmingSpecialPoolReferral, GFarmingSuccessTransaction } from "../../components/G-analytics/gFarming";
@@ -231,7 +230,7 @@ const ShowProductFarmDetails = ({
   const showMaxValue = async (deposit: any, input: any) => {
     try {
       if (input === "deposit") {
-        // GButtonClicked(`max_button for ${input}`,content.deposit,"v2")
+        GButtonClicked(`max_button for ${input}`,content.deposit,"v2")
         setDepositTokenValue(RGPBalance);
       } else if (input === "unstake") {
         setUnstakeToken(content.RGPStaked);
@@ -243,85 +242,85 @@ const ShowProductFarmDetails = ({
     }
   };
 
-  const tokensWithdrawal = async (pid: number,val:string) => {
-    if (account) {
-      try {
-        const lpTokens = await MasterChefV2Contract(
-          MASTERCHEFV2ADDRESSES[chainId as number],
-          library
-        );
+  // const tokensWithdrawal = async (pid: number,val:string) => {
+  //   if (account) {
+  //     try {
+  //       const lpTokens = await MasterChefV2Contract(
+  //         MASTERCHEFV2ADDRESSES[chainId as number],
+  //         library
+  //       );
 
-        const { format1, format2, format3 } = await calculateGas(
-          userGasPricePercentage,
-          library,
-          chainId as number
-        );
+  //       const { format1, format2, format3 } = await calculateGas(
+  //         userGasPricePercentage,
+  //         library,
+  //         chainId as number
+  //       );
 
-        const isEIP1559 = await library?.getFeeData();
-        const data = await lpTokens.withdraw(
-          pid,
-          ethers.utils.parseEther(unstakeToken.toString()),
-          {
-            from: account,
-            maxPriorityFeePerGas:
-              isEIP1559 && chainId === 137
-                ? ethers.utils.parseUnits(format1, 9).toString()
-                : null,
-            maxFeePerGas:
-              isEIP1559 && chainId === 137
-                ? ethers.utils.parseUnits(format2, 9).toString()
-                : null,
-            gasPrice:
-              chainId === 137
-                ? null
-                : chainId === 80001
-                ? null
-                : ethers.utils.parseUnits(format3, 9).toString(),
-          }
-        );
-        const { confirmations, status, logs } = await fetchTransactionData(
-          data
-        );
-        const { hash } = data;
-        const amountUnstaked = convertToNumber(logs[1].data);
+  //       const isEIP1559 = await library?.getFeeData();
+  //       const data = await lpTokens.withdraw(
+  //         pid,
+  //         ethers.utils.parseEther(unstakeToken.toString()),
+  //         {
+  //           from: account,
+  //           maxPriorityFeePerGas:
+  //             isEIP1559 && chainId === 137
+  //               ? ethers.utils.parseUnits(format1, 9).toString()
+  //               : null,
+  //           maxFeePerGas:
+  //             isEIP1559 && chainId === 137
+  //               ? ethers.utils.parseUnits(format2, 9).toString()
+  //               : null,
+  //           gasPrice:
+  //             chainId === 137
+  //               ? null
+  //               : chainId === 80001
+  //               ? null
+  //               : ethers.utils.parseUnits(format3, 9).toString(),
+  //         }
+  //       );
+  //       const { confirmations, status, logs } = await fetchTransactionData(
+  //         data
+  //       );
+  //       const { hash } = data;
+  //       const amountUnstaked = convertToNumber(logs[1].data);
 
-        const explorerLink = getExplorerLink(
-          chainId as number,
-          hash,
-          ExplorerDataType.TRANSACTION
-        );
-        GFarmingSuccessTransaction("farming", "unstake", val,"v2")
-        dispatch(
-          setOpenModal({
-            trxState: TrxState.TransactionSuccessful,
-            message: `Successfully unstaked ${convertFromWei(
-              amountUnstaked
-            )} RGP `,
-          })
-        );
+  //       const explorerLink = getExplorerLink(
+  //         chainId as number,
+  //         hash,
+  //         ExplorerDataType.TRANSACTION
+  //       );
+  //       GFarmingSuccessTransaction("product token", "unstake", val,"v2")
+  //       dispatch(
+  //         setOpenModal({
+  //           trxState: TrxState.TransactionSuccessful,
+  //           message: `Successfully unstaked ${convertFromWei(
+  //             amountUnstaked
+  //           )} RGP `,
+  //         })
+  //       );
 
-        dispatch(
-          addToast({
-            message: `Successfully unstaked ${convertFromWei(
-              amountUnstaked
-            )} RGP `,
-            URL: explorerLink,
-          })
-        );
-        setReload(true);
-        // dispatch the getTokenStaked action from here when data changes
-        //callRefreshFarm(confirmations, status);
-      } catch (e:any) {
-        console.log(e);
-        GFarmingFailedTransaction("farming", "unstake", e.message, val,"v2")
-        dispatch(
-          setOpenModal({
-            trxState: TrxState.TransactionFailed,
-          })
-        );
-      }
-    }
-  };
+  //       dispatch(
+  //         addToast({
+  //           message: `Successfully unstaked ${convertFromWei(
+  //             amountUnstaked
+  //           )} RGP `,
+  //           URL: explorerLink,
+  //         })
+  //       );
+  //       setReload(true);
+  //       // dispatch the getTokenStaked action from here when data changes
+  //       //callRefreshFarm(confirmations, status);
+  //     } catch (e:any) {
+  //       console.log(e);
+  //       GFarmingFailedTransaction("Product farm | auto period", "unstake", e.message, val,"v1")
+  //       dispatch(
+  //         setOpenModal({
+  //           trxState: TrxState.TransactionFailed,
+  //         })
+  //       );
+  //     }
+  //   }
+  // };
 
   const openDepositeModal = () => {
     //if (approveValueForOtherToken && approveValueForRGP) {
@@ -358,7 +357,7 @@ const ShowProductFarmDetails = ({
         const { confirmations, status } = await fetchTransactionData(data);
         if (confirmations >= 3) {
           setApproveValueForRGP(true);
-          // GFarmingSuccessTransaction("special pool", "approval", "RGP","v2")
+          GFarmingSuccessTransaction("product farm | auto period", "approval", "RGP","v1")
           dispatch(
             setOpenModal({
               trxState: TrxState.TransactionSuccessful,
@@ -369,7 +368,7 @@ const ShowProductFarmDetails = ({
         getAllowances();
       } catch (error:any) {
         console.error(error);
-        // GFarmingFailedTransaction("special pool", "approval", error.message, "RGP","v2")
+        GFarmingFailedTransaction("product farm | auto period", "approval", error.message, "RGP","v1")
         dispatch(
           setOpenModal({
             message: `Transaction failed`,
@@ -481,7 +480,7 @@ const ShowProductFarmDetails = ({
           }
         );
         await fetchTransactionData(data);
-        GFarmingSuccessTransaction("special pool", "stake", "RGP","v2")
+        GFarmingSuccessTransaction("Product farm | auto period", "stake", "RGP","v1")
         dispatch(
           setOpenModal({
             trxState: TrxState.TransactionSuccessful,
@@ -491,7 +490,7 @@ const ShowProductFarmDetails = ({
         // callRefreshFarm(confirmations, status);
       } catch (error:any) {
         console.log(error);
-        GFarmingFailedTransaction("special pool", "stake", error.message, "RGP","v2")
+        GFarmingFailedTransaction("Product farm | auto period", "stake", error.message, "RGP","v1")
         dispatch(
           setOpenModal({
             message: `Transaction failed`,
@@ -524,7 +523,7 @@ const ShowProductFarmDetails = ({
       }
     } catch (error:any) {
       console.log(error);
-      GFarmingFailedTransaction("farming", "stake", error.message, val,"v2")
+      GFarmingFailedTransaction("Product farm | auto period", "stake", error.message, val,"v1")
       dispatch(
         setOpenModal({
           message: `Failed to deposit LP tokens.`,
@@ -567,7 +566,7 @@ const ShowProductFarmDetails = ({
         const { confirmations, status } = await fetchTransactionData(data);
         if (confirmations >= 3) {
           setApproveValueForRGP(true);
-          GFarmingSuccessTransaction("farming", "approval", "RGP","v2")
+          GFarmingSuccessTransaction("Product farm | auto period", "approval", "RGP","v1")
           dispatch(
             setOpenModal({
               trxState: TrxState.TransactionSuccessful,
@@ -579,7 +578,7 @@ const ShowProductFarmDetails = ({
         setReload(true);
       } catch (error:any) {
         console.error(error);
-        GFarmingFailedTransaction("farming", "approval", error.message ,"RGP","v2")
+        GFarmingFailedTransaction("Product farm | auto period", "approval", error.message ,"RGP","v2")
         dispatch(
           setOpenModal({
             message: `Transaction failed`,
