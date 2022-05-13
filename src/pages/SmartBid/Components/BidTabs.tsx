@@ -85,7 +85,7 @@ const WinnersPanel = ({id, colors, price}: {id: number, colors: string[], price:
 };
 
 
-const BidTabs = () => {
+const BidTabs = ({time} : {time: number}) => {
     const [isMobileDevice] = useMediaQuery("(max-width: 950px)");
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     return (
@@ -104,9 +104,18 @@ const BidTabs = () => {
                             ))}
                         </TabPanel>
                         <TabPanel>
-                            {SmartBidWinners.map((item, index) => (
-                                <WinnersPanel key={index} id={item.id} colors={item.colors} price={item.price}/>
-                            ))}
+                            {time < 0 ?
+                            <Box>
+                                {SmartBidWinners.map((item, index) => (
+                                    <WinnersPanel key={index} id={item.id} colors={item.colors} price={item.price}/>
+                                ))}
+                            </Box>
+                                :
+                                <Box justifyContent={'center'} minHeight={'100px'}>
+                                    <Text textAlign={'center'} my={'30px'}>The list of winners and other participants will appear here.</Text>
+                                </Box>
+
+                            }
                         </TabPanel>
                     </TabPanels>
                 </Tabs>

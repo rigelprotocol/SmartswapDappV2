@@ -12,7 +12,7 @@ export const SmartBidData = [
     exclusive: true,
     image: cardbid,
     title: 'Launchpad NFT owners only',
-    id: 1,
+    id: 0,
     text: 'Participants get .. of their winnings.',
     color: '#F25F4C',
     bgColor: '#FFF3F1'
@@ -21,7 +21,7 @@ export const SmartBidData = [
     exclusive: true,
     image: cardbid2,
     title: 'Launchpad NFT owners only',
-    id: 2,
+    id: 1,
     text: 'Participants get .. of their winnings.',
     color: '#2CB67D',
     bgColor: '#EAFAF4'
@@ -30,7 +30,7 @@ export const SmartBidData = [
     exclusive: true,
     image: cardbid3,
     title: 'Launchpad NFT owners only',
-    id: 3,
+    id: 2,
     text: 'Participants get .. of their winnings.',
     color: '#FF8906',
     bgColor: '#FFF0DF'
@@ -40,9 +40,17 @@ export const SmartBidData = [
     exclusive: false,
     image: cardbid4,
     title: 'Everyone',
-    id: 4,
+    id: 3,
     text: 'NFT Owners get X2 of their winnings.',
     bgColor: '#EDE8FD',
+  }, {
+    time: "08:41:29",
+    exclusive: false,
+    image: cardbid4,
+    title: 'Everyone',
+    id: 4,
+    text: 'NFT Owners get X2 of their winnings.',
+    bgColor: '#EDE8FD'
   }, {
     time: "08:41:29",
     exclusive: false,
@@ -65,14 +73,6 @@ export const SmartBidData = [
     image: cardbid4,
     title: 'Everyone',
     id: 7,
-    text: 'NFT Owners get X2 of their winnings.',
-    bgColor: '#EDE8FD'
-  }, {
-    time: "08:41:29",
-    exclusive: false,
-    image: cardbid4,
-    title: 'Everyone',
-    id: 8,
     text: 'NFT Owners get X2 of their winnings.',
     bgColor: '#EDE8FD'
   }

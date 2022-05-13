@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Box, Text, Flex, Image, HStack, Icon} from '@chakra-ui/react';
+import {Box, Text, Flex, Image, HStack, Icon, Skeleton, useMediaQuery} from '@chakra-ui/react';
 import {MdPeopleOutline, AiOutlineGift, RiMedalFill} from "react-icons/all";
 import {Link} from 'react-router-dom';
 import {useSmartBid} from "../../../hooks/useSmartBid";
@@ -31,9 +31,9 @@ export const countDownDate = (time: number) => (timeConverter(time));
 
 const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDetails) => {
 
-    const { loadData , bidTime } = useSmartBid(0);
-    const [time, setTime] = useState(2);
+    const { loadData , bidTime } = useSmartBid(id);
     const [currentClock, setCurrentClock] = useState('');
+    const [isMobileDevice] = useMediaQuery("(max-width: 767px)");
 
     useEffect(() => {
         const timeFunction = setInterval(function() {
@@ -43,14 +43,12 @@ const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDe
 
             const bidDeadline = new Date(bidDate).getTime();
             const distance =  bidDeadline - now;
-            setTime(distance);
 
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            setCurrentClock(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+            setCurrentClock(`${hours}h ${minutes}m ${seconds}s`);
 
             if (distance < 0) {
                 clearInterval(timeFunction);
@@ -85,7 +83,13 @@ const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDe
                      borderRadius={'20px'} background={'#FDFCFF'}>
                     <HStack justifyContent={'space-between'}>
                         <Box fontWeight={700} my={2}>
+                            {!loadData ?
                             <Text color={'#333333'} fontSize={'24px'}>{currentClock}</Text>
+                                : <Skeleton
+                                    height='30px'
+                                    w={isMobileDevice ? "330px" : "100%"}
+                                />
+                            }
                             <Text color={'#666666'} fontSize={'14px'}>50% RGP Token</Text>
                         </Box>
                         {

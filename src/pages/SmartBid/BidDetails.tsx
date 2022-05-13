@@ -1,43 +1,52 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {Box, Text, Flex, useColorModeValue, Button, useMediaQuery, UnorderedList, ListItem} from '@chakra-ui/react';
 import BidHeader from "./Components/BidHeader";
 import BidTabs from "./Components/BidTabs";
 import {useSmartBid} from "../../hooks/useSmartBid";
-import {countDownDate, timeConverter} from "./Components/Card";
-
+import {countDownDate} from "./Components/Card";
+import { useLocation } from "react-router-dom";
+import BidModal from "./Components/BidModal";
 
 const BidDetails = () => {
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     const [isMobileDeviceSm] = useMediaQuery("(max-width: 750px)");
     const textFont = isMobileDeviceSm ? '25px' : '40px';
     const smallFont = isMobileDeviceSm ? '12px' : '16px';
+    const location = useLocation();
+    const idBid = location.pathname.split('/');
+    const viewId = Number(idBid[2]);
 
-    const { loadData , bidTime } = useSmartBid(0);
+    const [bidModal, setBidModal] = useState(false);
+
+
+    const { loadData , bidTime, bidDetails } = useSmartBid(viewId);
+
     const [time, setTime] = useState(2);
     const [currentClock, setCurrentClock] = useState({days: 0, hours: 0, minutes: 0, seconds: 0});
 
-    const timeFunction = setInterval(function() {
+    useEffect(() => {
+        const timeFunction = setInterval(function() {
 
-        const now = new Date().getTime();
-        const bidDate = countDownDate(Number(bidTime));
-        const bidDeadline = new Date(bidDate).getTime();
-        const distance =  bidDeadline - now;
-        setTime(distance);
+            const now = new Date().getTime();
+            const bidDate = countDownDate(Number(bidTime));
+            const bidDeadline = new Date(bidDate).getTime();
+            const distance =  bidDeadline - now;
+            setTime(distance);
 
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        setCurrentClock({days: days, hours: hours, minutes: minutes, seconds: seconds});
-        //  console.log(distance, now);
+            setCurrentClock({days: days, hours: hours, minutes: minutes, seconds: seconds});
 
-        if (distance < 0) {
-            clearInterval(timeFunction);
-            setCurrentClock({days: 0, hours: 0, minutes: 0, seconds: 0})
-        }
-    }, 1000);
+            if (distance < 0) {
+                clearInterval(timeFunction);
+                setCurrentClock({days: 0, hours: 0, minutes: 0, seconds: 0})
+            }
+        }, 1000);
 
+    }, [bidTime]);
 
     return (
         <>
@@ -89,14 +98,21 @@ const BidDetails = () => {
                                 </Box>
                             </Flex>
                             <Box marginY={3} border={'.5px solid #DEE6ED'}/>
-                            {time > 0 &&
-                              <Button my={3} width={'100%'} variant={'brand'} justifyContent={'center'}>Place Bid</Button>
-                            }
+                              <Button my={3} width={'100%'}
+                                      variant={'brand'}
+                                      disabled={time < 0}
+                                      justifyContent={'center'}
+                                      onClick={() => setBidModal(true)}
+                              >
+                                  {time > 0 ? 'Place Bid' : 'Event ended'}
+                              </Button>
+
                         </Box>
                     </Flex>
                 </Box>
+                <BidModal isOpen={bidModal} close={() => setBidModal(false)} id={viewId} amount={bidDetails.initial} max={bidDetails.max.toString()} />
 
-                <BidTabs/>
+                <BidTabs time={time}/>
 
             </Box>
         </>

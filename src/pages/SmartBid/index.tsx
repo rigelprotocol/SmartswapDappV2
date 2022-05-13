@@ -4,9 +4,6 @@ import {AddIcon} from "@chakra-ui/icons";
 import SmartBidCard from "./Components/Card";
 import {SmartBidData} from "./Components/cardData";
 import BidCarousel from "./Components/BidCarousel";
-import {useSmartBid} from "../../hooks/useSmartBid";
-
-
 
 
 
@@ -41,12 +38,13 @@ const SmartBid = () => {
                 </Flex>
             </Box>
             <SimpleGrid width={'100%'} p={'10px'} mx={'auto'} minChildWidth={'305px'} spacingX={'10px'} spacingY={'20px'}  alignItems={'start'}>
-                {SmartBidData.map((item) => (
+                {SmartBidData.map((item, index) => index !== -1 && index < 3 ? (
                     <GridItem rowSpan={1} key={item.id} colSpan={1}>
                         <SmartBidCard key={item.id} title={item.title} image={item.image} exclusive={item.exclusive} tileColor={item.color} bgColor={item.bgColor} id={item.id}/>
                     </GridItem>
 
-                ))}
+                ) : null
+                )}
             </SimpleGrid>
 
         </Box>
