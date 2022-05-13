@@ -235,13 +235,12 @@ const SetPrice = () => {
     if (currencies[Field.INPUT] && currencies[Field.OUTPUT] &&marketType!=="Smartswap") {
       console.log(OTHERMARKETADDRESSES[marketType][chainId as number],marketType,chainId)
       const rout = await otherMarketPriceContract(OTHERMARKETADDRESSES[marketType][chainId as number], library);
-      const routeAddress = currencies[Field.INPUT]?.isNative ? [WNATIVEADDRESSES[chainId as number], currencies[Field.OUTPUT]?.wrapped.address] :
-        currencies[Field.OUTPUT]?.isNative ? [currencies[Field.INPUT]?.wrapped.address, WNATIVEADDRESSES[chainId as number]] :
-          [currencies[Field.INPUT]?.wrapped.address, currencies[Field.OUTPUT]?.wrapped.address]
+    
+          console.log({pathArray})
       if (typedValue) {
         const priceOutput = await rout.getAmountsOut(
           Web3.utils.toWei(typedValue, 'ether'),
-          routeAddress
+          pathArray
         );
         setOtherMarketprice(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
       }

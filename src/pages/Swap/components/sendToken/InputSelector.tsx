@@ -73,14 +73,14 @@ const InputSelector = ({
           isRequired
           placeholder='0.0'
           value={value}
-          // disabled={disable}
+          disabled={disable}
           title={disable ? "please fill the input box below, they control this input": undefined}
           onChange={(event) => {
              !disable && enforcer(event.target.value.replace(/,/g, "."));
           }}
           focusBorderColor='none'
-          onMouseEnter={disable ? onHover : ""}
-          onMouseLeave={disable ? onHover : ""}
+          onMouseEnter={disable ? onHover : undefined}
+          onMouseLeave={disable ? onHover : undefined}
         />
 
        } 

@@ -472,7 +472,7 @@ setMinNav3(!minNav3)
          <div>
            <h6>Swap</h6>
            <p><Link to="/swap">Straight Swap</Link></p>
-           <p><Link to="/auto-time">Auto Time</Link></p>
+           <p><Link to="/auto-period">Auto Time</Link></p>
            <p><Link to="/set-price">Set Price</Link></p>
          </div>
          <div>

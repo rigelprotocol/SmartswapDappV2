@@ -71,7 +71,7 @@ import Faq from "./SmartBid/Faq";
               />
 
               <Route exact strict path="/set-price" component={chainId === SupportedChainId.BINANCETEST ? SetPrice : Swap} />
-              <Route exact path="/auto-time" component={chainId === SupportedChainId.BINANCETEST ? AutoTime : Swap} />
+              <Route exact path="/auto-period" component={chainId === SupportedChainId.BINANCETEST ? AutoTime : Swap} />
               <Route
                 exact
                 strict

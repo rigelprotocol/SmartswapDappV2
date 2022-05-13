@@ -29,7 +29,7 @@ function SwapDropdown() {
 
   const useName = () => {
     console.log(name);
-    if (name == '/swap' || name == '/auto-time' || name == '/set-price') {
+    if (name == '/swap' || name == '/auto-period' || name == '/set-price') {
       console.log(`Correct name is ${name}`);
       return name.substring(1);
     } else {
@@ -56,7 +56,7 @@ function SwapDropdown() {
           <Nav label="Straight Swap" to="/swap" />
         </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
-          <Nav label="Auto-Time" to={chainId === SupportedChainId.BINANCETEST ? '/auto-time' : '#'} />
+          <Nav label="Auto-period" to={chainId === SupportedChainId.BINANCETEST ? '/auto-period' : '#'} />
         </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
           <Nav label="Set Price" to={chainId === SupportedChainId.BINANCETEST ? '/set-price' : '#'} />

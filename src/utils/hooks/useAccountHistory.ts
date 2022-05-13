@@ -129,7 +129,7 @@ const useAccountHistory = (socket:any) => {
     const location = useLocation().pathname;
     const [, Symbol, Name,] = useNativeBalance()
     useEffect(() => {
-        if (location === "/auto-time") {
+        if (location === "/auto-period") {
             setLocationData("auto")
             setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
@@ -223,7 +223,7 @@ const useAccountHistory = (socket:any) => {
                     situation:"",
                     chainID:chainId
                 }));
-            } else if ( location === "/auto-time" || location === "/set-price") {
+            } else if ( location === "/auto-period" || location === "/set-price") {
                 const { transaction, database } = await getTransactionFromDatabase(account)
                 if (transaction.length > 0) {
                     dispatch(notificationTab({ 

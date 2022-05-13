@@ -50,7 +50,7 @@ const useMarketHistory = (socket:any) => {
         return decoder
     }
     useEffect(() => {
-        if (location === "/auto-time") {
+        if (location === "/auto-period") {
             setLocationData("auto")
             setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
@@ -156,7 +156,7 @@ const useMarketHistory = (socket:any) => {
 
                    
     
-                }else if ( location === "/auto-time" || location === "/set-price"){
+                }else if ( location === "/auto-period" || location === "/set-price"){
                     const transaction = await getTransactionFromDatabase()
                     if (transaction.length > 0) {
                         let result = []

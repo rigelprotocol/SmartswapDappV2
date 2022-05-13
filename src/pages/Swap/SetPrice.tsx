@@ -96,6 +96,7 @@ const SetPrice = () => {
   const [approvalForToken, setApprovalForToken] = useState("")
   const [totalNumberOfTransaction, setTotalNumberOfTransaction] = useState("1")
   const [approval, setApproval] = useState<String[]>([])
+  const [value, setValue] = useState(0)
   const [shakeInput, setShakeInput] = useState<boolean>(false)
   const [dataSignature,setDataSignature] = useState<{mess:string,signature:string}>({
     mess:"",
@@ -130,16 +131,21 @@ const SetPrice = () => {
     (state) => state.user.userDeadline
   );
   const changeValue = (val:number,sign:string)=>{
-   if(parseFloat(initialToPrice) >0){
-     let value = sign==="minus" ? parseFloat(initialToPrice) - val : parseFloat(initialToPrice) + val
-     value > 0 ? setInitialToPrice(value.toString()) : setInitialToPrice("0")
-     
-   } 
-  }
+    setValue(val)
+    if(parseFloat(initialFromPrice) >0){
+      let percent = (val/100) * parseFloat(initialFromPrice)
+      let value = sign==="minus" ? parseFloat(initialToPrice) - percent : parseFloat(initialToPrice) + percent
+      value > 0 ? setInitialToPrice(value.toString()) : setInitialToPrice("0")
+      
+    } 
+   }
   const { independentField, typedValue } = useSwapState();
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
   const [allowedSlippage] = useUserSlippageTolerance();
   useEffect(() => {
+    if(parseFloat(initialFromPrice) >0 && value===0 && unitAmount && oppositeAmount){
+      setInitialToPrice(unitAmount)
+    }
     if (parseFloat(initialToPrice) > 0 && parseFloat(initialFromPrice) > 0) {
       setDisableInput(false)
       // setShakeInput
@@ -152,6 +158,7 @@ const SetPrice = () => {
       setDisableInput(true)
     }
   }, [initialToPrice, initialFromPrice, typedValue])
+ 
   const parsedAmounts = useMemo(
     () =>
       showWrap
@@ -591,7 +598,7 @@ const SetPrice = () => {
               {[10,20,30,40,50].map((item,index)=>{
                 return <Square 
                 key={index} 
-                size="25px" 
+                size="28px" 
                 background={buttonBgcolor}
                 cursor="pointer"
                 border={`1px solid ${borderColor}`} 
@@ -599,7 +606,7 @@ const SetPrice = () => {
                 fontSize="12px"
                 onClick={()=>changeValue(item,"plus")}
                 mx="3px">
-                    +{item}
+                    +{item}%
                 </Square>
             })}  
             </Flex>
@@ -630,7 +637,7 @@ const SetPrice = () => {
               {[10,20,30,40,50].map((item,index)=>{
                 return <Square 
                 key={index} 
-                size="25px" 
+                size="28px" 
                 background={buttonBgcolor}
                 cursor="pointer"
                 border={`1px solid ${borderColor}`} 
@@ -638,7 +645,7 @@ const SetPrice = () => {
                 fontSize="12px"
                 onClick={()=>changeValue(item,"minus")}
                 mx="3px">
-                    -{item}
+                    -{item}%
                 </Square>
             })}  
             </Flex>
