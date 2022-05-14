@@ -99,7 +99,6 @@ import { shortenCode } from "../../utils";
 import { useLocation } from "react-router-dom";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { useUpdateUserGasPreference } from "../../state/gas/hooks";
-import { FiFilter } from "react-icons/fi";
 import { ChevronDownIcon, SearchIcon } from "@chakra-ui/icons";
 import Filter from "../../components/Farming/Modals/Filter";
 import { filterFarms } from "../../utils/utilsFunctions";
@@ -122,19 +121,26 @@ import { useFarmData } from "../../state/newfarm/hooks";
 import { GFarmingClickListYourProject, GFarmingInputSearchFarm, GOpenedSpecialPool } from "../../components/G-analytics/gFarming";
 
 export const BIG_TEN = new bigNumber(10);
-export const LIQUIDITY = "liquidity";
-export const STAKING = "staking";
-export const PRODUCT_FARMS = "product farms";
+// export const LIQUIDITY = "liquidity";
+// export const STAKING = "staking";
+// export const PRODUCT_FARM = "product farms";
 export const V1 = "v1";
 export const V2 = "v2";
 export const LIGHT_THEME = "light";
 export const DARK_THEME = "dark";
 export const LIQUIDITY_INDEX = 0;
 export const STAKING_INDEX = 1;
+enum farmSection {
+  LIQUIDITY,
+  STAKING,
+  PRODUCT_FARM
+} 
+
 export const MAINNET = 56;
 
 export function Index() {
   const history = useHistory();
+  const location = useLocation().pathname;
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
   const filterBorderColor = useColorModeValue("#DEE5ED", "#324D68");
   const useNotSelectedBackgroundColor = useColorModeValue("#FFFFFF","#15202B")
@@ -148,7 +154,7 @@ export function Index() {
   const useSelectedColor = useColorModeValue("#333333","#213345")
   const placeholderTextColor = useColorModeValue("#333333", "#DCE5EF");
   const titleColor = useColorModeValue("#333333", "#ffffff");
-  const [selected, setSelected] = useState(LIQUIDITY);
+  const [selected, setSelected] = useState(farmSection.LIQUIDITY);
   const [isActive, setIsActive] = useState(V2);
   const [showAlert, setShowAlert] = useState(true);
   const [farmDataLoading, setfarmDataLoading] = useState(false);
@@ -175,6 +181,8 @@ export function Index() {
   const [showPopOver, setShowPopover] = useState(false);
   const [saveChanges, setSavedChanges] = useState(false);
   const [keyword, setKeyword] = useState("");
+
+
   // 👇 look here
   const previousKeyword = usePrevious(keyword);
 
@@ -186,6 +194,25 @@ export function Index() {
     previousKeyword,
     searchData: filter,
   });
+
+  
+  console.log({location})
+  useEffect(()=>{
+if(location && location.includes("RGPv2")){
+    // setSelected(STAKING);
+    setSelected(farmSection.STAKING)
+    setTabIndex(1);
+  }else if(location && location.includes("product-farm")){
+    // setSelected(PRODUCT_FARMS);
+    setSelected(farmSection.PRODUCT_FARM)
+    setTabIndex(2)
+  }else{
+    // setSelected(LIQUIDITY)
+    setSelected(farmSection.LIQUIDITY)
+    setTabIndex(0);
+  }
+  },[location])
+  
 
   // console.log(count);
 
@@ -304,12 +331,12 @@ export function Index() {
     refreshData();
   }, []);
 
-  useEffect(() => {
-    if (match) {
-      setSelected(STAKING);
-      setTabIndex(1);
-    }
-  }, [match]);
+  // useEffect(() => {
+  //   if (match) {
+  //     setSelected(STAKING);
+  //     setTabIndex(1);
+  //   }
+  // }, [match]);
 
   const changeVersion = (version: string, external?: boolean) => {
     if (external) {
@@ -318,17 +345,18 @@ export function Index() {
     history.push(version);
   };
 
-  const handleSelect = (value: string) => {
-    if (value === LIQUIDITY) {
+  const handleSelect = (value: number) => {
+    if (value === farmSection.LIQUIDITY) {
       setSwitchTab(!switchTab);
-      setSelected(LIQUIDITY);
+      setSelected(farmSection.LIQUIDITY);
       changeVersion("/farming-v2");
-    }else if(value === PRODUCT_FARMS) {
-      setSelected(PRODUCT_FARMS)
+    }else if(value === farmSection.PRODUCT_FARM) {
+      setSelected(farmSection.PRODUCT_FARM)
       setSwitchTab(!switchTab);
-    } else if (value === STAKING) {
+      changeVersion("/farming-V2/product-farm");
+    } else if (value === farmSection.STAKING) {
       setSwitchTab(!switchTab);
-      setSelected(STAKING);
+      setSelected(farmSection.STAKING);
       GOpenedSpecialPool(tabIndex)
       if (tabIndex === 1) {
         setStakingIndex(1);
@@ -2022,11 +2050,11 @@ export function Index() {
               flexWrap={isMobileDevice ? "wrap" : undefined}
               padding={isMobileDevice ? "2px 4px" : undefined}
               border='1px solid #DEE5ED'
-              background={selected === LIQUIDITY ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
+              background={selected === farmSection.LIQUIDITY ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
               color={useSelectedColor}
-              value={LIQUIDITY}
+              value={farmSection.LIQUIDITY}
               fontSize="15px"
-              onClick={() => handleSelect(LIQUIDITY)}
+              onClick={() => handleSelect(farmSection.LIQUIDITY)}
               borderRadius={isMobileDevice ? "10px 0px 0px 10px" : 0}
             >
               <Text className={"liquidity"} color={titleColor}>
@@ -2049,8 +2077,8 @@ export function Index() {
                   //     ? "#0760A8 !important"
                   //     : "#F2F5F8 !important"
                   // }
-                  borderColor={selected === LIQUIDITY ? useNotSelectedBorderColor : useSelectedBorderColor}
-                  color={selected === LIQUIDITY ? useNotSelectedTextColor : useSelectedTextColor}
+                  borderColor={selected === farmSection.LIQUIDITY ? useNotSelectedBorderColor : useSelectedBorderColor}
+                  color={selected === farmSection.LIQUIDITY ? useNotSelectedTextColor : useSelectedTextColor}
                   // color={
                   //   mode === LIGHT_THEME && selected === LIQUIDITY
                   //     ? "#0760A8"
@@ -2090,7 +2118,7 @@ export function Index() {
               border='1px solid #DEE5ED'
               borderRadius={0}
               // border={`1px solid ${borderColor}`}
-              background={selected === STAKING ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
+              background={selected === farmSection.STAKING ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
               color={useSelectedColor}
               fontSize="15px"
               // px={5}
@@ -2098,7 +2126,7 @@ export function Index() {
               // minWidth={{ base: "none", md: "200px", lg: "200px" }}
 
               onClick={() => {
-                handleSelect(STAKING);
+                handleSelect(farmSection.STAKING);
               }}
             >
               <Text className={"staking"} color={titleColor}>
@@ -2115,9 +2143,9 @@ export function Index() {
                   //     ? "#0760A8 !important"
                   //     : mode === DARK_THEME && selected === LIQUIDITY
                   //     ? "#008DFF !important"
-                  //     : mode === DARK_THEME && selected === STAKING
+                  //     : mode === DARK_THEME && selected === farmSection.STAKING
                   //     ? "#324D68 !important"
-                  //     : mode === LIGHT_THEME && selected === STAKING
+                  //     : mode === LIGHT_THEME && selected === farmSection.STAKING
                   //     ? "#0760A8 !important"
                   //     : "#F2F5F8 !important"
                   // }
@@ -2127,14 +2155,14 @@ export function Index() {
                   //     ? "#0760A8"
                   //     : mode === DARK_THEME && selected === LIQUIDITY
                   //     ? "#008DFF"
-                  //     : mode === DARK_THEME && selected === STAKING
+                  //     : mode === DARK_THEME && selected === farmSection.STAKING
                   //     ? "#F1F5F8"
-                  //     : mode === LIGHT_THEME && selected === STAKING
+                  //     : mode === LIGHT_THEME && selected === farmSection.STAKING
                   //     ? "#0760A8"
                   //     : "#333333"
                   // }
-                  borderColor={selected === LIQUIDITY ? useNotSelectedBorderColor : useSelectedBorderColor}
-                  color={selected === LIQUIDITY ? useNotSelectedTextColor : useSelectedTextColor}
+                  borderColor={selected === farmSection.LIQUIDITY ? useNotSelectedBorderColor : useSelectedBorderColor}
+                  color={selected === farmSection.LIQUIDITY ? useNotSelectedTextColor : useSelectedTextColor}
                   onChange={handleStakingTab}
                   background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
                   onClick={(e) => e.stopPropagation()}
@@ -2156,12 +2184,12 @@ export function Index() {
             <Tab
               border='1px solid #DEE5ED'
               borderRadius={0}
-              background={selected === PRODUCT_FARMS ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
+              background={selected === farmSection.PRODUCT_FARM ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
               color={useSelectedColor}
               // px={5}
               // py={4}
               // minWidth={{ base: "none", md: "200px", lg: "200px" }}
-              onClick={() => handleSelect(PRODUCT_FARMS)}
+              onClick={() => handleSelect(farmSection.PRODUCT_FARM)}
             >
               <Menu>
         <MenuButton
@@ -2281,13 +2309,13 @@ export function Index() {
                 minHeight='89vh'
                 w={["100%", "100%", "100%"]}
                 background={
-                  mode === LIGHT_THEME && selected === STAKING
+                  mode === LIGHT_THEME && selected === farmSection.STAKING
                     ? "#FFFFFF !important"
-                    : mode === DARK_THEME && selected === LIQUIDITY
+                    : mode === DARK_THEME && selected === farmSection.LIQUIDITY
                     ? "#15202B !important"
-                    : mode === DARK_THEME && selected === STAKING
+                    : mode === DARK_THEME && selected === farmSection.STAKING
                     ? "#15202B !important"
-                    : mode === LIGHT_THEME && selected === LIQUIDITY
+                    : mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
                     ? "#FFFFFF !important"
                     : "#FFFFFF !important"
                 }
@@ -2300,24 +2328,24 @@ export function Index() {
                     px={4}
                     py={4}
                     background={
-                      mode === LIGHT_THEME && selected === LIQUIDITY
+                      mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
                         ? "#F2F5F8  !important"
-                        : mode === DARK_THEME && selected === LIQUIDITY
+                        : mode === DARK_THEME && selected === farmSection.LIQUIDITY
                         ? "#213345"
-                        : mode === DARK_THEME && selected === STAKING
+                        : mode === DARK_THEME && selected === farmSection.STAKING
                         ? "#213345"
-                        : mode === LIGHT_THEME && selected === STAKING
+                        : mode === LIGHT_THEME && selected === farmSection.STAKING
                         ? "#F2F5F8"
                         : "#F2F5F8 !important"
                     }
                     color={
-                      mode === LIGHT_THEME && selected === LIQUIDITY
+                      mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
                         ? "#333333"
-                        : mode === DARK_THEME && selected === STAKING
+                        : mode === DARK_THEME && selected === farmSection.STAKING
                         ? "#F1F5F8"
-                        : mode === DARK_THEME && selected === LIQUIDITY
+                        : mode === DARK_THEME && selected === farmSection.LIQUIDITY
                         ? "#F1F5F8"
-                        : mode === LIGHT_THEME && selected === STAKING
+                        : mode === LIGHT_THEME && selected === farmSection.STAKING
                         ? "#333333"
                         : "#333333"
                     }
@@ -2554,13 +2582,13 @@ export function Index() {
                 minHeight='89vh'
                 w={["100%", "100%", "100%"]}
                 background={
-                  mode === LIGHT_THEME && selected === STAKING
+                  mode === LIGHT_THEME && selected === farmSection.STAKING
                     ? "#FFFFFF !important"
-                    : mode === DARK_THEME && selected === LIQUIDITY
+                    : mode === DARK_THEME && selected === farmSection.LIQUIDITY
                     ? "#15202B !important"
-                    : mode === DARK_THEME && selected === STAKING
+                    : mode === DARK_THEME && selected === farmSection.STAKING
                     ? "#15202B !important"
-                    : mode === LIGHT_THEME && selected === LIQUIDITY
+                    : mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
                     ? "#FFFFFF !important"
                     : "#FFFFFF !important"
                 }
@@ -2573,24 +2601,24 @@ export function Index() {
                     px={4}
                     py={4}
                     background={
-                      mode === LIGHT_THEME && selected === LIQUIDITY
+                      mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
                         ? "#F2F5F8  !important"
-                        : mode === DARK_THEME && selected === LIQUIDITY
+                        : mode === DARK_THEME && selected === farmSection.LIQUIDITY
                         ? "#213345"
-                        : mode === DARK_THEME && selected === STAKING
+                        : mode === DARK_THEME && selected === farmSection.STAKING
                         ? "#213345"
-                        : mode === LIGHT_THEME && selected === STAKING
+                        : mode === LIGHT_THEME && selected === farmSection.STAKING
                         ? "#F2F5F8"
                         : "#F2F5F8 !important"
                     }
                     color={
-                      mode === LIGHT_THEME && selected === LIQUIDITY
+                      mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
                         ? "#333333"
-                        : mode === DARK_THEME && selected === STAKING
+                        : mode === DARK_THEME && selected === farmSection.STAKING
                         ? "#F1F5F8"
-                        : mode === DARK_THEME && selected === LIQUIDITY
+                        : mode === DARK_THEME && selected === farmSection.LIQUIDITY
                         ? "#F1F5F8"
-                        : mode === LIGHT_THEME && selected === STAKING
+                        : mode === LIGHT_THEME && selected === farmSection.STAKING
                         ? "#333333"
                         : "#333333"
                     }
@@ -2682,11 +2710,11 @@ export function Index() {
                     }
                     display={isMobileDevice ? "none" :"grid"}
                   >
-                     <Text fontSize="14px">{selected ===PRODUCT_FARMS ? "Auto-Period Product" : "Deposit"}</Text>
-                    <Text ml={4} fontSize="14px">{selected ===PRODUCT_FARMS ? "Percentage Profit Share" : "Earn"}</Text>
-                    <Text ml={4} fontSize="14px">{selected ===PRODUCT_FARMS ? "Profit Timeline" : "APY"}</Text>
+                     <Text fontSize="14px">{selected ===farmSection.PRODUCT_FARM ? "Auto-Period Product" : "Deposit"}</Text>
+                    <Text ml={4} fontSize="14px">{selected ===farmSection.PRODUCT_FARM ? "Percentage Profit Share" : "Earn"}</Text>
+                    <Text ml={4} fontSize="14px">{selected ===farmSection.PRODUCT_FARM ? "Profit Timeline" : "APY"}</Text>
                     <Text ml={4} fontSize="14px">Total Liquidity</Text>
-                    {selected ===PRODUCT_FARMS && <Text ml={4} fontSize="14px">Estimated Total Profits</Text>}
+                    {selected ===farmSection.PRODUCT_FARM && <Text ml={4} fontSize="14px">Estimated Total Profits</Text>}
                     <Text />
                   </Grid>
                   {FarmData.productFarm.map((content: any, index: number) =>
@@ -2790,13 +2818,13 @@ export function Index() {
                minHeight='89vh'
                w={["100%", "100%", "100%"]}
                background={
-                 mode === LIGHT_THEME && selected === STAKING
+                 mode === LIGHT_THEME && selected === farmSection.STAKING
                    ? "#FFFFFF !important"
-                   : mode === DARK_THEME && selected === LIQUIDITY
+                   : mode === DARK_THEME && selected === farmSection.LIQUIDITY
                    ? "#15202B !important"
-                   : mode === DARK_THEME && selected === STAKING
+                   : mode === DARK_THEME && selected === farmSection.STAKING
                    ? "#15202B !important"
-                   : mode === LIGHT_THEME && selected === LIQUIDITY
+                   : mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
                    ? "#FFFFFF !important"
                    : "#FFFFFF !important"
                }
@@ -2809,24 +2837,24 @@ export function Index() {
                    px={4}
                    py={4}
                    background={
-                     mode === LIGHT_THEME && selected === LIQUIDITY
+                     mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
                        ? "#F2F5F8  !important"
-                       : mode === DARK_THEME && selected === LIQUIDITY
+                       : mode === DARK_THEME && selected === farmSection.LIQUIDITY
                        ? "#213345"
-                       : mode === DARK_THEME && selected === STAKING
+                       : mode === DARK_THEME && selected === farmSection.STAKING
                        ? "#213345"
-                       : mode === LIGHT_THEME && selected === STAKING
+                       : mode === LIGHT_THEME && selected === farmSection.STAKING
                        ? "#F2F5F8"
                        : "#F2F5F8 !important"
                    }
                    color={
-                     mode === LIGHT_THEME && selected === LIQUIDITY
+                     mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
                        ? "#333333"
-                       : mode === DARK_THEME && selected === STAKING
+                       : mode === DARK_THEME && selected === farmSection.STAKING
                        ? "#F1F5F8"
-                       : mode === DARK_THEME && selected === LIQUIDITY
+                       : mode === DARK_THEME && selected === farmSection.LIQUIDITY
                        ? "#F1F5F8"
-                       : mode === LIGHT_THEME && selected === STAKING
+                       : mode === LIGHT_THEME && selected === farmSection.STAKING
                        ? "#333333"
                        : "#333333"
                    }

@@ -84,6 +84,12 @@ import Faq from "./SmartBid/Faq";
                 path="/farming-V2/staking-RGP"
                 component={FarmingV2}
               />
+              <Route
+                exact
+                strict
+                path="/farming-V2/product-farm"
+                component={FarmingV2}
+              />
               <Route exact path="/farming" component={FarmingV1} />
               <Route path="/farming-V2" component={FarmingV2} />
               <Route path="/farming-V2/:deposit" component={YieldFarm} />

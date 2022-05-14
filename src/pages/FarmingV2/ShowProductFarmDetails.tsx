@@ -102,6 +102,7 @@ const ShowProductFarmDetails = ({
   const [isReferrerCheck, setIsReferrerCheck] = useState(false);
   const [depositValue, setDepositValue] = useState("Confirm");
   const [feeAmount, setFeeAmount] = useState("0");
+  const [allowUnstake, setAllowUnstake] = useState(false);
   const [loading, setLoading] = useState(false);
   const { loadingState } = useUpdateFarm({ reload, setReload, content });
   const [userGasPricePercentage] = useUserGasPricePercentage();
@@ -183,12 +184,14 @@ const ShowProductFarmDetails = ({
             library
           );
           const minimumAmount = await specialPool.getMinimumStakeAmount();
+          const unstaking = await specialPool.userUnstake();
           const fee = await specialPool.devPercentage();
           const minStakeAmount = Web3.utils.fromWei(minimumAmount.toString());
           const feeAmount = Web3.utils.fromWei(fee.toString());
           console.log({feeAmount})
           setMinimumStakeAmount(minStakeAmount);
           setFeeAmount(feeAmount)
+          setAllowUnstake(unstaking)
         } catch (error) {
           console.log(error);
         }
@@ -778,6 +781,7 @@ return (
       </Flex>
 
       <Flex marginLeft={{ base: "20px", md: "none", lg: "none" }}>
+      <Tooltip label='available soon'>
         <Button
           w='45%'
           h='40px'
@@ -787,7 +791,7 @@ return (
           border='0'
           mb='4'
           mr='6'
-          disabled={approveValueForRGP  && parseFloat(content.RGPStaked) <= 0 }
+          disabled={(approveValueForRGP  && parseFloat(content.RGPStaked) <= 0) ||  !allowUnstake}
           padding='10px 40px'
           cursor='pointer'
           onClick={() => {
@@ -801,7 +805,9 @@ return (
           {approveValueForRGP
             ? "Unstake"
             : "Approve"}
+          
         </Button>
+        </Tooltip>
         <Button
           w='45%'
           h='40px'

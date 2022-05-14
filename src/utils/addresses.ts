@@ -120,7 +120,7 @@ export const PRODUCTSTAKINGADDRESSES: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
   "56": "0x",
-  "97": "0x8d347E9388c36514A042863c2cB032ce671f5E16",
+  "97": "0xD6D68fDCdDd66032de6bDdA2238C897419e194f1",
   "137": "0x",
   "80001": "0x",
 };
