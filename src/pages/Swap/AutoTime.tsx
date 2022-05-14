@@ -14,7 +14,7 @@ import {
 import { getERC20Token } from '../../utils/utilsFunctions';
 import { Field } from '../../state/swap/actions';
 import Web3 from 'web3';
-import { RGP } from '../../utils/addresses';
+import { OTHERMARKETFACTORYADDRESSES, RGP } from '../../utils/addresses';
 import { ethers } from 'ethers';
 
 import {
@@ -95,7 +95,7 @@ const SetPrice = () => {
   })
 
 
-  const { onCurrencySelection, onUserInput, onSwitchTokens } = useSwapActionHandlers();
+  const { onCurrencySelection, onUserInput, onSwitchTokens, onMarketSelection } = useSwapActionHandlers();
 
   const {
     currencies,
@@ -235,16 +235,17 @@ const SetPrice = () => {
     useEffect(async () => {
     if (currencies[Field.INPUT] && currencies[Field.OUTPUT] &&marketType!=="Smartswap") {
       console.log(OTHERMARKETADDRESSES[marketType][chainId as number],marketType,chainId)
-      const rout = await otherMarketPriceContract(OTHERMARKETADDRESSES[marketType][chainId as number], library);
+      // const rout = await otherMarketPriceContract(OTHERMARKETADDRESSES[marketType][chainId as number], library);
     
-          console.log({pathArray})
-      if (typedValue) {
-        const priceOutput = await rout.getAmountsOut(
-          Web3.utils.toWei(typedValue, 'ether'),
-          pathArray
-        );
-        setOtherMarketprice(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
-      }
+      //     console.log({pathArray})
+      // if (typedValue) {
+      //   const priceOutput = await rout.getAmountsOut(
+      //     Web3.utils.toWei(typedValue, 'ether'),
+      //     pathArray
+      //   );
+      //   setOtherMarketprice(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
+      // }
+      onMarketSelection(OTHERMARKETFACTORYADDRESSES[marketType][chainId as number])
     }
   }, [chainId, currencies[Field.INPUT], currencies[Field.OUTPUT],  typedValue,marketType])
   

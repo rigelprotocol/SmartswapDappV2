@@ -81,6 +81,20 @@ export const OTHERMARKETADDRESSES: { [key: string]: {[key:string]: string} } = {
     "97": "0x"
   }
 };
+export const OTHERMARKETFACTORYADDRESSES: { [key: string]: {[key:string]: string} } = {
+  "Pancakeswap":{
+    "56": "0x",
+    "97": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73"
+  },
+  "Uniswap":{
+    "56": "0x",
+    "97": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"
+  },
+  "Sushiswap":{
+    "56": "0x",
+    "97": "0x"
+  }
+};
 
 export const WNATIVEADDRESSESSYMBOL: { [key: string]: string } = {
   "1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",

@@ -54,7 +54,8 @@ export const useSwap = (
   currencyA: Currency,
   currencyB: Currency,
   amountIn?: string,
-  unit?:string
+  unit?:string,
+  market?:string
 ) => {
   const { chainId, library } = useActiveWeb3React();
   const [address, setAddress] = useState<string>();
@@ -89,14 +90,15 @@ export const useSwap = (
   const wrappable: boolean = tokenOneAddress == tokenTwoAddress;
   let validSmartAddress: string;
   if (SMARTSWAPFACTORYADDRESSES[chainId as number] !== "0x") {
-    validSmartAddress = SMARTSWAPFACTORYADDRESSES[chainId as number];
+    console.log({market})
+    validSmartAddress = market ?? SMARTSWAPFACTORYADDRESSES[chainId as number];
   }
  
   useEffect(() => {
     const getPairs = async () => {
       try {
         const SmartFactory = await smartFactory(validSmartAddress, library);
-
+        console.log({SmartFactory})
         const pairAddress = await SmartFactory.getPair(
           tokenOneAddress,
           tokenTwoAddress

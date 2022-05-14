@@ -4,7 +4,8 @@ import {
   selectCurrency,
   typeInput,
   replaceSwapState,
-  switchCurrencies
+  switchCurrencies,
+  selectMarket
 } from "./actions";
 export interface SwapState {
   readonly independentField: Field;
@@ -18,6 +19,7 @@ export interface SwapState {
   // the typed recipient address or ENS name, or null if swap should go to sender
   readonly recipient: string | null;
   readonly percentageChange: string | null;
+  market: string | undefined
 }
 
 const initialState: SwapState = {
@@ -30,7 +32,8 @@ const initialState: SwapState = {
     currencyId: "",
   },
   recipient: null,
-  percentageChange:"0"
+  percentageChange:"0",
+  market:""
 };
 
 export default createReducer<SwapState>(initialState, (builder) =>
@@ -59,7 +62,8 @@ export default createReducer<SwapState>(initialState, (builder) =>
           independentField: field,
           typedValue,
           recipient,
-          percentageChange:"0"
+          percentageChange:"0",
+          market:"0x7B14Ab51fAF91926a2214c91Ce9CDaB5C0E1A1c3"
         };
       }
     )
@@ -79,6 +83,14 @@ export default createReducer<SwapState>(initialState, (builder) =>
       return {
         ...state,
         [field]: { currencyId },
+      };
+    })
+    .addCase(selectMarket, (state, { payload: { market } }) => {
+       
+      // normal case
+      return {
+        ...state,
+        market:market
       };
     })
     .addCase(switchCurrencies, (state) => {

@@ -15,7 +15,7 @@ const MarketDropDown = ({marketType,setMarketType}:{marketType:string,setMarketT
           _focus={{ color: "#319EF6" }}
           fontSize="13px"
           textTransform={'capitalize'}
-          border={`1px solid ${borderColor}`}
+          border={`2px solid ${borderColor}`}
         >
           <Flex>
             <Img src={`./images/${marketType}.png`} width="25px" height="25px" mr="1" /> <Text mt="1">{marketType}</Text>

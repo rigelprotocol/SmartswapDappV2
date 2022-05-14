@@ -24,7 +24,8 @@ import {
   HStack,
   VStack,
   Input,
-  Square
+  Square,
+  Slider
 } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import { getERC20Token } from '../../utils/utilsFunctions';
@@ -45,6 +46,7 @@ import { RootState } from "../../state";
 import { refreshTransactionTab, transactionTab } from '../../state/transaction/actions';
 import { useUserSlippageTolerance } from '../../state/user/hooks';
 import MarketDropDown from '../../components/MarketDropDown';
+import SliderComponent from '../../components/Slider';
 
 
 const SetPrice = () => {
@@ -57,7 +59,7 @@ const SetPrice = () => {
   const dispatch = useDispatch();
   const color = useColorModeValue('#999999', '#7599BD');
 
-  const { onCurrencySelection, onUserInput, onSwitchTokens } = useSwapActionHandlers();
+  const { onCurrencySelection, onUserInput, onSwitchTokens,onMarketSelection } = useSwapActionHandlers();
   const { account, chainId, library } = useActiveWeb3React()
 
   const {
@@ -87,8 +89,13 @@ const SetPrice = () => {
   const [disableInput, setDisableInput] = useState(true)
   const [initialFromPrice, setInitialFromPrice] = useState("")
   const [initialToPrice, setInitialToPrice] = useState("")
+  const [basePrice, setBasePrice] = useState("")
   const [differenceInPrice, setDifferenceInPrice] = useState(0)
   const [signatureFromDataBase, setSignatureFromDataBase] = useState(false)
+  
+  const [positiveSliderValue, setPositiveSliderValue] = useState(0)
+  const [negativeSliderValue, setNegativeSliderValue] = useState(-1)
+  const [showTooltip, setShowTooltip] = useState(false)
   const [toPrice, setToPrice] = useState(0)
   const [showModal, setShowModal] = useState(false)
   const [checkedItem, setCheckedItem] = useState(false)
@@ -99,6 +106,7 @@ const SetPrice = () => {
   const [totalNumberOfTransaction, setTotalNumberOfTransaction] = useState("1")
   const [approval, setApproval] = useState<String[]>([])
   const [value, setValue] = useState(0)
+  const [name, setName] = useState("+")
   const [shakeInput, setShakeInput] = useState<boolean>(false)
   const [dataSignature,setDataSignature] = useState<{mess:string,signature:string}>({
     mess:"",
@@ -132,21 +140,27 @@ const SetPrice = () => {
   const deadline = useSelector<RootState, number>(
     (state) => state.user.userDeadline
   );
-  const changeValue = (val:number,sign:string)=>{
-    setValue(val)
-    if(parseFloat(initialFromPrice) >0){
-      let percent = (val/100) * parseFloat(initialFromPrice)
-      let value = sign==="minus" ? parseFloat(initialToPrice) - percent : parseFloat(initialToPrice) + percent
+  useEffect(()=>{
+ if(parseFloat(initialToPrice) >0){
+      const percent = (name==="+" ? positiveSliderValue/100 : negativeSliderValue/100) * parseFloat(basePrice)
+      console.log({percent})
+      const value = parseFloat(basePrice) + percent
+
       value > 0 ? setInitialToPrice(value.toString()) : setInitialToPrice("0")
       
     } 
-   }
+  },[positiveSliderValue,negativeSliderValue])
+
   const { independentField, typedValue } = useSwapState();
+
+
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
   const [allowedSlippage] = useUserSlippageTolerance();
+
   useEffect(() => {
-    if(parseFloat(initialFromPrice) >0 && value===0 && unitAmount && oppositeAmount){
+    if(parseFloat(initialFromPrice) >0 && negativeSliderValue===-1  && positiveSliderValue===0 && unitAmount && oppositeAmount){
       setInitialToPrice(unitAmount)
+      setBasePrice(unitAmount)
     }
     if (parseFloat(initialToPrice) > 0 && parseFloat(initialFromPrice) > 0) {
       setDisableInput(false)
@@ -620,22 +634,17 @@ const SetPrice = () => {
           </Box>
           {/* <Input placeholder="0.00" size="lg" borderRadius={4} borderColor={borderColor} /> */}
           <Flex justifyContent="flex-end">
-            <Flex mb="2">
-              {[10,20,30,40,50].map((item,index)=>{
-                return <Square 
-                key={index} 
-                size="28px" 
-                background={buttonBgcolor}
-                cursor="pointer"
-                border={`1px solid ${borderColor}`} 
-                borderRadius="4px" 
-                fontSize="12px"
-                onClick={()=>changeValue(item,"plus")}
-                mx="3px">
-                    +{item}%
-                </Square>
-            })}  
-            </Flex>
+            <SliderComponent 
+          setSliderValue={setPositiveSliderValue}
+          sliderValue={positiveSliderValue}
+          setShowTooltip={setShowTooltip}
+          showTooltip={showTooltip}
+          start={1}
+          stop={100}
+          width="45%"
+          name="+"
+          setName={setName}
+            />
           </Flex>
           <HStack>
             <CInput
@@ -659,22 +668,17 @@ const SetPrice = () => {
             />
           </HStack>
           <Flex justifyContent="flex-end">
-            <Flex mt="2">
-              {[10,20,30,40,50].map((item,index)=>{
-                return <Square 
-                key={index} 
-                size="28px" 
-                background={buttonBgcolor}
-                cursor="pointer"
-                border={`1px solid ${borderColor}`} 
-                borderRadius="4px" 
-                fontSize="12px"
-                onClick={()=>changeValue(item,"minus")}
-                mx="3px">
-                    -{item}%
-                </Square>
-            })}  
-            </Flex>
+          <SliderComponent 
+            setSliderValue={setNegativeSliderValue}
+            sliderValue={negativeSliderValue}
+            setShowTooltip={setShowTooltip}
+            showTooltip={showTooltip}
+            start={-1}
+          stop={-100}
+          width="45%"
+          name="-"
+          setName={setName}
+            />
           </Flex>
 
          

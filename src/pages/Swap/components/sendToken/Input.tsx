@@ -35,7 +35,7 @@ const CInput: React.FC<CProps> = ({
         <InputGroup size='sm' width="250px">
             
             <Input placeholder={placeholder} height="40px" value={initialFromPrice} onChange={(e) => setInitialPrice(e.target.value)} 
-            background={shakeInput ? "rgba(141, 137, 228, 0.312)": "transparent"}
+            background={shakeInput ? "lightBg.100": "transparent"}
             />
             <InputRightAddon children={(currency?.symbol && currency?.symbol && currency?.symbol.length > 4
                 ? currency?.symbol.slice(0, 4) +
