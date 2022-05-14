@@ -781,7 +781,7 @@ return (
       </Flex>
 
       <Flex marginLeft={{ base: "20px", md: "none", lg: "none" }}>
-      <Tooltip label='available soon'>
+      <Tooltip label={approveValueForRGP && !allowUnstake &&'available soon'}>
         <Button
           w='45%'
           h='40px'
@@ -791,7 +791,7 @@ return (
           border='0'
           mb='4'
           mr='6'
-          disabled={(approveValueForRGP  && parseFloat(content.RGPStaked) <= 0) ||  !allowUnstake}
+          disabled={(approveValueForRGP  && parseFloat(content.RGPStaked) <= 0) ||  (approveValueForRGP && !allowUnstake)}
           padding='10px 40px'
           cursor='pointer'
           onClick={() => {
