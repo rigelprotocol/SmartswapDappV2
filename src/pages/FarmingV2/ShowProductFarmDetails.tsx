@@ -2,16 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { ethers } from "ethers";
 import Web3 from "web3";
 import {
-  ModalOverlay,
-  ModalContent,
   useDisclosure,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalHeader,
-  InputRightElement,
-  InputGroup,
-  Input,
   useColorModeValue,
   Box,
   Flex,
@@ -22,10 +13,7 @@ import {
   Tooltip,
   Spinner,
   useMediaQuery,
-  Checkbox,
   Skeleton,
-  SkeletonText,
-  HStack,
 } from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import { SupportedChainId } from "../../constants/chains";
@@ -36,17 +24,11 @@ import { useDispatch } from "react-redux";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { getExplorerLink, ExplorerDataType } from "../../utils/getExplorerLink";
 import {
-  MasterChefV2Contract,
-  RGPSpecialPool,
-  RGPSpecialPool2,
-  smartSwapLPTokenPoolOne,
-  smartSwapLPTokenPoolTwo,
-  smartSwapLPTokenPoolThree,
-  smartSwapLPTokenV2PoolFour,
-  smartSwapLPTokenV2PoolFive,
   rigelToken,
  productStakingContract
 } from "../../utils/Contracts";
+
+import { calculateGas } from "../Swap/components/sendToken";
 import {
   MASTERCHEFV2ADDRESSES,
   RGP,
@@ -264,7 +246,94 @@ const ShowProductFarmDetails = ({
     }
   }, [wallet, content, account]);
 
-  
+  const unstakeProductFarm = async (val:string) => {
+    if (account) {
+      try {
+        const specialPool = await productStakingContract(
+          PRODUCTSTAKINGADDRESSES[chainId as number],
+          library
+        );
+        const { format1, format2, format3 } = await calculateGas(
+          userGasPricePercentage,
+          library,
+          chainId as number
+        );
+
+        const isEIP1559 = await library?.getFeeData();
+        const data = await specialPool.unStake(
+          ethers.utils.parseEther(unstakeToken.toString()), // user input from onclick shoild be here...
+          {
+            from: account,
+            maxPriorityFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format1, 9).toString()
+                : null,
+            maxFeePerGas:
+              isEIP1559 && chainId === 137
+                ? ethers.utils.parseUnits(format2, 9).toString()
+                : null,
+            gasPrice:
+              chainId === 137
+                ? null
+                : chainId === 80001
+                ? null
+                : ethers.utils.parseUnits(format3, 9).toString(),
+          }
+        );
+        const { confirmations, status } = await fetchTransactionData(data);
+        GFarmingSuccessTransaction("special pool", "unstake", "RGP","v2")
+        dispatch(
+          setOpenModal({
+            trxState: TrxState.TransactionSuccessful,
+            message: `Successfully unstaked ${unstakeToken} RGP `,
+          })
+        );
+        // dispatch the getTokenStaked action from here when data changes
+        //  callRefreshFarm(confirmations, status);
+      } catch (error:any) {
+        GFarmingFailedTransaction("special pool", "unstake", error.message, "RGP","v2")
+        dispatch(
+          setOpenModal({
+            trxState: TrxState.TransactionFailed,
+            message: `Transaction was not successful`,
+          })
+        );
+      }
+    }
+  };
+
+  async function confirmUnstakeDeposit(val: string) {
+    try {
+      GButtonIntialized("unstake product farm",content.deposit,"v2")
+      dispatch(
+        setOpenModal({
+          message: `Unstaking ${unstakeToken} ${val}`,
+          trxState: TrxState.WaitingForConfirmation,
+        })
+      );
+
+      if (account) {
+      //   if (val === "RGP" && Number(content.id) === 1) {
+      //     await RGPUnstake(val);
+      //   } else if (val === "RGP" && Number(content.id) === 13) {
+          await unstakeProductFarm(val);
+        // } else {
+          // tokensWithdrawal(content.id,val);
+        // }
+      }
+    } catch (err) {
+      console.log(err);
+      dispatch(
+        setOpenModal({
+          message: `Failed transaction`,
+          trxState: TrxState.TransactionFailed,
+        })
+      );
+    }
+
+    setTimeout(() => closeModal(), 400);
+    clearInputInfo(setUnstakeToken, setUnstakeButtonValue, "Confirm");
+  }
   const showMaxValue = async (deposit: any, input: any) => {
     try {
       if (input === "deposit") {
@@ -925,7 +994,7 @@ return (
  depositValue={depositValue}
  setDepositTokenValue={setUnstakeToken}
  depositErrorButtonText={errorButtonText}
- confirmDeposit={confirmDeposit}
+ confirmDeposit={confirmUnstakeDeposit}
  enoughApproval={enoughApproval}
  account={account}
  allowance={content.poolAllowance}
