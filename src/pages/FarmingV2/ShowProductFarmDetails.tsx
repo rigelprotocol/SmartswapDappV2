@@ -93,7 +93,11 @@ const ShowProductFarmDetails = ({
 
   const { account, chainId, library } = useActiveWeb3React();
   const [depositTokenValue, setDepositTokenValue] = useState("");
+  
+  const [inputHasError, setInputHasError] = useState(false);
+  const [errorButtonText, setErrorButtonText] = useState("");
   const [referrerAddress, setReferrerAddress] = useState(URLReferrerAddress);
+  const [unstakeButtonValue, setUnstakeButtonValue] = useState("Confirm");
   const [depositInputHasError, setDepositInputHasError] = useState(false);
   const [approveValueForRGP, setApproveValueForRGP] = useState(false);
   const [refAddressHasError, setRefAddressHasError] = useState(false);
@@ -115,6 +119,7 @@ const ShowProductFarmDetails = ({
   const [showReferrerField, setShowReferrerField] = useState(true);
   const [isReferrerCheck, setIsReferrerCheck] = useState(false);
   const [depositValue, setDepositValue] = useState("Confirm");
+  const [feeAmount, setFeeAmount] = useState("0");
   const [loading, setLoading] = useState(false);
   const { loadingState } = useUpdateFarm({ reload, setReload, content });
   const [userGasPricePercentage] = useUserGasPricePercentage();
@@ -125,7 +130,7 @@ const ShowProductFarmDetails = ({
   });
 
 
-  useEffect(() => {
+  useEffect(async () => {
     setDepositInputHasError(false);
     setDepositErrorButtonText("");
     if (!account) {
@@ -144,18 +149,49 @@ const ShowProductFarmDetails = ({
         parseFloat(content.RGPStaked) <= 0 &&
         Number(depositTokenValue) < Number(minimumStakeAmount)
       ) {
-        alert("less")
         setDepositInputHasError(true);
         setDepositErrorButtonText(
           `Minimum stake amount is ${minimumStakeAmount}`
         );
-      }
-      if (parseFloat(depositTokenValue) > parseFloat(RGPBalance)) {
+      }else if (parseFloat(depositTokenValue) > parseFloat(RGPBalance)) {
         setDepositInputHasError(true);
         setDepositErrorButtonText("Insufficient Balance");
+      }else{
+        let priceBalance = await getAllowances()
+        console.log({priceBalance})
+        if(priceBalance < depositTokenValue){
+         setApproveValueForRGP(false)
+        }
       }
     }
   }, [depositTokenValue]);
+  useEffect(() => {
+    setInputHasError(false);
+    setErrorButtonText("");
+
+    if (!account) {
+      setUnstakeButtonValue("Connect wallet");
+    }
+    if (unstakeToken !== "") {
+      if (
+        isNaN(parseFloat(unstakeToken)) ||
+        !Math.sign(parseFloat(unstakeToken)) ||
+        Math.sign(parseFloat(unstakeToken)) == -1
+      ) {
+        setInputHasError(true);
+        setErrorButtonText("Invalid Input");
+        return;
+      }
+      if (
+        parseFloat(unstakeToken) >
+        parseFloat(content.RGPStaked)
+      ) {
+        setInputHasError(true);
+        setErrorButtonText("Insufficient Balance");
+      }
+    }
+  }, [unstakeToken, account]);
+  
   useEffect(() => {
     const getMinimumStakeAmount = async () => {
       if (account) {
@@ -165,8 +201,12 @@ const ShowProductFarmDetails = ({
             library
           );
           const minimumAmount = await specialPool.getMinimumStakeAmount();
+          const fee = await specialPool.devPercentage();
           const minStakeAmount = Web3.utils.fromWei(minimumAmount.toString());
+          const feeAmount = Web3.utils.fromWei(fee.toString());
+          console.log({feeAmount})
           setMinimumStakeAmount(minStakeAmount);
+          setFeeAmount(feeAmount)
         } catch (error) {
           console.log(error);
         }
@@ -435,6 +475,7 @@ const ShowProductFarmDetails = ({
               rigelAllowance,
             ])
           );
+          return rigelAllowance
         
       } catch (error) {
         console.error(error, "something went wrong");
@@ -866,8 +907,10 @@ return (
  confirmDeposit={confirmDeposit}
  enoughApproval={enoughApproval}
  account={account}
+ feeAmount={feeAmount}
  allowance={content.poolAllowance}
  approvalButton={approvalButton}
+ approveValueForRGP ={approveValueForRGP}
  />
 
 <ProductModal 
@@ -877,16 +920,17 @@ return (
  showMaxValue = {showMaxValue}
  deposit={content.deposit}
  minimumStakeAmount={minimumStakeAmount}
- depositInputHasError={depositInputHasError}
+ depositInputHasError={inputHasError}
  refAddressHasError = {refAddressHasError}
  depositValue={depositValue}
  setDepositTokenValue={setUnstakeToken}
- depositErrorButtonText={depositErrorButtonText}
+ depositErrorButtonText={errorButtonText}
  confirmDeposit={confirmDeposit}
  enoughApproval={enoughApproval}
  account={account}
  allowance={content.poolAllowance}
  approvalButton={approvalButton}
+ approveValueForRGP ={true}
  />
 
 </Flex>

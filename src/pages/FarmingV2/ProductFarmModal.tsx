@@ -25,7 +25,9 @@ type IProductModal= {
     depositValue:string;
     allowance:string;
     depositErrorButtonText:string,
-    account:any
+    account:any,
+    feeAmount?:string,
+    approveValueForRGP?:boolean
     
 }
 export default function ProductModal({
@@ -52,6 +54,8 @@ export default function ProductModal({
     enoughApproval,
     approvalButton,
     account,
+    approveValueForRGP,
+    feeAmount
 }:IProductModal){
 
     
@@ -177,7 +181,7 @@ export default function ProductModal({
              {RGPBalance && <Box mr={2} mt={3}><Text color={modalTextColor2} fontSize="12px" >
                 Fee :
               </Text>
-              <Text color={modalTextColor}fontSize="16px">-20%</Text></Box>
+              <Text color={modalTextColor}fontSize="16px">-{feeAmount}%</Text></Box>
               }
               {depositInputHasError || refAddressHasError ? (
                 <>
@@ -224,10 +228,7 @@ export default function ProductModal({
                 </>
               ) : (
                 <>
-                  {enoughApproval(
-                    allowance,
-                    RGPBalance
-                  ) ? (
+                  {approveValueForRGP ? (
                     <Button
                       my='2'
                       mx='auto'
