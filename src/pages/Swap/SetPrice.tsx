@@ -44,6 +44,7 @@ import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { RootState } from "../../state";
 import { refreshTransactionTab, transactionTab } from '../../state/transaction/actions';
 import { useUserSlippageTolerance } from '../../state/user/hooks';
+import MarketDropDown from '../../components/MarketDropDown';
 
 
 const SetPrice = () => {
@@ -93,6 +94,7 @@ const SetPrice = () => {
   const [checkedItem, setCheckedItem] = useState(false)
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
   const [approvalForFee, setApprovalForFee] = useState("")
+  const [marketType, setMarketType] = useState("Smartswap")
   const [approvalForToken, setApprovalForToken] = useState("")
   const [totalNumberOfTransaction, setTotalNumberOfTransaction] = useState("1")
   const [approval, setApproval] = useState<String[]>([])
@@ -540,6 +542,30 @@ const SetPrice = () => {
           // h="550px"
         >
           <SwapSettings />
+          <Flex justifyContent="space-between">
+             <Box>
+                  <Flex>
+                    <Text fontSize="14px" mr={2} my={2}>
+                      Frequency <ExclamationIcon />
+                    </Text>
+                    
+                  </Flex>
+                  <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
+                    <Input placeholder="0" w="80px" value={totalNumberOfTransaction} type="number" onChange={e => {
+                      parseInt(e.target.value)<=0 ? setTotalNumberOfTransaction("1") :
+                      setTotalNumberOfTransaction(e.target.value)
+                    }} />
+                    <InputRightAddon children="times" fontSize="16px"padding="3px" />
+                  </InputGroup>
+                </Box>
+                <Box>
+                <Text fontSize="14px" mr={2} my={2}>
+                      Router <ExclamationIcon />
+                    </Text>
+                <MarketDropDown marketType={marketType} setMarketType={setMarketType} />
+                </Box>
+          </Flex>
+         
           <From
             onUserInput={handleTypeInput}
             onCurrencySelection={onCurrencySelection}
@@ -651,21 +677,7 @@ const SetPrice = () => {
             </Flex>
           </Flex>
 
-          <Box>
-                  <Flex>
-                    <Text fontSize="14px" mr={2} my={2}>
-                      Frequency <ExclamationIcon />
-                    </Text>
-                    
-                  </Flex>
-                  <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
-                    <Input placeholder="0" w="80px" value={totalNumberOfTransaction} type="number" onChange={e => {
-                      parseInt(e.target.value)<=0 ? setTotalNumberOfTransaction("1") :
-                      setTotalNumberOfTransaction(e.target.value)
-                    }} />
-                    <InputRightAddon children="times" fontSize="16px"padding="3px" />
-                  </InputGroup>
-                </Box>
+         
           <Box mt={5}>
             {inputError ?
               <Button

@@ -6,34 +6,41 @@ import {
   MenuItem,
   MenuList,
   Button,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import { SupportedChainId } from "../../constants/chains";
+export const Nav = ({ to, label, active }: { to: string; label: string, active?:boolean }) => {
+    const mobileNavColor = useColorModeValue("#FFFFFF", "#15202B");
+    return (
+  
+    <NavLink
+      to={to}
+      activeStyle={{
+        color: "#319EF6",
+      }}
+      color={active ? "#319EF6" : mobileNavColor}
+      style={active ? {color:"#319EF6"}: {color:""}}
+    >
+      {label}
+    </NavLink>
+  )};
+  
 
-const Nav = ({ to, label }: { to: string; label: string }) => (
-  <NavLink
-    to={to}
-    activeStyle={{
-      color: "#319EF6",
-    }}
-  >
-    {label}
-  </NavLink>
-);
-
-function SwapDropdown() {
+function EarnDropdown() {
   const location = useLocation();
+  
   const { chainId } = useActiveWeb3React();
   const name = location.pathname;
 
   const useName = () => {
     console.log(name);
-    if (name == '/swap' || name == '/auto-period' || name == '/set-price') {
+    if (name == '/farming-v2' || name == '/pool'  || name == '/add') {
       console.log(`Correct name is ${name}`);
-      return name.substring(1);
+      return name=== "/add" ? "pool" :name.substring(1).split("-")[0];
     } else {
-      return 'Swap'
+      return 'Farming'
     }
   };
 
@@ -53,18 +60,16 @@ function SwapDropdown() {
         {useName()}
       </MenuButton>
       <MenuList>
-        <MenuItem _focus={{ color: "#319EF6" }}>
-          <Nav label="Straight Swap" to="/swap" />
-        </MenuItem>
-        <MenuItem _focus={{ color: "#319EF6" }}>
-          <Nav label="Auto-period" to={chainId === SupportedChainId.BINANCETEST ? '/auto-period' : '#'} />
-        </MenuItem>
-        <MenuItem _focus={{ color: "#319EF6" }}>
-          <Nav label="Set Price" to={chainId === SupportedChainId.BINANCETEST ? '/set-price' : '#'} />
-        </MenuItem>
-      </MenuList>
+<MenuItem _focus={{ color: "#319EF6" }}>
+<Nav label="Liquidity" to="/pool" active={name === '/add' || name === '/remove' ? true : false} />
+ </MenuItem>
+<MenuItem _focus={{ color: "#319EF6" }}>
+          <Nav label="Farming" to="/farming-v2"  />
+ </MenuItem>
+
+</MenuList>
     </Menu>
   );
 }
 
-export default SwapDropdown;
+export default EarnDropdown;

@@ -53,6 +53,7 @@ import { changeFrequencyTodays } from '../../utils/utilsFunctions';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { refreshTransactionTab } from '../../state/transaction/actions';
 import { useLocation } from 'react-router-dom';
+import MarketDropDown from '../../components/MarketDropDown';
 
 
 
@@ -578,34 +579,7 @@ const SetPrice = () => {
                 </Box>
                 <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={buttonBgcolor}>
                   <Flex>
-                  <Menu>
-      <MenuButton
-        variant="ghost"
-        as={Button}
-        transition="all 0.2s"
-        rightIcon={<ChevronDownIcon />}
-        fontWeight={200}
-        _focus={{ color: "#319EF6" }}
-        fontSize="13px"
-        textTransform={'capitalize'}
-        border ="1px solid white"
-      >
-        <Flex>
-          <Img src={`./images/${marketType}.png`} width="25px" height="25px" mr="1" /> <Text mt="1">{marketType}</Text>
-        </Flex>
-       
-      </MenuButton>
-      <MenuList>
-        {[{name:"Smartswap",image:"Smartswap.png"},{name:"Pancakeswap",image:"Pancakeswap.png"},{name:"Sushiswap",image:"Sushiswap.png"}].map((item:{name:string,image:string},index)=>(
-          <MenuItem key={index} _focus={{ color: "#319EF6" }} onClick={() => setMarketType(item.name)} fontSize="13px">
-         <Img src={`./images/${item.image}`} width="30px" height="30px" mr={2} />{item.name}
-        </MenuItem>
-        ))
-
-        }
-        
-      </MenuList>
-    </Menu>
+                  <MarketDropDown marketType={marketType} setMarketType={setMarketType} />
 
                     <Spacer />
                     <VStack>
@@ -897,35 +871,7 @@ const SetPrice = () => {
               
                 <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={buttonBgcolor}>
                   <Flex>
-                  <Menu>
-      <MenuButton
-        variant="ghost"
-        as={Button}
-        transition="all 0.2s"
-        rightIcon={<ChevronDownIcon />}
-        fontWeight={200}
-        _focus={{ color: "#319EF6" }}
-        fontSize="13px"
-        textTransform={'capitalize'}
-        border ="1px solid white"
-        padding={1}
-      >
-        <Flex>
-          <Img src={`./images/${marketType}.png`} width="25px" height="25px" mr="1" /> <Text mt="1">{marketType}</Text>
-        </Flex>
-       
-      </MenuButton>
-      <MenuList>
-        {[{name:"Smartswap",image:"Smartswap.png"},{name:"Pancakeswap",image:"Pancakeswap.png"},{name:"Sushiswap",image:"Sushiswap.png"}].map((item:{name:string,image:string},index)=>(
-          <MenuItem key={index} _focus={{ color: "#319EF6" }} onClick={() => setMarketType(item.name)} fontSize="13px">
-         <Img src={`./images/${item.image}`} width="30px" height="30px" mr={2} />{item.name}
-        </MenuItem>
-        ))
-
-        }
-        
-      </MenuList>
-    </Menu>
+                  <MarketDropDown marketType={marketType} setMarketType={setMarketType} />
 
                     <Spacer />
                     <VStack>
