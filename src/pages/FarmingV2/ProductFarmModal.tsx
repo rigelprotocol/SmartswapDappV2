@@ -27,7 +27,8 @@ type IProductModal= {
     depositErrorButtonText:string,
     account:any,
     feeAmount?:string,
-    approveValueForRGP?:boolean
+    approveValueForRGP?:boolean,
+    RGPStaked?:string
     
 }
 export default function ProductModal({
@@ -55,7 +56,8 @@ export default function ProductModal({
     approvalButton,
     account,
     approveValueForRGP,
-    feeAmount
+    feeAmount,
+    RGPStaked
 }:IProductModal){
 
     
@@ -81,7 +83,7 @@ export default function ProductModal({
             fontWeight='regular'
             color={modalTextColor}
           >
-         {RGPBalance ?  "Stake":"Unstake"}
+         {RGPBalance ?  "Stake":`Unstake ${RGPStaked} RGP`}
           </ModalHeader>
 
           <ModalCloseButton

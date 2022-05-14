@@ -1000,6 +1000,7 @@ return (
  allowance={content.poolAllowance}
  approvalButton={approvalButton}
  approveValueForRGP ={true}
+ RGPStaked = {content.RGPStaked}
  />
 
 </Flex>
