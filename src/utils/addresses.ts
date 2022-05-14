@@ -119,7 +119,7 @@ export const RGPSPECIALPOOLADDRESSES: { [key: string]: string } = {
 export const PRODUCTSTAKINGADDRESSES: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
-  "56": "0x",
+  "56": "0x35110163bea89b9d227f7317683c540a2328e5d7",
   "97": "0xD6D68fDCdDd66032de6bDdA2238C897419e194f1",
   "137": "0x",
   "80001": "0x",

@@ -2181,7 +2181,10 @@ if(location && location.includes("RGPv2")){
                 </Select>
               )}
             </Tab>
-            <Tab
+           {Number(chainId) === Number(SupportedChainId.OASISTEST)  ||
+              Number(chainId) ===
+                Number(SupportedChainId.OASISMAINNET) ? null : ( 
+                   <Tab
               border='1px solid #DEE5ED'
               borderRadius={0}
               background={selected === farmSection.PRODUCT_FARM ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
@@ -2224,7 +2227,8 @@ if(location && location.includes("RGPv2")){
           
         </MenuList>
       </Menu>
-            </Tab>
+            </Tab>)
+            }
           </TabList>
           {/* <Divider display={isMobileDevice ? undefined : "none"} my='4' /> */}
           <Flex
