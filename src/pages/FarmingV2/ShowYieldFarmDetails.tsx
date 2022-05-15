@@ -112,6 +112,7 @@ const ShowYieldFarmDetails = ({
     poolVersion: number | string;
   };
   wallet: any;
+  URLReferrerAddress:string;
   LoadingState: boolean;
   section: string;
   showYieldfarm: boolean;
@@ -273,7 +274,7 @@ const ShowYieldFarmDetails = ({
           })
         );
         const rgp = await rigelToken(RGP[chainId as number], library);
-        const walletBal = (await rgp.balanceOf(account)) + 400e18;
+        const walletBal = (await rgp.balanceOf(account)) ;
         const data = await rgp.approve(
           RGPSPECIALPOOLADDRESSES[chainId as number],
           walletBal,
@@ -321,7 +322,7 @@ const ShowYieldFarmDetails = ({
         );
         
         const rgp = await rigelToken(RGP[chainId as number], library);
-        const walletBal = (await rgp.balanceOf(account)) + 400e18;
+        const walletBal = (await rgp.balanceOf(account)) ;
         const data = await rgp.approve(
           RGPSPECIALPOOLADDRESSES2[chainId as number],
           walletBal,
@@ -1449,7 +1450,7 @@ const ShowYieldFarmDetails = ({
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        const walletBal = (await contract.balanceOf(account)) + 400e18;
+        const walletBal = (await contract.balanceOf(account)) ;
         const data = await contract.approve(
           MASTERCHEFV2ADDRESSES[chainId as number],
           walletBal,
@@ -1513,7 +1514,7 @@ const ShowYieldFarmDetails = ({
           })
         );
         const rgp = await rigelToken(RGP[chainId as number], library);
-        const walletBal = (await rgp.balanceOf(account)) + 400e18;
+        const walletBal = (await rgp.balanceOf(account)) ;
         const data = await rgp.approve(
           MASTERCHEFV2ADDRESSES[chainId as number],
           walletBal,

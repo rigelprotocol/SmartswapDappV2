@@ -9,21 +9,21 @@ import {
   Stack,
   Skeleton,
   SkeletonText,
+  Grid,
 } from "@chakra-ui/react";
-import { formatAmount } from "../../utils/utilsFunctions";
 import ShowYieldFarmDetails from "./ShowYieldFarmDetails";
 import { useColorModeValue } from "@chakra-ui/react";
 import { LIGHT_THEME, DARK_THEME } from "./index";
 import { useWeb3React } from "@web3-react/core";
-import Darklogo from "../../assets/rgpdarklogo.svg";
+import Hot from "../../assets/hot.png"; 
 import { useLocation} from 'react-router-dom';
 import { useFetchYieldFarmDetails } from "../../state/newfarm/hooks";
 import { GButtonClicked } from "../../components/G-analytics/gFarming";
-// import "react-loading-skeleton/dist/skeleton.css";
+import ShowProductFarmDetails from "./ShowProductFarmDetails"
+import { formatAmount } from "../../utils/utilsFunctions";
 
-const YieldFarm = ({
+const ProductFarm = ({
   content,
-  content2,
   farmDataLoading,
   wallet,
   URLReferrerAddress,
@@ -31,35 +31,20 @@ const YieldFarm = ({
   section,
 }: {
   content?: {
-    pid: number;
-    id: string;
-    totalLiquidity: string;
-    earn: string;
-    img: string;
-    ARYValue: string;
-    lpSymbol: string;
-    tokensStaked: string[];
-    availableToken: string;
-    deposit: string;
-    poolAllowance: any;
-    RGPEarned: string;
-    poolVersion: number | string;
+    feature:string,
+    percentageProfitShare:string,
+    profitTimeLine:string,
+    totalLiquidity:string,
+    estimatedTotalProfit:string,
+    pid:number,
+    deposit:string,
+    poolAllowance:string
+    type:string
+    RGPStaked:string
   };
   farmDataLoading: boolean;
-  content2?: {
-    id: number | undefined;
-    img: string;
-    deposit: string;
-    symbol0: string;
-    symbol1: string;
-    earn: string;
-    type: string;
-    totalLiquidity: number;
-    APY: number;
-    address: string;
-  };
   wallet: any;
-  URLReferrerAddress: string;
+  URLReferrerAddress?: string;
   LoadingState: boolean;
   section: string;
 }) => {
@@ -72,26 +57,25 @@ const YieldFarm = ({
 
   const symbolName = params.split('/');
 
-  useEffect(() => {
-    const getSingleFarm = async () => {
-      await content2;
-      console.log(content2);
+  // useEffect(() => {
+  //   const getSingleFarm = async () => {
+  //     await content2;
+  //     console.log(content2);
 
-      if (symbolName[2] === content2?.deposit) {
-        myRef.current.scrollIntoView({behavior: 'smooth'});
-        setShowYieldFarm(true)
-      }
+  //     if (symbolName[2] === content2?.deposit) {
+  //       myRef.current.scrollIntoView({behavior: 'smooth'});
+  //       setShowYieldFarm(true)
+  //     }
 
-    };
-    getSingleFarm();
+  //   };
+  //   getSingleFarm();
 
-  }, [symbolName, params]);
-
+  // }, [symbolName, params]);
 
   const totalLiquidityValue = () => {
-    if (farmDataLoading) return <Spinner speed='0.65s' color='#333333' />;
+    if (farmDataLoading) return <Spinner speed='0.65s' color='#FFF' />;
 
-    if (content.totalLiquidity) {
+    if (content?.totalLiquidity) {
       return ` ${formatAmount(content.totalLiquidity)}`;
     }
   };
@@ -100,9 +84,10 @@ const YieldFarm = ({
 
   return (
     <>
-      <Flex ref={myRef}
-        justifyContent='space-between'
-        flexDirection={["column", "column", "row"]}
+      <Grid ref={myRef}
+        // justifyContent='space-between'
+        // flexDirection={["column", "column", "row"]}
+        templateColumns={["repeat(1,1fr)","repeat(1,1fr)","repeat(6,1fr)"]}
         border='1px solid #DEE5ED'
         background={
           mode === LIGHT_THEME
@@ -135,10 +120,10 @@ const YieldFarm = ({
             display={["block", "block", "none"]}
             opacity='0.5'
           >
-            Deposit
+            Product Feature
           </Box>
           <Box marginTop='15px' align='left'>
-            {content?.type === "RGP" ? content.deposit : content2?.deposit}
+            {content?.feature} <img src={Hot} />
           </Box>
         </Flex>
         <Flex justifyContent='space-between' width='100%'>
@@ -148,7 +133,7 @@ const YieldFarm = ({
             display={["block", "block", "none"]}
             opacity='0.5'
           >
-            Earn
+           Percentage Profit Share
           </Box>
           <Flex
             justifyContent='space-between'
@@ -158,9 +143,8 @@ const YieldFarm = ({
             alignItems='center'
           >
             {/* <RGPIcon />  */}
-            <Img w='24px' src={Darklogo} />{" "}
-            <Text marginLeft='10px'>
-              {content?.type === "RGP" ? content.earn : content2?.earn}
+            <Text marginLeft='10px' mt={-5}>
+              {formatAmount(content?.percentageProfitShare)}%
             </Text>
           </Flex>
         </Flex>
@@ -171,12 +155,24 @@ const YieldFarm = ({
             display={["block", "block", "none"]}
             opacity='0.5'
           >
-            APY
+           Profile Timeline
           </Box>
-          <Box marginTop='15px' paddingLeft='50px' align='left'>
-            {content?.type === "RGP"
-              ? `${formatAmount(content.ARYValue)}%`
-              : `${formatAmount(content2?.APY.toFixed(2))}%`}
+          <Box marginTop='15px' paddingLeft='20px' align='left'>
+            {content?.profitTimeLine}
+          </Box>
+        </Flex>
+        <Flex justifyContent='space-between' width='100%'>
+          <Box
+            marginTop='15px'
+            align='left'
+            display={["block", "block", "none"]}
+            opacity='0.5'
+          >
+           Total Liquidity
+          </Box>
+          <Box marginTop='15px' paddingLeft='20px' align='left'>
+            {/* {totalLiquidityValue} */}
+              {content?.totalLiquidity && `${formatAmount(content?.totalLiquidity)}%` } 
           </Box>
         </Flex>
         <Flex
@@ -190,16 +186,15 @@ const YieldFarm = ({
             display={["block", "block", "none"]}
             opacity='0.5'
           >
-            Total Liquidity
+            Estimated Total Profits
           </Box>
-          <Box marginTop='15px' paddingLeft='65px' align='right'>
+          <Box marginTop='15px' paddingLeft='35px' align='right'>
             ${" "}
-            {content?.type === "RGP"
-              ? totalLiquidityValue()
-              : formatAmount(content2?.totalLiquidity.toFixed(2))}
+            {formatAmount(content?.estimatedTotalProfit)}
           </Box>
         </Flex>
         <Box align='right' mt={["4", "0"]} ml='2'>
+         
           <Button
             w={["100%", "100%", "146px"]}
             h='40px'
@@ -241,9 +236,9 @@ const YieldFarm = ({
             mb='4'
             _hover={{ color: "#423a85" }}
             onClick={() => {
-              if(!showYieldfarm){
-                GButtonClicked("unlock button",content?.deposit,"v2")
-              }
+              // if(!showYieldfarm){
+              //   GButtonClicked("unlock button",content?.deposit,"v2")
+              // }
               setShowYieldFarm(!showYieldfarm)}}
             className={"unlock"}
           >
@@ -251,7 +246,7 @@ const YieldFarm = ({
           </Button>
           {/* )} */}
         </Box>
-      </Flex>
+      </Grid>
       {showYieldfarm && (
         // <Stack>
         //   <Skeleton height='20px' />
@@ -260,8 +255,8 @@ const YieldFarm = ({
         //   <Skeleton height='20px' />
         // </Stack>
         // <Skeleton>
-        <ShowYieldFarmDetails
-          content={content?.type === "RGP" ? content : content2}
+        <ShowProductFarmDetails
+          content={content}
           // content2={content2}
           LoadingState={LoadingState}
           section={section}
@@ -276,4 +271,4 @@ const YieldFarm = ({
   );
 };
 
-export default YieldFarm;
+export default ProductFarm;

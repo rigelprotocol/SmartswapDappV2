@@ -116,6 +116,14 @@ export const RGPSPECIALPOOLADDRESSES: { [key: string]: string } = {
   "137": "0x60715e85cba9892addc49830cf0655cf5fb09c3a",
   "80001": "0x60715e85cba9892addc49830cf0655cf5fb09c3a",
 };
+export const PRODUCTSTAKINGADDRESSES: { [key: string]: string } = {
+  "1": "0x",
+  "3": "0x",
+  "56": "0x35110163bea89b9d227f7317683c540a2328e5d7",
+  "97": "0xD6D68fDCdDd66032de6bDdA2238C897419e194f1",
+  "137": "0x5568f795aaf37b08274727b576567c580d3481d5",
+  "80001": "0x",
+};
 
 export const RGPSPECIALPOOLADDRESSES2: { [key: string]: string } = {
   "1": "0x",
