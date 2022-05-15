@@ -78,7 +78,8 @@ const ShowProductFarmDetails = ({
   
   const [inputHasError, setInputHasError] = useState(false);
   const [errorButtonText, setErrorButtonText] = useState("");
-  const [referrerAddress, setReferrerAddress] = useState(URLReferrerAddress);
+  // const [referrerAddress, setReferrerAddress] = useState(URLReferrerAddress);
+  const [referrerAddress, setReferrerAddress] = useState(ZERO_ADDRESS);
   const [unstakeButtonValue, setUnstakeButtonValue] = useState("Confirm");
   const [depositInputHasError, setDepositInputHasError] = useState(false);
   const [approveValueForRGP, setApproveValueForRGP] = useState(false);
@@ -98,7 +99,7 @@ const ShowProductFarmDetails = ({
   const modal1Disclosure = useDisclosure();
   const modal2Disclosure = useDisclosure();
   const [RGPBalance] = useRGPBalance();
-  const [showReferrerField, setShowReferrerField] = useState(true);
+  const [showReferrerField, setShowReferrerField] = useState(false);
   const [isReferrerCheck, setIsReferrerCheck] = useState(false);
   const [depositValue, setDepositValue] = useState("Confirm");
   const [feeAmount, setFeeAmount] = useState("0");
@@ -147,6 +148,7 @@ const ShowProductFarmDetails = ({
         }
       }
     }
+    console.log({URLReferrerAddress})
   }, [depositTokenValue]);
   useEffect(() => {
     setInputHasError(false);

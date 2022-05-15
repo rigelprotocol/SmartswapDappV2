@@ -119,6 +119,7 @@ import { useClearFarm } from "../../state/farming/hooks";
 
 import { useFarmData } from "../../state/newfarm/hooks";
 import { GFarmingClickListYourProject, GFarmingInputSearchFarm, GOpenedSpecialPool } from "../../components/G-analytics/gFarming";
+import { ZERO_ADDRESS } from "../../constants";
 
 export const BIG_TEN = new bigNumber(10);
 // export const LIQUIDITY = "liquidity";
@@ -409,7 +410,7 @@ if(location && location.includes("RGPv2")){
           queryRef
         ).toString(CryptoJS.enc.Utf8);
         decryptedReferralCode === account
-          ? setRefAddress("0x0000000000000000000000000000000000000000")
+          ? setRefAddress(ZERO_ADDRESS)
           : setRefAddress(decryptedReferralCode);
       } catch (error) {
         console.log(error);
