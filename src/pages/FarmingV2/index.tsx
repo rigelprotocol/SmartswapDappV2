@@ -20,15 +20,16 @@ import {
   Tooltip,
   IconButton,
   useClipboard,
-  AlertDialogBody,
   InputGroup,
   InputLeftAddon,
   Input,
-  Icon,
-  Spinner,
+  Grid,
   Stack,
   Skeleton,
-  SkeletonText,
+  MenuList,
+  MenuItem,
+  Menu,
+  MenuButton,
 } from "@chakra-ui/react";
 import { CopyIcon } from "../../theme/components/Icons";
 import { useHistory, useRouteMatch } from "react-router-dom";
@@ -43,6 +44,8 @@ import {
   updatePoolId,
   updateTokenStaked,
   updateTotalLiquidity,
+  updateFarmProductLiquidity,
+  updateProductStaked
 } from "../../state/farm/actions";
 import { useFarms } from "../../state/farm/hooks";
 import {
@@ -62,6 +65,7 @@ import {
   smartSwapLPTokenV2PoolNine,
   smartSwapLPTokenV2PoolTwelve,
   smartSwapLPTokenV2PoolThirteen,
+  productStakingContract,
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
@@ -79,10 +83,12 @@ import {
   SMARTSWAPLP_TOKEN9ADDRESSES,
   SMARTSWAPLP_TOKEN12ADDRESSES,
   SMARTSWAPLP_TOKEN13ADDRESSES,
+  PRODUCTSTAKINGADDRESSES,
 } from "../../utils/addresses";
 import { formatBigNumber } from "../../utils";
 import { RootState } from "../../state";
 import { SupportedChainId } from "../../constants/chains";
+import ProductFarm from "./ProductFarm"
 import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import Joyride from "react-joyride";
@@ -93,8 +99,7 @@ import { shortenCode } from "../../utils";
 import { useLocation } from "react-router-dom";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { useUpdateUserGasPreference } from "../../state/gas/hooks";
-import { FiFilter } from "react-icons/fi";
-import { SearchIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon, SearchIcon } from "@chakra-ui/icons";
 import Filter from "../../components/Farming/Modals/Filter";
 import { filterFarms } from "../../utils/utilsFunctions";
 import { farmStateInterface } from "../../state/farm/reducer";
@@ -113,28 +118,44 @@ import { useGetFarmData } from "../../utils/hooks/useGetFarmData";
 import { useClearFarm } from "../../state/farming/hooks";
 
 import { useFarmData } from "../../state/newfarm/hooks";
-import { contents } from "./mock";
 import { GFarmingClickListYourProject, GFarmingInputSearchFarm, GOpenedSpecialPool } from "../../components/G-analytics/gFarming";
+import { ZERO_ADDRESS } from "../../constants";
 
 export const BIG_TEN = new bigNumber(10);
-export const LIQUIDITY = "liquidity";
-export const STAKING = "staking";
-export const OTHER_FARMS = "other farms";
+// export const LIQUIDITY = "liquidity";
+// export const STAKING = "staking";
+// export const PRODUCT_FARM = "product farms";
 export const V1 = "v1";
 export const V2 = "v2";
 export const LIGHT_THEME = "light";
 export const DARK_THEME = "dark";
 export const LIQUIDITY_INDEX = 0;
 export const STAKING_INDEX = 1;
+enum farmSection {
+  LIQUIDITY,
+  STAKING,
+  PRODUCT_FARM
+} 
+
 export const MAINNET = 56;
 
 export function Index() {
   const history = useHistory();
+  const location = useLocation().pathname;
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
   const filterBorderColor = useColorModeValue("#DEE5ED", "#324D68");
+  const useNotSelectedBackgroundColor = useColorModeValue("#FFFFFF","#15202B")
+  const useSelectedBackgroundColor = useColorModeValue("#DEE5ED","#213345")
+  const useNotSelectedBorderColor = useColorModeValue("#008DFF","#324D68")
+  const useSelectedBorderColor = useColorModeValue("#0760A8","#F2F5F8")
+  const useNotSelectedTextColor = useColorModeValue("#333333","#0760A8")
+  const useSelectedTextColor = useColorModeValue("#0760A8","#008DFF")
+  
+  const borderColor = useColorModeValue("#F2F5F8","#324D68")
+  const useSelectedColor = useColorModeValue("#333333","#213345")
   const placeholderTextColor = useColorModeValue("#333333", "#DCE5EF");
   const titleColor = useColorModeValue("#333333", "#ffffff");
-  const [selected, setSelected] = useState(LIQUIDITY);
+  const [selected, setSelected] = useState(farmSection.LIQUIDITY);
   const [isActive, setIsActive] = useState(V2);
   const [showAlert, setShowAlert] = useState(true);
   const [farmDataLoading, setfarmDataLoading] = useState(false);
@@ -142,6 +163,7 @@ export function Index() {
   const [switchTab, setSwitchTab] = useState(true);
   const [tabIndex, setTabIndex] = useState(0);
   const [liquidityIndex, setLiquidityIndex] = useState(0);
+  const [ productFarmIndex, setProductFarmIndex] = useState(4);
   const [stakingIndex, setStakingIndex] = useState(1);
   const [isMobileDevice] = useMediaQuery("(max-width: 750px)");
   const [referralCode, setReferralCode] = useState("");
@@ -160,6 +182,8 @@ export function Index() {
   const [showPopOver, setShowPopover] = useState(false);
   const [saveChanges, setSavedChanges] = useState(false);
   const [keyword, setKeyword] = useState("");
+
+
   // 👇 look here
   const previousKeyword = usePrevious(keyword);
 
@@ -171,6 +195,25 @@ export function Index() {
     previousKeyword,
     searchData: filter,
   });
+
+  
+  console.log({location})
+  useEffect(()=>{
+if(location && location.includes("RGPv2")){
+    // setSelected(STAKING);
+    setSelected(farmSection.STAKING)
+    setTabIndex(1);
+  }else if(location && location.includes("product-farm")){
+    // setSelected(PRODUCT_FARMS);
+    setSelected(farmSection.PRODUCT_FARM)
+    setTabIndex(2)
+  }else{
+    // setSelected(LIQUIDITY)
+    setSelected(farmSection.LIQUIDITY)
+    setTabIndex(0);
+  }
+  },[location])
+  
 
   // console.log(count);
 
@@ -193,7 +236,7 @@ export function Index() {
   const handleTabsChange = (index: number) => {
     if (chainId !== SupportedChainId.OASISMAINNET) {
       const useIndex =
-        index === 0 ? liquidityIndex : index === 1 ? stakingIndex : index;
+        index === 0 ? liquidityIndex : index === 1 ? stakingIndex :liquidityIndex=== 2 ? setTabIndex(3) : index;
       setTabIndex(useIndex);
     }
   };
@@ -219,7 +262,7 @@ export function Index() {
       setTabIndex(0);
     } else if (parseInt(event.target.value, 10) === 2) {
       setLiquidityIndex(2);
-      setTabIndex(2);
+      setTabIndex(4);
     }
   };
 
@@ -233,7 +276,6 @@ export function Index() {
   const farms = useSelector((state) => state.farming.content);
   const searchSection = useSelector((state) => state.farming);
 
-  console.log(data);
 
   const clearSearchedData = useCallback(() => {
     dispatch(clearSearchResult());
@@ -245,7 +287,6 @@ export function Index() {
   }, [chainId]);
 
   const handleUpdateSearch = useCallback((searchedDataResult) => {
-    console.log({searchedDataResult})
     dispatch(
       updateSearchResult({
         farmData: searchedDataResult,
@@ -274,7 +315,6 @@ export function Index() {
 
   const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
   const stateChanged: boolean = trxState === 2;
-  console.log(searchResults.searchResult);
   //temporary
   useEffect(() => {
     getFarmData();
@@ -292,12 +332,12 @@ export function Index() {
     refreshData();
   }, []);
 
-  useEffect(() => {
-    if (match) {
-      setSelected(STAKING);
-      setTabIndex(1);
-    }
-  }, [match]);
+  // useEffect(() => {
+  //   if (match) {
+  //     setSelected(STAKING);
+  //     setTabIndex(1);
+  //   }
+  // }, [match]);
 
   const changeVersion = (version: string, external?: boolean) => {
     if (external) {
@@ -306,14 +346,18 @@ export function Index() {
     history.push(version);
   };
 
-  const handleSelect = (value: string) => {
-    if (value === LIQUIDITY) {
+  const handleSelect = (value: number) => {
+    if (value === farmSection.LIQUIDITY) {
       setSwitchTab(!switchTab);
-      setSelected(LIQUIDITY);
+      setSelected(farmSection.LIQUIDITY);
       changeVersion("/farming-v2");
-    } else if (value === STAKING) {
+    }else if(value === farmSection.PRODUCT_FARM) {
+      setSelected(farmSection.PRODUCT_FARM)
       setSwitchTab(!switchTab);
-      setSelected(STAKING);
+      changeVersion("/farming-V2/product-farm");
+    } else if (value === farmSection.STAKING) {
+      setSwitchTab(!switchTab);
+      setSelected(farmSection.STAKING);
       GOpenedSpecialPool(tabIndex)
       if (tabIndex === 1) {
         setStakingIndex(1);
@@ -366,7 +410,7 @@ export function Index() {
           queryRef
         ).toString(CryptoJS.enc.Utf8);
         decryptedReferralCode === account
-          ? setRefAddress("0x0000000000000000000000000000000000000000")
+          ? setRefAddress(ZERO_ADDRESS)
           : setRefAddress(decryptedReferralCode);
       } catch (error) {
         console.log(error);
@@ -534,7 +578,7 @@ export function Index() {
             poolNine,
             poolTwelve,
             poolThirteen,
-            RGPToken2,
+            RGPToken2
           ] = await Promise.all([
             rigelToken(RGP[chainId as number], library),
             smartSwapLPTokenPoolOne(
@@ -581,7 +625,7 @@ export function Index() {
               SMARTSWAPLP_TOKEN13ADDRESSES[chainId as number],
               library
             ),
-            rigelToken(RGP[chainId as number], library),
+            rigelToken(RGP[chainId as number], library)
           ]);
 
           const [
@@ -613,6 +657,8 @@ export function Index() {
             poolThirteen.balanceOf(account),
             RGPToken2.balanceOf(account),
           ]);
+
+          
 
           dispatch(
             updateFarmBalances([
@@ -752,7 +798,6 @@ export function Index() {
         );
 
         const rgpPrice = totalUSDT2 / totalRGP2;
-        console.log(rgpPrice);
 
         const RGPprice: number | any = ethers.utils.formatUnits(
           pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
@@ -1137,6 +1182,7 @@ export function Index() {
           pool12,
           pool13,
           specialPool2,
+          farmProductContract
         ] = await Promise.all([
           RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library),
           smartSwapLPTokenPoolOne(
@@ -1184,6 +1230,10 @@ export function Index() {
             library
           ),
           RGPSpecialPool2(RGPSPECIALPOOLADDRESSES2[chainId as number], library),
+            productStakingContract(
+              PRODUCTSTAKINGADDRESSES[chainId as number],
+              library
+            )
         ]);
 
         const [
@@ -1200,6 +1250,7 @@ export function Index() {
           pool12Reserve,
           pool13Reserve,
           rgpTotalStakingV2,
+          farmProductTotalStaking
         ] = await Promise.all([
           await specialPool.totalStaking(),
           pool1.getReserves(),
@@ -1214,6 +1265,7 @@ export function Index() {
           pool12.getReserves(),
           pool13.getReserves(),
           await specialPool2.totalStaking(),
+          farmProductContract.totalStaking()
         ]);
         const RGPprice: number | any = ethers.utils.formatUnits(
           pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
@@ -1226,6 +1278,11 @@ export function Index() {
         const RGPLiquidityV2 = ethers.utils
           .formatUnits(rgpTotalStakingV2.mul(Math.floor(1000 * RGPprice)), 21)
           .toString();
+          const productFarmLiquidity = ethers.utils
+          .formatUnits(farmProductTotalStaking.mul(Math.floor(1000 * RGPprice)), 21)
+          .toString();
+
+
         const BUSD_RGPLiquidity = ethers.utils
           .formatEther(pool1Reserve[0].mul(2))
           .toString();
@@ -1354,6 +1411,12 @@ export function Index() {
             },
           ])
         );
+        dispatch(updateFarmProductLiquidity([
+          {
+            deposit:"RGP",
+            liquidity:productFarmLiquidity
+          }
+        ]))
       }
     } catch (error) {
       console.log(error, "get farm data");
@@ -1399,6 +1462,23 @@ export function Index() {
       }
     }
   };
+  const productFarmStaked = async () => {
+    if (account) {
+      try {
+        const productFarm = await productStakingContract(
+          PRODUCTSTAKINGADDRESSES[chainId as number],
+          library
+        );
+        const productFarmStakedEarned =  await Promise.all([
+          productFarm.userInfo(account),
+          productFarm.userData(account),
+        ]);
+        return productFarmStakedEarned;
+      } catch (error) {
+        return error;
+      }
+    }
+  };
 
   const getTokenStaked = async () => {
     try {
@@ -1435,7 +1515,7 @@ export function Index() {
         ]);
 
         const RGPStakedEarnedV2 = await specialPoolStakedV2();
-
+       
         let RGPStakedV2;
         let RGPEarnedV2;
 
@@ -1473,6 +1553,7 @@ export function Index() {
             { staked: RGPStakedV2, earned: RGPEarnedV2, symbol: "RGP" },
           ])
         );
+       
 
         setInitialLoad(false);
       } else if (
@@ -1643,7 +1724,16 @@ export function Index() {
 
         let RGPStakedV2;
         let RGPEarnedV2;
+        const productFarmStakedEarn = await productFarmStaked();
+        let productStakedValue
+        if(productFarmStakedEarn){
+          const [productStaked,productEarned] = productFarmStakedEarn
+          productStakedValue = formatBigNumber(productStaked.tokenQuantity)
 
+        }
+        dispatch(
+          updateProductStaked([{staked:productStakedValue}])
+        )
         if (RGPStakedEarned) {
           const [specialPoolStaked, specialPoolEarned] = RGPStakedEarned;
 
@@ -1826,8 +1916,8 @@ export function Index() {
         welcomeText='With farming, you can maximize the rate of return on capital and generate rewards on your cryptocurrency holdings.'
       />
 
-      {!showAlert || tabIndex === 0 || tabIndex === 2 ? null : tabIndex === 1 &&
-        stakingIndex === 1 ? (
+      {!showAlert || tabIndex === 0  ? null : (tabIndex === 1 &&
+        stakingIndex === 1) ||tabIndex ===2 ? (
         <Box mx={[5, 10, 15, 20]} my={4}>
           <Alert
             color='#FFFFFF'
@@ -1951,58 +2041,22 @@ export function Index() {
         my={4}
         isFitted={isMobileDevice ? true : false}
       >
-        <Flex justifyContent='space-between' mt={10}>
+        <Flex justifyContent='space-between' mt={10} >
           <TabList h={isMobileDevice ? undefined : 14} borderBottom={0}>
             <Tab
-              // isDisabled={switchTab}
               display='flex'
               flex-direction='row'
               justify-content='center'
               align-items='center'
               flexWrap={isMobileDevice ? "wrap" : undefined}
               padding={isMobileDevice ? "2px 4px" : undefined}
-              // padding={0}
-              border='1px solid #DEE5ED !important'
-              background={
-                mode === LIGHT_THEME && selected === STAKING
-                  ? "#FFFFFF !important"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#213345 !important"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#15202B !important"
-                  : mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#DEE5ED !important"
-                  : "#DEE5ED !important"
-              }
-              color={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#333333"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#F1F5F8"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#F1F5F8"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#333333"
-                  : "#333333"
-              }
-              // px={5}
-              // py={4}
-              // minWidth={{ base: "none", md: "200px", lg: "200px" }}
-              value={LIQUIDITY}
-              onClick={() => handleSelect(LIQUIDITY)}
-              // onClick={() => alert("yes")}
+              border='1px solid #DEE5ED'
+              background={selected === farmSection.LIQUIDITY ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
+              color={useSelectedColor}
+              value={farmSection.LIQUIDITY}
+              fontSize="15px"
+              onClick={() => handleSelect(farmSection.LIQUIDITY)}
               borderRadius={isMobileDevice ? "10px 0px 0px 10px" : 0}
-              borderColor={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#F2F5F8 !important"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#324D68 !important"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#324D68 !important"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#F2F5F8 !important"
-                  : "#F2F5F8 !important"
-              }
             >
               <Text className={"liquidity"} color={titleColor}>
                 Liquidity Pools
@@ -2013,28 +2067,30 @@ export function Index() {
                 Number(SupportedChainId.OASISMAINNET) ? null : (
                 <Select
                   size={isMobileDevice ? undefined : "sm"}
-                  borderColor={
-                    mode === LIGHT_THEME && selected === LIQUIDITY
-                      ? "#0760A8 !important"
-                      : mode === DARK_THEME && selected === LIQUIDITY
-                      ? "#008DFF !important"
-                      : mode === DARK_THEME && selected === STAKING
-                      ? "#324D68 !important"
-                      : mode === LIGHT_THEME && selected === STAKING
-                      ? "#0760A8 !important"
-                      : "#F2F5F8 !important"
-                  }
-                  color={
-                    mode === LIGHT_THEME && selected === LIQUIDITY
-                      ? "#0760A8"
-                      : mode === DARK_THEME && selected === LIQUIDITY
-                      ? "#008DFF"
-                      : mode === DARK_THEME && selected === STAKING
-                      ? "#F1F5F8"
-                      : mode === LIGHT_THEME && selected === STAKING
-                      ? "#0760A8"
-                      : "#333333"
-                  }
+                  // borderColor={
+                  //   mode === LIGHT_THEME && selected === LIQUIDITY
+                  //     ? "#0760A8 !important"
+                  //     : mode === DARK_THEME && selected === LIQUIDITY
+                  //     ? "#008DFF !important"
+                  //     : mode === DARK_THEME && selected === STAKING
+                  //     ? "#324D68 !important"
+                  //     : mode === LIGHT_THEME && selected === STAKING
+                  //     ? "#0760A8 !important"
+                  //     : "#F2F5F8 !important"
+                  // }
+                  borderColor={selected === farmSection.LIQUIDITY ? useNotSelectedBorderColor : useSelectedBorderColor}
+                  color={selected === farmSection.LIQUIDITY ? useNotSelectedTextColor : useSelectedTextColor}
+                  // color={
+                  //   mode === LIGHT_THEME && selected === LIQUIDITY
+                  //     ? "#0760A8"
+                  //     : mode === DARK_THEME && selected === LIQUIDITY
+                  //     ? "#008DFF"
+                  //     : mode === DARK_THEME && selected === STAKING
+                  //     ? "#F1F5F8"
+                  //     : mode === LIGHT_THEME && selected === STAKING
+                  //     ? "#0760A8"
+                  //     : "#333333"
+                  // }
                   onChange={handleLiquidityTab}
                   background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
                   cursor='pointer'
@@ -2062,45 +2118,16 @@ export function Index() {
               padding={isMobileDevice ? "4px 12px" : undefined}
               border='1px solid #DEE5ED'
               borderRadius={0}
-              background={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#FFFFFF !important"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#213345 !important"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#15202B !important"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#DEE5ED !important"
-                  : "#DEE5ED !important"
-              }
-              color={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#333333"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#F1F5F8"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#F1F5F8"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#333333"
-                  : "#333333"
-              }
-              borderColor={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#F2F5F8 !important"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#324D68 !important"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#324D68 !important"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#F2F5F8 !important"
-                  : "#F2F5F8 !important"
-              }
+              // border={`1px solid ${borderColor}`}
+              background={selected === farmSection.STAKING ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
+              color={useSelectedColor}
+              fontSize="15px"
               // px={5}
               // py={4}
               // minWidth={{ base: "none", md: "200px", lg: "200px" }}
 
               onClick={() => {
-                handleSelect(STAKING);
+                handleSelect(farmSection.STAKING);
               }}
             >
               <Text className={"staking"} color={titleColor}>
@@ -2112,29 +2139,31 @@ export function Index() {
                 Number(SupportedChainId.OASISMAINNET) ? null : (
                 <Select
                   size={isMobileDevice ? undefined : "sm"}
-                  borderColor={
-                    mode === LIGHT_THEME && selected === LIQUIDITY
-                      ? "#0760A8 !important"
-                      : mode === DARK_THEME && selected === LIQUIDITY
-                      ? "#008DFF !important"
-                      : mode === DARK_THEME && selected === STAKING
-                      ? "#324D68 !important"
-                      : mode === LIGHT_THEME && selected === STAKING
-                      ? "#0760A8 !important"
-                      : "#F2F5F8 !important"
-                  }
-                  cursor='pointer'
-                  color={
-                    mode === LIGHT_THEME && selected === LIQUIDITY
-                      ? "#0760A8"
-                      : mode === DARK_THEME && selected === LIQUIDITY
-                      ? "#008DFF"
-                      : mode === DARK_THEME && selected === STAKING
-                      ? "#F1F5F8"
-                      : mode === LIGHT_THEME && selected === STAKING
-                      ? "#0760A8"
-                      : "#333333"
-                  }
+                  // borderColor={
+                  //   mode === LIGHT_THEME && selected === LIQUIDITY
+                  //     ? "#0760A8 !important"
+                  //     : mode === DARK_THEME && selected === LIQUIDITY
+                  //     ? "#008DFF !important"
+                  //     : mode === DARK_THEME && selected === farmSection.STAKING
+                  //     ? "#324D68 !important"
+                  //     : mode === LIGHT_THEME && selected === farmSection.STAKING
+                  //     ? "#0760A8 !important"
+                  //     : "#F2F5F8 !important"
+                  // }
+                  // cursor='pointer'
+                  // color={
+                  //   mode === LIGHT_THEME && selected === LIQUIDITY
+                  //     ? "#0760A8"
+                  //     : mode === DARK_THEME && selected === LIQUIDITY
+                  //     ? "#008DFF"
+                  //     : mode === DARK_THEME && selected === farmSection.STAKING
+                  //     ? "#F1F5F8"
+                  //     : mode === LIGHT_THEME && selected === farmSection.STAKING
+                  //     ? "#0760A8"
+                  //     : "#333333"
+                  // }
+                  borderColor={selected === farmSection.LIQUIDITY ? useNotSelectedBorderColor : useSelectedBorderColor}
+                  color={selected === farmSection.LIQUIDITY ? useNotSelectedTextColor : useSelectedTextColor}
                   onChange={handleStakingTab}
                   background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
                   onClick={(e) => e.stopPropagation()}
@@ -2153,52 +2182,54 @@ export function Index() {
                 </Select>
               )}
             </Tab>
-            <Tab
-              isDisabled={true}
+           {Number(chainId) === Number(SupportedChainId.OASISTEST)  ||
+              Number(chainId) ===
+                Number(SupportedChainId.OASISMAINNET) ? null : ( 
+                   <Tab
               border='1px solid #DEE5ED'
               borderRadius={0}
-              background={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#FFFFFF !important"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#213345 !important"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#15202B !important"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#DEE5ED !important"
-                  : "#DEE5ED !important"
-              }
-              color={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#333333"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#F1F5F8"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#F1F5F8"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#333333"
-                  : "#333333"
-              }
-              borderColor={
-                mode === LIGHT_THEME && selected === LIQUIDITY
-                  ? "#F2F5F8 !important"
-                  : mode === DARK_THEME && selected === LIQUIDITY
-                  ? "#324D68 !important"
-                  : mode === DARK_THEME && selected === STAKING
-                  ? "#324D68 !important"
-                  : mode === LIGHT_THEME && selected === STAKING
-                  ? "#F2F5F8 !important"
-                  : "#F2F5F8 !important"
-              }
+              background={selected === farmSection.PRODUCT_FARM ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
+              color={useSelectedColor}
               // px={5}
               // py={4}
               // minWidth={{ base: "none", md: "200px", lg: "200px" }}
-              // onClick={() => handleSelect(OTHER_FARMS)}
+              onClick={() => handleSelect(farmSection.PRODUCT_FARM)}
             >
-              <Text className={"other"} color={titleColor}>
-                Other Farms
-              </Text>
-            </Tab>
+              <Menu>
+        <MenuButton
+          // mr={1}
+          variant="ghost"
+          fontSize="15px"
+          as={Button}
+          transition="all 0.2s"
+          borderRadius="md"
+          _hover={{ bg: "none" }}
+          _focus={{ boxShadow: "none" }}
+          rightIcon={<ChevronDownIcon />}
+        >
+        
+        Product Farm
+        </MenuButton>
+        <MenuList>
+          <MenuItem>
+            <Stack direction={'column'} spacing={0} >
+              <Text my={2}>Product Farm</Text>
+            </Stack>
+
+          </MenuItem>
+          <MenuItem disabled={true} cursor="not-allowed">
+            <Tooltip label="launching soon">
+               <Stack direction={'column'} spacing={0} >
+                <Text my={2} color={placeholderTextColor}>Other Farm</Text>
+              </Stack>
+            </Tooltip>
+             
+          </MenuItem>
+          
+        </MenuList>
+      </Menu>
+            </Tab>)
+            }
           </TabList>
           {/* <Divider display={isMobileDevice ? undefined : "none"} my='4' /> */}
           <Flex
@@ -2283,13 +2314,13 @@ export function Index() {
                 minHeight='89vh'
                 w={["100%", "100%", "100%"]}
                 background={
-                  mode === LIGHT_THEME && selected === STAKING
+                  mode === LIGHT_THEME && selected === farmSection.STAKING
                     ? "#FFFFFF !important"
-                    : mode === DARK_THEME && selected === LIQUIDITY
+                    : mode === DARK_THEME && selected === farmSection.LIQUIDITY
                     ? "#15202B !important"
-                    : mode === DARK_THEME && selected === STAKING
+                    : mode === DARK_THEME && selected === farmSection.STAKING
                     ? "#15202B !important"
-                    : mode === LIGHT_THEME && selected === LIQUIDITY
+                    : mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
                     ? "#FFFFFF !important"
                     : "#FFFFFF !important"
                 }
@@ -2302,24 +2333,24 @@ export function Index() {
                     px={4}
                     py={4}
                     background={
-                      mode === LIGHT_THEME && selected === LIQUIDITY
+                      mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
                         ? "#F2F5F8  !important"
-                        : mode === DARK_THEME && selected === LIQUIDITY
+                        : mode === DARK_THEME && selected === farmSection.LIQUIDITY
                         ? "#213345"
-                        : mode === DARK_THEME && selected === STAKING
+                        : mode === DARK_THEME && selected === farmSection.STAKING
                         ? "#213345"
-                        : mode === LIGHT_THEME && selected === STAKING
+                        : mode === LIGHT_THEME && selected === farmSection.STAKING
                         ? "#F2F5F8"
                         : "#F2F5F8 !important"
                     }
                     color={
-                      mode === LIGHT_THEME && selected === LIQUIDITY
+                      mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
                         ? "#333333"
-                        : mode === DARK_THEME && selected === STAKING
+                        : mode === DARK_THEME && selected === farmSection.STAKING
                         ? "#F1F5F8"
-                        : mode === DARK_THEME && selected === LIQUIDITY
+                        : mode === DARK_THEME && selected === farmSection.LIQUIDITY
                         ? "#F1F5F8"
-                        : mode === LIGHT_THEME && selected === STAKING
+                        : mode === LIGHT_THEME && selected === farmSection.STAKING
                         ? "#333333"
                         : "#333333"
                     }
@@ -2343,7 +2374,9 @@ export function Index() {
 
                   {!account ? null : ChainId !== chainId ? (
                     <Stack mt={2}>
-                      <Box
+                       {new Array(5).fill("1").map((item,index)=>{
+                           return (
+                             <Box
                         p={isMobileDevice ? "3" : "6"}
                         h={isMobileDevice ? undefined : 20}
                         border='1px'
@@ -2356,338 +2389,28 @@ export function Index() {
                           }
                           alignItems={isMobileDevice ? "center" : undefined}
                         >
-                          <Flex
+                         {new Array(5).fill("1").map((item,index)=>{
+                           return (
+                            <Flex
                             ml={isMobileDevice ? undefined : 2}
                             mt={isMobileDevice ? 2 : undefined}
                             flexDirection='column'
                           >
                             <Skeleton
+                            background="red.300"
                               height='20px'
                               w={isMobileDevice ? "320px" : "208px"}
                             />
                           </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
+ 
+                           )
+                         })}
                         </Flex>
                       </Box>
-                      <Box
-                        p={isMobileDevice ? "3" : "6"}
-                        h={isMobileDevice ? undefined : 20}
-                        border='1px'
-                        borderColor={filterBorderColor}
-                      >
-                        <Flex
-                          flexDirection={isMobileDevice ? "column" : "row"}
-                          justifyContent={
-                            isMobileDevice ? "center" : "space-between"
-                          }
-                          alignItems={isMobileDevice ? "center" : undefined}
-                        >
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-                        </Flex>
-                      </Box>
-                      <Box
-                        p={isMobileDevice ? "3" : "6"}
-                        h={isMobileDevice ? undefined : 20}
-                        border='1px'
-                        borderColor={filterBorderColor}
-                      >
-                        <Flex
-                          flexDirection={isMobileDevice ? "column" : "row"}
-                          justifyContent={
-                            isMobileDevice ? "center" : "space-between"
-                          }
-                          alignItems={isMobileDevice ? "center" : undefined}
-                        >
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-                        </Flex>
-                      </Box>
-                      <Box
-                        p={isMobileDevice ? "3" : "6"}
-                        h={isMobileDevice ? undefined : 20}
-                        border='1px'
-                        borderColor={filterBorderColor}
-                      >
-                        <Flex
-                          flexDirection={isMobileDevice ? "column" : "row"}
-                          justifyContent={
-                            isMobileDevice ? "center" : "space-between"
-                          }
-                          alignItems={isMobileDevice ? "center" : undefined}
-                        >
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-                        </Flex>
-                      </Box>
-                      <Box
-                        p={isMobileDevice ? "3" : "6"}
-                        h={isMobileDevice ? undefined : 20}
-                        border='1px'
-                        borderColor={filterBorderColor}
-                      >
-                        <Flex
-                          flexDirection={isMobileDevice ? "column" : "row"}
-                          justifyContent={
-                            isMobileDevice ? "center" : "space-between"
-                          }
-                          alignItems={isMobileDevice ? "center" : undefined}
-                        >
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-
-                          <Flex
-                            ml={isMobileDevice ? undefined : 2}
-                            mt={isMobileDevice ? 2 : undefined}
-                            flexDirection='column'
-                          >
-                            <Skeleton
-                              height='20px'
-                              w={isMobileDevice ? "320px" : "208px"}
-                            />
-                          </Flex>
-                        </Flex>
-                      </Box>
+    )
+                         })}
+                     
+                     
                     </Stack>
                   ) : // </Stack>
                   keyword &&
@@ -2852,7 +2575,8 @@ export function Index() {
           </TabPanel>
 
           <TabPanel padding='0px'>
-            <Flex
+           
+            {/* <Flex
               justifyContent='center'
               alignItems='center'
               rounded='lg'
@@ -2863,13 +2587,13 @@ export function Index() {
                 minHeight='89vh'
                 w={["100%", "100%", "100%"]}
                 background={
-                  mode === LIGHT_THEME && selected === STAKING
+                  mode === LIGHT_THEME && selected === farmSection.STAKING
                     ? "#FFFFFF !important"
-                    : mode === DARK_THEME && selected === LIQUIDITY
+                    : mode === DARK_THEME && selected === farmSection.LIQUIDITY
                     ? "#15202B !important"
-                    : mode === DARK_THEME && selected === STAKING
+                    : mode === DARK_THEME && selected === farmSection.STAKING
                     ? "#15202B !important"
-                    : mode === LIGHT_THEME && selected === LIQUIDITY
+                    : mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
                     ? "#FFFFFF !important"
                     : "#FFFFFF !important"
                 }
@@ -2882,24 +2606,24 @@ export function Index() {
                     px={4}
                     py={4}
                     background={
-                      mode === LIGHT_THEME && selected === LIQUIDITY
+                      mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
                         ? "#F2F5F8  !important"
-                        : mode === DARK_THEME && selected === LIQUIDITY
+                        : mode === DARK_THEME && selected === farmSection.LIQUIDITY
                         ? "#213345"
-                        : mode === DARK_THEME && selected === STAKING
+                        : mode === DARK_THEME && selected === farmSection.STAKING
                         ? "#213345"
-                        : mode === LIGHT_THEME && selected === STAKING
+                        : mode === LIGHT_THEME && selected === farmSection.STAKING
                         ? "#F2F5F8"
                         : "#F2F5F8 !important"
                     }
                     color={
-                      mode === LIGHT_THEME && selected === LIQUIDITY
+                      mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
                         ? "#333333"
-                        : mode === DARK_THEME && selected === STAKING
+                        : mode === DARK_THEME && selected === farmSection.STAKING
                         ? "#F1F5F8"
-                        : mode === DARK_THEME && selected === LIQUIDITY
+                        : mode === DARK_THEME && selected === farmSection.LIQUIDITY
                         ? "#F1F5F8"
-                        : mode === LIGHT_THEME && selected === STAKING
+                        : mode === LIGHT_THEME && selected === farmSection.STAKING
                         ? "#333333"
                         : "#333333"
                     }
@@ -2937,6 +2661,78 @@ export function Index() {
                       Go to farming V1
                     </Button>
                   </Link>
+                </Box>
+              </Box>
+            </Flex> */}
+              <Flex
+              justifyContent='center'
+              alignItems='center'
+              rounded='lg'
+              mb={4}
+            >
+              <Box
+                bg='#120136'
+                minHeight='89vh'
+                w={["100%", "100%", "100%"]}
+                background={
+                  mode === LIGHT_THEME
+                    ? "#FFFFFF !important"
+                    : mode === DARK_THEME
+                    ? "#15202B !important"
+                    : "#FFFFFF !important"
+                }
+                rounded='lg'
+              >
+                <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
+                  <Grid
+                    // alignItems='center'
+                    // justifyContent='space-between'
+                    templateColumns={["repeat(1,1fr)","repeat(1,1fr)","repeat(6,1fr)"]}
+                    px={4}
+                    py={4}
+                    background={
+                      mode === DARK_THEME
+                        ? "#213345"
+                        : mode === LIGHT_THEME
+                        ? "#F2F5F8"
+                        : "#F2F5F8 !important"
+                    }
+                    color={
+                      mode === LIGHT_THEME
+                        ? "#333333"
+                        : mode === DARK_THEME
+                        ? "#F1F5F8"
+                        : "#333333"
+                    }
+                    w={["100%", "100%", "100%"]}
+                    align='left'
+                    border={
+                      mode === LIGHT_THEME
+                        ? "1px solid #DEE5ED !important"
+                        : mode === DARK_THEME
+                        ? "1px solid #324D68 !important"
+                        : "1px solid #324D68"
+                    }
+                    display={isMobileDevice ? "none" :"grid"}
+                  >
+                     <Text fontSize="14px">{selected ===farmSection.PRODUCT_FARM ? "Auto-Period Product" : "Deposit"}</Text>
+                    <Text ml={4} fontSize="14px">{selected ===farmSection.PRODUCT_FARM ? "Percentage Profit Share" : "Earn"}</Text>
+                    <Text ml={4} fontSize="14px">{selected ===farmSection.PRODUCT_FARM ? "Profit Timeline" : "APY"}</Text>
+                    <Text ml={4} fontSize="14px">Total Liquidity</Text>
+                    {selected ===farmSection.PRODUCT_FARM && <Text ml={4} fontSize="14px">Estimated Total Profits</Text>}
+                    <Text />
+                  </Grid>
+                  {FarmData.productFarm.map((content: any, index: number) =>
+                    index === 0 ? (
+                      <ProductFarm
+                        farmDataLoading={farmDataLoading}
+                        content={content}
+                        key={content.pid}
+                        wallet={wallet}
+                        URLReferrerAddress={refAddress}
+                      />
+                    ) : null
+                  )}
                 </Box>
               </Box>
             </Flex>
@@ -3012,6 +2808,99 @@ export function Index() {
               </Box>
             </Flex>
           </TabPanel>
+
+                      {/* special */}
+                      <TabPanel padding='0px'>
+           
+           <Flex
+             justifyContent='center'
+             alignItems='center'
+             rounded='lg'
+             mb={4}
+           >
+             <Box
+               bg='#120136'
+               minHeight='89vh'
+               w={["100%", "100%", "100%"]}
+               background={
+                 mode === LIGHT_THEME && selected === farmSection.STAKING
+                   ? "#FFFFFF !important"
+                   : mode === DARK_THEME && selected === farmSection.LIQUIDITY
+                   ? "#15202B !important"
+                   : mode === DARK_THEME && selected === farmSection.STAKING
+                   ? "#15202B !important"
+                   : mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
+                   ? "#FFFFFF !important"
+                   : "#FFFFFF !important"
+               }
+               rounded='lg'
+             >
+               <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
+                 <Flex
+                   alignItems='center'
+                   justifyContent='space-between'
+                   px={4}
+                   py={4}
+                   background={
+                     mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
+                       ? "#F2F5F8  !important"
+                       : mode === DARK_THEME && selected === farmSection.LIQUIDITY
+                       ? "#213345"
+                       : mode === DARK_THEME && selected === farmSection.STAKING
+                       ? "#213345"
+                       : mode === LIGHT_THEME && selected === farmSection.STAKING
+                       ? "#F2F5F8"
+                       : "#F2F5F8 !important"
+                   }
+                   color={
+                     mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
+                       ? "#333333"
+                       : mode === DARK_THEME && selected === farmSection.STAKING
+                       ? "#F1F5F8"
+                       : mode === DARK_THEME && selected === farmSection.LIQUIDITY
+                       ? "#F1F5F8"
+                       : mode === LIGHT_THEME && selected === farmSection.STAKING
+                       ? "#333333"
+                       : "#333333"
+                   }
+                   w={["100%", "100%", "100%"]}
+                   align='left'
+                   border={
+                     mode === LIGHT_THEME
+                       ? "1px solid #DEE5ED !important"
+                       : mode === DARK_THEME
+                       ? "1px solid #324D68 !important"
+                       : "1px solid #324D68"
+                   }
+                   display={{ base: "none", md: "flex", lg: "flex" }}
+                 >
+                   <Text>
+                     Please Migrate your LP token farming from farming V1 to
+                     this V2
+                   </Text>
+                 </Flex>
+
+                 <Link
+                   href='https://smartswapv1.rigelprotocol.com/farming'
+                   isExternal
+                 >
+                   <Button
+                     background='#4CAFFF'
+                     boxShadow='0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)'
+                     borderRadius='6px'
+                     mx={[5, 10, 15, 20]}
+                     position={{ base: "relative", md: "absolute" }}
+                     padding=' 12px 32px'
+                     mt={3}
+                     variant='brand'
+                   >
+                     Go to farming V1
+                   </Button>
+                 </Link>
+               </Box>
+             </Box>
+           </Flex> 
+         </TabPanel>
         </TabPanels>
       </Tabs>
     </Box>
