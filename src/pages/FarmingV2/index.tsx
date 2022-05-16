@@ -195,9 +195,6 @@ export function Index() {
     previousKeyword,
     searchData: filter,
   });
-
-  
-  console.log({location})
   useEffect(()=>{
 if(location && location.includes("RGPv2")){
     // setSelected(STAKING);
@@ -881,7 +878,7 @@ if(location && location.includes("RGPv2")){
           ])
         );
       } else if (Number(chainId) === Number(SupportedChainId.POLYGON)) {
-        const [specialPool, pool1, pool2, pool3, specialPool2] =
+        const [specialPool, pool1, pool2, pool3, specialPool2, farmProductContract] =
           await Promise.all([
             RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library),
             smartSwapLPTokenPoolOne(
@@ -900,6 +897,10 @@ if(location && location.includes("RGPv2")){
               RGPSPECIALPOOLADDRESSES2[chainId as number],
               library
             ),
+            productStakingContract(
+              PRODUCTSTAKINGADDRESSES[chainId as number],
+              library
+            )
           ]);
 
         const [
@@ -908,6 +909,7 @@ if(location && location.includes("RGPv2")){
           pool2Reserve,
           pool3Reserve,
           rgpTotalStakingV2,
+          farmProductTotalStaking
           // pool4Reserve,
           // pool5Reserve,
         ] = await Promise.all([
@@ -916,6 +918,7 @@ if(location && location.includes("RGPv2")){
           pool2.getReserves(),
           pool3.getReserves(),
           await specialPool2.totalStaking(),
+          farmProductContract.totalStaking()
           // pool4.getReserves(),
           // pool5.getReserves(),
         ]);
@@ -946,6 +949,11 @@ if(location && location.includes("RGPv2")){
 
         const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
         const USDC_RGPLiq = totalRGP3 * rgpPrice * 2;
+
+        const productFarmLiquidity = ethers.utils
+        .formatUnits(farmProductTotalStaking.mul(Math.floor(1000 * rgpPrice)), 21)
+        .toString();
+        console.log({productFarmLiquidity})
 
         const RGPLiquidityV2 =
           (ethers.utils.formatUnits(rgpTotalStakingV2, 18) * rgpPrice) / 2;
@@ -1009,6 +1017,12 @@ if(location && location.includes("RGPv2")){
             },
           ])
         );
+        dispatch(updateFarmProductLiquidity([
+          {
+            deposit:"RGP",
+            liquidity:productFarmLiquidity
+          }
+        ]))
       } else if (Number(chainId) === Number(SupportedChainId.OASISTEST)) {
         const [pool1, pool2, pool3] = await Promise.all([
           // RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
@@ -1281,6 +1295,7 @@ if(location && location.includes("RGPv2")){
           const productFarmLiquidity = ethers.utils
           .formatUnits(farmProductTotalStaking.mul(Math.floor(1000 * RGPprice)), 21)
           .toString();
+          console.log({productFarmLiquidity})
 
 
         const BUSD_RGPLiquidity = ethers.utils
@@ -1553,6 +1568,16 @@ if(location && location.includes("RGPv2")){
             { staked: RGPStakedV2, earned: RGPEarnedV2, symbol: "RGP" },
           ])
         );
+        const productFarmStakedEarn = await productFarmStaked();
+        let productStakedValue
+        if(productFarmStakedEarn){
+          const [productStaked] = productFarmStakedEarn
+          productStakedValue = formatBigNumber(productStaked.tokenQuantity)
+
+        }
+        dispatch(
+          updateProductStaked([{staked:productStakedValue}])
+        )
        
 
         setInitialLoad(false);
@@ -1719,8 +1744,6 @@ if(location && location.includes("RGPv2")){
 
         let RGPStaked;
         let RGPEarned;
-        let RGP2Staked;
-        let RGP2Earned;
 
         let RGPStakedV2;
         let RGPEarnedV2;
