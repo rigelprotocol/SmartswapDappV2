@@ -4,9 +4,6 @@ import {
     Input,
     InputRightAddon,
     useColorModeValue,
-    Square,
-    Box,
-    Flex
 } from '@chakra-ui/react'
 import { Currency } from '@uniswap/sdk';
 
@@ -28,14 +25,15 @@ const CInput: React.FC<CProps> = ({
     showButton
 }) => {
 
-    const tokenListTrgiggerBgColor = useColorModeValue('', '#ffffff');
+    const tokenListTrgiggerBgColor = useColorModeValue('', '#FFFFFF');
+    const background = useColorModeValue('#319df6b5', '#319df6b5');
     return (
         <>
         
         <InputGroup size='sm' width="250px">
             
             <Input placeholder={placeholder} height="40px" value={initialFromPrice} onChange={(e) => setInitialPrice(e.target.value)} 
-            background={shakeInput ? "lightBg.100": "transparent"}
+            background={shakeInput ? background: "transparent"}
             />
             <InputRightAddon children={(currency?.symbol && currency?.symbol && currency?.symbol.length > 4
                 ? currency?.symbol.slice(0, 4) +

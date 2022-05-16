@@ -158,7 +158,7 @@ const SetPrice = () => {
   const [allowedSlippage] = useUserSlippageTolerance();
 
   useEffect(() => {
-    if(parseFloat(initialFromPrice) >0 && negativeSliderValue===-1  && positiveSliderValue===0 && unitAmount && oppositeAmount){
+    if(parseFloat(initialFromPrice) >0 && negativeSliderValue===-100  && positiveSliderValue===0 && unitAmount && oppositeAmount){
       setInitialToPrice(unitAmount)
       setBasePrice(unitAmount)
     }
@@ -673,8 +673,8 @@ const SetPrice = () => {
             sliderValue={negativeSliderValue}
             setShowTooltip={setShowTooltip}
             showTooltip={showTooltip}
-            start={-1}
-          stop={-100}
+            start={-100}
+          stop={0}
           width="45%"
           name="-"
           setName={setName}

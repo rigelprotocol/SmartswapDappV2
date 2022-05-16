@@ -195,7 +195,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
             </Text>
            </Box>
            <Box>
-              <Tooltip label="Number of transaction completed">
+            {data.status===2 &&  <Tooltip label="Number of transaction completed">
 <Text
               fontSize="12px"
               lineHeight="0"
@@ -204,7 +204,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
             >
               Number
             </Text>
-           </Tooltip>
+           </Tooltip>}
             
             <Text color={activeTabColor} fontSize="14px" fontWeight="regular">
               {data.rate}

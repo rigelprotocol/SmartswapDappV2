@@ -90,7 +90,6 @@ export const useSwap = (
   const wrappable: boolean = tokenOneAddress == tokenTwoAddress;
   let validSmartAddress: string;
   if (SMARTSWAPFACTORYADDRESSES[chainId as number] !== "0x") {
-    console.log({market})
     validSmartAddress = market ?? SMARTSWAPFACTORYADDRESSES[chainId as number];
   }
  
@@ -98,7 +97,6 @@ export const useSwap = (
     const getPairs = async () => {
       try {
         const SmartFactory = await smartFactory(validSmartAddress, library);
-        console.log({SmartFactory})
         const pairAddress = await SmartFactory.getPair(
           tokenOneAddress,
           tokenTwoAddress
@@ -550,6 +548,8 @@ export const useSwap = (
       if(tokenOneAddress && tokenTwoAddress&& (amountIn ) ){
         interval = setInterval(()=>
           getPairs(),2000)
+      }else{
+        clearInterval(interval)
       }
  getPairs();
     return () => clearInterval(interval)
