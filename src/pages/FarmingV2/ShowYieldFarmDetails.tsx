@@ -380,7 +380,6 @@ const ShowYieldFarmDetails = ({
       setApproveValueForRGP(true);
     } else {
       const pool = await smartSwapLPTokenPoolTwo(content.address, library);
-      console.log({pool})
       if (!approveValueForOtherToken && !approveValueForRGP) {
         await RGPApproval();
         await LPApproval(pool,content.deposit);
@@ -697,7 +696,6 @@ const ShowYieldFarmDetails = ({
   };
 
   async function confirmUnstakeDeposit(val: string) {
-    console.log({val})
     try {
       setUnstakeButtonValue("Pending Confirmation");
       GButtonIntialized("unstake",content.deposit,"v2")

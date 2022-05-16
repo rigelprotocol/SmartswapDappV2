@@ -1,23 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import {
   Box,
   Flex,
   Button,
   Spinner,
   Text,
-  Img,
-  Stack,
-  Skeleton,
-  SkeletonText,
   Grid,
 } from "@chakra-ui/react";
-import ShowYieldFarmDetails from "./ShowYieldFarmDetails";
 import { useColorModeValue } from "@chakra-ui/react";
 import { LIGHT_THEME, DARK_THEME } from "./index";
 import { useWeb3React } from "@web3-react/core";
 import Hot from "../../assets/hot.png"; 
 import { useLocation} from 'react-router-dom';
-import { useFetchYieldFarmDetails } from "../../state/newfarm/hooks";
 import { GButtonClicked } from "../../components/G-analytics/gFarming";
 import ShowProductFarmDetails from "./ShowProductFarmDetails"
 import { formatAmount } from "../../utils/utilsFunctions";
@@ -55,38 +49,10 @@ const ProductFarm = ({
   const params = useLocation().pathname;
   const myRef = useRef(null);
 
-  const symbolName = params.split('/');
-
-  // useEffect(() => {
-  //   const getSingleFarm = async () => {
-  //     await content2;
-  //     console.log(content2);
-
-  //     if (symbolName[2] === content2?.deposit) {
-  //       myRef.current.scrollIntoView({behavior: 'smooth'});
-  //       setShowYieldFarm(true)
-  //     }
-
-  //   };
-  //   getSingleFarm();
-
-  // }, [symbolName, params]);
-
-  const totalLiquidityValue = () => {
-    if (farmDataLoading) return <Spinner speed='0.65s' color='#FFF' />;
-
-    if (content?.totalLiquidity) {
-      return ` ${formatAmount(content.totalLiquidity)}`;
-    }
-  };
-
-  // console.log(loading);
 
   return (
     <>
       <Grid ref={myRef}
-        // justifyContent='space-between'
-        // flexDirection={["column", "column", "row"]}
         templateColumns={["repeat(1,1fr)","repeat(1,1fr)","repeat(6,1fr)"]}
         border='1px solid #DEE5ED'
         background={
@@ -171,7 +137,6 @@ const ProductFarm = ({
            Total Liquidity
           </Box>
           <Box marginTop='15px' paddingLeft='20px' align='left'>
-            {/* {totalLiquidityValue} */}
               {content?.totalLiquidity && `${formatAmount(content?.totalLiquidity)}%` } 
           </Box>
         </Flex>

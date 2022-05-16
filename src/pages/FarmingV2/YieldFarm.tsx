@@ -75,7 +75,6 @@ const YieldFarm = ({
   useEffect(() => {
     const getSingleFarm = async () => {
       await content2;
-      console.log(content2);
 
       if (symbolName[2] === content2?.deposit) {
         myRef.current.scrollIntoView({behavior: 'smooth'});

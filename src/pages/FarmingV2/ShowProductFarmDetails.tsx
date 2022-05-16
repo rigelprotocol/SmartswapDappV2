@@ -142,13 +142,11 @@ const ShowProductFarmDetails = ({
         setDepositErrorButtonText("Insufficient Balance");
       }else{
         let priceBalance = await getAllowances()
-        console.log({priceBalance})
         if(priceBalance < depositTokenValue){
          setApproveValueForRGP(false)
         }
       }
     }
-    console.log({URLReferrerAddress})
   }, [depositTokenValue]);
   useEffect(() => {
     setInputHasError(false);
@@ -190,7 +188,6 @@ const ShowProductFarmDetails = ({
           const fee = await specialPool.devPercentage();
           const minStakeAmount = Web3.utils.fromWei(minimumAmount.toString());
           const feeAmount = Web3.utils.fromWei(fee.toString());
-          console.log({feeAmount})
           setMinimumStakeAmount(minStakeAmount);
           setFeeAmount(feeAmount)
           setAllowUnstake(unstaking)
@@ -200,7 +197,6 @@ const ShowProductFarmDetails = ({
       }
     };
     getMinimumStakeAmount();
-    console.log({content})
   }, [account]);
 
   useEffect(() => {
@@ -533,8 +529,6 @@ const ShowProductFarmDetails = ({
             library
           ),
         ]);
-        console.log({RGPAllowances})
-
         const [
           productStakingAllowance,
           ,
@@ -559,11 +553,6 @@ const ShowProductFarmDetails = ({
  
   const enoughApproval = (allowance: any, balance: any) => {
     if (allowance && balance) {
-      console.log(
-        allowance.gt(ethers.utils.parseEther(balance)),
-        allowance.gt(ethers.utils.parseEther(balance)),
-        parseFloat(allowance.toString()) >= parseFloat(balance)
-        )
       return content.type === "AT"
         ? parseFloat(allowance.toString()) >= parseFloat(balance)
         : parseFloat(allowance) > parseFloat(balance);
@@ -614,7 +603,6 @@ const ShowProductFarmDetails = ({
     }
   };
   const approveLPToken = async (LPToken: any) => {
-    console.log({LPToken})
         checkUser(LPToken);
 
   };
@@ -875,7 +863,7 @@ return (
             To be earned
           </Text>{" "}
           <Text color={mode === DARK_THEME ? "#DCE5EF" : "#333333"} fontSize='16px'  mt={2}>
-          {content.percentageProfitShare}% Profit Shares
+          {content.percentageProfitShare} Profit Shares
           </Text>
         </Box>
       </Box>
