@@ -451,6 +451,8 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
       (item) => item?.allocPoint !== 0 && item !== undefined
     );
 
+
+      console.log({iterated})
     return iterated;
   };
 

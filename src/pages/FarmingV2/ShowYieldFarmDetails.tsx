@@ -197,6 +197,7 @@ const ShowYieldFarmDetails = ({
           account,
           MASTERCHEFV2ADDRESSES[chainId as number]
         );
+        console.log({rgpApproval},rgpApproval.toString())
         return !(rgpApproval.toString() <= 0);
       }
     };
@@ -236,7 +237,9 @@ const ShowYieldFarmDetails = ({
         changeApprovalButton(true, specialPoolV2Approval);
       } else {
         const pool = await smartSwapLPTokenPoolTwo(content.address, library);
+        console.log({pool})
         const approvalForRGPBNB = await poolAllowance(pool);
+        console.log({content,approvalForRGPBNB})
         changeApprovalButton(approvalForRGPBNB, rgpApproval);
       }
     };
@@ -685,12 +688,13 @@ const ShowYieldFarmDetails = ({
     }
   };
   const enoughApproval = (allowance: any, balance: any) => {
+    console.log({allowance,balance})
     if (allowance && balance) {
       //console.log(allowance.gt(ethers.utils.parseEther(balance)),ethers.utils.parseEther(balance),allowance.toString());
 
       return content.type === "RGP"
         ? allowance.gt(ethers.utils.parseEther(balance))
-        : parseFloat(allowance) > parseFloat(balance);
+        : parseFloat(allowance) >= parseFloat(balance);
     }
     return true;
   };
@@ -1449,6 +1453,7 @@ const ShowYieldFarmDetails = ({
           })
         );
         const walletBal = (await contract.balanceOf(account)) ;
+        console.log({walletBal})
         const data = await contract.approve(
           MASTERCHEFV2ADDRESSES[chainId as number],
           walletBal,

@@ -695,22 +695,6 @@ setLoading(false)
 return {loading}
 
 }
-export const useUpdateProductFarm = ({
-  reload,
-  setReload,
-  content,
-  section,
-}: updateFarmInterface) => {
-  const data = useFarmData();
-  const searchSection = useSelector((state) => state.farming);
-
-  const { account, chainId, library } = useWeb3React();
-  const [loadingState, setLoadingState] = useState(true);
-
-  const dispatch = useDispatch();
-
-  return { loadingState };
-};
 
 // const { account, chainId, library } = useWeb3React();
 
