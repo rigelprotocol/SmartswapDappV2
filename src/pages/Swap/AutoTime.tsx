@@ -14,7 +14,6 @@ import {
 import { getERC20Token } from '../../utils/utilsFunctions';
 import { Field } from '../../state/swap/actions';
 import Web3 from 'web3';
-import { OTHERMARKETFACTORYADDRESSES, RGP } from '../../utils/addresses';
 import { ethers } from 'ethers';
 
 import {
@@ -47,12 +46,11 @@ import { useUserSlippageTolerance } from "../../state/user/hooks";
 import { useSelector,useDispatch } from 'react-redux';
 import { RootState } from "../../state";
 import { autoSwapV2, rigelToken, SmartSwapRouter, otherMarketPriceContract } from '../../utils/Contracts';
-import { RGPADDRESSES, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES, SMARTSWAPROUTER, OTHERMARKETADDRESSES } from '../../utils/addresses';
+import { RGPADDRESSES, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES, SMARTSWAPROUTER, OTHERMARKETADDRESSES,MARKETAUTOSWAPADDRESSES, OTHERMARKETFACTORYADDRESSES, RGP } from '../../utils/addresses';
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { changeFrequencyTodays } from '../../utils/utilsFunctions';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { refreshTransactionTab } from '../../state/transaction/actions';
-import { useLocation } from 'react-router-dom';
 import MarketDropDown from '../../components/MarketDropDown';
 
 
@@ -81,6 +79,7 @@ const SetPrice = () => {
   const [otherMarketprice, setOtherMarketprice] = useState<string>("0")
   const [approval, setApproval] = useState<string[]>([])
   const [approvalForFee, setApprovalForFee] = useState("")
+  const [fee, setFee] = useState("")
   const [approvalForToken, setApprovalForToken] = useState("")
   const [showModal, setShowModal] = useState(false)
   const [totalNumberOfTransaction,setTotalNumberOfTransaction] = useState("1")
@@ -95,7 +94,7 @@ const SetPrice = () => {
   })
 
 
-  const { onCurrencySelection, onUserInput, onSwitchTokens, onMarketSelection } = useSwapActionHandlers();
+  const { onCurrencySelection, onUserInput, onSwitchTokens, onMarketSelection, } = useSwapActionHandlers();
 
   const {
     currencies,
@@ -122,12 +121,12 @@ const SetPrice = () => {
   );
   useEffect(() => {
     async function runCheck() {
-      if (account) {
+      if (account && currencies[Field.INPUT]) {
         await checkForApproval()
       }
     }
     runCheck()
-  }, [currencies[Field.INPUT],typedValue, account])
+  }, [currencies[Field.INPUT],typedValue, account,marketType])
  
   useEffect(() => {
     async function checkIfSignatureExists() {
@@ -148,6 +147,7 @@ const SetPrice = () => {
     }
     if (account) {
       checkIfSignatureExists()
+      getFee()
     }
     setCheckedItem(false)
   }, [account])
@@ -156,6 +156,12 @@ const SetPrice = () => {
     (state) => state.user.userDeadline
   );
   const [allowedSlippage] = useUserSlippageTolerance();
+  const getFee =async () => {
+    const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
+    const amountToApprove = await autoSwapV2Contract.fee()
+    const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
+    setFee(fee)
+  }
   const parsedAmounts = useMemo(
     () =>
       showWrap
@@ -232,31 +238,21 @@ const SetPrice = () => {
 
  
   
-    useEffect(async () => {
-    if (currencies[Field.INPUT] && currencies[Field.OUTPUT] &&marketType!=="Smartswap") {
-      console.log(OTHERMARKETADDRESSES[marketType][chainId as number],marketType,chainId)
-      // const rout = await otherMarketPriceContract(OTHERMARKETADDRESSES[marketType][chainId as number], library);
-    
-      //     console.log({pathArray})
-      // if (typedValue) {
-      //   const priceOutput = await rout.getAmountsOut(
-      //     Web3.utils.toWei(typedValue, 'ether'),
-      //     pathArray
-      //   );
-      //   setOtherMarketprice(ethers.utils.formatUnits(priceOutput[1].toString(), currencies[Field.OUTPUT]?.decimals))
-      // }
-      onMarketSelection(OTHERMARKETFACTORYADDRESSES[marketType][chainId as number])
-    }
-  }, [chainId, currencies[Field.INPUT], currencies[Field.OUTPUT],  typedValue,marketType])
+    useEffect(async () => {      
+      onMarketSelection(OTHERMARKETFACTORYADDRESSES[marketType][chainId as number],OTHERMARKETADDRESSES[marketType][chainId as number])
+    // }
+  }, [chainId,marketType])
   
   const checkForApproval = async () => {
-    const autoSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
+    const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
+    
     // check approval for RGP and the other token
     const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
     const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
     const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
   
+    console.log({autoSwapV2Contract,RGPBalance,fee},parseFloat(RGPBalance))
     let approvalArray:any=[]
     if (parseFloat(RGPBalance) >= parseFloat(fee)) {
       setHasBeenApproved(true)
@@ -327,7 +323,7 @@ const SetPrice = () => {
     console.log({tokenApprovingFor})
     // let setArr = Array.from(new Set(approval))
     // if (setArr.length > 0) {
-      try {
+      // try {
         dispatch(
           setOpenModal({
             message: `Approve ${tokenApprovingFor} ${tokenApprovingFor ==="RGP" ? "for fee" : ""}`,
@@ -339,9 +335,9 @@ const SetPrice = () => {
           const rgp = await rigelToken(RGP[chainId as number], library);
           const token = await getERC20Token(address, library);
 
-          const walletBal = (await token.balanceOf(account)) + 4e18;
+          const walletBal = (await token.balanceOf(account));
           const approveTransaction = await rgp.approve(
-            AUTOSWAPV2ADDRESSES[chainId as number],
+            MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
             walletBal,
             {
               from: account,
@@ -362,9 +358,9 @@ const SetPrice = () => {
         } else {
           const address = currencies[Field.INPUT]?.wrapped.address;
           const token = address && await getERC20Token(address, library);
-          const walletBal = (await token?.balanceOf(account)) + 4e18;
+          const walletBal = (await token?.balanceOf(account));
           const approveTransaction = await token?.approve(
-            AUTOSWAPV2ADDRESSES[chainId as number],
+            MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
             walletBal,
             {
               from: account,
@@ -382,9 +378,9 @@ const SetPrice = () => {
           // setArr && setApproval(setArr.filter(item=>item!==currencies[Field.INPUT]?.wrapped.symbol))
         }
         setApprovalForToken("")
-      } catch (e) {
-        console.log(e)
-      }
+      // } catch (e) {
+      //   console.log(e)
+      // }
     // } else {
     //   dispatch(
     //     setOpenModal({
@@ -397,7 +393,7 @@ const SetPrice = () => {
   }
   const sendTransactionToDatabase = async () => {
 
-    const autoSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
+    const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
     dispatch(
       setOpenModal({
         message: `Signing initial transaction between ${currencies[Field.INPUT]?.symbol} and ${currencies[Field.OUTPUT]?.symbol}`,
@@ -469,7 +465,8 @@ const SetPrice = () => {
           pathArray,
           minimum,
           situation,
-          pathSymbol
+          pathSymbol,
+          market:marketType
         })
       })
       const res = await response.json()
@@ -494,40 +491,47 @@ const SetPrice = () => {
     if (currencies[Field.INPUT]?.isNative) {
       return setHasBeenApproved(true);
     }
-    try {
+    // try {
+      console.log(1111111111)
       const status = await getERC20Token(tokenAddress, library);
       const check = await status.allowance(
         account,
-        AUTOSWAPV2ADDRESSES[chainId as number],
+        MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
         {
           from: account,
         }
       )
+      console.log(222222222)
 
       const approveBalance = ethers.utils.formatEther(check).toString();
+      console.log({check,approveBalance})
       return approveBalance
-    } catch (e) {
-      console.log(e)
-    }
+    // } catch (e) {
+    //   console.log(e)
+    // }
 
   }
   const checkApprovalForRGP = async (tokenAddress: string) => {
 
-    try {
+    // try {
       const status = await rigelToken(tokenAddress, library);
+      console.log(MARKETAUTOSWAPADDRESSES[marketType][chainId as number])
       const check = await status.allowance(
         account,
-        AUTOSWAPV2ADDRESSES[chainId as number],
+        MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
         {
           from: account,
         }
       )
+      console.log(3333333,{tokenAddress,status,check})
+      console.log({tokenAddress,status,check})
 
       const approveBalance = ethers.utils.formatEther(check).toString();
+      console.log({check,approveBalance},9939939)
       return approveBalance
-    } catch (e) {
-      console.log(e)
-    }
+    // } catch (e) {
+    //   console.log(e)
+    // }
 
   }
 
@@ -580,14 +584,12 @@ const SetPrice = () => {
                 </Box>
                 <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={buttonBgcolor}>
                   <Flex>
-                  <MarketDropDown marketType={marketType} setMarketType={setMarketType} />
+                  <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId}/>
 
                     <Spacer />
                     <VStack>
                       <Text fontSize="24px" color={textColorOne} isTruncated width="160px" textAlign="right">
-                        {marketType==="Smartswap"?
-                        isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : formattedAmounts[Field.OUTPUT]
-                        : otherMarketprice}
+                        {formattedAmounts[Field.OUTPUT]}
                       </Text>
                       {/* <Text fontSize="14px" color={color}  width="160px">
                         -2.67
@@ -659,7 +661,7 @@ const SetPrice = () => {
       5 minutes
       </MenuButton>
       <MenuList>
-        {["5","30","daily","weekly","monthly"].map((item:string,index)=>(
+        {["5","30","60","daily","weekly","monthly"].map((item:string,index)=>(
           <MenuItem key={index} _focus={{ color: "#319EF6" }} onClick={(e) => setSelectedFrequency(item)} fontSize="13px">
          {parseInt(item) ? `${item} minutes` : item}
         </MenuItem>
@@ -671,7 +673,7 @@ const SetPrice = () => {
     </Menu>
                 </VStack>
               </Box>
-              <Box display="flex" mt={5}>
+              <Flex mt={5} justifyContent="space-between">
                 <VStack>
                   <Flex>
                   <Text fontSize="14px" mr={2} ml="-63px">
@@ -715,7 +717,10 @@ const SetPrice = () => {
                   </Box>
           
                 </VStack>
-                <Spacer />
+                <Box mt={10}>
+                  <Text fontSize="16px">Fee: <span style={{color:borderColor}}>{fee} RGP</span></Text>
+                  <Text></Text>
+                </Box>
                 <VStack>
                   <Flex>
                     <Text fontSize="14px" mr={2}>
@@ -730,7 +735,7 @@ const SetPrice = () => {
                     <InputRightAddon children="times" fontSize="16px"padding="3px" />
                   </InputGroup>
                 </VStack>
-              </Box>
+              </Flex>
               <Box mt={5}>
                 {inputError ?
                   <Button
@@ -872,14 +877,12 @@ const SetPrice = () => {
               
                 <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={buttonBgcolor}>
                   <Flex>
-                  <MarketDropDown marketType={marketType} setMarketType={setMarketType} />
+                  <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId}/>
 
                     <Spacer />
                     <VStack>
                       <Text fontSize="24px" color={textColorOne} textAlign="right" isTruncated width="160px" >
-                      {marketType==="Smartswap"?
-                        isNaN(parseFloat(formattedAmounts[Field.OUTPUT])) ? "0" : formattedAmounts[Field.OUTPUT]
-                        : otherMarketprice}
+                      {formattedAmounts[Field.OUTPUT]}
                       </Text>
                       {/* <Text fontSize="14px" color={color}  width="160px" textAlign="right">
                         -2.67
@@ -965,10 +968,10 @@ const SetPrice = () => {
     </Menu>
                 </VStack>
               </Box>
-              <Box display="flex" mt={5}>
+              <Flex mt={5} justifyContent="space-between">
                 <VStack>
                   <Flex>
-                    <Text fontSize="14px" mr={2} ml="-63px">
+                  <Text fontSize="14px" mr={2} ml="-63px">
                       Range
                     </Text>
                     <ExclamationIcon />
@@ -1000,15 +1003,18 @@ const SetPrice = () => {
                 border="none"
                 borderRadius="4px"
                 onClick={() => setSituation('below')}
-                isDisabled ={parseFloat(percentageChange)<=0 || percentageChange ===""?true:false}
+                                isDisabled ={parseFloat(percentageChange)<=0 || percentageChange ===""?true:false}
               >
                 Below
               </Tab>
             </TabList>
           </Tabs>
                   </Box>
+          
                 </VStack>
-                <Spacer />
+                <Box mt={10}>
+                  <Text fontSize="16px">Fee: <span style={{color:borderColor}}>{fee} RGP</span></Text>
+                </Box>
                 <VStack>
                   <Flex>
                     <Text fontSize="14px" mr={2}>
@@ -1018,13 +1024,12 @@ const SetPrice = () => {
                   </Flex>
                   <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
                     <Input placeholder="0" w="80px" value={totalNumberOfTransaction} type="number" onChange={e => {
-                      parseInt(e.target.value)<=0 ? setTotalNumberOfTransaction("1") :
                       setTotalNumberOfTransaction(e.target.value)
                     }} />
                     <InputRightAddon children="times" fontSize="16px"padding="3px" />
                   </InputGroup>
                 </VStack>
-              </Box>
+              </Flex>
               <Box mt={5}>
                 {inputError ?
                   <Button

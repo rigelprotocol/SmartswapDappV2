@@ -21,6 +21,7 @@ import { getNativeAddress } from "../utils/hooks/usePools";
 import { getDecimals } from "../utils/utilsFunctions";
 import { useCurrency } from "./Tokens";
 import { Field } from "../state/swap/actions";
+import { isAddress } from "../utils";
 
 const formatAmount = (number: string, decimals: number) => {
   return ethers.utils.formatUnits(number, decimals);
@@ -54,8 +55,9 @@ export const useSwap = (
   currencyA: Currency,
   currencyB: Currency,
   amountIn?: string,
+  marketFactory?:string,
+  marketRouterAddress?:string,
   unit?:string,
-  market?:string
 ) => {
   const { chainId, library } = useActiveWeb3React();
   const [address, setAddress] = useState<string>();
@@ -87,16 +89,25 @@ export const useSwap = (
   const tokenOneAddress = tokenA?.address || nativeAddress?.address;
   const tokenTwoAddress = tokenB?.address || nativeAddress?.address;
 
-  const wrappable: boolean = tokenOneAddress == tokenTwoAddress;
-  let validSmartAddress: string;
-  if (SMARTSWAPFACTORYADDRESSES[chainId as number] !== "0x") {
-    validSmartAddress = market ?? SMARTSWAPFACTORYADDRESSES[chainId as number];
-  }
- 
+  // const wrappable: boolean = tokenOneAddress == tokenTwoAddress;
+  // let validSmartAddress: string | undefined;
+  // if (SMARTSWAPFACTORYADDRESSES[chainId as number] !== "0x") {
+  //   // validSmartAddress =  SMARTSWAPFACTORYADDRESSES[chainId as number];
+  //   validSmartAddress = isAddress(market) ? market : SMARTSWAPFACTORYADDRESSES[chainId as number];
+  // }
+  
   useEffect(() => {
     const getPairs = async () => {
+      const wrappable: boolean = tokenOneAddress == tokenTwoAddress;
+  let validSmartAddress: string | undefined;
+  if (SMARTSWAPFACTORYADDRESSES[chainId as number] !== "0x") {
+    // validSmartAddress =  SMARTSWAPFACTORYADDRESSES[chainId as number];
+    
+    validSmartAddress = isAddress(marketFactory) ? marketFactory : SMARTSWAPFACTORYADDRESSES[chainId as number];
+  }
+  
       try {
-        const SmartFactory = await smartFactory(validSmartAddress, library);
+        const SmartFactory = await smartFactory(validSmartAddress ? validSmartAddress :  SMARTSWAPFACTORYADDRESSES[chainId as number], library);
         const pairAddress = await SmartFactory.getPair(
           tokenOneAddress,
           tokenTwoAddress
@@ -110,16 +121,21 @@ export const useSwap = (
         if (!wrappable && address !== ZERO_ADDRESS) {
           setWrap(false);
           if (amountIn !== undefined) {
+           
+            // const SwapRouter = await SmartSwapRouter(
+            //   SMARTSWAPROUTER[chainId as number],
+            //   library
+            // );
             const SwapRouter = await SmartSwapRouter(
-              SMARTSWAPROUTER[chainId as number],
-              library
-            );
+              marketRouterAddress ? marketRouterAddress : SMARTSWAPROUTER[chainId as number],
+               library
+             );
 
             const amountOut = await SwapRouter.getAmountsOut(amountIn, [
               tokenOneAddress,
               tokenTwoAddress,
             ]);
-
+          
             const amountsIn =
               independentFieldString === "INPUT"
                 ? undefined
@@ -164,11 +180,19 @@ export const useSwap = (
           const CurrencyA = getAddress(currencyA);
           const CurrencyB = getAddress(currencyB);
           const factory = await smartFactory(
-            SMARTSWAPFACTORYADDRESSES[chainId as number],
+            validSmartAddress ? validSmartAddress :  SMARTSWAPFACTORYADDRESSES[chainId as number],
             library
           );
+          // const factory = await smartFactory(
+          //   SMARTSWAPFACTORYADDRESSES[chainId as number],
+          //   library
+          // );
+          // const SwapRouter = await SmartSwapRouter(
+          //   SMARTSWAPROUTER[chainId as number],
+          //   library
+          // );
           const SwapRouter = await SmartSwapRouter(
-            SMARTSWAPROUTER[chainId as number],
+           marketRouterAddress ? marketRouterAddress : SMARTSWAPROUTER[chainId as number],
             library
           );
 
@@ -191,6 +215,7 @@ export const useSwap = (
             factory.getPair(USDT[chainId as number], CurrencyA),
             factory.getPair(USDT[chainId as number], CurrencyB),
           ]);
+          
 
           const [USDTRGP, USDTNATIVE] = await Promise.all([
             factory.getPair(
@@ -202,7 +227,14 @@ export const useSwap = (
               WNATIVEADDRESSES[chainId as number]
             ),
           ]);
-
+// console.log({  RGPTOKENA,
+//             RGPTOKENB,
+//             NATIVETOKENA,
+//             NATIVETOKENB,
+//             BUSDTOKENA,
+//             BUSDTOKENB,
+//             USDTTOKENA,
+//             USDTTOKENB,USDTRGP, USDTNATIVE})
           try {
             if (USDTTOKENA !== ZERO_ADDRESS && USDTTOKENB !== ZERO_ADDRESS) {
               if (amountIn !== undefined) {
@@ -539,6 +571,7 @@ export const useSwap = (
           setPath([]);
         }
       } catch (e) {
+        console.log(e)
         console.log(`Error occurs here: ${e}`);
         setAmount("");
       }
@@ -566,7 +599,9 @@ export const useSwap = (
     tokenA,
     tokenB,
     independentFieldString,
-    oppositeAmount
+    oppositeAmount,
+    marketFactory,
+    marketRouterAddress
   ]);
   
   return [address, wrap, amount, pathArray, pathSymbol,oppositeAmount];

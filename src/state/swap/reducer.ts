@@ -5,7 +5,8 @@ import {
   typeInput,
   replaceSwapState,
   switchCurrencies,
-  selectMarket
+  selectMarketFactory,
+  selectMarketRouterAddress
 } from "./actions";
 export interface SwapState {
   readonly independentField: Field;
@@ -19,7 +20,8 @@ export interface SwapState {
   // the typed recipient address or ENS name, or null if swap should go to sender
   readonly recipient: string | null;
   readonly percentageChange: string | null;
-  market: string | undefined
+  marketFactory: string | undefined,
+  marketRouterAddress: string | undefined
 }
 
 const initialState: SwapState = {
@@ -33,7 +35,8 @@ const initialState: SwapState = {
   },
   recipient: null,
   percentageChange:"0",
-  market:""
+  marketFactory:"",
+  marketRouterAddress:""
 };
 
 export default createReducer<SwapState>(initialState, (builder) =>
@@ -63,7 +66,8 @@ export default createReducer<SwapState>(initialState, (builder) =>
           typedValue,
           recipient,
           percentageChange:"0",
-          market:"0x7B14Ab51fAF91926a2214c91Ce9CDaB5C0E1A1c3"
+          marketFactory:"",
+          marketRouterAddress:""
         };
       }
     )
@@ -85,12 +89,13 @@ export default createReducer<SwapState>(initialState, (builder) =>
         [field]: { currencyId },
       };
     })
-    .addCase(selectMarket, (state, { payload: { market } }) => {
-       
+    .addCase(selectMarketFactory, (state, { payload: { marketFactory,marketRouterAddress } }) => {
+       console.log({marketFactory,marketRouterAddress})
       // normal case
       return {
         ...state,
-        market:market
+        marketFactory,
+        marketRouterAddress
       };
     })
     .addCase(switchCurrencies, (state) => {

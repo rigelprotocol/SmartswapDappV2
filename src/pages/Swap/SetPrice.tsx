@@ -38,7 +38,7 @@ import CInput from './components/sendToken/Input';
 import { Field } from '../../state/swap/actions';
 import { maxAmountSpend } from '../../utils/maxAmountSpend';
 import { autoSwapV2, rigelToken, SmartSwapRouter } from '../../utils/Contracts';
-import { RGPADDRESSES, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES, SMARTSWAPROUTER } from '../../utils/addresses';
+import { RGPADDRESSES, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES, SMARTSWAPROUTER, MARKETAUTOSWAPADDRESSES } from '../../utils/addresses';
 import { RGP } from '../../utils/addresses';
 import { useDispatch,useSelector } from "react-redux";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
@@ -106,6 +106,7 @@ const SetPrice = () => {
   const [totalNumberOfTransaction, setTotalNumberOfTransaction] = useState("1")
   const [approval, setApproval] = useState<String[]>([])
   const [value, setValue] = useState(0)
+  const [fee, setFee] = useState("")
   const [name, setName] = useState("+")
   const [shakeInput, setShakeInput] = useState<boolean>(false)
   const [dataSignature,setDataSignature] = useState<{mess:string,signature:string}>({
@@ -114,7 +115,7 @@ const SetPrice = () => {
   })
 
 
-  useEffect(() => {
+  useEffect(async () => {
     async function checkIfSignatureExists() {
 
       let user = await fetch(`${URL}/auto/data/${account}`)
@@ -134,6 +135,7 @@ const SetPrice = () => {
     }
     if (account) {
       checkIfSignatureExists()
+      getFee()
 
     }
   }, [account])
@@ -209,11 +211,17 @@ const SetPrice = () => {
     },      
     [allowedSlippage, bestTrade,toPrice]
   );
+  const getFee =async () => {
+    const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
+    const amountToApprove = await autoSwapV2Contract.fee()
+    const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
+    setFee(fee)
+  }
   const minimum = minimumAmountToReceive().toFixed(
     currencies[Field.OUTPUT]?.decimals
   );
   const sendTransactionToDatabase = async () => {
-    const autoSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
+    const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
     dispatch(
       setOpenModal({
         message: `Signing initial transaction between ${currencies[Field.INPUT]?.symbol} and ${currencies[Field.OUTPUT]?.symbol}`,
@@ -291,7 +299,8 @@ const SetPrice = () => {
           slippage:Number(allowedSlippage / 100),
           minimum,
           pathArray,
-          pathSymbol
+          pathSymbol,
+          market:marketType
         })
       })
       const res = await response.json()
@@ -400,7 +409,7 @@ const SetPrice = () => {
   
             const walletBal = (await token.balanceOf(account)) + 4e18;
             const approveTransaction = await rgp.approve(
-              AUTOSWAPV2ADDRESSES[chainId as number],
+              MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
               walletBal,
               {
                 from: account,
@@ -423,7 +432,7 @@ const SetPrice = () => {
             const token = address && await getERC20Token(address, library);
             const walletBal = (await token?.balanceOf(account)) + 4e18;
             const approveTransaction = await token?.approve(
-              AUTOSWAPV2ADDRESSES[chainId as number],
+              MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
               walletBal,
               {
                 from: account,
@@ -455,7 +464,7 @@ const SetPrice = () => {
   
     }
     const checkForApproval = async () => {
-      const autoSwapV2Contract = await autoSwapV2(AUTOSWAPV2ADDRESSES[chainId as number], library);
+      const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
       // check approval for RGP and the other token
       const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
       const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
@@ -502,7 +511,7 @@ const SetPrice = () => {
       const status = await getERC20Token(tokenAddress, library);
       const check = await status.allowance(
         account,
-        AUTOSWAPV2ADDRESSES[chainId as number],
+        MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
         {
           from: account,
         }
@@ -521,7 +530,7 @@ const SetPrice = () => {
       const status = await rigelToken(tokenAddress, library);
       const check = await status.allowance(
         account,
-        AUTOSWAPV2ADDRESSES[chainId as number],
+        MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
         {
           from: account,
         }
@@ -572,11 +581,12 @@ const SetPrice = () => {
                     <InputRightAddon children="times" fontSize="16px"padding="3px" />
                   </InputGroup>
                 </Box>
+                
                 <Box>
                 <Text fontSize="14px" mr={2} my={2}>
                       Router <ExclamationIcon />
                     </Text>
-                <MarketDropDown marketType={marketType} setMarketType={setMarketType} />
+                    <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId}/>
                 </Box>
           </Flex>
          
@@ -633,7 +643,11 @@ const SetPrice = () => {
 
           </Box>
           {/* <Input placeholder="0.00" size="lg" borderRadius={4} borderColor={borderColor} /> */}
-          <Flex justifyContent="flex-end">
+
+          <Flex justifyContent="space-between">
+          <Box>
+                  <Text fontSize="16px" mb={2}>Fee: <span style={{color:borderColor}}>{fee} RGP</span></Text>
+                </Box>
             <SliderComponent 
           setSliderValue={setPositiveSliderValue}
           sliderValue={positiveSliderValue}
@@ -647,6 +661,7 @@ const SetPrice = () => {
             />
           </Flex>
           <HStack>
+          
             <CInput
               currency={currencies[Field.INPUT]}
               initialFromPrice={initialFromPrice}
