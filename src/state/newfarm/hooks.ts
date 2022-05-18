@@ -11,6 +11,7 @@ import {
   MasterChefV2Contract,
   LiquidityPairInstance,
   smartFactory,
+  productStakingContract,
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
@@ -19,6 +20,7 @@ import {
   BUSD,
   USDT,
   USDC,
+  PRODUCTSTAKINGADDRESSES,
 } from "../../utils/addresses";
 import { getERC20Token } from "../../utils/utilsFunctions";
 import { ethers } from "ethers";
@@ -29,8 +31,10 @@ import {
   updateYieldFarmDetails,
   updateNewFilterResult,
   updateNewSearchResult,
+  updateProductFarmDetails,
 } from "../farming/action";
 import { Web3Provider } from "@ethersproject/providers";
+import Web3 from "web3";
 
 export const useFarmData = (): farmDataInterface => {
   const farms = useSelector((state: State) => state.newfarm);
@@ -630,6 +634,82 @@ export const useFetchYieldFarmDetails = ({
     }
   }, []);
   return { loading };
+};
+
+interface productFarmState {
+  content: {
+    feature:string,
+    percentageProfitShare:string,
+    profitTimeLine:string,
+    totalLiquidity:string,
+    estimatedTotalProfit:string,
+    pid:number,
+    deposit:string,
+    poolAllowance: "",
+    type:string
+  };
+  loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+export const useProductFarmDetails = ({
+  content,
+  loading,
+  setLoading
+}:productFarmState) =>{
+  const { account, chainId, library } = useWeb3React();
+const getUserValue = async ()=> {
+  const productFarm = await productStakingContract(
+    PRODUCTSTAKINGADDRESSES[chainId as number],
+    library
+  );
+   const [ userInfo, FarmTokenBalance] =
+        await Promise.all([
+          productFarm.userInfo(account),
+          productFarm.userData(account),
+        ]);
+        console.log({userInfo,FarmTokenBalance})
+      const tokenStaked = await FarmTokenBalance.tokenQuantity
+      console.log({tokenStaked},tokenStaked.toString(),Web3.utils.fromWei(tokenStaked.toString()))
+
+      return {
+        feature:"Auto Period",
+        percentageProfitShare:"25%",
+        profitTimeLine:"6 months",
+        totalLiquidity:"188839",
+        estimatedTotalProfit:"929020003",
+        deposit: "RGP",
+        pid:93903,
+        poolAllowance: "",
+        type:"AT",
+        tokenStaked: Web3.utils.fromWei(tokenStaked.toString())
+      };
+}
+ 
+useMemo(async ()=>{
+ let response =await getUserValue()
+
+ updateProductFarmDetails({value:[response]})
+
+setLoading(false)
+},[])
+return {loading}
+
+}
+export const useUpdateProductFarm = ({
+  reload,
+  setReload,
+  content,
+  section,
+}: updateFarmInterface) => {
+  const data = useFarmData();
+  const searchSection = useSelector((state) => state.farming);
+
+  const { account, chainId, library } = useWeb3React();
+  const [loadingState, setLoadingState] = useState(true);
+
+  const dispatch = useDispatch();
+
+  return { loadingState };
 };
 
 // const { account, chainId, library } = useWeb3React();

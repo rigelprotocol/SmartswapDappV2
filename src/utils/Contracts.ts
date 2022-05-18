@@ -10,6 +10,7 @@ import WETHABI from "./abis/WETH9.json";
 import SmartSwapLPTokenABI1 from "./abis/LPToken1.json";
 import SmartSwapLPTokenABI2 from "./abis/LPToken2.json";
 import SmartSwapLPTokenABI3 from "./abis/SmartSwapLPTokenThree.json";
+import ProductStakingABI from "./abis/ProductStaking.json";
 import RigelToken from "./abis/RigelToken.json";
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers";
 import { AddressZero } from "@ethersproject/constants";
@@ -171,6 +172,12 @@ export const smartSwapLPTokenPoolThree = async (
   library: Web3Provider | undefined
 ) => {
   return new Contract(address, SmartSwapLPTokenABI3, library?.getSigner());
+};
+export const productStakingContract = async (
+  address: string,
+  library: Web3Provider | undefined
+) => {
+  return new Contract(address, ProductStakingABI, library?.getSigner());
 };
 
 export const smartSwapLPTokenV2PoolFour = async (

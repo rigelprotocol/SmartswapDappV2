@@ -791,27 +791,23 @@ const SendToken = () => {
       const sendTransaction = await weth.deposit(
         {
           value: isExactIn ? parsedAmount : formatAmount,
-        },
-        chainId === 137 || chainId === 80001
-          ? {
-              maxPriorityFeePerGas:
-                chainId === 137
-                  ? ethers.utils.parseUnits(format1, 9).toString()
-                  : null,
-              maxFeePerGas:
-                chainId === 137
-                  ? ethers.utils.parseUnits(format2, 9).toString()
-                  : null,
-            }
-          : {
-              gasPrice:
-                chainId === 137
-                  ? null
-                  : chainId === 80001
-                  ? null
-                  : ethers.utils.parseUnits(format3, 9).toString(),
-            }
-      );
+          maxPriorityFeePerGas:
+            chainId === 137
+              ? ethers.utils.parseUnits(format1, 9).toString()
+              : null,
+          maxFeePerGas:
+            chainId === 137
+              ? ethers.utils.parseUnits(format2, 9).toString()
+              : null,
+          gasPrice:
+            chainId === 137
+              ? null
+              : chainId === 80001
+              ? null
+              : ethers.utils.parseUnits(format3, 9).toString(),
+          }
+        );
+
       const { confirmations, status } = await sendTransaction.wait(1);
       const { hash } = sendTransaction;
       if (
@@ -939,7 +935,7 @@ const SendToken = () => {
   };
 
   const swapTokens = async () => {
-    if (chainId === SupportedChainId.POLYGONTEST || SupportedChainId.POLYGON) {
+    if (chainId === SupportedChainId.POLYGONTEST || chainId === SupportedChainId.POLYGON) {
       if (
         currencies[Field.INPUT]?.symbol === "MATIC" &&
         currencies[Field.OUTPUT]?.symbol === "WMATIC"
@@ -1195,7 +1191,7 @@ const SendToken = () => {
               _hover={{ bgColor: buttonBgcolor }}
               onClick={() => {
                 GButtonClick("straight_swap","swapping",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
-              
+
                 setCurrentToPrice(receivedAmount);
                 setShowModal(!showModal);
               }}
