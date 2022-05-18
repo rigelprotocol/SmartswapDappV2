@@ -452,7 +452,6 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
     );
 
 
-      console.log({iterated})
     return iterated;
   };
 
