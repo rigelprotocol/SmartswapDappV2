@@ -142,6 +142,7 @@ const ShowYieldFarmDetails = ({
   const [depositInputHasError, setDepositInputHasError] = useState(false);
   const [refAddressHasError, setRefAddressHasError] = useState(false);
   const [depositErrorButtonText, setDepositErrorButtonText] = useState("");
+  const [enoughApproval, setEnoughApproval] = useState(false);
   const [RGPBalance] = useRGPBalance();
   const [farmingFee, setFarmingFee] = useState("10");
   const [FarmingFeeLoading, setFarmingFeeLoading] = useState(true);
@@ -189,7 +190,19 @@ const ShowYieldFarmDetails = ({
       setIsReferrerCheck(false);
     }
   };
+useEffect(()=>{
+  const checkEnoughApproval = (allowance: any, balance: any) => {
+    if (allowance && balance) {
 
+      let approve = content.type === "RGP"
+        ? allowance.gt(ethers.utils.parseEther(balance))
+        : parseFloat(allowance) >= parseFloat(depositTokenValue);
+        approve ? setEnoughApproval(true) : setEnoughApproval(false)
+    }
+    return true;
+  };
+  checkEnoughApproval(content.poolAllowance,content.availableToken)
+},[depositTokenValue])
   useEffect(() => {
     const poolAllowance = async (contract: Contract) => {
       if (account) {
@@ -684,15 +697,7 @@ const ShowYieldFarmDetails = ({
       );
     }
   };
-  const enoughApproval = (allowance: any, balance: any) => {
-    if (allowance && balance) {
-
-      return content.type === "RGP"
-        ? allowance.gt(ethers.utils.parseEther(balance))
-        : parseFloat(allowance) >= parseFloat(balance);
-    }
-    return true;
-  };
+ 
 
   async function confirmUnstakeDeposit(val: string) {
     try {
@@ -2321,10 +2326,7 @@ const ShowYieldFarmDetails = ({
                       </>
                     ) : (
                       <>
-                        {enoughApproval(
-                          content.poolAllowance,
-                          content.availableToken
-                        ) ? (
+                        {enoughApproval ? (
                           <Button
                             my='2'
                             mx='auto'
@@ -2464,10 +2466,7 @@ const ShowYieldFarmDetails = ({
                       </>
                     ) : (
                       <>
-                        {enoughApproval(
-                          content.poolAllowance,
-                          content.availableToken
-                        ) ? (
+                        {enoughApproval ? (
                           <Button
                             my='2'
                             mx='auto'
