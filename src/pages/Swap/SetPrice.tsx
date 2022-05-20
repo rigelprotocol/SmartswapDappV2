@@ -84,7 +84,7 @@ const SetPrice = () => {
     }
     runCheck()
   }, [currencies[Field.INPUT], account])
-  const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")//http://localhost:7000
+  const [URL, setURL] = useState("http://178.62.13.26")//http://localhost:7000
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [disableInput, setDisableInput] = useState(true)
   const [initialFromPrice, setInitialFromPrice] = useState("")
