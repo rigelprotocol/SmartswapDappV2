@@ -18,13 +18,12 @@ import {
 import React, {useMemo, useState, useEffect} from 'react';
 import {getERC20Token} from "../../../utils/utilsFunctions";
 import {setOpenModal, TrxState} from "../../../state/application/reducer";
-import {SMARTBID2} from "../../../utils/addresses";
+import {SMARTBID2, SMARTSWAPNFTTWO, SMARTBID1} from "../../../utils/addresses";
 import {ExplorerDataType, getExplorerLink} from "../../../utils/getExplorerLink";
 import {addToast} from "../../../components/Toast/toastSlice";
 import {useActiveWeb3React} from "../../../utils/hooks/useActiveWeb3React";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {useBidAllowance} from "../../../hooks/useSmartBid";
-import {useRGPBalance} from "../../../utils/hooks/useBalances";
 import {ethers} from "ethers";
 import {RigelSmartBidTwo} from "../../../utils/Contracts";
 import {ZERO_ADDRESS} from "../../../constants";
@@ -36,10 +35,21 @@ type BidModalProps = {
     close: () => void,
     id: number,
     amount: string,
-    max: string
+    max: string,
+    tokenInfo: {
+        symbol: string,
+        balance: string,
+        decimals: string
+    },
+    address: string,
+    placeBid: {
+        address: string,
+        id: number
+    },
+    bidLoad: boolean
 };
 
-const BidModal = ({isOpen, close, id, amount, max} : BidModalProps) => {
+const BidModal = ({isOpen, close, id, amount, max, tokenInfo, address, placeBid, bidLoad} : BidModalProps) => {
     const { chainId, library, account } = useActiveWeb3React();
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     const lightTextColor = useColorModeValue("#666666", "grey");
@@ -48,8 +58,6 @@ const BidModal = ({isOpen, close, id, amount, max} : BidModalProps) => {
 
     const {hasTokenABeenApproved, loadInfo} = useBidAllowance(checkTokenApproval, amount, isOpen, id);
 
-    const [RGPBalance] = useRGPBalance();
-
     const bgColour = useColorModeValue("#FFFFFF", "#15202B");
     const textColour = useColorModeValue("#333333", "#F1F5F8");
     const closeBtnColour = useColorModeValue("#666666", "#DCE5EF");
@@ -57,8 +65,6 @@ const BidModal = ({isOpen, close, id, amount, max} : BidModalProps) => {
 
     const [stakeBid, setStakeBid] = useState('');
     const [error, setError] = useState('');
-    const [tokenInfo, setTokenInfo] = useState({symbol: '', balance: '', decimals: ''});
-    const [tokenAddress, setTokenAddress] = useState('');
 
     const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`);
 
@@ -79,37 +85,6 @@ const BidModal = ({isOpen, close, id, amount, max} : BidModalProps) => {
         }
     }, [stakeBid]);
 
-    const checkEvents = async () => {
-        const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
-
-        bidContract.on('bidding', (userAddress, pid, stakedAmount, time) => {
-            console.log('Event here!');
-            console.log(userAddress, pid.toString(), amount.toString(), time.toString())
-        });
-    };
-
-
-    useMemo(() => {
-        const getTokenData = async () => {
-
-            try {
-                const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
-                const bidToken = await bidContract.requestToken(id);
-                setTokenAddress(bidToken._token);
-
-                const token = await getERC20Token(bidToken._token, library);
-
-                const [tokenSymbol, tokenBalance, tokenDecimals] = await Promise.all(
-                    [token.symbol(), token.balanceOf(account), token.decimals()]);
-                setTokenInfo({symbol: tokenSymbol, balance: tokenBalance, decimals: tokenDecimals});
-
-            } catch (e) {
-                console.log(e)
-            }
-        };
-        getTokenData();
-    }, []);
-
 
     const approveTokens = async () => {
         if (account) {
@@ -121,7 +96,7 @@ const BidModal = ({isOpen, close, id, amount, max} : BidModalProps) => {
                     })
                 );
 
-                const token = await getERC20Token(tokenAddress, library);
+                const token = await getERC20Token(address, library);
 
                 const approval = await token.approve(
                     SMARTBID2[chainId as number],
@@ -178,8 +153,9 @@ const BidModal = ({isOpen, close, id, amount, max} : BidModalProps) => {
                     })
                 );
                 const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
+                console.log(placeBid);
 
-                const data = await bidContract.submitBid(id, ZERO_ADDRESS, 0, ethers.utils.parseUnits(stakeBid, tokenInfo.decimals));
+                const data = await bidContract.submitBid(id, placeBid.id !== 0 ? placeBid.address : ZERO_ADDRESS, placeBid.id !== 0 ? placeBid.id : 0, ethers.utils.parseUnits(stakeBid, tokenInfo.decimals));
 
                 const { confirmations } = await data.wait(3);
                 const { hash } = data;
@@ -205,21 +181,29 @@ const BidModal = ({isOpen, close, id, amount, max} : BidModalProps) => {
                         })
                     );
                     setStakeBid('');
-                    checkEvents();
                     close();
-
                 }
 
 
             } catch (e) {
                 console.log(e);
-                dispatch(
-                    setOpenModal({
-                        message: `Transaction Failed`,
-                        trxState: TrxState.TransactionFailed,
-                    })
-                );
+                if (e.data.code === 3) {
+                    dispatch(
+                        setOpenModal({
+                            message: `You do not own any Rigel NFTs`,
+                            trxState: TrxState.TransactionFailed,
+                        })
+                    );
+                } else {
+                    dispatch(
+                        setOpenModal({
+                            message: `Transaction Failed`,
+                            trxState: TrxState.TransactionFailed,
+                        })
+                    );
+                }
             }
+
         }
     };
 
@@ -243,22 +227,31 @@ const BidModal = ({isOpen, close, id, amount, max} : BidModalProps) => {
                             onClick={() => close()}
                         />
                         <ModalBody align="center" my={2}>
-                            {loadInfo ? <Spinner
-                                thickness="4px"
-                                speed="0.53s"
-                                emptyColor="transparent"
-                                color="#319EF6"
-                                size="xl"
-                                width="100px"
-                                height="100px"
-                                my={10}
-                            /> : (
+                            {loadInfo || bidLoad ?
+                            <Box justifyContent={'center'} alignItems={'center'}>
+                                <Spinner
+                                    thickness="4px"
+                                    speed="0.53s"
+                                    emptyColor="transparent"
+                                    color="#319EF6"
+                                    size="xl"
+                                    width="100px"
+                                    height="100px"
+                                    my={10}
+                                />
+                                {bidLoad &&  <Text fontSize="14px" fontWeight={400} color={textColour} py={2}>Checking your NFT ownership status ...</Text>}
+                            </Box>
+                            : (
                                 <>
                                     <Text fontSize="20px" fontWeight={500} color={textColour} py={2}>Now let's place your bid</Text>
                                     <Text fontSize="14px" fontWeight={400} color={textColour} py={2}>You’re about to place bid on #Event {id}</Text>
 
                                     <Box>
-                                        <Text my={'20px'} color={'#666666'}>Last bid placed on this event was {ethers.utils.formatUnits(amount, tokenInfo.decimals)} {tokenInfo.symbol}</Text>
+                                        <Text
+                                            my={'20px'}
+                                            color={'#666666'}>
+                                            Last bid placed on this event was {ethers.utils.formatUnits(amount, tokenInfo.decimals)} {tokenInfo.symbol}
+                                        </Text>
                                         <InputGroup>
                                             <Input
                                                 placeholder='Enter amount'

@@ -6,8 +6,33 @@ import {Box, Text, Flex,
 } from '@chakra-ui/react';
 import bidLogo from '../../../assets/smartbid/bidRGP.svg';
 import {SmartBidActivity, SmartBidWinners} from "./cardData";
+import {shortenAddress} from "../../../utils";
+import {ethers} from "ethers";
 
-const ActivityPanel = () => {
+export function timeConverter(UNIX_timestamp: any) {
+    const a = new Date(UNIX_timestamp * 1000);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const year = a.getFullYear();
+    const month = months[a.getMonth()];
+    const date = a.getDate();
+    const hour = a.getHours() < 10 ? `0${a.getHours()}` : a.getHours();
+    const min = a.getMinutes()<10 ? `0${a.getMinutes()}` : a.getMinutes();
+    return `${month} ${date}, ${year} ${hour}:${min}`;
+}
+
+type ActivityID = {
+    address: string,
+    id: number,
+    amount: string,
+    time: string,
+    tokenInfo: {
+        symbol: string,
+        balance: string,
+        decimals: string
+    }
+}
+
+const ActivityPanel = ({address, id, amount, time, tokenInfo}: ActivityID) => {
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     const [isMobileDevice] = useMediaQuery("(max-width: 550px)");
     return (
@@ -23,15 +48,14 @@ const ActivityPanel = () => {
                        <Image src={bidLogo} height={isMobileDevice ? '15px ' : '20px'} width={isMobileDevice ? '15px ' : '20px'}/>
                    </Flex>
                     <Box mx={2}>
-                        <Text fontWeight={700} fontStyle={'normal'} fontSize={isMobileDevice ? '12px' : '16px'}  my={1}>2 RGP</Text>
-                        <Text fontWeight={500} fontStyle={'normal'} fontSize={'12px'}  my={1}>Bid placed by .. 0x8d80...0a94</Text>
+                        <Text fontWeight={700} fontStyle={'normal'} fontSize={isMobileDevice ? '12px' : '16px'}  my={1}>{ethers.utils.formatUnits(amount, 18)} RGP</Text>
+                        <Text fontWeight={500} fontStyle={'normal'} fontSize={'12px'}  my={1}>Bid placed by .. {shortenAddress(address)}</Text>
                     </Box>
                 </Flex>
                 <Flex
-                   // fontFamily={'Cera Pro, sans serif'}
                     alignItems={'center'}>
                     <Box mx={'20px'} border={'.5px solid #DEE6ED'} height={'40px'} rotate={'90deg'}/>
-                    <Text fontWeight={400} fontStyle={'normal'} fontSize={isMobileDevice ? '10px' : '14px'} color={'#A7A9BE'} my={1}>April 30, 2020 12:44pm</Text>
+                    <Text fontWeight={400} fontStyle={'normal'} fontSize={isMobileDevice ? '10px' : '14px'} color={'#A7A9BE'} my={1}>{timeConverter(time)}</Text>
                 </Flex>
             </Flex>
         </>
@@ -84,8 +108,19 @@ const WinnersPanel = ({id, colors, price}: {id: number, colors: string[], price:
     )
 };
 
+type BidTabsDetails = {
+    time: number,
+    id: number,
+    events: [],
+    tokenInfo: {
+        symbol: string,
+        balance: string,
+        decimals: string
+    }
+}
 
-const BidTabs = ({time} : {time: number}) => {
+
+const BidTabs = ({time, id, events, tokenInfo} : BidTabsDetails) => {
     const [isMobileDevice] = useMediaQuery("(max-width: 950px)");
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     return (
@@ -99,8 +134,14 @@ const BidTabs = ({time} : {time: number}) => {
 
                     <TabPanels mb={'80px'}>
                         <TabPanel>
-                            {SmartBidActivity.map((item, index) => (
-                                <ActivityPanel key={index}/>
+                            {events.map((item, index) => (
+                                <ActivityPanel key={index}
+                                               address={item.args[0]}
+                                               id={item.args[1].toString()}
+                                               amount={item.args[2].toString()}
+                                               time={item.args[3].toString()}
+                                               tokenInfo={tokenInfo}
+                                />
                             ))}
                         </TabPanel>
                         <TabPanel>

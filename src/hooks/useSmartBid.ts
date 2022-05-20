@@ -6,7 +6,6 @@ import {useEffect, useState} from "react";
 import {RigelNFT, RigelSmartBid, RigelSmartBidTwo} from "../utils/Contracts";
 import {getERC20Token} from "../utils/utilsFunctions";
 import {ethers} from "ethers";
-import {formatAmount} from "../utils/hooks/useAccountHistory";
 
 
 
@@ -75,19 +74,15 @@ export const useBidAllowance = (
                     const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
                     const bidToken = await bidContract.requestToken(id);
 
-
-
                         const [tokenA] = await Promise.all([
                             getERC20Token(bidToken._token, library)
                         ]);
 
-                        const [allowanceA, decimalsA] = await Promise.all([
-                            tokenA.allowance(account, SMARTBID2[chainId as number]),
-                            tokenA.decimals()
+                        const [allowanceA] = await Promise.all([
+                            tokenA.allowance(account, SMARTBID2[chainId as number])
                         ]);
 
-                        const isTokenAApproved = allowanceA.toString() > parseFloat(ethers.utils.formatUnits(amount, decimalsA).toString());
-                        console.log(isTokenAApproved);
+                        const isTokenAApproved = allowanceA.toString() > parseFloat(amount.toString());
 
                         setHasTokenABeenApproved(isTokenAApproved);
                         setLoadInfo(false);
