@@ -10,9 +10,10 @@ import {
     ModalBody,
     useColorModeValue,
     useDisclosure,
-    Circle, Button, Link
+    Circle, Button, Link,
+    Flex
 } from "@chakra-ui/react";
-import { CheckIcon, CloseIcon } from '@chakra-ui/icons'
+import { CheckIcon, CloseIcon, ArrowUpIcon } from '@chakra-ui/icons'
 import { RootState } from '../../../state';
 import { setCloseModal, TrxState } from '../../../state/application/reducer';
 
@@ -25,6 +26,7 @@ const TransactionStateModal: React.FC = () => {
     const closeButtonBgColour = useColorModeValue("#319EF6", "#008DFF");
     const successBgColour = useColorModeValue("#22BB33", "#75F083");
     const errorBgColour = useColorModeValue("#CC334F", "#FF3358");
+    const transBgColour = useColorModeValue("#2F82D0", "#FF3358");
 
     const [modalOpen, setModalOpen] = useState(false)
     const dispatch = useDispatch();
@@ -141,6 +143,8 @@ const TransactionStateModal: React.FC = () => {
                             >
                                 Close
                             </Button>}
+
+
                     </ModalBody>
                 </ModalContent>
             </Modal>

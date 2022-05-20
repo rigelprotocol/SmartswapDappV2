@@ -46,8 +46,6 @@ function NetworkIndicator() {
   if (!chainId || !info || !library) {
     return null;
   }
-  console.log("infor", info);
- 
   return (
     <>
       <Button

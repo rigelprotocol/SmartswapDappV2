@@ -130,9 +130,9 @@ const MobileNavDrawer = () => {
                       onClick={onClose}
                     >
                       <Nav
-                        label="Auto-Time"
+                        label="auto-period"
                         to={
-                          chainId === SupportedChainId.BINANCETEST ? "#" : "#"
+                          chainId === SupportedChainId.BINANCETEST ? "/auto-period" : "#"
                         }
                       />
                     </Text>
@@ -144,7 +144,7 @@ const MobileNavDrawer = () => {
                       <Nav
                         label="Set Price"
                         to={
-                          chainId === SupportedChainId.BINANCETEST ? "#" : "#"
+                          chainId === SupportedChainId.BINANCETEST ? "/set-price" : "#"
                         }
                       />
                     </Text>

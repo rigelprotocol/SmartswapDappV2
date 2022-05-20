@@ -21,6 +21,7 @@ export const SMARTSWAPFACTORYADDRESSES: { [key: string]: string } = {
   "42262": "0xCE2ca7C47813E86008B0f9D5d5661356c130997f",
 };
 
+
 //SMARTSWAP ROUTER
 export const SMARTSWAPROUTER: { [key: string]: string } = {
   "1": "0x",
@@ -67,6 +68,8 @@ export const WNATIVEADDRESSES: { [key: string]: string } = {
   "42262": "0x21C718C22D52d0F3a789b752D4c2fD5908a8A733",
 };
 
+
+
 export const WNATIVEADDRESSESSYMBOL: { [key: string]: string } = {
   "1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
   "3": "0x492Df17f202e36525151Ce7BcD49d5637Dc10659",
@@ -106,6 +109,75 @@ export const MASTERCHEFV2ADDRESSES: { [key: string]: string } = {
   "80001": "0x4B3B531bbbf7821A6f3019f82B461da760a184Ae",
   "42261": "0xFCAD25Ce875EA7eaBdcf99cdF57692376F1DbdF1",
   "42262": "0x1A700c1810387F4178b3944373388de76A88F804",
+};
+export const AUTOSWAPV2ADDRESSES: { [key: string]: string } = {
+  "1": "0x",
+  "3": "0x",
+  "56": "0x80297998b4b7bd7Bf3c71c9E800Ad3AB403437cB",
+  "97": "0xf767A2b636494c98afB8452633ba61F3A1400dd7",
+  "137": "0xCA4f379b674e2d72c8144b5c521BdD24657C8949",
+  "80001": "0x",
+};
+export const MARKETAUTOSWAPADDRESSES : { [key: string]: {[key:string]: string} } = {
+  "Smartswap": {
+    "56": "0xB6e99D7a37Bbf4C45fA54929C9E1c6DE213962de",
+    // "56": "0x80297998b4b7bd7Bf3c71c9E800Ad3AB403437cB",
+    "97": "0xf767A2b636494c98afB8452633ba61F3A1400dd7",
+    "137": "0xCA4f379b674e2d72c8144b5c521BdD24657C8949",
+  },
+  "Pancakeswap":{
+    "56": "0x0024Cc4036776e7314d08faAA0B079A625Fd2ACd",
+    "97": "0x"
+  },
+  "Quickswap":{
+    "137":"0x70b2Bd618C0Fa0253E125Ff4b4c671D0496238a0"
+  }
+};
+export const OTHERMARKETADDRESSES: { [key: string]: {[key:string]: string} } = {
+  "Pancakeswap":{
+    "56": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "97": "0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3"
+  },
+  "Quickswap":{
+    "137":"0x831753DD7087CaC61aB5644b308642cc1c33Dc13"
+  },
+  "Smartswap":{
+    "1": "0x",
+  "3": "0x3175bfbc3e620FaF654309186f66908073cF9CBB",
+  "56": "0xf78234E21f1F34c4D8f65faF1BC82bfc0fa24920",
+  "97": "0x00749e00af4359df5e8c156af6dfbdf30dd53f44",
+  "137": "0x5f5acbd6c1c98d380aa12e614510bacf39fbd531",
+  "80001": "0xaEBC5E5aC2Ad8680978Ce11d03048A4E2889DEbA",
+  "42261": "0x3c5AAa6cAA82CC62327C7A0849e4d854B1905A3d",
+  "42262": "0xFf672dB2558c8A78813EA3F61303460fcec656F7",
+  }
+  // "Sushiswap":{
+  //   "56": "0x",
+  //   "97": "0x"
+  // }
+};
+export const OTHERMARKETFACTORYADDRESSES: { [key: string]: {[key:string]: string} } = {
+  "Pancakeswap":{
+    "56": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+    "97": "0x"
+  },
+  "Quickswap":{
+    "137": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32"
+  },
+  "Smartswap": {
+      "1": "0x",
+      "3": "0xc33b4cB9eAFE64BEa3c96e723bEBdB961d462288",
+      "56": "0x655333A1cD74232C404049AF9d2d6cF1244E71F6",
+      "97": "0x7B14Ab51fAF91926a2214c91Ce9CDaB5C0E1A1c3",
+      "137": "0xbb0fa753ae6fddb78bb66d70fc223e4a10d5f4d4",
+      "80001": "0xC8F273a1656d26BB8ECBc8B267e53304533600c4",
+      "42261": "0xF9d14C9516AF795ee2b5dca7479f927EEaC1EDdb",
+      "42262": "0xCE2ca7C47813E86008B0f9D5d5661356c130997f",
+  }
+  // "Sushiswap":{
+  //   "56": "0x",
+  //   "97": "0x"
+  // }
 };
 
 export const RGPSPECIALPOOLADDRESSES: { [key: string]: string } = {

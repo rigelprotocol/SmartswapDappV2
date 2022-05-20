@@ -6,6 +6,8 @@ import {
   typeInput,
   replaceSwapState,
   switchCurrencies,
+  selectMarketFactory,
+  selectMarketRouterAddress
 } from "./actions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import { ParsedQs } from "qs";
@@ -50,19 +52,11 @@ export function useSwapState(): RootState["swap"] {
 
 export function useSwapActionHandlers(): {
   onCurrencySelection: (field: Field, currency: Currency) => void;
+  onMarketSelection: (marketFactory:string,marketRouterAddress:string) =>void
   onUserInput: (field: Field, typedValue: string) => void;
   onSwitchTokens: () => void;
 } {
-  const { chainId, account } = useActiveWeb3React();
-  const {
-    independentField,
-    typedValue,
-    [Field.INPUT]: { currencyId: inputCurrencyId },
-    [Field.OUTPUT]: { currencyId: outputCurrencyId },
-    recipient,
-  } = useSwapState();
 
-  const [Balance, Symbol] = useNativeBalance();
 
   const dispatch = useDispatch<AppDispatch>();
   const onCurrencySelection = useCallback(
@@ -80,7 +74,17 @@ export function useSwapActionHandlers(): {
     },
     [dispatch]
   );
-
+  const onMarketSelection = useCallback(
+    (marketFactory:string,marketRouterAddress:string) => {
+      dispatch(
+        selectMarketFactory({
+          marketFactory,
+          marketRouterAddress
+        })
+      );
+    },
+    [dispatch]
+  );
   const onSwitchTokens = useCallback(() => {
     dispatch(switchCurrencies());
   }, [dispatch]);
@@ -95,6 +99,7 @@ export function useSwapActionHandlers(): {
     onCurrencySelection,
     onUserInput,
     onSwitchTokens,
+    onMarketSelection,
   };
 }
 
@@ -109,6 +114,8 @@ export function useDerivedSwapInfo(): {
   pathSymbol: string;
   isExactIn: boolean;
   formatAmount: string;
+ unitAmount: string| undefined,
+ oppositeAmount: string | undefined
 } {
   const { account } = useActiveWeb3React();
   const [Balance] = useNativeBalance();
@@ -118,6 +125,8 @@ export function useDerivedSwapInfo(): {
     [Field.INPUT]: { currencyId: inputCurrencyId },
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
     recipient,
+    marketFactory,
+    marketRouterAddress
   } = useSwapState();
   const inputCurrency = useCurrency(inputCurrencyId);
   const outputCurrency = useCurrency(outputCurrencyId);
@@ -133,19 +142,31 @@ export function useDerivedSwapInfo(): {
     typedValue,
     (isExactIn ? inputCurrency : outputCurrency) ?? undefined
   );
-
   const [address, wrap, amount, pathArray, pathSymbol] = useSwap(
     // isExactIn ? inputCurrency : outputCurrency,
     inputCurrency,
     // isExactIn ? outputCurrency : inputCurrency,
     outputCurrency,
-    parsedAmount
+    parsedAmount,
+    marketFactory,
+    marketRouterAddress
   );
+const [,, unitAmount, ,,oppositeAmount ] = useSwap(
+    // isExactIn ? inputCurrency : outputCurrency,
+    inputCurrency,
+    // isExactIn ? outputCurrency : inputCurrency,
+    outputCurrency,
+    "1000000000000000000",
+    marketFactory,
+    marketRouterAddress,
+    "unit"
+  ); 
 
   const formatAmount = tryParseAmount(
     amount as string,
     inputCurrency as Currency
   );
+
 
   const showWrap = wrap;
   const bestTrade = amount;
@@ -201,9 +222,12 @@ export function useDerivedSwapInfo(): {
     pathArray,
     pathSymbol,
     isExactIn,
-    formatAmount
+    formatAmount,
+    unitAmount,
+    oppositeAmount
   };
 }
+
 
 function parseTokenAmountURLParameter(urlParam: any): string {
   // eslint-disable-next-line no-restricted-globals

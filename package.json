@@ -61,6 +61,7 @@
     "react-usestateref": "^1.0.8",
     "redux-localstorage-simple": "^2.4.1",
     "save-dev": "^0.0.1-security",
+    "socket.io-client": "^4.5.0",
     "typescript": "^3.9.5",
     "web-vitals": "^0.2.2",
     "web3": "^1.6.1"

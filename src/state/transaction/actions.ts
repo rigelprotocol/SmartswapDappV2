@@ -41,3 +41,5 @@ export const checkedTransaction = createAction<{
 export const transactionTab = createAction<{removeSideTab : boolean}>('transactions/transactionTab');
 
 export const detailsTab = createAction<{removeDetailsTab : boolean}>('transactions/detailsTab');
+export const refreshTransactionTab = createAction<{refresh : number}>('transactions/refreshTab');
+export const notificationTab = createAction<{setPriceNotification? : number,autoTimeNotification? : number,address?: string}>('transactions/notificationTab');

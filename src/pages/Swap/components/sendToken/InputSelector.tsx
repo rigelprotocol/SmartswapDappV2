@@ -26,6 +26,10 @@ type InputSelectorProps = {
   onMax?: () => void;
   onUserInput: (value: string) => void;
   value: string | undefined;
+  display?:boolean;
+  onHover?:()=>void
+  disable?:boolean
+  placeholder?:string
 };
 
 const InputSelector = ({
@@ -38,6 +42,9 @@ const InputSelector = ({
   onMax,
   onUserInput,
   value,
+  display,
+  disable,
+  onHover
 }: InputSelectorProps) => {
   const inputColor = useColorModeValue("#333333", "#F1F5F8");
   const balanceColor = useColorModeValue("#666666", "#DCE5EF");
@@ -47,7 +54,6 @@ const InputSelector = ({
   const tokenListTrgiggerBgColor = useColorModeValue("", "#213345");
 
   const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`);
-
   const enforcer = (nextUserInput: string) => {
     if (nextUserInput === "" || inputRegex.test(escapeRegExp(nextUserInput))) {
       onUserInput(nextUserInput);
@@ -58,7 +64,7 @@ const InputSelector = ({
   return (
     <>
       <Flex alignItems='center' mt={3} justifyContent='space-between'>
-        <Input
+       {!display && <Input
           fontSize='2xl'
           type='text'
           min='0'
@@ -67,18 +73,24 @@ const InputSelector = ({
           isRequired
           placeholder='0.0'
           value={value}
+          disabled={disable}
+          title={disable ? "please fill the input box below, they control this input": undefined}
           onChange={(event) => {
-            enforcer(event.target.value.replace(/,/g, "."));
+             !disable && enforcer(event.target.value.replace(/,/g, "."));
           }}
           focusBorderColor='none'
+          onMouseEnter={disable ? onHover : undefined}
+          onMouseLeave={disable ? onHover : undefined}
         />
+
+       } 
         <Flex>
           <Menu>
             <Button
               border='0px'
               h='40px'
               rightIcon={<ChevronDownIcon />}
-              mr={3}
+              mr={display ? "0" : 3}
               bgColor={tokenListTrgiggerBgColor}
               onClick={() => setToken(tokenModal)}
               data-tut='reactour__selectToken'
@@ -106,11 +118,11 @@ const InputSelector = ({
         </Flex>
       </Flex>
       <Flex mt={3} alignItems='center'>
-        <Text ml={4} color={balanceColor} fontSize='14px'>
+       {!display && <Text ml={4} color={balanceColor} fontSize='14px'>
           Balance:{" "}
           {balance.currency?.isToken ? balance.toSignificant(6) : balance}{" "}
           {currency?.symbol}
-        </Text>
+        </Text>}
         {max ? (
           <Text
             ml={2}
@@ -141,4 +153,4 @@ const InputSelector = ({
   );
 };
 
-export default InputSelector;
+export default React.memo(InputSelector);
