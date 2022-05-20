@@ -93,31 +93,31 @@ export const getNftTokenID = (id: number, name: string) => {
         }
     } else if (name === nameOfNFTsContracts[2]) {
         switch (id) {
-            case 1:
+            case 31:
                 return Array.from({length: 12}, (_, i) => i + 1);
 
-            case 2:
+            case 30:
                 return Array.from({length: 12}, (_, i) => i + 13);
 
-            case 3:
+            case 29:
                 return Array.from({length: 12}, (_, i) => i + 25);
 
-            case 4:
+            case 28:
                 return Array.from({length: 30}, (_, i) => i + 37);
 
-            case 5:
+            case 27:
                 return Array.from({length: 30}, (_, i) => i + 67);
 
-            case 6:
+            case 26:
                 return Array.from({length: 30}, (_, i) => i + 97);
 
-            case 7:
+            case 25:
                 return Array.from({length: 30}, (_, i) => i + 127);
 
-            case 8:
+            case 24:
                 return Array.from({length: 30}, (_, i) => i + 157);
 
-            case 9:
+            case 23:
                 return Array.from({length: 45}, (_, i) => i + 187);
         }
     }

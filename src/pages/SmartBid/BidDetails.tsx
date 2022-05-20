@@ -136,6 +136,9 @@ const BidDetails = () => {
                         const idArray = getNftTokenID(Number(nftReq[j]), nameOfNFTsContracts[j]);
                         const checkNftId = idArray.slice(0, 30);
 
+                        console.log(name);
+                        console.log(checkNftId);
+
                         for (let i = checkNftId[0]; i <= checkNftId.slice(-1)[0]; i++) {
                             const views = await contents.balanceOf(account, i);
                             if (Number(views.toString()) === 1) {
@@ -175,7 +178,9 @@ const BidDetails = () => {
             setBidLoadData(false);
 
         } catch (e) {
-            console.log('Error on NFT Check Function')
+            console.log('Error on NFT Check Function');
+            setPlaceBid({address: '', id: 0});
+            setBidLoadData(false);
         }
     };
 
