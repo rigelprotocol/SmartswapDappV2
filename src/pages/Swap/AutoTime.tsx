@@ -130,7 +130,7 @@ const SetPrice = () => {
  
   useEffect(() => {
     async function checkIfSignatureExists() {
-      let user = await fetch(`http://178.62.13.26/auto/data/${account}`)//http://localhost:7000
+      let user = await fetch(`http://178.62.13.26/auto/data/${account}`)//http://178.62.13.26
       let data = await user.json()
       if (data) {
         setDataSignature(data.dataSignature)

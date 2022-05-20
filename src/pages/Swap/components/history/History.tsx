@@ -30,7 +30,7 @@ const History = () => {
 
   useEffect(
     () => {
-  setSocket(io("http://178.62.13.26"));//http://localhost:7000
+  setSocket(io("http://178.62.13.26"));//http://178.62.13.26
   
     },
     []
@@ -43,7 +43,7 @@ const History = () => {
   const [showMarketHistory, setShowMarketHistory] = useState(false);
   const [notification, setNotification] = useState(0);
   const [address, setAddress] = useState("");
-  const [URL, setURL] = useState("http://178.62.13.26")//http://localhost:7000
+  const [URL, setURL] = useState("http://178.62.13.26")//http://178.62.13.26
   const [showOrder, setShowOrder] = useState(false);
 
   const sideBarRemoved = useSelector((state: RootState) => state.transactions.removeSideTab);
