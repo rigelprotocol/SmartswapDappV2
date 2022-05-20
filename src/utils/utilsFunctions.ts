@@ -137,6 +137,31 @@ export const checkSideTab = (sideBarName: string): boolean => {
   }
 };
 
+export const changeFrequencyTodays = (frequency: string): { today: number,interval:number,days:number} => {
+  let interval = 60*24 
+  let date = new Date()
+  let today = (date.getTime() /(1000*60))
+  let days = 1
+  if (frequency === "daily") {
+    return {today,interval,days}
+  } else if (frequency === "weekly") {
+    days= 7
+    interval = days * 24 * 60
+    today=today+interval
+    return {today,interval,days}
+  } else if (frequency === "monthly") {
+    days =30
+    // interval = days * 24 * 60
+    today=today+interval
+    return {today,interval,days}
+  } else if (frequency === "30" || frequency === "5") {
+    interval = parseInt(frequency)
+    // today=today+interval
+    return {today,interval,days}
+  }
+  return {today,interval,days}
+}
+
 export const provider = async () => {
   try {
     let ethProvider = await detectEthereumProvider();
@@ -346,12 +371,15 @@ export function truncate(str: string, maxDecimalDigits: number) {
 
   return str;
 }
+
+export const formatAmount = (value: any) => parseFloat(value).toLocaleString();
+
 export const getOutPutDataFromEvent = async (
   tokenAddress,
   eventsArray,
   decimal
 ) => {
-  const duplicateArray = [];
+  const duplicateArray:any = [];
   eventsArray.map((event) => {
     if (event.address.toLowerCase() === tokenAddress.toLowerCase()) {
       duplicateArray.push(event);

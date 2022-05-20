@@ -21,6 +21,7 @@ import { getNativeAddress } from "../utils/hooks/usePools";
 import { getDecimals } from "../utils/utilsFunctions";
 import { useCurrency } from "./Tokens";
 import { Field } from "../state/swap/actions";
+import { isAddress } from "../utils";
 
 const formatAmount = (number: string, decimals: number) => {
   return ethers.utils.formatUnits(number, decimals);
@@ -53,12 +54,16 @@ export function tryParseAmount<T extends Currency>(
 export const useSwap = (
   currencyA: Currency,
   currencyB: Currency,
-  amountIn?: string
+  amountIn?: string,
+  marketFactory?:string,
+  marketRouterAddress?:string,
+  unit?:string,
 ) => {
   const { chainId, library } = useActiveWeb3React();
   const [address, setAddress] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
   const [amount, setAmount] = useState<string | undefined>("");
+  const [oppositeAmount, setOppositeAmount] = useState<string | undefined>("0");
   const [wrap, setWrap] = useState<boolean>(false);
   const [pathArray, setPath] = useState<string[] | undefined>(undefined);
   const [pathSymbol, setPathSymbol] = useState("");
@@ -84,17 +89,25 @@ export const useSwap = (
   const tokenOneAddress = tokenA?.address || nativeAddress?.address;
   const tokenTwoAddress = tokenB?.address || nativeAddress?.address;
 
-  const wrappable: boolean = tokenOneAddress == tokenTwoAddress;
-  let validSmartAddress: string;
-  if (SMARTSWAPFACTORYADDRESSES[chainId as number] !== "0x") {
-    validSmartAddress = SMARTSWAPFACTORYADDRESSES[chainId as number];
-  }
- 
+  // const wrappable: boolean = tokenOneAddress == tokenTwoAddress;
+  // let validSmartAddress: string | undefined;
+  // if (SMARTSWAPFACTORYADDRESSES[chainId as number] !== "0x") {
+  //   // validSmartAddress =  SMARTSWAPFACTORYADDRESSES[chainId as number];
+  //   validSmartAddress = isAddress(market) ? market : SMARTSWAPFACTORYADDRESSES[chainId as number];
+  // }
+  
   useEffect(() => {
     const getPairs = async () => {
+      const wrappable: boolean = tokenOneAddress == tokenTwoAddress;
+  let validSmartAddress: string | undefined;
+  if (SMARTSWAPFACTORYADDRESSES[chainId as number] !== "0x") {
+    // validSmartAddress =  SMARTSWAPFACTORYADDRESSES[chainId as number];
+    
+    validSmartAddress = isAddress(marketFactory) ? marketFactory : SMARTSWAPFACTORYADDRESSES[chainId as number];
+  }
+  
       try {
-        const SmartFactory = await smartFactory(validSmartAddress, library);
-
+        const SmartFactory = await smartFactory(validSmartAddress ? validSmartAddress :  SMARTSWAPFACTORYADDRESSES[chainId as number], library);
         const pairAddress = await SmartFactory.getPair(
           tokenOneAddress,
           tokenTwoAddress
@@ -108,25 +121,33 @@ export const useSwap = (
         if (!wrappable && address !== ZERO_ADDRESS) {
           setWrap(false);
           if (amountIn !== undefined) {
+           
+            // const SwapRouter = await SmartSwapRouter(
+            //   SMARTSWAPROUTER[chainId as number],
+            //   library
+            // );
             const SwapRouter = await SmartSwapRouter(
-              SMARTSWAPROUTER[chainId as number],
-              library
-            );
+              marketRouterAddress ? marketRouterAddress : SMARTSWAPROUTER[chainId as number],
+               library
+             );
 
             const amountOut = await SwapRouter.getAmountsOut(amountIn, [
               tokenOneAddress,
               tokenTwoAddress,
             ]);
-
+          
             const amountsIn =
               independentFieldString === "INPUT"
                 ? undefined
                 : await SwapRouter.getAmountsIn(amountIn, [
-                    tokenOneAddress,
-                    tokenTwoAddress,
-                  ]);
+                  tokenOneAddress,
+                  tokenTwoAddress,
+                ]);
+              
+    
 
-            const output = formatAmount(amountOut[1], currencyB.decimals);
+            const output = formatAmount(amountOut[1], currencyB.decimals); 
+            
 
             const amountsInOutput =
               independentFieldString === "INPUT"
@@ -139,6 +160,15 @@ export const useSwap = (
             setAmount(
               independentFieldString === "INPUT" ? output : amountsInOutput
             );
+            if(unit){
+              const amountOut2= await SwapRouter.getAmountsOut(amountIn, [
+                  tokenTwoAddress,
+                  tokenOneAddress,
+                ]);
+            const output2 = formatAmount(amountOut2[1], currencyA.decimals);
+            setOppositeAmount(output2)
+            }
+            
           } else {
             setAmount("");
           }
@@ -150,11 +180,19 @@ export const useSwap = (
           const CurrencyA = getAddress(currencyA);
           const CurrencyB = getAddress(currencyB);
           const factory = await smartFactory(
-            SMARTSWAPFACTORYADDRESSES[chainId as number],
+            validSmartAddress ? validSmartAddress :  SMARTSWAPFACTORYADDRESSES[chainId as number],
             library
           );
+          // const factory = await smartFactory(
+          //   SMARTSWAPFACTORYADDRESSES[chainId as number],
+          //   library
+          // );
+          // const SwapRouter = await SmartSwapRouter(
+          //   SMARTSWAPROUTER[chainId as number],
+          //   library
+          // );
           const SwapRouter = await SmartSwapRouter(
-            SMARTSWAPROUTER[chainId as number],
+           marketRouterAddress ? marketRouterAddress : SMARTSWAPROUTER[chainId as number],
             library
           );
 
@@ -177,6 +215,7 @@ export const useSwap = (
             factory.getPair(USDT[chainId as number], CurrencyA),
             factory.getPair(USDT[chainId as number], CurrencyB),
           ]);
+          
 
           const [USDTRGP, USDTNATIVE] = await Promise.all([
             factory.getPair(
@@ -188,7 +227,14 @@ export const useSwap = (
               WNATIVEADDRESSES[chainId as number]
             ),
           ]);
-
+// console.log({  RGPTOKENA,
+//             RGPTOKENB,
+//             NATIVETOKENA,
+//             NATIVETOKENB,
+//             BUSDTOKENA,
+//             BUSDTOKENB,
+//             USDTTOKENA,
+//             USDTTOKENB,USDTRGP, USDTNATIVE})
           try {
             if (USDTTOKENA !== ZERO_ADDRESS && USDTTOKENB !== ZERO_ADDRESS) {
               if (amountIn !== undefined) {
@@ -202,17 +248,17 @@ export const useSwap = (
                   independentFieldString === "INPUT"
                     ? undefined
                     : await SwapRouter.getAmountsIn(amountIn, [
-                        CurrencyA,
-                        USDT[chainId as number],
-                        CurrencyB,
-                      ]);
-
-                const amountsInOutput =
+                      CurrencyA,
+                      USDT[chainId as number],
+                      CurrencyB,
+                    ]);
+                    const amountsInOutput =
                   independentFieldString === "INPUT"
                     ? undefined
                     : formatAmount(amountsIn[0], currencyA.decimals);
 
                 const output = formatAmount(amountsOut[2], currencyB.decimals);
+                           
                 setPath([
                   CurrencyA as string,
                   USDT[chainId as number],
@@ -225,6 +271,15 @@ export const useSwap = (
                 setAmount(
                   independentFieldString === "INPUT" ? output : amountsInOutput
                 );
+                if(unit){
+                  const amountsOut2 = await SwapRouter.getAmountsOut(amountIn, [
+                  CurrencyB,
+                  USDT[chainId as number],
+                  CurrencyA,
+                ]) 
+                 const output2 = formatAmount(amountsOut2[2], currencyA.decimals);
+                setAmount(output2)
+                }
               } else {
                 setAmount("");
                 setPathSymbol("");
@@ -240,15 +295,15 @@ export const useSwap = (
                   RGPADDRESSES[chainId as number],
                   CurrencyB,
                 ]);
-
+                
                 const amountsIn =
                   independentFieldString === "INPUT"
                     ? undefined
                     : await SwapRouter.getAmountsIn(amountIn, [
-                        CurrencyA,
-                        RGPADDRESSES[chainId as number],
-                        CurrencyB,
-                      ]);
+                      CurrencyA,
+                      RGPADDRESSES[chainId as number],
+                      CurrencyB,
+                    ]);
 
                 const amountsInOutput =
                   independentFieldString === "INPUT"
@@ -268,6 +323,16 @@ export const useSwap = (
                 setAmount(
                   independentFieldString === "INPUT" ? output : amountsInOutput
                 );
+                if(unit){
+                  const amountsOut2 = await SwapRouter.getAmountsOut(amountIn, [
+                    CurrencyB,
+                    RGPADDRESSES[chainId as number],
+                    CurrencyA,
+                  ]);
+  
+                  const output2 = formatAmount(amountsOut2[2], currencyA.decimals);
+                  setOppositeAmount(output2)
+                }
               } else {
                 setAmount("");
                 setPathSymbol("");
@@ -283,15 +348,16 @@ export const useSwap = (
                   WNATIVEADDRESSES[chainId as number],
                   CurrencyB,
                 ]);
+               
 
                 const amountsIn =
                   independentFieldString === "INPUT"
                     ? undefined
                     : await SwapRouter.getAmountsIn(amountIn, [
-                        CurrencyA,
-                        WNATIVEADDRESSES[chainId as number],
-                        CurrencyB,
-                      ]);
+                      CurrencyA,
+                      WNATIVEADDRESSES[chainId as number],
+                      CurrencyB,
+                    ]);
 
                 const amountsInOutput =
                   independentFieldString === "INPUT"
@@ -299,20 +365,29 @@ export const useSwap = (
                     : formatAmount(amountsIn[0], currencyA.decimals);
 
                 const output = formatAmount(amountsOut[2], currencyB.decimals);
+            
                 setPath([
                   CurrencyA as string,
                   WNATIVEADDRESSES[chainId as number],
                   CurrencyB as string,
                 ]);
                 setPathSymbol(
-                  `${currencyA?.symbol} - ${
-                    SupportedChainSymbols[chainId as number]
+                  `${currencyA?.symbol} - ${SupportedChainSymbols[chainId as number]
                   } - ${currencyB?.symbol}`
                 );
 
                 setAmount(
                   independentFieldString === "INPUT" ? output : amountsInOutput
                 );
+                if(unit){
+                  const amountsOut2 = await SwapRouter.getAmountsOut(amountIn, [
+                    CurrencyB,
+                    WNATIVEADDRESSES[chainId as number],
+                    CurrencyA,
+                  ]);
+                  const output2 = formatAmount(amountsOut2[2], currencyA.decimals);
+                  setOppositeAmount(output2)
+                }
               } else {
                 setAmount("");
                 setPathSymbol("");
@@ -333,10 +408,10 @@ export const useSwap = (
                   independentFieldString === "INPUT"
                     ? undefined
                     : await SwapRouter.getAmountsIn(amountIn, [
-                        CurrencyA,
-                        BUSD[chainId as number],
-                        CurrencyB,
-                      ]);
+                      CurrencyA,
+                      BUSD[chainId as number],
+                      CurrencyB,
+                    ]);
 
                 const amountsInOutput =
                   independentFieldString === "INPUT"
@@ -357,6 +432,15 @@ export const useSwap = (
                 setAmount(
                   independentFieldString === "INPUT" ? output : amountsInOutput
                 );
+                if(unit){
+                  const amountsOut2 = await SwapRouter.getAmountsOut(amountIn, [
+                    CurrencyB,
+                    BUSD[chainId as number],
+                    CurrencyA,
+                  ]);
+                  const output2 = formatAmount(amountsOut2[2], currencyA.decimals);
+                  setOppositeAmount(output2)
+                }
               } else {
                 setAmount("");
                 setPathSymbol("");
@@ -379,11 +463,11 @@ export const useSwap = (
                   independentFieldString === "INPUT"
                     ? undefined
                     : await SwapRouter.getAmountsIn(amountIn, [
-                        CurrencyA,
-                        RGPADDRESSES[chainId as number],
-                        USDT[chainId as number],
-                        CurrencyB,
-                      ]);
+                      CurrencyA,
+                      RGPADDRESSES[chainId as number],
+                      USDT[chainId as number],
+                      CurrencyB,
+                    ]);
 
                 const amountsInOutput =
                   independentFieldString === "INPUT"
@@ -404,6 +488,16 @@ export const useSwap = (
                 setAmount(
                   independentFieldString === "INPUT" ? output : amountsInOutput
                 );
+                if(unit){
+                  const amountsOut2 = await SwapRouter.getAmountsOut(amountIn, [
+                    CurrencyB,
+                    RGPADDRESSES[chainId as number],
+                    USDT[chainId as number],
+                    CurrencyA,
+                  ]);
+                  const output2 = formatAmount(amountsOut2[3], currencyA.decimals);
+                  setOppositeAmount(output2)
+                }
               } else {
                 setAmount("");
                 setPathSymbol("");
@@ -426,11 +520,11 @@ export const useSwap = (
                   independentFieldString === "INPUT"
                     ? undefined
                     : await SwapRouter.getAmountsIn(amountIn, [
-                        CurrencyA,
-                        USDT[chainId as number],
-                        WNATIVEADDRESSES[chainId as number],
-                        CurrencyB,
-                      ]);
+                      CurrencyA,
+                      USDT[chainId as number],
+                      WNATIVEADDRESSES[chainId as number],
+                      CurrencyB,
+                    ]);
 
                 const amountsInOutput =
                   independentFieldString === "INPUT"
@@ -445,14 +539,23 @@ export const useSwap = (
                   CurrencyA as string,
                 ]);
                 setPathSymbol(
-                  `${currencyA?.symbol} - USDT - ${
-                    SupportedChainSymbols[chainId as number]
+                  `${currencyA?.symbol} - USDT - ${SupportedChainSymbols[chainId as number]
                   } - ${currencyB?.symbol}`
                 );
 
                 setAmount(
                   independentFieldString === "INPUT" ? output : amountsInOutput
                 );
+                if(unit){
+                  const amountsOut2 = await SwapRouter.getAmountsOut(amountIn, [
+                    CurrencyB,
+                    USDT[chainId as number],
+                    WNATIVEADDRESSES[chainId as number],
+                    CurrencyA,
+                  ]);
+                  const output2 = formatAmount(amountsOut2[3], currencyA.decimals);
+                  setOppositeAmount(output2)
+                }
               } else {
                 setAmount("");
                 setPathSymbol("");
@@ -468,6 +571,7 @@ export const useSwap = (
           setPath([]);
         }
       } catch (e) {
+        console.log(e)
         console.log(`Error occurs here: ${e}`);
         setAmount("");
       }
@@ -477,6 +581,8 @@ export const useSwap = (
       if(tokenOneAddress && tokenTwoAddress&& (amountIn ) ){
         interval = setInterval(()=>
           getPairs(),2000)
+      }else{
+        clearInterval(interval)
       }
  getPairs();
     return () => clearInterval(interval)
@@ -493,7 +599,10 @@ export const useSwap = (
     tokenA,
     tokenB,
     independentFieldString,
+    oppositeAmount,
+    marketFactory,
+    marketRouterAddress
   ]);
   
-  return [address, wrap, amount, pathArray, pathSymbol];
+  return [address, wrap, amount, pathArray, pathSymbol,oppositeAmount];
 };

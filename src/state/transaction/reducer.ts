@@ -4,6 +4,8 @@ import {
     checkedTransaction,
     clearAllTransactions,
     finalizeTransaction, transactionTab, detailsTab,
+    refreshTransactionTab,
+    notificationTab
 } from './actions'
 
 import { createReducer } from '@reduxjs/toolkit'
@@ -33,12 +35,20 @@ export interface TransactionState {
         [txHash: string]: TransactionDetails
     },
     removeSideTab: boolean,
-    removeDetailsTab: boolean
+    removeDetailsTab: boolean,
+    refresh:number,
+    setPriceNotification : number,
+    autoTimeNotification : number,
+    address:string
 }
 
 export const initialState: TransactionState = {
     removeSideTab: false,
-    removeDetailsTab: false
+    removeDetailsTab: false,
+    refresh:0,
+    autoTimeNotification:0,
+    setPriceNotification:0,
+    address:""
 };
 
 export default createReducer(initialState, (builder) =>
@@ -87,5 +97,15 @@ export default createReducer(initialState, (builder) =>
         })
         .addCase(detailsTab, (transactions, { payload: { removeDetailsTab } }) => {
         transactions.removeDetailsTab = removeDetailsTab;
-    })
+      
+    })  
+    .addCase(refreshTransactionTab,(transactions,{payload:{refresh}}) => {
+            transactions.refresh = refresh
+        })
+    .addCase(notificationTab,(transactions,{payload:{setPriceNotification,autoTimeNotification,address}}) => {
+        console.log({autoTimeNotification})
+            transactions.setPriceNotification = setPriceNotification ? setPriceNotification: transactions.setPriceNotification
+            transactions.autoTimeNotification= autoTimeNotification ?autoTimeNotification : transactions.autoTimeNotification
+            transactions.address = address ? address : transactions.address
+        })
 )

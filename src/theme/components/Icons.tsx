@@ -1,6 +1,7 @@
 import { Icon, useColorModeValue } from '@chakra-ui/react';
 import React from 'react';
 import { CgArrowsExchangeAltV } from 'react-icons/cg';
+import { BsArrowRight } from 'react-icons/bs';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { FiCopy } from 'react-icons/fi'
 import { BiMinus } from 'react-icons/bi';
@@ -17,6 +18,26 @@ export const SwitchIcon = () => {
   return (
     <Icon
       as={CgArrowsExchangeAltV}
+      color={arrowColor}
+      p={1}
+      borderRadius="6px"
+      border="2px"
+      borderColor={borderColor}
+      bgColor={switchBgcolor}
+      cursor="pointer"
+      h="35px"
+      w="35px"
+    />
+  );
+};
+export const RightIcon = () => {
+  const arrowColor = useColorModeValue('#333333', '#F1F5F8');
+  const switchBgcolor = useColorModeValue('#F2F5F8', '#213345');
+  const borderColor = useColorModeValue('#DEE5ED', '#324D68');
+
+  return (
+    <Icon
+      as={BsArrowRight}
       color={arrowColor}
       p={1}
       borderRadius="6px"

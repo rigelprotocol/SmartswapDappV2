@@ -70,8 +70,8 @@ import Faq from "./SmartBid/Faq";
                 component={AddLiquidity}
               />
 
-              <Route exact strict path="/set-price" component={chainId === SupportedChainId.BINANCETEST ? SetPrice : Swap} />
-              <Route exact path="/auto-time" component={chainId === SupportedChainId.BINANCETEST ? AutoTime : Swap} />
+              <Route exact strict path="/set-price" component={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON ? Swap : SetPrice } />
+              <Route exact path="/auto-period" component={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON ? Swap : AutoTime} />
               <Route
                 exact
                 strict
@@ -82,6 +82,12 @@ import Faq from "./SmartBid/Faq";
                 exact
                 strict
                 path="/farming-V2/staking-RGP"
+                component={FarmingV2}
+              />
+              <Route
+                exact
+                strict
+                path="/farming-V2/product-farm"
                 component={FarmingV2}
               />
               <Route exact path="/farming" component={FarmingV1} />

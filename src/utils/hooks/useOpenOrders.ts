@@ -1,15 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import SmartSwapRouter02 from '../abis/swapAbiForDecoder.json';
-import { timeConverter, getTokenSymbol, formatAmount, APIENDPOINT, APIKEY } from "./useAccountHistory";
+import { timeConverter, getTokenSymbol, formatAmount,  } from "./useAccountHistory";
 import { AUTOSWAPV2ADDRESSES, SMARTSWAPROUTER, WNATIVEADDRESSES } from "../addresses";
 import { getERC20Token } from '../utilsFunctions';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../state';
 import { useLocation } from 'react-router-dom';
-import { useNativeBalance } from './useBalances';
-import { SmartSwapRouter } from '../Contracts';
-
+import { useNativeBalance } from './useBalances';;
 
 
 const abiDecoder = require('abi-decoder');
@@ -27,20 +24,19 @@ interface DataIncoming {
     error: [],
     status: number,
     currentToPrice?: string,
-    chainID?:string
+    chainID?:string,
+    situation?:string,
+    expectedUserPrice?:string
 }
 
-const useMarketHistory = (socket:any) => {
+const useOpenOrders = (socket:any) => {
     const { account, chainId, library } = useWeb3React();
-    const [loadMarketData, setLoadMarketData] = useState(false);
-    const [marketHistoryData, setMarketHistoryData] = useState({} as any);
+    const [loadOpenOrders, setloadOpenOrders] = useState(false);
+    const [openOrderData, setopenOrderData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("http://178.62.13.26")//
+    const [URL, setURL] = useState("http://178.62.13.26")
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
-
-    const api = APIENDPOINT[chainId as number];
-    const apikey = APIKEY[chainId as number];
     const refreshPage = useSelector((state: RootState) => state.transactions.refresh);
     const location = useLocation().pathname;
     const [, Symbol, Name,] = useNativeBalance()
@@ -50,6 +46,7 @@ const useMarketHistory = (socket:any) => {
         return decoder
     }
     useEffect(() => {
+       
         if (location === "/auto-period") {
             setLocationData("auto")
             setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
@@ -65,12 +62,11 @@ const useMarketHistory = (socket:any) => {
         }
     }, [location, chainId])
     useEffect(() => {
-        getMarketData();
+        getOpenOrders();
     }, [chainId, account, contractAddress,refreshPage,locationData]);
-
     useEffect(() => {
         socket?.on("success",()=>{
-            getMarketData();
+            getOpenOrders();
         })
         
     }, [socket]);
@@ -90,96 +86,36 @@ const useMarketHistory = (socket:any) => {
         };
         return address !== '0x' ? resolveToken : null;
     };
-    const getTransactionFromDatabase = async () => {
-        const data = await fetch(`${URL}/auto/transactions`)
-
+    
+    const getTransactionFromDatabase = async (address: string) => {
+        const data = await fetch(`${URL}/auto/data/all/${address}`)
         const transaction = await data.json()
-       const transactions = transaction.reduce((array:any,item:any)=>{
-            const successfullyTransaction = item.transaction.filter((x:any) => x.transactionHash !== "" && x.status===1)
-            return [...array,...successfullyTransaction]
-       },[]).reverse()
+        const transactions = transaction[0].transaction.filter((item:any)=>item.status===2 || item.status===3)
         return transactions
     }
 
 
 
-        const getMarketData = async () => {
+        const getOpenOrders = async () => {
             if ((account && contractAddress && locationData)) {
-                setLoadMarketData(true);
+                setloadOpenOrders(true);
                 try {
-                    let dataToUse = []
-                    if( location === "/swap"){
-                    
-                    const uri = `https://${api}?module=account&action=txlist&address=${contractAddress}&startblock=0
-                    &endblock=latest&sort=desc&apikey=${apikey}`;
-
-                    const data = await fetch(uri);
-                    const jsonData = await data.json();
-
-
-                    const filteredData = jsonData.result
-                        .filter((items: any) => decodeInput(items.input,SmartSwapRouter02) !== undefined && items.isError !== "1")
-                        .map((items: any) => ({
-                            transactionObj: decodeInput(items.input,SmartSwapRouter02).params,
-                            timestamp: items.timeStamp,
-                            value: items.value,
-                            from: items.from,
-                            to: items.to,
-                            transactionHash: items.transactionHash,
-                        status: 10,
-                        chainID:items.chainID 
-                        }));
-
-
-                    const marketData = filteredData.map((data: any) => ({
-                        inputAmount:
-                            Number(data.value) > 0 ? data.value : data.transactionObj[0].value,
-                        outputAmount:
-                            Number(data.value) > 0
-                                ? data.transactionObj[0].value
-                                : data.transactionObj[1].value,
-                        tokenIn:
-                            Number(data.value) > 0
-                                ? data.transactionObj[1].value[0]
-
-                                : data.transactionObj[2].value[0],
-                        tokenOut:
-                            Number(data.value) > 0
-                                ? data.transactionObj[1].value[data.transactionObj[1].value.length - 1]
-                                : data.transactionObj[2].value[data.transactionObj[2].value.length - 1],
-                        time: timeConverter(data.timestamp),
-                        from: data.from,
-                        to: data.to
-                    }));
-
-                    dataToUse = marketData.length > 5 ? marketData.splice(0, 5) : marketData;
-
-                   
-    
-                }else if ( location === "/auto-period" || location === "/set-price"){
-                    const transaction = await getTransactionFromDatabase()
+                    let dataToUse =[]
+                    const transaction = await getTransactionFromDatabase(account)
                     if (transaction.length > 0) {
-                        let result = []
+                        let data = []
                         if (locationData === "auto") {
-                            let data = transaction.filter((data: any) => data.typeOfTransaction === "Auto Time")
-                            result = data.filter((item:any)=>item.status===1)
+                            data = transaction.filter((data: any) => data.typeOfTransaction === "Auto Time")
                         }else if (locationData === "price") {
-                            let data = transaction.filter((data: any) => data.typeOfTransaction === "Set Price")
-                            // .sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
-                            result = data.filter((item:any)=>item.status===1)
+                            data = transaction.filter((data: any) => data.typeOfTransaction === "Set Price")
+                            
                         }
-                        console.log({result})
+                        const result = data.filter((item:any)=>item.errorArray.length===0 && item.transactionHash === "")
                         dataToUse = await Promise.all(result.map(async (data: any) => {
-                            let fromAddress = data.swapFromToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapFromToken
-                            let toAddress = data.swapToToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapToToken
-                            const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
-                            const toPriceOut = await rout.getAmountsOut(
-                                data.amountToSwap,
-                                [fromAddress, toAddress]
-                            );
+                            console.log({data})
                             return {
                                 inputAmount: data.amountToSwap,
-                                outputAmount:data.actualToPrice,
+                                outputAmount: data.userExpectedPrice,
                                 tokenIn: data.swapFromToken,
                                 tokenOut: data.swapToToken,
                                 time: data.time && timeConverter(parseInt(data.time)),
@@ -191,12 +127,16 @@ const useMarketHistory = (socket:any) => {
                                 status: data.status,
                                 currentToPrice: data.typeOfTransaction === "Set Price" ? data.currentToPrice : data.percentageChange,
                                 chainID:data.chainID ,
+                                rate:`${data.currentNumber -1} / ${data.totalNumberOfTransaction}`,
+                                initialFromPrice:data.initialFromPrice,
+                                initialToPrice:data.initialToPrice,
+                                situation:data.situation,
+                                _id:data._id,
                                 pathSymbol:data.pathSymbol
-                                
                             }
                         })
                         )
-                    }
+                    
                 }
                 const marketSwap = await Promise.all(
                     dataToUse.map(async (data: any) => ({
@@ -223,18 +163,23 @@ const useMarketHistory = (socket:any) => {
                         status: data.status,
                         currentToPrice: data.currentToPrice,
                         chainID:data.chainID,
-                        pathSymbol:data.pathSymbol 
+                        rate:data.rate,
+                        situation:data.situation,
+                        initialFromPrice:data.initialFromPrice,
+                        initialToPrice:data.initialToPrice,
+                        _id:data._id,
+                        pathSymbol:data.pathSymbol
                     })),
                 );
                     const marketHistory = marketSwap.map((data) => ({
-                        token1Icon:
+                        token1Icon:data.tokenIn &&
                             getTokenSymbol(data.tokenIn.symbol),
                         token2Icon:
-                            getTokenSymbol(data.tokenOut.symbol),
+                            data.tokenOut && getTokenSymbol(data.tokenOut.symbol),
                         token1: data.tokenIn,
                         token2: data.tokenOut,
-                        amountIn: formatAmount(data.amountIn, data.tokenIn.decimals),
-                        amountOut: data.name ==="Set Price" || data.name==="Auto Time" ? parseFloat(data.amountOut).toFixed(4) : formatAmount(data.amountOut, data.tokenOut.decimals),
+                        amountIn: data.tokenIn && formatAmount(data.amountIn, data.tokenIn.decimals),
+                        amountOut:  parseFloat(data.amountOut).toFixed(4),
         
                         time: data.time,
                         name: data.name,
@@ -245,24 +190,28 @@ const useMarketHistory = (socket:any) => {
                         status: data.status,
                         currentToPrice: data.currentToPrice,
                         chainID:data.chainID,
-                        pathSymbol:data.pathSymbol 
+                        rate:data.rate,
+                        situation:data.situation,
+                        initialFromPrice:data.initialFromPrice,
+                        initialToPrice:data.initialToPrice,
+                        _id:data._id,
+                        pathSymbol:data.pathSymbol
                     }));
-
-                    setMarketHistoryData(marketHistory);
-                    setLoadMarketData(false);
+                    setopenOrderData(marketHistory);
+                    setloadOpenOrders(false);
 
                 } catch (e) {
                     console.log(e);
-                    setMarketHistoryData({});
-                    setLoadMarketData(false);
+                    setopenOrderData({});
+                    setloadOpenOrders(false);
                 }
             } else {
                 console.log('Connect your wallet')
             }
 
         };
-    return { marketHistoryData, loadMarketData };
+    return { openOrderData, loadOpenOrders };
 
 };
 
-export default useMarketHistory;
+export default useOpenOrders;

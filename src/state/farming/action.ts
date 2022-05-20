@@ -22,5 +22,8 @@ export const clearSearchResult = createAction("farming/clearSearchResult");
 export const updateYieldFarmDetails = createAction<{ value: any[] }>(
   "farming/updateYieldFarmDetails"
 );
+export const updateProductFarmDetails = createAction<{ value: any[] }>(
+  "farming/updateProductFarmDetails"
+);
 
 export const clearAllFarms = createAction("farming/clearAllFarms");

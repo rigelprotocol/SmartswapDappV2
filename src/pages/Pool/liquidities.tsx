@@ -64,26 +64,26 @@ const Liquidities = (props: Liquidity) => {
               {props.pair.path[0].token == "WBNB"
                 ? "BNB"
                 : props.pair.path[0].token == "WETH"
-                ? "ETH"
-                : props.pair.path[0].token == "WMATIC"
-                ? "MATIC"
-                : props.pair.path[0].token == "WROSE"
-                ? "ROSE"
-                : props.pair.path[0].token == "wROSE"
-                ? "ROSE"
-                : props.pair.path[0].token}{" "}
+                  ? "ETH"
+                  : props.pair.path[0].token == "WMATIC"
+                    ? "MATIC"
+                    : props.pair.path[0].token == "WROSE"
+                      ? "ROSE"
+                      : props.pair.path[0].token == "wROSE"
+                        ? "ROSE"
+                        : props.pair.path[0].token}{" "}
               /{" "}
               {props.pair.path[1].token == "WBNB"
                 ? "BNB"
                 : props.pair.path[1].token == "WETH"
-                ? "ETH"
-                : props.pair.path[1].token == "WMATIC"
-                ? "MATIC"
-                : props.pair.path[1].token == "WROSE"
-                ? "ROSE"
-                : props.pair.path[1].token == "wROSE"
-                ? "ROSE"
-                : props.pair.path[1].token}
+                  ? "ETH"
+                  : props.pair.path[1].token == "WMATIC"
+                    ? "MATIC"
+                    : props.pair.path[1].token == "WROSE"
+                      ? "ROSE"
+                      : props.pair.path[1].token == "wROSE"
+                        ? "ROSE"
+                        : props.pair.path[1].token}
             </Box>
           </Flex>
           <Flex

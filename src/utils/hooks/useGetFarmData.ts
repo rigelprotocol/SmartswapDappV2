@@ -451,6 +451,7 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
       (item) => item?.allocPoint !== 0 && item !== undefined
     );
 
+
     return iterated;
   };
 
@@ -471,7 +472,6 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
 
         setLoading(false);
 
-        console.log("farmss", farms);
 
         handleLoading(false);
         handleUpdateChainId(chainId);

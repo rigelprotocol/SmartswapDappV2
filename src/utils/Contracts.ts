@@ -10,10 +10,12 @@ import WETHABI from "./abis/WETH9.json";
 import SmartSwapLPTokenABI1 from "./abis/LPToken1.json";
 import SmartSwapLPTokenABI2 from "./abis/LPToken2.json";
 import SmartSwapLPTokenABI3 from "./abis/SmartSwapLPTokenThree.json";
+import ProductStakingABI from "./abis/ProductStaking.json";
 import RigelToken from "./abis/RigelToken.json";
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers";
 import { AddressZero } from "@ethersproject/constants";
 import { getAddress } from "@ethersproject/address";
+import AUTOSWAPV2 from './abis/autoswap.json'
 import NFTAbi from './abis/nft.json';
 import NFTTwoAbi from './abis/nftTwo.json';
 import BidAbi from './abis/smartBid.json';
@@ -59,7 +61,14 @@ export function getContract(
     getProviderOrSigner(library, account) as any
   );
 }
-
+// AUTO SWAP TOKEN CONTRACT
+export const autoSwapV2 = async (address: string, library: Web3Provider | undefined) => {
+  return new Contract(
+    address,
+    AUTOSWAPV2,
+    library?.getSigner()
+  );
+};
 export const smartFactory = async (
   address: string,
   library: Web3Provider | undefined
@@ -102,11 +111,12 @@ export const WETH = async (
   return new Contract(address, WETHABI, library?.getSigner());
 };
 
-export const MasterChefV2Contract = async (
-  address: string,
-  library: Web3Provider | undefined
-) => {
-  return new Contract(address, masterChefV2, library?.getSigner());
+export const MasterChefV2Contract = async (address: string, library: Web3Provider | undefined) => {
+  return new Contract(
+    address,
+    masterChefV2,
+    library?.getSigner()
+  );
 };
 
 export const RigelNFT = async (address: string, library: Web3Provider | undefined) => {
@@ -127,28 +137,38 @@ export const RigelSmartBidTwo = async (address: string, library: Web3Provider | 
 };
 
 // contract for special pool
-export const RGPSpecialPool = async (
-  address: string,
-  library: Web3Provider | undefined
-) => {
-  return new Contract(address, specialPool, library?.getSigner());
+export const RGPSpecialPool = async (address: string, library: Web3Provider | undefined) => {
+  return new Contract(
+    address,
+    specialPool,
+    library?.getSigner()
+  );
 };
 
 // contract for special pool v2
-export const RGPSpecialPool2 = async (
-  address: string,
-  library: Web3Provider | undefined
-) => {
-  return new Contract(address, specialPool2, library?.getSigner());
+export const RGPSpecialPool2 = async (address: string, library: Web3Provider | undefined) => {
+  return new Contract(
+    address,
+    specialPool2,
+    library?.getSigner()
+  );
+};
+export const otherMarketPriceContract = async (address: string, library: Web3Provider | undefined) => {
+  return new Contract(
+    address,
+    SmartSwapRouterV2Abi,
+    library?.getSigner()
+  );
 };
 
 //Liquuidity provider token contracts
 
-export const smartSwapLPTokenPoolOne = async (
-  address: string,
-  library: Web3Provider | undefined
-) => {
-  return new Contract(address, SmartSwapLPTokenABI1, library?.getSigner());
+export const smartSwapLPTokenPoolOne = async (address: string, library: Web3Provider | undefined) => {
+  return new Contract(
+    address,
+    SmartSwapLPTokenABI1,
+    library?.getSigner()
+  );
 };
 
 export const smartSwapLPTokenPoolTwo = async (
@@ -163,6 +183,12 @@ export const smartSwapLPTokenPoolThree = async (
   library: Web3Provider | undefined
 ) => {
   return new Contract(address, SmartSwapLPTokenABI3, library?.getSigner());
+};
+export const productStakingContract = async (
+  address: string,
+  library: Web3Provider | undefined
+) => {
+  return new Contract(address, ProductStakingABI, library?.getSigner());
 };
 
 export const smartSwapLPTokenV2PoolFour = async (
@@ -234,3 +260,4 @@ export const smartSwapLPTokenV2 = async (
 ) => {
   return new Contract(address, SmartSwapLPTokenABI3, library?.getSigner());
 };
+

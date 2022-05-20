@@ -7,11 +7,12 @@ import BidCarousel from "./Components/BidCarousel";
 import {RigelSmartBidTwo} from "../../utils/Contracts";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 import {SMARTBID2} from "../../utils/addresses";
-
+import {SupportedChainId} from "../../constants/chains";
 
 
 const SmartBid = () => {
     const textColor = useColorModeValue("#333333", "#F1F5F8");
+    const headerColor = useColorModeValue("#0760A8", "#F1F5F8");
     const [isMobileDeviceSm] = useMediaQuery("(max-width: 450px)");
     const {chainId, library} = useActiveWeb3React();
     const [itemLength, setItemLength] = useState(3);
@@ -62,7 +63,6 @@ const SmartBid = () => {
                 ) : null
                 )}
             </SimpleGrid>
-
         </Box>
     )
 };

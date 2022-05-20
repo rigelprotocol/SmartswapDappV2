@@ -196,15 +196,15 @@ const SendToken = () => {
     () =>
       showWrap
         ? {
-            [Field.INPUT]: typedValue,
-            [Field.OUTPUT]: typedValue,
-          }
+          [Field.INPUT]: typedValue,
+          [Field.OUTPUT]: typedValue,
+        }
         : {
-            [Field.INPUT]:
-              independentField === Field.INPUT ? parsedAmount : bestTrade,
-            [Field.OUTPUT]:
-              independentField === Field.OUTPUT ? parsedAmount : bestTrade,
-          },
+          [Field.INPUT]:
+            independentField === Field.INPUT ? parsedAmount : bestTrade,
+          [Field.OUTPUT]:
+            independentField === Field.OUTPUT ? parsedAmount : bestTrade,
+        },
     [independentField, parsedAmount, showWrap, bestTrade]
   );
 
@@ -430,11 +430,9 @@ const SendToken = () => {
       setSendingTrx(true);
       dispatch(
         setOpenModal({
-          message: `Swapping ${formattedAmounts[Field.INPUT]} ${
-            currencies[Field.INPUT]?.symbol
-          } for ${formattedAmounts[Field.OUTPUT]} ${
-            currencies[Field.OUTPUT]?.symbol
-          }`,
+          message: `Swapping ${formattedAmounts[Field.INPUT]} ${currencies[Field.INPUT]?.symbol
+            } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol
+            }`,
           trxState: TrxState.WaitingForConfirmation,
         })
       );
@@ -507,9 +505,8 @@ const SendToken = () => {
         );
         dispatch(
           addToast({
-            message: `Swap ${inputAmount} ${
-              currencies[Field.INPUT]?.symbol
-            } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${inputAmount} ${currencies[Field.INPUT]?.symbol
+              } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
@@ -542,11 +539,9 @@ const SendToken = () => {
       setSendingTrx(true);
       dispatch(
         setOpenModal({
-          message: `Swapping ${formattedAmounts[Field.INPUT]} ${
-            currencies[Field.INPUT]?.symbol
-          } for ${formattedAmounts[Field.OUTPUT]} ${
-            currencies[Field.OUTPUT]?.symbol
-          }`,
+          message: `Swapping ${formattedAmounts[Field.INPUT]} ${currencies[Field.INPUT]?.symbol
+            } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol
+            }`,
           trxState: TrxState.WaitingForConfirmation,
         })
       );
@@ -557,6 +552,7 @@ const SendToken = () => {
       );
 
       const isEIP1559 = await library?.getFeeData();
+      console.log({pathArray,parsedAmount,formatAmount,dl},parsedOutput(currencies[Field.OUTPUT]?.decimals as number))
       const sendTransaction = await route.swapETHForExactTokens(
         parsedOutput(currencies[Field.OUTPUT]?.decimals as number),
         // [from, to],
@@ -616,11 +612,9 @@ const SendToken = () => {
         );
         dispatch(
           addToast({
-            message: `Swap ${inputAmountForDisplay} ${
-              currencies[Field.INPUT]?.symbol
-            } for ${outputAmountForDisplay} ${
-              currencies[Field.OUTPUT]?.symbol
-            }`,
+            message: `Swap ${inputAmountForDisplay} ${currencies[Field.INPUT]?.symbol
+              } for ${outputAmountForDisplay} ${currencies[Field.OUTPUT]?.symbol
+              }`,
             URL: explorerLink,
           })
         );
@@ -652,11 +646,9 @@ const SendToken = () => {
       setSendingTrx(true);
       dispatch(
         setOpenModal({
-          message: `Swapping ${formattedAmounts[Field.INPUT]} ${
-            currencies[Field.INPUT]?.symbol
-          } for ${formattedAmounts[Field.OUTPUT]} ${
-            currencies[Field.OUTPUT]?.symbol
-          }`,
+          message: `Swapping ${formattedAmounts[Field.INPUT]} ${currencies[Field.INPUT]?.symbol
+            } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol
+            }`,
           trxState: TrxState.WaitingForConfirmation,
         })
       );
@@ -748,18 +740,16 @@ const SendToken = () => {
         );
         dispatch(
           setOpenModal({
-            message: `Swap tokens for ${
-              currencies[Field.OUTPUT]?.symbol
-            } Successful.`,
+            message: `Swap tokens for ${currencies[Field.OUTPUT]?.symbol
+              } Successful.`,
             trxState: TrxState.TransactionSuccessful,
           })
         );
         GSuccessfullyTransaction("straight_swap","swapping",currencies[Field.INPUT]?.symbol, currencies[Field.OUTPUT]?.symbol)
         dispatch(
           addToast({
-            message: `Swap ${inputAmount} ${
-              currencies[Field.INPUT]?.symbol
-            } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${inputAmount} ${currencies[Field.INPUT]?.symbol
+              } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
@@ -785,9 +775,8 @@ const SendToken = () => {
     setSendingTrx(true);
     dispatch(
       setOpenModal({
-        message: `Swapping ${typedValue} ${
-          currencies[Field.INPUT]?.symbol
-        } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
+        message: `Swapping ${typedValue} ${currencies[Field.INPUT]?.symbol
+          } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
         trxState: TrxState.WaitingForConfirmation,
       })
     );
@@ -802,27 +791,23 @@ const SendToken = () => {
       const sendTransaction = await weth.deposit(
         {
           value: isExactIn ? parsedAmount : formatAmount,
-        },
-        chainId === 137 || chainId === 80001
-          ? {
-              maxPriorityFeePerGas:
-                chainId === 137
-                  ? ethers.utils.parseUnits(format1, 9).toString()
-                  : null,
-              maxFeePerGas:
-                chainId === 137
-                  ? ethers.utils.parseUnits(format2, 9).toString()
-                  : null,
-            }
-          : {
-              gasPrice:
-                chainId === 137
-                  ? null
-                  : chainId === 80001
-                  ? null
-                  : ethers.utils.parseUnits(format3, 9).toString(),
-            }
-      );
+          maxPriorityFeePerGas:
+            chainId === 137
+              ? ethers.utils.parseUnits(format1, 9).toString()
+              : null,
+          maxFeePerGas:
+            chainId === 137
+              ? ethers.utils.parseUnits(format2, 9).toString()
+              : null,
+          gasPrice:
+            chainId === 137
+              ? null
+              : chainId === 80001
+              ? null
+              : ethers.utils.parseUnits(format3, 9).toString(),
+          }
+        );
+
       const { confirmations, status } = await sendTransaction.wait(1);
       const { hash } = sendTransaction;
       if (
@@ -845,9 +830,8 @@ const SendToken = () => {
         GSuccessfullyTransaction("straight_swap","swapping",currencies[Field.INPUT]?.symbol, currencies[Field.OUTPUT]?.symbol)
         dispatch(
           addToast({
-            message: `Swap ${typedValue} ${
-              currencies[Field.INPUT]?.symbol
-            } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${typedValue} ${currencies[Field.INPUT]?.symbol
+              } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
@@ -872,9 +856,8 @@ const SendToken = () => {
     setSendingTrx(true);
     dispatch(
       setOpenModal({
-        message: `Swapping ${typedValue} ${
-          currencies[Field.INPUT]?.symbol
-        } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
+        message: `Swapping ${typedValue} ${currencies[Field.INPUT]?.symbol
+          } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
         trxState: TrxState.WaitingForConfirmation,
       })
     );
@@ -929,9 +912,8 @@ const SendToken = () => {
         );
         dispatch(
           addToast({
-            message: `Swap ${typedValue} ${
-              currencies[Field.INPUT]?.symbol
-            } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${typedValue} ${currencies[Field.INPUT]?.symbol
+              } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
@@ -953,7 +935,7 @@ const SendToken = () => {
   };
 
   const swapTokens = async () => {
-    if (chainId === SupportedChainId.POLYGONTEST || SupportedChainId.POLYGON) {
+    if (chainId === SupportedChainId.POLYGONTEST || chainId === SupportedChainId.POLYGON) {
       if (
         currencies[Field.INPUT]?.symbol === "MATIC" &&
         currencies[Field.OUTPUT]?.symbol === "WMATIC"
@@ -1096,6 +1078,7 @@ const SendToken = () => {
           otherCurrency={currencies[Field.OUTPUT]}
           onMax={handleMaxInput}
           value={formattedAmounts[Field.INPUT]}
+          placeholder="0.0"
         />
         <Flex justifyContent='center' onClick={onSwitchTokens}>
           <SwitchIcon />
@@ -1106,6 +1089,7 @@ const SendToken = () => {
           otherCurrency={currencies[Field.INPUT]}
           value={formattedAmounts[Field.OUTPUT]}
           onUserOutput={handleTypeOutput}
+          placeholder="0.0"
         />
 
         <Flex alignItems='center' className='SwapToken'>
@@ -1207,7 +1191,7 @@ const SendToken = () => {
               _hover={{ bgColor: buttonBgcolor }}
               onClick={() => {
                 GButtonClick("straight_swap","swapping",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
-              
+
                 setCurrentToPrice(receivedAmount);
                 setShowModal(!showModal);
               }}
