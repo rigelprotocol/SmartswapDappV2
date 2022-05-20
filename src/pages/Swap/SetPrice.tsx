@@ -37,13 +37,13 @@ import {
 import CInput from './components/sendToken/Input';
 import { Field } from '../../state/swap/actions';
 import { maxAmountSpend } from '../../utils/maxAmountSpend';
-import { autoSwapV2, rigelToken, SmartSwapRouter } from '../../utils/Contracts';
-import { RGPADDRESSES, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES, SMARTSWAPROUTER, MARKETAUTOSWAPADDRESSES } from '../../utils/addresses';
+import { autoSwapV2, rigelToken } from '../../utils/Contracts';
+import { RGPADDRESSES, MARKETAUTOSWAPADDRESSES } from '../../utils/addresses';
 import { RGP } from '../../utils/addresses';
 import { useDispatch,useSelector } from "react-redux";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { RootState } from "../../state";
-import { refreshTransactionTab, transactionTab } from '../../state/transaction/actions';
+import { refreshTransactionTab } from '../../state/transaction/actions';
 import { useUserSlippageTolerance } from '../../state/user/hooks';
 import MarketDropDown from '../../components/MarketDropDown';
 import SliderComponent from '../../components/Slider';
@@ -75,15 +75,7 @@ const SetPrice = () => {
     oppositeAmount
   } = useDerivedSwapInfo();
 
-  useEffect(() => {
-    async function runCheck() {
-      if (account) {
-
-        await checkForApproval()
-      }
-    }
-    runCheck()
-  }, [currencies[Field.INPUT], account])
+  
   const [URL, setURL] = useState("http://178.62.13.26")//http://localhost:7000
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [disableInput, setDisableInput] = useState(true)
@@ -105,7 +97,6 @@ const SetPrice = () => {
   const [approvalForToken, setApprovalForToken] = useState("")
   const [totalNumberOfTransaction, setTotalNumberOfTransaction] = useState("1")
   const [approval, setApproval] = useState<String[]>([])
-  const [value, setValue] = useState(0)
   const [fee, setFee] = useState("")
   const [name, setName] = useState("+")
   const [shakeInput, setShakeInput] = useState<boolean>(false)
@@ -115,7 +106,7 @@ const SetPrice = () => {
   })
 
 
-  useEffect(async () => {
+  useEffect( () => {
     async function checkIfSignatureExists() {
 
       let user = await fetch(`${URL}/auto/data/${account}`)
@@ -134,11 +125,13 @@ const SetPrice = () => {
       }
     }
     if (account) {
-      checkIfSignatureExists()
+    checkIfSignatureExists()
       getFee()
 
     }
   }, [account])
+
+ 
   const deadline = useSelector<RootState, number>(
     (state) => state.user.userDeadline
   );
@@ -155,12 +148,21 @@ const SetPrice = () => {
 
   const { independentField, typedValue } = useSwapState();
 
+  useEffect(() => {
+    async function runCheck() {
+      if (account  && currencies[Field.INPUT]) {
+
+        await checkForApproval()
+      }
+    }
+    runCheck()
+  }, [currencies[Field.INPUT],typedValue, account,marketType])
 
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
   const [allowedSlippage] = useUserSlippageTolerance();
 
   useEffect(() => {
-    if(parseFloat(initialFromPrice) >0 && negativeSliderValue===-100  && positiveSliderValue===0 && unitAmount && oppositeAmount){
+    if(parseFloat(initialFromPrice) >0 && negativeSliderValue===-1  && positiveSliderValue===0 && unitAmount && oppositeAmount){
       setInitialToPrice(unitAmount)
       setBasePrice(unitAmount)
     }
@@ -332,12 +334,6 @@ const SetPrice = () => {
     [onUserInput]
   );
 
-  const handleTypeOutput = useCallback(
-    (value: string) => {
-      onUserInput(Field.OUTPUT, value);
-    },
-    [onUserInput]
-  );
 
   const signTransaction = async () => {
     if (account !== undefined) {
@@ -349,32 +345,10 @@ const SetPrice = () => {
         
          if(account && mess){
           let signature = await web3.eth.personal.sign(mess, account,"12348844");
-       var sig = ethers.utils.splitSignature(signature)
-        const ecRec = await web3.eth.personal.ecRecover(mess,signature)
-        console.log({signature,sig,mess,ecRec})
-        
         setDataSignature({mess,signature})
         setTransactionSigned(true)
          }
-
-
-        // 
-        // const provider =new ethers.providers.Web3Provider(window.ethereum) 
-        // const signer = provider.getSigner()
-        // const signature= await signer.signMessage(permitHash)
-        // console.log({signature})
-        
-       
-
-        // await checkForApproval()
-      // } catch (e) {
-      //   dispatch(
-      //     setOpenModal({
-      //       message: "Signing wallet failed",
-      //       trxState: TrxState.TransactionFailed,
-      //     })
-      //   );
-      // }
+ 
 
     } else {
       dispatch(
@@ -465,12 +439,14 @@ const SetPrice = () => {
     }
     const checkForApproval = async () => {
       const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
+      
       // check approval for RGP and the other token
       const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
       const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
       const amountToApprove = await autoSwapV2Contract.fee()
       const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
     
+      console.log({autoSwapV2Contract,RGPBalance,fee},parseFloat(RGPBalance))
       let approvalArray:any=[]
       if (parseFloat(RGPBalance) >= parseFloat(fee)) {
         setHasBeenApproved(true)
