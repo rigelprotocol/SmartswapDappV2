@@ -76,7 +76,7 @@ const SetPrice = () => {
   } = useDerivedSwapInfo();
 
   
-  const [URL, setURL] = useState("http://178.62.13.26")//http://178.62.13.26
+  const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")//https://autoperiod.rigelprotocol.com
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [disableInput, setDisableInput] = useState(true)
   const [initialFromPrice, setInitialFromPrice] = useState("")

@@ -35,7 +35,7 @@ const useOpenOrders = (socket:any) => {
     const [openOrderData, setopenOrderData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("http://178.62.13.26")
+    const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const refreshPage = useSelector((state: RootState) => state.transactions.refresh);
     const location = useLocation().pathname;
