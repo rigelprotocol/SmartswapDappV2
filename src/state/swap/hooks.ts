@@ -6,8 +6,7 @@ import {
   typeInput,
   replaceSwapState,
   switchCurrencies,
-  selectMarketFactory,
-  selectMarketRouterAddress
+  selectMarketFactory
 } from "./actions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import { ParsedQs } from "qs";
@@ -156,7 +155,7 @@ const [,, unitAmount, ,,oppositeAmount ] = useSwap(
     inputCurrency,
     // isExactIn ? outputCurrency : inputCurrency,
     outputCurrency,
-    "1000000000000000000",
+     `${10**inputCurrency?.decimals}`,
     marketFactory,
     marketRouterAddress,
     "unit"

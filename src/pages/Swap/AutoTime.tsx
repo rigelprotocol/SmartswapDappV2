@@ -39,19 +39,21 @@ import {
   TabList,
   Tab,
   Img,
-  AlertDescription
+  AlertDescription,
+  Spinner
 } from '@chakra-ui/react';
 import AutoTimeModal from './modals/autoTimeModal';
 import { useUserSlippageTolerance } from "../../state/user/hooks";
 import { useSelector,useDispatch } from 'react-redux';
 import { RootState } from "../../state";
-import { autoSwapV2, rigelToken, SmartSwapRouter, otherMarketPriceContract } from '../../utils/Contracts';
-import { RGPADDRESSES, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES, SMARTSWAPROUTER, OTHERMARKETADDRESSES,MARKETAUTOSWAPADDRESSES, OTHERMARKETFACTORYADDRESSES, RGP } from '../../utils/addresses';
+import { autoSwapV2, rigelToken } from '../../utils/Contracts';
+import { RGPADDRESSES, OTHERMARKETADDRESSES,MARKETAUTOSWAPADDRESSES, OTHERMARKETFACTORYADDRESSES, RGP } from '../../utils/addresses';
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { changeFrequencyTodays } from '../../utils/utilsFunctions';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { refreshTransactionTab } from '../../state/transaction/actions';
 import MarketDropDown from '../../components/MarketDropDown';
+import { GButtonClick, GFailedTransaction, GSuccessfullyTransaction } from '../../components/G-analytics/gIndex';
 
 
 
@@ -61,7 +63,6 @@ const SetPrice = () => {
   const borderColor = useColorModeValue('#DEE6ED', '#324D68');
   const iconColor = useColorModeValue('#666666', '#DCE6EF');
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
-  const bgColor = useColorModeValue('#ffffff', '#15202B');
   const buttonBgcolor = useColorModeValue('#F2F5F8', '#213345');
   const color = useColorModeValue('#999999', '#7599BD');
   const lightmode = useColorModeValue(true, false);
@@ -130,7 +131,7 @@ const SetPrice = () => {
  
   useEffect(() => {
     async function checkIfSignatureExists() {
-      let user = await fetch(`https://autoperiod.rigelprotocol.com/auto/data/${account}`)//https://autoperiod.rigelprotocol.com
+      let user = await fetch(`http://localhost:7000/auto/data/${account}`)//http://localhost:7000
       let data = await user.json()
       if (data) {
         setDataSignature(data.dataSignature)
@@ -296,8 +297,6 @@ const SetPrice = () => {
         
          if(account && mess){
           let signature = await web3.eth.personal.sign(mess, account,"12348844");
-       var sig = ethers.utils.splitSignature(signature)
-        const ecRec = await web3.eth.personal.ecRecover(mess,signature)
         setDataSignature({mess,signature})
         setTransactionSigned(true)
          }
@@ -315,21 +314,21 @@ const SetPrice = () => {
   }
 
   const approveOneOrTwoTokens = async (tokenApprovingFor:string) => {
-  console.log({approvalForFee,approvalForToken})
     if (currencies[Field.INPUT]?.isNative) {
       setHasBeenApproved(true);
       setApproval(approval.filter(t => t !== currencies[Field.INPUT]?.name))
     }
-    console.log({tokenApprovingFor})
-    // let setArr = Array.from(new Set(approval))
-    // if (setArr.length > 0) {
-      // try {
+    
+    GButtonClick("auto_period",`Approve ${tokenApprovingFor} ${tokenApprovingFor ==="RGP" ? "for fee" : ""}`,currencies[Field.INPUT]?.symbol)
+
         dispatch(
           setOpenModal({
             message: `Approve ${tokenApprovingFor} ${tokenApprovingFor ==="RGP" ? "for fee" : ""}`,
             trxState: TrxState.WaitingForConfirmation,
           })
         );
+        try{
+
         if (tokenApprovingFor === "RGP") {
           const address = RGPADDRESSES[chainId as number];
           const rgp = await rigelToken(RGP[chainId as number], library);
@@ -353,6 +352,7 @@ const SetPrice = () => {
               })
             );
           }
+          GSuccessfullyTransaction("auto_period",`Approval ${tokenApprovingFor} ${tokenApprovingFor ==="RGP" ? "for fee" : ""}`,currencies[Field.INPUT]?.symbol)
             setApprovalForFee("")
           // setArr && setApproval(setArr)
         } else {
@@ -375,24 +375,20 @@ const SetPrice = () => {
               })
             );
           }
-          // setArr && setApproval(setArr.filter(item=>item!==currencies[Field.INPUT]?.wrapped.symbol))
+          
+          GSuccessfullyTransaction("auto_period","Approval",currencies[Field.INPUT]?.symbol)
         }
+      }catch(e:any){
+        GFailedTransaction("straight_swap","approval",e.message,currencies[Field.INPUT]?.symbol)
+      }
         setApprovalForToken("")
-      // } catch (e) {
-      //   console.log(e)
-      // }
-    // } else {
-    //   dispatch(
-    //     setOpenModal({
-    //       message: `Approval Failed.`,
-    //       trxState: TrxState.TransactionFailed,
-    //     })
-    //   );
-    // }
+      
 
   }
   const sendTransactionToDatabase = async () => {
-
+    GButtonClick("auto_period","sending transaction to database",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
+    try{
+      
     const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
     dispatch(
       setOpenModal({
@@ -403,7 +399,6 @@ const SetPrice = () => {
     let currentDate = new Date();
     let futureDate = currentDate.getTime() + deadline;
     let data, response
-    console.log({pathArray,futureDate},Web3.utils.toWei(typedValue, 'ether'))
     if (currencies[Field.INPUT]?.isNative) {
       
       data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
@@ -433,8 +428,7 @@ const SetPrice = () => {
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)//
-      console.log({pathSymbol,pathArray})
-      const response = await fetch(`https://autoperiod.rigelprotocol.com/auto/add`, {
+      const response = await fetch(`http://localhost:7000/auto/add`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -469,13 +463,14 @@ const SetPrice = () => {
           market:marketType
         })
       })
-      const res = await response.json()
+      await response.json()
       dispatch(
         setOpenModal({
           message: "Successfully stored Transaction",
           trxState: TrxState.TransactionSuccessful,
         })
       );
+      GSuccessfullyTransaction("auto_period","storing transaction to the database",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
       dispatch(refreshTransactionTab({ refresh:Math.random() }))
       onUserInput(Field.INPUT, "");
       setApproval([])
@@ -483,6 +478,9 @@ const SetPrice = () => {
       setCheckedItem(false)
       setShowNewChangesText(false);
     }
+  }catch(e){
+    GFailedTransaction("auto_period","storing transaction to database","error",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
+  }
 
   }
 
@@ -757,10 +755,11 @@ const SetPrice = () => {
                     borderRadius="6px"
                     border={lightmode ? '2px' : 'none'}
                     borderColor={borderColor}
-                    // onClick={signTransaction}
+                    
                     onClick={() => {
                       setCurrentToPrice(receivedAmount)
                       setShowModal(!showModal)
+                      GButtonClick("auto_period","sign wallet",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
                     }}
                     h="48px"
                     p="5px"
@@ -884,26 +883,19 @@ const SetPrice = () => {
                       <Text fontSize="24px" color={textColorOne} textAlign="right" isTruncated width="160px" >
                       {formattedAmounts[Field.OUTPUT]}
                       </Text>
-                      {/* <Text fontSize="14px" color={color}  width="160px" textAlign="right">
-                        -2.67
-                      </Text> */}
                     </VStack>
                   </Flex>
                 </Box>
               </Box>
 
               <Box mt={5}>
-                {/* <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px" cursor="pointer">
-                  <VectorIcon />
-                </Center>
-                <Spacer /> */}
                 {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
                   <>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                    1 {currencies[Field.INPUT]?.symbol} = {unitAmount} {currencies[Field.OUTPUT]?.symbol}
+                    1 {currencies[Field.INPUT]?.symbol} = {unitAmount ?unitAmount :  <Spinner speed='0.65s' color='#999999' />} {currencies[Field.OUTPUT]?.symbol}
                     </Text>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount} {currencies[Field.INPUT]?.symbol}
+                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount ? oppositeAmount :  <Spinner speed='0.65s' color='#999999' />} {currencies[Field.INPUT]?.symbol}
                     </Text>
                     <ExclamationIcon />
                   </>
@@ -1051,8 +1043,12 @@ const SetPrice = () => {
                     borderRadius="6px"
                     border={lightmode ? '2px' : 'none'}
                     borderColor={borderColor}
-                    // onClick={signTransaction}
-                    onClick={() => setShowModal(!showModal)}
+                    
+                    onClick={() => {
+                      setCurrentToPrice(receivedAmount)
+                      setShowModal(!showModal)
+                      GButtonClick("auto_period","sign wallet",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
+                    }}
                     h="48px"
                     p="5px"
                     color={color}
@@ -1092,7 +1088,7 @@ const SetPrice = () => {
                     _hover={{ bgColor: buttonBgcolor }}
                   >
                     Approve RGP for fee
-                  </Button> :<Button
+                  </Button> : <Button
                     w="100%"
                     borderRadius="6px"
                     border={lightmode ? '2px' : 'none'}
