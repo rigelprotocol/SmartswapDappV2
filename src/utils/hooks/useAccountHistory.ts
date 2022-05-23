@@ -68,7 +68,8 @@ interface DataIncoming {
     initialFromPrice?:string,
     initialToPrice?:string,
     situation?:string,
-    pathSymbol?:string
+    pathSymbol?:string,
+    market?:string
 }
 let web3 = new Web3(Web3.givenProvider);
 export const formatAmount = (number: string, decimals: any) => {
@@ -264,7 +265,8 @@ const useAccountHistory = (socket:any) => {
                             initialFromPrice:data.initialFromPrice,
                             initialToPrice:data.initialToPrice,
                             situation:data.situation,
-                            pathSymbol:data.pathSymbol
+                            pathSymbol:data.pathSymbol,
+                            market:data.market
                         }
                     })
                     )
@@ -300,7 +302,8 @@ const useAccountHistory = (socket:any) => {
                     chainID:data.chainID,initialFromPrice:data.initialFromPrice,
                     initialToPrice:data.initialToPrice,
                     situation:data.situation,
-                    pathSymbol:data.pathSymbol                       
+                    pathSymbol:data.pathSymbol,
+                    market:data.market                       
                 })),
             );
             const userSwapHistory = swapDataForWallet.map((data: any) => ({
@@ -326,7 +329,8 @@ const useAccountHistory = (socket:any) => {
                 initialFromPrice:data.initialFromPrice,
                 initialToPrice:data.initialToPrice,
                 situation:data.situation,
-                pathSymbol:data.pathSymbol
+                pathSymbol:data.pathSymbol,
+                market:data.market
           
             }));
             setHistoryData(userSwapHistory);

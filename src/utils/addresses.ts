@@ -120,17 +120,17 @@ export const AUTOSWAPV2ADDRESSES: { [key: string]: string } = {
 };
 export const MARKETAUTOSWAPADDRESSES : { [key: string]: {[key:string]: string} } = {
   "Smartswap": {
-    "56": "0xB6e99D7a37Bbf4C45fA54929C9E1c6DE213962de",
+    "56": "0xe3D5Eb691b58ad13D53c82Ab998D7F0509Bb3d48",
     // "56": "0x80297998b4b7bd7Bf3c71c9E800Ad3AB403437cB",
     "97": "0xf767A2b636494c98afB8452633ba61F3A1400dd7",
-    "137": "0xCA4f379b674e2d72c8144b5c521BdD24657C8949",
+    "137": "0x2c74968Be7B1183C6B15140393925DfDBfA8AC1a",
   },
   "Pancakeswap":{
-    "56": "0x0024Cc4036776e7314d08faAA0B079A625Fd2ACd",
+    "56": "0xb828702915a576acc8c22b1cb7a01ea22d26ade7",
     "97": "0x"
   },
   "Quickswap":{
-    "137":"0x70b2Bd618C0Fa0253E125Ff4b4c671D0496238a0"
+    "137":"0xa5ef2644b2a69af4466c17922280969410ec8a82"
   }
 };
 export const OTHERMARKETADDRESSES: { [key: string]: {[key:string]: string} } = {
