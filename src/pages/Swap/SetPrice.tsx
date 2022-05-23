@@ -38,7 +38,7 @@ import CInput from './components/sendToken/Input';
 import { Field } from '../../state/swap/actions';
 import { maxAmountSpend } from '../../utils/maxAmountSpend';
 import { autoSwapV2, rigelToken } from '../../utils/Contracts';
-import { RGPADDRESSES, MARKETAUTOSWAPADDRESSES } from '../../utils/addresses';
+import { RGPADDRESSES, MARKETAUTOSWAPADDRESSES, OTHERMARKETFACTORYADDRESSES, OTHERMARKETADDRESSES } from '../../utils/addresses';
 import { RGP } from '../../utils/addresses';
 import { useDispatch,useSelector } from "react-redux";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
