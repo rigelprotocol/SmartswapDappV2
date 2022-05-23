@@ -68,7 +68,7 @@ const BidDetails = () => {
             }
         };
         getTokenData();
-    }, []);
+    }, [account, chainId]);
 
     useEffect(() => {
         const timeFunction = setInterval(function() {

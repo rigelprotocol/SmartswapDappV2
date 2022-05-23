@@ -13,7 +13,7 @@ import {
     ModalOverlay,
     Spinner,
     Text,
-    useColorModeValue
+    useColorModeValue, useMediaQuery
 } from '@chakra-ui/react'
 import React, {useMemo, useState, useEffect} from 'react';
 import {getERC20Token} from "../../../utils/utilsFunctions";
@@ -55,6 +55,7 @@ const BidModal = ({isOpen, close, id, amount, max, tokenInfo, address, placeBid,
     const lightTextColor = useColorModeValue("#666666", "grey");
     const [checkTokenApproval, setCheckTokenApproval] = useState(0);
     const dispatch = useDispatch();
+    const [isMobileDevice] = useMediaQuery("(max-width: 750px)");
 
     const {hasTokenABeenApproved, loadInfo} = useBidAllowance(checkTokenApproval, amount, isOpen, id);
 
@@ -213,7 +214,7 @@ const BidModal = ({isOpen, close, id, amount, max, tokenInfo, address, placeBid,
                 <>
                     <ModalOverlay />
                     <ModalContent bg={bgColour} color="#fff" borderRadius="6px"
-                                  paddingBottom="15px" width="50vw">
+                                  paddingBottom="15px" width={isMobileDevice ? '90%' : '50vw'}>
                         <ModalCloseButton
                             bg="none"
                             color={closeBtnColour}
@@ -300,7 +301,7 @@ const BidModal = ({isOpen, close, id, amount, max, tokenInfo, address, placeBid,
                 <>
                     <ModalOverlay />
                     <ModalContent bg={bgColour} color="#fff" borderRadius="6px"
-                                  paddingBottom="15px" width="50vw">
+                                  paddingBottom="15px" width={isMobileDevice ? '90%' : '50vw'}>
                         <ModalCloseButton
                             bg="none"
                             color={closeBtnColour}
