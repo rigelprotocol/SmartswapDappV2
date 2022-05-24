@@ -18,6 +18,7 @@ export interface modalState {
     message?: string;
     trxState: TrxState;
     urlNetwork?: string;
+    continue?: Function
 
 }
 
