@@ -108,7 +108,7 @@ const useMarketHistory = (socket:any) => {
                 setLoadMarketData(true);
                 try {
                     let dataToUse = []
-                    if( location === "/swap"){
+                    if( location.includes("swap")){
                     
                     const uri = `https://${api}?module=account&action=txlist&address=${contractAddress}&startblock=0
                     &endblock=latest&sort=desc&apikey=${apikey}`;
@@ -156,7 +156,7 @@ const useMarketHistory = (socket:any) => {
 
                    
     
-                }else if ( location === "/auto-period" || location === "/set-price"){
+                }else if ( location.includes("auto-period") || location.includes("set-price")){
                     const transaction = await getTransactionFromDatabase()
                     if (transaction.length > 0) {
                         let result = []
