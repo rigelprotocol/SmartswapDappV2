@@ -87,6 +87,19 @@ const BidModal = ({isOpen, close, id, amount, max, tokenInfo, address, placeBid,
         }
     }, [stakeBid]);
 
+    const [lowBalance, setLowBalance] = useState(false);
+
+    useMemo(() => {
+        if (tokenInfo.balance === '') {
+            return;
+        }
+       else if (Number(ethers.utils.formatUnits(amount, 18)) > Number(ethers.utils.formatUnits(tokenInfo.balance, 18))) {
+            setLowBalance(true);
+        } else {
+           setLowBalance(false)
+        }
+    }, [isOpen]);
+
 
     const approveTokens = async () => {
         if (account) {
@@ -388,6 +401,12 @@ const BidModal = ({isOpen, close, id, amount, max, tokenInfo, address, placeBid,
                             /> : (<>
                                 <Text fontSize="20px" fontWeight={500} color={textColour} py={2}>First, let’s get things straight</Text>
                                 <Text fontSize="14px" fontWeight={400} color={textColour} py={2}>You’re required to approve this trasanction by paying the required amount of gas fee.</Text>
+                                {
+                                    lowBalance && <Box>
+                                        <Text my={'10px'} color={'#CC334F'} fontSize={'16px'}>Insufficient Balance</Text>
+                                        <Text my={'10px'} color={'#CC334F'} fontSize={'16px'}>Mimimum required: {ethers.utils.formatUnits(amount, tokenInfo.decimals)} {tokenInfo.symbol}</Text>
+                                    </Box>
+                                }
                                 <Button
                                     variant="brand" padding="24px 0"
                                     width="100%" isFullWidth
@@ -397,6 +416,7 @@ const BidModal = ({isOpen, close, id, amount, max, tokenInfo, address, placeBid,
                                     background={closeButtonBgColour}
                                     color="#FFFFFF" cursor="pointer"
                                     onClick={() => approveTokens()}
+                                    disabled={lowBalance}
                                 >
                                     Approve
                                 </Button>
