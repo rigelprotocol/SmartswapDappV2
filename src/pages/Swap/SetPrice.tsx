@@ -25,7 +25,8 @@ import {
   VStack,
   Input,
   Square,
-  Slider
+  Slider,
+  Spinner
 } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import { getERC20Token } from '../../utils/utilsFunctions';
@@ -38,15 +39,17 @@ import CInput from './components/sendToken/Input';
 import { Field } from '../../state/swap/actions';
 import { maxAmountSpend } from '../../utils/maxAmountSpend';
 import { autoSwapV2, rigelToken } from '../../utils/Contracts';
-import { RGPADDRESSES, MARKETAUTOSWAPADDRESSES } from '../../utils/addresses';
+import { RGPADDRESSES, MARKETAUTOSWAPADDRESSES, OTHERMARKETFACTORYADDRESSES, OTHERMARKETADDRESSES } from '../../utils/addresses';
 import { RGP } from '../../utils/addresses';
 import { useDispatch,useSelector } from "react-redux";
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { RootState } from "../../state";
 import { refreshTransactionTab } from '../../state/transaction/actions';
 import { useUserSlippageTolerance } from '../../state/user/hooks';
+import { binanceTestMarketArray,polygonMarketArray,binanceMarketArray } from "../../state/swap/hooks"
 import MarketDropDown from '../../components/MarketDropDown';
 import SliderComponent from '../../components/Slider';
+import { useLocation } from 'react-router-dom';
 
 
 const SetPrice = () => {
@@ -58,6 +61,7 @@ const SetPrice = () => {
   const buttonBgcolor = useColorModeValue('#F2F5F8', '#213345');
   const dispatch = useDispatch();
   const color = useColorModeValue('#999999', '#7599BD');
+  const location = useLocation().pathname;
 
   const { onCurrencySelection, onUserInput, onSwitchTokens,onMarketSelection } = useSwapActionHandlers();
   const { account, chainId, library } = useActiveWeb3React()
@@ -75,8 +79,7 @@ const SetPrice = () => {
     oppositeAmount
   } = useDerivedSwapInfo();
 
-  
-  const [URL, setURL] = useState("http://178.62.13.26")//http://localhost:7000
+  const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")//https://autoperiod.rigelprotocol.com
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [disableInput, setDisableInput] = useState(true)
   const [initialFromPrice, setInitialFromPrice] = useState("")
@@ -105,7 +108,10 @@ const SetPrice = () => {
     signature:""
   })
 
-
+  useEffect(async () => {      
+    onMarketSelection(OTHERMARKETFACTORYADDRESSES[marketType][chainId as number],OTHERMARKETADDRESSES[marketType][chainId as number])
+  // }
+}, [chainId,marketType])
   useEffect( () => {
     async function checkIfSignatureExists() {
 
@@ -136,15 +142,30 @@ const SetPrice = () => {
     (state) => state.user.userDeadline
   );
   useEffect(()=>{
+    let market = location.split("/").length===3? location.split("/")[2]:""
+    checkIfMarketExists(market,chainId)
+ 
+  },[location,chainId])
+  useEffect(()=>{
  if(parseFloat(initialToPrice) >0){
       const percent = (name==="+" ? positiveSliderValue/100 : negativeSliderValue/100) * parseFloat(basePrice)
-      console.log({percent})
       const value = parseFloat(basePrice) + percent
 
       value > 0 ? setInitialToPrice(value.toString()) : setInitialToPrice("0")
       
     } 
   },[positiveSliderValue,negativeSliderValue])
+  
+  const checkIfMarketExists = (market:string,chainId:number| undefined) => {
+    let marketArray:any
+    if(chainId === 56) marketArray = binanceMarketArray
+    else if(chainId === 97) marketArray = binanceTestMarketArray
+    else if(chainId === 137) marketArray = polygonMarketArray
+    if(marketArray && marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())){
+      let item = marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())
+      setMarketType(item.name)
+    }
+  }
 
   const { independentField, typedValue } = useSwapState();
 
@@ -289,6 +310,7 @@ const SetPrice = () => {
           toAddress: currencies[Field.OUTPUT]?.isNative ? "native" : currencies[Field.OUTPUT]?.wrapped.address,
           userExpectedPrice: toPrice,
           percentageChange:"",
+          fromNumberOfDecimals: currencies[Field.INPUT]?.isNative ? 18 : currencies[Field.INPUT]?.wrapped.decimals,
           toNumberOfDecimals: currencies[Field.OUTPUT]?.isNative ? 18 : currencies[Field.OUTPUT]?.wrapped.decimals,
           fromPrice: typedValue,
           currentToPrice: formattedAmounts[Field.OUTPUT],
@@ -361,14 +383,10 @@ const SetPrice = () => {
 
   }
   const approveOneOrTwoTokens = async (tokenApprovingFor:string) => {
-    console.log({approvalForFee,approvalForToken})
       if (currencies[Field.INPUT]?.isNative) {
         setHasBeenApproved(true);
         setApproval(approval.filter(t => t !== currencies[Field.INPUT]?.name))
       }
-      console.log({tokenApprovingFor})
-      // let setArr = Array.from(new Set(approval))
-      // if (setArr.length > 0) {
         try {
           dispatch(
             setOpenModal({
@@ -445,8 +463,6 @@ const SetPrice = () => {
       const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
       const amountToApprove = await autoSwapV2Contract.fee()
       const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
-    
-      console.log({autoSwapV2Contract,RGPBalance,fee},parseFloat(RGPBalance))
       let approvalArray:any=[]
       if (parseFloat(RGPBalance) >= parseFloat(fee)) {
         setHasBeenApproved(true)
@@ -607,10 +623,10 @@ const SetPrice = () => {
              {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
                   <>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.INPUT]?.symbol} = {unitAmount} {currencies[Field.OUTPUT]?.symbol}
+                      1 {currencies[Field.INPUT]?.symbol} = {unitAmount && parseFloat(unitAmount) >0 ? unitAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.OUTPUT]?.symbol}
                     </Text>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount} {currencies[Field.INPUT]?.symbol}
+                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount && parseFloat(oppositeAmount)>0 ? oppositeAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.INPUT]?.symbol}
                     </Text>
                     <ExclamationIcon />
                   </>

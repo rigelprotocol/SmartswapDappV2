@@ -71,7 +71,9 @@ import Faq from "./SmartBid/Faq";
               />
 
               <Route exact strict path="/set-price" component={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON ? Swap : SetPrice } />
+              <Route exact strict path="/set-price/:router" component={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON ? Swap : SetPrice } />
               <Route exact path="/auto-period" component={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON ? Swap : AutoTime} />
+              <Route exact path="/auto-period/:router" component={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON ? Swap : AutoTime} />
               <Route
                 exact
                 strict

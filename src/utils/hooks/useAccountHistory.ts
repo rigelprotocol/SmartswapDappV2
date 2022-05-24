@@ -8,7 +8,7 @@ import SmartSwapRouter02 from '../abis/swapAbiForDecoder.json';
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state";
 import { useLocation } from 'react-router-dom';
-import { SMARTSWAPROUTER, AUTOSWAPV2ADDRESSES, RGPADDRESSES, WNATIVEADDRESSES } from "../addresses";
+import { SMARTSWAPROUTER, AUTOSWAPV2ADDRESSES, RGPADDRESSES, WNATIVEADDRESSES, AUTOSWAPSTATEADDRESSES } from "../addresses";
 import Web3 from 'web3';
 import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { ParseFloat } from '..';
@@ -68,7 +68,8 @@ interface DataIncoming {
     initialFromPrice?:string,
     initialToPrice?:string,
     situation?:string,
-    pathSymbol?:string
+    pathSymbol?:string,
+    market?:string
 }
 let web3 = new Web3(Web3.givenProvider);
 export const formatAmount = (number: string, decimals: any) => {
@@ -98,7 +99,7 @@ const useAccountHistory = (socket:any) => {
     const [historyData, setHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("http://178.62.13.26")//
+    const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")//
     const dispatch =useDispatch()
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const tokenList = async (addressName: string) => {
@@ -114,6 +115,7 @@ const useAccountHistory = (socket:any) => {
             address: standardToken[2],
             decimals: standardToken[3]
         };
+        console.log({resolveToken})
         return address !== '0x' ? resolveToken : null;
     };
 
@@ -129,13 +131,13 @@ const useAccountHistory = (socket:any) => {
     const location = useLocation().pathname;
     const [, Symbol, Name,] = useNativeBalance()
     useEffect(() => {
-        if (location === "/auto-period") {
+        if (location.includes("auto-period")) {
             setLocationData("auto")
-            setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
+            setStateAccount(AUTOSWAPSTATEADDRESSES[chainId as number])
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
-        } else if (location === "/set-price") {
+        } else if (location.includes("set-price")) {
             setLocationData("price")
-            setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
+            setStateAccount(AUTOSWAPSTATEADDRESSES[chainId as number])
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
         } else {
             setLocationData("swap")
@@ -150,7 +152,6 @@ const useAccountHistory = (socket:any) => {
             loadAccountHistory();
         })
         socket?.on("cleared",(page:string)=>{
-            console.log({page})
             if(page==="auto"){
                dispatch(notificationTab({ autoTimeNotification:0})) 
             }else{
@@ -175,7 +176,7 @@ const useAccountHistory = (socket:any) => {
             setLoading(true);
             try {
             let userData = []
-            if (location === "/swap") {
+            if (location.includes("swap")) {
                 const uri = `https://${api}?module=account&action=txlist&address=${account}&startblock=0
                 &endblock=latest&sort=desc&apikey=${apikey}`;
 
@@ -223,9 +224,10 @@ const useAccountHistory = (socket:any) => {
                     situation:"",
                     chainID:chainId
                 }));
-            } else if ( location === "/auto-period" || location === "/set-price") {
+            } else if ( location.includes("auto-period") || location.includes("set-price")) {
                 const { transaction, database } = await getTransactionFromDatabase(account)
                 if (transaction.length > 0) {
+                    
                     dispatch(notificationTab({ 
                     autoTimeNotification:transaction[0].autoTimeNotification,
                     setPriceNotification:transaction[0].setPriceNotification,
@@ -236,7 +238,6 @@ const useAccountHistory = (socket:any) => {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "Auto Time")
                         result = result.filter((item:any)=> item.status === 1 || item.status === 0).reverse()
                         
-
                         // result = newArray
                     } else if (locationData === "price") {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "Set Price")
@@ -264,7 +265,8 @@ const useAccountHistory = (socket:any) => {
                             initialFromPrice:data.initialFromPrice,
                             initialToPrice:data.initialToPrice,
                             situation:data.situation,
-                            pathSymbol:data.pathSymbol
+                            pathSymbol:data.pathSymbol,
+                            market:data.market
                         }
                     })
                     )
@@ -273,6 +275,7 @@ const useAccountHistory = (socket:any) => {
 
 
             }
+            console.log({userData})
             const swapDataForWallet = await Promise.all(
                 userData.map(async (data: DataIncoming) => ({
                     tokenIn: data.tokenIn === "native" ? {
@@ -300,7 +303,8 @@ const useAccountHistory = (socket:any) => {
                     chainID:data.chainID,initialFromPrice:data.initialFromPrice,
                     initialToPrice:data.initialToPrice,
                     situation:data.situation,
-                    pathSymbol:data.pathSymbol                       
+                    pathSymbol:data.pathSymbol,
+                    market:data.market                       
                 })),
             );
             const userSwapHistory = swapDataForWallet.map((data: any) => ({
@@ -326,11 +330,11 @@ const useAccountHistory = (socket:any) => {
                 initialFromPrice:data.initialFromPrice,
                 initialToPrice:data.initialToPrice,
                 situation:data.situation,
-                pathSymbol:data.pathSymbol
+                pathSymbol:data.pathSymbol,
+                market:data.market
           
             }));
             setHistoryData(userSwapHistory);
-
 
             setLoading(false);
 

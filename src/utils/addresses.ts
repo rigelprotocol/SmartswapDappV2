@@ -113,24 +113,24 @@ export const MASTERCHEFV2ADDRESSES: { [key: string]: string } = {
 export const AUTOSWAPV2ADDRESSES: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
-  "56": "0x80297998b4b7bd7Bf3c71c9E800Ad3AB403437cB",
+  "56": "0x8eAc699588e46E7426375D945dD0330b0ad11814",
   "97": "0xf767A2b636494c98afB8452633ba61F3A1400dd7",
   "137": "0xCA4f379b674e2d72c8144b5c521BdD24657C8949",
   "80001": "0x",
 };
 export const MARKETAUTOSWAPADDRESSES : { [key: string]: {[key:string]: string} } = {
   "Smartswap": {
-    "56": "0xB6e99D7a37Bbf4C45fA54929C9E1c6DE213962de",
+    "56": "0x43a790946c19dbF48d2cd2B0D8951DEE686D0cD7",
     // "56": "0x80297998b4b7bd7Bf3c71c9E800Ad3AB403437cB",
     "97": "0xf767A2b636494c98afB8452633ba61F3A1400dd7",
-    "137": "0xCA4f379b674e2d72c8144b5c521BdD24657C8949",
+    "137": "0x2c74968Be7B1183C6B15140393925DfDBfA8AC1a",
   },
   "Pancakeswap":{
-    "56": "0x0024Cc4036776e7314d08faAA0B079A625Fd2ACd",
+    "56": "0x6611AE8248fa084023789C59878A0381791D3a6a",
     "97": "0x"
   },
   "Quickswap":{
-    "137":"0x70b2Bd618C0Fa0253E125Ff4b4c671D0496238a0"
+    "137":"0xb027c89617dEA17505bA3E98DE20d8658572942c"
   }
 };
 export const OTHERMARKETADDRESSES: { [key: string]: {[key:string]: string} } = {
@@ -139,7 +139,7 @@ export const OTHERMARKETADDRESSES: { [key: string]: {[key:string]: string} } = {
     "97": "0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3"
   },
   "Quickswap":{
-    "137":"0x831753DD7087CaC61aB5644b308642cc1c33Dc13"
+    "137":"0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"
   },
   "Smartswap":{
     "1": "0x",
@@ -180,6 +180,14 @@ export const OTHERMARKETFACTORYADDRESSES: { [key: string]: {[key:string]: string
   // }
 };
 
+export const AUTOSWAPSTATEADDRESSES: { [key: string]: string } = {
+  "1": "0x",
+  "3": "0x",
+  "56": "0xeBD0329E00B92898C9Ad614b001FdBD1d0e3E19D",
+  "97": "0x97C982a4033d5fceD06Eedbee1Be10778E811D85",
+  "137": "0xeBD0329E00B92898C9Ad614b001FdBD1d0e3E19D",
+  "80001": "0x",
+};
 export const RGPSPECIALPOOLADDRESSES: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",

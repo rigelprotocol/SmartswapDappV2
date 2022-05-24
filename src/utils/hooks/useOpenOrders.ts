@@ -27,6 +27,7 @@ interface DataIncoming {
     chainID?:string,
     situation?:string,
     expectedUserPrice?:string
+    market?:string
 }
 
 const useOpenOrders = (socket:any) => {
@@ -35,7 +36,7 @@ const useOpenOrders = (socket:any) => {
     const [openOrderData, setopenOrderData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("http://178.62.13.26")
+    const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const refreshPage = useSelector((state: RootState) => state.transactions.refresh);
     const location = useLocation().pathname;
@@ -132,7 +133,8 @@ const useOpenOrders = (socket:any) => {
                                 initialToPrice:data.initialToPrice,
                                 situation:data.situation,
                                 _id:data._id,
-                                pathSymbol:data.pathSymbol
+                                pathSymbol:data.pathSymbol,
+                                market:data.market
                             }
                         })
                         )
@@ -168,7 +170,8 @@ const useOpenOrders = (socket:any) => {
                         initialFromPrice:data.initialFromPrice,
                         initialToPrice:data.initialToPrice,
                         _id:data._id,
-                        pathSymbol:data.pathSymbol
+                        pathSymbol:data.pathSymbol,
+                        market:data.market
                     })),
                 );
                     const marketHistory = marketSwap.map((data) => ({
@@ -195,7 +198,8 @@ const useOpenOrders = (socket:any) => {
                         initialFromPrice:data.initialFromPrice,
                         initialToPrice:data.initialToPrice,
                         _id:data._id,
-                        pathSymbol:data.pathSymbol
+                        pathSymbol:data.pathSymbol,
+                        market:data.market,
                     }));
                     setopenOrderData(marketHistory);
                     setloadOpenOrders(false);
