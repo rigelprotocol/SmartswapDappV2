@@ -99,7 +99,7 @@ const useAccountHistory = (socket:any) => {
     const [historyData, setHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")//
+    const [URL, setURL] = useState("http://localhost:7000")//
     const dispatch =useDispatch()
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const tokenList = async (addressName: string) => {
@@ -115,6 +115,7 @@ const useAccountHistory = (socket:any) => {
             address: standardToken[2],
             decimals: standardToken[3]
         };
+        console.log({resolveToken})
         return address !== '0x' ? resolveToken : null;
     };
 
@@ -135,7 +136,6 @@ const useAccountHistory = (socket:any) => {
             setStateAccount(AUTOSWAPSTATEADDRESSES[chainId as number])
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
         } else if (location.includes("set-price")) {
-            alert("yes")
             setLocationData("price")
             setStateAccount(AUTOSWAPSTATEADDRESSES[chainId as number])
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
@@ -152,7 +152,6 @@ const useAccountHistory = (socket:any) => {
             loadAccountHistory();
         })
         socket?.on("cleared",(page:string)=>{
-            console.log({page})
             if(page==="auto"){
                dispatch(notificationTab({ autoTimeNotification:0})) 
             }else{
@@ -239,7 +238,6 @@ const useAccountHistory = (socket:any) => {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "Auto Time")
                         result = result.filter((item:any)=> item.status === 1 || item.status === 0).reverse()
                         
-                        console.log({result})
                         // result = newArray
                     } else if (locationData === "price") {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "Set Price")
@@ -277,6 +275,7 @@ const useAccountHistory = (socket:any) => {
 
 
             }
+            console.log({userData})
             const swapDataForWallet = await Promise.all(
                 userData.map(async (data: DataIncoming) => ({
                     tokenIn: data.tokenIn === "native" ? {
@@ -308,7 +307,6 @@ const useAccountHistory = (socket:any) => {
                     market:data.market                       
                 })),
             );
-            console.log({swapDataForWallet})
             const userSwapHistory = swapDataForWallet.map((data: any) => ({
                 token1Icon:
                     getTokenSymbol(data.tokenIn.symbol),
@@ -338,7 +336,6 @@ const useAccountHistory = (socket:any) => {
             }));
             setHistoryData(userSwapHistory);
 
-                console.log({userSwapHistory})
             setLoading(false);
 
 

@@ -96,7 +96,6 @@ const useSwap = (
     validSmartAddress = isAddress(marketFactory) ? marketFactory : SMARTSWAPFACTORYADDRESSES[chainId as number];
   }
   
-console.log({marketFactory,marketRouterAddress})
       try {
         const SmartFactory = await smartFactory(validSmartAddress ? validSmartAddress :  SMARTSWAPFACTORYADDRESSES[chainId as number], library);
         const pairAddress = await SmartFactory.getPair(
@@ -121,13 +120,11 @@ console.log({marketFactory,marketRouterAddress})
               marketRouterAddress ? marketRouterAddress : SMARTSWAPROUTER[chainId as number],
                library
              );
-              console.log({SmartSwapRouter,marketRouterAddress,amountIn})
 
             const amountOut = await SwapRouter.getAmountsOut(amountIn, [
               tokenOneAddress,
               tokenTwoAddress,
             ]);
-          console.log({SwapRouter,amountOut,amountIn})
             const amountsIn =
               independentFieldString === "INPUT"
                 ? undefined

@@ -79,7 +79,7 @@ const SetPrice = () => {
     oppositeAmount
   } = useDerivedSwapInfo();
 
-  const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")//https://rigelprotocol-autoswap.herokuapp.com
+  const [URL, setURL] = useState("http://localhost:7000")//http://localhost:7000
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [disableInput, setDisableInput] = useState(true)
   const [initialFromPrice, setInitialFromPrice] = useState("")
@@ -310,6 +310,7 @@ const SetPrice = () => {
           toAddress: currencies[Field.OUTPUT]?.isNative ? "native" : currencies[Field.OUTPUT]?.wrapped.address,
           userExpectedPrice: toPrice,
           percentageChange:"",
+          fromNumberOfDecimals: currencies[Field.INPUT]?.isNative ? 18 : currencies[Field.INPUT]?.wrapped.decimals,
           toNumberOfDecimals: currencies[Field.OUTPUT]?.isNative ? 18 : currencies[Field.OUTPUT]?.wrapped.decimals,
           fromPrice: typedValue,
           currentToPrice: formattedAmounts[Field.OUTPUT],
