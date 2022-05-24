@@ -8,7 +8,7 @@ import SmartSwapRouter02 from '../abis/swapAbiForDecoder.json';
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state";
 import { useLocation } from 'react-router-dom';
-import { SMARTSWAPROUTER, AUTOSWAPV2ADDRESSES, RGPADDRESSES, WNATIVEADDRESSES } from "../addresses";
+import { SMARTSWAPROUTER, AUTOSWAPV2ADDRESSES, RGPADDRESSES, WNATIVEADDRESSES, AUTOSWAPSTATEADDRESSES } from "../addresses";
 import Web3 from 'web3';
 import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { ParseFloat } from '..';
@@ -99,7 +99,7 @@ const useAccountHistory = (socket:any) => {
     const [historyData, setHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")//
+    const [URL, setURL] = useState("http://localhost:7000")//
     const dispatch =useDispatch()
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const tokenList = async (addressName: string) => {
@@ -132,11 +132,12 @@ const useAccountHistory = (socket:any) => {
     useEffect(() => {
         if (location.includes("auto-period")) {
             setLocationData("auto")
-            setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
+            setStateAccount(AUTOSWAPSTATEADDRESSES[chainId as number])
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
         } else if (location.includes("set-price")) {
+            alert("yes")
             setLocationData("price")
-            setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
+            setStateAccount(AUTOSWAPSTATEADDRESSES[chainId as number])
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
         } else {
             setLocationData("swap")
@@ -238,7 +239,7 @@ const useAccountHistory = (socket:any) => {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "Auto Time")
                         result = result.filter((item:any)=> item.status === 1 || item.status === 0).reverse()
                         
-
+                        console.log({result})
                         // result = newArray
                     } else if (locationData === "price") {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "Set Price")
@@ -307,6 +308,7 @@ const useAccountHistory = (socket:any) => {
                     market:data.market                       
                 })),
             );
+            console.log({swapDataForWallet})
             const userSwapHistory = swapDataForWallet.map((data: any) => ({
                 token1Icon:
                     getTokenSymbol(data.tokenIn.symbol),
@@ -336,7 +338,7 @@ const useAccountHistory = (socket:any) => {
             }));
             setHistoryData(userSwapHistory);
 
-
+                console.log({userSwapHistory})
             setLoading(false);
 
 

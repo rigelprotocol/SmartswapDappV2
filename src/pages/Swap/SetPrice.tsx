@@ -25,7 +25,8 @@ import {
   VStack,
   Input,
   Square,
-  Slider
+  Slider,
+  Spinner
 } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import { getERC20Token } from '../../utils/utilsFunctions';
@@ -78,7 +79,7 @@ const SetPrice = () => {
     oppositeAmount
   } = useDerivedSwapInfo();
 
-  const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")//https://autoperiod.rigelprotocol.com
+  const [URL, setURL] = useState("http://localhost:7000")//http://localhost:7000
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [disableInput, setDisableInput] = useState(true)
   const [initialFromPrice, setInitialFromPrice] = useState("")
@@ -621,10 +622,10 @@ const SetPrice = () => {
              {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
                   <>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.INPUT]?.symbol} = {unitAmount} {currencies[Field.OUTPUT]?.symbol}
+                      1 {currencies[Field.INPUT]?.symbol} = {unitAmount && parseFloat(unitAmount) >0 ? unitAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.OUTPUT]?.symbol}
                     </Text>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount} {currencies[Field.INPUT]?.symbol}
+                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount && parseFloat(oppositeAmount)>0 ? oppositeAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.INPUT]?.symbol}
                     </Text>
                     <ExclamationIcon />
                   </>

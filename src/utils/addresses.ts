@@ -139,7 +139,7 @@ export const OTHERMARKETADDRESSES: { [key: string]: {[key:string]: string} } = {
     "97": "0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3"
   },
   "Quickswap":{
-    "137":"0x831753DD7087CaC61aB5644b308642cc1c33Dc13"
+    "137":"0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"
   },
   "Smartswap":{
     "1": "0x",
@@ -180,6 +180,14 @@ export const OTHERMARKETFACTORYADDRESSES: { [key: string]: {[key:string]: string
   // }
 };
 
+export const AUTOSWAPSTATEADDRESSES: { [key: string]: string } = {
+  "1": "0x",
+  "3": "0x",
+  "56": "0xeBD0329E00B92898C9Ad614b001FdBD1d0e3E19D",
+  "97": "0x97C982a4033d5fceD06Eedbee1Be10778E811D85",
+  "137": "0xeBD0329E00B92898C9Ad614b001FdBD1d0e3E19D",
+  "80001": "0x",
+};
 export const RGPSPECIALPOOLADDRESSES: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",

@@ -47,7 +47,7 @@ export function tryParseAmount<T extends Currency>(
   return undefined;
 }
 
-export const useSwap = ( 
+const useSwap = ( 
   currencyA: Currency | null | undefined,
   currencyB: Currency | null | undefined,
   amountIn?: string,
@@ -96,6 +96,7 @@ export const useSwap = (
     validSmartAddress = isAddress(marketFactory) ? marketFactory : SMARTSWAPFACTORYADDRESSES[chainId as number];
   }
   
+console.log({marketFactory,marketRouterAddress})
       try {
         const SmartFactory = await smartFactory(validSmartAddress ? validSmartAddress :  SMARTSWAPFACTORYADDRESSES[chainId as number], library);
         const pairAddress = await SmartFactory.getPair(
@@ -120,12 +121,13 @@ export const useSwap = (
               marketRouterAddress ? marketRouterAddress : SMARTSWAPROUTER[chainId as number],
                library
              );
+              console.log({SmartSwapRouter,marketRouterAddress,amountIn})
 
             const amountOut = await SwapRouter.getAmountsOut(amountIn, [
               tokenOneAddress,
               tokenTwoAddress,
             ]);
-          
+          console.log({SwapRouter,amountOut,amountIn})
             const amountsIn =
               independentFieldString === "INPUT"
                 ? undefined
@@ -561,13 +563,14 @@ export const useSwap = (
           setPath([]);
         }
       } catch (e) {
-        console.log(e)
+        console.log({e})
         console.log(`Error occurs here: ${e}`);
         setAmount("");
       }
     };
 
     var interval:any
+
       if(tokenOneAddress && tokenTwoAddress&& (amountIn ) ){
         interval = setInterval(()=>
           getPairs(),2000)
@@ -597,3 +600,5 @@ export const useSwap = (
   
   return [address, wrap, amount, pathArray, pathSymbol,oppositeAmount];
 };
+
+export {useSwap}
