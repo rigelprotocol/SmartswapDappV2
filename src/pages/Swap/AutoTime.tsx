@@ -174,8 +174,8 @@ const SetPrice = () => {
     if(chainId === 56) marketArray = binanceMarketArray
     else if(chainId === 97) marketArray = binanceTestMarketArray
     else if(chainId === 137) marketArray = polygonMarketArray
-    if(marketArray && marketArray.find((item:any)=> item.name ===market)){
-      let item = marketArray.find((item:any)=> item.name ===market)
+    if(marketArray && marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())){
+      let item = marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())
       setMarketType(item.name)
     }
   }
@@ -269,7 +269,6 @@ const SetPrice = () => {
     const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
   
-    console.log({autoSwapV2Contract,RGPBalance,fee},parseFloat(RGPBalance))
     let approvalArray:any=[]
     if (parseFloat(RGPBalance) >= parseFloat(fee)) {
       setHasBeenApproved(true)
@@ -506,7 +505,6 @@ const SetPrice = () => {
       return setHasBeenApproved(true);
     }
     // try {
-      console.log(1111111111)
       const status = await getERC20Token(tokenAddress, library);
       const check = await status.allowance(
         account,
@@ -515,10 +513,8 @@ const SetPrice = () => {
           from: account,
         }
       )
-      console.log(222222222)
 
       const approveBalance = ethers.utils.formatEther(check).toString();
-      console.log({check,approveBalance})
       return approveBalance
     // } catch (e) {
     //   console.log(e)
@@ -529,7 +525,6 @@ const SetPrice = () => {
 
     // try {
       const status = await rigelToken(tokenAddress, library);
-      console.log(MARKETAUTOSWAPADDRESSES[marketType][chainId as number])
       const check = await status.allowance(
         account,
         MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
@@ -537,11 +532,8 @@ const SetPrice = () => {
           from: account,
         }
       )
-      console.log(3333333,{tokenAddress,status,check})
-      console.log({tokenAddress,status,check})
 
       const approveBalance = ethers.utils.formatEther(check).toString();
-      console.log({check,approveBalance},9939939)
       return approveBalance
     // } catch (e) {
     //   console.log(e)
