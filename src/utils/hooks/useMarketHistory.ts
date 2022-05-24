@@ -194,10 +194,10 @@ const useMarketHistory = (socket:any) => {
                                     status: data.status,
                                     currentToPrice: data.typeOfTransaction === "Set Price" ? data.currentToPrice : data.percentageChange,
                                     chainID:data.chainID ,
-                                    pathSymbol:data.pathSymbol
+                                    pathSymbol:data.pathSymbol,
+                                    market:data.market
                                     
                                 }
-                                console.log({dataBase})
                                 return dataBase
                             }catch(e){
                                 console.log(e)
@@ -207,7 +207,6 @@ const useMarketHistory = (socket:any) => {
                         )
                     }
                 }
-                console.log({dataToUse})
                 const marketSwap = await Promise.all(
                     dataToUse.map(async (data: any) => ({
                         tokenIn: data?.tokenIn === "native" ? {
@@ -233,7 +232,8 @@ const useMarketHistory = (socket:any) => {
                         status: data.status,
                         currentToPrice: data.currentToPrice,
                         chainID:data.chainID,
-                        pathSymbol:data.pathSymbol 
+                        pathSymbol:data.pathSymbol,
+                        market:data.market
                     })),
                 );
                     const marketHistory = marketSwap.map((data) => ({
@@ -255,7 +255,8 @@ const useMarketHistory = (socket:any) => {
                         status: data.status,
                         currentToPrice: data.currentToPrice,
                         chainID:data.chainID,
-                        pathSymbol:data.pathSymbol 
+                        pathSymbol:data.pathSymbol,
+                        market:data.market 
                     }));
 
                     setMarketHistoryData(marketHistory);
