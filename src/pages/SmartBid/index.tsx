@@ -1,5 +1,6 @@
 import React, {useEffect, useMemo, useState} from "react";
-import {Box, Text, Flex, useColorModeValue, Button, SimpleGrid, GridItem, useMediaQuery} from '@chakra-ui/react';
+import {Box, Text, Flex, useColorModeValue, VStack, Heading,
+    Button, SimpleGrid, GridItem, useMediaQuery} from '@chakra-ui/react';
 import {AddIcon} from "@chakra-ui/icons";
 import SmartBidCard from "./Components/Card";
 import {SmartBidData, SmartBidNFTData} from "./Components/cardData";
@@ -7,6 +8,7 @@ import BidCarousel from "./Components/BidCarousel";
 import {RigelSmartBidTwo} from "../../utils/Contracts";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 import {SMARTBID2} from "../../utils/addresses";
+import {SupportedChainId} from "../../constants/chains";
 
 
 const SmartBid = () => {
@@ -53,23 +55,40 @@ const SmartBid = () => {
                     <Button leftIcon={<AddIcon/>} variant={'brand'} mx={2}>Create Event</Button>
                 </Flex>
             </Box>
-            <SimpleGrid width={'100%'} p={'10px'} mx={'auto'} minChildWidth={'305px'} spacingX={'10px'} spacingY={'20px'}  alignItems={'start'}>
-                {SmartBidData.map((item, index) => index !== -1 && index < itemLength ? (
-                    <GridItem rowSpan={1} key={item.id} colSpan={1}>
-                        <SmartBidCard key={item.id} title={item.title} image={item.image} exclusive={item.exclusive} tileColor={item.color} bgColor={item.bgColor} id={item.id}/>
-                    </GridItem>
+            {
+                chainId === SupportedChainId.BINANCETEST ?
 
-                ) : null
-                )}
+                    <SimpleGrid width={'100%'} p={'10px'} mx={'auto'} minChildWidth={'305px'} spacingX={'10px'}
+                                spacingY={'20px'} alignItems={'start'}>
+                        {SmartBidData.map((item, index) => index !== -1 && index < itemLength ? (
+                                <GridItem rowSpan={1} key={item.id} colSpan={1}>
+                                    <SmartBidCard key={item.id} title={item.title} image={item.image}
+                                                  exclusive={item.exclusive} tileColor={item.color} bgColor={item.bgColor}
+                                                  id={item.id}/>
+                                </GridItem>
 
-                {SmartBidNFTData.map((item, index) => index !== -1 && index < itemLength ? (
-                        <GridItem rowSpan={1} key={item.id} colSpan={1}>
-                            <SmartBidCard key={item.id} title={item.title} image={item.image} exclusive={item.exclusive} tileColor={item.color} bgColor={item.bgColor} id={item.id}/>
-                        </GridItem>
+                            ) : null
+                        )}
 
-                    ) : null
-                )}
-            </SimpleGrid>
+                        {SmartBidNFTData.map((item, index) => index !== -1 && index < itemLength ? (
+                                <GridItem rowSpan={1} key={item.id} colSpan={1}>
+                                    <SmartBidCard key={item.id} title={item.title} image={item.image}
+                                                  exclusive={item.exclusive} tileColor={item.color} bgColor={item.bgColor}
+                                                  id={item.id}/>
+                                </GridItem>
+
+                            ) : null
+                        )}
+                    </SimpleGrid>
+
+                    :
+
+                    <VStack minH="80vh" align="center" justify="center" width={'40%'} mx={'auto'}>
+                        <Heading color={headerColor} fontFamily={'Cera Pro'} fontSize={'64px'}>Coming Soon...</Heading>
+                        <Text color={textColor} fontSize={'20px'} textAlign={'center'}>We are going to launch creation of bid events by individual users very soon.</Text>
+                    </VStack>
+
+            }
         </Box>
     )
 };
