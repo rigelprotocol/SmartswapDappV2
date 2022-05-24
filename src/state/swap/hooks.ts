@@ -287,6 +287,19 @@ function queryParametersToSwapState(parsedQs: any, chainId: number) {
     recipient,
   };
 }
+export const binanceMarketArray = [
+  {name:"Smartswap",image:"Smartswap.png"},
+  {name:"Pancakeswap",image:"Pancakeswap.png"},
+]
+
+export const polygonMarketArray = [
+  {name:"Smartswap",image:"Smartswap.png"},
+  {name:"Quickswap",image:"Quickswap.png"}
+]
+
+export const binanceTestMarketArray = [
+  {name:"Smartswap",image:"Smartswap.png"},
+]
 
 // updates the swap state to use the defaults for a given network
 export function useDefaultsFromURLSearch() {

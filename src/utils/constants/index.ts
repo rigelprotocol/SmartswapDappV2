@@ -21,7 +21,7 @@ export const INITIAL_GASPRICE_INCREASE = (): number => {
   }
 };
 
-export const INITIAL_GAS = 0;
+export const INITIAL_GAS = checkNetVersion() == "0x89" ?15 : 0;
 
 const BSC_MAIN_NET_ID =
   window.ethereum !== undefined && window.ethereum.isTrust ? "56" : "0x38";

@@ -56,6 +56,7 @@ export default createReducer<SwapState>(initialState, (builder) =>
         }
       ) => {
         return {
+          ...state,
           [Field.INPUT]: {
             currencyId: inputCurrencyId,
           },
@@ -66,8 +67,6 @@ export default createReducer<SwapState>(initialState, (builder) =>
           typedValue,
           recipient,
           percentageChange:"0",
-          marketFactory:"",
-          marketRouterAddress:""
         };
       }
     )

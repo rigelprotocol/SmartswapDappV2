@@ -45,8 +45,10 @@ import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { RootState } from "../../state";
 import { refreshTransactionTab } from '../../state/transaction/actions';
 import { useUserSlippageTolerance } from '../../state/user/hooks';
+import { binanceTestMarketArray,polygonMarketArray,binanceMarketArray } from "../../state/swap/hooks"
 import MarketDropDown from '../../components/MarketDropDown';
 import SliderComponent from '../../components/Slider';
+import { useLocation } from 'react-router-dom';
 
 
 const SetPrice = () => {
@@ -58,6 +60,7 @@ const SetPrice = () => {
   const buttonBgcolor = useColorModeValue('#F2F5F8', '#213345');
   const dispatch = useDispatch();
   const color = useColorModeValue('#999999', '#7599BD');
+  const location = useLocation().pathname;
 
   const { onCurrencySelection, onUserInput, onSwitchTokens,onMarketSelection } = useSwapActionHandlers();
   const { account, chainId, library } = useActiveWeb3React()
@@ -138,6 +141,12 @@ const SetPrice = () => {
     (state) => state.user.userDeadline
   );
   useEffect(()=>{
+    console.log({location})
+    let market = location.split("/").length===3? location.split("/")[2]:""
+    checkIfMarketExists(market,chainId)
+ 
+  },[location,chainId])
+  useEffect(()=>{
  if(parseFloat(initialToPrice) >0){
       const percent = (name==="+" ? positiveSliderValue/100 : negativeSliderValue/100) * parseFloat(basePrice)
       console.log({percent})
@@ -147,6 +156,17 @@ const SetPrice = () => {
       
     } 
   },[positiveSliderValue,negativeSliderValue])
+  
+  const checkIfMarketExists = (market:string,chainId:number| undefined) => {
+    let marketArray:any
+    if(chainId === 56) marketArray = binanceMarketArray
+    else if(chainId === 97) marketArray = binanceTestMarketArray
+    else if(chainId === 137) marketArray = polygonMarketArray
+    if(marketArray && marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())){
+      let item = marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())
+      setMarketType(item.name)
+    }
+  }
 
   const { independentField, typedValue } = useSwapState();
 

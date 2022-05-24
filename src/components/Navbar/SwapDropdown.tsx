@@ -29,9 +29,9 @@ function SwapDropdown() {
 
   const useName = () => {
     console.log(name);
-    if (name == '/swap' || name == '/auto-period' || name == '/set-price') {
-      console.log(`Correct name is ${name}`);
-      return name.substring(1);
+    if (name.includes('swap') || name.includes('auto-period') || name.includes('set-price')) {
+      console.log(`Correct name is ${name.split("/")}`);
+      return name.split("/")[1];
     } else {
       return 'Swap'
     }

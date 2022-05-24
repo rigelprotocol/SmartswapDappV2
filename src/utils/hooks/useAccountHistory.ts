@@ -130,11 +130,11 @@ const useAccountHistory = (socket:any) => {
     const location = useLocation().pathname;
     const [, Symbol, Name,] = useNativeBalance()
     useEffect(() => {
-        if (location === "/auto-period") {
+        if (location.includes("auto-period")) {
             setLocationData("auto")
             setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
-        } else if (location === "/set-price") {
+        } else if (location.includes("set-price")) {
             setLocationData("price")
             setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
@@ -176,7 +176,7 @@ const useAccountHistory = (socket:any) => {
             setLoading(true);
             try {
             let userData = []
-            if (location === "/swap") {
+            if (location.includes("swap")) {
                 const uri = `https://${api}?module=account&action=txlist&address=${account}&startblock=0
                 &endblock=latest&sort=desc&apikey=${apikey}`;
 
@@ -224,9 +224,10 @@ const useAccountHistory = (socket:any) => {
                     situation:"",
                     chainID:chainId
                 }));
-            } else if ( location === "/auto-period" || location === "/set-price") {
+            } else if ( location.includes("auto-period") || location.includes("set-price")) {
                 const { transaction, database } = await getTransactionFromDatabase(account)
                 if (transaction.length > 0) {
+                    
                     dispatch(notificationTab({ 
                     autoTimeNotification:transaction[0].autoTimeNotification,
                     setPriceNotification:transaction[0].setPriceNotification,

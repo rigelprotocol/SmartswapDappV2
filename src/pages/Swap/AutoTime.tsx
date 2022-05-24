@@ -11,6 +11,7 @@ import {
   useSwapActionHandlers,
   useSwapState,
 } from '../../state/swap/hooks';
+import { binanceTestMarketArray,polygonMarketArray,binanceMarketArray } from "../../state/swap/hooks"
 import { getERC20Token } from '../../utils/utilsFunctions';
 import { Field } from '../../state/swap/actions';
 import Web3 from 'web3';
@@ -54,12 +55,14 @@ import { ChevronDownIcon } from '@chakra-ui/icons';
 import { refreshTransactionTab } from '../../state/transaction/actions';
 import MarketDropDown from '../../components/MarketDropDown';
 import { GButtonClick, GFailedTransaction, GSuccessfullyTransaction } from '../../components/G-analytics/gIndex';
+import { useLocation } from 'react-router-dom';
 
 
 
 const SetPrice = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
   const dispatch = useDispatch();
+  const location = useLocation().pathname;
   const borderColor = useColorModeValue('#DEE6ED', '#324D68');
   const iconColor = useColorModeValue('#666666', '#DCE6EF');
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
@@ -77,7 +80,6 @@ const SetPrice = () => {
   const [selectedFrequency, setSelectedFrequency] = useState("5")
   const [marketType, setMarketType] = useState("Smartswap")
   const [percentageChange, setPercentageChange] = useState<string>("0")
-  const [otherMarketprice, setOtherMarketprice] = useState<string>("0")
   const [approval, setApproval] = useState<string[]>([])
   const [approvalForFee, setApprovalForFee] = useState("")
   const [fee, setFee] = useState("")
@@ -128,7 +130,11 @@ const SetPrice = () => {
     }
     runCheck()
   }, [currencies[Field.INPUT],typedValue, account,marketType])
- 
+ useEffect(()=>{
+   let market = location.split("/").length===3? location.split("/")[2]:""
+   checkIfMarketExists(market,chainId)
+
+ },[location,chainId])
   useEffect(() => {
     async function checkIfSignatureExists() {
       let user = await fetch(`https://autoperiod.rigelprotocol.com/auto/data/${account}`)//https://autoperiod.rigelprotocol.com
@@ -162,6 +168,16 @@ const SetPrice = () => {
     const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
     setFee(fee)
+  }
+  const checkIfMarketExists = (market:string,chainId:number| undefined) => {
+    let marketArray:any
+    if(chainId === 56) marketArray = binanceMarketArray
+    else if(chainId === 97) marketArray = binanceTestMarketArray
+    else if(chainId === 137) marketArray = polygonMarketArray
+    if(marketArray && marketArray.find((item:any)=> item.name ===market)){
+      let item = marketArray.find((item:any)=> item.name ===market)
+      setMarketType(item.name)
+    }
   }
   const parsedAmounts = useMemo(
     () =>
@@ -605,10 +621,10 @@ const SetPrice = () => {
                 {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
                   <>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.INPUT]?.symbol} = {unitAmount} {currencies[Field.OUTPUT]?.symbol}
+                      1 {currencies[Field.INPUT]?.symbol} = {unitAmount ? unitAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.OUTPUT]?.symbol}
                     </Text>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount} {currencies[Field.INPUT]?.symbol}
+                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount ? oppositeAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.INPUT]?.symbol}
                     </Text>
                     <ExclamationIcon />
                   </>
@@ -892,10 +908,10 @@ const SetPrice = () => {
                 {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
                   <>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                    1 {currencies[Field.INPUT]?.symbol} = {unitAmount ?unitAmount :  <Spinner speed='0.65s' color='#999999' />} {currencies[Field.OUTPUT]?.symbol}
+                    1 {currencies[Field.INPUT]?.symbol} = {unitAmount ?unitAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.OUTPUT]?.symbol}
                     </Text>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount ? oppositeAmount :  <Spinner speed='0.65s' color='#999999' />} {currencies[Field.INPUT]?.symbol}
+                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount ? oppositeAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.INPUT]?.symbol}
                     </Text>
                     <ExclamationIcon />
                   </>

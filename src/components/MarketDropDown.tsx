@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from "react"
 import { ChevronDownIcon } from "@chakra-ui/icons"
 import { Button, Flex, Img, Menu, MenuButton, MenuItem, MenuList, Text, useColorModeValue } from "@chakra-ui/react"
+import { binanceTestMarketArray,polygonMarketArray,binanceMarketArray } from "../state/swap/hooks"
 
+// const binanceMarketArray = [
+//   {name:"Smartswap",image:"Smartswap.png"},
+//   {name:"Pancakeswap",image:"Pancakeswap.png"},
+// ]
 
-const binanceMarketArray = [
-  {name:"Smartswap",image:"Smartswap.png"},
-  {name:"Pancakeswap",image:"Pancakeswap.png"},
-]
+// const polygonMarketArray = [
+//   {name:"Smartswap",image:"Smartswap.png"},
+//   {name:"Quickswap",image:"Quickswap.png"}
+// ]
 
-const polygonMarketArray = [
-  {name:"Smartswap",image:"Smartswap.png"},
-  {name:"Quickswap",image:"Quickswap.png"}
-]
-
-const binanceTestMarketArray = [
-  {name:"Smartswap",image:"Smartswap.png"},
-]
+// const binanceTestMarketArray = [
+//   {name:"Smartswap",image:"Smartswap.png"},
+// ]
 const MarketDropDown = ({marketType,setMarketType,chainID}:{marketType:string,setMarketType:React.Dispatch<React.SetStateAction<string>>,chainID:number | undefined}) => {
   const [marketArray,setMarketArray] = useState(binanceTestMarketArray)
   useEffect(()=>{
