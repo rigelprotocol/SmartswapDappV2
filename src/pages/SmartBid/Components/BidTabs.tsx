@@ -25,11 +25,7 @@ type ActivityID = {
     id: number,
     amount: string,
     time: string,
-    tokenInfo: {
-        symbol: string,
-        balance: string,
-        decimals: string
-    }
+    tokenInfo: string
 }
 
 const ActivityPanel = ({address, id, amount, time, tokenInfo}: ActivityID) => {
@@ -48,7 +44,7 @@ const ActivityPanel = ({address, id, amount, time, tokenInfo}: ActivityID) => {
                        <Image src={bidLogo} height={isMobileDevice ? '15px ' : '20px'} width={isMobileDevice ? '15px ' : '20px'}/>
                    </Flex>
                     <Box mx={2}>
-                        <Text fontWeight={700} fontStyle={'normal'} fontSize={isMobileDevice ? '12px' : '16px'}  my={1}>{ethers.utils.formatUnits(amount, 18)} RGP</Text>
+                        <Text fontWeight={700} fontStyle={'normal'} fontSize={isMobileDevice ? '12px' : '16px'}  my={1}>{ethers.utils.formatUnits(amount, 18)} {tokenInfo}</Text>
                         <Text fontWeight={500} fontStyle={'normal'} fontSize={'12px'}  my={1}>Bid placed by .. {shortenAddress(address)}</Text>
                     </Box>
                 </Flex>
@@ -112,11 +108,7 @@ type BidTabsDetails = {
     time: number,
     id: number,
     events: [],
-    tokenInfo: {
-        symbol: string,
-        balance: string,
-        decimals: string
-    }
+    tokenInfo: string
 }
 
 

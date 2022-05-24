@@ -2,12 +2,11 @@ import React, {useEffect, useMemo, useState} from "react";
 import {Box, Text, Flex, useColorModeValue, Button, SimpleGrid, GridItem, useMediaQuery} from '@chakra-ui/react';
 import {AddIcon} from "@chakra-ui/icons";
 import SmartBidCard from "./Components/Card";
-import {SmartBidData} from "./Components/cardData";
+import {SmartBidData, SmartBidNFTData} from "./Components/cardData";
 import BidCarousel from "./Components/BidCarousel";
 import {RigelSmartBidTwo} from "../../utils/Contracts";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 import {SMARTBID2} from "../../utils/addresses";
-import {SupportedChainId} from "../../constants/chains";
 
 
 const SmartBid = () => {
@@ -61,6 +60,14 @@ const SmartBid = () => {
                     </GridItem>
 
                 ) : null
+                )}
+
+                {SmartBidNFTData.map((item, index) => index !== -1 && index < itemLength ? (
+                        <GridItem rowSpan={1} key={item.id} colSpan={1}>
+                            <SmartBidCard key={item.id} title={item.title} image={item.image} exclusive={item.exclusive} tileColor={item.color} bgColor={item.bgColor} id={item.id}/>
+                        </GridItem>
+
+                    ) : null
                 )}
             </SimpleGrid>
         </Box>

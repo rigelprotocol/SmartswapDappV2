@@ -16,9 +16,9 @@ import {useSmartBid} from "../../hooks/useSmartBid";
 import {countDownDate} from "./Components/Card";
 import { useLocation } from "react-router-dom";
 import BidModal from "./Components/BidModal";
-import {RigelNFTTwo, RigelSmartBidTwo} from "../../utils/Contracts";
+import {RigelNFTTwo, RigelSmartBidTwo, RigelSmartBid} from "../../utils/Contracts";
 import {SMARTBID2, SMARTBID1} from "../../utils/addresses";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../state";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 import {getERC20Token} from "../../utils/utilsFunctions";
@@ -33,11 +33,14 @@ const BidDetails = () => {
     const location = useLocation();
     const idBid = location.pathname.split('/');
     const viewId = Number(idBid[2]);
+    const typeVal = idBid[3];
+    const exc = (typeVal === 'true');
+
 
     const [bidModal, setBidModal] = useState(false);
+    const dispatch = useDispatch();
 
-
-    const { loadData , bidTime, bidDetails } = useSmartBid(viewId);
+    const { loadData , bidTime, bidDetails } = useSmartBid(viewId, exc);
 
     const [time, setTime] = useState(2);
     const [currentClock, setCurrentClock] = useState({days: 0, hours: 0, minutes: 0, seconds: 0});
@@ -51,21 +54,40 @@ const BidDetails = () => {
 
     useMemo(() => {
         const getTokenData = async () => {
+            if (exc) {
+                try {
+                    const bidContract = await RigelSmartBid(SMARTBID1[chainId as number], library);
+                    const bidToken = await bidContract.request_token_info(viewId);
+                    setTokenAddress(bidToken.token);
 
-            try {
-                const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
-                const bidToken = await bidContract.requestToken(viewId);
-                setTokenAddress(bidToken._token);
+                    const token = await getERC20Token(bidToken.token, library);
 
-                const token = await getERC20Token(bidToken._token, library);
+                    const [tokenSymbol, tokenBalance, tokenDecimals] = await Promise.all(
+                        [token.symbol(), token.balanceOf(account), token.decimals()]);
+                    setTokenInfo({symbol: tokenSymbol, balance: tokenBalance, decimals: tokenDecimals});
 
-                const [tokenSymbol, tokenBalance, tokenDecimals] = await Promise.all(
-                    [token.symbol(), token.balanceOf(account), token.decimals()]);
-                setTokenInfo({symbol: tokenSymbol, balance: tokenBalance, decimals: tokenDecimals});
+                } catch (e) {
+                    console.log(e)
+                }
+            } else {
+                try {
+                    const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
+                    const bidToken = await bidContract.requestToken(viewId);
+                    setTokenAddress(bidToken._token);
 
-            } catch (e) {
-                console.log(e)
+                    const token = await getERC20Token(bidToken._token, library);
+
+                    const [tokenSymbol, tokenBalance, tokenDecimals] = await Promise.all(
+                        [token.symbol(), token.balanceOf(account), token.decimals()]);
+                    setTokenInfo({symbol: tokenSymbol, balance: tokenBalance, decimals: tokenDecimals});
+
+                } catch (e) {
+                    console.log(e)
+                }
             }
+
+
+
         };
         getTokenData();
     }, [account, chainId]);
@@ -97,7 +119,13 @@ const BidDetails = () => {
     const [eventData, setEventData] = useState([]);
 
     const checkEvents = async () => {
-        const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
+        let bidContract;
+        if (exc) {
+            bidContract = await RigelSmartBid(SMARTBID1[chainId as number], library);
+        } else {
+            bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
+        }
+
 
         const filter = bidContract.filters.bidding();
         const events = await bidContract.queryFilter(filter, library.getBlockNumber().then((b) => b - 4000), "latest");
@@ -112,76 +140,121 @@ const BidDetails = () => {
     const [bidloadData, setBidLoadData] = useState(false);
 
     const nftCheck = async () => {
-        try {
-            setBidLoadData(true);
-            const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
-            const data = await bidContract.requestToken(viewId);
-            const {nftCont, nftReq} = data;
-            const nameOfNFTsContracts = [ "RigelProtocol Smartswap NFTs", "Rigel Protocol LaunchPad NFTs", "Rigel Protocol GiftDapp NFT"];
-            let j = 0;
-            let x = 0;
-            let m = 0;
+        if (exc) {
+            try {
+                setBidLoadData(true);
+                const bidContract = await RigelSmartBid(SMARTBID1[chainId as number], library);
+                const data = await bidContract.request_token_info(viewId);
+                const {NFTContractAddress, firstURIRequireFromNFTs, secondURIRequireFromNFTs} = data;
+                let x = 0;
 
-            for( j ; j < nftReq.length; j++) {
+                const nftIDArray = [firstURIRequireFromNFTs, secondURIRequireFromNFTs];
 
-                if (j <= nftCont.length) {
-                    const contents = await RigelNFTTwo(nftCont[j], library);
-                    const name = await contents.name();
+                const contents = await RigelNFTTwo(NFTContractAddress, library);
+                const name = await contents.name();
 
-                    if(x != 0) {
+                for (const item of nftIDArray) {
+                    const idArray = getNftTokenID(Number(item), name);
+                    const checkNftId = idArray.slice(0, 30);
+
+                    if (x != 0) {
                         break;
                     }
 
-                    if (name === nameOfNFTsContracts[j]) {
-                        const idArray = getNftTokenID(Number(nftReq[j]), nameOfNFTsContracts[j]);
-                        const checkNftId = idArray.slice(0, 30);
 
-                        console.log(name);
-                        console.log(checkNftId);
-
-                        for (let i = checkNftId[0]; i <= checkNftId.slice(-1)[0]; i++) {
-                            const views = await contents.balanceOf(account, i);
-                            if (Number(views.toString()) === 1) {
-                                x = i;
-                                setPlaceBid({address: nftCont[j], id: i});
-                                console.log(i);
-                                break;
-                            }
+                    for (let i = checkNftId[0]; i <= checkNftId.slice(-1)[0]; i++) {
+                        const views = await contents.balanceOf(account, i);
+                        if (Number(views.toString()) === 1) {
+                            setPlaceBid({address: NFTContractAddress, id: i});
+                            x = i;
+                            console.log(i);
+                            break;
                         }
-                    }
-                } else {
-                    const contents = await RigelNFTTwo(nftCont[m], library);
-                    const name = await contents.name();
-
-                    if(x != 0) {
-                        break;
-                    }
-
-                    if (name === nameOfNFTsContracts[j]) {
-                        const idArray = getNftTokenID(Number(nftReq[m]), nameOfNFTsContracts[m]);
-                        const checkNftId = idArray.slice(0, 30);
-
-                        for (let i = checkNftId[0]; i <= checkNftId.slice(-1)[0]; i++) {
-                            const views = await contents.balanceOf(account, i);
-                            if (Number(views.toString()) === 1) {
-                                x = i;
-                                setPlaceBid({address: nftCont[m], id: i});
-                                console.log(i);
-                                break;
-                            }
-                        }
-                        m++;
                     }
                 }
+                setBidLoadData(false);
+                if (x === 0) {
+                    console.log('User has no NFT');
+                    setPlaceBid({address: '', id: 0});
+                }
 
+
+
+            } catch (e) {
+                console.log('Error on user has NFT Only Function');
+                setPlaceBid({address: '', id: 0});
+                setBidLoadData(false);
             }
-            setBidLoadData(false);
 
-        } catch (e) {
-            console.log('Error on NFT Check Function');
-            setPlaceBid({address: '', id: 0});
-            setBidLoadData(false);
+        } else {
+            try {
+                setBidLoadData(true);
+                const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
+                const data = await bidContract.requestToken(viewId);
+                const {nftCont, nftReq} = data;
+                const nameOfNFTsContracts = [ "RigelProtocol Smartswap NFTs", "Rigel Protocol LaunchPad NFTs", "Rigel Protocol GiftDapp NFT"];
+                let j = 0;
+                let x = 0;
+                let m = 0;
+
+                for( j ; j < nftReq.length; j++) {
+
+                    if (j <= nftCont.length) {
+                        const contents = await RigelNFTTwo(nftCont[j], library);
+                        const name = await contents.name();
+
+                        if(x != 0) {
+                            break;
+                        }
+
+                        if (name === nameOfNFTsContracts[j]) {
+                            const idArray = getNftTokenID(Number(nftReq[j]), nameOfNFTsContracts[j]);
+                            const checkNftId = idArray.slice(0, 30);
+
+                            for (let i = checkNftId[0]; i <= checkNftId.slice(-1)[0]; i++) {
+                                const views = await contents.balanceOf(account, i);
+                                if (Number(views.toString()) === 1) {
+                                    x = i;
+                                    setPlaceBid({address: nftCont[j], id: i});
+                                    console.log(i);
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        const contents = await RigelNFTTwo(nftCont[m], library);
+                        const name = await contents.name();
+
+                        if(x != 0) {
+                            break;
+                        }
+
+                        if (name === nameOfNFTsContracts[j]) {
+                            const idArray = getNftTokenID(Number(nftReq[m]), nameOfNFTsContracts[m]);
+                            const checkNftId = idArray.slice(0, 30);
+
+                            for (let i = checkNftId[0]; i <= checkNftId.slice(-1)[0]; i++) {
+                                const views = await contents.balanceOf(account, i);
+                                if (Number(views.toString()) === 1) {
+                                    x = i;
+                                    setPlaceBid({address: nftCont[m], id: i});
+                                    break;
+                                }
+                            }
+                            m++;
+                        }
+                    }
+
+                }
+                setBidLoadData(false);
+
+            } catch (e) {
+                console.log('Error on NFT Check Function');
+                setPlaceBid({address: '', id: 0});
+                setBidLoadData(false);
+            }
         }
+
     };
 
     useMemo(() => {
@@ -191,7 +264,7 @@ const BidDetails = () => {
                 await nftCheck();
 
             } catch (e) {
-                console.log('Error here')
+                console.log('Error on Bid Event')
             }
 
         };
@@ -282,9 +355,9 @@ const BidDetails = () => {
                     close={() => setBidModal(false)}
                     id={viewId} amount={bidDetails.initial}
                     max={bidDetails.max.toString()}
-                    tokenInfo={tokenInfo} address={tokenAddress} placeBid={placeBid} bidLoad={bidloadData} />
+                    tokenInfo={tokenInfo} address={tokenAddress} placeBid={placeBid} bidLoad={bidloadData} exclusive={exc} />
 
-                <BidTabs time={time} id={viewId} events={eventData} tokenInfo={tokenInfo}/>
+                <BidTabs time={time} id={viewId} events={eventData} tokenInfo={tokenInfo.symbol}/>
 
             </Box>
         </>

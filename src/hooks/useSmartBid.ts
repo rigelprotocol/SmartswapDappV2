@@ -1,16 +1,15 @@
 import {useActiveWeb3React} from "../utils/hooks/useActiveWeb3React";
 import {useSelector} from "react-redux";
 import {RootState} from "../state";
-import {RGPADDRESSES, SMARTBID1, SMARTBID2, SMARTSWAPNFTSALES} from "../utils/addresses";
+import { SMARTBID1, SMARTBID2} from "../utils/addresses";
 import {useEffect, useState} from "react";
-import {RigelNFT, RigelSmartBid, RigelSmartBidTwo} from "../utils/Contracts";
+import {RigelSmartBid, RigelSmartBidTwo} from "../utils/Contracts";
 import {getERC20Token} from "../utils/utilsFunctions";
-import {ethers} from "ethers";
 
 
 
 
-export const useSmartBid = (id: number) => {
+export const useSmartBid = (id: number, exclusive: boolean) => {
     const {chainId, library, account} = useActiveWeb3React();
 
 
@@ -21,29 +20,43 @@ export const useSmartBid = (id: number) => {
     const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
     const stateChanged: boolean = trxState === 2;
 
-    let validSmartAddress: string;
-    if (SMARTBID2[chainId as number] !== "0x") {
-        validSmartAddress = SMARTBID2[chainId as number];
-    }
 
     useEffect(() => {
         setLoadData(true);
 
         const fetchBidData = async () => {
-            if (chainId !== undefined) {
-                try {
-                    const bidContract = await RigelSmartBidTwo(validSmartAddress, library);
-                    const bidData = await bidContract.request_data_in_Bidding(id);
-                    setBidTime(bidData.timeOut.toString());
-                    setBidDetails({initial : bidData.highestbid.toString(), max: Number(bidData.mustNotExceed.toString()) + Number(bidData.highestbid.toString())});
+            if (exclusive) {
+                if (chainId !== undefined) {
+                    try {
+                        const bidContract = await RigelSmartBid(SMARTBID1[chainId as number], library);
+                        const bidData = await bidContract.request_data_in_Bidding(id);
+                        setBidTime(bidData.timeOut.toString());
+                        setBidDetails({initial : bidData.highestbid.toString(), max: Number(bidData.mustNotExceed.toString()) + Number(bidData.highestbid.toString())});
 
-                    setLoadData(false);
+                        setLoadData(false);
 
-                } catch (e) {
-                    console.log(e);
-                    setLoadData(false);
+                    } catch (e) {
+                        console.log(e);
+                        setLoadData(false);
+                    }
+                }
+            } else {
+                if (chainId !== undefined) {
+                    try {
+                        const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
+                        const bidData = await bidContract.request_data_in_Bidding(id);
+                        setBidTime(bidData.timeOut.toString());
+                        setBidDetails({initial : bidData.highestbid.toString(), max: Number(bidData.mustNotExceed.toString()) + Number(bidData.highestbid.toString())});
+
+                        setLoadData(false);
+
+                    } catch (e) {
+                        console.log(e);
+                        setLoadData(false);
+                    }
                 }
             }
+
         };
         fetchBidData();
 
@@ -59,7 +72,8 @@ export const useBidAllowance = (
     checkTokenApproval: number,
     amount: string,
     isOpen: boolean,
-    id: number
+    id: number,
+    exclusive: boolean
 ) => {
     const { account, chainId, library } = useActiveWeb3React();
     const [hasTokenABeenApproved, setHasTokenABeenApproved] = useState(false);
@@ -68,11 +82,35 @@ export const useBidAllowance = (
     useEffect( () => {
         const getAllowance = async () => {
             if (account) {
-                try {
-                    setLoadInfo(true);
+                if (exclusive) {
+                    try {
+                        setLoadInfo(true);
 
-                    const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
-                    const bidToken = await bidContract.requestToken(id);
+                        const bidContract = await RigelSmartBid(SMARTBID1[chainId as number], library);
+                        const bidToken = await bidContract.request_token_info(id);
+
+                        const [tokenA] = await Promise.all([
+                            getERC20Token(bidToken.token, library)
+                        ]);
+
+                        const [allowanceA] = await Promise.all([
+                            tokenA.allowance(account, SMARTBID1[chainId as number])
+                        ]);
+
+                        const isTokenAApproved = allowanceA.toString() > parseFloat(amount.toString());
+
+                        setHasTokenABeenApproved(isTokenAApproved);
+                        setLoadInfo(false);
+
+                    } catch (e) {
+                        console.log(e)
+                    }
+                } else {
+                    try {
+                        setLoadInfo(true);
+
+                        const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
+                        const bidToken = await bidContract.requestToken(id);
 
                         const [tokenA] = await Promise.all([
                             getERC20Token(bidToken._token, library)
@@ -87,9 +125,11 @@ export const useBidAllowance = (
                         setHasTokenABeenApproved(isTokenAApproved);
                         setLoadInfo(false);
 
-                } catch (e) {
-                    console.log(e)
+                    } catch (e) {
+                        console.log(e)
+                    }
                 }
+
             }
         };
         getAllowance();

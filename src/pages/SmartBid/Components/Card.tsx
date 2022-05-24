@@ -3,6 +3,7 @@ import {Box, Text, Flex, Image, HStack, Icon, Skeleton, useMediaQuery} from '@ch
 import {MdPeopleOutline, AiOutlineGift, RiMedalFill} from "react-icons/all";
 import {Link} from 'react-router-dom';
 import {useSmartBid} from "../../../hooks/useSmartBid";
+import {NftProps} from "../../Nft/ViewNFT";
 
 export type CardDetails = {
     exclusive: boolean,
@@ -31,7 +32,9 @@ export const countDownDate = (time: number) => (timeConverter(time));
 
 const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDetails) => {
 
-    const { loadData , bidTime } = useSmartBid(id);
+    const { loadData , bidTime } = useSmartBid(id, exclusive);
+
+
     const [currentClock, setCurrentClock] = useState('');
     const [isMobileDevice] = useMediaQuery("(max-width: 767px)");
 
@@ -57,10 +60,17 @@ const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDe
         }, 1000);
     }, [bidTime]);
 
+    const data = {
+        id: id,
+        exclusive: exclusive
+    };
 
 
     return (
-        <Link to={`/smartbid/${id}`}>
+        <Link to={{
+            pathname: `/smartbid/${id}/${exclusive}`,
+            state: data
+        }}>
             <Box
                 height={'300px'}
                 width={'305px'}
@@ -111,9 +121,9 @@ const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDe
                         <Flex  alignItems={'center'}>
                             <Icon as={AiOutlineGift} color={'#333333'} pr={1} w={6} h={6}/>
                             {exclusive ?
-                                <Text color={'#333333'} my={1} fontSize={'12px'} lineHeight={'16px'}>Participants get <span style={{color: tileColor}}>..</span> of their winnings.</Text>
+                                <Text color={'#333333'} my={1} fontSize={'12px'} lineHeight={'16px'}>Participants get <span style={{color: tileColor}}>X2</span> of their winnings.</Text>
                                 :
-                                <Text color={'#333333'} my={1} fontSize={'12px'} lineHeight={'16px'}>NFT Owners get <span style={{color: '#319EF6'}}>X2</span> of their winnings.</Text>
+                                <Text color={'#333333'} my={1} fontSize={'12px'} lineHeight={'16px'}>NFT Owners get <span style={{color: '#0760A8'}}>X2</span> of their winnings.</Text>
                             }
                         </Flex>
                     </Box>

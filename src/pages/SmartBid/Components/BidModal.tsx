@@ -18,14 +18,14 @@ import {
 import React, {useMemo, useState, useEffect} from 'react';
 import {getERC20Token} from "../../../utils/utilsFunctions";
 import {setOpenModal, TrxState} from "../../../state/application/reducer";
-import {SMARTBID2, SMARTSWAPNFTTWO, SMARTBID1} from "../../../utils/addresses";
+import {SMARTBID2, SMARTBID1} from "../../../utils/addresses";
 import {ExplorerDataType, getExplorerLink} from "../../../utils/getExplorerLink";
 import {addToast} from "../../../components/Toast/toastSlice";
 import {useActiveWeb3React} from "../../../utils/hooks/useActiveWeb3React";
 import {useDispatch, useSelector} from "react-redux";
 import {useBidAllowance} from "../../../hooks/useSmartBid";
 import {ethers} from "ethers";
-import {RigelSmartBidTwo} from "../../../utils/Contracts";
+import {RigelSmartBidTwo, RigelSmartBid} from "../../../utils/Contracts";
 import {ZERO_ADDRESS} from "../../../constants";
 import {escapeRegExp} from "../../../utils";
 import {RiErrorWarningLine} from "react-icons/all";
@@ -46,10 +46,11 @@ type BidModalProps = {
         address: string,
         id: number
     },
-    bidLoad: boolean
+    bidLoad: boolean,
+    exclusive: boolean
 };
 
-const BidModal = ({isOpen, close, id, amount, max, tokenInfo, address, placeBid, bidLoad} : BidModalProps) => {
+const BidModal = ({isOpen, close, id, amount, max, tokenInfo, address, placeBid, bidLoad, exclusive} : BidModalProps) => {
     const { chainId, library, account } = useActiveWeb3React();
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     const lightTextColor = useColorModeValue("#666666", "grey");
@@ -57,7 +58,7 @@ const BidModal = ({isOpen, close, id, amount, max, tokenInfo, address, placeBid,
     const dispatch = useDispatch();
     const [isMobileDevice] = useMediaQuery("(max-width: 750px)");
 
-    const {hasTokenABeenApproved, loadInfo} = useBidAllowance(checkTokenApproval, amount, isOpen, id);
+    const {hasTokenABeenApproved, loadInfo} = useBidAllowance(checkTokenApproval, amount, isOpen, id, exclusive);
 
     const bgColour = useColorModeValue("#FFFFFF", "#15202B");
     const textColour = useColorModeValue("#333333", "#F1F5F8");
@@ -99,8 +100,7 @@ const BidModal = ({isOpen, close, id, amount, max, tokenInfo, address, placeBid,
 
                 const token = await getERC20Token(address, library);
 
-                const approval = await token.approve(
-                    SMARTBID2[chainId as number],
+                const approval = await token.approve( exclusive ? SMARTBID1[chainId as number] :  SMARTBID2[chainId as number],
                     tokenInfo.balance,
                     {
                         from: account,
@@ -146,64 +146,126 @@ const BidModal = ({isOpen, close, id, amount, max, tokenInfo, address, placeBid,
 
     const makeBid = async () => {
         if (account) {
-            try {
-                dispatch(
-                    setOpenModal({
-                        message: `Placing bid of ${stakeBid} ${tokenInfo.symbol}`,
-                        trxState: TrxState.WaitingForConfirmation,
-                    })
-                );
-                const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
-                console.log(placeBid);
-
-                const data = await bidContract.submitBid(id, placeBid.id !== 0 ? placeBid.address : ZERO_ADDRESS, placeBid.id !== 0 ? placeBid.id : 0, ethers.utils.parseUnits(stakeBid, tokenInfo.decimals));
-
-                const { confirmations } = await data.wait(3);
-                const { hash } = data;
-
-                if (confirmations >= 3) {
-                    const explorerLink = getExplorerLink(
-                        chainId as number,
-                        hash,
-                        ExplorerDataType.TRANSACTION
-                    );
-
+            if (exclusive) {
+                if (placeBid.id === 0) {
                     dispatch(
                         setOpenModal({
-                            message: "Transaction Successful",
-                            trxState: TrxState.TransactionSuccessful,
-                        })
-                    );
-
-                    dispatch(
-                        addToast({
-                            message: `Successfully Placed Bid on Event ${id}`,
-                            URL: explorerLink,
-                        })
-                    );
-                    setStakeBid('');
-                    close();
-                }
-
-
-            } catch (e) {
-                console.log(e);
-                if (e.data.code === 3) {
-                    dispatch(
-                        setOpenModal({
-                            message: `You do not own any Rigel NFTs`,
+                            message: `You do not own the required NFT for this action.`,
                             trxState: TrxState.TransactionFailed,
                         })
                     );
                 } else {
+                    try {
+                        dispatch(
+                            setOpenModal({
+                                message: `Placing bid of ${stakeBid} ${tokenInfo.symbol}`,
+                                trxState: TrxState.WaitingForConfirmation,
+                            })
+                        );
+                        const bidContract = await RigelSmartBid(SMARTBID1[chainId as number], library);
+
+                        const data = await bidContract.submitBid(id, placeBid.id, ethers.utils.parseUnits(stakeBid, tokenInfo.decimals));
+
+                        const { confirmations } = await data.wait(3);
+                        const { hash } = data;
+
+                        if (confirmations >= 3) {
+                            const explorerLink = getExplorerLink(
+                                chainId as number,
+                                hash,
+                                ExplorerDataType.TRANSACTION
+                            );
+
+                            dispatch(
+                                setOpenModal({
+                                    message: "Transaction Successful",
+                                    trxState: TrxState.TransactionSuccessful,
+                                })
+                            );
+
+                            dispatch(
+                                addToast({
+                                    message: `Successfully Placed Bid on Event ${id}`,
+                                    URL: explorerLink,
+                                })
+                            );
+                            setStakeBid('');
+                            close();
+                        }
+
+
+                    } catch (e) {
+                        console.log(e);
+                        dispatch(
+                            setOpenModal({
+                                message: `Transaction Failed`,
+                                trxState: TrxState.TransactionFailed,
+                            })
+                        );
+                    }
+                }
+
+
+            } else {
+                try {
                     dispatch(
                         setOpenModal({
-                            message: `Transaction Failed`,
-                            trxState: TrxState.TransactionFailed,
+                            message: `Placing bid of ${stakeBid} ${tokenInfo.symbol}`,
+                            trxState: TrxState.WaitingForConfirmation,
                         })
                     );
+                    const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
+
+                    const data = await bidContract.submitBid(id, placeBid.id !== 0 ? placeBid.address : ZERO_ADDRESS, placeBid.id !== 0 ? placeBid.id : 0, ethers.utils.parseUnits(stakeBid, tokenInfo.decimals));
+
+                    const { confirmations } = await data.wait(3);
+                    const { hash } = data;
+
+                    if (confirmations >= 3) {
+                        const explorerLink = getExplorerLink(
+                            chainId as number,
+                            hash,
+                            ExplorerDataType.TRANSACTION
+                        );
+
+                        dispatch(
+                            setOpenModal({
+                                message: "Transaction Successful",
+                                trxState: TrxState.TransactionSuccessful,
+                            })
+                        );
+
+                        dispatch(
+                            addToast({
+                                message: `Successfully Placed Bid on Event ${id}`,
+                                URL: explorerLink,
+                            })
+                        );
+                        setStakeBid('');
+                        close();
+                    }
+
+
+                } catch (e) {
+                    console.log(e);
+                    if (e.data.code === 3) {
+                        dispatch(
+                            setOpenModal({
+                                message: `You do not own any Rigel NFTs`,
+                                trxState: TrxState.TransactionFailed,
+                            })
+                        );
+                    } else {
+                        dispatch(
+                            setOpenModal({
+                                message: `Transaction Failed`,
+                                trxState: TrxState.TransactionFailed,
+                            })
+                        );
+                    }
                 }
             }
+
 
         }
     };
