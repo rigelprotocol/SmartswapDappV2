@@ -81,7 +81,6 @@ export const useSwap = (
   const [tokenA, tokenB] = chainId
     ? [currencyA?.wrapped, currencyB?.wrapped]
     : [undefined, undefined];
-  console.log(tokenA?.symbol,tokenB?.symbol)
   const tokenOneAddress = tokenA?.address || nativeAddress?.address;
   const tokenTwoAddress = tokenB?.address || nativeAddress?.address;
 
@@ -91,7 +90,6 @@ export const useSwap = (
     const getPairs = async () => {
       const wrappable: boolean = tokenOneAddress == tokenTwoAddress;
   let validSmartAddress: string | undefined;
-  console.log({amountIn,currencyB,currencyA})
   if (SMARTSWAPFACTORYADDRESSES[chainId as number] !== "0x") {
     // validSmartAddress =  SMARTSWAPFACTORYADDRESSES[chainId as number];
     
@@ -158,7 +156,6 @@ export const useSwap = (
                   tokenOneAddress,
                 ]);
             const output2 = formatAmount(amountOut2[1], currencyA.decimals);
-            console.log({output2},currencyB.decimals)
             setOppositeAmount(output2)
             }
             

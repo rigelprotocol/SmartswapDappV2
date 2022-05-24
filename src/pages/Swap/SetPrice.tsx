@@ -141,7 +141,6 @@ const SetPrice = () => {
     (state) => state.user.userDeadline
   );
   useEffect(()=>{
-    console.log({location})
     let market = location.split("/").length===3? location.split("/")[2]:""
     checkIfMarketExists(market,chainId)
  
@@ -149,7 +148,6 @@ const SetPrice = () => {
   useEffect(()=>{
  if(parseFloat(initialToPrice) >0){
       const percent = (name==="+" ? positiveSliderValue/100 : negativeSliderValue/100) * parseFloat(basePrice)
-      console.log({percent})
       const value = parseFloat(basePrice) + percent
 
       value > 0 ? setInitialToPrice(value.toString()) : setInitialToPrice("0")
@@ -383,14 +381,10 @@ const SetPrice = () => {
 
   }
   const approveOneOrTwoTokens = async (tokenApprovingFor:string) => {
-    console.log({approvalForFee,approvalForToken})
       if (currencies[Field.INPUT]?.isNative) {
         setHasBeenApproved(true);
         setApproval(approval.filter(t => t !== currencies[Field.INPUT]?.name))
       }
-      console.log({tokenApprovingFor})
-      // let setArr = Array.from(new Set(approval))
-      // if (setArr.length > 0) {
         try {
           dispatch(
             setOpenModal({
@@ -467,8 +461,6 @@ const SetPrice = () => {
       const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
       const amountToApprove = await autoSwapV2Contract.fee()
       const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
-    
-      console.log({autoSwapV2Contract,RGPBalance,fee},parseFloat(RGPBalance))
       let approvalArray:any=[]
       if (parseFloat(RGPBalance) >= parseFloat(fee)) {
         setHasBeenApproved(true)

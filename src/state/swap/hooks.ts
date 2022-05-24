@@ -169,7 +169,6 @@ const [,, unitAmount, ,,oppositeAmount ] = useSwap(
 
   const showWrap = wrap;
   const bestTrade = amount;
-  // console.log(pathArray);
 
   const getMaxValue = async (currency: Currency, library: Web3Provider) => {
     if (currency.isNative) {
