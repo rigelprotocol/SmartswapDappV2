@@ -174,6 +174,12 @@ const useOpenOrders = (socket:any) => {
                         market:data.market
                     })),
                 );
+                console.log({marketSwap},{
+                    name: Name,
+                    symbol: Symbol,
+                    address: WNATIVEADDRESSES[chainId as number],
+                    decimals: 18
+                })
                     const marketHistory = marketSwap.map((data) => ({
                         token1Icon:data.tokenIn &&
                             getTokenSymbol(data.tokenIn.symbol),

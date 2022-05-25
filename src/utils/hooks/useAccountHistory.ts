@@ -115,7 +115,6 @@ const useAccountHistory = (socket:any) => {
             address: standardToken[2],
             decimals: standardToken[3]
         };
-        console.log({resolveToken})
         return address !== '0x' ? resolveToken : null;
     };
 
@@ -275,7 +274,6 @@ const useAccountHistory = (socket:any) => {
 
 
             }
-            console.log({userData})
             const swapDataForWallet = await Promise.all(
                 userData.map(async (data: DataIncoming) => ({
                     tokenIn: data.tokenIn === "native" ? {

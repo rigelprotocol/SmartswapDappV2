@@ -163,13 +163,11 @@ const useMarketHistory = (socket:any) => {
                         if (locationData === "auto") {
                             let data = transaction.filter((data: any) => data.typeOfTransaction === "Auto Time")
                             result = data.filter((item:any)=>item.status===1)
-                            console.log({result})
                         }else if (locationData === "price") {
                             let data = transaction.filter((data: any) => data.typeOfTransaction === "Set Price")
                             // .sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
                             result = data.filter((item:any)=>item.status===1)
                         }
-                        console.log({result})
                         dataToUse = await Promise.all(result.map(async (data: any) => {
                             try{
                                 let fromAddress = data.swapFromToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapFromToken
@@ -198,7 +196,6 @@ const useMarketHistory = (socket:any) => {
                                     market:data.market
                                     
                                 }
-                                console.log({dataBase})
                                 return dataBase
                             }catch(e){
                                 console.log(e)
