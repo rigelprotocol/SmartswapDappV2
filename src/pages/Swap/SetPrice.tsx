@@ -172,7 +172,7 @@ const SetPrice = () => {
 
   useEffect(() => {
     console.log({marketType})
-    routerHistory.push(`/set-price/${marketType}`)
+    // routerHistory.push(`/set-price/${marketType}`)
     async function runCheck() {
       if (account  && currencies[Field.INPUT]) {
 

@@ -123,7 +123,7 @@ const SetPrice = () => {
     [onUserInput]
   );
   useEffect(() => {
-    routerHistory.push(`/auto-period/${marketType}`)
+    // routerHistory.push(`/auto-[eropd/${marketType}`)
     async function runCheck() {
       if (account && currencies[Field.INPUT]) {
         await checkForApproval()
