@@ -37,7 +37,7 @@ const useMarketHistory = (socket:any) => {
     const [marketHistoryData, setMarketHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("http://localhost:7000")//
+    const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")//
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
 
     const api = APIENDPOINT[chainId as number];
@@ -167,7 +167,7 @@ const useMarketHistory = (socket:any) => {
                         }else if (locationData === "price") {
                             let data = transaction.filter((data: any) => data.typeOfTransaction === "Set Price")
                             // .sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
-                            result = data.filter((item:any)=>item.status===1)
+                            result = data.filter((item:any)=>item.status===1 && parseInt(item.chainID) === chainId)
                         }
                         dataToUse = await Promise.all(result.map(async (data: any) => {
                             // try{
