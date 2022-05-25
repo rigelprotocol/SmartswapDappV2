@@ -20,7 +20,7 @@ export const useNativeBalance = () => {
 
   useEffect(() => {
     const getBalance = async () => {
-      if (account) {
+      if (account || chainId) {
 
         try {
            const balance = await library?.getBalance(account as string);

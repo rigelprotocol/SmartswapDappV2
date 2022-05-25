@@ -99,7 +99,7 @@ const useAccountHistory = (socket:any) => {
     const [historyData, setHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("http://localhost:7000")//
+    const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")//
     const dispatch =useDispatch()
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const tokenList = async (addressName: string) => {
@@ -115,7 +115,6 @@ const useAccountHistory = (socket:any) => {
             address: standardToken[2],
             decimals: standardToken[3]
         };
-        console.log({resolveToken})
         return address !== '0x' ? resolveToken : null;
     };
 
@@ -275,7 +274,6 @@ const useAccountHistory = (socket:any) => {
 
 
             }
-            console.log({userData})
             const swapDataForWallet = await Promise.all(
                 userData.map(async (data: DataIncoming) => ({
                     tokenIn: data.tokenIn === "native" ? {
