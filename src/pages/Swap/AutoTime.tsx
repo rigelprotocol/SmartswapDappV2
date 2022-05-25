@@ -137,7 +137,7 @@ const SetPrice = () => {
  },[location,chainId])
   useEffect(() => {
     async function checkIfSignatureExists() {
-      let user = await fetch(`http://localhost:7000/auto/data/${account}`)//http://localhost:7000
+      let user = await fetch(`https://autoperiod.rigelprotocol.com/auto/data/${account}`)//https://autoperiod.rigelprotocol.com
       let data = await user.json()
       if (data) {
         setDataSignature(data.dataSignature)
@@ -443,7 +443,7 @@ const SetPrice = () => {
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)//
-      const response = await fetch(`http://localhost:7000/auto/add`, {
+      const response = await fetch(`https://autoperiod.rigelprotocol.com/auto/add`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
