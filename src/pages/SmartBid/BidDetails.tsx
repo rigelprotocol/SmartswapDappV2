@@ -138,6 +138,7 @@ const BidDetails = () => {
 
     const [placeBid, setPlaceBid] = useState({address: '', id: 0});
     const [bidloadData, setBidLoadData] = useState(false);
+    const [nftName, setNFTName] = useState('');
 
     const nftCheck = async () => {
         if (exc) {
@@ -152,6 +153,7 @@ const BidDetails = () => {
 
                 const contents = await RigelNFTTwo(NFTContractAddress, library);
                 const name = await contents.name();
+                setNFTName(name);
 
                 for (const item of nftIDArray) {
                     const idArray = getNftTokenID(Number(item), name);
@@ -286,6 +288,8 @@ const BidDetails = () => {
                             <ListItem color={textColor} p={1}>Winner gets 30% of the Total Token raised</ListItem>
                             <ListItem color={textColor} p={1}>5 random bidders will be selected at the end of the event to win 10% of Total Token raised.</ListItem>
                         </UnorderedList>
+
+                        {exc && nftName ? <Text fontWeight={600} lineHeight={'32px'} fontSize={'18px'} color={'#CC334F'}>{nftName} owners only.</Text> : null}
                     </Box>
                     <Flex>
                         {loadData ?

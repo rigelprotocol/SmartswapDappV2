@@ -15,14 +15,14 @@ import {
     Text,
     useColorModeValue, useMediaQuery
 } from '@chakra-ui/react'
-import React, {useMemo, useState, useEffect} from 'react';
+import React, {useMemo, useState} from 'react';
 import {getERC20Token} from "../../../utils/utilsFunctions";
 import {setOpenModal, TrxState} from "../../../state/application/reducer";
 import {SMARTBID2, SMARTBID1} from "../../../utils/addresses";
 import {ExplorerDataType, getExplorerLink} from "../../../utils/getExplorerLink";
 import {addToast} from "../../../components/Toast/toastSlice";
 import {useActiveWeb3React} from "../../../utils/hooks/useActiveWeb3React";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {useBidAllowance} from "../../../hooks/useSmartBid";
 import {ethers} from "ethers";
 import {RigelSmartBidTwo, RigelSmartBid} from "../../../utils/Contracts";
@@ -400,7 +400,7 @@ const BidModal = ({isOpen, close, id, amount, max, tokenInfo, address, placeBid,
                                 my={10}
                             /> : (<>
                                 <Text fontSize="20px" fontWeight={500} color={textColour} py={2}>First, let’s get things straight</Text>
-                                <Text fontSize="14px" fontWeight={400} color={textColour} py={2}>You’re required to approve this trasanction by paying the required amount of gas fee.</Text>
+                                <Text fontSize="14px" fontWeight={400} color={textColour} py={2}>You’re required to approve this transaction by paying the required amount of gas fee.</Text>
                                 {
                                     lowBalance && <Box>
                                         <Text my={'10px'} color={'#CC334F'} fontSize={'16px'}>Insufficient Balance</Text>
@@ -418,7 +418,7 @@ const BidModal = ({isOpen, close, id, amount, max, tokenInfo, address, placeBid,
                                     onClick={() => approveTokens()}
                                     disabled={lowBalance}
                                 >
-                                    Approve
+                                    Approve {tokenInfo.symbol}
                                 </Button>
                             </>)}
 

@@ -78,6 +78,8 @@ const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDe
                 mx={'auto'}
                 borderRadius={'30px'}
                 background={bgColor}
+                transition={'transform .2s'}
+                _hover={{transform: 'scale(1.03)'}}
             >
                 <Flex justifyContent={'center'}>
                     <Image src={image} marginTop={'-30px'} zIndex={1}/>
