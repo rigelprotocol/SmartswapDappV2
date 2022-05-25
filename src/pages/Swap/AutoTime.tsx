@@ -374,6 +374,7 @@ const SetPrice = () => {
           const address = currencies[Field.INPUT]?.wrapped.address;
           const token = address && await getERC20Token(address, library);
           const walletBal = (await token?.balanceOf(account));
+          console.log({walletBal})
           const approveTransaction = await token?.approve(
             MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
             walletBal,
@@ -515,7 +516,8 @@ const SetPrice = () => {
         }
       )
 
-      const approveBalance = ethers.utils.formatEther(check).toString();
+      const approveBalance = ethers.utils.formatUnits(check.toString(), currencies[Field.INPUT]?.decimals);
+      console.log({approveBalance})
       return approveBalance
     // } catch (e) {
     //   console.log(e)

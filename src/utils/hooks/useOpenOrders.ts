@@ -6,7 +6,8 @@ import { getERC20Token } from '../utilsFunctions';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../state';
 import { useLocation } from 'react-router-dom';
-import { useNativeBalance } from './useBalances';;
+import { useNativeBalance } from './useBalances';import { SupportedChainName, SupportedChainSymbols } from '../constants/chains';
+;
 
 
 const abiDecoder = require('abi-decoder');
@@ -144,14 +145,14 @@ const useOpenOrders = (socket:any) => {
                 const marketSwap = await Promise.all(
                     dataToUse.map(async (data: any) => ({
                         tokenIn: data.tokenIn === "native" ? {
-                            name: Name,
-                            symbol: Symbol,
+                            name: SupportedChainName[data.chainID],
+                            symbol: SupportedChainSymbols[data.chainID],
                             address: WNATIVEADDRESSES[chainId as number],
                             decimals: 18
                         } : await tokenList(data.tokenIn),
                         tokenOut: data.tokenOut === "native" ? {
-                            name: Name,
-                            symbol: Symbol,
+                            name: SupportedChainName[data.chainID],
+                            symbol: SupportedChainSymbols[data.chainID],
                             address: WNATIVEADDRESSES[chainId as number],
                             decimals: 18
                         } : await tokenList(data.tokenOut),

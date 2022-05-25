@@ -14,6 +14,7 @@ import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { ParseFloat } from '..';
 import { notificationTab } from '../../state/transaction/actions';
 import { ZERO_ADDRESS } from '../../constants';
+import { SupportedChainName, SupportedChainSymbols } from '../constants/chains';
 
 const abiDecoder = require('abi-decoder');
 
@@ -277,15 +278,15 @@ const useAccountHistory = (socket:any) => {
             console.log({userData})
             const swapDataForWallet = await Promise.all(
                 userData.map(async (data: DataIncoming) => ({
-                    tokenIn: data.tokenIn === "native" ? {
-                        name: Name,
-                        symbol: Symbol,
+                    tokenIn: data.chainID && data.tokenIn === "native" ? {
+                        name: SupportedChainName[data.chainID],
+                            symbol: SupportedChainSymbols[data.chainID],
                         address: WNATIVEADDRESSES[chainId as number],
                         decimals: 18
                     } : await tokenList(data.tokenIn),
-                    tokenOut: data.tokenOut === "native" ? {
-                        name: Name,
-                        symbol: Symbol,
+                    tokenOut: data.chainID && data.tokenOut === "native" ? {
+                        name: SupportedChainName[data.chainID],
+                        symbol: SupportedChainSymbols[data.chainID],
                         address: WNATIVEADDRESSES[chainId as number],
                         decimals: 18
                     } : await tokenList(data.tokenOut),
