@@ -6,7 +6,8 @@ import { getERC20Token } from '../utilsFunctions';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../state';
 import { useLocation } from 'react-router-dom';
-import { useNativeBalance } from './useBalances';;
+import { useNativeBalance } from './useBalances';import { SupportedChainName, SupportedChainSymbols } from '../constants/chains';
+;
 
 
 const abiDecoder = require('abi-decoder');
@@ -48,11 +49,11 @@ const useOpenOrders = (socket:any) => {
     }
     useEffect(() => {
        
-        if (location === "/auto-period") {
+        if (location.includes("auto-period")) {
             setLocationData("auto")
             setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
-        } else if (location === "/set-price") {
+        } else if (location.includes("set-price")) {
             setLocationData("price")
             setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
@@ -103,6 +104,7 @@ const useOpenOrders = (socket:any) => {
                 try {
                     let dataToUse =[]
                     const transaction = await getTransactionFromDatabase(account)
+                    console.log({transaction})
                     if (transaction.length > 0) {
                         let data = []
                         if (locationData === "auto") {
@@ -111,9 +113,10 @@ const useOpenOrders = (socket:any) => {
                             data = transaction.filter((data: any) => data.typeOfTransaction === "Set Price")
                             
                         }
-                        const result = data.filter((item:any)=>item.errorArray.length===0 && item.transactionHash === "")
+                        console.log({data})
+                        const result = data.filter((item:any)=>item.errorArray.length===0 && item.transactionHash === "" && parseInt(item.chainID) === chainId)
+                        console.log({result},chainId)
                         dataToUse = await Promise.all(result.map(async (data: any) => {
-                            console.log({data})
                             return {
                                 inputAmount: data.amountToSwap,
                                 outputAmount: data.userExpectedPrice,
@@ -140,17 +143,18 @@ const useOpenOrders = (socket:any) => {
                         )
                     
                 }
+                console.log({dataToUse})
                 const marketSwap = await Promise.all(
                     dataToUse.map(async (data: any) => ({
                         tokenIn: data.tokenIn === "native" ? {
-                            name: Name,
-                            symbol: Symbol,
+                            name: SupportedChainName[data.chainID],
+                            symbol: SupportedChainSymbols[data.chainID],
                             address: WNATIVEADDRESSES[chainId as number],
                             decimals: 18
                         } : await tokenList(data.tokenIn),
                         tokenOut: data.tokenOut === "native" ? {
-                            name: Name,
-                            symbol: Symbol,
+                            name: SupportedChainName[data.chainID],
+                            symbol: SupportedChainSymbols[data.chainID],
                             address: WNATIVEADDRESSES[chainId as number],
                             decimals: 18
                         } : await tokenList(data.tokenOut),

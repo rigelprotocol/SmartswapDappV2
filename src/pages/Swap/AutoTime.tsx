@@ -55,7 +55,7 @@ import { ChevronDownIcon } from '@chakra-ui/icons';
 import { refreshTransactionTab } from '../../state/transaction/actions';
 import MarketDropDown from '../../components/MarketDropDown';
 import { GButtonClick, GFailedTransaction, GSuccessfullyTransaction } from '../../components/G-analytics/gIndex';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 
 
@@ -96,7 +96,7 @@ const SetPrice = () => {
     signature:""
   })
 
-
+  const routerHistory = useHistory()
   const { onCurrencySelection, onUserInput, onSwitchTokens, onMarketSelection, } = useSwapActionHandlers();
 
   const {
@@ -123,6 +123,7 @@ const SetPrice = () => {
     [onUserInput]
   );
   useEffect(() => {
+    // routerHistory.push(`/auto-[eropd/${marketType}`)
     async function runCheck() {
       if (account && currencies[Field.INPUT]) {
         await checkForApproval()
@@ -374,6 +375,7 @@ const SetPrice = () => {
           const address = currencies[Field.INPUT]?.wrapped.address;
           const token = address && await getERC20Token(address, library);
           const walletBal = (await token?.balanceOf(account));
+          console.log({walletBal})
           const approveTransaction = await token?.approve(
             MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
             walletBal,
@@ -515,7 +517,8 @@ const SetPrice = () => {
         }
       )
 
-      const approveBalance = ethers.utils.formatEther(check).toString();
+      const approveBalance = ethers.utils.formatUnits(check.toString(), currencies[Field.INPUT]?.decimals);
+      console.log({approveBalance})
       return approveBalance
     // } catch (e) {
     //   console.log(e)

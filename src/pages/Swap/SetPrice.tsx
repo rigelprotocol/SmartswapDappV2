@@ -48,6 +48,7 @@ import { refreshTransactionTab } from '../../state/transaction/actions';
 import { useUserSlippageTolerance } from '../../state/user/hooks';
 import { binanceTestMarketArray,polygonMarketArray,binanceMarketArray } from "../../state/swap/hooks"
 import MarketDropDown from '../../components/MarketDropDown';
+import { useHistory } from 'react-router-dom';
 import SliderComponent from '../../components/Slider';
 import { useLocation } from 'react-router-dom';
 
@@ -107,7 +108,7 @@ const SetPrice = () => {
     mess:"",
     signature:""
   })
-
+  const routerHistory = useHistory()
   useEffect(async () => {      
     onMarketSelection(OTHERMARKETFACTORYADDRESSES[marketType][chainId as number],OTHERMARKETADDRESSES[marketType][chainId as number])
   // }
@@ -170,6 +171,8 @@ const SetPrice = () => {
   const { independentField, typedValue } = useSwapState();
 
   useEffect(() => {
+    console.log({marketType})
+    // routerHistory.push(`/set-price/${marketType}`)
     async function runCheck() {
       if (account  && currencies[Field.INPUT]) {
 

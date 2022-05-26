@@ -125,6 +125,7 @@ const useSwap = (
               tokenOneAddress,
               tokenTwoAddress,
             ]);
+            console.log({amountIn,tokenOneAddress,tokenTwoAddress})
             const amountsIn =
               independentFieldString === "INPUT"
                 ? undefined
@@ -149,7 +150,9 @@ const useSwap = (
             setAmount(
               independentFieldString === "INPUT" ? output : amountsInOutput
             );
-            if(unit && currencyA && currencyB){
+            if(unit){
+              console.log(`${10**currencyB?.decimals}`,{tokenTwoAddress,
+                tokenOneAddress})
               const amountOut2= await SwapRouter.getAmountsOut( `${10**currencyB?.decimals}`, [
                   tokenTwoAddress,
                   tokenOneAddress,
@@ -261,7 +264,7 @@ const useSwap = (
                   independentFieldString === "INPUT" ? output : amountsInOutput
                 );
                 if(unit){
-                  const amountsOut2 = await SwapRouter.getAmountsOut(amountIn, [
+                  const amountsOut2 = await SwapRouter.getAmountsOut(`${10**currencyB?.decimals}`, [
                   CurrencyB,
                   USDT[chainId as number],
                   CurrencyA,
@@ -313,7 +316,7 @@ const useSwap = (
                   independentFieldString === "INPUT" ? output : amountsInOutput
                 );
                 if(unit){
-                  const amountsOut2 = await SwapRouter.getAmountsOut(amountIn, [
+                  const amountsOut2 = await SwapRouter.getAmountsOut(`${10**currencyB?.decimals}`, [
                     CurrencyB,
                     RGPADDRESSES[chainId as number],
                     CurrencyA,
@@ -369,7 +372,7 @@ const useSwap = (
                   independentFieldString === "INPUT" ? output : amountsInOutput
                 );
                 if(unit){
-                  const amountsOut2 = await SwapRouter.getAmountsOut(amountIn, [
+                  const amountsOut2 = await SwapRouter.getAmountsOut(`${10**currencyB?.decimals}`, [
                     CurrencyB,
                     WNATIVEADDRESSES[chainId as number],
                     CurrencyA,
@@ -422,7 +425,7 @@ const useSwap = (
                   independentFieldString === "INPUT" ? output : amountsInOutput
                 );
                 if(unit){
-                  const amountsOut2 = await SwapRouter.getAmountsOut(amountIn, [
+                  const amountsOut2 = await SwapRouter.getAmountsOut(`${10**currencyB?.decimals}`, [
                     CurrencyB,
                     BUSD[chainId as number],
                     CurrencyA,
@@ -478,7 +481,7 @@ const useSwap = (
                   independentFieldString === "INPUT" ? output : amountsInOutput
                 );
                 if(unit){
-                  const amountsOut2 = await SwapRouter.getAmountsOut(amountIn, [
+                  const amountsOut2 = await SwapRouter.getAmountsOut(`${10**currencyB?.decimals}`, [
                     CurrencyB,
                     RGPADDRESSES[chainId as number],
                     USDT[chainId as number],
