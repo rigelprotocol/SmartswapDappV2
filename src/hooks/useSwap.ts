@@ -125,7 +125,6 @@ const useSwap = (
               tokenOneAddress,
               tokenTwoAddress,
             ]);
-            console.log({amountIn,tokenOneAddress,tokenTwoAddress})
             const amountsIn =
               independentFieldString === "INPUT"
                 ? undefined
@@ -151,8 +150,6 @@ const useSwap = (
               independentFieldString === "INPUT" ? output : amountsInOutput
             );
             if(unit){
-              console.log(`${10**currencyB?.decimals}`,{tokenTwoAddress,
-                tokenOneAddress})
               const amountOut2= await SwapRouter.getAmountsOut( `${10**currencyB?.decimals}`, [
                   tokenTwoAddress,
                   tokenOneAddress,

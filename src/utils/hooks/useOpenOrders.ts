@@ -104,7 +104,6 @@ const useOpenOrders = (socket:any) => {
                 try {
                     let dataToUse =[]
                     const transaction = await getTransactionFromDatabase(account)
-                    console.log({transaction})
                     if (transaction.length > 0) {
                         let data = []
                         if (locationData === "auto") {
@@ -113,9 +112,7 @@ const useOpenOrders = (socket:any) => {
                             data = transaction.filter((data: any) => data.typeOfTransaction === "Set Price")
                             
                         }
-                        console.log({data})
                         const result = data.filter((item:any)=>item.errorArray.length===0 && item.transactionHash === "" && parseInt(item.chainID) === chainId)
-                        console.log({result},chainId)
                         dataToUse = await Promise.all(result.map(async (data: any) => {
                             return {
                                 inputAmount: data.amountToSwap,
@@ -143,7 +140,6 @@ const useOpenOrders = (socket:any) => {
                         )
                     
                 }
-                console.log({dataToUse})
                 const marketSwap = await Promise.all(
                     dataToUse.map(async (data: any) => ({
                         tokenIn: data.tokenIn === "native" ? {
@@ -178,12 +174,6 @@ const useOpenOrders = (socket:any) => {
                         market:data.market
                     })),
                 );
-                console.log({marketSwap},{
-                    name: Name,
-                    symbol: Symbol,
-                    address: WNATIVEADDRESSES[chainId as number],
-                    decimals: 18
-                })
                     const marketHistory = marketSwap.map((data) => ({
                         token1Icon:data.tokenIn &&
                             getTokenSymbol(data.tokenIn.symbol),
