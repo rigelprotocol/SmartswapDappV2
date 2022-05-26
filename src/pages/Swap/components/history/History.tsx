@@ -234,6 +234,8 @@ const History = () => {
             <Text fontWeight="400" cursor="pointer" fontSize="16px" color={showMarketHistory ? activeTabColor : nonActiveTabColor} onClick={() => {
               GMarketHistoryTab()
               setShowMarketHistory(true);
+              setShowOrder(false);
+              setShow(false)
             }}>
               Market History
             </Text>
@@ -269,6 +271,8 @@ const History = () => {
                 setOpen(true);
                 GMarketHistoryTab()
                 setShow(true);
+                setShowMarketHistory(false);
+                setShowOrder(false);
               }}
             >
               <AddIcon onClick={() => setOpen(true)} />

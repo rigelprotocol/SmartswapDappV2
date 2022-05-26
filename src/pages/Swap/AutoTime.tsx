@@ -56,6 +56,7 @@ import { refreshTransactionTab } from '../../state/transaction/actions';
 import MarketDropDown from '../../components/MarketDropDown';
 import { GButtonClick, GFailedTransaction, GSuccessfullyTransaction } from '../../components/G-analytics/gIndex';
 import { useHistory, useLocation } from 'react-router-dom';
+import { GetAddressTokenBalance } from '../../state/wallet/hooks';
 
 
 
@@ -68,6 +69,7 @@ const SetPrice = () => {
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
   const buttonBgcolor = useColorModeValue('#F2F5F8', '#213345');
   const color = useColorModeValue('#999999', '#7599BD');
+  const switchBgcolor = useColorModeValue("#F2F5F8", "#213345");
   const lightmode = useColorModeValue(true, false);
   const borderTwo = useColorModeValue('#319EF6', '#4CAFFF');
   const { account, library, chainId } = useActiveWeb3React()
@@ -91,6 +93,7 @@ const SetPrice = () => {
   const [userOutputPrice, setUserOutputPrice] = useState<number>(0)
   const [currentToPrice,setCurrentToPrice] = useState("0")
   const [showNewChangesText,setShowNewChangesText] = useState(false)
+  const [insufficientBalance, setInsufficientBalance] = useState(false);
   const [dataSignature,setDataSignature] = useState<{mess:string,signature:string}>({
     mess:"",
     signature:""
@@ -122,20 +125,23 @@ const SetPrice = () => {
     },
     [onUserInput]
   );
+ useEffect(()=>{
+   let market = location.split("/").length===3? location.split("/")[2]:""
+   checkIfMarketExists(market,chainId)
+
+ },[location,chainId])
   useEffect(() => {
-    // routerHistory.push(`/auto-[eropd/${marketType}`)
     async function runCheck() {
       if (account && currencies[Field.INPUT]) {
         await checkForApproval()
       }
     }
     runCheck()
-  }, [currencies[Field.INPUT],typedValue, account,marketType])
- useEffect(()=>{
-   let market = location.split("/").length===3? location.split("/")[2]:""
-   checkIfMarketExists(market,chainId)
+  }, [currencies[Field.INPUT],typedValue, account])
 
- },[location,chainId])
+  const switchMarket = (market:string)=>{
+    routerHistory.push(`/auto-period/${market}`)
+  }
   useEffect(() => {
     async function checkIfSignatureExists() {
       let user = await fetch(`https://autoperiod.rigelprotocol.com/auto/data/${account}`)//https://autoperiod.rigelprotocol.com
@@ -160,6 +166,8 @@ const SetPrice = () => {
     setCheckedItem(false)
   }, [account])
 
+
+  
   const deadline = useSelector<RootState, number>(
     (state) => state.user.userDeadline
   );
@@ -169,6 +177,7 @@ const SetPrice = () => {
     const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
     setFee(fee)
+    return fee
   }
   const checkIfMarketExists = (market:string,chainId:number| undefined) => {
     let marketArray:any
@@ -204,8 +213,31 @@ const SetPrice = () => {
       : parsedAmounts[dependentField] ?? "", //?.toSignificant(6) ?? '',
   };
   const receivedAmount = Number(formattedAmounts[Field.OUTPUT]).toFixed(4);
-
-
+  const [balance] = GetAddressTokenBalance(
+    currencies[Field.INPUT] ?? undefined
+  );
+  useEffect(async () => {
+    const checkBalance = async ()=>{
+     if(currencies[Field.INPUT]?.symbol==="RGP"){
+      let fee =await getFee()
+      let amount = parseFloat(formattedAmounts[Field.INPUT]) + parseFloat(fee) 
+      console.log({amount,balance,fee},currencies[Field.INPUT]?.symbol,parseFloat(formattedAmounts[Field.INPUT]))
+      if(amount > parseFloat(balance) ){
+        setInsufficientBalance(true);
+      }else{
+        setInsufficientBalance(false);
+      }
+    }else{
+     if (balance < parseFloat(formattedAmounts[Field.INPUT])) {
+      setInsufficientBalance(true);
+    } else {
+      setInsufficientBalance(false);
+    } 
+    } 
+    }
+    
+   await checkBalance()
+  }, [balance, formattedAmounts[Field.INPUT]]);
   useMemo(() => {
     if(parseFloat(percentageChange) >0 && formattedAmounts[Field.OUTPUT]){
         const actualRecievedAmount = (parseFloat(percentageChange) / 100) * parseFloat(formattedAmounts[Field.OUTPUT]) + parseFloat(formattedAmounts[Field.OUTPUT])
@@ -241,7 +273,7 @@ const SetPrice = () => {
       }
     }
   }, [currentToPrice, receivedAmount]);
-
+ 
   useEffect(() => {
     let interval;
     if (showNewChangesText) {
@@ -268,7 +300,8 @@ const SetPrice = () => {
     const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
     const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
     const amountToApprove = await autoSwapV2Contract.fee()
-    const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
+    console.log({amountToApprove},amountToApprove.toString())
+    const fee = ethers.utils.formatUnits(amountToApprove.toString(), 18)
   
     let approvalArray:any=[]
     if (parseFloat(RGPBalance) >= parseFloat(fee)) {
@@ -279,7 +312,8 @@ const SetPrice = () => {
     }else{
       setApprovalForFee("RGP")
     }
-    if(parseFloat(tokenBalance) >= parseFloat(formattedAmounts[Field.INPUT])){
+    console.log(parseFloat(formattedAmounts[Field.INPUT]),parseFloat(fee))
+    if(parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT])+parseFloat(fee))){
       setHasBeenApproved(true)
       approvalArray=[]
       // setApprovalForFee("")
@@ -538,6 +572,7 @@ const SetPrice = () => {
       )
 
       const approveBalance = ethers.utils.formatEther(check).toString();
+      console.log({approveBalance})
       return approveBalance
     // } catch (e) {
     //   console.log(e)
@@ -594,7 +629,7 @@ const SetPrice = () => {
                 </Box>
                 <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={buttonBgcolor}>
                   <Flex>
-                  <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId}/>
+                  <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
 
                     <Spacer />
                     <VStack>
@@ -747,22 +782,26 @@ const SetPrice = () => {
                 </VStack>
               </Flex>
               <Box mt={5}>
-                {inputError ?
-                  <Button
-                    w="100%"
-                    borderRadius="6px"
-                    border={lightmode ? '2px' : 'none'}
-                    borderColor={borderColor}
-                    h="48px"
-                    p="5px"
-                    color={color}
-                    bgColor={buttonBgcolor}
-                    fontSize="18px"
-                    boxShadow={lightmode ? 'base' : 'lg'}
-                    _hover={{ bgColor: buttonBgcolor }}
-                  >
-                    {inputError}
-                  </Button> : !transactionSigned ? <Button
+              {insufficientBalance || inputError ?( 
+            <Button
+              w='100%'
+              borderRadius='6px'
+              border={lightmode ? "2px" : "none"}
+              borderColor={borderColor}
+              h='48px'
+              p='5px'
+              mt={1}
+              disabled={inputError !== undefined || insufficientBalance}
+              color={inputError ? color : "#FFFFFF"}
+              bgColor={inputError ? switchBgcolor : buttonBgcolor}
+              fontSize='18px'
+              boxShadow={lightmode ? "base" : "lg"}
+              _hover={{ bgColor: buttonBgcolor }}
+            >
+              {inputError
+                ? inputError
+                : `Insufficient ${currencies[Field.INPUT]?.symbol} Balance ${currencies[Field.INPUT]?.symbol==="RGP" && "for fee"}`}
+            </Button>) : !transactionSigned ? <Button
                     w="100%"
                     borderRadius="6px"
                     border={lightmode ? '2px' : 'none'}
@@ -888,7 +927,7 @@ const SetPrice = () => {
               
                 <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={buttonBgcolor}>
                   <Flex>
-                  <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId}/>
+                  <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
 
                     <Spacer />
                     <VStack>
@@ -1035,22 +1074,26 @@ const SetPrice = () => {
                 </VStack>
               </Flex>
               <Box mt={5}>
-                {inputError ?
-                  <Button
-                    w="100%"
-                    borderRadius="6px"
-                    border={lightmode ? '2px' : 'none'}
-                    borderColor={borderColor}
-                    h="48px"
-                    p="5px"
-                    color={color}
-                    bgColor={buttonBgcolor}
-                    fontSize="18px"
-                    boxShadow={lightmode ? 'base' : 'lg'}
-                    _hover={{ bgColor: buttonBgcolor }}
-                  >
-                    {inputError}
-                  </Button> : !transactionSigned ? <Button
+                {insufficientBalance || inputError ?( 
+            <Button
+              w='100%'
+              borderRadius='6px'
+              border={lightmode ? "2px" : "none"}
+              borderColor={borderColor}
+              h='48px'
+              p='5px'
+              mt={1}
+              disabled={inputError !== undefined || insufficientBalance}
+              color={inputError ? color : "#FFFFFF"}
+              bgColor={inputError ? switchBgcolor : buttonBgcolor}
+              fontSize='18px'
+              boxShadow={lightmode ? "base" : "lg"}
+              _hover={{ bgColor: buttonBgcolor }}
+            >
+              {inputError
+                ? inputError
+                : `Insufficient ${currencies[Field.INPUT]?.symbol} Balance ${currencies[Field.INPUT]?.symbol==="RGP" && "for fee"}`}
+            </Button>) : !transactionSigned ? <Button
                     w="100%"
                     borderRadius="6px"
                     border={lightmode ? '2px' : 'none'}

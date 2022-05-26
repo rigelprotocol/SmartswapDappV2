@@ -51,6 +51,7 @@ import MarketDropDown from '../../components/MarketDropDown';
 import { useHistory } from 'react-router-dom';
 import SliderComponent from '../../components/Slider';
 import { useLocation } from 'react-router-dom';
+import { GetAddressTokenBalance } from '../../state/wallet/hooks';
 
 
 const SetPrice = () => {
@@ -60,6 +61,7 @@ const SetPrice = () => {
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
   const lightmode = useColorModeValue(true, false);
   const buttonBgcolor = useColorModeValue('#F2F5F8', '#213345');
+  const switchBgcolor = useColorModeValue("#F2F5F8", "#213345");
   const dispatch = useDispatch();
   const color = useColorModeValue('#999999', '#7599BD');
   const location = useLocation().pathname;
@@ -99,6 +101,7 @@ const SetPrice = () => {
   const [approvalForFee, setApprovalForFee] = useState("")
   const [marketType, setMarketType] = useState("Smartswap")
   const [approvalForToken, setApprovalForToken] = useState("")
+  const [insufficientBalance, setInsufficientBalance] = useState(false);
   const [totalNumberOfTransaction, setTotalNumberOfTransaction] = useState("1")
   const [approval, setApproval] = useState<String[]>([])
   const [fee, setFee] = useState("")
@@ -108,6 +111,7 @@ const SetPrice = () => {
     mess:"",
     signature:""
   })
+  
   const routerHistory = useHistory()
   useEffect(async () => {      
     onMarketSelection(OTHERMARKETFACTORYADDRESSES[marketType][chainId as number],OTHERMARKETADDRESSES[marketType][chainId as number])
@@ -138,7 +142,10 @@ const SetPrice = () => {
     }
   }, [account])
 
- 
+  const [balance] = GetAddressTokenBalance(
+    currencies[Field.INPUT] ?? undefined
+  );
+
   const deadline = useSelector<RootState, number>(
     (state) => state.user.userDeadline
   );
@@ -171,8 +178,6 @@ const SetPrice = () => {
   const { independentField, typedValue } = useSwapState();
 
   useEffect(() => {
-    console.log({marketType})
-    // routerHistory.push(`/set-price/${marketType}`)
     async function runCheck() {
       if (account  && currencies[Field.INPUT]) {
 
@@ -180,7 +185,7 @@ const SetPrice = () => {
       }
     }
     runCheck()
-  }, [currencies[Field.INPUT],typedValue, account,marketType])
+  }, [currencies[Field.INPUT],typedValue, account])
 
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT;
   const [allowedSlippage] = useUserSlippageTolerance();
@@ -225,6 +230,28 @@ const SetPrice = () => {
       ? parsedAmounts[independentField] ?? '' //?.toExact() ?? ''
       : parsedAmounts[dependentField] ?? '', //?.toSignificant(6) ?? '',
   };
+  useEffect(async () => {
+    const checkBalance = async ()=>{
+     if(currencies[Field.INPUT]?.symbol==="RGP"){
+      let fee =await getFee()
+      let amount = parseFloat(formattedAmounts[Field.INPUT]) + parseFloat(fee) 
+      console.log({amount,balance,fee},currencies[Field.INPUT]?.symbol,parseFloat(formattedAmounts[Field.INPUT]))
+      if(amount > parseFloat(balance) ){
+        setInsufficientBalance(true);
+      }else{
+        setInsufficientBalance(false);
+      }
+    }else{
+     if (balance < parseFloat(formattedAmounts[Field.INPUT])) {
+      setInsufficientBalance(true);
+    } else {
+      setInsufficientBalance(false);
+    } 
+    } 
+    }
+    
+   await checkBalance()
+  }, [balance, formattedAmounts[Field.INPUT]]);
   const minimumAmountToReceive = useCallback(
     () =>{
       let data
@@ -242,10 +269,14 @@ const SetPrice = () => {
     const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
     setFee(fee)
+    return fee
   }
   const minimum = minimumAmountToReceive().toFixed(
     currencies[Field.OUTPUT]?.decimals
   );
+  const switchMarket = (market:string)=>{
+    routerHistory.push(`/set-price/${market}`)
+  }
   const sendTransactionToDatabase = async () => {
     const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
     dispatch(
@@ -511,7 +542,8 @@ const SetPrice = () => {
           from: account,
         }
       )
-
+        const balance =await status.balanceOf(account)
+        console.log({balance})
       const approveBalance = ethers.utils.formatEther(check).toString();
       return approveBalance
     } catch (e) {
@@ -581,7 +613,7 @@ const SetPrice = () => {
                 <Text fontSize="14px" mr={2} my={2}>
                       Router <ExclamationIcon />
                     </Text>
-                    <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId}/>
+                    <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
                 </Box>
           </Flex>
          
@@ -693,22 +725,26 @@ const SetPrice = () => {
 
          
           <Box mt={5}>
-            {inputError ?
-              <Button
-                w="100%"
-                borderRadius="6px"
-                border={lightmode ? '2px' : 'none'}
-                borderColor={borderColor}
-                h="48px"
-                p="5px"
-                color={color}
-                bgColor={buttonBgcolor}
-                fontSize="18px"
-                boxShadow={lightmode ? 'base' : 'lg'}
-                _hover={{ bgColor: buttonBgcolor }}
-              >
-                {inputError}
-              </Button> : !transactionSigned ? <Button
+            {insufficientBalance || inputError ?( 
+            <Button
+              w='100%'
+              borderRadius='6px'
+              border={lightmode ? "2px" : "none"}
+              borderColor={borderColor}
+              h='48px'
+              p='5px'
+              mt={1}
+              disabled={inputError !== undefined || insufficientBalance}
+              color={inputError ? color : "#FFFFFF"}
+              bgColor={inputError ? switchBgcolor : buttonBgcolor}
+              fontSize='18px'
+              boxShadow={lightmode ? "base" : "lg"}
+              _hover={{ bgColor: buttonBgcolor }}
+            >
+              {inputError
+                ? inputError
+                : `Insufficient ${currencies[Field.INPUT]?.symbol} Balance ${currencies[Field.INPUT]?.symbol==="RGP" && "for fee"}`}
+            </Button>) : !transactionSigned ? <Button
                 w="100%"
                 borderRadius="6px"
                 border={lightmode ? '2px' : 'none'}

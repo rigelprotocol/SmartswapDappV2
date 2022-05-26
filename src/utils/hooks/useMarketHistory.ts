@@ -51,13 +51,11 @@ const useMarketHistory = (socket:any) => {
         return decoder
     }
     useEffect(() => {
-        if (location === "/auto-period") {
+        if (location.includes("auto-period")) {
             setLocationData("auto")
-            setStateAccount(AUTOSWAPSTATEADDRESSES[chainId as number])
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
-        } else if (location === "/set-price") {
+        } else if (location.includes("set-price")) {
             setLocationData("price")
-            setStateAccount(AUTOSWAPSTATEADDRESSES[chainId as number])
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
         } else {
             setLocationData("swap")
@@ -109,8 +107,7 @@ const useMarketHistory = (socket:any) => {
                 setLoadMarketData(true);
                 try {
                     let dataToUse = []
-                    if( location.includes("swap")){
-                    
+                    if( location.includes("/swap")){
                     const uri = `https://${api}?module=account&action=txlist&address=${contractAddress}&startblock=0
                     &endblock=latest&sort=desc&apikey=${apikey}`;
 
@@ -174,10 +171,7 @@ const useMarketHistory = (socket:any) => {
                                 let fromAddress = data.swapFromToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapFromToken
                                 let toAddress = data.swapToToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapToToken
                                 const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
-                                const toPriceOut = await rout.getAmountsOut(
-                                    data.amountToSwap,
-                                    [fromAddress, toAddress]
-                                );
+                                
     
                                 let dataBase = {
                                     inputAmount: data.amountToSwap,
@@ -235,7 +229,6 @@ const useMarketHistory = (socket:any) => {
                         market:data.market
                     })),
                 );
-                console.log({marketSwap})
                     const marketHistory = marketSwap.map((data) => ({
                         token1Icon:
                             getTokenSymbol(data.tokenIn.symbol),

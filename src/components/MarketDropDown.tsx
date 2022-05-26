@@ -16,7 +16,7 @@ import { binanceTestMarketArray,polygonMarketArray,binanceMarketArray } from "..
 // const binanceTestMarketArray = [
 //   {name:"Smartswap",image:"Smartswap.png"},
 // ]
-const MarketDropDown = ({marketType,setMarketType,chainID}:{marketType:string,setMarketType:React.Dispatch<React.SetStateAction<string>>,chainID:number | undefined}) => {
+const MarketDropDown = ({marketType,setMarketType,chainID,switchMarket}:{marketType:string,setMarketType:React.Dispatch<React.SetStateAction<string>>,chainID:number | undefined,switchMarket:(market:string)=>void}) => {
   const [marketArray,setMarketArray] = useState(binanceTestMarketArray)
   useEffect(()=>{
     if(chainID === 56) setMarketArray(binanceMarketArray)
@@ -47,7 +47,10 @@ const MarketDropDown = ({marketType,setMarketType,chainID}:{marketType:string,se
             <MenuItem
             key={index}
             _focus={{ color: "#319EF6" }}
-            onClick={() => setMarketType(item.name)} fontSize="13px">
+            onClick={() => {
+              setMarketType(item.name)
+              switchMarket(item.name)
+              }} fontSize="13px">
            <Img 
            src={`./images/${item.image}`} 
            width="30px" 
