@@ -14,6 +14,7 @@ import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { ParseFloat } from '..';
 import { notificationTab } from '../../state/transaction/actions';
 import { ZERO_ADDRESS } from '../../constants';
+import { SupportedChainName, SupportedChainSymbols } from '../constants/chains';
 
 const abiDecoder = require('abi-decoder');
 
@@ -235,13 +236,12 @@ const useAccountHistory = (socket:any) => {
                     let result = []
                     if (locationData === "auto") {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "Auto Time")
-                        result = result.filter((item:any)=> item.status === 1 || item.status === 0).reverse()
                         
                         // result = newArray
                     } else if (locationData === "price") {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "Set Price")
-                        result = result.filter((item:any)=> item.status === 1 || item.status === 0).reverse()
                     }
+                        result = result.filter((item:any)=> (item.status === 1 || item.status === 0) && parseInt(item.chainID) === chainId)
                     userData = await Promise.all(result.map(async (data: any) => {
                         return {
                             inputAmount: data.amountToSwap,
@@ -274,17 +274,18 @@ const useAccountHistory = (socket:any) => {
 
 
             }
+            console.log({userData})
             const swapDataForWallet = await Promise.all(
                 userData.map(async (data: DataIncoming) => ({
-                    tokenIn: data.tokenIn === "native" ? {
-                        name: Name,
-                        symbol: Symbol,
+                    tokenIn: data.chainID && data.tokenIn === "native" ? {
+                        name: SupportedChainName[data.chainID],
+                            symbol: SupportedChainSymbols[data.chainID],
                         address: WNATIVEADDRESSES[chainId as number],
                         decimals: 18
                     } : await tokenList(data.tokenIn),
-                    tokenOut: data.tokenOut === "native" ? {
-                        name: Name,
-                        symbol: Symbol,
+                    tokenOut: data.chainID && data.tokenOut === "native" ? {
+                        name: SupportedChainName[data.chainID],
+                        symbol: SupportedChainSymbols[data.chainID],
                         address: WNATIVEADDRESSES[chainId as number],
                         decimals: 18
                     } : await tokenList(data.tokenOut),
@@ -298,13 +299,15 @@ const useAccountHistory = (socket:any) => {
                     error: data.error,
                     status: data.status,
                     currentToPrice: data.currentToPrice,
-                    chainID:data.chainID,initialFromPrice:data.initialFromPrice,
+                    chainID:data.chainID,
+                    initialFromPrice:data.initialFromPrice,
                     initialToPrice:data.initialToPrice,
                     situation:data.situation,
                     pathSymbol:data.pathSymbol,
                     market:data.market                       
                 })),
             );
+            console.log({swapDataForWallet})
             const userSwapHistory = swapDataForWallet.map((data: any) => ({
                 token1Icon:
                     getTokenSymbol(data.tokenIn.symbol),
