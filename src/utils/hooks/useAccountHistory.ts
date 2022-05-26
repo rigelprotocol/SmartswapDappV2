@@ -176,7 +176,7 @@ const useAccountHistory = (socket:any) => {
             setLoading(true);
             try {
             let userData = []
-            if (location.includes("swap")) {
+            if (location.includes("/swap")) {
                 const uri = `https://${api}?module=account&action=txlist&address=${account}&startblock=0
                 &endblock=latest&sort=desc&apikey=${apikey}`;
 
@@ -274,7 +274,6 @@ const useAccountHistory = (socket:any) => {
 
 
             }
-            console.log({userData})
             const swapDataForWallet = await Promise.all(
                 userData.map(async (data: DataIncoming) => ({
                     tokenIn: data.chainID && data.tokenIn === "native" ? {
@@ -307,7 +306,6 @@ const useAccountHistory = (socket:any) => {
                     market:data.market                       
                 })),
             );
-            console.log({swapDataForWallet})
             const userSwapHistory = swapDataForWallet.map((data: any) => ({
                 token1Icon:
                     getTokenSymbol(data.tokenIn.symbol),
