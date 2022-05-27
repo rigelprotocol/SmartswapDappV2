@@ -49,7 +49,7 @@ const MarketDropDown = ({marketType,setMarketType,chainID,switchMarket}:{marketT
             _focus={{ color: "#319EF6" }}
             onClick={() => {
               setMarketType(item.name)
-              switchMarket(item.name)
+              switchMarket(item.name.toLowerCase())
               }} fontSize="13px">
            <Img 
            src={`./images/${item.image}`} 
