@@ -144,7 +144,7 @@ const SetPrice = () => {
   }
   useEffect(() => {
     async function checkIfSignatureExists() {
-      let user = await fetch(`https://autoperiod.rigelprotocol.com/auto/data/${account}`)//https://autoperiod.rigelprotocol.com
+      let user = await fetch(`http://localhost:7000/auto/data/${account}`)//http://localhost:7000
       let data = await user.json()
       if (data) {
         setDataSignature(data.dataSignature)
@@ -186,7 +186,7 @@ const SetPrice = () => {
     else if(chainId === 137) marketArray = polygonMarketArray
     if(marketArray && marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())){
       let item = marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())
-      setMarketType(item.name)
+      setMarketType(item.name.charAt(0).toUpperCase() + item.name.slice(1))
     }
   }
   const parsedAmounts = useMemo(
@@ -221,7 +221,6 @@ const SetPrice = () => {
      if(currencies[Field.INPUT]?.symbol==="RGP"){
       let fee =await getFee()
       let amount = parseFloat(formattedAmounts[Field.INPUT]) + parseFloat(fee) 
-      console.log({amount,balance,fee},currencies[Field.INPUT]?.symbol,parseFloat(formattedAmounts[Field.INPUT]))
       if(amount > parseFloat(balance) ){
         setInsufficientBalance(true);
       }else{
@@ -300,7 +299,6 @@ const SetPrice = () => {
     const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
     const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
     const amountToApprove = await autoSwapV2Contract.fee()
-    console.log({amountToApprove},amountToApprove.toString())
     const fee = ethers.utils.formatUnits(amountToApprove.toString(), 18)
   
     let approvalArray:any=[]
@@ -312,7 +310,6 @@ const SetPrice = () => {
     }else{
       setApprovalForFee("RGP")
     }
-    console.log(parseFloat(formattedAmounts[Field.INPUT]),parseFloat(fee))
     if(parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT])+parseFloat(fee))){
       setHasBeenApproved(true)
       approvalArray=[]
@@ -409,7 +406,6 @@ const SetPrice = () => {
           const address = currencies[Field.INPUT]?.wrapped.address;
           const token = address && await getERC20Token(address, library);
           const walletBal = (await token?.balanceOf(account));
-          console.log({walletBal})
           const approveTransaction = await token?.approve(
             MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
             walletBal,
@@ -451,11 +447,12 @@ const SetPrice = () => {
     let futureDate = currentDate.getTime() + deadline;
     let data, response
     if (currencies[Field.INPUT]?.isNative) {
-      console.log({pathArray})
+      let quantity = typedValue && parseFloat(typedValue) * parseInt(totalNumberOfTransaction)
+      console.log({typedValue},quantity)
       data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
         pathArray,
         futureDate,
-        { value: Web3.utils.toWei(typedValue, 'ether') }
+        { value: Web3.utils.toWei(quantity.toString(), 'ether') }
       )
       const fetchTransactionData = async (sendTransaction: any) => {
         const { confirmations, status, logs } = await sendTransaction.wait(1);
@@ -479,7 +476,7 @@ const SetPrice = () => {
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)//
-      const response = await fetch(`https://autoperiod.rigelprotocol.com/auto/add`, {
+      const response = await fetch(`http://localhost:7000/auto/add`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -552,7 +549,6 @@ const SetPrice = () => {
       )
 
       const approveBalance = ethers.utils.formatUnits(check.toString(), currencies[Field.INPUT]?.decimals);
-      console.log({approveBalance})
       return approveBalance
     // } catch (e) {
     //   console.log(e)
@@ -572,7 +568,6 @@ const SetPrice = () => {
       )
 
       const approveBalance = ethers.utils.formatEther(check).toString();
-      console.log({approveBalance})
       return approveBalance
     // } catch (e) {
     //   console.log(e)

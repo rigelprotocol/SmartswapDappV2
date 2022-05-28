@@ -82,7 +82,7 @@ const SetPrice = () => {
     oppositeAmount
   } = useDerivedSwapInfo();
 
-  const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")//https://autoperiod.rigelprotocol.com
+  const [URL, setURL] = useState("http://localhost:7000")//http://localhost:7000
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [disableInput, setDisableInput] = useState(true)
   const [initialFromPrice, setInitialFromPrice] = useState("")
@@ -171,7 +171,7 @@ const SetPrice = () => {
     else if(chainId === 137) marketArray = polygonMarketArray
     if(marketArray && marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())){
       let item = marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())
-      setMarketType(item.name)
+      setMarketType(item.name.charAt(0).toUpperCase() + item.name.slice(1))
     }
   }
 
