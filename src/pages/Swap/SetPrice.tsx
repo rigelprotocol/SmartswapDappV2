@@ -175,6 +175,23 @@ const SetPrice = () => {
     }
   }
 
+
+  const dammy = {
+    name:"fakorede damilola",
+    age:14,
+    course:{
+      math
+    }
+    cgpa:(math,eng)=>{
+      return math+eng
+    },
+    eat
+  }
+  dammy.name
+  
+
+
+
   const { independentField, typedValue } = useSwapState();
 
   useEffect(() => {
