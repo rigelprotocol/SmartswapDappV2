@@ -171,7 +171,7 @@ const SetPrice = () => {
     else if(chainId === 137) marketArray = polygonMarketArray
     if(marketArray && marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())){
       let item = marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())
-      setMarketType(item.name)
+      setMarketType(item.name.charAt(0).toUpperCase() + item.name.slice(1))
     }
   }
 

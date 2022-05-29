@@ -160,7 +160,7 @@ const useMarketHistory = (socket:any) => {
                         let result = []
                         if (locationData === "auto") {
                             let data = transaction.filter((data: any) => data.typeOfTransaction === "Auto Time")
-                            result = data.filter((item:any)=>item.status===1)
+                            result = data.filter((item:any)=>item.status===1 && parseInt(item.chainID) === chainId)
                         }else if (locationData === "price") {
                             let data = transaction.filter((data: any) => data.typeOfTransaction === "Set Price")
                             // .sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
@@ -201,33 +201,37 @@ const useMarketHistory = (socket:any) => {
                     }
                 }
                 const marketSwap = await Promise.all(
-                    dataToUse.map(async (data: any) => ({
-                        tokenIn: data?.tokenIn === "native" ? {
-                            name: SupportedChainName[data.chainID as number],
-                            symbol: SupportedChainSymbols[data.chainID as number],
-                            address: WNATIVEADDRESSES[data.chainID as number],
-                            decimals: 18
-                        } : await tokenList(data?.tokenIn),
-                        tokenOut: data.tokenOut === "native" ? {
-                            name: SupportedChainName[data.chainID as number],
-                            symbol: SupportedChainSymbols[data.chainID as number],
-                            address: WNATIVEADDRESSES[data.chainID as number],
-                            decimals: 18
-                        } : await tokenList(data.tokenOut),
-                        amountIn: data.inputAmount,
-                        amountOut: data.outputAmount,
-                        time: data.time,
-                        name: data.name,
-                        frequency: data.frequency,
-                        id: data.id,
-                        transactionHash: data.transactionHash,
-                        error: data.error,
-                        status: data.status,
-                        currentToPrice: data.currentToPrice,
-                        chainID:data.chainID,
-                        pathSymbol:data.pathSymbol,
-                        market:data.market
-                    })),
+                    dataToUse.map(async (data: any) => {
+                        let item ={
+                            tokenIn: data?.tokenIn === "native" ? {
+                                name: SupportedChainName[data.chainID as number],
+                                symbol: SupportedChainSymbols[data.chainID as number],
+                                address: WNATIVEADDRESSES[data.chainID as number],
+                                decimals: 18
+                            } : await tokenList(data?.tokenIn),
+                            tokenOut: data.tokenOut === "native" ? {
+                                name: SupportedChainName[data.chainID as number],
+                                symbol: SupportedChainSymbols[data.chainID as number],
+                                address: WNATIVEADDRESSES[data.chainID as number],
+                                decimals: 18
+                            } : await tokenList(data.tokenOut),
+                            amountIn: data.inputAmount,
+                            amountOut: data.outputAmount,
+                            time: data.time,
+                            name: data.name,
+                            frequency: data.frequency,
+                            id: data.id,
+                            transactionHash: data.transactionHash,
+                            error: data.error,
+                            status: data.status,
+                            currentToPrice: data.currentToPrice,
+                            chainID:data.chainID,
+                            pathSymbol:data.pathSymbol,
+                            market:data.market
+                        }
+                        return item
+                        
+                    }),
                 );
                     const marketHistory = marketSwap.map((data) => ({
                         token1Icon:

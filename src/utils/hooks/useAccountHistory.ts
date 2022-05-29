@@ -241,7 +241,7 @@ const useAccountHistory = (socket:any) => {
                     } else if (locationData === "price") {
                         result = collapsedTransaction.filter((data: any) => data.typeOfTransaction === "Set Price")
                     }
-                        result = result.filter((item:any)=> (item.status === 1 || item.status === 0) && parseInt(item.chainID) === chainId)
+                        result = result.filter((item:any)=> (item.status === 1 || item.status === 0) && parseInt(item.chainID) === chainId).reverse()
                     userData = await Promise.all(result.map(async (data: any) => {
                         return {
                             inputAmount: data.amountToSwap,
