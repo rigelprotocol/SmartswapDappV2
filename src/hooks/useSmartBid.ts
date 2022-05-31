@@ -16,6 +16,7 @@ export const useSmartBid = (id: number, exclusive: boolean) => {
     const [bidTime, setBidTime] = useState(0);
     const [loadData, setLoadData] = useState(false);
     const [bidDetails, setBidDetails] = useState({initial: '', max: 0});
+    const [addresses, setAddresses] = useState(3);
 
     const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
     const stateChanged: boolean = trxState === 2;
@@ -31,7 +32,13 @@ export const useSmartBid = (id: number, exclusive: boolean) => {
                         const bidContract = await RigelSmartBid(SMARTBID1[chainId as number], library);
                         const bidData = await bidContract.request_data_in_Bidding(id);
                         setBidTime(bidData.timeOut.toString());
-                        setBidDetails({initial : bidData.highestbid.toString(), max: Number(bidData.mustNotExceed.toString()) + Number(bidData.highestbid.toString())});
+                        setAddresses(bidData.numberOfRandomAddress.toString());
+                        const maxOutput =  Number(bidData.highestbid.toString()) !== 0 ?
+                            Number(bidData.mustNotExceed.toString()) + Number(bidData.highestbid.toString())
+                            : Number(bidData.mustNotExceed.toString()) + Number(bidData.initiialBiddingAmount.toString());
+
+                        setBidDetails({initial : Number(bidData.highestbid.toString()) !== 0 ? bidData.highestbid.toString()
+                                : bidData.initiialBiddingAmount.toString(), max: maxOutput});
 
                         setLoadData(false);
 
@@ -46,7 +53,12 @@ export const useSmartBid = (id: number, exclusive: boolean) => {
                         const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
                         const bidData = await bidContract.request_data_in_Bidding(id);
                         setBidTime(bidData.timeOut.toString());
-                        setBidDetails({initial : bidData.highestbid.toString(), max: Number(bidData.mustNotExceed.toString()) + Number(bidData.highestbid.toString())});
+                        setAddresses(bidData.numberOfRandomAddress.toString());
+                        const maxOutput =  Number(bidData.highestbid.toString()) !== 0 ?
+                            Number(bidData.mustNotExceed.toString()) + Number(bidData.highestbid.toString())
+                            : Number(bidData.mustNotExceed.toString()) + Number(bidData.initiialBiddingAmount.toString());
+                        setBidDetails({initial : Number(bidData.highestbid.toString()) !== 0 ? bidData.highestbid.toString()
+                                : bidData.initiialBiddingAmount.toString(), max: maxOutput});
 
                         setLoadData(false);
 
@@ -64,7 +76,7 @@ export const useSmartBid = (id: number, exclusive: boolean) => {
 
     }, [account, chainId, stateChanged]);
 
-    return {loadData, bidTime, bidDetails}
+    return {loadData, bidTime, bidDetails, addresses}
 };
 
 

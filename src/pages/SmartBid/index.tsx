@@ -5,9 +5,9 @@ import {AddIcon} from "@chakra-ui/icons";
 import SmartBidCard from "./Components/Card";
 import {SmartBidData, SmartBidNFTData} from "./Components/cardData";
 import BidCarousel from "./Components/BidCarousel";
-import {RigelSmartBidTwo} from "../../utils/Contracts";
+import {RigelSmartBidTwo, RigelSmartBid} from "../../utils/Contracts";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
-import {SMARTBID2} from "../../utils/addresses";
+import {SMARTBID2, SMARTBID1} from "../../utils/addresses";
 import {SupportedChainId} from "../../constants/chains";
 
 
@@ -17,6 +17,7 @@ const SmartBid = () => {
     const [isMobileDeviceSm] = useMediaQuery("(max-width: 450px)");
     const {chainId, library} = useActiveWeb3React();
     const [itemLength, setItemLength] = useState(3);
+    const [itemTwoLength, setItemTwoLength] = useState(3);
 
     useMemo(() => {
         const getLength = async () => {
@@ -24,6 +25,10 @@ const SmartBid = () => {
                 const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
                 const item = await bidContract.bidLength();
                 setItemLength(item);
+
+                const bidContractTwo = await RigelSmartBid(SMARTBID1[chainId as number], library);
+                const itemTwo = await bidContractTwo.bidLength();
+                setItemTwoLength(itemTwo);
 
             } catch (e) {
                 console.log(e)
@@ -60,7 +65,7 @@ const SmartBid = () => {
 
                     <SimpleGrid width={'100%'} p={'10px'} mx={'auto'} minChildWidth={'305px'} spacingX={'10px'}
                                 spacingY={'20px'} alignItems={'start'}>
-                        {SmartBidData.map((item, index) => index !== -1 && index < itemLength ? (
+                        {SmartBidData.map((item, index) => index !== -1 && index < itemTwoLength ? (
                                 <GridItem rowSpan={1} key={item.id} colSpan={1}>
                                     <SmartBidCard key={item.id} title={item.title} image={item.image}
                                                   exclusive={item.exclusive} tileColor={item.color} bgColor={item.bgColor}

@@ -40,7 +40,7 @@ const BidDetails = () => {
     const [bidModal, setBidModal] = useState(false);
     const dispatch = useDispatch();
 
-    const { loadData , bidTime, bidDetails } = useSmartBid(viewId, exc);
+    const { loadData , bidTime, bidDetails , addresses} = useSmartBid(viewId, exc);
 
     const [time, setTime] = useState(2);
     const [currentClock, setCurrentClock] = useState({days: 0, hours: 0, minutes: 0, seconds: 0});
@@ -286,7 +286,8 @@ const BidDetails = () => {
                         <Text fontWeight={400} lineHeight={'24px'} fontSize={'16px'} color={'#A7A9BE'} my={2}>Place your bid and stand a chance to win the grand token prize at the end of this event.</Text>
                         <UnorderedList fontWeight={500} fontSize={'16px'} lineHeight={'24px'} width={'80%'} my={3}>
                             <ListItem color={textColor} p={1}>Winner gets 30% of the Total Token raised</ListItem>
-                            <ListItem color={textColor} p={1}>5 random bidders will be selected at the end of the event to win 10% of Total Token raised.</ListItem>
+                            <ListItem color={textColor} p={1}>{addresses} random bidders will be selected at the end of the event to win 10% of Total Token raised.</ListItem>
+                            <ListItem color={textColor} p={1}>You need {tokenInfo.symbol} token to bid on this event.</ListItem>
                         </UnorderedList>
 
                         {exc && nftName ? <Text fontWeight={600} lineHeight={'32px'} fontSize={'18px'} color={'#CC334F'}>{nftName} owners only.</Text> : null}

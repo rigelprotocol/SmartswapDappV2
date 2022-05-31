@@ -39,67 +39,75 @@ export const SmartBidData = [
   {
     time: "08:41:29",
     exclusive: true,
-    image: cardbid4,
+    image: cardbid3,
     title: 'NFT owners only',
     id: 3,
     text: 'NFT Owners get X2 of their winnings.',
-    bgColor: '#EDE8FD',
+    color: '#FF8906',
+    bgColor: '#FFF0DF'
   }, {
     time: "08:41:29",
     exclusive: true,
-    image: cardbid4,
+    image: cardbid2,
     title: 'NFT owners only',
     id: 4,
     text: 'NFT Owners get X2 of their winnings.',
-    bgColor: '#EDE8FD'
+    color: '#2CB67D',
+    bgColor: '#EAFAF4'
   }, {
     time: "08:41:29",
     exclusive: true,
-    image: cardbid4,
+    image: cardbid2,
     title: 'NFT owners only',
     id: 5,
     text: 'NFT Owners get X2 of their winnings.',
-    bgColor: '#EDE8FD'
+    color: '#2CB67D',
+    bgColor: '#EAFAF4'
   }, {
     time: "08:41:29",
     exclusive: true,
-    image: cardbid4,
+    image: cardbid,
     title: 'NFT owners only',
     id: 6,
     text: 'NFT Owners get X2 of their winnings.',
-    bgColor: '#EDE8FD'
+    color: '#F25F4C',
+    bgColor: '#FFF3F1'
   }, {
     time: "08:41:29",
     exclusive: true,
-    image: cardbid4,
+    image: cardbid,
     title: 'NFT owners only',
     id: 7,
     text: 'NFT Owners get X2 of their winnings.',
-    bgColor: '#EDE8FD'
+    color: '#F25F4C',
+    bgColor: '#FFF3F1'
   }, {
     time: "08:41:29",
     exclusive: true,
-    image: cardbid4,
+    image: cardbid3,
     title: 'NFT owners only',
     id: 8,
     text: 'NFT Owners get X2 of their winnings.',
-    bgColor: '#EDE8FD'
+    color: '#FF8906',
+    bgColor: '#FFF0DF'
   }, {
     time: "08:41:29",
     exclusive: true,
-    image: cardbid4,
+    image: cardbid3,
     title: 'NFT owners only',
     id: 9,
     text: 'NFT Owners get X2 of their winnings.',
-    bgColor: '#EDE8FD'
+    color: '#FF8906',
+    bgColor: '#FFF0DF'
   }, {
     time: "08:41:29",
     exclusive: true,
-    image: cardbid4,
+    image: cardbid2,
     title: 'NFT owners only',
     id: 10,
     text: 'NFT Owners get X2 of their winnings.',
-    bgColor: '#EDE8FD'
+    color: '#2CB67D',
+    bgColor: '#EAFAF4'
   }
 ];
 
