@@ -34,6 +34,9 @@ import {
   useTokenBalance,
   useUpdateBalance,
 } from "../../utils/hooks/useUpdateBalances";
+import {useAllLists, useInactiveListUrls} from "../../state/lists/hooks";
+import {WrappedTokenInfo, TagInfo} from "../../state/types";
+import {createFilterToken} from "./filtering";
 
 type IModal = {
   tokenModal: boolean;
@@ -42,6 +45,53 @@ type IModal = {
   selectedCurrency?: Currency | null;
   otherSelectedCurrency?: Currency | null;
 };
+
+export function useSearchInactiveTokenLists(search: string | undefined, minResults = 10): WrappedTokenInfo[] {
+  const lists = useAllLists()
+  const inactiveUrls = useInactiveListUrls()
+  const { chainId } = useActiveWeb3React()
+  const activeTokens = useAllTokens()
+  return useMemo(() => {
+    if (!search || search.trim().length === 0) return []
+    const filterToken = createFilterToken(search)
+    const exactMatches: WrappedTokenInfo[] = []
+    const rest: WrappedTokenInfo[] = []
+    const addressSet: { [address: string]: true } = {}
+    for (const url of inactiveUrls) {
+      const list = lists[url].current
+      // eslint-disable-next-line no-continue
+      if (!list) continue
+      for (const tokenInfo of list.tokens) {
+        if (
+            tokenInfo.chainId === chainId &&
+            !(tokenInfo.address in activeTokens) &&
+            !addressSet[tokenInfo.address] &&
+            filterToken(tokenInfo)
+        ) {
+          const tags: TagInfo[] =
+              tokenInfo.tags
+                  ?.map((tagId) => {
+                    if (!list.tags?.[tagId]) return undefined
+                    return { ...list.tags[tagId], id: tagId }
+                  })
+                  ?.filter((x): x is TagInfo => Boolean(x)) ?? []
+          const wrapped: WrappedTokenInfo = new WrappedTokenInfo(tokenInfo, tags)
+          addressSet[wrapped.address] = true
+          const trimmedSearchQuery = search.toLowerCase().trim()
+          if (
+              tokenInfo.name?.toLowerCase() === trimmedSearchQuery ||
+              tokenInfo.symbol?.toLowerCase() === trimmedSearchQuery
+          ) {
+            exactMatches.push(wrapped)
+          } else {
+            rest.push(wrapped)
+          }
+        }
+      }
+    }
+    return [...exactMatches, ...rest].slice(0, minResults)
+  }, [activeTokens, chainId, inactiveUrls, lists, minResults, search])
+}
 
 const SelectToken: React.FC<IModal> = ({
   tokenModal,
@@ -105,12 +155,16 @@ const SelectToken: React.FC<IModal> = ({
   useEffect(() => {
     if (!searchToken && !(filteredTokenListWithETH?.length > 0)) {
       setIsSearchingForToken(true);
-    } else {
+    }  else {
       setIsSearchingForToken(false);
     }
   }, [searchToken, filteredTokenListWithETH]);
 
   const [sortedTokenList] = useUpdateBalance("");
+
+  const filteredInactiveTokens = useSearchInactiveTokenLists(debouncedQuery);
+  console.log(filteredInactiveTokens.length);
+  console.log(debouncedQuery);
 
   return (
     <>
@@ -159,32 +213,36 @@ const SelectToken: React.FC<IModal> = ({
                 Searching...
               </Text>
             ) : searchToken && !searchTokenIsAdded ? (
-              <ImportRow
-                token={searchToken}
-                openNewTokenModal={setOpenNewTokenModal}
-              />
+                <Box>
+                  <ImportRow
+                      token={searchToken}
+                      openNewTokenModal={setOpenNewTokenModal}
+                  />
+                  <Text>This is where new tokens should go.</Text>
+                </Box>
+
             ) : searchQuery !== "" ? (
               filteredTokenListWithETH.map((currency, index) => {
                 return (
-                  <CurrencyList
-                    onCurrencySelect={handleCurrencySelect}
-                    key={index}
-                    currency={currency}
-                    selectedCurrency={selectedCurrency}
-                    otherSelectedCurrency={otherSelectedCurrency}
-                  />
+                      <CurrencyList
+                          onCurrencySelect={handleCurrencySelect}
+                          key={index}
+                          currency={currency}
+                          selectedCurrency={selectedCurrency}
+                          otherSelectedCurrency={otherSelectedCurrency}
+                      />
                 );
               })
             ) : sortedTokenList?.length > 0 ? (
               sortedTokenList.map((currency, index) => {
                 return (
-                  <CurrencyList
-                    onCurrencySelect={handleCurrencySelect}
-                    key={index}
-                    currency={currency[0]}
-                    selectedCurrency={selectedCurrency}
-                    otherSelectedCurrency={otherSelectedCurrency}
-                  />
+                      <CurrencyList
+                          onCurrencySelect={handleCurrencySelect}
+                          key={index}
+                          currency={currency[0]}
+                          selectedCurrency={selectedCurrency}
+                          otherSelectedCurrency={otherSelectedCurrency}
+                      />
                 );
               })
             ) : (
