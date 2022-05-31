@@ -16,6 +16,11 @@ import useOpenOrders from '../../../../utils/hooks/useOpenOrders';
 import { io } from "socket.io-client";
 
 import { GMarketHistoryTab } from '../../../../components/G-analytics/gIndex';
+import { SupportedChainSymbols } from '../../../../utils/constants/chains';
+import { autoSwapV2 } from '../../../../utils/Contracts';
+import { MARKETAUTOSWAPADDRESSES } from '../../../../utils/addresses';
+import { useActiveWeb3React } from '../../../../utils/hooks/useActiveWeb3React';
+import Web3 from 'web3';
 
 const History = () => {
   
@@ -30,21 +35,22 @@ const History = () => {
 
   useEffect(
     () => {
-  setSocket(io("https://autoperiod.rigelprotocol.com"));//https://autoperiod.rigelprotocol.com
+  setSocket(io("http://localhost:7000"));//http://localhost:7000
   
     },
     []
   )
  
-
+  const { account, chainId, library } = useActiveWeb3React()
   const [show, setShow] = useState<Boolean>(true);
   const [typeOfModal, setTypeOfModal] = useState(0);
   const [open, setOpen] = useState<Boolean>(true);
   const [showMarketHistory, setShowMarketHistory] = useState(false);
   const [notification, setNotification] = useState(0);
   const [address, setAddress] = useState("");
-  const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")//https://autoperiod.rigelprotocol.com
+  const [URL, setURL] = useState("http://localhost:7000")//http://localhost:7000
   const [showOrder, setShowOrder] = useState(false);
+  const [type, setType] = useState("");
 
   const sideBarRemoved = useSelector((state: RootState) => state.transactions.removeSideTab);
 
@@ -85,6 +91,14 @@ const History = () => {
         message: "Deleting Order...",
         trxState: TrxState.WaitingForConfirmation,
       })
+      if(data.token1.symbol ===SupportedChainSymbols[data.chainID]){
+        console.log("ieoioeooe")
+        const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[data.market][chainId as number], library);
+        await autoSwapV2Contract.cancelOrder(data.orderID)
+        console.log({autoSwapV2Contract})
+        console.log(Web3.utils.toWei(`${data.orderID}`,"ether"))
+       
+      }
       const result = await fetch(`${URL}/auto/data/${data._id}/${data.id}`, { method: 'DELETE' })
       const res = await result.json()
       if (res === "success") {
@@ -126,40 +140,15 @@ const History = () => {
       }
 
      
-    // } else if (data && data.name === "Set Price") {
-    //   setOpenModal({
-    //     message: data.status === 2 ? "Suspending Transaction..." : "Resuming Transaction",
-    //     trxState: TrxState.WaitingForConfirmation,
-    //   })
-    //   const result = await fetch(`${URL}/auto/update/${data.id}`, {
-    //     mode: "cors",
-    //     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-    //     credentials: 'same-origin', // include, *same-origin, omit
-    //     headers: {
-    //       'Content-Type': 'application/json'
-    //       // 'Content-Type': 'application/x-www-form-urlencoded',
-    //     },
-    //     method: "PUT",
-    //     body: data.status === 2 ? JSON.stringify({ status: 3 }) : JSON.stringify({ status: 2 })
-    //   })
-    //   const res = await result.json()
-    //   if (res === "success") {
-    //     dispatch(
-    //       setOpenModal({
-    //         message: `Data deleted Successful.`,
-    //         trxState: TrxState.TransactionSuccessful,
-    //       })
-    //     );
-    //   }
-    //   dispatch(refreshTransactionTab({ refresh:Math.random() }))
-    // }
+
     setShowModal(false)
     
     dispatch(refreshTransactionTab({ refresh:Math.random() }))
   }
-  const confirmDeletion = async (data: DataType,value:number) => {
+  const confirmDeletion = async (data: DataType,value:number,type:string) => {
     setData(data)
     setTypeOfModal(value)
+    setType(type)
     setShowModal(true)
   }
 
@@ -328,7 +317,7 @@ const History = () => {
         showModal={showModal}
         setShowModal={setShowModal}
         deleteDataFromDatabase={deleteDataFromDatabase}
-        text={`You are about to ${ data?.status===3 ? "resume" :  data?.status===2 ? "suspend" : "delete"} an ${data?.name} transaction. ${data?.status===3 ?"This will continue running all transaction that was stopped." : "This will prevent future transaction from been auto enabled for you. Do you want to continue"}`}
+        text={`You are about to ${ data?.status===3 ? "resume" :  type==="delete" ? "delete" :"suspend" } an ${data?.name} transaction. ${data?.status===3 ?"This will continue running all transaction that was stopped." : "This will prevent future transaction from been auto enabled for you. Do you want to continue"}`}
       />
     </Flex>
   );

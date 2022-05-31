@@ -114,7 +114,7 @@ export const AUTOSWAPV2ADDRESSES: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
   "56": "0x8eAc699588e46E7426375D945dD0330b0ad11814",
-  "97": "0xf767A2b636494c98afB8452633ba61F3A1400dd7",
+  "97": "0xE17686df144bF8a4e62dda8Fa7956894847cAa40",
   "137": "0xCA4f379b674e2d72c8144b5c521BdD24657C8949",
   "80001": "0x",
 };
@@ -122,7 +122,7 @@ export const MARKETAUTOSWAPADDRESSES : { [key: string]: {[key:string]: string} }
   "Smartswap": {
     "56": "0x85dc8445aCc4ef06ABB7Dc223C26F6D666A4b55C",
     // "56": "0x80297998b4b7bd7Bf3c71c9E800Ad3AB403437cB",
-    "97": "0xE21DbC4B76e527032Bfe0F95B7412C896f937498",
+    "97": "0xE17686df144bF8a4e62dda8Fa7956894847cAa40",
     // "97": "0xf767A2b636494c98afB8452633ba61F3A1400dd7",
     "137": "0x77F2fe1dd5eB0d10E366b70122Dd601d1c624556",
   },

@@ -28,7 +28,8 @@ interface DataIncoming {
     error: [],
     status: number,
     currentToPrice?: string,
-    chainID?:string
+    chainID:string,
+    market:string
 }
 
 const useMarketHistory = (socket:any) => {
@@ -37,7 +38,7 @@ const useMarketHistory = (socket:any) => {
     const [marketHistoryData, setMarketHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")//
+    const [URL, setURL] = useState("http://localhost:7000")//
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
 
     const api = APIENDPOINT[chainId as number];
@@ -125,7 +126,9 @@ const useMarketHistory = (socket:any) => {
                             to: items.to,
                             transactionHash: items.transactionHash,
                         status: 10,
-                        chainID:items.chainID 
+                        chainID:items.chainID,
+                        market:"",
+                        orderID:""
                         }));
 
 
@@ -147,7 +150,10 @@ const useMarketHistory = (socket:any) => {
                                 : data.transactionObj[2].value[data.transactionObj[2].value.length - 1],
                         time: timeConverter(data.timestamp),
                         from: data.from,
-                        to: data.to
+                        to: data.to,
+                        chainID:chainId,
+                        market:"",
+                        orderID:""
                     }));
 
                     dataToUse = marketData.length > 5 ? marketData.splice(0, 5) : marketData;
@@ -185,6 +191,7 @@ const useMarketHistory = (socket:any) => {
                                     transactionHash: data.transactionHash,
                                     error: data.errorArray,
                                     status: data.status,
+                                    orderID:data.orderID,
                                     currentToPrice: data.typeOfTransaction === "Set Price" ? data.currentToPrice : data.percentageChange,
                                     chainID:data.chainID ,
                                     pathSymbol:data.pathSymbol,
@@ -221,6 +228,7 @@ const useMarketHistory = (socket:any) => {
                             name: data.name,
                             frequency: data.frequency,
                             id: data.id,
+                            orderID:data.orderID,
                             transactionHash: data.transactionHash,
                             error: data.error,
                             status: data.status,
@@ -253,7 +261,8 @@ const useMarketHistory = (socket:any) => {
                         currentToPrice: data.currentToPrice,
                         chainID:data.chainID,
                         pathSymbol:data.pathSymbol,
-                        market:data.market 
+                        market:data.market,
+                        orderID:data.orderID,
                     }));
 
                     setMarketHistoryData(marketHistory);

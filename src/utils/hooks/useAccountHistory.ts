@@ -66,6 +66,7 @@ interface DataIncoming {
     status: number,
     currentToPrice?: string,
     chainID?:string,
+    orderID?:string,
     initialFromPrice?:string,
     initialToPrice?:string,
     situation?:string,
@@ -100,7 +101,7 @@ const useAccountHistory = (socket:any) => {
     const [historyData, setHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")//
+    const [URL, setURL] = useState("http://localhost:7000")//
     const dispatch =useDispatch()
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const tokenList = async (addressName: string) => {
@@ -195,7 +196,9 @@ const useAccountHistory = (socket:any) => {
                         // name: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).name,
                         transactionHash: items.hash,
                         status: 10,
-                        chainID:items.chainID 
+                        chainID:items.chainID ,
+                        market:"",
+                        orderID:"",
                     }));
 
                 const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(0, 5) : dataFiltered;
@@ -222,7 +225,9 @@ const useAccountHistory = (socket:any) => {
                     error: [],
                     status: "10",
                     situation:"",
-                    chainID:chainId
+                    chainID:chainId,
+                    market:"",
+                    orderID:"",
                 }));
             } else if ( location.includes("auto-period") || location.includes("set-price")) {
                 const { transaction, database } = await getTransactionFromDatabase(account)
@@ -261,6 +266,7 @@ const useAccountHistory = (socket:any) => {
                             status: data.status,
                             currentToPrice: data.typeOfTransaction === "Set Price" ? data.currentToPrice : data.percentageChange,
                             chainID:data.chainID ,
+                            orderID:data.orderID ,
                             initialFromPrice:data.initialFromPrice,
                             initialToPrice:data.initialToPrice,
                             situation:data.situation,
@@ -303,7 +309,8 @@ const useAccountHistory = (socket:any) => {
                     initialToPrice:data.initialToPrice,
                     situation:data.situation,
                     pathSymbol:data.pathSymbol,
-                    market:data.market                       
+                    market:data.market,
+                    orderID:data.orderID,                      
                 })),
             );
             const userSwapHistory = swapDataForWallet.map((data: any) => ({
@@ -330,8 +337,8 @@ const useAccountHistory = (socket:any) => {
                 initialToPrice:data.initialToPrice,
                 situation:data.situation,
                 pathSymbol:data.pathSymbol,
-                market:data.market
-          
+                market:data.market,
+                orderID:data.orderID,
             }));
             setHistoryData(userSwapHistory);
 

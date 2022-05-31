@@ -26,16 +26,17 @@ export interface DataType {
   error: [String],
   status: number | string,
   currentToPrice?: string,
-  chainID?: string,
+  chainID: string,
   initialFromPrice?:string,
   initialToPrice?:string,
   rate?:string,
   situation?:string,
   pathSymbol?:string,
-  market?:string
+  market:string
+  orderID:string
 }
 
-const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: any }) => {
+const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: (data: DataType,value:number,type:string)=>void }) => {
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
   const nonActiveTabColor = useColorModeValue('#666666', '#4A739B');
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
@@ -240,7 +241,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
               border={`1px solid ${data.status===2 ?pendingColor : successColor}`}
               border-radius="6px" backgroundColor="transparent" 
               mt="2" 
-              onClick={() => deleteData(data,2)} 
+              onClick={() => deleteData(data,2,"pause")} 
               >
               {data.status===2 ? "Pause" : "Resume"}
             </Button> : <></>}
@@ -281,7 +282,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
             </Flex> : (data.status===2 || data.status===3) &&  
             <Flex justifyContent="right">
               <Box>
-             <Text fontSize="14px" textDecoration="underline" cursor="pointer" color="red.300" onClick={() => deleteData(data,1)}>
+             <Text fontSize="14px" textDecoration="underline" cursor="pointer" color="red.300" onClick={() => deleteData(data,1,"delete")}>
               Delete
             </Text>
           </Box>

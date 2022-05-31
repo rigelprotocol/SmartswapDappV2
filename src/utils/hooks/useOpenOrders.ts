@@ -37,7 +37,7 @@ const useOpenOrders = (socket:any) => {
     const [openOrderData, setopenOrderData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")
+    const [URL, setURL] = useState("http://localhost:7000")
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const refreshPage = useSelector((state: RootState) => state.transactions.refresh);
     const location = useLocation().pathname;
@@ -134,7 +134,8 @@ const useOpenOrders = (socket:any) => {
                                 situation:data.situation,
                                 _id:data._id,
                                 pathSymbol:data.pathSymbol,
-                                market:data.market
+                                market:data.market,
+                                orderID:data.orderID,
                             }
                         })
                         )
@@ -171,9 +172,11 @@ const useOpenOrders = (socket:any) => {
                         initialToPrice:data.initialToPrice,
                         _id:data._id,
                         pathSymbol:data.pathSymbol,
-                        market:data.market
+                        market:data.market,
+                        orderID:data.orderID,
                     })),
                 );
+                console.log({marketSwap})
                     const marketHistory = marketSwap.map((data) => ({
                         token1Icon:data.tokenIn &&
                             getTokenSymbol(data.tokenIn.symbol),
@@ -200,6 +203,7 @@ const useOpenOrders = (socket:any) => {
                         _id:data._id,
                         pathSymbol:data.pathSymbol,
                         market:data.market,
+                        orderID:data.orderID,
                     }));
                     setopenOrderData(marketHistory);
                     setloadOpenOrders(false);
