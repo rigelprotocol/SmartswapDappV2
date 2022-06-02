@@ -459,12 +459,10 @@ const SetPrice = () => {
       )
       const fetchTransactionData = async (sendTransaction: any) => {
         const { confirmations, status, logs } = await sendTransaction.wait(1);
-        alert(2)
         return { confirmations, status, logs };
       };
       const { confirmations, status, logs } = await fetchTransactionData(data)
       if (confirmations >= 1 && status) {
-        alert("yes")
         response = true
       }
     } else {
