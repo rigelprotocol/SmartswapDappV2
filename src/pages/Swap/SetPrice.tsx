@@ -82,7 +82,7 @@ const SetPrice = () => {
     oppositeAmount
   } = useDerivedSwapInfo();
 
-  const [URL, setURL] = useState("http://localhost:7000")//http://localhost:7000
+  const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//https://autoswap-server.herokuapp.com
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [disableInput, setDisableInput] = useState(true)
   const [initialFromPrice, setInitialFromPrice] = useState("")
@@ -288,8 +288,9 @@ const SetPrice = () => {
     let minutesToAdd = 20;
     let currentDate = new Date();
     let futureDate = currentDate.getTime() + minutesToAdd;
-    let data, response
+    let data, response,quantity
     if (currencies[Field.INPUT]?.isNative) {
+      quantity = typedValue && parseFloat(typedValue) * parseInt(totalNumberOfTransaction)
       data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
 
         currencies[Field.OUTPUT]?.wrapped.address,
@@ -298,7 +299,7 @@ const SetPrice = () => {
         // signedTransaction?.r,
         // signedTransaction?.s,
         // signedTransaction?.v,
-        { value: Web3.utils.toWei(typedValue, 'ether') }
+        { value: Web3.utils.toWei(quantity.toString(), 'ether') }
       )
       const fetchTransactionData = async (sendTransaction: any) => {
         const { confirmations, status, logs } = await sendTransaction.wait(1);
@@ -311,6 +312,7 @@ const SetPrice = () => {
       }
     } else {
       response = true
+      quantity= typedValue
     }
 
 
@@ -346,7 +348,7 @@ const SetPrice = () => {
           percentageChange:"",
           fromNumberOfDecimals: currencies[Field.INPUT]?.isNative ? 18 : currencies[Field.INPUT]?.wrapped.decimals,
           toNumberOfDecimals: currencies[Field.OUTPUT]?.isNative ? 18 : currencies[Field.OUTPUT]?.wrapped.decimals,
-          fromPrice: typedValue,
+          fromPrice: quantity,
           currentToPrice: formattedAmounts[Field.OUTPUT],
           orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1,
           type: "Set Price",

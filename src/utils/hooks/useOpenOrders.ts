@@ -37,7 +37,7 @@ const useOpenOrders = (socket:any) => {
     const [openOrderData, setopenOrderData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("http://localhost:7000")
+    const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const refreshPage = useSelector((state: RootState) => state.transactions.refresh);
     const location = useLocation().pathname;
@@ -114,6 +114,7 @@ const useOpenOrders = (socket:any) => {
                         }
                         const result = data.filter((item:any)=>item.errorArray.length===0 && item.transactionHash === "" && parseInt(item.chainID) === chainId)
                         dataToUse = await Promise.all(result.map(async (data: any) => {
+                            console.log(data.swapFromToken,data.amountToSwap,data.totalNumberOfTransaction,data.orderID)
                             return {
                                 inputAmount: data.amountToSwap,
                                 outputAmount: data.userExpectedPrice,
@@ -136,6 +137,7 @@ const useOpenOrders = (socket:any) => {
                                 pathSymbol:data.pathSymbol,
                                 market:data.market,
                                 orderID:data.orderID,
+                                totalTransaction:data.totalNumberOfTransaction
                             }
                         })
                         )
@@ -174,6 +176,7 @@ const useOpenOrders = (socket:any) => {
                         pathSymbol:data.pathSymbol,
                         market:data.market,
                         orderID:data.orderID,
+                        totalTransaction:data.totalTransaction
                     })),
                 );
                 console.log({marketSwap})
@@ -184,7 +187,7 @@ const useOpenOrders = (socket:any) => {
                             data.tokenOut && getTokenSymbol(data.tokenOut.symbol),
                         token1: data.tokenIn,
                         token2: data.tokenOut,
-                        amountIn: data.tokenIn && formatAmount(data.amountIn, data.tokenIn.decimals),
+                        amountIn: data.tokenIn &&  data.tokenIn?.name === SupportedChainName[data.chainID as number]  ? parseFloat(formatAmount(data.amountIn, data.tokenIn.decimals)) / data.totalTransaction : data.tokenIn &&  formatAmount(data.amountIn, data.tokenIn.decimals),
                         amountOut:  parseFloat(data.amountOut).toFixed(4),
         
                         time: data.time,

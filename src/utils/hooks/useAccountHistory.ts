@@ -71,7 +71,8 @@ interface DataIncoming {
     initialToPrice?:string,
     situation?:string,
     pathSymbol?:string,
-    market?:string
+    market?:string,
+    totalTransaction?:string
 }
 let web3 = new Web3(Web3.givenProvider);
 export const formatAmount = (number: string, decimals: any) => {
@@ -101,7 +102,7 @@ const useAccountHistory = (socket:any) => {
     const [historyData, setHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("http://localhost:7000")//
+    const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//
     const dispatch =useDispatch()
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const tokenList = async (addressName: string) => {
@@ -271,7 +272,8 @@ const useAccountHistory = (socket:any) => {
                             initialToPrice:data.initialToPrice,
                             situation:data.situation,
                             pathSymbol:data.pathSymbol,
-                            market:data.market
+                            market:data.market,
+                            totalTransaction:data.totalNumberOfTransaction
                         }
                     })
                     )
@@ -310,7 +312,8 @@ const useAccountHistory = (socket:any) => {
                     situation:data.situation,
                     pathSymbol:data.pathSymbol,
                     market:data.market,
-                    orderID:data.orderID,                      
+                    orderID:data.orderID,  
+                    totalTransaction:data.totalTransaction                    
                 })),
             );
             const userSwapHistory = swapDataForWallet.map((data: any) => ({
@@ -320,7 +323,7 @@ const useAccountHistory = (socket:any) => {
                     getTokenSymbol(data.tokenOut.symbol),
                 token1: data.tokenIn,
                 token2: data.tokenOut,
-                amountIn: formatAmount(data.amountIn, data.tokenIn.decimals),
+                amountIn: data.tokenIn?.name === SupportedChainName[data.chainID as number] ? parseFloat(formatAmount(data.amountIn, data.tokenIn.decimals))/ data.totalTransaction : formatAmount(data.amountIn, data.tokenIn.decimals)  ,
                 amountOut:  data.name==="Set Price" || data.name==="Auto Time" ? data.amountOut : 
                 formatAmount(data.amountOut, data.tokenOut.decimals),
 
@@ -340,6 +343,7 @@ const useAccountHistory = (socket:any) => {
                 market:data.market,
                 orderID:data.orderID,
             }));
+            console.log({userSwapHistory})
             setHistoryData(userSwapHistory);
 
             setLoading(false);

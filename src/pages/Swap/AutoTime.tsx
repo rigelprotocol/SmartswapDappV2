@@ -144,7 +144,7 @@ const SetPrice = () => {
   }
   useEffect(() => {
     async function checkIfSignatureExists() {
-      let user = await fetch(`http://localhost:7000/auto/data/${account}`)//http://localhost:7000
+      let user = await fetch(`https://autoswap-server.herokuapp.com/auto/data/${account}`)//https://autoswap-server.herokuapp.com
       let data = await user.json()
       if (data) {
         setDataSignature(data.dataSignature)
@@ -310,7 +310,7 @@ const SetPrice = () => {
     }else{
       setApprovalForFee("RGP")
     }
-    if(parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT])+parseFloat(fee))){
+    if(parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT])+parseFloat(fee)) || currencies[Field.INPUT]?.isNative ){
       setHasBeenApproved(true)
       approvalArray=[]
       // setApprovalForFee("")
@@ -329,7 +329,7 @@ const SetPrice = () => {
       approvalArray.push(currencies[Field.INPUT]?.wrapped?.symbol)
       setApprovalForToken(currencies[Field.INPUT]?.wrapped?.symbol ?? "")
     }
-   
+   console.log({approvalArray})
     setApproval(Array.from(new Set(approvalArray)))
     
   }
@@ -382,6 +382,7 @@ const SetPrice = () => {
           const token = await getERC20Token(address, library);
 
           const walletBal = (await token.balanceOf(account));
+          console.log(MARKETAUTOSWAPADDRESSES[marketType][chainId as number],walletBal,walletBal.toString())
           const approveTransaction = await rgp.approve(
             MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
             walletBal,
@@ -445,10 +446,12 @@ const SetPrice = () => {
     );
     let currentDate = new Date();
     let futureDate = currentDate.getTime() + deadline;
-    let data, response
-    if (currencies[Field.INPUT]?.isNative) {
-      let quantity = typedValue && parseFloat(typedValue) * parseInt(totalNumberOfTransaction)
+    let data, response,quantity
+    try{
+       if (currencies[Field.INPUT]?.isNative) {
+     quantity = typedValue && parseFloat(typedValue) * parseInt(totalNumberOfTransaction)
       console.log({typedValue},quantity)
+      
       data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
         pathArray,
         futureDate,
@@ -456,16 +459,25 @@ const SetPrice = () => {
       )
       const fetchTransactionData = async (sendTransaction: any) => {
         const { confirmations, status, logs } = await sendTransaction.wait(1);
-
+        alert(2)
         return { confirmations, status, logs };
       };
       const { confirmations, status, logs } = await fetchTransactionData(data)
       if (confirmations >= 1 && status) {
+        alert("yes")
         response = true
       }
     } else {
       response = true
-
+      quantity = typedValue
+    }
+    }catch(e){
+      dispatch(
+      setOpenModal({
+        message: "Signing initial transaction",
+        trxState: TrxState.TransactionFailed,
+      })
+    );
     }
     let orderID = await autoSwapV2Contract.orderCount()
     if (response) {
@@ -476,7 +488,7 @@ const SetPrice = () => {
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)//
-      const response = await fetch(`http://localhost:7000/auto/add`, {
+      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/add`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -498,7 +510,7 @@ const SetPrice = () => {
           percentageChange,
           fromNumberOfDecimals: currencies[Field.INPUT]?.isNative ? 18 : currencies[Field.INPUT]?.wrapped.decimals,
           toNumberOfDecimals: currencies[Field.OUTPUT]?.isNative ? 18 : currencies[Field.OUTPUT]?.wrapped.decimals,
-          fromPrice: typedValue,
+          fromPrice: `${quantity}`,
           currentToPrice: formattedAmounts[Field.OUTPUT],
           orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1,
           type: "Auto Time",
@@ -512,7 +524,8 @@ const SetPrice = () => {
           market:marketType
         })
       })
-      await response.json()
+      let res =await response.json()
+      console.log({res})
       dispatch(
         setOpenModal({
           message: "Successfully stored Transaction",
@@ -529,6 +542,12 @@ const SetPrice = () => {
     }
   }catch(e){
     GFailedTransaction("auto_period","storing transaction to database","error",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
+    dispatch(
+      setOpenModal({
+        message: "Storing Transaction failed",
+        trxState: TrxState.TransactionFailed,
+      })
+    );
   }
 
   }

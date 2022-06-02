@@ -35,7 +35,7 @@ const History = () => {
 
   useEffect(
     () => {
-  setSocket(io("http://localhost:7000"));//http://localhost:7000
+  setSocket(io("https://autoswap-server.herokuapp.com"));//https://autoswap-server.herokuapp.com
   
     },
     []
@@ -48,7 +48,7 @@ const History = () => {
   const [showMarketHistory, setShowMarketHistory] = useState(false);
   const [notification, setNotification] = useState(0);
   const [address, setAddress] = useState("");
-  const [URL, setURL] = useState("http://localhost:7000")//http://localhost:7000
+  const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//https://autoswap-server.herokuapp.com
   const [showOrder, setShowOrder] = useState(false);
   const [type, setType] = useState("");
 
@@ -86,18 +86,33 @@ const History = () => {
  
   const deleteDataFromDatabase = async () => {
     // if (data && data.name === "Auto Time") {
+      console.log({typeOfModal})
       if(data && typeOfModal===1){
-         setOpenModal({
-        message: "Deleting Order...",
-        trxState: TrxState.WaitingForConfirmation,
-      })
+        dispatch(
+          setOpenModal({
+            message: "Deleting Order...",
+            trxState: TrxState.WaitingForConfirmation,
+          })
+        );
+        let response;
       if(data.token1.symbol ===SupportedChainSymbols[data.chainID]){
-        console.log("ieoioeooe")
-        const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[data.market][chainId as number], library);
-        await autoSwapV2Contract.cancelOrder(data.orderID)
-        console.log({autoSwapV2Contract})
-        console.log(Web3.utils.toWei(`${data.orderID}`,"ether"))
        
+        const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[data.market][chainId as number], library);
+        console.log({data})
+        console.log(data.orderID)
+       const res= await autoSwapV2Contract.cancelOrder(data.orderID)
+        const fetchTransactionData = async (sendTransaction: any) => {
+          const { confirmations, status, logs } = await sendTransaction.wait(1);
+  
+          return { confirmations, status, logs };
+        };
+        const { confirmations, status, logs } = await fetchTransactionData(res)
+        if (confirmations >= 1 && status) {
+          response = true
+        }
+       
+      }else{
+        response = true
       }
       const result = await fetch(`${URL}/auto/data/${data._id}/${data.id}`, { method: 'DELETE' })
       const res = await result.json()

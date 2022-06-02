@@ -38,7 +38,7 @@ const useMarketHistory = (socket:any) => {
     const [marketHistoryData, setMarketHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("http://localhost:7000")//
+    const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
 
     const api = APIENDPOINT[chainId as number];
@@ -166,17 +166,15 @@ const useMarketHistory = (socket:any) => {
                         let result = []
                         if (locationData === "auto") {
                             let data = transaction.filter((data: any) => data.typeOfTransaction === "Auto Time")
+                            .sort((a: any, b: any) => b.time - a.time)
                             result = data.filter((item:any)=>item.status===1 && parseInt(item.chainID) === chainId)
                         }else if (locationData === "price") {
                             let data = transaction.filter((data: any) => data.typeOfTransaction === "Set Price")
-                            // .sort((a: any, b: any) => new Date(b.time * 1000) - new Date(a.time * 1000))
+                            .sort((a: any, b: any) => b.time - a.time)
                             result = data.filter((item:any)=>item.status===1 && parseInt(item.chainID) === chainId)
                         }
                         dataToUse = await Promise.all(result.map(async (data: any) => {
                             // try{
-                                let fromAddress = data.swapFromToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapFromToken
-                                let toAddress = data.swapToToken === "native" ? WNATIVEADDRESSES[chainId as number] : data.swapToToken
-                                const rout = await SmartSwapRouter(SMARTSWAPROUTER[chainId as number], library);
                                 
     
                                 let dataBase = {
@@ -195,7 +193,8 @@ const useMarketHistory = (socket:any) => {
                                     currentToPrice: data.typeOfTransaction === "Set Price" ? data.currentToPrice : data.percentageChange,
                                     chainID:data.chainID ,
                                     pathSymbol:data.pathSymbol,
-                                    market:data.market
+                                    market:data.market,
+                                    totalTransaction:data.totalNumberOfTransaction
                                     
                                 }
                                 return dataBase
@@ -235,7 +234,8 @@ const useMarketHistory = (socket:any) => {
                             currentToPrice: data.currentToPrice,
                             chainID:data.chainID,
                             pathSymbol:data.pathSymbol,
-                            market:data.market
+                            market:data.market,
+                            totalTransaction:data.totalTransaction
                         }
                         return item
                         
@@ -248,7 +248,7 @@ const useMarketHistory = (socket:any) => {
                             getTokenSymbol(data.tokenOut.symbol),
                         token1: data.tokenIn,
                         token2: data.tokenOut,
-                        amountIn: formatAmount(data.amountIn, data.tokenIn.decimals),
+                        amountIn: data.tokenIn.name === SupportedChainName[data.chainID as number] ? parseInt(formatAmount(data.amountIn, data.tokenIn.decimals)) /data.totalTransaction  : formatAmount(data.amountIn, data.tokenIn.decimals),
                         amountOut: data.name ==="Set Price" || data.name==="Auto Time" ? parseFloat(data.amountOut).toFixed(4) : formatAmount(data.amountOut, data.tokenOut.decimals),
         
                         time: data.time,
