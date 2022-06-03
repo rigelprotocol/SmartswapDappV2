@@ -67,7 +67,8 @@ const SetPrice = () => {
   const borderColor = useColorModeValue('#DEE6ED', '#324D68');
   const iconColor = useColorModeValue('#666666', '#DCE6EF');
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
-  const buttonBgcolor = useColorModeValue('#F2F5F8', '#213345');
+  const routerBgcolor = useColorModeValue('#F2F5F8', '#213345');
+  const buttonBgcolor = useColorModeValue("#319EF6", "#4CAFFF");
   const color = useColorModeValue('#999999', '#7599BD');
   const switchBgcolor = useColorModeValue("#F2F5F8", "#213345");
   const lightmode = useColorModeValue(true, false);
@@ -82,7 +83,6 @@ const SetPrice = () => {
   const [selectedFrequency, setSelectedFrequency] = useState("5")
   const [marketType, setMarketType] = useState("Smartswap")
   const [percentageChange, setPercentageChange] = useState<string>("0")
-  const [approval, setApproval] = useState<string[]>([])
   const [approvalForFee, setApprovalForFee] = useState("")
   const [fee, setFee] = useState("")
   const [approvalForToken, setApprovalForToken] = useState("")
@@ -130,14 +130,6 @@ const SetPrice = () => {
    checkIfMarketExists(market,chainId)
 
  },[location,chainId])
-  useEffect(() => {
-    async function runCheck() {
-      if (account && currencies[Field.INPUT]) {
-        await checkForApproval()
-      }
-    }
-    runCheck()
-  }, [currencies[Field.INPUT],typedValue, account])
 
   const switchMarket = (market:string)=>{
     routerHistory.push(`/auto-period/${market}`)
@@ -160,6 +152,7 @@ const SetPrice = () => {
       }
     }
     if (account) {
+      console.log(3434)
       checkIfSignatureExists()
       getFee()
     }
@@ -237,6 +230,15 @@ const SetPrice = () => {
     
    await checkBalance()
   }, [balance, formattedAmounts[Field.INPUT]]);
+  useEffect(() => {
+    async function runCheck() {
+      if (!inputError) {
+        await checkForApproval()
+      }
+    }
+    runCheck()
+  }, [inputError, formattedAmounts[Field.INPUT], currencies[Field.INPUT]])
+
   useMemo(() => {
     if(parseFloat(percentageChange) >0 && formattedAmounts[Field.OUTPUT]){
         const actualRecievedAmount = (parseFloat(percentageChange) / 100) * parseFloat(formattedAmounts[Field.OUTPUT]) + parseFloat(formattedAmounts[Field.OUTPUT])
@@ -300,11 +302,9 @@ const SetPrice = () => {
     const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
     const amountToApprove = await autoSwapV2Contract.fee()
     const fee = ethers.utils.formatUnits(amountToApprove.toString(), 18)
-  
-    let approvalArray:any=[]
+    console.log({fee,RGPBalance,tokenBalance})
     if (parseFloat(RGPBalance) >= parseFloat(fee)) {
       setHasBeenApproved(true)
-      approvalArray=[]
       setApprovalForFee("")
       // setApprovalForToken("")
     }else{
@@ -312,7 +312,6 @@ const SetPrice = () => {
     }
     if(parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT])+parseFloat(fee)) || currencies[Field.INPUT]?.isNative ){
       setHasBeenApproved(true)
-      approvalArray=[]
       // setApprovalForFee("")
       setApprovalForToken("")
     } else{
@@ -320,18 +319,15 @@ const SetPrice = () => {
     }
     if (parseFloat(RGPBalance) < parseFloat(fee) || (parseFloat(tokenBalance) < Number(formattedAmounts[Field.INPUT]) && (!currencies[Field.INPUT]?.isNative && currencies[Field.INPUT]?.wrapped?.symbol === "RGP" ))) {
       setHasBeenApproved(false)
-      approvalArray.push("RGP")
       setApprovalForFee("RGP")
       setApprovalForToken("RGP")
     }
     if (parseFloat(tokenBalance) < Number(formattedAmounts[Field.INPUT]) && (!currencies[Field.INPUT]?.isNative &&currencies[Field.INPUT]?.wrapped.symbol !== "RGP")) {
       setHasBeenApproved(false)
-      approvalArray.push(currencies[Field.INPUT]?.wrapped?.symbol)
+     
       setApprovalForToken(currencies[Field.INPUT]?.wrapped?.symbol ?? "")
     }
-   console.log({approvalArray})
-    setApproval(Array.from(new Set(approvalArray)))
-    
+   console.log("ieeoeo") 
   }
 
   const signTransaction = async () => {
@@ -361,6 +357,7 @@ const SetPrice = () => {
   }
 
   const approveOneOrTwoTokens = async (tokenApprovingFor:string) => {
+    console.log({tokenApprovingFor})
     if (currencies[Field.INPUT]?.isNative) {
       setHasBeenApproved(true);
       setApproval(approval.filter(t => t !== currencies[Field.INPUT]?.name))
@@ -533,12 +530,12 @@ const SetPrice = () => {
       GSuccessfullyTransaction("auto_period","storing transaction to the database",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
       dispatch(refreshTransactionTab({ refresh:Math.random() }))
       onUserInput(Field.INPUT, "");
-      setApproval([])
       setSignatureFromDataBase(true)
       setCheckedItem(false)
       setShowNewChangesText(false);
     }
   }catch(e){
+    console.log({e})
     GFailedTransaction("auto_period","storing transaction to database","error",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
     dispatch(
       setOpenModal({
@@ -639,7 +636,7 @@ const SetPrice = () => {
                     display={true}
                   />
                 </Box>
-                <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={buttonBgcolor}>
+                <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={routerBgcolor}>
                   <Flex>
                   <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
 
@@ -774,10 +771,9 @@ const SetPrice = () => {
                   </Box>
           
                 </VStack>
-                <Box mt={10}>
-                  <Text fontSize="16px">Fee: <span style={{color:borderColor}}>{fee} RGP</span></Text>
-                  <Text></Text>
-                </Box>
+                <Flex mt={10} justifyContent="space-between">
+                  <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{fee} RGP</Text>
+                </Flex>
                 <VStack>
                   <Flex>
                     <Text fontSize="14px" mr={2}>
@@ -826,7 +822,7 @@ const SetPrice = () => {
                     }}
                     h="48px"
                     p="5px"
-                    color={color}
+                    color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
@@ -841,7 +837,7 @@ const SetPrice = () => {
                     h="48px"
                     p="5px"
                     onClick={()=>approveOneOrTwoTokens(approvalForToken)}
-                    color={color}
+                    color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
@@ -856,7 +852,7 @@ const SetPrice = () => {
                     h="48px"
                     p="5px"
                     onClick={()=>approveOneOrTwoTokens(approvalForFee)}
-                    color={color}
+                    color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
@@ -870,7 +866,7 @@ const SetPrice = () => {
                     borderColor={borderColor}
                     h="48px"
                     p="5px"
-                    color={color}
+                    color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     onClick={()=>
                       {
@@ -937,7 +933,7 @@ const SetPrice = () => {
                 </Box>
 
               
-                <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={buttonBgcolor}>
+                <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={routerBgcolor}>
                   <Flex>
                   <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
 
@@ -1067,9 +1063,9 @@ const SetPrice = () => {
                   </Box>
           
                 </VStack>
-                <Box mt={10}>
-                  <Text fontSize="16px">Fee: <span style={{color:borderColor}}>{fee} RGP</span></Text>
-                </Box>
+                <Flex mt={10} justifyContent="space-between">
+                  <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{fee} RGP</Text>
+                </Flex>
                 <VStack>
                   <Flex>
                     <Text fontSize="14px" mr={2}>
@@ -1118,7 +1114,7 @@ const SetPrice = () => {
                     }}
                     h="48px"
                     p="5px"
-                    color={color}
+                    color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
@@ -1133,7 +1129,7 @@ const SetPrice = () => {
                     h="48px"
                     p="5px"
                     onClick={()=>approveOneOrTwoTokens(approvalForToken)}
-                    color={color}
+                   color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
@@ -1148,7 +1144,7 @@ const SetPrice = () => {
                     h="48px"
                     p="5px"
                     onClick={()=>approveOneOrTwoTokens(approvalForFee)}
-                    color={color}
+                   color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
@@ -1162,7 +1158,7 @@ const SetPrice = () => {
                     borderColor={borderColor}
                     h="48px"
                     p="5px"
-                    color={color}
+                    color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     onClick={()=>
                       {

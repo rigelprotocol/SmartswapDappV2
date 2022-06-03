@@ -60,7 +60,8 @@ const SetPrice = () => {
   const iconColor = useColorModeValue('#666666', '#DCE6EF');
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
   const lightmode = useColorModeValue(true, false);
-  const buttonBgcolor = useColorModeValue('#F2F5F8', '#213345');
+  const routerBgcolor = useColorModeValue('#F2F5F8', '#213345');
+  const buttonBgcolor = useColorModeValue("#319EF6", "#4CAFFF");
   const switchBgcolor = useColorModeValue("#F2F5F8", "#213345");
   const dispatch = useDispatch();
   const color = useColorModeValue('#999999', '#7599BD');
@@ -674,9 +675,9 @@ const SetPrice = () => {
           {/* <Input placeholder="0.00" size="lg" borderRadius={4} borderColor={borderColor} /> */}
 
           <Flex justifyContent="space-between">
-          <Box>
-                  <Text fontSize="16px" mb={2}>Fee: <span style={{color:borderColor}}>{fee} RGP</span></Text>
-                </Box>
+          <Flex mt={10} justifyContent="space-between">
+                  <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{fee} RGP</Text>
+                </Flex>
             <SliderComponent 
           setSliderValue={setPositiveSliderValue}
           sliderValue={positiveSliderValue}
@@ -755,7 +756,7 @@ const SetPrice = () => {
                 onClick={() => setShowModal(!showModal)}
                 h="48px"
                 p="5px"
-                color={color}
+                color={inputError ? color : "#FFFFFF"}
                 bgColor={buttonBgcolor}
                 fontSize="18px"
                 boxShadow={lightmode ? 'base' : 'lg'}
@@ -770,7 +771,7 @@ const SetPrice = () => {
                     h="48px"
                     p="5px"
                     onClick={()=>approveOneOrTwoTokens(approvalForToken)}
-                    color={color}
+                    color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
@@ -785,7 +786,7 @@ const SetPrice = () => {
                     h="48px"
                     p="5px"
                     onClick={()=>approveOneOrTwoTokens(approvalForFee)}
-                    color={color}
+                    color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
@@ -799,7 +800,7 @@ const SetPrice = () => {
                 borderColor={borderColor}
                 h="48px"
                 p="5px"
-                color={color}
+                color={inputError ? color : "#FFFFFF"}
                 bgColor={buttonBgcolor}
                 onClick={() => signatureFromDataBase ? setShowModal(!showModal) : sendTransactionToDatabase()}
                 // onClick={sendTransactionToDatabase}

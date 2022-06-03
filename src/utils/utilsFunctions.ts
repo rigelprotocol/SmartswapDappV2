@@ -138,26 +138,23 @@ export const checkSideTab = (sideBarName: string): boolean => {
 };
 
 export const changeFrequencyTodays = (frequency: string): { today: number,interval:number,days:number} => {
-  let interval = 60*24 
+  let interval = 60 * 24
   let date = new Date()
   let today = (date.getTime() /(1000*60))
   let days = 1
   if (frequency === "daily") {
-    return {today,interval,days}
+    interval = 60*24 
   } else if (frequency === "weekly") {
     days= 7
     interval = days * 24 * 60
-    today=today+interval
-    return {today,interval,days}
+    today=today+1
   } else if (frequency === "monthly") {
     days =30
     // interval = days * 24 * 60
-    today=today+interval
-    return {today,interval,days}
+    today=today+1
   } else if (frequency === "30" || frequency === "5") {
     interval = parseInt(frequency)
-    // today=today+interval
-    return {today,interval,days}
+    today=today+1
   }
   return {today,interval,days}
 }
