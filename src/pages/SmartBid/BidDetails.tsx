@@ -8,7 +8,7 @@ import {
     useMediaQuery,
     UnorderedList,
     ListItem,
-    Spinner
+    Spinner, Icon
 } from '@chakra-ui/react';
 import BidHeader from "./Components/BidHeader";
 import BidTabs from "./Components/BidTabs";
@@ -23,6 +23,7 @@ import {RootState} from "../../state";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 import {getERC20Token} from "../../utils/utilsFunctions";
 import {getNftTokenID} from "../../state/nft/bidTest";
+import {RiErrorWarningLine} from "react-icons/all";
 
 const BidDetails = () => {
     const { chainId, library, account } = useActiveWeb3React();
@@ -146,10 +147,15 @@ const BidDetails = () => {
                 setBidLoadData(true);
                 const bidContract = await RigelSmartBid(SMARTBID1[chainId as number], library);
                 const data = await bidContract.request_token_info(viewId);
-                const {NFTContractAddress, firstURIRequireFromNFTs, secondURIRequireFromNFTs} = data;
+                const singleID = await bidContract.getSetURI(viewId);
+                const {NFTContractAddress} = data;
                 let x = 0;
 
-                const nftIDArray = [firstURIRequireFromNFTs, secondURIRequireFromNFTs];
+                let nftIDArray = [];
+
+                for (const item of singleID) {
+                    nftIDArray.push(item.toString())
+                }
 
                 const contents = await RigelNFTTwo(NFTContractAddress, library);
                 const name = await contents.name();
@@ -251,7 +257,7 @@ const BidDetails = () => {
                 setBidLoadData(false);
 
             } catch (e) {
-                console.log('Error on NFT Check Function');
+                console.log('Error on NFT Check Function', e);
                 setPlaceBid({address: '', id: 0});
                 setBidLoadData(false);
             }
@@ -273,6 +279,19 @@ const BidDetails = () => {
         getBidEvent();
     }, [stateChanged, account, chainId]);
 
+    useMemo(() => {
+        const getNFTInfo = async () => {
+            try {
+                await nftCheck();
+
+            } catch (e) {
+                console.log('Error on NFT Fetch Function')
+            }
+
+        };
+        getNFTInfo();
+    }, [account, chainId]);
+
 
 
     return (
@@ -287,7 +306,6 @@ const BidDetails = () => {
                         <UnorderedList fontWeight={500} fontSize={'16px'} lineHeight={'24px'} width={'80%'} my={3}>
                             <ListItem color={textColor} p={1}>Winner gets 30% of the Total Token raised</ListItem>
                             <ListItem color={textColor} p={1}>{addresses} random bidders will be selected at the end of the event to win 10% of Total Token raised.</ListItem>
-                            <ListItem color={textColor} p={1}>You need {tokenInfo.symbol} token to bid on this event.</ListItem>
                         </UnorderedList>
 
                         {exc && nftName ? <Text fontWeight={600} lineHeight={'32px'} fontSize={'18px'} color={'#CC334F'}>{nftName} owners only.</Text> : null}
@@ -307,51 +325,57 @@ const BidDetails = () => {
                             />
                         </Box>
                         :
-                        <Box border={'1px solid #DEE6ED'}
-                             borderRadius={'20px'}
-                             width={'100%'}
-                             padding={'30px'}
-                             boxShadow={'0px 6px 8px -6px rgba(24, 39, 75, 0.12), 0px 8px 16px -6px rgba(24, 39, 75, 0.08)'}
-                        >
-                            <Text textAlign={'center'} my={2}>{time > 0 ? `Event ending in` : `Event has ended`}</Text>
-                            <Flex width={'100%'} my={3} justifyContent={'center'}>
-                                <Box px={1} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-                                    <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont}>{currentClock.days}</Text>
-                                    <Text fontWeight={600} fontStyle={'normal'} fontSize={smallFont} color={'#999999'} my={'8px'}>Days</Text>
+                            <Box>
+                                <Flex alignItems={'center'} bg={'#FEFEF6'} border={'1px solid #B18D14'} borderRadius={'4px'} padding={'10px'} my={'20px'}>
+                                    <Icon as={RiErrorWarningLine} w={5} h={5} color={'#b18d14'} mr={2}/>
+                                    <Text color={'#B18D14'} fontSize={'14px'}>You need {tokenInfo.symbol} token to bid on this event.</Text>
+                                </Flex>
+                                <Box border={'1px solid #DEE6ED'}
+                                     borderRadius={'20px'}
+                                     width={'100%'}
+                                     padding={'30px'}
+                                     boxShadow={'0px 6px 8px -6px rgba(24, 39, 75, 0.12), 0px 8px 16px -6px rgba(24, 39, 75, 0.08)'}
+                                >
+                                    <Text textAlign={'center'} my={2}>{time > 0 ? `Event ending in` : `Event has ended`}</Text>
+                                    <Flex width={'100%'} my={3} justifyContent={'center'}>
+                                        <Box px={1} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+                                            <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont}>{currentClock.days}</Text>
+                                            <Text fontWeight={600} fontStyle={'normal'} fontSize={smallFont} color={'#999999'} my={'8px'}>Days</Text>
+                                        </Box>
+
+                                        <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont} mx={3}>:</Text>
+
+                                        <Box px={1} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+                                            <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont}>{currentClock.hours}</Text>
+                                            <Text fontWeight={600} fontStyle={'normal'} fontSize={smallFont} color={'#999999'} my={'8px'}>Hours</Text>
+                                        </Box>
+
+                                        <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont} mx={3}>:</Text>
+
+                                        <Box px={1} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+                                            <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont}>{currentClock.minutes}</Text>
+                                            <Text fontWeight={600} fontStyle={'normal'} fontSize={smallFont} color={'#999999'} my={'8px'}>Minutes</Text>
+                                        </Box>
+
+                                        <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont} mx={3}>:</Text>
+
+                                        <Box px={1} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+                                            <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont}>{currentClock.seconds}</Text>
+                                            <Text fontWeight={600} fontStyle={'normal'} fontSize={smallFont} color={'#999999'} my={'8px'}>Seconds</Text>
+                                        </Box>
+                                    </Flex>
+                                    <Box marginY={3} border={'.5px solid #DEE6ED'}/>
+                                    <Button my={3} width={'100%'}
+                                            variant={'brand'}
+                                            disabled={time < 0}
+                                            justifyContent={'center'}
+                                            onClick={() => setBidModal(true)}
+                                    >
+                                        {time > 0 ? 'Place Bid' : 'Event ended'}
+                                    </Button>
+
                                 </Box>
-
-                                <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont} mx={3}>:</Text>
-
-                                <Box px={1} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-                                    <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont}>{currentClock.hours}</Text>
-                                    <Text fontWeight={600} fontStyle={'normal'} fontSize={smallFont} color={'#999999'} my={'8px'}>Hours</Text>
-                                </Box>
-
-                                <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont} mx={3}>:</Text>
-
-                                <Box px={1} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-                                    <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont}>{currentClock.minutes}</Text>
-                                    <Text fontWeight={600} fontStyle={'normal'} fontSize={smallFont} color={'#999999'} my={'8px'}>Minutes</Text>
-                                </Box>
-
-                                <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont} mx={3}>:</Text>
-
-                                <Box px={1} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-                                    <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont}>{currentClock.seconds}</Text>
-                                    <Text fontWeight={600} fontStyle={'normal'} fontSize={smallFont} color={'#999999'} my={'8px'}>Seconds</Text>
-                                </Box>
-                            </Flex>
-                            <Box marginY={3} border={'.5px solid #DEE6ED'}/>
-                              <Button my={3} width={'100%'}
-                                      variant={'brand'}
-                                      disabled={time < 0}
-                                      justifyContent={'center'}
-                                      onClick={() => setBidModal(true)}
-                              >
-                                  {time > 0 ? 'Place Bid' : 'Event ended'}
-                              </Button>
-
-                        </Box>
+                            </Box>
                         }
                     </Flex>
                 </Box>

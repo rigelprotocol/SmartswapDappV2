@@ -61,7 +61,7 @@ export const SMARTBID1: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
   "56": "0x",
-  "97": "0x38cD7153EA305da21c6aF28D138b841bf34D87db",
+  "97": "0x96C65EFeEDb7a7dDa8A8e2630BD5e07534ED294B",
   "137": "0x",
   "80001": "0x"
 };
@@ -70,7 +70,7 @@ export const SMARTBID2: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
   "56": "0x",
-  "97": "0x97364B12C559c999Ab14e0a0078A11F3fcD498B8",
+  "97": "0x95FBD127A6B735922ff2B2A967526c625f2622b9",
   "137": "0x",
   "80001": "0x"
 };

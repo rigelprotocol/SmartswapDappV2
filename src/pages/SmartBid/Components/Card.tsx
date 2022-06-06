@@ -36,6 +36,7 @@ const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDe
 
 
     const [currentClock, setCurrentClock] = useState('');
+    const [timeDistance, setTimeDistance] = useState(1);
     const [isMobileDevice] = useMediaQuery("(max-width: 767px)");
 
     useEffect(() => {
@@ -46,6 +47,7 @@ const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDe
 
             const bidDeadline = new Date(bidDate).getTime();
             const distance =  bidDeadline - now;
+            setTimeDistance(distance);
 
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
@@ -68,70 +70,74 @@ const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDe
 
     return (
         <Link to={{
-            pathname: `/smartbid/${id}/${exclusive}`,
-            state: data
-        }}>
-            <Box
-                height={'300px'}
-                width={'305px'}
-                my={4}
-                mx={'auto'}
-                borderRadius={'30px'}
-                background={bgColor}
-                transition={'transform .2s'}
-                _hover={{transform: 'scale(1.03)'}}
-            >
-                <Flex justifyContent={'center'}>
-                    <Image src={image} marginTop={'-30px'} zIndex={1}/>
-                </Flex>
-                <Box width={'90%'}
-                     mx={'auto'}
-                     position={'relative'}
-                     mt={'-35px'}
-                     mb={2}
-                     zIndex={10}
-                     boxShadow={'0px 20px 20px rgba(0, 0, 0, 0.08)'}
-                     p={3}
-                     borderRadius={'20px'} background={'#FDFCFF'}>
-                    <HStack justifyContent={'space-between'}>
-                        <Box fontWeight={700} my={2}>
-                            {!loadData ?
-                            <Text color={'#333333'} fontSize={'24px'}>{currentClock}</Text>
-                                : <Skeleton
-                                    height='30px'
-                                    w={isMobileDevice ? "330px" : "100%"}
-                                />
+                pathname: `/smartbid/${id}/${exclusive}`,
+                state: data
+            }}>
+                <Box
+                    height={'300px'}
+                    width={'305px'}
+                    my={4}
+                    mx={'auto'}
+                    borderRadius={'30px'}
+                    background={bgColor}
+                    transition={'transform .2s'}
+                    _hover={{transform: 'scale(1.03)'}}
+                >
+                    <Flex justifyContent={'center'}>
+                        <Image src={image} marginTop={'-30px'} zIndex={1}/>
+                    </Flex>
+                    <Box width={'90%'}
+                         mx={'auto'}
+                         position={'relative'}
+                         mt={'-35px'}
+                         mb={2}
+                         zIndex={10}
+                         boxShadow={'0px 20px 20px rgba(0, 0, 0, 0.08)'}
+                         p={3}
+                         borderRadius={'20px'} background={'#FDFCFF'}>
+                        <HStack justifyContent={'space-between'}>
+                            <Box fontWeight={700} my={2}>
+                                {!loadData ?
+                                    <Text color={'#333333'} fontSize={'24px'}>{currentClock}</Text>
+                                    : <Skeleton
+                                        height='30px'
+                                        w={isMobileDevice ? "330px" : "100%"}
+                                    />
+                                }
+                                <Text color={'#666666'} fontSize={'14px'}>50% RGP Token</Text>
+                            </Box>
+                            {
+                                exclusive &&
+                                <Flex background={tileColor} borderRadius={'4px'} padding={1} alignItems={'center'}>
+                                    <Icon as={RiMedalFill} color={'#fff'} pr={1} w={6} h={6}/>
+                                    <Text fontSize={'14px'} fontWeight={700}>Exclusive</Text>
+                                </Flex>
                             }
-                            <Text color={'#666666'} fontSize={'14px'}>50% RGP Token</Text>
-                        </Box>
-                        {
-                            exclusive &&
-                            <Flex background={tileColor} borderRadius={'4px'} padding={1} alignItems={'center'}>
-                                <Icon as={RiMedalFill} color={'#fff'} pr={1} w={6} h={6}/>
-                                <Text fontSize={'14px'} fontWeight={700}>Exclusive</Text>
+                        </HStack>
+                        <Text my={2} color={'#999999'} fontSize={'12px'} fontWeight={400}>Place your bid and stand a
+                            chance to...</Text>
+
+                        <Box fontWeight={400} my={1}>
+                            <Flex alignItems={'center'}>
+                                <Icon as={MdPeopleOutline} color={'#333333'} pr={1} w={6} h={6}/>
+                                <Text color={'#333333'} my={1} fontSize={'12px'} fontWeight={700}
+                                      lineHeight={'16px'}>{title}</Text>
                             </Flex>
-                        }
-                    </HStack>
-                    <Text my={2} color={'#999999'} fontSize={'12px'} fontWeight={400}>Place your bid and stand a chance to...</Text>
 
-                    <Box fontWeight={400} my={1}>
-                        <Flex alignItems={'center'}>
-                            <Icon as={MdPeopleOutline} color={'#333333'} pr={1} w={6} h={6}/>
-                            <Text color={'#333333'} my={1} fontSize={'12px'} fontWeight={700} lineHeight={'16px'}>{title}</Text>
-                        </Flex>
-
-                        <Flex  alignItems={'center'}>
-                            <Icon as={AiOutlineGift} color={'#333333'} pr={1} w={6} h={6}/>
-                            {exclusive ?
-                                <Text color={'#333333'} my={1} fontSize={'12px'} lineHeight={'16px'}>Participants get <span style={{color: tileColor}}>X2</span> of their winnings.</Text>
-                                :
-                                <Text color={'#333333'} my={1} fontSize={'12px'} lineHeight={'16px'}>NFT Owners get <span style={{color: '#0760A8'}}>X2</span> of their winnings.</Text>
-                            }
-                        </Flex>
+                            <Flex alignItems={'center'}>
+                                <Icon as={AiOutlineGift} color={'#333333'} pr={1} w={6} h={6}/>
+                                {exclusive ?
+                                    <Text color={'#333333'} my={1} fontSize={'12px'} lineHeight={'16px'}>Participants
+                                        get <span style={{color: tileColor}}>X2</span> of their winnings.</Text>
+                                    :
+                                    <Text color={'#333333'} my={1} fontSize={'12px'} lineHeight={'16px'}>NFT Owners
+                                        get <span style={{color: '#0760A8'}}>X2</span> of their winnings.</Text>
+                                }
+                            </Flex>
+                        </Box>
                     </Box>
                 </Box>
-            </Box>
-        </Link>
+            </Link>
     )
 };
 

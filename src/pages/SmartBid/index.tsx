@@ -65,9 +65,9 @@ const SmartBid = () => {
 
                     <SimpleGrid width={'100%'} p={'10px'} mx={'auto'} minChildWidth={'305px'} spacingX={'10px'}
                                 spacingY={'20px'} alignItems={'start'}>
-                        {SmartBidData.map((item, index) => index !== -1 && index < itemTwoLength ? (
+                        {SmartBidData.map((item, index) => item.id !== -1 && item.id < Number(itemTwoLength.toString()) ? (
                                 <GridItem rowSpan={1} key={item.id} colSpan={1}>
-                                    <SmartBidCard key={item.id} title={item.title} image={item.image}
+                                    <SmartBidCard title={item.title} image={item.image}
                                                   exclusive={item.exclusive} tileColor={item.color} bgColor={item.bgColor}
                                                   id={item.id}/>
                                 </GridItem>
@@ -75,9 +75,9 @@ const SmartBid = () => {
                             ) : null
                         )}
 
-                        {SmartBidNFTData.map((item, index) => index !== -1 && index < itemLength ? (
+                        {SmartBidNFTData.map((item, index) => item.id !== -1 && item.id < Number(itemLength.toString()) ? (
                                 <GridItem rowSpan={1} key={item.id} colSpan={1}>
-                                    <SmartBidCard key={item.id} title={item.title} image={item.image}
+                                    <SmartBidCard title={item.title} image={item.image}
                                                   exclusive={item.exclusive} tileColor={item.color} bgColor={item.bgColor}
                                                   id={item.id}/>
                                 </GridItem>

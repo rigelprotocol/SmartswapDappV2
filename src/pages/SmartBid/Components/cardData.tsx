@@ -108,6 +108,107 @@ export const SmartBidData = [
     text: 'NFT Owners get X2 of their winnings.',
     color: '#2CB67D',
     bgColor: '#EAFAF4'
+  },
+  {
+    time: "08:41:29",
+    exclusive: true,
+    image: cardbid,
+    title: 'NFT owners only',
+    id: 11,
+    text: 'Participants get .. of their winnings.',
+    color: '#F25F4C',
+    bgColor: '#FFF3F1'
+  }, {
+    time: "08:41:29",
+    exclusive: true,
+    image: cardbid2,
+    title: 'NFT owners only',
+    id: 12,
+    text: 'Participants get .. of their winnings.',
+    color: '#2CB67D',
+    bgColor: '#EAFAF4'
+  }, {
+    time: "08:41:29",
+    exclusive: true,
+    image: cardbid3,
+    title: 'NFT owners only',
+    id: 13,
+    text: 'Participants get .. of their winnings.',
+    color: '#FF8906',
+    bgColor: '#FFF0DF'
+  },
+  {
+    time: "08:41:29",
+    exclusive: true,
+    image: cardbid3,
+    title: 'NFT owners only',
+    id: 14,
+    text: 'NFT Owners get X2 of their winnings.',
+    color: '#FF8906',
+    bgColor: '#FFF0DF'
+  }, {
+    time: "08:41:29",
+    exclusive: true,
+    image: cardbid2,
+    title: 'NFT owners only',
+    id: 15,
+    text: 'NFT Owners get X2 of their winnings.',
+    color: '#2CB67D',
+    bgColor: '#EAFAF4'
+  }, {
+    time: "08:41:29",
+    exclusive: true,
+    image: cardbid2,
+    title: 'NFT owners only',
+    id: 16,
+    text: 'NFT Owners get X2 of their winnings.',
+    color: '#2CB67D',
+    bgColor: '#EAFAF4'
+  }, {
+    time: "08:41:29",
+    exclusive: true,
+    image: cardbid,
+    title: 'NFT owners only',
+    id: 17,
+    text: 'NFT Owners get X2 of their winnings.',
+    color: '#F25F4C',
+    bgColor: '#FFF3F1'
+  }, {
+    time: "08:41:29",
+    exclusive: true,
+    image: cardbid,
+    title: 'NFT owners only',
+    id: 18,
+    text: 'NFT Owners get X2 of their winnings.',
+    color: '#F25F4C',
+    bgColor: '#FFF3F1'
+  }, {
+    time: "08:41:29",
+    exclusive: true,
+    image: cardbid3,
+    title: 'NFT owners only',
+    id: 19,
+    text: 'NFT Owners get X2 of their winnings.',
+    color: '#FF8906',
+    bgColor: '#FFF0DF'
+  }, {
+    time: "08:41:29",
+    exclusive: true,
+    image: cardbid3,
+    title: 'NFT owners only',
+    id: 20,
+    text: 'NFT Owners get X2 of their winnings.',
+    color: '#FF8906',
+    bgColor: '#FFF0DF'
+  }, {
+    time: "08:41:29",
+    exclusive: true,
+    image: cardbid2,
+    title: 'NFT owners only',
+    id: 21,
+    text: 'NFT Owners get X2 of their winnings.',
+    color: '#2CB67D',
+    bgColor: '#EAFAF4'
   }
 ];
 
@@ -203,6 +304,99 @@ export const SmartBidNFTData = [
     image: bidNFT,
     title: 'Everyone',
     id: 10,
+    text: 'NFT Owners get X2 of their winnings.',
+    bgColor: '#EDE8FD'
+  },
+  {
+    time: "08:41:29",
+    exclusive: false,
+    image: bidNFT,
+    title: 'Everyone',
+    id: 11,
+    text: 'Participants get .. of their winnings.',
+    color: '#F25F4C',
+    bgColor: '#EDE8FD'
+  }, {
+    time: "08:41:29",
+    exclusive: false,
+    image: bidNFT,
+    title: 'Everyone',
+    id: 12,
+    text: 'Participants get .. of their winnings.',
+    color: '#2CB67D',
+    bgColor: '#EDE8FD'
+  }, {
+    time: "08:41:29",
+    exclusive: false,
+    image: bidNFT,
+    title: 'Everyone',
+    id: 13,
+    text: 'Participants get .. of their winnings.',
+    color: '#FF8906',
+    bgColor: '#EDE8FD'
+  },
+  {
+    time: "08:41:29",
+    exclusive: false,
+    image: bidNFT,
+    title: 'Everyone',
+    id: 14,
+    text: 'NFT Owners get X2 of their winnings.',
+    bgColor: '#EDE8FD',
+  }, {
+    time: "08:41:29",
+    exclusive: false,
+    image: bidNFT,
+    title: 'Everyone',
+    id: 15,
+    text: 'NFT Owners get X2 of their winnings.',
+    bgColor: '#EDE8FD'
+  }, {
+    time: "08:41:29",
+    exclusive: false,
+    image: bidNFT,
+    title: 'Everyone',
+    id: 16,
+    text: 'NFT Owners get X2 of their winnings.',
+    bgColor: '#EDE8FD'
+  }, {
+    time: "08:41:29",
+    exclusive: false,
+    image: bidNFT,
+    title: 'Everyone',
+    id: 17,
+    text: 'NFT Owners get X2 of their winnings.',
+    bgColor: '#EDE8FD'
+  }, {
+    time: "08:41:29",
+    exclusive: false,
+    image: bidNFT,
+    title: 'Everyone',
+    id: 18,
+    text: 'NFT Owners get X2 of their winnings.',
+    bgColor: '#EDE8FD'
+  }, {
+    time: "08:41:29",
+    exclusive: false,
+    image: bidNFT,
+    title: 'Everyone',
+    id: 19,
+    text: 'NFT Owners get X2 of their winnings.',
+    bgColor: '#EDE8FD'
+  }, {
+    time: "08:41:29",
+    exclusive: false,
+    image: bidNFT,
+    title: 'Everyone',
+    id: 20,
+    text: 'NFT Owners get X2 of their winnings.',
+    bgColor: '#EDE8FD'
+  }, {
+    time: "08:41:29",
+    exclusive: false,
+    image: bidNFT,
+    title: 'Everyone',
+    id: 21,
     text: 'NFT Owners get X2 of their winnings.',
     bgColor: '#EDE8FD'
   }
