@@ -19,6 +19,9 @@ const SmartBid = () => {
     const [itemLength, setItemLength] = useState(3);
     const [itemTwoLength, setItemTwoLength] = useState(3);
 
+    const NftReqArray = SmartBidData.sort((a, b) => b.id - a.id);
+    const NoNftReqArray = SmartBidNFTData.sort((a, b) => b.id - a.id);
+
     useMemo(() => {
         const getLength = async () => {
             try {
@@ -65,7 +68,7 @@ const SmartBid = () => {
 
                     <SimpleGrid width={'100%'} p={'10px'} mx={'auto'} minChildWidth={'305px'} spacingX={'10px'}
                                 spacingY={'20px'} alignItems={'start'}>
-                        {SmartBidData.map((item, index) => item.id !== -1 && item.id < Number(itemTwoLength.toString()) ? (
+                        {NftReqArray.map((item, index) => item.id !== -1 && item.id < Number(itemTwoLength.toString()) ? (
                                 <GridItem rowSpan={1} key={item.id} colSpan={1}>
                                     <SmartBidCard title={item.title} image={item.image}
                                                   exclusive={item.exclusive} tileColor={item.color} bgColor={item.bgColor}
@@ -75,7 +78,7 @@ const SmartBid = () => {
                             ) : null
                         )}
 
-                        {SmartBidNFTData.map((item, index) => item.id !== -1 && item.id < Number(itemLength.toString()) ? (
+                        {NoNftReqArray.map((item, index) => item.id !== -1 && item.id < Number(itemLength.toString()) ? (
                                 <GridItem rowSpan={1} key={item.id} colSpan={1}>
                                     <SmartBidCard title={item.title} image={item.image}
                                                   exclusive={item.exclusive} tileColor={item.color} bgColor={item.bgColor}
