@@ -47,7 +47,7 @@ type IModal = {
 };
 
 export function useSearchInactiveTokenLists(search: string | undefined, minResults = 10): WrappedTokenInfo[] {
-  const lists = useAllLists()
+  const lists = useAllLists();
   const inactiveUrls = useInactiveListUrls()
   const { chainId } = useActiveWeb3React()
   const activeTokens = useAllTokens()
@@ -59,6 +59,7 @@ export function useSearchInactiveTokenLists(search: string | undefined, minResul
     const addressSet: { [address: string]: true } = {}
     for (const url of inactiveUrls) {
       const list = lists[url].current
+      console.log(list)
       // eslint-disable-next-line no-continue
       if (!list) continue
       for (const tokenInfo of list.tokens) {
@@ -77,14 +78,17 @@ export function useSearchInactiveTokenLists(search: string | undefined, minResul
                   ?.filter((x): x is TagInfo => Boolean(x)) ?? []
           const wrapped: WrappedTokenInfo = new WrappedTokenInfo(tokenInfo, tags)
           addressSet[wrapped.address] = true
+          console.log(wrapped)
           const trimmedSearchQuery = search.toLowerCase().trim()
           if (
               tokenInfo.name?.toLowerCase() === trimmedSearchQuery ||
               tokenInfo.symbol?.toLowerCase() === trimmedSearchQuery
           ) {
             exactMatches.push(wrapped)
+         //   console.log(exactMatches)
           } else {
             rest.push(wrapped)
+           // console.log(rest)
           }
         }
       }
@@ -163,8 +167,7 @@ const SelectToken: React.FC<IModal> = ({
   const [sortedTokenList] = useUpdateBalance("");
 
   const filteredInactiveTokens = useSearchInactiveTokenLists(debouncedQuery);
-  console.log(filteredInactiveTokens.length);
-  console.log(debouncedQuery);
+  console.log(filteredInactiveTokens);
 
   return (
     <>

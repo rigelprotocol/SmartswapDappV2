@@ -11,7 +11,7 @@ export const UNSUPPORTED_LIST_URLS: string[] = []
 export const DEFAULT_LIST_OF_LISTS: string[] = [
   MAIN_LIST,
   DEFAULT_LIST,
- 
+
   ...UNSUPPORTED_LIST_URLS, // need to load unsupported tokens as well
 ]
 
