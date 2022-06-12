@@ -72,6 +72,7 @@ function sortByListPriority(urlA: string, urlB: string) {
 
 // merge tokens contained within lists from urls
 function useCombinedTokenMapFromUrls(urls: string[] | undefined): TokenAddressMap {
+  console.log({urls})
   const lists = useAllLists()
   return useMemo(() => {
     if (!urls) return {}
