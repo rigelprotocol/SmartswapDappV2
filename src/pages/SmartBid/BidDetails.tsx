@@ -8,11 +8,11 @@ import {
     useMediaQuery,
     UnorderedList,
     ListItem,
-    Spinner, Icon
+    Spinner, Icon, VStack, Heading
 } from '@chakra-ui/react';
 import BidHeader from "./Components/BidHeader";
 import BidTabs from "./Components/BidTabs";
-import {useSmartBid} from "../../hooks/useSmartBid";
+import {useBidWinners, useSmartBid} from "../../hooks/useSmartBid";
 import {countDownDate} from "./Components/Card";
 import { useLocation } from "react-router-dom";
 import BidModal from "./Components/BidModal";
@@ -24,11 +24,14 @@ import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 import {getERC20Token} from "../../utils/utilsFunctions";
 import {getNftTokenID} from "../../state/nft/bidTest";
 import {RiErrorWarningLine} from "react-icons/all";
+import {ethers} from "ethers";
+import {SupportedChainId} from "../../constants/chains";
 
 const BidDetails = () => {
     const { chainId, library, account } = useActiveWeb3React();
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     const [isMobileDeviceSm] = useMediaQuery("(max-width: 750px)");
+    const headerColor = useColorModeValue("#0760A8", "#F1F5F8");
     const textFont = isMobileDeviceSm ? '25px' : '40px';
     const smallFont = isMobileDeviceSm ? '12px' : '16px';
     const location = useLocation();
@@ -41,7 +44,7 @@ const BidDetails = () => {
     const [bidModal, setBidModal] = useState(false);
     const dispatch = useDispatch();
 
-    const { loadData , bidTime, bidDetails , addresses} = useSmartBid(viewId, exc);
+    const { loadData , bidTime, bidDetails , addresses, rewardArray, totalBid} = useSmartBid(viewId, exc);
 
     const [time, setTime] = useState(2);
     const [currentClock, setCurrentClock] = useState({days: 0, hours: 0, minutes: 0, seconds: 0});
@@ -51,6 +54,7 @@ const BidDetails = () => {
 
     const [tokenInfo, setTokenInfo] = useState({symbol: '', balance: '', decimals: ''});
     const [tokenAddress, setTokenAddress] = useState('');
+    const [bidAmount, setBidAmount] = useState('');
 
 
     useMemo(() => {
@@ -67,6 +71,8 @@ const BidDetails = () => {
                         [token.symbol(), token.balanceOf(account), token.decimals()]);
                     setTokenInfo({symbol: tokenSymbol, balance: tokenBalance, decimals: tokenDecimals});
 
+                    setBidAmount( ethers.utils.formatUnits(totalBid, tokenDecimals));
+
                 } catch (e) {
                     console.log(e)
                 }
@@ -82,6 +88,8 @@ const BidDetails = () => {
                         [token.symbol(), token.balanceOf(account), token.decimals()]);
                     setTokenInfo({symbol: tokenSymbol, balance: tokenBalance, decimals: tokenDecimals});
 
+                    setBidAmount(ethers.utils.formatUnits(totalBid, tokenDecimals));
+
                 } catch (e) {
                     console.log(e)
                 }
@@ -91,7 +99,7 @@ const BidDetails = () => {
 
         };
         getTokenData();
-    }, [account, chainId]);
+    }, [account, chainId, totalBid]);
 
     useEffect(() => {
         const timeFunction = setInterval(function() {
@@ -297,98 +305,118 @@ const BidDetails = () => {
     return (
         <>
             <BidHeader/>
-            <Box width={'90%'} margin={'0px auto'}>
-                <Box display={'flex'} my={'90px'} flexDirection={isMobileDeviceSm ? 'column' : 'row'} justifyContent={'space-between'} width={'100%'} mx={'auto'}>
-                    <Box width={isMobileDeviceSm ? '100%' : '60%'}>
-                        <Text color={textColor} fontWeight={700} fontStyle={'normal'} fontSize={'36px'} my={1}>Event {viewId}</Text>
-                        <Text fontWeight={600} lineHeight={'32px'} fontSize={'18px'} textDecoration={'underline'}>Description</Text>
-                        <Text fontWeight={400} lineHeight={'24px'} fontSize={'16px'} color={'#A7A9BE'} my={2}>Place your bid and stand a chance to win the grand token prize at the end of this event.</Text>
-                        <UnorderedList fontWeight={500} fontSize={'16px'} lineHeight={'24px'} width={'80%'} my={3}>
-                            <ListItem color={textColor} p={1}>Winner gets 30% of the Total Token raised</ListItem>
-                            <ListItem color={textColor} p={1}>{addresses} random bidders will be selected at the end of the event to win 10% of Total Token raised.</ListItem>
-                        </UnorderedList>
-
-                        {exc && nftName ? <Text fontWeight={600} lineHeight={'32px'} fontSize={'18px'} color={'#CC334F'}>{nftName} owners only.</Text> : null}
-                    </Box>
-                    <Flex>
-                        {loadData ?
-                        <Box justifyContent={'center'}>
-                            <Spinner
-                                thickness="4px"
-                                speed="0.53s"
-                                emptyColor="transparent"
-                                color="#319EF6"
-                                size="xl"
-                                width="100px"
-                                height="100px"
-                                my={10}
-                            />
-                        </Box>
-                        :
-                            <Box>
-                                <Flex alignItems={'center'} bg={'#FEFEF6'} border={'1px solid #B18D14'} borderRadius={'4px'} padding={'10px'} my={'20px'}>
-                                    <Icon as={RiErrorWarningLine} w={5} h={5} color={'#b18d14'} mr={2}/>
-                                    <Text color={'#B18D14'} fontSize={'14px'}>You need {tokenInfo.symbol} token to bid on this event.</Text>
+            {
+                chainId === SupportedChainId.BINANCETEST ?
+                    <Box width={'90%'} margin={'0px auto'}>
+                        <Box display={'flex'} my={'90px'} flexDirection={isMobileDeviceSm ? 'column' : 'row'} justifyContent={'space-between'} width={'100%'} mx={'auto'}>
+                            <Box width={isMobileDeviceSm ? '100%' : '60%'}>
+                                <Text color={textColor} fontWeight={700} fontStyle={'normal'} fontSize={'36px'} my={1}>Event {viewId}</Text>
+                                <Text fontWeight={600} lineHeight={'32px'} fontSize={'18px'} textDecoration={'underline'}>Description</Text>
+                                <Text fontWeight={400} lineHeight={'24px'} fontSize={'16px'} color={'#A7A9BE'} my={2}>Place your bid and stand a chance to win the grand token prize at the end of this event.</Text>
+                                <Flex alignItems={'center'}>
+                                    <Icon as={RiErrorWarningLine} w={6} h={6} color={'#319EF6'} mr={2}/>
+                                    <Text textAlign={"left"} my={'10px'}
+                                          color={'#319EF6'} fontSize={'16px'}
+                                    >Total of {' '}
+                                        {bidAmount} {tokenInfo.symbol} tokens bidded so far.</Text>
                                 </Flex>
-                                <Box border={'1px solid #DEE6ED'}
-                                     borderRadius={'20px'}
-                                     width={'100%'}
-                                     padding={'30px'}
-                                     boxShadow={'0px 6px 8px -6px rgba(24, 39, 75, 0.12), 0px 8px 16px -6px rgba(24, 39, 75, 0.08)'}
-                                >
-                                    <Text textAlign={'center'} my={2}>{time > 0 ? `Event ending in` : `Event has ended`}</Text>
-                                    <Flex width={'100%'} my={3} justifyContent={'center'}>
-                                        <Box px={1} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-                                            <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont}>{currentClock.days}</Text>
-                                            <Text fontWeight={600} fontStyle={'normal'} fontSize={smallFont} color={'#999999'} my={'8px'}>Days</Text>
-                                        </Box>
+                                <UnorderedList fontWeight={500} fontSize={'16px'} lineHeight={'24px'} width={'80%'} my={3}>
+                                    <ListItem color={textColor} p={1}>1st prize bidder gets {rewardArray[0]}% of the Total Token raised</ListItem>
+                                    <ListItem color={textColor} p={1}>2nd prize bidder gets {rewardArray[1]}% of the Total Token raised</ListItem>
+                                    <ListItem color={textColor} p={1}>3rd prize bidder gets {rewardArray[2]}% of the Total Token raised</ListItem>
+                                    <ListItem color={textColor} p={1}>{addresses} random bidders will be selected at the end of the event to win {rewardArray[3]}% of Total Token raised.</ListItem>
+                                </UnorderedList>
 
-                                        <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont} mx={3}>:</Text>
-
-                                        <Box px={1} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-                                            <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont}>{currentClock.hours}</Text>
-                                            <Text fontWeight={600} fontStyle={'normal'} fontSize={smallFont} color={'#999999'} my={'8px'}>Hours</Text>
-                                        </Box>
-
-                                        <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont} mx={3}>:</Text>
-
-                                        <Box px={1} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-                                            <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont}>{currentClock.minutes}</Text>
-                                            <Text fontWeight={600} fontStyle={'normal'} fontSize={smallFont} color={'#999999'} my={'8px'}>Minutes</Text>
-                                        </Box>
-
-                                        <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont} mx={3}>:</Text>
-
-                                        <Box px={1} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-                                            <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont}>{currentClock.seconds}</Text>
-                                            <Text fontWeight={600} fontStyle={'normal'} fontSize={smallFont} color={'#999999'} my={'8px'}>Seconds</Text>
-                                        </Box>
-                                    </Flex>
-                                    <Box marginY={3} border={'.5px solid #DEE6ED'}/>
-                                    <Button my={3} width={'100%'}
-                                            variant={'brand'}
-                                            disabled={time < 0}
-                                            justifyContent={'center'}
-                                            onClick={() => setBidModal(true)}
-                                    >
-                                        {time > 0 ? 'Place Bid' : 'Event ended'}
-                                    </Button>
-
-                                </Box>
+                                {exc && nftName ? <Text fontWeight={600} lineHeight={'32px'} fontSize={'18px'} color={'#CC334F'}>{nftName} owners only.</Text> : null}
                             </Box>
-                        }
-                    </Flex>
-                </Box>
-                <BidModal
-                    isOpen={bidModal}
-                    close={() => setBidModal(false)}
-                    id={viewId} amount={bidDetails.initial}
-                    max={bidDetails.max.toString()}
-                    tokenInfo={tokenInfo} address={tokenAddress} placeBid={placeBid} bidLoad={bidloadData} exclusive={exc} />
+                            <Flex>
+                                {loadData ?
+                                    <Box justifyContent={'center'}>
+                                        <Spinner
+                                            thickness="4px"
+                                            speed="0.53s"
+                                            emptyColor="transparent"
+                                            color="#319EF6"
+                                            size="xl"
+                                            width="100px"
+                                            height="100px"
+                                            my={10}
+                                        />
+                                    </Box>
+                                    :
+                                    <Box>
+                                        <Flex alignItems={'center'} bg={'#FEFEF6'} border={'1px solid #B18D14'} borderRadius={'4px'} padding={'10px'} my={'20px'}>
+                                            <Icon as={RiErrorWarningLine} w={5} h={5} color={'#b18d14'} mr={2}/>
+                                            <Text color={'#B18D14'} fontSize={'14px'}>You need {tokenInfo.symbol} token to bid on this event.</Text>
+                                        </Flex>
+                                        <Box border={'1px solid #DEE6ED'}
+                                             borderRadius={'20px'}
+                                             width={'100%'}
+                                             padding={'30px'}
+                                             boxShadow={'0px 6px 8px -6px rgba(24, 39, 75, 0.12), 0px 8px 16px -6px rgba(24, 39, 75, 0.08)'}
+                                        >
+                                            <Text textAlign={'center'} my={2}>{time > 0 ? `Event ending in` : `Event has ended`}</Text>
+                                            <Flex width={'100%'} my={3} justifyContent={'center'}>
+                                                <Box px={1} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+                                                    <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont}>{currentClock.days}</Text>
+                                                    <Text fontWeight={600} fontStyle={'normal'} fontSize={smallFont} color={'#999999'} my={'8px'}>Days</Text>
+                                                </Box>
 
-                <BidTabs time={time} id={viewId} events={eventData} tokenInfo={tokenInfo.symbol}/>
+                                                <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont} mx={3}>:</Text>
 
-            </Box>
+                                                <Box px={1} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+                                                    <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont}>{currentClock.hours}</Text>
+                                                    <Text fontWeight={600} fontStyle={'normal'} fontSize={smallFont} color={'#999999'} my={'8px'}>Hours</Text>
+                                                </Box>
+
+                                                <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont} mx={3}>:</Text>
+
+                                                <Box px={1} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+                                                    <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont}>{currentClock.minutes}</Text>
+                                                    <Text fontWeight={600} fontStyle={'normal'} fontSize={smallFont} color={'#999999'} my={'8px'}>Minutes</Text>
+                                                </Box>
+
+                                                <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont} mx={3}>:</Text>
+
+                                                <Box px={1} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+                                                    <Text fontWeight={700} fontStyle={'normal'} fontSize={textFont}>{currentClock.seconds}</Text>
+                                                    <Text fontWeight={600} fontStyle={'normal'} fontSize={smallFont} color={'#999999'} my={'8px'}>Seconds</Text>
+                                                </Box>
+                                            </Flex>
+                                            <Box marginY={3} border={'.5px solid #DEE6ED'}/>
+                                            <Button my={3} width={'100%'}
+                                                    variant={'brand'}
+                                                    disabled={time < 0}
+                                                    justifyContent={'center'}
+                                                    onClick={() => setBidModal(true)}
+                                            >
+                                                {time > 0 ? 'Place Bid' : 'Event ended'}
+                                            </Button>
+
+                                        </Box>
+                                    </Box>
+                                }
+                            </Flex>
+                        </Box>
+                        <BidModal
+                            isOpen={bidModal}
+                            close={() => setBidModal(false)}
+                            id={viewId} amount={bidDetails.initial}
+                            max={bidDetails.max.toString()}
+                            tokenInfo={tokenInfo} address={tokenAddress} placeBid={placeBid} bidLoad={bidloadData} exclusive={exc} />
+
+                        <BidTabs time={time} id={viewId} events={eventData} tokenInfo={tokenInfo.symbol} exclusive={exc}/>
+
+                    </Box>
+
+                    :
+
+                    <VStack minH="80vh" align="center" justify="center" width={'40%'} mx={'auto'}>
+                        <Heading color={headerColor} fontFamily={'Cera Pro'} fontSize={'64px'}>Coming Soon...</Heading>
+                        <Text color={textColor} fontSize={'20px'} textAlign={'center'}>We are going to launch creation of bid events by individual users very soon.</Text>
+                    </VStack>
+            }
+
         </>
     )
 };

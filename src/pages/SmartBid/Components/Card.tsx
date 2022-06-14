@@ -104,7 +104,7 @@ const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDe
                                         w={isMobileDevice ? "330px" : "100%"}
                                     />
                                 }
-                                <Text color={'#666666'} fontSize={'14px'}>50% RGP Token</Text>
+                                <Text color={'#666666'} fontSize={'14px'}>90% RGP Token</Text>
                             </Box>
                             {
                                 exclusive &&

@@ -444,23 +444,21 @@ export const SmartBidWinners = [
   {
     id: 1,
     colors: ['#FDEB64', '#FED443', '#D4840E'],
-    price: '50 RGP'
+    price: 50,
+    address: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56'
   },
   {
     id: 2,
     colors: ['#E0E9F1', '#D2DCE5', '#728B9F'],
-    price: '50 RGP'
+    price: 50,
+    address: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56'
   },
   {
     id: 3,
     colors: ['#E7BA90', '#D4A982', '#9D5D21'],
-    price: '50 RGP'
-  },
-  {
-    id: 4,
-    colors: ['#ffffff', '#ffffff', '#333333'],
-    price: '-'
-  },
+    price: 50,
+    address: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56'
+  }
 
 ];
 

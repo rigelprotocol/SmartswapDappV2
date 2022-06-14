@@ -1,6 +1,8 @@
 import React, {useEffect, useMemo, useState} from "react";
-import {Box, Text, Flex, useColorModeValue, VStack, Heading,
-    Button, SimpleGrid, GridItem, useMediaQuery} from '@chakra-ui/react';
+import {
+    Box, Text, Flex, useColorModeValue, VStack, Heading,
+    Button, SimpleGrid, GridItem, useMediaQuery, Spinner
+} from '@chakra-ui/react';
 import {AddIcon} from "@chakra-ui/icons";
 import SmartBidCard from "./Components/Card";
 import {SmartBidData, SmartBidNFTData} from "./Components/cardData";
@@ -9,6 +11,7 @@ import {RigelSmartBidTwo, RigelSmartBid} from "../../utils/Contracts";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 import {SMARTBID2, SMARTBID1} from "../../utils/addresses";
 import {SupportedChainId} from "../../constants/chains";
+import {useBidInfo} from "../../state/smartbid/hooks";
 
 
 const SmartBid = () => {
@@ -16,31 +19,10 @@ const SmartBid = () => {
     const headerColor = useColorModeValue("#0760A8", "#F1F5F8");
     const [isMobileDeviceSm] = useMediaQuery("(max-width: 450px)");
     const {chainId, library} = useActiveWeb3React();
-    const [itemLength, setItemLength] = useState(3);
-    const [itemTwoLength, setItemTwoLength] = useState(3);
+    const {loadBid, bidItemsNFT } = useBidInfo();
 
-    const NftReqArray = SmartBidData.sort((a, b) => b.id - a.id);
-    const NoNftReqArray = SmartBidNFTData.sort((a, b) => b.id - a.id);
 
-    useMemo(() => {
-        const getLength = async () => {
-            try {
-                const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
-                const item = await bidContract.bidLength();
-                setItemLength(item);
-
-                const bidContractTwo = await RigelSmartBid(SMARTBID1[chainId as number], library);
-                const itemTwo = await bidContractTwo.bidLength();
-                setItemTwoLength(itemTwo);
-
-            } catch (e) {
-                console.log(e)
-            }
-        };
-        getLength();
-
-    }, [chainId]);
-
+  //  const NoNftReqArray = bidItemsNFT.sort((x, y) => (x.time === y.time) ? 0 : y?  -1 : 1);
 
     return (
         <Box width={'95%'} margin={'30px auto'}>
@@ -64,12 +46,26 @@ const SmartBid = () => {
                 </Flex>
             </Box>
             {
+                loadBid ? <Flex justifyContent={'center'}>
+                    <Spinner
+                        thickness="3px"
+                        speed="0.75s"
+                        emptyColor="transparent"
+                        color="#319EF6"
+                        size="xl"
+                        width="100px"
+                        height="100px"
+                        my={10}
+                    />
+                </Flex> : null }
+            {
                 chainId === SupportedChainId.BINANCETEST ?
 
                     <SimpleGrid width={'100%'} p={'10px'} mx={'auto'} minChildWidth={'305px'} spacingX={'10px'}
                                 spacingY={'20px'} alignItems={'start'}>
-                        {NftReqArray.map((item, index) => item.id !== -1 && item.id < Number(itemTwoLength.toString()) ? (
-                                <GridItem rowSpan={1} key={item.id} colSpan={1}>
+
+                        {bidItemsNFT.map((item, index) => !item.time ? (
+                                <GridItem rowSpan={1} key={index} colSpan={1}>
                                     <SmartBidCard title={item.title} image={item.image}
                                                   exclusive={item.exclusive} tileColor={item.color} bgColor={item.bgColor}
                                                   id={item.id}/>
@@ -78,8 +74,8 @@ const SmartBid = () => {
                             ) : null
                         )}
 
-                        {NoNftReqArray.map((item, index) => item.id !== -1 && item.id < Number(itemLength.toString()) ? (
-                                <GridItem rowSpan={1} key={item.id} colSpan={1}>
+                        {bidItemsNFT.map((item, index) => item.time ? (
+                                <GridItem rowSpan={1} key={index} colSpan={1}>
                                     <SmartBidCard title={item.title} image={item.image}
                                                   exclusive={item.exclusive} tileColor={item.color} bgColor={item.bgColor}
                                                   id={item.id}/>

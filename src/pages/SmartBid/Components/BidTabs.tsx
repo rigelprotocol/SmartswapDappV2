@@ -5,9 +5,16 @@ import {Box, Text, Flex,
     TabPanel, TabPanels, Image, Button
 } from '@chakra-ui/react';
 import bidLogo from '../../../assets/smartbid/bidRGP.svg';
-import {SmartBidActivity, SmartBidWinners} from "./cardData";
+import {useActiveWeb3React} from "../../../utils/hooks/useActiveWeb3React";
 import {shortenAddress} from "../../../utils";
 import {ethers} from "ethers";
+import {useBidWinners} from "../../../hooks/useSmartBid";
+import {setOpenModal, TrxState} from "../../../state/application/reducer";
+import {RigelSmartBid, RigelSmartBidTwo} from "../../../utils/Contracts";
+import {SMARTBID1, SMARTBID2} from "../../../utils/addresses";
+import {ExplorerDataType, getExplorerLink} from "../../../utils/getExplorerLink";
+import {addToast} from "../../../components/Toast/toastSlice";
+import {useDispatch} from "react-redux";
 
 export function timeConverter(UNIX_timestamp: any) {
     const a = new Date(UNIX_timestamp * 1000);
@@ -59,10 +66,70 @@ const ActivityPanel = ({address, id, amount, time, tokenInfo}: ActivityID) => {
 };
 
 
-const WinnersPanel = ({id, colors, price}: {id: number, colors: string[], price: string}) => {
+const WinnersPanel = ({id, colors, price, address, tokenInfo, exclusive}: {id: number, colors: string[], price: string | number, address: string, tokenInfo: string, exclusive: boolean}) => {
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     const [isMobileDevice] = useMediaQuery("(max-width: 950px)");
     const [isMobileDeviceSm] = useMediaQuery("(max-width: 650px)");
+    const { chainId, library, account } = useActiveWeb3React();
+    const dispatch = useDispatch();
+
+    const claimReward = async () => {
+        try {
+            dispatch(
+                setOpenModal({
+                    message: `Claiming Rewards on this Event`,
+                    trxState: TrxState.WaitingForConfirmation,
+                })
+            );
+
+            let bidContract;
+
+            if (exclusive) {
+                bidContract = await RigelSmartBid(SMARTBID1[chainId as number], library);
+            } else {
+                bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
+            }
+
+
+            const data = await bidContract.DistributeRewardsWithOther3(id);
+
+            const { confirmations } = await data.wait(3);
+            const { hash } = data;
+
+            if (confirmations >= 3) {
+                const explorerLink = getExplorerLink(
+                    chainId as number,
+                    hash,
+                    ExplorerDataType.TRANSACTION
+                );
+
+                dispatch(
+                    setOpenModal({
+                        message: "Transaction Successful",
+                        trxState: TrxState.TransactionSuccessful,
+                    })
+                );
+
+                dispatch(
+                    addToast({
+                        message: `Successfully Claimed Rewards`,
+                        URL: explorerLink,
+                    })
+                );
+            }
+
+        } catch (e) {
+            console.log(e);
+            dispatch(
+                setOpenModal({
+                    message: `Transaction Failed`,
+                    trxState: TrxState.TransactionFailed,
+                })
+            );
+        }
+    };
+
+
     return (
         <>
             <Flex width={isMobileDeviceSm ? '100%' : '90%'} justifyContent={'space-between'}
@@ -81,8 +148,8 @@ const WinnersPanel = ({id, colors, price}: {id: number, colors: string[], price:
 
                     </Flex>
                     <Box mx={2}>
-                        <Text fontWeight={700} fontStyle={'normal'} fontSize={'16px'} lineHeight={'19px'} my={1}>0x8d80...0a94</Text>
-                        <Text fontWeight={500} color={'#A7A9BE'} fontStyle={'normal'} fontSize={'12px'} lineHeight={'16px'} my={1}>Apr 30, 2021 | 12:51pm</Text>
+                        <Text fontWeight={700} fontStyle={'normal'} fontSize={'16px'} lineHeight={'19px'} my={1}>{shortenAddress( address !== undefined ? address : '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56')}</Text>
+                        <Text fontWeight={500} color={'#A7A9BE'} fontStyle={'normal'} fontSize={'12px'} lineHeight={'16px'} my={1}>Event ended</Text>
                     </Box>
                 </Flex>
                 {
@@ -91,14 +158,16 @@ const WinnersPanel = ({id, colors, price}: {id: number, colors: string[], price:
                         <Box mr={isMobileDevice ? '20px' : '48px'} border={'.5px solid #A7A9BE'} height={'40px'}
                              rotate={'90deg'}/>
                         <Text fontWeight={700} fontSize={'20px'} textAlign={'center'} color={textColor}
-                              minWidth={'70px'} lineHeight={'44px'} my={1}>{price}</Text>
+                              minWidth={'70px'} lineHeight={'44px'} my={1}>{price} {tokenInfo}</Text>
                         <Box ml={isMobileDevice ? '20px' : '48px'} border={'.5px solid #A7A9BE'} height={'40px'}
                              rotate={'90deg'}/>
                     </Flex>
                 }
+
                 <Flex alignItems={'center'}>
-                    <Button variant={'brand'}>{isMobileDeviceSm ? 'Reward' : 'Claim Reward'}</Button>
+                    <Button disabled={account !== address} variant={'brand'} onClick={() => claimReward()}>{isMobileDeviceSm ? 'Reward' : 'Claim Reward'}</Button>
                 </Flex>
+
             </Flex>
         </>
     )
@@ -108,13 +177,17 @@ type BidTabsDetails = {
     time: number,
     id: number,
     events: [],
-    tokenInfo: string
+    tokenInfo: string,
+    exclusive: boolean
 }
 
 
-const BidTabs = ({time, id, events, tokenInfo} : BidTabsDetails) => {
+const BidTabs = ({time, id, events, tokenInfo, exclusive} : BidTabsDetails) => {
     const [isMobileDevice] = useMediaQuery("(max-width: 950px)");
     const textColor = useColorModeValue("#333333", "#F1F5F8");
+
+    const {loadWinners, winnerDetails} = useBidWinners(id, exclusive);
+
     return (
         <>
             <Box width={isMobileDevice ? '100%' : '60%'}>
@@ -139,8 +212,8 @@ const BidTabs = ({time, id, events, tokenInfo} : BidTabsDetails) => {
                         <TabPanel>
                             {time < 0 ?
                             <Box>
-                                {SmartBidWinners.map((item, index) => (
-                                    <WinnersPanel key={index} id={item.id} colors={item.colors} price={item.price}/>
+                                {winnerDetails.map((item, index) => (
+                                    <WinnersPanel key={index} id={item.id} colors={item.colors} price={item.price} address={item.address} tokenInfo={tokenInfo} exclusive={exclusive}/>
                                 ))}
                             </Box>
                                 :
