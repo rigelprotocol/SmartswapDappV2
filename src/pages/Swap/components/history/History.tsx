@@ -35,7 +35,7 @@ const History = () => {
 
   useEffect(
     () => {
-  setSocket(io("https://autoswap-server.herokuapp.com"));//https://autoswap-server.herokuapp.com
+  setSocket(io("http://localhost:7000"));//http://localhost:7000
   
     },
     []
@@ -48,7 +48,7 @@ const History = () => {
   const [showMarketHistory, setShowMarketHistory] = useState(false);
   const [notification, setNotification] = useState(0);
   const [address, setAddress] = useState("");
-  const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//https://autoswap-server.herokuapp.com
+  const [URL, setURL] = useState("http://localhost:7000")//http://localhost:7000
   const [showOrder, setShowOrder] = useState(false);
   const [type, setType] = useState("");
 
@@ -309,7 +309,10 @@ const History = () => {
         maxHeight={'80vh'}
       >
         <Flex justifyContent={'center'}>
-          {open && loadMarketData || open && loading || open && loadOpenOrders && <Spinner my={3} size={'md'} />}
+          {(open && loadMarketData )|| (open && loading )|| (open && loadOpenOrders) ?
+            (<Spinner my={3} size={'md'} />)
+          : <></>
+         }
         </Flex>
               {/* market history */}
         {open && showMarketHistory && marketHistoryData && historyArray.map((data: DataType,index) =>{

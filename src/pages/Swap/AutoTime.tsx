@@ -92,6 +92,7 @@ const SetPrice = () => {
   const [checkedItem, setCheckedItem] = useState(false)
   const [userOutputPrice, setUserOutputPrice] = useState<number>(0)
   const [currentToPrice,setCurrentToPrice] = useState("0")
+  const [quantity,setQuantity] = useState< string>("0")
   const [showNewChangesText,setShowNewChangesText] = useState(false)
   const [insufficientBalance, setInsufficientBalance] = useState(false);
   const [dataSignature,setDataSignature] = useState<{mess:string,signature:string}>({
@@ -136,7 +137,7 @@ const SetPrice = () => {
   }
   useEffect(() => {
     async function checkIfSignatureExists() {
-      let user = await fetch(`https://autoswap-server.herokuapp.com/auto/data/${account}`)//https://autoswap-server.herokuapp.com
+      let user = await fetch(`http://localhost:7000/auto/data/${account}`)//http://localhost:7000
       let data = await user.json()
       if (data) {
         setDataSignature(data.dataSignature)
@@ -330,6 +331,12 @@ const SetPrice = () => {
    console.log("ieeoeo") 
   }
 
+  const runTransaction = () =>{
+    setShowModal(!showModal);
+   setQuantityValue()
+   
+  }
+
   const signTransaction = async () => {
     if (account !== undefined) {
       // try {
@@ -430,10 +437,27 @@ const SetPrice = () => {
       
 
   }
+
+
+const setQuantityValue =() =>{
+  console.log("jkrkkrk")
+  let value
+ const quantity = typedValue && parseFloat(typedValue) * parseInt(totalNumberOfTransaction)
+ if(currencies[Field.INPUT]?.isNative){
+     setQuantity(`${quantity}`)
+     value=quantity
+}else{
+  setQuantity(typedValue)
+  value = typedValue
+}
+ return value
+}
+
   const sendTransactionToDatabase = async () => {
     GButtonClick("auto_period","sending transaction to database",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
     try{
       
+     
     const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
     dispatch(
       setOpenModal({
@@ -443,16 +467,18 @@ const SetPrice = () => {
     );
     let currentDate = new Date();
     let futureDate = currentDate.getTime() + deadline;
-    let data, response,quantity
-    try{
+    let data, response
+    let value = setQuantityValue()
+    try{ 
+       
        if (currencies[Field.INPUT]?.isNative) {
-     quantity = typedValue && parseFloat(typedValue) * parseInt(totalNumberOfTransaction)
-      console.log({typedValue},quantity)
+   
+      console.log({typedValue},value)
       
       data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
         pathArray,
         futureDate,
-        { value: Web3.utils.toWei(quantity.toString(), 'ether') }
+        { value: Web3.utils.toWei(value.toString(), 'ether') }
       )
       const fetchTransactionData = async (sendTransaction: any) => {
         const { confirmations, status, logs } = await sendTransaction.wait(1);
@@ -464,7 +490,7 @@ const SetPrice = () => {
       }
     } else {
       response = true
-      quantity = typedValue
+      // quantity = typedValue
     }
     }catch(e){
       dispatch(
@@ -474,8 +500,11 @@ const SetPrice = () => {
       })
     );
     }
+    // setQuantity(quantity)
     let orderID = await autoSwapV2Contract.orderCount()
-    if (response) {
+   
+    console.log({value})
+    if (response && value) {
       dispatch(
         setOpenModal({
           message: "Storing Transaction",
@@ -483,7 +512,7 @@ const SetPrice = () => {
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)//
-      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/add`, {
+      const response = await fetch(`http://localhost:7000/auto/add`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -505,7 +534,7 @@ const SetPrice = () => {
           percentageChange,
           fromNumberOfDecimals: currencies[Field.INPUT]?.isNative ? 18 : currencies[Field.INPUT]?.wrapped.decimals,
           toNumberOfDecimals: currencies[Field.OUTPUT]?.isNative ? 18 : currencies[Field.OUTPUT]?.wrapped.decimals,
-          fromPrice: `${quantity}`,
+          fromPrice: `${value}`,
           currentToPrice: formattedAmounts[Field.OUTPUT],
           orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1,
           type: "Auto Time",
@@ -1004,10 +1033,10 @@ const SetPrice = () => {
         border ="1px solid white"
         padding={1}
       >
-      5 minutes
+      {parseInt(selectedFrequency) ? `${selectedFrequency} minutes` : selectedFrequency}
       </MenuButton>
       <MenuList>
-        {["5","30","60","daily","weekly","monthly"].map((item:string,index)=>(
+        {["5","10","30","60","daily","weekly","monthly"].map((item:string,index)=>(
           <MenuItem key={index} _focus={{ color: "#319EF6" }} onClick={(e) => setSelectedFrequency(item)} fontSize="13px">
          {parseInt(item) ? `${item} minutes` : item}
         </MenuItem>
@@ -1163,9 +1192,7 @@ const SetPrice = () => {
                     onClick={()=>
                       {
                       setCurrentToPrice(receivedAmount)
-                      signatureFromDataBase ? 
-                      setShowModal(!showModal)
-                     : sendTransactionToDatabase()
+                      signatureFromDataBase ? runTransaction() : sendTransactionToDatabase()
                     }}
                     // onClick={sendTransactionToDatabase}
                     fontSize="18px"
@@ -1207,6 +1234,8 @@ const SetPrice = () => {
         showNewChangesText={showNewChangesText}
         pathSymbol={pathSymbol}
         situation={situation}
+        quantity={currencies[Field.INPUT]?.isNative ? quantity : ""}
+        market={marketType}
       />
     </Box>
   )

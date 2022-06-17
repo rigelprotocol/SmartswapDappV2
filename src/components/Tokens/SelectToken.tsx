@@ -88,7 +88,6 @@ const SelectToken: React.FC<IModal> = ({
   function useSearchInactiveTokenLists(search: string | undefined, minResults = 10): WrappedTokenInfo[] {
     const lists = useAllLists()
     const inactiveUrls = useInactiveListUrls()
-    console.log({inactiveUrls,lists})
     const { chainId } = useActiveWeb3React()
     const activeTokens = useAllTokens()
     return useMemo(() => {

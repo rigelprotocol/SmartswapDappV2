@@ -12,7 +12,8 @@ import {
     Text,
     Button,
     Image,
-    Checkbox
+    Checkbox,
+    Img
 } from "@chakra-ui/react";
 import { InfoOutlineIcon, ArrowDownIcon } from "@chakra-ui/icons";
 import RGPImage from "./../../../assets/tokens/RGP.svg";
@@ -40,7 +41,9 @@ export type IModal = {
     setCheckedItem: Function;
     checkedItem: boolean;
   showNewChangesText:boolean;
-  numberOfTransaction:string
+  numberOfTransaction:string;
+  quantity:string | number | undefined;
+  market:string
 };
 
 const AutoTimeModal: React.FC<IModal> = ({
@@ -65,7 +68,9 @@ const AutoTimeModal: React.FC<IModal> = ({
     slippage,
     minimumAmountToRecieve,
     showNewChangesText,
-    numberOfTransaction
+    numberOfTransaction,
+    quantity,
+    market
 }) => {
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
@@ -194,6 +199,7 @@ const AutoTimeModal: React.FC<IModal> = ({
                                 </Box>
                                 <Text color={heavyTextColor}>{frequency === "5" || frequency === "30" ? `${frequency} minutes` : `${frequency}`}</Text>
                             </Flex>
+                           
                             <Flex justifyContent='space-between' my='4'>
                                 <Box color={lightTextColor}>
                                     Route <InfoOutlineIcon />
@@ -202,7 +208,12 @@ const AutoTimeModal: React.FC<IModal> = ({
                                     {pathSymbol}
                                 </Text>
                             </Flex>
-                          
+                            {quantity && <Flex justifyContent='space-between'>
+                                <Box color={lightTextColor}>
+                                    Amount withdrawed to contract <InfoOutlineIcon />
+                                </Box>
+                                <Text color={heavyTextColor}>{quantity}</Text>
+                            </Flex>}
                             <Flex justifyContent='space-between' my='4'>
                                 <Box color={lightTextColor}>
                                     Number of transaction <InfoOutlineIcon />
@@ -210,6 +221,14 @@ const AutoTimeModal: React.FC<IModal> = ({
                                 <Text color={heavyTextColor} fontWeight='500'>
                                     {numberOfTransaction}
                                 </Text>
+                            </Flex>
+                            <Flex justifyContent='space-between' my='4'>
+                                <Box color={lightTextColor}>
+                                   Market Router <InfoOutlineIcon />
+                                </Box>
+                                <Flex>
+            <Img src={`./images/${market}.png`} width="25px" height="25px" mr="1" /> <Text mt="1">{market}</Text>
+          </Flex>
                             </Flex>
                             <Flex justifyContent='space-between' my='4'>
                                 <Box color={lightTextColor}>

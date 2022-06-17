@@ -37,7 +37,7 @@ const useOpenOrders = (socket:any) => {
     const [openOrderData, setopenOrderData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")
+    const [URL, setURL] = useState("http://localhost:7000")
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const refreshPage = useSelector((state: RootState) => state.transactions.refresh);
     const location = useLocation().pathname;
@@ -68,10 +68,11 @@ const useOpenOrders = (socket:any) => {
     }, [chainId, account, contractAddress,refreshPage,locationData]);
     useEffect(() => {
         socket?.on("success",()=>{
+            console.log(123)
             getOpenOrders();
         })
         
-    }, [socket]);
+    }, [socket,account]);
 
     const tokenList = async (addressName: string) => {
         const token = await getERC20Token(addressName, library);
@@ -99,11 +100,12 @@ const useOpenOrders = (socket:any) => {
 
 
         const getOpenOrders = async () => {
-            if ((account && contractAddress && locationData)) {
+            if ((account && locationData)) {
                 setloadOpenOrders(true);
                 try {
                     let dataToUse =[]
                     const transaction = await getTransactionFromDatabase(account)
+                    console.log("yes8388")
                     if (transaction.length > 0) {
                         let data = []
                         if (locationData === "auto") {
@@ -114,7 +116,7 @@ const useOpenOrders = (socket:any) => {
                         }
                         const result = data.filter((item:any)=>item.errorArray.length===0 && item.transactionHash === "" && parseInt(item.chainID) === chainId)
                         dataToUse = await Promise.all(result.map(async (data: any) => {
-                            console.log(data.swapFromToken,data.amountToSwap,data.totalNumberOfTransaction,data.orderID)
+                            console.log(data.swapFromToken,data.amountToSwap,data.totalNumberOfTransaction,data.orderID,data.currentNumber)
                             return {
                                 inputAmount: data.amountToSwap,
                                 outputAmount: data.userExpectedPrice,
@@ -129,7 +131,7 @@ const useOpenOrders = (socket:any) => {
                                 status: data.status,
                                 currentToPrice: data.typeOfTransaction === "Set Price" ? data.currentToPrice : data.percentageChange,
                                 chainID:data.chainID ,
-                                rate:`${data.currentNumber -1} / ${data.totalNumberOfTransaction}`,
+                                rate:`${data.currentNumber- 1} / ${data.totalNumberOfTransaction}`,
                                 initialFromPrice:data.initialFromPrice,
                                 initialToPrice:data.initialToPrice,
                                 situation:data.situation,
