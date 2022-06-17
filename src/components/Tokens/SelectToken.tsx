@@ -59,7 +59,6 @@ export function useSearchInactiveTokenLists(search: string | undefined, minResul
     const addressSet: { [address: string]: true } = {}
     for (const url of inactiveUrls) {
       const list = lists[url].current
-      console.log(list)
       // eslint-disable-next-line no-continue
       if (!list) continue
       for (const tokenInfo of list.tokens) {
