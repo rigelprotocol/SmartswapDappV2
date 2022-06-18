@@ -131,7 +131,7 @@ const useOpenOrders = (socket:any) => {
                                 status: data.status,
                                 currentToPrice: data.typeOfTransaction === "Set Price" ? data.currentToPrice : data.percentageChange,
                                 chainID:data.chainID ,
-                                rate:`${data.currentNumber- 1} / ${data.totalNumberOfTransaction}`,
+                                rate:`${data.currentNumber} / ${data.totalNumberOfTransaction}`,
                                 initialFromPrice:data.initialFromPrice,
                                 initialToPrice:data.initialToPrice,
                                 situation:data.situation,
