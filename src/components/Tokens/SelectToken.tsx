@@ -26,6 +26,7 @@ import {
   useToken,
   useIsUserAddedToken,
 } from "../../hooks/Tokens";
+import {DEFAULT_LIST_OF_LISTS, CMC} from "../../utils/constants/lists";
 import { isAddress } from "../../utils";
 import { filterTokens } from "./filtering";
 import ImportRow from "./ImportRow";
@@ -166,7 +167,24 @@ const SelectToken: React.FC<IModal> = ({
   const [sortedTokenList] = useUpdateBalance("");
 
   const filteredInactiveTokens = useSearchInactiveTokenLists(debouncedQuery);
-  console.log(filteredInactiveTokens);
+
+  const [inactiveList, setInactiveList] = useState([]);
+
+  const getTokens = async () => {
+    try {
+      const tokenList = await fetch(CMC);
+      const filtered = await tokenList.json();
+      setInactiveList(filtered.tokens)
+    } catch (e) {
+      console.log(e)
+    }
+  };
+
+  useEffect(() => {
+    getTokens();
+  }, [chainId]);
+
+  //console.log(inactiveList.filter((token) => token.name.toLowerCase().includes(debouncedQuery)));
 
   return (
     <>
@@ -220,6 +238,12 @@ const SelectToken: React.FC<IModal> = ({
                       token={searchToken}
                       openNewTokenModal={setOpenNewTokenModal}
                   />
+                  {/*{inactiveList.map((token) => (*/}
+                  {/*    <ImportRow*/}
+                  {/*        token={token}*/}
+                  {/*        openNewTokenModal={setOpenNewTokenModal}*/}
+                  {/*    />*/}
+                  {/*))}*/}
                   <Text>This is where new tokens should go.</Text>
                 </Box>
 
