@@ -13,13 +13,15 @@ import {
 import { formatAmount } from "../../utils/utilsFunctions";
 import ShowYieldFarmDetails from "./ShowYieldFarmDetails";
 import { useColorModeValue } from "@chakra-ui/react";
-import { LIGHT_THEME, DARK_THEME } from "./index";
+import {LIGHT_THEME, DARK_THEME, farmSection} from "./index";
 import { useWeb3React } from "@web3-react/core";
 import Darklogo from "../../assets/rgpdarklogo.svg";
 import { useLocation} from 'react-router-dom';
 import { useFetchYieldFarmDetails } from "../../state/newfarm/hooks";
 import { GButtonClicked } from "../../components/G-analytics/gFarming";
-// import "react-loading-skeleton/dist/skeleton.css";
+import ShowNewFarm from "./ShowNewFarm";
+import {useSelector} from "react-redux";
+import {State} from "../../state/types";
 
 const YieldFarm = ({
   content,
@@ -72,19 +74,22 @@ const YieldFarm = ({
 
   const symbolName = params.split('/');
 
-  useEffect(() => {
-    const getSingleFarm = async () => {
-      await content2;
+  const selectedField = useSelector((state: State) => state.farming.selectedField);
+  const selected = selectedField === farmSection.NEW_LP;
 
-      if (symbolName[2] === content2?.deposit) {
-        myRef.current.scrollIntoView({behavior: 'smooth'});
-        setShowYieldFarm(true)
-      }
-
-    };
-    getSingleFarm();
-
-  }, [symbolName, params]);
+  // useEffect(() => {
+  //   const getSingleFarm = async () => {
+  //     await content2;
+  //
+  //     if (symbolName[2] === content2?.deposit) {
+  //       myRef.current.scrollIntoView({behavior: 'smooth'});
+  //       setShowYieldFarm(true)
+  //     }
+  //
+  //   };
+  //   getSingleFarm();
+  //
+  // }, [symbolName, params]);
 
 
   const totalLiquidityValue = () => {
@@ -252,24 +257,27 @@ const YieldFarm = ({
         </Box>
       </Flex>
       {showYieldfarm && (
-        // <Stack>
-        //   <Skeleton height='20px' />
-        //   <Skeleton height='20px' />
-        //   <Skeleton height='20px' />
-        //   <Skeleton height='20px' />
-        // </Stack>
-        // <Skeleton>
-        <ShowYieldFarmDetails
-          content={content?.type === "RGP" ? content : content2}
-          // content2={content2}
-          LoadingState={LoadingState}
-          section={section}
-          // content2={content2}
-          // showYieldfarm={loading}
-          wallet={wallet}
-          URLReferrerAddress={URLReferrerAddress}
-        />
-        // </Skeleton>
+
+          !selected ? (
+              <ShowYieldFarmDetails
+                  content={content?.type === "RGP" ? content : content2}
+                  // content2={content2}
+                  LoadingState={LoadingState}
+                  section={section}
+                  // content2={content2}
+                  // showYieldfarm={loading}
+                  wallet={wallet}
+                  URLReferrerAddress={URLReferrerAddress}
+              />
+          ) : (
+              <ShowNewFarm
+                  content={content?.type === "RGP" ? content : content2}
+                  LoadingState={LoadingState}
+                  section={section}
+                  wallet={wallet}
+                  URLReferrerAddress={URLReferrerAddress}
+              />
+          )
       )}
     </>
   );
