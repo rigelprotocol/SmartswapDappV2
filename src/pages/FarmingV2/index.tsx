@@ -2102,7 +2102,7 @@ export function Index() {
               background={selected === farmSection.LIQUIDITY ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
               color={useSelectedColor}
               value={farmSection.LIQUIDITY}
-              fontSize="15px"
+              fontSize="14px"
               onClick={() => handleSelect(farmSection.LIQUIDITY)}
               borderRadius={isMobileDevice ? "10px 0px 0px 10px" : 0}
             >
@@ -2169,7 +2169,7 @@ export function Index() {
               // border={`1px solid ${borderColor}`}
               background={selected === farmSection.STAKING ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
               color={useSelectedColor}
-              fontSize="15px"
+              fontSize="14px"
               // px={5}
               // py={4}
               // minWidth={{ base: "none", md: "200px", lg: "200px" }}
@@ -2247,7 +2247,7 @@ export function Index() {
         <MenuButton
           // mr={1}
           variant="ghost"
-          fontSize="15px"
+          fontSize="14px"
           as={Button}
           transition="all 0.2s"
           borderRadius="md"
@@ -2290,12 +2290,12 @@ export function Index() {
                 background={selected === farmSection.NEW_LP ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
                 color={useSelectedColor}
                 value={farmSection.NEW_LP}
-                fontSize="15px"
+                fontSize="14px"
                 onClick={() => handleSelect(farmSection.NEW_LP)}
                 borderRadius={isMobileDevice ? "10px 0px 0px 10px" : 0}
             >
               <Text className={"liquidity"} color={titleColor}>
-                New LP Farms
+                Pancake LP Farm
               </Text>
             </Tab>
           </TabList>

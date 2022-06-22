@@ -330,7 +330,7 @@ export const useUpdateNewFarm = ({
                 setReload(false);
             }
         }
-    }, [reload, stateChanged]);
+    }, [reload, stateChanged, chainId]);
     return { loadingFarm };
 };
 
@@ -632,7 +632,7 @@ export const useNewYieldFarmDetails = ({
 
             setLoading(false);
         }
-    }, [account, stateChanged]);
+    }, [account, stateChanged, chainId]);
     return { loading };
 };
 
