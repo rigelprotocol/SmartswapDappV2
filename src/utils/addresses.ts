@@ -115,7 +115,7 @@ export const MASTERCHEFNEWLPADDRESSES: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
   "56": "0xe1eccccb46755a38d218bf7fdcd6f26c2cd7671f",
-  "97": "0x16C57b6c5e935E501c4Fd574A1865866BcaEf09B",
+  "97": "0x94822127C89C589Fa6335ED43E1D92a21AA49E22",
   "137": "0x",
   "80001": "0x",
   "42261": "0x",

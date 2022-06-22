@@ -141,9 +141,10 @@ const YieldFarm = ({
           >
             Deposit
           </Box>
-          <Box marginTop='15px' align='left'>
+          <Flex justifyContent={'space-between'} marginTop='15px' align='left' alignItems={'center'}>
             {content?.type === "RGP" ? content.deposit : content2?.deposit}
-          </Box>
+            {selected && <Img boxSize={'25px'} m={'10px'} src={'https://s2.coinmarketcap.com/static/img/coins/64x64/7186.png'} />}
+          </Flex>
         </Flex>
         <Flex justifyContent='space-between' width='100%'>
           <Box
@@ -196,7 +197,7 @@ const YieldFarm = ({
           >
             Total Liquidity
           </Box>
-          <Box marginTop='15px' paddingLeft='65px' align='right'>
+          <Box marginTop='15px' paddingLeft='65px' align='right'  alignItems='center'>
             ${" "}
             {content?.type === "RGP"
               ? totalLiquidityValue()
