@@ -1,14 +1,16 @@
-import { createReducer } from "@reduxjs/toolkit";
+import {createReducer} from "@reduxjs/toolkit";
 import {
-  updateSearchResult,
-  clearSearchResult,
-  updateFilterResult,
-  updateYieldFarmDetails,
-  updateNewFilterResult,
-  updateNewSearchResult,
-  clearAllFarms,
-  updateProductFarmDetails,
+    clearAllFarms,
+    clearSearchResult,
+    updateFilterResult,
+    updateNewFilterResult,
+    updateNewSearchResult,
+    updateProductFarmDetails,
+    updateSearchResult,
+    updateSelectedField,
+    updateYieldFarmDetails
 } from "./action";
+import {farmSection} from "../../pages/FarmingV2";
 
 export interface FarmingSearchState {
   searchResult: [] | undefined;
@@ -45,6 +47,7 @@ export interface FarmingSearchState {
       tokenStaked:string
       }>
     | undefined;
+  selectedField: farmSection
 }
 
 const initialState: FarmingSearchState = {
@@ -53,7 +56,8 @@ const initialState: FarmingSearchState = {
   filterResult: undefined,
   newFilterResult: undefined,
   content: undefined,
-  productFarm:undefined
+  productFarm:undefined,
+    selectedField: farmSection.LIQUIDITY
 };
 
 export default createReducer(initialState, (builder) =>
@@ -120,4 +124,11 @@ export default createReducer(initialState, (builder) =>
         filterResult: undefined,
       };
     })
+      .addCase(updateSelectedField, (farming, {payload: { value }}) => {
+          return {
+              ...farming,
+              selectedField: value
+
+          };
+      })
 );

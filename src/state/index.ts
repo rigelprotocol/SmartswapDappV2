@@ -13,6 +13,8 @@ import farms from "./farm/reducer";
 import gas from "./gas/reducer";
 import farming from "./farming/reducer";
 import newfarm from "./newfarm/reducer";
+import lpfarm from "./LPFarm/reducer";
+import newFarming from "./newFarming/reducer";
 
 const PERSISTED_KEYS: string[] = ["user", "lists", "gas", "newfarm"];
 
@@ -35,6 +37,8 @@ const store = configureStore({
     gas,
     farming,
     newfarm,
+    lpfarm,
+    newFarming
   },
   middleware: [
     ...getDefaultMiddleware({ thunk: true }),
