@@ -110,6 +110,19 @@ export const MASTERCHEFV2ADDRESSES: { [key: string]: string } = {
   "42261": "0xFCAD25Ce875EA7eaBdcf99cdF57692376F1DbdF1",
   "42262": "0x1A700c1810387F4178b3944373388de76A88F804",
 };
+
+export const MASTERCHEFNEWLPADDRESSES: { [key: string]: string } = {
+  "1": "0x",
+  "3": "0x",
+  "56": "0x35d5eDaeebfB3D084d8ff796514fc9fd8c103357",
+  "97": "0x94822127C89C589Fa6335ED43E1D92a21AA49E22",
+  "137": "0x",
+  "80001": "0x",
+  "42261": "0x",
+  "42262": "0x",
+};
+
+
 export const AUTOSWAPV2ADDRESSES: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",

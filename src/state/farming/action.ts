@@ -26,4 +26,8 @@ export const updateProductFarmDetails = createAction<{ value: any[] }>(
   "farming/updateProductFarmDetails"
 );
 
+export const updateSelectedField = createAction<{ value: any }>(
+    "farming/updateSelectedField"
+);
+
 export const clearAllFarms = createAction("farming/clearAllFarms");
