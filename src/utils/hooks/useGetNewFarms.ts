@@ -1,16 +1,20 @@
 import {useWeb3React} from "@web3-react/core";
 import {useCallback, useMemo, useState} from "react";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {updateChainId, updateFarms, updateLoadingState} from "../../state/LPFarm/actions";
 import {Contract, ethers} from "ethers";
 import {LiquidityPairInstance, MasterChefV2Contract, smartFactory} from "../Contracts";
 import {BUSD, MASTERCHEFNEWLPADDRESSES, RGPADDRESSES, SMARTSWAPFACTORYADDRESSES, USDC, USDT} from "../addresses";
 import {getERC20Token} from "../utilsFunctions";
+import {State} from "../../state/types";
+import {farmSection} from "../../pages/FarmingV2";
 
 
-export const useGetNewFarms = (reload?: boolean, setReload?: any) => {
+export const useGetNewFarms = (id:number, reload?: boolean, setReload?: any) => {
     const { chainId, account, library } = useWeb3React();
     const [loadingLP, setLoading] = useState(true);
+    const selectedField = useSelector((state: State) => state.farming.selectedField);
+    const selected = selectedField === farmSection.SECOND_NEW_LP;
     const [LPData, setLPData] = useState<
         Array<{
             id: number | undefined;
@@ -137,9 +141,6 @@ export const useGetNewFarms = (reload?: boolean, setReload?: any) => {
                     token0Address === USDT[chainId as number] ? decimal1 : decimal0
                 );
                 rgpPrice = totalUSDT / totalRGP;
-                console.log("second", totalUSDT / totalRGP);
-
-                console.log(reserves[0].toString(), reserves[1].toString());
             }
 
             return rgpPrice;
@@ -213,7 +214,7 @@ export const useGetNewFarms = (reload?: boolean, setReload?: any) => {
     ) => {
         try {
             const masterchef = await MasterChefV2Contract(
-                MASTERCHEFNEWLPADDRESSES[chainId as number],
+                MASTERCHEFNEWLPADDRESSES[chainId as number][id],
                 library
             );
             const reserves = await getLpTokenReserve(address);
@@ -319,7 +320,7 @@ export const useGetNewFarms = (reload?: boolean, setReload?: any) => {
                 setLoading(true);
                 handleLoading(true);
                 const masterchef = await MasterChefV2Contract(
-                    MASTERCHEFNEWLPADDRESSES[chainId as number],
+                    MASTERCHEFNEWLPADDRESSES[chainId as number][id],
                     library
                 );
                 const rgpPrice = await calculateRigelPrice();
@@ -341,7 +342,7 @@ export const useGetNewFarms = (reload?: boolean, setReload?: any) => {
                 console.log(err);
             }
         }
-    }, [chainId, reload]);
+    }, [chainId, reload, selected]);
 
     return { LPData, loadingLP };
 };

@@ -22,6 +22,7 @@ import { GButtonClicked } from "../../components/G-analytics/gFarming";
 import ShowNewFarm from "./ShowNewFarm";
 import {useSelector} from "react-redux";
 import {State} from "../../state/types";
+import {SupportedChainId} from "../../constants/chains";
 
 const YieldFarm = ({
   content,
@@ -31,6 +32,7 @@ const YieldFarm = ({
   URLReferrerAddress,
   LoadingState,
   section,
+    contractID
 }: {
   content?: {
     pid: number;
@@ -64,6 +66,7 @@ const YieldFarm = ({
   URLReferrerAddress: string;
   LoadingState: boolean;
   section: string;
+  contractID: number;
 }) => {
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
   const { chainId, library } = useWeb3React();
@@ -75,7 +78,8 @@ const YieldFarm = ({
   const symbolName = params.split('/');
 
   const selectedField = useSelector((state: State) => state.farming.selectedField);
-  const selected = selectedField === farmSection.NEW_LP;
+  const  selectedBSC = selectedField === farmSection.NEW_LP;
+  const selected = selectedField === farmSection.NEW_LP || selectedField === farmSection.SECOND_NEW_LP;
 
   // useEffect(() => {
   //   const getSingleFarm = async () => {
@@ -143,7 +147,8 @@ const YieldFarm = ({
           </Box>
           <Flex justifyContent={'space-between'} marginTop='15px' align='left' alignItems={'center'}>
             {content?.type === "RGP" ? content.deposit : content2?.deposit}
-            {selected && <Img boxSize={'25px'} m={'10px'} src={'https://s2.coinmarketcap.com/static/img/coins/64x64/7186.png'} />}
+            {selectedBSC && Number(chainId) === Number(SupportedChainId.BINANCETEST) || Number(chainId) === Number(SupportedChainId.BINANCE) ?
+            <Img boxSize={'25px'} m={'10px'} src={'https://s2.coinmarketcap.com/static/img/coins/64x64/7186.png'} /> : null}
           </Flex>
         </Flex>
         <Flex justifyContent='space-between' width='100%'>
@@ -277,6 +282,7 @@ const YieldFarm = ({
                   section={section}
                   wallet={wallet}
                   URLReferrerAddress={URLReferrerAddress}
+                  contractID={contractID}
               />
           )
       )}

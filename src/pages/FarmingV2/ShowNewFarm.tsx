@@ -89,7 +89,7 @@ import {
 import {ZERO_ADDRESS} from "../../constants";
 import {State} from "../../state/types";
 
-const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section, showYieldfarm}: {
+const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section, showYieldfarm, contractID}: {
     content: {
         pid: number | string;
         id: string;
@@ -110,6 +110,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
     LoadingState: boolean;
     section: string;
     showYieldfarm: boolean;
+    contractID: number
 }) => {
     const mode = useColorModeValue("light", DARK_THEME);
     const bgColor = useColorModeValue("#FFF", "#15202B");
@@ -154,16 +155,11 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
 
     // const data = useGetFarmData(reload, setReload);
 
-    const selectedField = useSelector((state: State) => state.farming.selectedField);
-    const selected = selectedField === farmSection.NEW_LP;
 
-   // const {loadingState} = useUpdateFarm({reload, setReload, content});
 
-   // useFetchYieldFarmDetails({content, section, setLoading, loading});
+    const {loadingFarm} = useUpdateNewFarm({reload, setReload, content, contractID});
 
-    const {loadingFarm} = useUpdateNewFarm({reload, setReload, content});
-
-     useNewYieldFarmDetails({content, section, setLoading, loading});
+     useNewYieldFarmDetails({content, section, setLoading, loading, contractID});
 
 
 
@@ -207,7 +203,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
             if (account) {
                 const rgpApproval = await contract.allowance(
                     account,
-                    MASTERCHEFNEWLPADDRESSES[chainId as number]
+                    MASTERCHEFNEWLPADDRESSES[chainId as number][contractID]
                 );
                 return !(rgpApproval.toString() <= 0);
             }
@@ -421,28 +417,33 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
         setChecked(true);
     };
 
+    const [devpercent, setDevPercent] = useState('');
+
     useEffect(() => {
         const RGPfarmingFee = async () => {
             if (account) {
                 const masterChef = await MasterChefNEWLPContract(
-                    MASTERCHEFNEWLPADDRESSES[chainId as number],
+                    MASTERCHEFNEWLPADDRESSES[chainId as number][contractID],
                     library
                 );
                 const minFarmingFee = await masterChef.farmingFee();
-                const fee = Web3.utils.fromWei(minFarmingFee.toString());
-                setFarmingFee(fee);
+                const percentFee = await masterChef.devSetpercentOnExternalPool();
+                const fee = ethers.utils.formatUnits(minFarmingFee, 18);
+                const percentageAmount = ethers.utils.formatUnits(percentFee, 18);
+                setFarmingFee(fee.toString());
+                setDevPercent(percentageAmount.toString());
                 setFarmingFeeLoading(false);
             }
         };
         RGPfarmingFee();
-    }, [account]);
+    }, [chainId]);
 
     useEffect(() => {
         getAllowances();
     }, [account, deposited]);
 
     const allowance = (contract: Contract) =>
-        contract.allowance(account, MASTERCHEFNEWLPADDRESSES[chainId as number]);
+        contract.allowance(account, MASTERCHEFNEWLPADDRESSES[chainId as number][contractID]);
 
     const getAllowances = async () => {
         if (account) {
@@ -743,7 +744,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
         if (account) {
             try {
                 const lpTokens = await MasterChefNEWLPContract(
-                    MASTERCHEFNEWLPADDRESSES[chainId as number],
+                    MASTERCHEFNEWLPADDRESSES[chainId as number][contractID],
                     library
                 );
 
@@ -922,7 +923,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                     }
                 } else {
                     const lpTokens = await MasterChefNEWLPContract(
-                        MASTERCHEFNEWLPADDRESSES[chainId as number],
+                        MASTERCHEFNEWLPADDRESSES[chainId as number][contractID],
                         library
                     );
                     const { format1, format2, format3 } = await calculateGas(
@@ -1019,7 +1020,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                         );
                     } else {
                         const lpTokens = await MasterChefNEWLPContract(
-                            MASTERCHEFNEWLPADDRESSES[chainId as number],
+                            MASTERCHEFNEWLPADDRESSES[chainId as number][contractID],
                             library
                         );
                         const { format1, format2, format3 } = await calculateGas(
@@ -1068,7 +1069,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                     }
                 } else {
                     const lpTokens = await MasterChefNEWLPContract(
-                        MASTERCHEFNEWLPADDRESSES[chainId as number],
+                        MASTERCHEFNEWLPADDRESSES[chainId as number][contractID],
                         library
                     );
 
@@ -1385,7 +1386,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                 );
                 const walletBal = (await contract.balanceOf(account)) ;
                 const data = await contract.approve(
-                    MASTERCHEFNEWLPADDRESSES[chainId as number],
+                    MASTERCHEFNEWLPADDRESSES[chainId as number][contractID],
                     walletBal,
                     {
                         from: account,
@@ -1449,7 +1450,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                 const rgp = await rigelToken(RGP[chainId as number], library);
                 const walletBal = (await rgp.balanceOf(account)) ;
                 const data = await rgp.approve(
-                    MASTERCHEFNEWLPADDRESSES[chainId as number],
+                    MASTERCHEFNEWLPADDRESSES[chainId as number][contractID],
                     walletBal,
                     {
                         from: account,
@@ -2035,36 +2036,60 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                                 justifyContent='space-around'
                             >
                                 <Box>
-                                    {
-                                        <Flex marginTop='10px'>
-                                            <Text fontSize='24px' marginTop='15px' fontWeight='bold'>
-                                                {FarmingFeeLoading ? (
-                                                    <Spinner speed='0.65s' color='#999999' />
-                                                ) : (
-                                                    farmingFee
-                                                )}
-                                            </Text>
-                                            <Flex flexDirection={["column", "column", "column"]}>
-                                                <Text
-                                                    fontSize='16px'
-                                                    color={mode === DARK_THEME ? "#999999" : "#999999"}
-                                                    textAlign='right'
-                                                    marginLeft='30px'
-                                                >
-                                                    Minimum
-                                                </Text>{" "}
-                                                <Text
-                                                    fontSize='16px'
-                                                    color={mode === DARK_THEME ? "#999999" : "#999999"}
-                                                    marginLeft='30px'
-                                                >
-                                                    Farming Fee
-                                                </Text>{" "}
+                                    <Box>
+                                        {
+                                            <Flex marginTop='10px'>
+                                                <Text fontSize='16px' marginTop='15px' fontWeight='bold'>
+                                                    {FarmingFeeLoading ? (
+                                                        <Spinner speed='0.65s' color='#999999' />
+                                                    ) : (
+                                                        farmingFee
+                                                    )}
+                                                </Text>
+                                                <Flex flexDirection={["column", "column", "column"]}>
+                                                    <Text
+                                                        fontSize='16px'
+                                                        color={mode === DARK_THEME ? "#999999" : "#999999"}
+                                                        textAlign='center'
+                                                        marginLeft='30px'
+                                                    >
+                                                        Minimum
+                                                    </Text>{" "}
+                                                    <Text
+                                                        fontSize='16px'
+                                                        color={mode === DARK_THEME ? "#999999" : "#999999"}
+                                                        marginLeft='30px'
+                                                    >
+                                                        Farming Fee
+                                                    </Text>{" "}
+                                                </Flex>
                                             </Flex>
-                                        </Flex>
-                                    }
-                                </Box>
+                                        }
+                                    </Box>
 
+                                    <Box>
+                                        {
+                                            <Flex marginTop='10px' alignItems={'center'}>
+                                                <Text fontSize='16px' fontWeight='bold'>
+                                                    {FarmingFeeLoading ? (
+                                                        <Spinner speed='0.65s' color='#999999' />
+                                                    ) : (
+                                                        devpercent
+                                                    )}
+                                                </Text>
+                                                <Flex flexDirection={["column", "column", "column"]}>
+                                                    <Text
+                                                        fontSize='16px'
+                                                        color={mode === DARK_THEME ? "#999999" : "#999999"}
+                                                        marginLeft='30px'
+                                                    >
+                                                        Percentage Fee
+                                                    </Text>
+                                                </Flex>
+                                            </Flex>
+                                        }
+                                    </Box>
+                                </Box>
                                 <Box
                                     my={3}
                                     mx={1}

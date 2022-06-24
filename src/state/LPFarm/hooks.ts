@@ -29,6 +29,7 @@ import {
 } from "../newFarming/action";
 import Web3 from "web3";
 import {RootState} from "../index";
+import {farmSection} from "../../pages/FarmingV2";
 
 export const useNewLPData = (): farmDataInterface => {
     const farms = useSelector((state: State) => state.lpfarm);
@@ -50,17 +51,21 @@ interface updateFarmInterface {
         APY: number;
         address: string;
     };
+    contractID: number;
     section: string;
+
 }
 
 export const useUpdateNewFarm = ({
                                   reload,
                                   setReload,
-                                  content,
-                                  section
+                                  content, contractID, section
                               }: updateFarmInterface) => {
     const data = useNewLPData();
     const searchSection = useSelector((state) => state.newFarming);
+
+    const selectedField = useSelector((state: State) => state.farming.selectedField);
+    const selected = selectedField === farmSection.SECOND_NEW_LP;
 
     const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
     const stateChanged : boolean = trxState === 2;
@@ -205,7 +210,7 @@ export const useUpdateNewFarm = ({
     const calculateLiquidityAndApy = async (reward: number | undefined) => {
         try {
             const masterchef = await MasterChefNEWLPContract(
-                MASTERCHEFNEWLPADDRESSES[chainId as number],
+                MASTERCHEFNEWLPADDRESSES[chainId as number][contractID],
                 library
             );
             const LPInstance = await LiquidityPairInstance(content.address, library);
@@ -269,7 +274,7 @@ export const useUpdateNewFarm = ({
                     LPInstance.balanceOf(account),
                     LPInstance.allowance(
                         account,
-                        MASTERCHEFNEWLPADDRESSES[chainId as number]
+                        MASTERCHEFNEWLPADDRESSES[chainId as number][contractID]
                     ),
                 ]);
             const tokenStaked = await userInfo.amount;
@@ -330,7 +335,7 @@ export const useUpdateNewFarm = ({
                 setReload(false);
             }
         }
-    }, [reload, stateChanged, chainId]);
+    }, [reload, stateChanged, chainId, selected]);
     return { loadingFarm };
 };
 
@@ -350,14 +355,10 @@ interface FetchYieldFarmDetails {
     section: string;
     loading: boolean;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    contractID: number
 }
 
-export const useNewYieldFarmDetails = ({
-                                             content,
-                                             section,
-                                             loading,
-                                             setLoading
-                                         }: FetchYieldFarmDetails) => {
+export const useNewYieldFarmDetails = ({content, section, loading, setLoading, contractID}: FetchYieldFarmDetails) => {
     const data = useNewLPData();
     const searchSection = useSelector((state) => state.newFarming);
     const { account, chainId, library } = useWeb3React();
@@ -365,6 +366,9 @@ export const useNewYieldFarmDetails = ({
 
     const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
     const stateChanged : boolean = trxState === 2;
+
+    const selectedField = useSelector((state: State) => state.farming.selectedField);
+    const selected = selectedField === farmSection.SECOND_NEW_LP;
 
     const dispatch = useDispatch();
 
@@ -506,7 +510,7 @@ export const useNewYieldFarmDetails = ({
     const calculateLiquidityAndApy = async (reward: number | undefined) => {
         try {
             const masterchef = await MasterChefNEWLPContract(
-                MASTERCHEFNEWLPADDRESSES[chainId as number],
+                MASTERCHEFNEWLPADDRESSES[chainId as number][contractID],
                 library
             );
             const LPInstance = await LiquidityPairInstance(content.address, library);
@@ -570,7 +574,7 @@ export const useNewYieldFarmDetails = ({
                     LPInstance.balanceOf(account),
                     LPInstance.allowance(
                         account,
-                        MASTERCHEFNEWLPADDRESSES[chainId as number]
+                        MASTERCHEFNEWLPADDRESSES[chainId as number][contractID]
                     ),
                 ]);
             const tokenStaked = await userInfo.amount;
@@ -632,7 +636,7 @@ export const useNewYieldFarmDetails = ({
 
             setLoading(false);
         }
-    }, [account, stateChanged, chainId]);
+    }, [account, stateChanged, chainId, selected]);
     return { loading };
 };
 
