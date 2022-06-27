@@ -2297,11 +2297,19 @@ export function Index() {
               Number(chainId) === Number(SupportedChainId.POLYGONTEST) ||  Number(chainId) === Number(SupportedChainId.POLYGON) ? (
                   <Tab
                       border='1px solid #DEE5ED'
-                      borderRadius={0}
                       background={selected === farmSection.NEW_LP || selected === farmSection.SECOND_NEW_LP ?
                           useSelectedBackgroundColor : useNotSelectedBackgroundColor}
                       color={useSelectedColor}
                       onClick={() => handleSelect(farmSection.NEW_LP)}
+                      display='flex'
+                      flex-direction='row'
+                      justify-content='center'
+                      align-items='center'
+                      flexWrap={isMobileDevice ? "wrap" : undefined}
+                      padding={isMobileDevice ? "2px 4px" : undefined}
+                      value={farmSection.LIQUIDITY}
+                      fontSize="14px"
+                      borderRadius={isMobileDevice ? "0px 10px 10px 0px" : 0}
                   >
                     <Text color={titleColor}>New Farms</Text>
                         <Select
@@ -2339,7 +2347,7 @@ export function Index() {
                       value={farmSection.NEW_LP}
                       fontSize="14px"
                       onClick={() => handleSelect(farmSection.NEW_LP)}
-                      borderRadius={isMobileDevice ? "10px 0px 0px 10px" : 0}
+                      borderRadius={isMobileDevice ? "0px 10px 10px 0px" : 0}
                   >
                     <Text className={"liquidity"} color={titleColor}>Pancake LP Farm</Text>
                   </Tab>
