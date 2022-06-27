@@ -171,6 +171,7 @@ export function Index() {
   const [liquidityIndex, setLiquidityIndex] = useState(0);
   const [ productFarmIndex, setProductFarmIndex] = useState(4);
   const [stakingIndex, setStakingIndex] = useState(1);
+  const [newFarmIndex, setNewFarmIndex] = useState(5);
   const [isMobileDevice] = useMediaQuery("(max-width: 750px)");
   const [referralCode, setReferralCode] = useState("");
   const [refAddress, setRefAddress] = useState("");
@@ -278,6 +279,18 @@ export function Index() {
     } else if (parseInt(event.target.value, 10) === 2) {
       setLiquidityIndex(2);
       setTabIndex(4);
+    }
+  };
+
+  const handleNewFarmTab = (event: { target: { value: string } }) => {
+    if (parseInt(event.target.value, 10) === 5) {
+      setNewFarmIndex(5);
+      setTabIndex(5);
+      history.push("/farming-v2/new-farm");
+    } else if (parseInt(event.target.value, 10) === 6) {
+      setNewFarmIndex(6);
+      setTabIndex(6);
+      history.push("/farming-v2/second-farm");
     }
   };
 
@@ -2080,6 +2093,7 @@ export function Index() {
           </Button>
         </Link>
       </Flex>
+
       <Tabs
         defaultIndex={match ? STAKING_INDEX : LIQUIDITY_INDEX}
         index={tabIndex}
@@ -2279,7 +2293,39 @@ export function Index() {
             </Tab>)
             }
 
-
+            {
+              Number(chainId) === Number(SupportedChainId.POLYGONTEST) ||  Number(chainId) === Number(SupportedChainId.POLYGON) ? (
+                  <Tab
+                      border='1px solid #DEE5ED'
+                      borderRadius={0}
+                      background={selected === farmSection.NEW_LP || selected === farmSection.SECOND_NEW_LP ?
+                          useSelectedBackgroundColor : useNotSelectedBackgroundColor}
+                      color={useSelectedColor}
+                      onClick={() => handleSelect(farmSection.NEW_LP)}
+                  >
+                    <Text color={titleColor}>New Farms</Text>
+                        <Select
+                            size={isMobileDevice ? undefined : "sm"}
+                            borderColor={selected === farmSection.NEW_LP ? useNotSelectedBorderColor : useSelectedBorderColor}
+                            color={selected === farmSection.NEW_LP ? useNotSelectedTextColor : useSelectedTextColor}
+                            onChange={handleNewFarmTab}
+                            background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
+                            onClick={(e) => e.stopPropagation()}
+                            border=' 1px solid #008DFF'
+                            box-sizing='border-box'
+                            borderRadius='50px'
+                            /* Inside auto layout */
+                            width={isMobileDevice ? undefined : "fit-content"}
+                            flex='none'
+                            order='1'
+                            flex-grow='0'
+                            margin='10px 16px'
+                        >
+                          <option value={5}>QuickSwap</option>
+                          <option value={6}>UniSwap</option>
+                        </Select>
+                  </Tab>
+              ) : (
                   <Tab
                       display='flex'
                       flex-direction='row'
@@ -2295,36 +2341,10 @@ export function Index() {
                       onClick={() => handleSelect(farmSection.NEW_LP)}
                       borderRadius={isMobileDevice ? "10px 0px 0px 10px" : 0}
                   >
-                    <Text className={"liquidity"} color={titleColor}>
-                     {chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.BINANCETEST ?
-                        "Pancake LP Farm" : "QuickSwap LP"}
-                    </Text>
+                    <Text className={"liquidity"} color={titleColor}>Pancake LP Farm</Text>
                   </Tab>
-
-            {
-              Number(chainId) === Number(SupportedChainId.POLYGONTEST) ||  Number(chainId) === Number(SupportedChainId.POLYGON) ? (
-                  <Tab
-                      display='flex'
-                      flex-direction='row'
-                      justify-content='center'
-                      align-items='center'
-                      flexWrap={isMobileDevice ? "wrap" : undefined}
-                      padding={isMobileDevice ? "2px 4px" : undefined}
-                      border='1px solid #DEE5ED'
-                      background={selected === farmSection.SECOND_NEW_LP ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
-                      color={useSelectedColor}
-                      value={farmSection.SECOND_NEW_LP}
-                      fontSize="14px"
-                      onClick={() => handleSelect(farmSection.SECOND_NEW_LP)}
-                      borderRadius={isMobileDevice ? "10px 0px 0px 10px" : 0}
-                  >
-                    <Text className={"liquidity"} color={titleColor}>
-                      UniSwap LP
-                    </Text>
-                  </Tab>
-              ) : null
+              )
             }
-
 
           </TabList>
           {/* <Divider display={isMobileDevice ? undefined : "none"} my='4' /> */}

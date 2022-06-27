@@ -1,24 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Box,
-  Flex,
-  Button,
-  Spinner,
-  Text,
-  Img,
-  Stack,
-  Skeleton,
-  SkeletonText,
-} from "@chakra-ui/react";
-import { formatAmount } from "../../utils/utilsFunctions";
+import React, {useRef, useState} from "react";
+import {Box, Button, Flex, Img, Spinner, Text, useColorModeValue,} from "@chakra-ui/react";
+import {formatAmount} from "../../utils/utilsFunctions";
 import ShowYieldFarmDetails from "./ShowYieldFarmDetails";
-import { useColorModeValue } from "@chakra-ui/react";
-import {LIGHT_THEME, DARK_THEME, farmSection} from "./index";
-import { useWeb3React } from "@web3-react/core";
+import {DARK_THEME, farmSection, LIGHT_THEME} from "./index";
+import {useWeb3React} from "@web3-react/core";
 import Darklogo from "../../assets/rgpdarklogo.svg";
-import { useLocation} from 'react-router-dom';
-import { useFetchYieldFarmDetails } from "../../state/newfarm/hooks";
-import { GButtonClicked } from "../../components/G-analytics/gFarming";
+import {useLocation} from 'react-router-dom';
+import {GButtonClicked} from "../../components/G-analytics/gFarming";
 import ShowNewFarm from "./ShowNewFarm";
 import {useSelector} from "react-redux";
 import {State} from "../../state/types";
@@ -149,6 +137,8 @@ const YieldFarm = ({
             {content?.type === "RGP" ? content.deposit : content2?.deposit}
             {selectedBSC && Number(chainId) === Number(SupportedChainId.BINANCETEST) || Number(chainId) === Number(SupportedChainId.BINANCE) ?
             <Img boxSize={'25px'} m={'10px'} src={'https://s2.coinmarketcap.com/static/img/coins/64x64/7186.png'} /> : null}
+            {selectedField === farmSection.SECOND_NEW_LP ?
+                <Img boxSize={'25px'} m={'10px'} src={'https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png'} /> : null}
           </Flex>
         </Flex>
         <Flex justifyContent='space-between' width='100%'>
