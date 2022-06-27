@@ -427,9 +427,9 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                     library
                 );
                 const minFarmingFee = await masterChef.farmingFee();
+                const fee = Web3.utils.fromWei(minFarmingFee.toString());
                 const percentFee = await masterChef.devSetpercentOnExternalPool();
-                const fee = ethers.utils.formatUnits(minFarmingFee, 18);
-                const percentageAmount = ethers.utils.formatUnits(percentFee, 18);
+                const percentageAmount = Web3.utils.fromWei(percentFee.toString());
                 setFarmingFee(fee.toString());
                 setDevPercent(percentageAmount.toString());
                 setFarmingFeeLoading(false);

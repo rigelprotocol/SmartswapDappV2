@@ -66,6 +66,7 @@ export const useUpdateNewFarm = ({
 
     const selectedField = useSelector((state: State) => state.farming.selectedField);
     const selected = selectedField === farmSection.SECOND_NEW_LP;
+    const mainLP = selectedField === farmSection.NEW_LP;
 
     const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
     const stateChanged : boolean = trxState === 2;
@@ -335,7 +336,7 @@ export const useUpdateNewFarm = ({
                 setReload(false);
             }
         }
-    }, [reload, stateChanged, chainId, selected]);
+    }, [reload, stateChanged, chainId, selected, mainLP]);
     return { loadingFarm };
 };
 
@@ -369,6 +370,7 @@ export const useNewYieldFarmDetails = ({content, section, loading, setLoading, c
 
     const selectedField = useSelector((state: State) => state.farming.selectedField);
     const selected = selectedField === farmSection.SECOND_NEW_LP;
+    const mainLP = selectedField === farmSection.NEW_LP;
 
     const dispatch = useDispatch();
 
@@ -636,7 +638,7 @@ export const useNewYieldFarmDetails = ({content, section, loading, setLoading, c
 
             setLoading(false);
         }
-    }, [account, stateChanged, chainId, selected]);
+    }, [account, stateChanged, chainId, selected, mainLP]);
     return { loading };
 };
 

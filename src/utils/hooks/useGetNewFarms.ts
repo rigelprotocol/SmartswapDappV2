@@ -15,6 +15,7 @@ export const useGetNewFarms = (id:number, reload?: boolean, setReload?: any) => 
     const [loadingLP, setLoading] = useState(true);
     const selectedField = useSelector((state: State) => state.farming.selectedField);
     const selected = selectedField === farmSection.SECOND_NEW_LP;
+    const mainLP = selectedField === farmSection.NEW_LP;
     const [LPData, setLPData] = useState<
         Array<{
             id: number | undefined;
@@ -342,7 +343,7 @@ export const useGetNewFarms = (id:number, reload?: boolean, setReload?: any) => 
                 console.log(err);
             }
         }
-    }, [chainId, reload, selected]);
+    }, [chainId, reload, selected, mainLP]);
 
     return { LPData, loadingLP };
 };
