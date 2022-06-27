@@ -37,7 +37,7 @@ const useOpenOrders = (socket:any) => {
     const [openOrderData, setopenOrderData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("https://rigelprotocol-autoswap.herokuapp.com")
+    const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const refreshPage = useSelector((state: RootState) => state.transactions.refresh);
     const location = useLocation().pathname;
@@ -131,7 +131,7 @@ const useOpenOrders = (socket:any) => {
                                 status: data.status,
                                 currentToPrice: data.typeOfTransaction === "Set Price" ? data.currentToPrice : data.percentageChange,
                                 chainID:data.chainID ,
-                                rate:`${data.currentNumber+1} / ${data.totalNumberOfTransaction}`,
+                                rate:`${data.currentNumber} / ${data.totalNumberOfTransaction}`,
                                 initialFromPrice:data.initialFromPrice,
                                 initialToPrice:data.initialToPrice,
                                 situation:data.situation,
@@ -145,6 +145,7 @@ const useOpenOrders = (socket:any) => {
                         )
                     
                 }
+                console.log({dataToUse})
                 const marketSwap = await Promise.all(
                     dataToUse.map(async (data: any) => ({
                         tokenIn: data.tokenIn === "native" ? {
