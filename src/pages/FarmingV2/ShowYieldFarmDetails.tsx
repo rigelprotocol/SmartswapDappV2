@@ -210,6 +210,8 @@ useEffect(()=>{
           account,
           MASTERCHEFV2ADDRESSES[chainId as number]
         );
+        console.log({contract,account},contract.symbol())
+        console.log({rgpApproval},rgpApproval.toString())
         return !(rgpApproval.toString() <= 0);
       }
     };
@@ -250,6 +252,7 @@ useEffect(()=>{
       } else {
         const pool = await smartSwapLPTokenPoolTwo(content.address, library);
         const approvalForRGPBNB = await poolAllowance(pool);
+        console.log({approvalForRGPBNB,rgpApproval})
         changeApprovalButton(approvalForRGPBNB, rgpApproval);
       }
     };
@@ -272,7 +275,7 @@ useEffect(()=>{
     setApproveValueForRGP(false);
     setApproveValueForOtherToken(false);
 
-    if (account) {
+    if (account && content) {
       checkForApproval();
     }
   }, [wallet, content, account]);

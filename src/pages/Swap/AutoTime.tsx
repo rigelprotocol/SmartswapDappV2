@@ -137,7 +137,7 @@ const SetPrice = () => {
   }
   useEffect(() => {
     async function checkIfSignatureExists() {
-      let user = await fetch(`https://autoswap-server.herokuapp.com/auto/data/${account}`)//https://autoswap-server.herokuapp.com
+      let user = await fetch(`https://rigelprotocol-autoswap.herokuapp.com/auto/data/${account}`)//https://rigelprotocol-autoswap.herokuapp.com
       let data = await user.json()
       if (data) {
         setDataSignature(data.dataSignature)
@@ -512,7 +512,7 @@ const setQuantityValue =() =>{
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)//
-      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/add`, {
+      const response = await fetch(`https://rigelprotocol-autoswap.herokuapp.com/auto/add`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
