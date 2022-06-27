@@ -2313,7 +2313,7 @@ export function Index() {
                       border='1px solid #DEE5ED'
                       background={selected === farmSection.SECOND_NEW_LP ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
                       color={useSelectedColor}
-                      value={farmSection.NEW_LP}
+                      value={farmSection.SECOND_NEW_LP}
                       fontSize="14px"
                       onClick={() => handleSelect(farmSection.SECOND_NEW_LP)}
                       borderRadius={isMobileDevice ? "10px 0px 0px 10px" : 0}
@@ -3275,7 +3275,7 @@ export function Index() {
 
                   {!account ? null : ChainId !== chainId || loadingLP ? (
                           <Stack mt={2}>
-                            {new Array(5).fill("1").map((item,index)=>{
+                            {new Array(4).fill("1").map((item,index)=>{
                               return (
                                   <Box
                                       p={isMobileDevice ? "3" : "6"}
@@ -3290,7 +3290,7 @@ export function Index() {
                                         }
                                         alignItems={isMobileDevice ? "center" : undefined}
                                     >
-                                      {new Array(5).fill("1").map((item,index)=>{
+                                      {new Array(4).fill("1").map((item,index)=>{
                                         return (
                                             <Flex
                                                 ml={isMobileDevice ? undefined : 2}
@@ -3313,7 +3313,7 @@ export function Index() {
 
 
                           </Stack>
-                      ) : // </Stack>
+                      ) :
                       keyword &&
                       searchResults.searchResult === undefined ? null : keyword &&
                       searchResults.searchResult !== undefined ? (
