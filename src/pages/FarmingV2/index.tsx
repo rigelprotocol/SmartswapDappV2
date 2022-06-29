@@ -191,6 +191,9 @@ export function Index() {
   const [keyword, setKeyword] = useState("");
 
 
+  const selectedField = useSelector((state: State) => state.farming.selectedField);
+  const selectedDisplay = selectedField === farmSection.NEW_LP || selectedField === farmSection.SECOND_NEW_LP;
+
   // 👇 look here
   const previousKeyword = usePrevious(keyword);
 
@@ -3055,7 +3058,7 @@ export function Index() {
                 <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
                   <Flex
                       alignItems='center'
-                      justifyContent='space-between'
+                      justifyContent='space-around'
                       px={4}
                       py={4}
                       background={
@@ -3095,7 +3098,8 @@ export function Index() {
                     <Text>Earn</Text>
                     <Text>APY</Text>
                     <Text>Total Liquidity</Text>
-                    <Text />
+                    <Text>LP Locked</Text>
+                    <Text/>
                   </Flex>
 
                   {!account ? null : ChainId !== chainId ? (
@@ -3258,7 +3262,7 @@ export function Index() {
                 <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
                   <Flex
                       alignItems='center'
-                      justifyContent='space-between'
+                      justifyContent='space-around'
                       px={4}
                       py={4}
                       background={
@@ -3298,7 +3302,8 @@ export function Index() {
                     <Text>Earn</Text>
                     <Text>APY</Text>
                     <Text>Total Liquidity</Text>
-                    <Text />
+                    <Text>LP Locked</Text>
+                    <Text/>
                   </Flex>
 
                   {!account ? null : ChainId !== chainId || loadingLP ? (

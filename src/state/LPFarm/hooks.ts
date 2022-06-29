@@ -8,7 +8,7 @@ import {
     MasterChefNEWLPContract,
     LiquidityPairInstance,
     smartFactory,
-    productStakingContract,
+    productStakingContract, smartSwapLPTokenPoolThree,
 } from "../../utils/Contracts";
 import {
     MASTERCHEFNEWLPADDRESSES,
@@ -17,7 +17,7 @@ import {
     BUSD,
     USDT,
     USDC,
-    PRODUCTSTAKINGADDRESSES,
+    PRODUCTSTAKINGADDRESSES, SMARTSWAPLP_TOKEN3ADDRESSES, SYMBOLS,
 } from "../../utils/addresses";
 import { getERC20Token } from "../../utils/utilsFunctions";
 import { ethers } from "ethers";
@@ -55,6 +55,37 @@ interface updateFarmInterface {
     section: string;
 
 }
+
+const getBNBPrice = async (address: string, library: any) => {
+    try {
+        let BNBPrice;
+        const pair = await smartSwapLPTokenPoolThree(
+            address,
+            library
+        );
+        const reserves = await pair.getReserves();
+        const testNetPair = SMARTSWAPLP_TOKEN3ADDRESSES[97];
+
+        // BUSD is token0 on testnet but token1 on mainnet, thus the reason to check
+        // before calculating the price based on BUSD
+
+        if (pair.address === testNetPair) {
+            BNBPrice = ethers.utils.formatUnits(
+                reserves[0].mul(1000).div(reserves[1]),
+                3
+            );
+        } else {
+            BNBPrice = ethers.utils.formatUnits(
+                reserves[1].mul(1000).div(reserves[0]),
+                3
+            );
+        }
+        return Number(BNBPrice);
+
+    } catch (e) {
+        console.log('Could not fetch BNB Price.')
+    }
+};
 
 export const useUpdateNewFarm = ({
                                   reload,
@@ -177,10 +208,12 @@ export const useUpdateNewFarm = ({
         //this function gets the reserves of an LP token, it takes the LP token address as an argument
         try {
             const LpTokenContract = await LiquidityPairInstance(address, library);
-            const [totalReserves, token0, token1] = await Promise.all([
+            const [totalReserves, token0, token1, LPLockedPair, LPTotalSupply] = await Promise.all([
                 LpTokenContract.getReserves(),
                 LpTokenContract.token0(),
                 LpTokenContract.token1(),
+                LpTokenContract.balanceOf(MASTERCHEFNEWLPADDRESSES[chainId as number][contractID]),
+                LpTokenContract.totalSupply()
             ]);
 
             const [token0Contract, token1Contract] = await Promise.all([
@@ -202,6 +235,8 @@ export const useUpdateNewFarm = ({
                 symbol1,
                 decimals0,
                 decimals1,
+                LPSupply: LPLockedPair,
+                LPTotalSupply
             };
         } catch (err) {
             console.log(err);
@@ -230,7 +265,14 @@ export const useUpdateNewFarm = ({
                     )
                 : "1";
 
+            const totalBNB = reserves
+                ? SYMBOLS['BNB'][chainId as number] === reserves.tokenAddress0
+                    ? reserves.reserves0.toString()
+                    : reserves.reserves1.toString()
+                : "1";
+
             const rgpPrice = await calculateRigelPrice();
+            const BNBPrice = await getBNBPrice(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number], library);
 
             const [token0, token1] = await Promise.all([
                 getERC20Token(reserves && reserves.tokenAddress0, library),
@@ -255,8 +297,14 @@ export const useUpdateNewFarm = ({
                 symbol1 === "USDT" ||
                 symbol0 === "USDC" ||
                 symbol1 === "USDC"
-                    ? parseFloat(totalStable) * 2
-                    : parseFloat(ethers.utils.formatEther(totalRGP)) * rgpPrice * 2;
+                    ? parseFloat(totalStable) * 2 :
+                    symbol0 === "WBNB" || symbol1 === "WBNB"
+                        ? parseFloat(ethers.utils.formatEther(totalBNB)) * BNBPrice * 2
+                        : parseFloat(ethers.utils.formatEther(totalRGP)) * rgpPrice * 2;
+
+            const LiquidityLocked = parseFloat(ethers.utils.formatEther(reserves.LPSupply)) / parseFloat(ethers.utils.formatEther(reserves.LPTotalSupply));
+
+            const newLiquidity = (LiquidityLocked * totalLiquidity);
 
             const [poolInfo, totalAllocPoint] = await Promise.all([
                 masterchef.poolInfo(content.id),
@@ -268,6 +316,8 @@ export const useUpdateNewFarm = ({
                     parseFloat(totalAllocPoint.toString())) *
                 reward;
             const APY = (rgpPrice * poolReward * 365 * 100) / totalLiquidity;
+            const newAPY = (rgpPrice * poolReward * 365 * 100) / newLiquidity;
+
             const [tokenEarned, userInfo, FarmTokenBalance, allowance] =
                 await Promise.all([
                     masterchef.pendingRigel(content.id, account),
@@ -287,7 +337,7 @@ export const useUpdateNewFarm = ({
                 earn: "RGP",
                 type: "LP",
                 totalLiquidity,
-                APY,
+                APY: newAPY,
                 tokenStaked: [
                     `${content.symbol0}-${content.symbol1}`,
                     ethers.utils.formatEther(tokenStaked.toString()),
@@ -296,6 +346,7 @@ export const useUpdateNewFarm = ({
                 availableToken: ethers.utils.formatEther(FarmTokenBalance.toString()),
                 poolAllowance: ethers.utils.formatEther(allowance.toString()),
                 address: content.address,
+                LPLocked: newLiquidity.toFixed(2),
             };
         } catch (err) {
             console.log(err);
@@ -463,9 +514,6 @@ export const useNewYieldFarmDetails = ({content, section, loading, setLoading, c
                     token0Address === USDT[chainId as number] ? decimal1 : decimal0
                 );
                 rgpPrice = totalUSDT / totalRGP;
-                console.log("second", totalUSDT / totalRGP);
-
-                console.log(reserves[0].toString(), reserves[1].toString());
             }
 
             return rgpPrice;
@@ -478,10 +526,12 @@ export const useNewYieldFarmDetails = ({content, section, loading, setLoading, c
         //this function gets the reserves of an LP token, it takes the LP token address as an argument
         try {
             const LpTokenContract = await LiquidityPairInstance(address, library);
-            const [totalReserves, token0, token1] = await Promise.all([
+            const [totalReserves, token0, token1, LPLockedPair, LPTotalSupply] = await Promise.all([
                 LpTokenContract.getReserves(),
                 LpTokenContract.token0(),
                 LpTokenContract.token1(),
+                LpTokenContract.balanceOf(MASTERCHEFNEWLPADDRESSES[chainId as number][contractID]),
+                LpTokenContract.totalSupply()
             ]);
 
             const [token0Contract, token1Contract] = await Promise.all([
@@ -503,6 +553,8 @@ export const useNewYieldFarmDetails = ({content, section, loading, setLoading, c
                 symbol1,
                 decimals0,
                 decimals1,
+                LPSupply: LPLockedPair,
+                LPTotalSupply
             };
         } catch (err) {
             console.log(err);
@@ -532,6 +584,7 @@ export const useNewYieldFarmDetails = ({content, section, loading, setLoading, c
                 : "1";
 
             const rgpPrice = await calculateRigelPrice();
+            const BNBPrice = await getBNBPrice(SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number], library);
 
             const [token0, token1] = await Promise.all([
                 getERC20Token(reserves && reserves.tokenAddress0, library),
@@ -549,6 +602,12 @@ export const useNewYieldFarmDetails = ({content, section, loading, setLoading, c
                     : reserves.reserves1.toString()
                 : "1";
 
+            const totalBNB = reserves
+                ? SYMBOLS['BNB'][chainId as number] === reserves.tokenAddress0
+                    ? reserves.reserves0.toString()
+                    : reserves.reserves1.toString()
+                : "1";
+
             const totalLiquidity =
                 symbol0 === "BUSD" ||
                 symbol1 === "BUSD" ||
@@ -556,8 +615,13 @@ export const useNewYieldFarmDetails = ({content, section, loading, setLoading, c
                 symbol1 === "USDT" ||
                 symbol0 === "USDC" ||
                 symbol1 === "USDC"
-                    ? parseFloat(totalStable) * 2
-                    : parseFloat(ethers.utils.formatEther(totalRGP)) * rgpPrice * 2;
+                    ? parseFloat(totalStable) * 2 :
+                    symbol0 === "WBNB" || symbol1 === "WBNB"
+                        ? parseFloat(ethers.utils.formatEther(totalBNB)) * BNBPrice * 2
+                        : parseFloat(ethers.utils.formatEther(totalRGP)) * rgpPrice * 2;
+
+            const LiquidityLocked = parseFloat(ethers.utils.formatEther(reserves.LPSupply)) / parseFloat(ethers.utils.formatEther(reserves.LPTotalSupply));
+            const newLiquidity = (LiquidityLocked * totalLiquidity);
 
             const [poolInfo, totalAllocPoint] = await Promise.all([
                 masterchef.poolInfo(content.id),
@@ -569,6 +633,9 @@ export const useNewYieldFarmDetails = ({content, section, loading, setLoading, c
                     parseFloat(totalAllocPoint.toString())) *
                 reward;
             const APY = (rgpPrice * poolReward * 365 * 100) / totalLiquidity;
+            const newAPY = (rgpPrice * poolReward * 365 * 100) / newLiquidity;
+
+
             const [tokenEarned, userInfo, FarmTokenBalance, allowance] =
                 await Promise.all([
                     masterchef.pendingRigel(content.id, account),
@@ -588,7 +655,7 @@ export const useNewYieldFarmDetails = ({content, section, loading, setLoading, c
                 earn: "RGP",
                 type: "LP",
                 totalLiquidity,
-                APY,
+                APY: newAPY,
                 tokenStaked: [
                     `${content.symbol0}-${content.symbol1}`,
                     ethers.utils.formatEther(tokenStaked.toString()),
@@ -597,6 +664,7 @@ export const useNewYieldFarmDetails = ({content, section, loading, setLoading, c
                 availableToken: ethers.utils.formatEther(FarmTokenBalance.toString()),
                 poolAllowance: ethers.utils.formatEther(allowance.toString()),
                 address: content.address,
+                LPLocked: newLiquidity.toFixed(2)
             };
         } catch (err) {
             console.log(err);
@@ -632,7 +700,7 @@ export const useNewYieldFarmDetails = ({content, section, loading, setLoading, c
 
             newArray[index] = updatedFarm;
 
-            console.log("updatedd", newArray);
+            console.log("updated", newArray);
 
             handleUpdateFarms(newArray);
 
@@ -673,9 +741,7 @@ export const useProductFarmDetails = ({
                 productFarm.userInfo(account),
                 productFarm.userData(account),
             ]);
-        console.log({userInfo,FarmTokenBalance})
-        const tokenStaked = await FarmTokenBalance.tokenQuantity
-        console.log({tokenStaked},tokenStaked.toString(),Web3.utils.fromWei(tokenStaked.toString()))
+        const tokenStaked = await FarmTokenBalance.tokenQuantity;
 
         return {
             feature:"Auto Period",

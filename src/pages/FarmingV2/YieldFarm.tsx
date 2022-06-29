@@ -47,6 +47,7 @@ const YieldFarm = ({
     earn: string;
     type: string;
     totalLiquidity: number;
+    LPLocked: number;
     APY: number;
     address: string;
   };
@@ -135,8 +136,10 @@ const YieldFarm = ({
           </Box>
           <Flex justifyContent={'space-between'} marginTop='15px' align='left' alignItems={'center'}>
             {content?.type === "RGP" ? content.deposit : content2?.deposit}
-            {selectedBSC && Number(chainId) === Number(SupportedChainId.BINANCETEST) || Number(chainId) === Number(SupportedChainId.BINANCE) ?
+            {selectedBSC && (Number(chainId) === Number(SupportedChainId.BINANCETEST) || Number(chainId) === Number(SupportedChainId.BINANCE)) ?
             <Img boxSize={'25px'} m={'10px'} src={'https://s2.coinmarketcap.com/static/img/coins/64x64/7186.png'} /> : null}
+            {selectedBSC && (Number(chainId) === Number(SupportedChainId.POLYGONTEST) || Number(chainId) === Number(SupportedChainId.POLYGON)) ?
+                <Img boxSize={'25px'} m={'10px'} src={'https://s2.coinmarketcap.com/static/img/coins/64x64/8206.png'} /> : null}
             {selectedField === farmSection.SECOND_NEW_LP ?
                 <Img boxSize={'25px'} m={'10px'} src={'https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png'} /> : null}
           </Flex>
@@ -190,15 +193,35 @@ const YieldFarm = ({
             display={["block", "block", "none"]}
             opacity='0.5'
           >
-            Total Liquidity
+           Total Liquidity
           </Box>
           <Box marginTop='15px' paddingLeft='65px' align='right'  alignItems='center'>
-            ${" "}
+           ${" "}
             {content?.type === "RGP"
               ? totalLiquidityValue()
               : formatAmount(content2?.totalLiquidity.toFixed(2))}
           </Box>
         </Flex>
+        {
+          selected &&
+              <Flex
+                  justifyContent='space-between'
+                  width='100%'
+                  marginBottom={["10px", "10px", "0"]}
+              >
+                <Box
+                    marginTop='15px'
+                    align='left'
+                    display={["block", "block", "none"]}
+                    opacity='0.5'
+                >
+                  LP Locked
+                </Box>
+                <Box marginTop='15px' paddingLeft='65px' align='right' alignItems='center'>
+                  {content2?.LPLocked}
+                </Box>
+              </Flex>
+        }
         <Box align='right' mt={["4", "0"]} ml='2'>
           <Button
             w={["100%", "100%", "146px"]}
