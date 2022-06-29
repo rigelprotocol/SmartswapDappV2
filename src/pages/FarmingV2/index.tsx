@@ -124,6 +124,7 @@ import { GFarmingClickListYourProject, GFarmingInputSearchFarm, GOpenedSpecialPo
 import { ZERO_ADDRESS } from "../../constants";
 import {updateSelectedField} from "../../state/farming/action";
 import {State} from "../../state/types";
+import {clearAllFarms} from "../../state/newFarming/action";
 
 export const BIG_TEN = new bigNumber(10);
 // export const LIQUIDITY = "liquidity";
@@ -310,6 +311,10 @@ export function Index() {
   const recentFarms = useSelector((state) => state.newFarming.content);
   const searchSection = useSelector((state) => state.farming);
   const newSearchSection = useSelector((state) => state.newFarming);
+
+  useEffect(() => {
+    dispatch(clearAllFarms())
+  }, [chainId]);
 
 
   const clearSearchedData = useCallback(() => {
