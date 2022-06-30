@@ -2035,11 +2035,11 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                                 display='flex'
                                 justifyContent='space-around'
                             >
-                                <Box>
+                                <Flex flexDirection={'column'} alignItems={'center'}>
                                     <Box>
                                         {
-                                            <Flex marginTop='10px'>
-                                                <Text fontSize='16px' marginTop='15px' fontWeight='bold'>
+                                            <Flex marginTop='10px' alignItems={'center'}>
+                                                <Text fontSize='16px' fontWeight='bold'>
                                                     {FarmingFeeLoading ? (
                                                         <Spinner speed='0.65s' color='#999999' />
                                                     ) : (
@@ -2050,18 +2050,10 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                                                     <Text
                                                         fontSize='16px'
                                                         color={mode === DARK_THEME ? "#999999" : "#999999"}
-                                                        textAlign='center'
-                                                        marginLeft='30px'
+                                                        marginLeft='20px'
                                                     >
-                                                        Minimum
-                                                    </Text>{" "}
-                                                    <Text
-                                                        fontSize='16px'
-                                                        color={mode === DARK_THEME ? "#999999" : "#999999"}
-                                                        marginLeft='30px'
-                                                    >
-                                                        Farming Fee
-                                                    </Text>{" "}
+                                                        Farm Fee
+                                                    </Text>
                                                 </Flex>
                                             </Flex>
                                         }
@@ -2081,15 +2073,17 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                                                     <Text
                                                         fontSize='16px'
                                                         color={mode === DARK_THEME ? "#999999" : "#999999"}
-                                                        marginLeft='30px'
+                                                        marginLeft='20px'
                                                     >
-                                                        Percentage Fee
+                                                        LP Fee
                                                     </Text>
                                                 </Flex>
                                             </Flex>
                                         }
                                     </Box>
-                                </Box>
+
+
+                                </Flex>
                                 <Box
                                     my={3}
                                     mx={1}
