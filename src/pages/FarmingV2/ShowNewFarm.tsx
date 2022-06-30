@@ -2043,7 +2043,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                                                     {FarmingFeeLoading ? (
                                                         <Spinner speed='0.65s' color='#999999' />
                                                     ) : (
-                                                        farmingFee
+                                                        <Text>{farmingFee} {' RGP'}</Text>
                                                     )}
                                                 </Text>
                                                 <Flex flexDirection={["column", "column", "column"]}>
@@ -2066,7 +2066,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                                                     {FarmingFeeLoading ? (
                                                         <Spinner speed='0.65s' color='#999999' />
                                                     ) : (
-                                                        devpercent
+                                                        <Text>{devpercent} {' %'}</Text>
                                                     )}
                                                 </Text>
                                                 <Flex flexDirection={["column", "column", "column"]}>
