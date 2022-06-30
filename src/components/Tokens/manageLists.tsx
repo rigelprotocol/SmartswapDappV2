@@ -89,6 +89,7 @@ const ManageList: React.FC<IModal> = ({
   const isImported = Object.keys(lists).includes(tokenInput)
 
   const sortedLists = useMemo(() => {
+    
     const listUrls = Object.keys(lists)
     return listUrls
       .filter((listUrl) => {

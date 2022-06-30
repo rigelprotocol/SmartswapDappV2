@@ -2,7 +2,7 @@ import {useMemo,useCallback, useEffect} from "react"
 import DEFAULT_TOKEN_LIST from "../../utils/constants/tokenList/rigelprotocol-default.tokenList.json"
 import { TokenList } from '@uniswap/token-lists'
 import {WrappedTokenInfo} from "./WrappedTokenInfo"
-import { TagInfo } from "./WrappedTokenInfo"
+// import { TagInfo } from "./WrappedTokenInfo"
 import { Tags } from "@uniswap/token-lists"
 import { DEFAULT_LIST_OF_LISTS } from "../../utils/constants/lists"
 import { AppDispatch, RootState } from ".."
@@ -24,7 +24,7 @@ export type TokenAddressMap = Readonly<{
   typeof WeakMap !== 'undefined' ? new WeakMap<TokenList, TokenAddressMap>() : null
 
   export function useAllLists(): RootState['lists']['byUrl'] {
-    return useSelector((state) => state.lists.byUrl)
+    return useSelector((state:RootState) => state.lists.byUrl)
   }
   
 // use ordering of default list of lists to assign priority

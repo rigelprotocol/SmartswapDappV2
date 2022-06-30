@@ -12,6 +12,7 @@ import { SerializedToken, addSerializedToken,removeSerializedToken } from '../ac
 export function useUserSlippageTolerance(): [number, (slippage: number) => void] {
   const dispatch = useDispatch<AppDispatch>();
   const userSlippageTolerance = useSelector<RootState, RootState['user']['userSlippageTolerance']>((state) => {
+    console.log(state.user,"930930")
     return state.user.userSlippageTolerance
   });
 
