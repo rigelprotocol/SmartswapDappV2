@@ -2125,7 +2125,7 @@ export function Index() {
               background={selected === farmSection.LIQUIDITY ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
               color={useSelectedColor}
               value={farmSection.LIQUIDITY}
-              fontSize="14px"
+              fontSize={isMobileDevice ? '12px' : '14px'}
               onClick={() => handleSelect(farmSection.LIQUIDITY)}
               borderRadius={isMobileDevice ? "10px 0px 0px 10px" : 0}
             >
@@ -2173,7 +2173,7 @@ export function Index() {
                   order='1'
                   onClick={(e) => e.stopPropagation()}
                   flex-grow='0'
-                  margin='10px 16px'
+                  margin={isMobileDevice ? "5px 12px" : '10px 16px'}
                 >
                   <option value={0}>V2</option>
                   <option value={2}>V1</option>
@@ -2192,7 +2192,7 @@ export function Index() {
               // border={`1px solid ${borderColor}`}
               background={selected === farmSection.STAKING ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
               color={useSelectedColor}
-              fontSize="14px"
+              fontSize={isMobileDevice ? '12px' : '14px'}
               // px={5}
               // py={4}
               // minWidth={{ base: "none", md: "200px", lg: "200px" }}
@@ -2210,29 +2210,6 @@ export function Index() {
                 Number(SupportedChainId.OASISMAINNET) ? null : (
                 <Select
                   size={isMobileDevice ? undefined : "sm"}
-                  // borderColor={
-                  //   mode === LIGHT_THEME && selected === LIQUIDITY
-                  //     ? "#0760A8 !important"
-                  //     : mode === DARK_THEME && selected === LIQUIDITY
-                  //     ? "#008DFF !important"
-                  //     : mode === DARK_THEME && selected === farmSection.STAKING
-                  //     ? "#324D68 !important"
-                  //     : mode === LIGHT_THEME && selected === farmSection.STAKING
-                  //     ? "#0760A8 !important"
-                  //     : "#F2F5F8 !important"
-                  // }
-                  // cursor='pointer'
-                  // color={
-                  //   mode === LIGHT_THEME && selected === LIQUIDITY
-                  //     ? "#0760A8"
-                  //     : mode === DARK_THEME && selected === LIQUIDITY
-                  //     ? "#008DFF"
-                  //     : mode === DARK_THEME && selected === farmSection.STAKING
-                  //     ? "#F1F5F8"
-                  //     : mode === LIGHT_THEME && selected === farmSection.STAKING
-                  //     ? "#0760A8"
-                  //     : "#333333"
-                  // }
                   borderColor={selected === farmSection.LIQUIDITY ? useNotSelectedBorderColor : useSelectedBorderColor}
                   color={selected === farmSection.LIQUIDITY ? useNotSelectedTextColor : useSelectedTextColor}
                   onChange={handleStakingTab}
@@ -2246,7 +2223,7 @@ export function Index() {
                   flex='none'
                   order='1'
                   flex-grow='0'
-                  margin='10px 16px'
+                  margin={isMobileDevice ? "5px 12px" : '10px 16px'}
                 >
                   <option value={1}>V2</option>
                   <option value={3}>V1</option>
@@ -2270,7 +2247,7 @@ export function Index() {
                   <MenuButton
                     // mr={1}
                     variant="ghost"
-                    fontSize="14px"
+                    fontSize={isMobileDevice ? '12px' : '14px'}
                     as={Button}
                     transition="all 0.2s"
                     borderRadius="md"
@@ -2316,7 +2293,7 @@ export function Index() {
                       flexWrap={isMobileDevice ? "wrap" : undefined}
                       padding={isMobileDevice ? "2px 4px" : undefined}
                       value={farmSection.LIQUIDITY}
-                      fontSize="14px"
+                      fontSize={isMobileDevice ? '12px' : '14px'}
                       borderRadius={isMobileDevice ? "0px 10px 10px 0px" : 0}
                   >
                     <Text color={titleColor}>New Farms</Text>
@@ -2353,7 +2330,7 @@ export function Index() {
                       background={selected === farmSection.NEW_LP ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
                       color={useSelectedColor}
                       value={farmSection.NEW_LP}
-                      fontSize="14px"
+                      fontSize={isMobileDevice ? '12px' : '14px'}
                       onClick={() => handleSelect(farmSection.NEW_LP)}
                       borderRadius={isMobileDevice ? "0px 10px 10px 0px" : 0}
                   >
