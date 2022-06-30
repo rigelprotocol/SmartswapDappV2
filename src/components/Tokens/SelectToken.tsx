@@ -171,12 +171,14 @@ const SelectToken: React.FC<IModal> = ({
   const [inactiveList, setInactiveList] = useState([]);
 
   const getTokens = async () => {
-    try {
-      const tokenList = await fetch(CMC);
-      const filtered = await tokenList.json();
-      setInactiveList(filtered.tokens)
-    } catch (e) {
-      console.log(e)
+    if (debouncedQuery !== '') {
+      try {
+        const tokenList = await fetch(CMC);
+        const filtered = await tokenList.json();
+        setInactiveList(filtered.tokens)
+      } catch (e) {
+        console.log(e)
+      }
     }
   };
 
@@ -184,7 +186,9 @@ const SelectToken: React.FC<IModal> = ({
     getTokens();
   }, [chainId]);
 
-  //console.log(inactiveList.filter((token) => token.name.toLowerCase().includes(debouncedQuery)));
+  console.log(inactiveList.filter((token) => token.name.toLowerCase().includes(debouncedQuery)));
+  console.log(inactiveList);
+  const searchTokens = inactiveList.filter((token) => token.name.toLowerCase().includes(debouncedQuery));
 
   return (
     <>
@@ -238,12 +242,12 @@ const SelectToken: React.FC<IModal> = ({
                       token={searchToken}
                       openNewTokenModal={setOpenNewTokenModal}
                   />
-                  {/*{inactiveList.map((token) => (*/}
-                  {/*    <ImportRow*/}
-                  {/*        token={token}*/}
-                  {/*        openNewTokenModal={setOpenNewTokenModal}*/}
-                  {/*    />*/}
-                  {/*))}*/}
+                  {searchTokens.map((token) => (
+                      <ImportRow
+                          token={token}
+                          openNewTokenModal={setOpenNewTokenModal}
+                      />
+                  ))}
                   <Text>This is where new tokens should go.</Text>
                 </Box>
 
