@@ -29,6 +29,7 @@ export interface FarmingSearchState {
         availableToken: string;
         allowance: string;
         address: string;
+        LPLocked: number;
     }>
         | undefined;
     productFarm:

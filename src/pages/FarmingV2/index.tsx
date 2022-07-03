@@ -35,6 +35,7 @@ import { CopyIcon } from "../../theme/components/Icons";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import YieldFarm from "./YieldFarm";
 import { AlertSvg } from "./Icon";
+import {HamburgerIcon} from "@chakra-ui/icons";
 
 import { useDispatch, useSelector } from "react-redux";
 import bigNumber from "bignumber.js";
@@ -124,6 +125,7 @@ import { GFarmingClickListYourProject, GFarmingInputSearchFarm, GOpenedSpecialPo
 import { ZERO_ADDRESS } from "../../constants";
 import {updateSelectedField} from "../../state/farming/action";
 import {State} from "../../state/types";
+import {clearAllFarms} from "../../state/newFarming/action";
 
 export const BIG_TEN = new bigNumber(10);
 // export const LIQUIDITY = "liquidity";
@@ -139,7 +141,8 @@ export enum farmSection {
   LIQUIDITY,
   STAKING,
   PRODUCT_FARM,
-  NEW_LP
+  NEW_LP,
+  SECOND_NEW_LP,
 } 
 
 export const MAINNET = 56;
@@ -149,15 +152,15 @@ export function Index() {
   const location = useLocation().pathname;
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
   const filterBorderColor = useColorModeValue("#DEE5ED", "#324D68");
-  const useNotSelectedBackgroundColor = useColorModeValue("#FFFFFF","#15202B")
-  const useSelectedBackgroundColor = useColorModeValue("#DEE5ED","#213345")
-  const useNotSelectedBorderColor = useColorModeValue("#008DFF","#324D68")
-  const useSelectedBorderColor = useColorModeValue("#0760A8","#F2F5F8")
-  const useNotSelectedTextColor = useColorModeValue("#333333","#0760A8")
-  const useSelectedTextColor = useColorModeValue("#0760A8","#008DFF")
+  const useNotSelectedBackgroundColor = useColorModeValue("#FFFFFF","#15202B");
+  const useSelectedBackgroundColor = useColorModeValue("#DEE5ED","#213345");
+  const useNotSelectedBorderColor = useColorModeValue("#008DFF","#324D68");
+  const useSelectedBorderColor = useColorModeValue("#0760A8","#F2F5F8");
+  const useNotSelectedTextColor = useColorModeValue("#333333","#0760A8");
+  const useSelectedTextColor = useColorModeValue("#0760A8","#008DFF");
   
-  const borderColor = useColorModeValue("#F2F5F8","#324D68")
-  const useSelectedColor = useColorModeValue("#333333","#213345")
+  const borderColor = useColorModeValue("#F2F5F8","#324D68");
+  const useSelectedColor = useColorModeValue("#333333","#213345");
   const placeholderTextColor = useColorModeValue("#333333", "#DCE5EF");
   const titleColor = useColorModeValue("#333333", "#ffffff");
   const [selected, setSelected] = useState(farmSection.LIQUIDITY);
@@ -170,6 +173,7 @@ export function Index() {
   const [liquidityIndex, setLiquidityIndex] = useState(0);
   const [ productFarmIndex, setProductFarmIndex] = useState(4);
   const [stakingIndex, setStakingIndex] = useState(1);
+  const [newFarmIndex, setNewFarmIndex] = useState(5);
   const [isMobileDevice] = useMediaQuery("(max-width: 750px)");
   const [referralCode, setReferralCode] = useState("");
   const [refAddress, setRefAddress] = useState("");
@@ -187,6 +191,7 @@ export function Index() {
   const [showPopOver, setShowPopover] = useState(false);
   const [saveChanges, setSavedChanges] = useState(false);
   const [keyword, setKeyword] = useState("");
+
 
 
   // 👇 look here
@@ -216,7 +221,11 @@ export function Index() {
               setSelected(farmSection.NEW_LP);
               dispatch(updateSelectedField({value: farmSection.NEW_LP}));
               setTabIndex(5)
-            } else {
+            } else if (location && location.includes("second-farm")) {
+            setSelected(farmSection.SECOND_NEW_LP);
+            dispatch(updateSelectedField({value: farmSection.SECOND_NEW_LP}));
+            setTabIndex(6)
+          } else {
               // setSelected(LIQUIDITY)
               setSelected(farmSection.LIQUIDITY);
             dispatch(updateSelectedField({value: farmSection.LIQUIDITY}));
@@ -276,12 +285,24 @@ export function Index() {
     }
   };
 
+  const handleNewFarmTab = (event: { target: { value: string } }) => {
+    if (parseInt(event.target.value, 10) === 5) {
+      setNewFarmIndex(5);
+      setTabIndex(5);
+      history.push("/farming-v2/new-farm");
+    } else if (parseInt(event.target.value, 10) === 6) {
+      setNewFarmIndex(6);
+      setTabIndex(6);
+      history.push("/farming-v2/second-farm");
+    }
+  };
+
   const { account, chainId, library } = useActiveWeb3React();
   const dispatch = useDispatch();
   let match = useRouteMatch("/farming-V2/staking-RGPv2");
   const FarmData = useFarms();
   const { farmdata, loadingState } = useGetFarmData();
-  const { LPData, loadingLP } = useGetNewFarms();
+  const { LPData, loadingLP } = useGetNewFarms(selected === farmSection.SECOND_NEW_LP ? 2 : 1);
 
   const data = useFarmData();
   const newLP = useNewLPData();
@@ -289,6 +310,10 @@ export function Index() {
   const recentFarms = useSelector((state) => state.newFarming.content);
   const searchSection = useSelector((state) => state.farming);
   const newSearchSection = useSelector((state) => state.newFarming);
+
+  useEffect(() => {
+    dispatch(clearAllFarms())
+  }, [chainId]);
 
 
   const clearSearchedData = useCallback(() => {
@@ -323,35 +348,24 @@ export function Index() {
 
   const searchResults = useSearchResults();
 
-  const trxState = useSelector<RootState>(
-    (state) => state.application.modal?.trxState
-  );
-
   const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
-  const stateChanged: boolean = trxState === 2;
+
   //temporary
-  useEffect(() => {
-    getFarmData();
-    getTokenStaked();
-    getFarmTokenBalance();
-  }, [account, chainId, stateChanged]);
-
-  const refreshData = () => {
-    getFarmData();
-    getTokenStaked();
-    getFarmTokenBalance();
-  };
-
-  useEffect(() => {
-    refreshData();
-  }, []);
-
   // useEffect(() => {
-  //   if (match) {
-  //     setSelected(STAKING);
-  //     setTabIndex(1);
-  //   }
-  // }, [match]);
+  //   getFarmData();
+  //   getTokenStaked();
+  //   getFarmTokenBalance();
+  // }, [account, chainId, stateChanged]);
+  //
+  // const refreshData = () => {
+  //   getFarmData();
+  //   getTokenStaked();
+  //   getFarmTokenBalance();
+  // };
+  //
+  // useEffect(() => {
+  //   refreshData();
+  // }, []);
 
   const changeVersion = (version: string, external?: boolean) => {
     if (external) {
@@ -376,11 +390,16 @@ export function Index() {
       dispatch(updateSelectedField({value: farmSection.NEW_LP}));
       setSwitchTab(!switchTab);
       changeVersion("/farming-V2/new-farm");
+    }else if(value === farmSection.SECOND_NEW_LP) {
+      setSelected(farmSection.SECOND_NEW_LP);
+      dispatch(updateSelectedField({value: farmSection.SECOND_NEW_LP}));
+      setSwitchTab(!switchTab);
+      changeVersion("/farming-V2/second-farm");
     } else if (value === farmSection.STAKING) {
       setSwitchTab(!switchTab);
       setSelected(farmSection.STAKING);
       dispatch(updateSelectedField({value: farmSection.STAKING}));
-      GOpenedSpecialPool(tabIndex)
+      GOpenedSpecialPool(tabIndex);
       if (tabIndex === 1) {
         setStakingIndex(1);
         changeVersion("/farming-v2/staking-RGPv2");
@@ -680,7 +699,7 @@ export function Index() {
             RGPToken2.balanceOf(account),
           ]);
 
-          
+
 
           dispatch(
             updateFarmBalances([
@@ -978,7 +997,7 @@ export function Index() {
         const productFarmLiquidity = ethers.utils
         .formatUnits(farmProductTotalStaking.mul(Math.floor(1000 * rgpPrice)), 21)
         .toString();
-        console.log({productFarmLiquidity})
+        console.log({productFarmLiquidity});
 
         const RGPLiquidityV2 =
           (ethers.utils.formatUnits(rgpTotalStakingV2, 18) * rgpPrice) / 2;
@@ -1320,7 +1339,7 @@ export function Index() {
           const productFarmLiquidity = ethers.utils
           .formatUnits(farmProductTotalStaking.mul(Math.floor(1000 * RGPprice)), 21)
           .toString();
-          console.log({productFarmLiquidity})
+          console.log({productFarmLiquidity});
 
 
         const BUSD_RGPLiquidity = ethers.utils
@@ -1594,15 +1613,15 @@ export function Index() {
           ])
         );
         const productFarmStakedEarn = await productFarmStaked();
-        let productStakedValue
+        let productStakedValue;
         if(productFarmStakedEarn){
-          const [productStaked] = productFarmStakedEarn
+          const [productStaked] = productFarmStakedEarn;
           productStakedValue = formatBigNumber(productStaked.tokenQuantity)
 
         }
         dispatch(
           updateProductStaked([{staked:productStakedValue}])
-        )
+        );
        
 
         setInitialLoad(false);
@@ -1773,15 +1792,15 @@ export function Index() {
         let RGPStakedV2;
         let RGPEarnedV2;
         const productFarmStakedEarn = await productFarmStaked();
-        let productStakedValue
+        let productStakedValue;
         if(productFarmStakedEarn){
-          const [productStaked,productEarned] = productFarmStakedEarn
+          const [productStaked,productEarned] = productFarmStakedEarn;
           productStakedValue = formatBigNumber(productStaked.tokenQuantity)
 
         }
         dispatch(
           updateProductStaked([{staked:productStakedValue}])
-        )
+        );
         if (RGPStakedEarned) {
           const [specialPoolStaked, specialPoolEarned] = RGPStakedEarned;
 
@@ -2020,40 +2039,42 @@ export function Index() {
             />
           </Alert>
         </Box>
-      ) : (
-        <Box mx={[5, 10, 15, 20]} my={4}>
-          <Alert
-            color='#FFFFFF'
-            background={mode === DARK_THEME ? "#319EF6" : "#319EF6"}
-            borderRadius='8px'
-          >
-            <AlertSvg />
-            <AlertDescription
-              fontFamily='Inter'
-              fontSize={{ base: "16px", md: "18px", lg: "20px" }}
-              fontWeight='500'
-              lineHeight='24px'
-              letterSpacing='0em'
-              textAlign='left'
-              padding='10px'
-            >
-              {`This is the V2 Farm. You should migrate your stakings from V1 Farm.`}
-            </AlertDescription>
-
-            <CloseButton
-              position='absolute'
-              margin='2px'
-              height='14px'
-              width='14px'
-              background='#319EF6'
-              color='#fff'
-              right='20px'
-              textAign='center'
-              onClick={handleAlert}
-            />
-          </Alert>
-        </Box>
-      )}
+      ) : null
+      //     (
+      //   <Box mx={[5, 10, 15, 20]} my={4}>
+      //     <Alert
+      //       color='#FFFFFF'
+      //       background={mode === DARK_THEME ? "#319EF6" : "#319EF6"}
+      //       borderRadius='8px'
+      //     >
+      //       <AlertSvg />
+      //       <AlertDescription
+      //         fontFamily='Inter'
+      //         fontSize={{ base: "16px", md: "18px", lg: "20px" }}
+      //         fontWeight='500'
+      //         lineHeight='24px'
+      //         letterSpacing='0em'
+      //         textAlign='left'
+      //         padding='10px'
+      //       >
+      //         {`This is the V2 Farm. You should migrate your stakings from V1 Farm.`}
+      //       </AlertDescription>
+      //
+      //       <CloseButton
+      //         position='absolute'
+      //         margin='2px'
+      //         height='14px'
+      //         width='14px'
+      //         background='#319EF6'
+      //         color='#fff'
+      //         right='20px'
+      //         textAign='center'
+      //         onClick={handleAlert}
+      //       />
+      //     </Alert>
+      //   </Box>
+      // )
+      }
 
       <Flex
         display={isMobileDevice ? undefined : "none"}
@@ -2079,6 +2100,7 @@ export function Index() {
           </Button>
         </Link>
       </Flex>
+
       <Tabs
         defaultIndex={match ? STAKING_INDEX : LIQUIDITY_INDEX}
         index={tabIndex}
@@ -2089,8 +2111,8 @@ export function Index() {
         my={4}
         isFitted={isMobileDevice ? true : false}
       >
-        <Flex justifyContent='space-between' mt={10} >
-          <TabList h={isMobileDevice ? undefined : 14} borderBottom={0}>
+        <Flex justifyContent='space-between' mt={10}>
+          <TabList h={isMobileDevice ? undefined : 14} borderBottom={0} width={'100%'}>
             <Tab
               display='flex'
               flex-direction='row'
@@ -2102,7 +2124,7 @@ export function Index() {
               background={selected === farmSection.LIQUIDITY ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
               color={useSelectedColor}
               value={farmSection.LIQUIDITY}
-              fontSize="14px"
+              fontSize={isMobileDevice ? '12px' : '14px'}
               onClick={() => handleSelect(farmSection.LIQUIDITY)}
               borderRadius={isMobileDevice ? "10px 0px 0px 10px" : 0}
             >
@@ -2150,7 +2172,7 @@ export function Index() {
                   order='1'
                   onClick={(e) => e.stopPropagation()}
                   flex-grow='0'
-                  margin='10px 16px'
+                  margin={isMobileDevice ? "5px 12px" : '10px 16px'}
                 >
                   <option value={0}>V2</option>
                   <option value={2}>V1</option>
@@ -2169,7 +2191,7 @@ export function Index() {
               // border={`1px solid ${borderColor}`}
               background={selected === farmSection.STAKING ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
               color={useSelectedColor}
-              fontSize="14px"
+              fontSize={isMobileDevice ? '12px' : '14px'}
               // px={5}
               // py={4}
               // minWidth={{ base: "none", md: "200px", lg: "200px" }}
@@ -2187,29 +2209,6 @@ export function Index() {
                 Number(SupportedChainId.OASISMAINNET) ? null : (
                 <Select
                   size={isMobileDevice ? undefined : "sm"}
-                  // borderColor={
-                  //   mode === LIGHT_THEME && selected === LIQUIDITY
-                  //     ? "#0760A8 !important"
-                  //     : mode === DARK_THEME && selected === LIQUIDITY
-                  //     ? "#008DFF !important"
-                  //     : mode === DARK_THEME && selected === farmSection.STAKING
-                  //     ? "#324D68 !important"
-                  //     : mode === LIGHT_THEME && selected === farmSection.STAKING
-                  //     ? "#0760A8 !important"
-                  //     : "#F2F5F8 !important"
-                  // }
-                  // cursor='pointer'
-                  // color={
-                  //   mode === LIGHT_THEME && selected === LIQUIDITY
-                  //     ? "#0760A8"
-                  //     : mode === DARK_THEME && selected === LIQUIDITY
-                  //     ? "#008DFF"
-                  //     : mode === DARK_THEME && selected === farmSection.STAKING
-                  //     ? "#F1F5F8"
-                  //     : mode === LIGHT_THEME && selected === farmSection.STAKING
-                  //     ? "#0760A8"
-                  //     : "#333333"
-                  // }
                   borderColor={selected === farmSection.LIQUIDITY ? useNotSelectedBorderColor : useSelectedBorderColor}
                   color={selected === farmSection.LIQUIDITY ? useNotSelectedTextColor : useSelectedTextColor}
                   onChange={handleStakingTab}
@@ -2223,7 +2222,7 @@ export function Index() {
                   flex='none'
                   order='1'
                   flex-grow='0'
-                  margin='10px 16px'
+                  margin={isMobileDevice ? "5px 12px" : '10px 16px'}
                 >
                   <option value={1}>V2</option>
                   <option value={3}>V1</option>
@@ -2232,72 +2231,165 @@ export function Index() {
             </Tab>
            {Number(chainId) === Number(SupportedChainId.OASISTEST)  ||
               Number(chainId) ===
-                Number(SupportedChainId.OASISMAINNET) ? null : ( 
-                   <Tab
-              border='1px solid #DEE5ED'
-              borderRadius={0}
-              background={selected === farmSection.PRODUCT_FARM ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
-              color={useSelectedColor}
-              // px={5}
-              // py={4}
-              // minWidth={{ base: "none", md: "200px", lg: "200px" }}
-              onClick={() => handleSelect(farmSection.PRODUCT_FARM)}
-            >
+                Number(SupportedChainId.OASISMAINNET) ? null : (
+                    <Tab
+                      border='1px solid #DEE5ED'
+                      borderRadius={0}
+                      background={selected === farmSection.PRODUCT_FARM ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
+                      color={useSelectedColor}
+                      // px={5}
+                      // py={4}
+                      // minWidth={{ base: "none", md: "200px", lg: "200px" }}
+                      onClick={() => handleSelect(farmSection.PRODUCT_FARM)}
+                     >
               <Menu>
-        <MenuButton
-          // mr={1}
-          variant="ghost"
-          fontSize="14px"
-          as={Button}
-          transition="all 0.2s"
-          borderRadius="md"
-          _hover={{ bg: "none" }}
-          _focus={{ boxShadow: "none" }}
-          rightIcon={<ChevronDownIcon />}
-        >
-        
-        Product Farm
-        </MenuButton>
-        <MenuList>
-          <MenuItem>
-            <Stack direction={'column'} spacing={0} >
-              <Text my={2}>Product Farm</Text>
-            </Stack>
+                  <MenuButton
+                    // mr={1}
+                    variant="ghost"
+                    fontSize={isMobileDevice ? '12px' : '14px'}
+                    as={Button}
+                    whiteSpace={'wrap'}
+                    transition="all 0.2s"
+                    borderRadius="md"
+                    _hover={{ bg: "none" }}
+                    _focus={{ boxShadow: "none" }}
+                    rightIcon={!isMobileDevice && <ChevronDownIcon />}
+                  >
+                    Product Farm
+                  </MenuButton>
+                  <MenuList>
+                    <MenuItem>
+                      <Stack direction={'column'} spacing={0} >
+                        <Text my={2}>Product Farm</Text>
+                      </Stack>
 
-          </MenuItem>
-          <MenuItem disabled={true} cursor="not-allowed">
-            <Tooltip label="launching soon">
-               <Stack direction={'column'} spacing={0} >
-                <Text my={2} color={placeholderTextColor}>Other Farm</Text>
-              </Stack>
-            </Tooltip>
-             
-          </MenuItem>
-          
-        </MenuList>
-      </Menu>
+                    </MenuItem>
+                    <MenuItem disabled={true} cursor="not-allowed">
+                      <Tooltip label="launching soon">
+                         <Stack direction={'column'} spacing={0} >
+                          <Text my={2} color={placeholderTextColor}>Other Farm</Text>
+                        </Stack>
+                      </Tooltip>
+
+                    </MenuItem>
+                  </MenuList>
+         </Menu>
             </Tab>)
             }
 
-            <Tab
-                display='flex'
-                flex-direction='row'
-                justify-content='center'
-                align-items='center'
-                flexWrap={isMobileDevice ? "wrap" : undefined}
-                padding={isMobileDevice ? "2px 4px" : undefined}
-                border='1px solid #DEE5ED'
-                background={selected === farmSection.NEW_LP ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
-                color={useSelectedColor}
-                value={farmSection.NEW_LP}
-                fontSize="14px"
-                onClick={() => handleSelect(farmSection.NEW_LP)}
-                borderRadius={isMobileDevice ? "10px 0px 0px 10px" : 0}
-            >
-              <Text className={"liquidity"} color={titleColor}>
-                Pancake LP Farm
-              </Text>
-            </Tab>
+            {
+              isMobileDevice ? (
+                  <Tab
+                      border='1px solid #DEE5ED'
+                      background={selected === farmSection.NEW_LP || selected === farmSection.SECOND_NEW_LP ?
+                          useSelectedBackgroundColor : useNotSelectedBackgroundColor}
+                      color={useSelectedColor}
+                      display='flex'
+                      flex-direction='row'
+                      justify-content='center'
+                      align-items='center'
+                      flexWrap={"wrap"}
+                      padding={"2px 4px"}
+                      fontSize={'12px'}
+                      borderRadius={"0px 10px 0px 0px"}
+                  >
+                    <Menu>
+                      <MenuButton
+                          variant="ghost"
+                          fontSize={'14px'}
+                          as={Button}
+                          transition="all 0.2s"
+                          borderRadius="md"
+                          _hover={{ bg: "none" }}
+                          _focus={{ boxShadow: "none" }}
+                      >
+
+                        <HamburgerIcon w={6} h={6} color={titleColor}/>
+                      </MenuButton>
+                      <MenuList>
+                        <MenuItem onClick={() => handleSelect(farmSection.NEW_LP)}>
+                          <Stack direction={'column'} spacing={0}>
+                            <Text my={2}>{
+                              Number(chainId) === Number(SupportedChainId.POLYGONTEST) ||  Number(chainId) === Number(SupportedChainId.POLYGON) ?
+                                  'QuickSwap' : 'Pancake LP Farm'
+                            }</Text>
+                          </Stack>
+                        </MenuItem>
+
+                        {
+                          Number(chainId) === Number(SupportedChainId.POLYGONTEST) ||  Number(chainId) === Number(SupportedChainId.POLYGON) ? (
+                              <MenuItem onClick={() => handleSelect(farmSection.SECOND_NEW_LP)}>
+                                <Stack direction={'column'} spacing={0}>
+                                  <Text my={2}>Uniswap</Text>
+                                </Stack>
+                              </MenuItem>
+                          ) : null
+                        }
+                      </MenuList>
+                    </Menu>
+                {/*<HamburgerIcon w={'80%'} h={'80%'} color={titleColor} onClick={() => setShowDropDown(!showDropDown)}/>*/}
+              </Tab>
+              ) : (
+                    Number(chainId) === Number(SupportedChainId.POLYGONTEST) ||  Number(chainId) === Number(SupportedChainId.POLYGON) ? (
+                      <Tab
+                          border='1px solid #DEE5ED'
+                          background={selected === farmSection.NEW_LP || selected === farmSection.SECOND_NEW_LP ?
+                              useSelectedBackgroundColor : useNotSelectedBackgroundColor}
+                          color={useSelectedColor}
+                          onClick={() => handleSelect(farmSection.NEW_LP)}
+                          display='flex'
+                          flex-direction='row'
+                          justify-content='center'
+                          align-items='center'
+                          flexWrap={isMobileDevice ? "wrap" : undefined}
+                          padding={isMobileDevice ? "2px 4px" : undefined}
+                          value={farmSection.LIQUIDITY}
+                          fontSize={isMobileDevice ? '12px' : '14px'}
+                          borderRadius={isMobileDevice ? "0px 10px 10px 0px" : 0}
+                      >
+                        <Text color={titleColor}>New Farms</Text>
+                        <Select
+                            size={isMobileDevice ? undefined : "sm"}
+                            borderColor={selected === farmSection.NEW_LP ? useNotSelectedBorderColor : useSelectedBorderColor}
+                            color={selected === farmSection.NEW_LP ? useNotSelectedTextColor : useSelectedTextColor}
+                            onChange={handleNewFarmTab}
+                            background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
+                            onClick={(e) => e.stopPropagation()}
+                            border=' 1px solid #008DFF'
+                            box-sizing='border-box'
+                            borderRadius='50px'
+                            /* Inside auto layout */
+                            width={isMobileDevice ? undefined : "fit-content"}
+                            flex='none'
+                            order='1'
+                            flex-grow='0'
+                            margin='10px 16px'
+                        >
+                          <option value={5}>QuickSwap</option>
+                          <option value={6}>UniSwap</option>
+                        </Select>
+                      </Tab>
+                  ) : (
+                      <Tab
+                          display='flex'
+                          flex-direction='row'
+                          justify-content='center'
+                          align-items='center'
+                          flexWrap={isMobileDevice ? "wrap" : undefined}
+                          padding={isMobileDevice ? "2px 4px" : undefined}
+                          border='1px solid #DEE5ED'
+                          background={selected === farmSection.NEW_LP ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
+                          color={useSelectedColor}
+                          value={farmSection.NEW_LP}
+                          fontSize={isMobileDevice ? '12px' : '14px'}
+                          onClick={() => handleSelect(farmSection.NEW_LP)}
+                          borderRadius={isMobileDevice ? "0px 10px 10px 0px" : 0}
+                      >
+                        <Text className={"liquidity"} color={titleColor}>Pancake LP Farm</Text>
+                      </Tab>
+                  ))
+            }
+
           </TabList>
           {/* <Divider display={isMobileDevice ? undefined : "none"} my='4' /> */}
           <Flex
@@ -2335,7 +2427,7 @@ export function Index() {
                 _placeholder={{ color: placeholderTextColor }}
                 value={keyword}
                 onChange={(e) => {
-                  GFarmingInputSearchFarm(true)
+                  GFarmingInputSearchFarm(true);
                   const formattedValue = e.target.value.toUpperCase();
                   setKeyword(formattedValue);
                 }}
@@ -2999,7 +3091,7 @@ export function Index() {
                 <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
                   <Flex
                       alignItems='center'
-                      justifyContent='space-between'
+                      justifyContent='space-around'
                       px={4}
                       py={4}
                       background={
@@ -3039,7 +3131,8 @@ export function Index() {
                     <Text>Earn</Text>
                     <Text>APY</Text>
                     <Text>Total Liquidity</Text>
-                    <Text />
+                    <Text>LP Locked</Text>
+                    <Text/>
                   </Flex>
 
                   {!account ? null : ChainId !== chainId ? (
@@ -3151,6 +3244,7 @@ export function Index() {
                                       section={"normal"}
                                       wallet={wallet}
                                       LoadingState={loadingLP}
+                                      contractID={1}
                                   />
                               ))
                           )
@@ -3163,11 +3257,216 @@ export function Index() {
                                       section={"normal"}
                                       wallet={wallet}
                                       LoadingState={loadingLP}
+                                      contractID={1}
                                   />
                               ))
                           )
                           )
                               : null}
+                </Box>
+              </Box>
+            </Flex>
+          </TabPanel>
+
+          <TabPanel padding='0px'>
+            <Flex
+                justifyContent='center'
+                alignItems='center'
+                rounded='lg'
+                mb={4}
+            >
+              <Box
+                  bg='#120136'
+                  minHeight='89vh'
+                  w={["100%", "100%", "100%"]}
+                  background={
+                    mode === LIGHT_THEME && selected === farmSection.STAKING
+                        ? "#FFFFFF !important"
+                        : mode === DARK_THEME && selected === farmSection.SECOND_NEW_LP
+                        ? "#15202B !important"
+                        : mode === DARK_THEME && selected === farmSection.STAKING
+                            ? "#15202B !important"
+                            : mode === LIGHT_THEME && selected === farmSection.SECOND_NEW_LP
+                                ? "#FFFFFF !important"
+                                : "#FFFFFF !important"
+                  }
+                  rounded='lg'
+              >
+                <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
+                  <Flex
+                      alignItems='center'
+                      justifyContent='space-around'
+                      px={4}
+                      py={4}
+                      background={
+                        mode === LIGHT_THEME && selected === farmSection.SECOND_NEW_LP
+                            ? "#F2F5F8  !important"
+                            : mode === DARK_THEME && selected === farmSection.SECOND_NEW_LP
+                            ? "#213345"
+                            : mode === DARK_THEME && selected === farmSection.STAKING
+                                ? "#213345"
+                                : mode === LIGHT_THEME && selected === farmSection.STAKING
+                                    ? "#F2F5F8"
+                                    : "#F2F5F8 !important"
+                      }
+                      color={
+                        mode === LIGHT_THEME && selected === farmSection.SECOND_NEW_LP
+                            ? "#333333"
+                            : mode === DARK_THEME && selected === farmSection.STAKING
+                            ? "#F1F5F8"
+                            : mode === DARK_THEME && selected === farmSection.SECOND_NEW_LP
+                                ? "#F1F5F8"
+                                : mode === LIGHT_THEME && selected === farmSection.STAKING
+                                    ? "#333333"
+                                    : "#333333"
+                      }
+                      w={["100%", "100%", "100%"]}
+                      align='left'
+                      border={
+                        mode === LIGHT_THEME
+                            ? "1px solid #DEE5ED !important"
+                            : mode === DARK_THEME
+                            ? "1px solid #324D68 !important"
+                            : "1px solid #324D68"
+                      }
+                      display={{ base: "none", md: "flex", lg: "flex" }}
+                  >
+                    <Text>Deposit</Text>
+                    <Text>Earn</Text>
+                    <Text>APY</Text>
+                    <Text>Total Liquidity</Text>
+                    <Text>LP Locked</Text>
+                    <Text/>
+                  </Flex>
+
+                  {!account ? null : ChainId !== chainId || loadingLP ? (
+                          <Stack mt={2}>
+                            {new Array(4).fill("1").map((item,index)=>{
+                              return (
+                                  <Box
+                                      p={isMobileDevice ? "3" : "6"}
+                                      h={isMobileDevice ? undefined : 20}
+                                      border='1px'
+                                      borderColor={filterBorderColor}
+                                  >
+                                    <Flex
+                                        flexDirection={isMobileDevice ? "column" : "row"}
+                                        justifyContent={
+                                          isMobileDevice ? "center" : "space-between"
+                                        }
+                                        alignItems={isMobileDevice ? "center" : undefined}
+                                    >
+                                      {new Array(4).fill("1").map((item,index)=>{
+                                        return (
+                                            <Flex
+                                                ml={isMobileDevice ? undefined : 2}
+                                                mt={isMobileDevice ? 2 : undefined}
+                                                flexDirection='column'
+                                            >
+                                              <Skeleton
+                                                  background="red.300"
+                                                  height='20px'
+                                                  w={isMobileDevice ? "320px" : "208px"}
+                                              />
+                                            </Flex>
+
+                                        )
+                                      })}
+                                    </Flex>
+                                  </Box>
+                              )
+                            })}
+
+
+                          </Stack>
+                      ) :
+                      keyword &&
+                      searchResults.searchResult === undefined ? null : keyword &&
+                      searchResults.searchResult !== undefined ? (
+                          newSearchSection.newSearchResult === undefined ? (
+                              searchResults.searchResult.map(
+                                  (content: any, index: number) => (
+                                      <YieldFarm
+                                          farmDataLoading={farmDataLoading}
+                                          content2={content}
+                                          key={content?.id}
+                                          section={"search"}
+                                          wallet={wallet}
+                                          LoadingState={loadingState}
+                                      />
+                                  )
+                              )
+                          ) : (
+                              newSearchSection.newSearchResult.map(
+                                  (content: any, index: number) => (
+                                      <YieldFarm
+                                          farmDataLoading={farmDataLoading}
+                                          content2={content}
+                                          key={content?.id}
+                                          section={"search"}
+                                          wallet={wallet}
+                                          LoadingState={loadingState}
+                                      />
+                                  )
+                              )
+                          )
+                      ) : searchResults.filterResult !== undefined ? (
+                          newSearchSection.newFilterResult === undefined ? (
+                              searchResults.filterResult.map(
+                                  (content: any, index: number) => (
+                                      <YieldFarm
+                                          farmDataLoading={farmDataLoading}
+                                          content2={content}
+                                          section={"filter"}
+                                          key={content?.id}
+                                          wallet={wallet}
+                                          LoadingState={loadingState}
+                                      />
+                                  )
+                              )
+                          ) : (
+                              newSearchSection.newFilterResult.map(
+                                  (content: any, index: number) => (
+                                      <YieldFarm
+                                          farmDataLoading={farmDataLoading}
+                                          content2={content}
+                                          key={content?.id}
+                                          section={"filter"}
+                                          wallet={wallet}
+                                          LoadingState={loadingState}
+                                      />
+                                  )
+                              )
+                          )
+                      ) : searchResults.filterResult === undefined ? (
+                              recentFarms === undefined ? (
+                                      newLP.contents?.map((content: any, index: number) => (
+                                          <YieldFarm
+                                              farmDataLoading={farmDataLoading}
+                                              content2={content}
+                                              key={content?.id}
+                                              section={"normal"}
+                                              wallet={wallet}
+                                              LoadingState={loadingLP}
+                                              contractID={2}
+                                          />
+                                      ))
+                                  )
+                                  : (
+                                      recentFarms.map((content: any, index: number) => (
+                                          <YieldFarm
+                                              farmDataLoading={farmDataLoading}
+                                              content2={content}
+                                              key={content?.id}
+                                              section={"normal"}
+                                              wallet={wallet}
+                                              LoadingState={loadingLP}
+                                              contractID={2}
+                                          />
+                                      ))
+                                  )
+                          )
+                          : null}
                 </Box>
               </Box>
             </Flex>
