@@ -68,7 +68,6 @@ const useOpenOrders = (socket:any) => {
     }, [chainId, account, contractAddress,refreshPage,locationData]);
     useEffect(() => {
         socket?.on("success",()=>{
-            console.log(123)
             getOpenOrders();
         })
         
@@ -105,7 +104,6 @@ const useOpenOrders = (socket:any) => {
                 try {
                     let dataToUse =[]
                     const transaction = await getTransactionFromDatabase(account)
-                    console.log("yes8388")
                     if (transaction.length > 0) {
                         let data = []
                         if (locationData === "auto") {
@@ -116,7 +114,6 @@ const useOpenOrders = (socket:any) => {
                         }
                         const result = data.filter((item:any)=>item.errorArray.length===0 && item.transactionHash === "" && parseInt(item.chainID) === chainId)
                         dataToUse = await Promise.all(result.map(async (data: any) => {
-                            console.log(data.swapFromToken,data.amountToSwap,data.totalNumberOfTransaction,data.orderID,data.currentNumber)
                             return {
                                 inputAmount: data.amountToSwap,
                                 outputAmount: data.userExpectedPrice,
@@ -145,7 +142,6 @@ const useOpenOrders = (socket:any) => {
                         )
                     
                 }
-                console.log({dataToUse})
                 const marketSwap = await Promise.all(
                     dataToUse.map(async (data: any) => ({
                         tokenIn: data.tokenIn === "native" ? {
@@ -182,7 +178,6 @@ const useOpenOrders = (socket:any) => {
                         totalTransaction:data.totalTransaction
                     })),
                 );
-                console.log({marketSwap})
                     const marketHistory = marketSwap.map((data) => ({
                         token1Icon:data.tokenIn &&
                             getTokenSymbol(data.tokenIn.symbol),

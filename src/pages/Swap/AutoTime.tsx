@@ -89,7 +89,6 @@ const SetPrice = () => {
   const [showModal, setShowModal] = useState(false)
   const [totalNumberOfTransaction,setTotalNumberOfTransaction] = useState("1")
   const [situation,setSituation] = useState("above")
-  const [checkedItem, setCheckedItem] = useState(false)
   const [userOutputPrice, setUserOutputPrice] = useState<number>(0)
   const [currentToPrice,setCurrentToPrice] = useState("0")
   const [quantity,setQuantity] = useState< string>("0")
@@ -153,11 +152,9 @@ const SetPrice = () => {
       }
     }
     if (account) {
-      console.log(3434)
       checkIfSignatureExists()
       getFee()
     }
-    setCheckedItem(false)
   }, [account])
 
 
@@ -166,10 +163,8 @@ const SetPrice = () => {
     (state) => state.user.userDeadline
   );
   const [allowedSlippage] = useUserSlippageTolerance();
-  console.log({allowedSlippage})
   const getFee =async () => {
     const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
-      console.log({autoSwapV2Contract},MARKETAUTOSWAPADDRESSES[marketType][chainId as number])
     try{
     //   const amountToApprove = await autoSwapV2Contract.fee()
     //   console.log({amountToApprove},"ieoieoioe")
@@ -314,7 +309,7 @@ const SetPrice = () => {
     // console.log({amountToApprove})
     // const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
     const fee ="10"
-    console.log({fee,RGPBalance,tokenBalance})
+    
     if (parseFloat(RGPBalance) >= parseFloat(fee)) {
       setHasBeenApproved(true)
       setApprovalForFee("")
@@ -339,7 +334,6 @@ const SetPrice = () => {
      
       setApprovalForToken(currencies[Field.INPUT]?.wrapped?.symbol ?? "")
     }
-   console.log("ieeoeo") 
   }
 
   const runTransaction = () =>{
@@ -375,7 +369,6 @@ const SetPrice = () => {
   }
 
   const approveOneOrTwoTokens = async (tokenApprovingFor:string) => {
-    console.log({tokenApprovingFor})
     if (currencies[Field.INPUT]?.isNative) {
       setHasBeenApproved(true);
       setApproval(approval.filter(t => t !== currencies[Field.INPUT]?.name))
@@ -397,7 +390,6 @@ const SetPrice = () => {
           const token = await getERC20Token(address, library);
 
           const walletBal = (await token.balanceOf(account));
-          console.log(MARKETAUTOSWAPADDRESSES[marketType][chainId as number],walletBal,walletBal.toString())
           const approveTransaction = await rgp.approve(
             MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
             walletBal,
@@ -451,7 +443,6 @@ const SetPrice = () => {
 
 
 const setQuantityValue =() =>{
-  console.log("jkrkkrk")
   let value
  const quantity = typedValue && parseFloat(typedValue) * parseInt(totalNumberOfTransaction)
  if(currencies[Field.INPUT]?.isNative){
@@ -484,7 +475,6 @@ const setQuantityValue =() =>{
        
        if (currencies[Field.INPUT]?.isNative) {
    
-      console.log({typedValue},value)
       
       data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
         pathArray,
@@ -504,6 +494,7 @@ const setQuantityValue =() =>{
       // quantity = typedValue
     }
     }catch(e){
+      console.log({e})
       dispatch(
       setOpenModal({
         message: "Signing initial transaction",
@@ -514,7 +505,6 @@ const setQuantityValue =() =>{
     // setQuantity(quantity)
     let orderID = await autoSwapV2Contract.orderCount()
    
-    console.log({value})
     if (response && value) {
       dispatch(
         setOpenModal({
@@ -560,7 +550,6 @@ const setQuantityValue =() =>{
         })
       })
       let res =await response.json()
-      console.log({res})
       dispatch(
         setOpenModal({
           message: "Successfully stored Transaction",
@@ -571,7 +560,7 @@ const setQuantityValue =() =>{
       dispatch(refreshTransactionTab({ refresh:Math.random() }))
       onUserInput(Field.INPUT, "");
       setSignatureFromDataBase(true)
-      setCheckedItem(false)
+      // setCheckedItem(false)
       setShowNewChangesText(false);
     }
   }catch(e){
@@ -1238,8 +1227,6 @@ const setQuantityValue =() =>{
         fromDeposited={formattedAmounts[Field.INPUT]}
         toDeposited={userOutputPrice.toString()}
         signSignature={signatureFromDataBase ? sendTransactionToDatabase : signTransaction}
-        setCheckedItem={setCheckedItem}
-        checkedItem={checkedItem}
         minimumAmountToRecieve={minimum}
         slippage={Number(allowedSlippage / 100)}
         showNewChangesText={showNewChangesText}

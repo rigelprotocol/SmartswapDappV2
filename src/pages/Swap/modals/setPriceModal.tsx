@@ -23,7 +23,7 @@ export type IModal = {
     from?: string | undefined;
     to?: string | undefined;
     fromDeposited?: string;
-    toDeposited?: string;
+    toDeposited?: number;
     slippage?: number;
     showModal: boolean;
     setShowModal: Function;
@@ -52,8 +52,6 @@ const SetPriceModal: React.FC<IModal> = ({
     signSignature,
     minimumAmountToRecieve,
     buttonText,
-    setCheckedItem,
-    checkedItem,
     slippage,
     frequency
 }) => {
@@ -67,7 +65,7 @@ const SetPriceModal: React.FC<IModal> = ({
 
 
     const tokenPrice = (Number(toDeposited) / Number(fromDeposited)).toFixed(4);
-
+    const [checkedItem,setCheckedItem] = useState(false);
     return (
         <>
             <Modal isOpen={showModal} onClose={() => setShowModal(false)} isCentered>
@@ -222,9 +220,12 @@ const SetPriceModal: React.FC<IModal> = ({
                             <Text>Signing this transaction means you are giving us access to swap on your behalf. The swapping will be done based on the parameters you inputted. The swap will occur if and only if the price of <Text as='span' color={textColor}>{to}</Text> is greater than or equals to <Text as='span' color={textColor}>{toDeposited}</Text></Text>
                         </Box>
                         <Box mb="1">
-                            <Checkbox size='sm' colorScheme={textColor} checked={checkedItem} onChange={(e) => setCheckedItem(e.target.checked)}>
-                                I agree to this changes
-                            </Checkbox>
+                        <Checkbox
+          isChecked={checkedItem}
+          onChange={(e) => setCheckedItem(e.target.checked)}
+        >
+             I agree to this changes
+        </Checkbox>
                         </Box>
                         <Button
                             bgColor={textColor}

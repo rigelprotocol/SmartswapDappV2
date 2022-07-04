@@ -15,6 +15,7 @@ import { ParseFloat } from '..';
 import { notificationTab } from '../../state/transaction/actions';
 import { ZERO_ADDRESS } from '../../constants';
 import { SupportedChainName, SupportedChainSymbols } from '../constants/chains';
+import { useActiveWeb3React } from './useActiveWeb3React';
 
 const abiDecoder = require('abi-decoder');
 
@@ -97,7 +98,7 @@ export const getTokenSymbol = (symbol: string) => {
 
 
 const useAccountHistory = (socket:any) => {
-    const { account, chainId, library } = useWeb3React();
+    const { account, chainId, library } = useActiveWeb3React();
     const [loading, setLoading] = useState(false);
     const [historyData, setHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)

@@ -63,8 +63,8 @@ const AutoTimeModal: React.FC<IModal> = ({
     percentageChange,
     situation,
     buttonText,
-    setCheckedItem,
-    checkedItem,
+    // setCheckedItem,
+    // checkedItem,
     slippage,
     minimumAmountToRecieve,
     showNewChangesText,
@@ -80,7 +80,7 @@ const AutoTimeModal: React.FC<IModal> = ({
     const boxColor = useColorModeValue("#F2F5F8", "#213345");
     const { onClose } = useDisclosure();
 
-
+    const [checkedItem,setCheckedItem] = useState(false);
     const tokenPrice = (Number(toDeposited) / Number(fromDeposited)).toFixed(4);
 
     return (
@@ -267,9 +267,12 @@ const AutoTimeModal: React.FC<IModal> = ({
                             <Text>The swap will occur   <Text as='span' color={textColor}>{frequency === "5" || frequency === "30" ? `${frequency} minutes` : `${frequency}`}</Text> only when the <Text as='span' color={textColor}>{to}</Text> price is greater than or equal to the current <Text as='span' color={textColor}>{to}</Text>  price plus <Text as='span' color={textColor}>{percentageChange}</Text>  % of the <Text as='span' color={textColor}>{to}</Text>  price.</Text>
                         </Box>
                         <Box mb="1">
-                            <Checkbox size='sm' colorScheme={textColor} checked={checkedItem} onChange={(e) => setCheckedItem(e.target.checked)}>
-                                I agree to this changes
-                            </Checkbox>
+                            <Checkbox
+          isChecked={checkedItem}
+          onChange={(e) => setCheckedItem(e.target.checked)}
+        >
+             I agree to this changes
+        </Checkbox>
                         </Box>
                         <Button
                             bgColor={textColor}

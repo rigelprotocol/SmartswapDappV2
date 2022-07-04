@@ -97,7 +97,6 @@ const SetPrice = () => {
   const [showTooltip, setShowTooltip] = useState(false)
   const [toPrice, setToPrice] = useState(0)
   const [showModal, setShowModal] = useState(false)
-  const [checkedItem, setCheckedItem] = useState(false)
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
   const [approvalForFee, setApprovalForFee] = useState("")
   const [marketType, setMarketType] = useState("Smartswap")
@@ -834,8 +833,6 @@ const SetPrice = () => {
         toDeposited={toPrice}
         frequency={totalNumberOfTransaction}
         signSignature={signatureFromDataBase ? sendTransactionToDatabase : signTransaction}
-        setCheckedItem={setCheckedItem}
-        checkedItem={checkedItem}
         fromPrice={typedValue}
         pathSymbol={pathSymbol}
         minimumAmountToRecieve={minimum}
