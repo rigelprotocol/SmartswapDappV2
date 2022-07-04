@@ -35,7 +35,6 @@ function EarnDropdown() {
   const name = location.pathname;
 
   const useName = () => {
-    console.log(name);
     if (name == '/farming-v2' || name == '/pool'  || name == '/add') {
       console.log(`Correct name is ${name}`);
       return name=== "/add" ? "pool" :name.substring(1).split("-")[0];
@@ -60,14 +59,17 @@ function EarnDropdown() {
         {useName()}
       </MenuButton>
       <MenuList>
-<MenuItem _focus={{ color: "#319EF6" }}>
-<Nav label="Liquidity" to="/pool" active={name === '/add' || name === '/remove' ? true : false} />
- </MenuItem>
-<MenuItem _focus={{ color: "#319EF6" }}>
-          <Nav label="Farming" to="/farming-v2"  />
- </MenuItem>
+        <MenuItem _focus={{ color: "#319EF6" }}>
+            <Nav label="Liquidity" to="/pool" active={name === '/add' || name === '/remove'} />
+         </MenuItem>
+        <MenuItem _focus={{ color: "#319EF6" }}>
+            <Nav label="Farming" to="/farming-v2"  />
+         </MenuItem>
+          <MenuItem _focus={{ color: "#319EF6" }}>
+              <Nav label="New LP Farm" to="/farming-v2/new-farm"  />
+          </MenuItem>
 
-</MenuList>
+        </MenuList>
     </Menu>
   );
 }

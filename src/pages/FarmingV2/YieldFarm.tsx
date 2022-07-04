@@ -1,25 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Box,
-  Flex,
-  Button,
-  Spinner,
-  Text,
-  Img,
-  Stack,
-  Skeleton,
-  SkeletonText,
-} from "@chakra-ui/react";
-import { formatAmount } from "../../utils/utilsFunctions";
+import React, {useRef, useState} from "react";
+import {Box, Button, Flex, Img, Spinner, Text, useColorModeValue,} from "@chakra-ui/react";
+import {formatAmount} from "../../utils/utilsFunctions";
 import ShowYieldFarmDetails from "./ShowYieldFarmDetails";
-import { useColorModeValue } from "@chakra-ui/react";
-import { LIGHT_THEME, DARK_THEME } from "./index";
-import { useWeb3React } from "@web3-react/core";
+import {DARK_THEME, farmSection, LIGHT_THEME} from "./index";
+import {useWeb3React} from "@web3-react/core";
 import Darklogo from "../../assets/rgpdarklogo.svg";
-import { useLocation} from 'react-router-dom';
-import { useFetchYieldFarmDetails } from "../../state/newfarm/hooks";
-import { GButtonClicked } from "../../components/G-analytics/gFarming";
-// import "react-loading-skeleton/dist/skeleton.css";
+import {useLocation} from 'react-router-dom';
+import {GButtonClicked} from "../../components/G-analytics/gFarming";
+import ShowNewFarm from "./ShowNewFarm";
+import {useSelector} from "react-redux";
+import {State} from "../../state/types";
+import {SupportedChainId} from "../../constants/chains";
 
 const YieldFarm = ({
   content,
@@ -29,6 +20,7 @@ const YieldFarm = ({
   URLReferrerAddress,
   LoadingState,
   section,
+    contractID
 }: {
   content?: {
     pid: number;
@@ -55,6 +47,7 @@ const YieldFarm = ({
     earn: string;
     type: string;
     totalLiquidity: number;
+    LPLocked: number;
     APY: number;
     address: string;
   };
@@ -62,6 +55,7 @@ const YieldFarm = ({
   URLReferrerAddress: string;
   LoadingState: boolean;
   section: string;
+  contractID: number;
 }) => {
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
   const { chainId, library } = useWeb3React();
@@ -72,19 +66,23 @@ const YieldFarm = ({
 
   const symbolName = params.split('/');
 
-  useEffect(() => {
-    const getSingleFarm = async () => {
-      await content2;
+  const selectedField = useSelector((state: State) => state.farming.selectedField);
+  const  selectedBSC = selectedField === farmSection.NEW_LP;
+  const selected = selectedField === farmSection.NEW_LP || selectedField === farmSection.SECOND_NEW_LP;
 
-      if (symbolName[2] === content2?.deposit) {
-        myRef.current.scrollIntoView({behavior: 'smooth'});
-        setShowYieldFarm(true)
-      }
-
-    };
-    getSingleFarm();
-
-  }, [symbolName, params]);
+  // useEffect(() => {
+  //   const getSingleFarm = async () => {
+  //     await content2;
+  //
+  //     if (symbolName[2] === content2?.deposit) {
+  //       myRef.current.scrollIntoView({behavior: 'smooth'});
+  //       setShowYieldFarm(true)
+  //     }
+  //
+  //   };
+  //   getSingleFarm();
+  //
+  // }, [symbolName, params]);
 
 
   const totalLiquidityValue = () => {
@@ -136,9 +134,15 @@ const YieldFarm = ({
           >
             Deposit
           </Box>
-          <Box marginTop='15px' align='left'>
+          <Flex justifyContent={'space-between'} marginTop='15px' align='left' alignItems={'center'}>
             {content?.type === "RGP" ? content.deposit : content2?.deposit}
-          </Box>
+            {selectedBSC && (Number(chainId) === Number(SupportedChainId.BINANCETEST) || Number(chainId) === Number(SupportedChainId.BINANCE)) ?
+            <Img boxSize={'25px'} m={'10px'} src={'https://s2.coinmarketcap.com/static/img/coins/64x64/7186.png'} /> : null}
+            {selectedBSC && (Number(chainId) === Number(SupportedChainId.POLYGONTEST) || Number(chainId) === Number(SupportedChainId.POLYGON)) ?
+                <Img boxSize={'25px'} m={'10px'} src={'https://s2.coinmarketcap.com/static/img/coins/64x64/8206.png'} /> : null}
+            {selectedField === farmSection.SECOND_NEW_LP ?
+                <Img boxSize={'25px'} m={'10px'} src={'https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png'} /> : null}
+          </Flex>
         </Flex>
         <Flex justifyContent='space-between' width='100%'>
           <Box
@@ -189,15 +193,35 @@ const YieldFarm = ({
             display={["block", "block", "none"]}
             opacity='0.5'
           >
-            Total Liquidity
+           Total Liquidity
           </Box>
-          <Box marginTop='15px' paddingLeft='65px' align='right'>
-            ${" "}
+          <Box marginTop='15px' paddingLeft='65px' align='right'  alignItems='center'>
+           ${" "}
             {content?.type === "RGP"
               ? totalLiquidityValue()
               : formatAmount(content2?.totalLiquidity.toFixed(2))}
           </Box>
         </Flex>
+        {
+          selected &&
+              <Flex
+                  justifyContent='space-between'
+                  width='100%'
+                  marginBottom={["10px", "10px", "0"]}
+              >
+                <Box
+                    marginTop='15px'
+                    align='left'
+                    display={["block", "block", "none"]}
+                    opacity='0.5'
+                >
+                  LP Locked
+                </Box>
+                <Box marginTop='15px' paddingLeft='65px' align='right' alignItems='center'>
+                  {content2?.LPLocked}
+                </Box>
+              </Flex>
+        }
         <Box align='right' mt={["4", "0"]} ml='2'>
           <Button
             w={["100%", "100%", "146px"]}
@@ -252,24 +276,28 @@ const YieldFarm = ({
         </Box>
       </Flex>
       {showYieldfarm && (
-        // <Stack>
-        //   <Skeleton height='20px' />
-        //   <Skeleton height='20px' />
-        //   <Skeleton height='20px' />
-        //   <Skeleton height='20px' />
-        // </Stack>
-        // <Skeleton>
-        <ShowYieldFarmDetails
-          content={content?.type === "RGP" ? content : content2}
-          // content2={content2}
-          LoadingState={LoadingState}
-          section={section}
-          // content2={content2}
-          // showYieldfarm={loading}
-          wallet={wallet}
-          URLReferrerAddress={URLReferrerAddress}
-        />
-        // </Skeleton>
+
+          !selected ? (
+              <ShowYieldFarmDetails
+                  content={content?.type === "RGP" ? content : content2}
+                  // content2={content2}
+                  LoadingState={LoadingState}
+                  section={section}
+                  // content2={content2}
+                  // showYieldfarm={loading}
+                  wallet={wallet}
+                  URLReferrerAddress={URLReferrerAddress}
+              />
+          ) : (
+              <ShowNewFarm
+                  content={content?.type === "RGP" ? content : content2}
+                  LoadingState={LoadingState}
+                  section={section}
+                  wallet={wallet}
+                  URLReferrerAddress={URLReferrerAddress}
+                  contractID={contractID}
+              />
+          )
       )}
     </>
   );

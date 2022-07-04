@@ -33,7 +33,6 @@ import {
   updateNewSearchResult,
   updateProductFarmDetails,
 } from "../farming/action";
-import { Web3Provider } from "@ethersproject/providers";
 import Web3 from "web3";
 
 export const useFarmData = (): farmDataInterface => {
@@ -57,13 +56,14 @@ interface updateFarmInterface {
     address: string;
   };
   section: string;
+  address: string;
 }
 
 export const useUpdateFarm = ({
   reload,
   setReload,
   content,
-  section,
+  section, address
 }: updateFarmInterface) => {
   const data = useFarmData();
   const searchSection = useSelector((state) => state.farming);
@@ -272,7 +272,7 @@ export const useUpdateFarm = ({
           LPInstance.balanceOf(account),
           LPInstance.allowance(
             account,
-            MASTERCHEFV2ADDRESSES[chainId as number]
+           MASTERCHEFV2ADDRESSES[chainId as number]
           ),
         ]);
       const tokenStaked = await userInfo.amount;
@@ -359,7 +359,7 @@ export const useFetchYieldFarmDetails = ({
   content,
   section,
   loading,
-  setLoading,
+  setLoading
 }: FetchYieldFarmDetails) => {
   const data = useFarmData();
   const searchSection = useSelector((state) => state.farming);
@@ -506,7 +506,7 @@ export const useFetchYieldFarmDetails = ({
   const calculateLiquidityAndApy = async (reward: number | undefined) => {
     try {
       const masterchef = await MasterChefV2Contract(
-        MASTERCHEFV2ADDRESSES[chainId as number],
+          MASTERCHEFV2ADDRESSES[chainId as number],
         library
       );
       const LPInstance = await LiquidityPairInstance(content.address, library);
@@ -570,7 +570,7 @@ export const useFetchYieldFarmDetails = ({
           LPInstance.balanceOf(account),
           LPInstance.allowance(
             account,
-            MASTERCHEFV2ADDRESSES[chainId as number]
+              MASTERCHEFV2ADDRESSES[chainId as number]
           ),
         ]);
       const tokenStaked = await userInfo.amount;
@@ -684,7 +684,7 @@ const getUserValue = async ()=> {
         tokenStaked: Web3.utils.fromWei(tokenStaked.toString())
       };
 }
- 
+
 useMemo(async ()=>{
  let response =await getUserValue()
 
