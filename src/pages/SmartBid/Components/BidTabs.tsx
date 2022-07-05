@@ -66,7 +66,7 @@ const ActivityPanel = ({address, id, amount, time, tokenInfo}: ActivityID) => {
 };
 
 
-const WinnersPanel = ({id, colors, price, address, tokenInfo, exclusive, bidAmount}: {id: number, colors: string[], price: string | number, address: string, tokenInfo: string, exclusive: boolean, bidAmount: string}) => {
+const WinnersPanel = ({id, colors, price, address, tokenInfo, exclusive, bidAmount, count}: {id: number, colors: string[], price: string | number, address: string, tokenInfo: string, exclusive: boolean, bidAmount: string, count: number}) => {
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     const [isMobileDevice] = useMediaQuery("(max-width: 950px)");
     const [isMobileDeviceSm] = useMediaQuery("(max-width: 650px)");
@@ -143,7 +143,7 @@ const WinnersPanel = ({id, colors, price, address, tokenInfo, exclusive, bidAmou
                         <Flex justifyContent={'center'}  alignItems={'center'}
                               background={colors[1]}
                               borderRadius={'50%'} boxSize={'32px'}>
-                            <Text color={colors[2]} textAlign={'center'}>{id}</Text>
+                            <Text color={colors[2]} textAlign={'center'}>{count}</Text>
                         </Flex>
 
                     </Flex>
@@ -168,7 +168,9 @@ const WinnersPanel = ({id, colors, price, address, tokenInfo, exclusive, bidAmou
                     {
                         parseInt(bidAmount) === 0 ?
                             <Text fontWeight={500} color={'#A7A9BE'} fontStyle={'normal'} fontSize={'12px'} lineHeight={'16px'} my={1}>Reward Claimed</Text> :
-                            <Button disabled={account !== address} variant={'brand'} onClick={() => claimReward()}>{isMobileDeviceSm ? 'Reward' : 'Claim Reward'}</Button>
+                            <Button
+                                disabled={account !== address}
+                                variant={'brand'} onClick={() => claimReward()}>{isMobileDeviceSm ? 'Reward' : 'Claim Reward'}</Button>
                     }
                 </Flex>
 
@@ -218,9 +220,9 @@ const BidTabs = ({time, id, events, tokenInfo, exclusive, bidAmount} : BidTabsDe
                             {time < 0 ?
                             <Box>
                                 {winnerDetails.map((item, index) => (
-                                    <WinnersPanel key={index} id={item.id} colors={item.colors}
+                                    <WinnersPanel key={index} id={id} colors={item.colors}
                                                   price={item.price} address={item.address} bidAmount={bidAmount}
-                                                  tokenInfo={tokenInfo} exclusive={exclusive}/>
+                                                  tokenInfo={tokenInfo} exclusive={exclusive} count={item.id}/>
                                 ))}
                             </Box>
                                 :
