@@ -98,7 +98,6 @@ export const useGetNewFarms = (id:number, reload?: boolean, setReload?: any) => 
                     3
                 );
             }
-            console.log(Number(BNBPrice));
             return Number(BNBPrice);
 
         } catch (e) {

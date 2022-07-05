@@ -7,11 +7,9 @@ export function calculateSlippageAmount(value: any, slippage: number): string {
     .divide(new Fraction(100, 1))
     .subtract(new Fraction(value, 1));
 
-  console.log(fraction.quotient.toString().split('-'))
 
   const removeSign = Math.abs(parseFloat(fraction.toFixed(0).toString()));
 
-  console.log(slippage)
 
   return fraction.quotient.toString().split('-')[1];
 }

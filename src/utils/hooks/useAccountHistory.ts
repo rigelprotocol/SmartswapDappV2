@@ -344,7 +344,6 @@ const useAccountHistory = (socket:any) => {
                 market:data.market,
                 orderID:data.orderID,
             }));
-            console.log({userSwapHistory})
             setHistoryData(userSwapHistory);
 
             setLoading(false);

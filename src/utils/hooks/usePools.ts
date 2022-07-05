@@ -448,7 +448,6 @@ export const useAllowance = (
   const [hasTokenABeenApproved, setHasTokenABeenApproved] = useState(false);
   const [hasTokenBBeenApproved, setHasTokenBBeenApproved] = useState(false);
   useMemo(async () => {
-    console.log({inputA,inputB});
     if (CurrencyA && CurrencyB && account) {
       const currencyAAddress = getAddress(CurrencyA);
       const currencyBAddress = getAddress(CurrencyB);

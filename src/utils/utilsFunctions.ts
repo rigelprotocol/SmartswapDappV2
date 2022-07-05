@@ -77,7 +77,6 @@ export const filterFarms = (
 
     const arrayLength = dataArray.length;
     const firstItem = dataArray.splice(0, 1);
-    console.log(dataArray);
     const lastItem = dataArray.splice(
       chainId === 80001 ||
         chainId === 137 ||
@@ -99,7 +98,6 @@ export const filterFarms = (
     const editSearch = [...searchResult];
     // editSearch.unshift(firstItem[0]);
     // editSearch.push(lastItem[0]);
-    console.log(editSearch);
     setSearchedFarmData(editSearch);
     return editSearch;
   } else if (!newestToOldest && farmData.contents) {
