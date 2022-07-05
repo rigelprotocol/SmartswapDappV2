@@ -405,7 +405,7 @@ const BidDetails = () => {
                             max={bidDetails.max.toString()}
                             tokenInfo={tokenInfo} address={tokenAddress} placeBid={placeBid} bidLoad={bidloadData} exclusive={exc} />
 
-                        <BidTabs time={time} id={viewId} events={eventData} tokenInfo={tokenInfo.symbol} exclusive={exc}/>
+                        <BidTabs time={time} id={viewId} events={eventData} tokenInfo={tokenInfo.symbol} exclusive={exc} bidAmount={bidAmount}/>
 
                     </Box>
 
