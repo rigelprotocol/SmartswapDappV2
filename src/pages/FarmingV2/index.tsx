@@ -2396,6 +2396,7 @@ export function Index() {
             ml={5}
             display={isMobileDevice ? "none" : undefined}
             justifyContent='space-between'
+            width={'60%'}
           >
             <Filter
               oldestToNewest={oldestToNewest}
@@ -2412,7 +2413,7 @@ export function Index() {
               setSavedChanges={setSavedChanges}
             />
 
-            <InputGroup w='40%'>
+            <InputGroup w='40%' mx={'10px'}>
               <InputLeftAddon
                 bgColor='transparent'
                 borderColor={filterBorderColor}
