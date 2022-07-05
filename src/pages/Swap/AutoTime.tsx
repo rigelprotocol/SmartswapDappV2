@@ -166,11 +166,12 @@ const SetPrice = () => {
   const getFee =async () => {
     const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
     try{
-    //   const amountToApprove = await autoSwapV2Contract.fee()
-    //   console.log({amountToApprove},"ieoieoioe")
-    // const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
-    const fee= "10"
-    setFee("5")
+      const amountToApprove = await autoSwapV2Contract.fee()
+      console.log({amountToApprove},amountToApprove.toString(),"ieoieoioe")
+    const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
+    console.log({fee})
+    // const fee= "10"
+    setFee(fee)
     return fee 
     }catch(e){
       console.log("ERROR",e)
@@ -305,10 +306,10 @@ const SetPrice = () => {
     // check approval for RGP and the other token
     const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
     const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
-    // const amountToApprove = await autoSwapV2Contract.fee()
-    // console.log({amountToApprove})
-    // const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
-    const fee ="10"
+    const amountToApprove = await autoSwapV2Contract.fee()
+    console.log({amountToApprove})
+    const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
+    // const fee ="10"
     
     if (parseFloat(RGPBalance) >= parseFloat(fee)) {
       setHasBeenApproved(true)
