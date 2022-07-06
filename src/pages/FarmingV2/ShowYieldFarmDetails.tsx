@@ -52,7 +52,6 @@ import {
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
-    MASTERCHEFNEWLPADDRESSES,
   RGP,
   RGPSPECIALPOOLADDRESSES,
   RGPSPECIALPOOLADDRESSES2,
@@ -162,12 +161,6 @@ const ShowYieldFarmDetails = ({
 
   // const data = useGetFarmData(reload, setReload);
 
-  const selectedField = useSelector((state: State) => state.farming.selectedField);
-  const selected = selectedField === farmSection.NEW_LP;
-  const farms = useSelector((state: State) => state.newfarm);
-  const LPfarms = useSelector((state: State) => state.lpfarm);
-  const useAddress = selected ? MASTERCHEFNEWLPADDRESSES[chainId as number] : MASTERCHEFV2ADDRESSES[chainId as number];
-  const useFarms = selected ? LPfarms : farms;
 
   const {loadingState} = useUpdateFarm({reload, setReload, content});
 

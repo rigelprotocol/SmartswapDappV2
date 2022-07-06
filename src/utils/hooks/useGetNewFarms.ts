@@ -1,16 +1,29 @@
 import {useWeb3React} from "@web3-react/core";
 import {useCallback, useMemo, useState} from "react";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {updateChainId, updateFarms, updateLoadingState} from "../../state/LPFarm/actions";
 import {Contract, ethers} from "ethers";
-import {LiquidityPairInstance, MasterChefV2Contract, smartFactory} from "../Contracts";
-import {BUSD, MASTERCHEFNEWLPADDRESSES, RGPADDRESSES, SMARTSWAPFACTORYADDRESSES, USDC, USDT} from "../addresses";
+import {LiquidityPairInstance, MasterChefV2Contract, smartFactory, smartSwapLPTokenPoolThree} from "../Contracts";
+import {
+    BUSD,
+    MASTERCHEFNEWLPADDRESSES,
+    RGPADDRESSES,
+    SMARTSWAPFACTORYADDRESSES,
+    SMARTSWAPLP_TOKEN3ADDRESSES, SYMBOLS,
+    USDC,
+    USDT
+} from "../addresses";
 import {getERC20Token} from "../utilsFunctions";
+import {State} from "../../state/types";
+import {farmSection} from "../../pages/FarmingV2";
 
 
-export const useGetNewFarms = (reload?: boolean, setReload?: any) => {
+export const useGetNewFarms = (id:number, reload?: boolean, setReload?: any) => {
     const { chainId, account, library } = useWeb3React();
     const [loadingLP, setLoading] = useState(true);
+    const selectedField = useSelector((state: State) => state.farming.selectedField);
+    const selected = selectedField === farmSection.SECOND_NEW_LP;
+    const mainLP = selectedField === farmSection.NEW_LP;
     const [LPData, setLPData] = useState<
         Array<{
             id: number | undefined;
@@ -59,6 +72,38 @@ export const useGetNewFarms = (reload?: boolean, setReload?: any) => {
             LPAddress.push(LpAddress);
         }
         return LPAddress;
+    };
+
+    const getBNBPrice = async () => {
+        try {
+            let BNBPrice;
+            const pair = await smartSwapLPTokenPoolThree(
+                SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
+                library
+            );
+            const reserves = await pair.getReserves();
+            const testNetPair = SMARTSWAPLP_TOKEN3ADDRESSES[97];
+
+            // BUSD is token0 on testnet but token1 on mainnet, thus the reason to check
+            // before calculating the price based on BUSD
+
+            if (pair.address === testNetPair) {
+                BNBPrice = ethers.utils.formatUnits(
+                    reserves[0].mul(1000).div(reserves[1]),
+                    3
+                );
+            } else {
+                BNBPrice = ethers.utils.formatUnits(
+                    reserves[1].mul(1000).div(reserves[0]),
+                    3
+                );
+            }
+            console.log(Number(BNBPrice));
+            return Number(BNBPrice);
+
+        } catch (e) {
+            console.log('Could not fetch BNB Price.')
+        }
     };
 
     const calculateRigelPrice = async () => {
@@ -137,9 +182,6 @@ export const useGetNewFarms = (reload?: boolean, setReload?: any) => {
                     token0Address === USDT[chainId as number] ? decimal1 : decimal0
                 );
                 rgpPrice = totalUSDT / totalRGP;
-                console.log("second", totalUSDT / totalRGP);
-
-                console.log(reserves[0].toString(), reserves[1].toString());
             }
 
             return rgpPrice;
@@ -152,10 +194,12 @@ export const useGetNewFarms = (reload?: boolean, setReload?: any) => {
         //this function gets the reserves of an LP token, it takes the LP token address as an argument
         try {
             const LpTokenContract = await LiquidityPairInstance(address, library);
-            const [totalReserves, token0, token1] = await Promise.all([
+            const [totalReserves, token0, token1, LPLockedPair, LPTotalSupply] = await Promise.all([
                 LpTokenContract.getReserves(),
                 LpTokenContract.token0(),
                 LpTokenContract.token1(),
+                LpTokenContract.balanceOf(MASTERCHEFNEWLPADDRESSES[chainId as number][id]),
+                LpTokenContract.totalSupply()
             ]);
 
             const [token0Contract, token1Contract] = await Promise.all([
@@ -181,6 +225,8 @@ export const useGetNewFarms = (reload?: boolean, setReload?: any) => {
                 symbol1,
                 decimals0,
                 decimals1,
+                LPSupply: LPLockedPair,
+                LPTotalSupply
             };
         } catch (err) {
             console.log(err);
@@ -207,18 +253,25 @@ export const useGetNewFarms = (reload?: boolean, setReload?: any) => {
     const calculateLiquidityandApy = async (
         address: string,
         rgpPrice: number | undefined,
+        BNBPrice: number | undefined,
         pid?: number,
         reward?: number,
         Lp?: boolean
     ) => {
         try {
             const masterchef = await MasterChefV2Contract(
-                MASTERCHEFNEWLPADDRESSES[chainId as number],
+                MASTERCHEFNEWLPADDRESSES[chainId as number][id],
                 library
             );
             const reserves = await getLpTokenReserve(address);
             const totalRGP = reserves
                 ? RGPADDRESSES[chainId as number] === reserves.tokenAddress0
+                    ? reserves.reserves0.toString()
+                    : reserves.reserves1.toString()
+                : "1";
+
+            const totalBNB = reserves
+                ? SYMBOLS['BNB'][chainId as number] === reserves.tokenAddress0
                     ? reserves.reserves0.toString()
                     : reserves.reserves1.toString()
                 : "1";
@@ -253,8 +306,14 @@ export const useGetNewFarms = (reload?: boolean, setReload?: any) => {
                 symbol1 === "USDT" ||
                 symbol0 === "USDC" ||
                 symbol1 === "USDC"
-                    ? parseFloat(totalStable) * 2
+                    ? parseFloat(totalStable) * 2 :
+                    symbol0 === "WBNB" || symbol1 === "WBNB"
+                    ? parseFloat(ethers.utils.formatEther(totalBNB)) * BNBPrice * 2
                     : parseFloat(ethers.utils.formatEther(totalRGP)) * rgpPrice * 2;
+
+            const LiquidityLocked = parseFloat(ethers.utils.formatEther(reserves.LPSupply)) / parseFloat(ethers.utils.formatEther(reserves.LPTotalSupply));
+
+            const newLiquidity = (LiquidityLocked * totalLiquidity);
 
             const [poolInfo, totalAllocPoint] = await Promise.all([
                 masterchef.poolInfo(pid),
@@ -266,6 +325,7 @@ export const useGetNewFarms = (reload?: boolean, setReload?: any) => {
                     parseFloat(totalAllocPoint.toString())) *
                 reward;
             const APY = (rgpPrice * poolReward * 365 * 100) / totalLiquidity;
+            const newAPY = (rgpPrice * poolReward * 365 * 100) / newLiquidity;
 
             return {
                 id: pid,
@@ -278,22 +338,24 @@ export const useGetNewFarms = (reload?: boolean, setReload?: any) => {
                 earn: "RGP",
                 type: "LP",
                 totalLiquidity,
-                APY,
+                APY: newAPY,
                 allocPoint: parseFloat(allocPoint.toString()),
                 address: address,
+                LPLocked: newLiquidity.toFixed(2),
             };
         } catch (err) {
             console.log(err);
         }
     };
 
-    const loopFarms = async (LpAddress: any[], rgpPrice: number | undefined) => {
+    const loopFarms = async (LpAddress: any[], rgpPrice: number | undefined, BNBPrice: number | undefined) => {
         const data = [];
 
         for (let i = 0; i < LpAddress.length; i++) {
             const farm = await calculateLiquidityandApy(
                 LpAddress[i],
                 rgpPrice,
+                BNBPrice,
                 i,
                 chainId === 137 || chainId === 80001
                     ? 2014.83125
@@ -319,14 +381,15 @@ export const useGetNewFarms = (reload?: boolean, setReload?: any) => {
                 setLoading(true);
                 handleLoading(true);
                 const masterchef = await MasterChefV2Contract(
-                    MASTERCHEFNEWLPADDRESSES[chainId as number],
+                    MASTERCHEFNEWLPADDRESSES[chainId as number][id],
                     library
                 );
                 const rgpPrice = await calculateRigelPrice();
+                const BNBPrice = await getBNBPrice();
 
                 const farmLength = await masterchef.poolLength();
                 const LpAddress = await getLpfarmAddresses(farmLength, masterchef);
-                const farms = await loopFarms(LpAddress, rgpPrice);
+                const farms = await loopFarms(LpAddress, rgpPrice, BNBPrice);
 
                 setLoading(false);
 
@@ -341,7 +404,7 @@ export const useGetNewFarms = (reload?: boolean, setReload?: any) => {
                 console.log(err);
             }
         }
-    }, [chainId, reload]);
+    }, [chainId, reload, selected, mainLP]);
 
     return { LPData, loadingLP };
 };

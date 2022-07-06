@@ -111,13 +111,21 @@ export const MASTERCHEFV2ADDRESSES: { [key: string]: string } = {
   "42262": "0x1A700c1810387F4178b3944373388de76A88F804",
 };
 
-export const MASTERCHEFNEWLPADDRESSES: { [key: string]: string } = {
-  "1": "0x",
-  "3": "0x",
-  "56": "0x35d5eDaeebfB3D084d8ff796514fc9fd8c103357",
-  "97": "0x94822127C89C589Fa6335ED43E1D92a21AA49E22",
-  "137": "0x",
-  "80001": "0x",
+export const MASTERCHEFNEWLPADDRESSES: { [key: string]: string | any } = {
+  "56": {
+    "1": "0x35d5eDaeebfB3D084d8ff796514fc9fd8c103357"
+  },
+  "97": {
+    "1": "0x94822127C89C589Fa6335ED43E1D92a21AA49E22"
+  },
+  "137": {
+    "1": "0x3F28D26A5e01C603c194d22D6eb07e34e2A65844",
+    "2": "0xAE3d06F9476cAbe5b18827a9Fd9c43a1459384Ca"
+  },
+  "80001": {
+    "1": "0x14deaEA03b5b9B5B817dB11985B622F0A8Db077e",
+    "2": "0x13f9d9e1bb03C3e7155447d5C07D6Eb74589C839"
+  },
   "42261": "0x",
   "42262": "0x",
 };

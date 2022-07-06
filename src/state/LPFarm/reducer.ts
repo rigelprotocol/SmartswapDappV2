@@ -21,6 +21,7 @@ export interface farmDataInterface {
         availableToken: string;
         allowance: string;
         address: string;
+        LPLocked: number;
     }>
         | undefined;
     loading: boolean;

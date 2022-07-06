@@ -10,7 +10,13 @@ import {
     updateSelectedField,
     updateYieldFarmDetails
 } from "./action";
-import {farmSection} from "../../pages/FarmingV2";
+ enum farmSection {
+    LIQUIDITY,
+    STAKING,
+    PRODUCT_FARM,
+    NEW_LP,
+    SECOND_NEW_LP,
+}
 
 export interface FarmingSearchState {
   searchResult: [] | undefined;

@@ -7,7 +7,7 @@ import {
     clearAllFarms,
 } from "./action";
 import { useFarms } from "../farm/hooks";
-import { useFarmData } from "../LPFarm/hooks";
+import { useNewLPData } from "../LPFarm/hooks";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import { useWeb3React } from "@web3-react/core";
 
@@ -37,7 +37,7 @@ export const useFilterFarms = ({
                                    saveChanges,
                                }: FilterFarms) => {
     const farmData = useFarms();
-    const farms = useFarmData();
+    const farms = useNewLPData();
     const { chainId } = useActiveWeb3React();
     const dispatch = useDispatch();
 
