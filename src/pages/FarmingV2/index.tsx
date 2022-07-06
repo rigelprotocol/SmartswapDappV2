@@ -7,7 +7,6 @@ import {
   AlertDescription,
   Button,
   CloseButton,
-  Divider,
   Link,
   Select,
   Tab,
@@ -128,9 +127,6 @@ import {State} from "../../state/types";
 import {clearAllFarms} from "../../state/newFarming/action";
 
 export const BIG_TEN = new bigNumber(10);
-// export const LIQUIDITY = "liquidity";
-// export const STAKING = "staking";
-// export const PRODUCT_FARM = "product farms";
 export const V1 = "v1";
 export const V2 = "v2";
 export const LIGHT_THEME = "light";
