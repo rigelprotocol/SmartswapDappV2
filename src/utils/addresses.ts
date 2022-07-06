@@ -70,7 +70,7 @@ export const SMARTBID2: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
   "56": "0x",
-  "97": "0xa8ae7B9294Cf634ac99Be38Bd432039A3B1f8CA1",
+  "97": "0xD732452F05579e10fb0c04f6D9Ee21e42B0192b0",
   "137": "0x",
   "80001": "0x"
 };

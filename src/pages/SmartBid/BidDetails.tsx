@@ -183,7 +183,6 @@ const BidDetails = () => {
                         if (Number(views.toString()) === 1) {
                             setPlaceBid({address: NFTContractAddress, id: i});
                             x = i;
-                            console.log(i);
                             break;
                         }
                     }
@@ -232,7 +231,6 @@ const BidDetails = () => {
                                 if (Number(views.toString()) === 1) {
                                     x = i;
                                     setPlaceBid({address: nftCont[j], id: i});
-                                    console.log(i);
                                     break;
                                 }
                             }
