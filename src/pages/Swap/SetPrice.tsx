@@ -234,8 +234,7 @@ const SetPrice = () => {
     const checkBalance = async ()=>{
      if(currencies[Field.INPUT]?.symbol==="RGP"){
       let fee =await getFee()
-      let amount = parseFloat(formattedAmounts[Field.INPUT]) + parseFloat(fee) 
-      console.log({amount,balance,fee},currencies[Field.INPUT]?.symbol,parseFloat(formattedAmounts[Field.INPUT]))
+      let amount = parseFloat(formattedAmounts[Field.INPUT]) + parseFloat(fee)
       if(amount > parseFloat(balance) ){
         setInsufficientBalance(true);
       }else{
@@ -545,7 +544,6 @@ const SetPrice = () => {
         }
       )
         const balance =await status.balanceOf(account)
-        console.log({balance})
       const approveBalance = ethers.utils.formatEther(check).toString();
       return approveBalance
     } catch (e) {
