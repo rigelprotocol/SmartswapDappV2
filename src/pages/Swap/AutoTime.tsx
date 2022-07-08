@@ -144,7 +144,7 @@ const SetPrice = () => {
   }
   useEffect(() => {
     async function checkIfSignatureExists() {
-      let user = await fetch(`https://autoperiod.rigelprotocol.com/auto/data/${account}`)//https://autoperiod.rigelprotocol.com
+      let user = await fetch(`https://autoswap-server.herokuapp.com/auto/data/${account}`)//https://autoswap-server.herokuapp.com
       let data = await user.json()
       if (data) {
         setDataSignature(data.dataSignature)
@@ -476,7 +476,7 @@ const SetPrice = () => {
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)//
-      const response = await fetch(`https://autoperiod.rigelprotocol.com/auto/add`, {
+      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/add`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached

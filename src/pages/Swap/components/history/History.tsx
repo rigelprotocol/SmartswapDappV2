@@ -30,7 +30,7 @@ const History = () => {
 
   useEffect(
     () => {
-  setSocket(io("https://autoperiod.rigelprotocol.com"));//https://autoperiod.rigelprotocol.com
+  setSocket(io("https://autoswap-server.herokuapp.com"));//https://autoswap-server.herokuapp.com
   
     },
     []
@@ -43,7 +43,7 @@ const History = () => {
   const [showMarketHistory, setShowMarketHistory] = useState(false);
   const [notification, setNotification] = useState(0);
   const [address, setAddress] = useState("");
-  const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")//https://autoperiod.rigelprotocol.com
+  const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//https://autoswap-server.herokuapp.com
   const [showOrder, setShowOrder] = useState(false);
 
   const sideBarRemoved = useSelector((state: RootState) => state.transactions.removeSideTab);
