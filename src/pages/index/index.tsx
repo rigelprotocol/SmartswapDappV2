@@ -154,6 +154,19 @@ setMinNav2(!minNav2)
                 </a>
                </li>
                <li className='list'>
+               <a href="https://smartswap.rigelprotocol.com/#/auto-period" target="_blank">
+                {/* <a
+                href="smartbid.html"
+                > */}
+                 <div className="multi_navbar_ul_div_item">
+                   <p className="multi_nav_head">Auto Period</p>
+                  <div>
+                   <p>Auto invests in any crypto of your choice</p>
+                  </div>
+                 </div>
+                </a>
+               </li>
+               <li className='list'>
                <a href="https://smartswap.rigelprotocol.com/#/smartbid" target="_blank">
                 {/* <a
                 href="smartbid.html"
