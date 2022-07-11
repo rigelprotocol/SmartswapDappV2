@@ -35,9 +35,8 @@ import {
   useTokenBalance,
   useUpdateBalance,
 } from "../../utils/hooks/useUpdateBalances";
-import {useAllLists, useInactiveListUrls} from "../../state/lists/hooks";
-import {WrappedTokenInfo, TagInfo} from "../../state/types";
-import {createFilterToken} from "./filtering";
+import {useSelector} from "react-redux";
+import {RootState} from "../../state";
 
 type IModal = {
   tokenModal: boolean;
@@ -47,55 +46,6 @@ type IModal = {
   otherSelectedCurrency?: Currency | null;
 };
 
-export function useSearchInactiveTokenLists(search: string | undefined, minResults = 10): WrappedTokenInfo[] {
-  const lists = useAllLists();
-  const inactiveUrls = useInactiveListUrls()
-  const { chainId } = useActiveWeb3React()
-  const activeTokens = useAllTokens()
-  return useMemo(() => {
-    if (!search || search.trim().length === 0) return []
-    const filterToken = createFilterToken(search)
-    const exactMatches: WrappedTokenInfo[] = []
-    const rest: WrappedTokenInfo[] = []
-    const addressSet: { [address: string]: true } = {}
-    for (const url of inactiveUrls) {
-      const list = lists[url].current
-      // eslint-disable-next-line no-continue
-      if (!list) continue
-      for (const tokenInfo of list.tokens) {
-        if (
-            tokenInfo.chainId === chainId &&
-            !(tokenInfo.address in activeTokens) &&
-            !addressSet[tokenInfo.address] &&
-            filterToken(tokenInfo)
-        ) {
-          const tags: TagInfo[] =
-              tokenInfo.tags
-                  ?.map((tagId) => {
-                    if (!list.tags?.[tagId]) return undefined
-                    return { ...list.tags[tagId], id: tagId }
-                  })
-                  ?.filter((x): x is TagInfo => Boolean(x)) ?? []
-          const wrapped: WrappedTokenInfo = new WrappedTokenInfo(tokenInfo, tags)
-          addressSet[wrapped.address] = true
-          console.log(wrapped)
-          const trimmedSearchQuery = search.toLowerCase().trim()
-          if (
-              tokenInfo.name?.toLowerCase() === trimmedSearchQuery ||
-              tokenInfo.symbol?.toLowerCase() === trimmedSearchQuery
-          ) {
-            exactMatches.push(wrapped)
-         //   console.log(exactMatches)
-          } else {
-            rest.push(wrapped)
-           // console.log(rest)
-          }
-        }
-      }
-    }
-    return [...exactMatches, ...rest].slice(0, minResults)
-  }, [activeTokens, chainId, inactiveUrls, lists, minResults, search])
-}
 
 const SelectToken: React.FC<IModal> = ({
   tokenModal,
@@ -113,6 +63,8 @@ const SelectToken: React.FC<IModal> = ({
   const textColor = useColorModeValue("#319EF6", "#4CAFFF");
   const boxColor = useColorModeValue("#F2F5F8", "#213345");
 
+  const [inactiveList, setInactiveList] = useState([]);
+
   useEffect(() => {
     setSearchQuery("");
   }, [tokenModal]);
@@ -124,6 +76,25 @@ const SelectToken: React.FC<IModal> = ({
     },
     [onCurrencySelect]
   );
+
+  const getTokens = async () => {
+    if (searchQuery !== '') {
+      try {
+        const tokenList = await fetch(CMC);
+        const filtered = await tokenList.json();
+        setInactiveList(filtered.tokens)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+  };
+
+  useEffect(() => {
+    getTokens();
+  }, [chainId, debouncedQuery]);
+
+  const searchNewTokens = inactiveList.filter((token) => token.name.toLowerCase().includes(debouncedQuery)).slice(0, 10);
+
   const allTokens = useAllTokens();
   // useUpdateBalance("");
   // useUpdateTokenList()
@@ -157,38 +128,17 @@ const SelectToken: React.FC<IModal> = ({
 
   const [isSearchingForToken, setIsSearchingForToken] = useState(false);
   useEffect(() => {
-    if (!searchToken && !(filteredTokenListWithETH?.length > 0)) {
+    if (!searchToken && !(filteredTokenListWithETH?.length > 0) ) {
       setIsSearchingForToken(true);
     }  else {
       setIsSearchingForToken(false);
     }
-  }, [searchToken, filteredTokenListWithETH]);
+  }, [searchToken, filteredTokenListWithETH, debouncedQuery]);
 
   const [sortedTokenList] = useUpdateBalance("");
 
-  const filteredInactiveTokens = useSearchInactiveTokenLists(debouncedQuery);
+  const newImportToken = useSelector<RootState>((state) => state.lists.importedToken);
 
-  const [inactiveList, setInactiveList] = useState([]);
-
-  const getTokens = async () => {
-    if (debouncedQuery !== '') {
-      try {
-        const tokenList = await fetch(CMC);
-        const filtered = await tokenList.json();
-        setInactiveList(filtered.tokens)
-      } catch (e) {
-        console.log(e)
-      }
-    }
-  };
-
-  useEffect(() => {
-    getTokens();
-  }, [chainId]);
-
-  console.log(inactiveList.filter((token) => token.name.toLowerCase().includes(debouncedQuery)));
-  console.log(inactiveList);
-  const searchTokens = inactiveList.filter((token) => token.name.toLowerCase().includes(debouncedQuery));
 
   return (
     <>
@@ -233,22 +183,24 @@ const SelectToken: React.FC<IModal> = ({
           </Box>
           <ModalBody maxHeight='60vh' overflowY='scroll' p={0}>
             {isSearchingForToken ? (
-              <Text textAlign='center' py='7'>
-                Searching...
-              </Text>
+                <Box>
+                  <Text textAlign='center' py='7'>
+                   {inactiveList.length > 0 ? 'Expanded from Inactive List' :  'Searching...'}
+                  </Text>
+                  {searchNewTokens.map((token) => (
+                      <ImportRow
+                          token={token}
+                          openNewTokenModal={setOpenNewTokenModal}
+                      />
+                  ))}
+                </Box>
+
             ) : searchToken && !searchTokenIsAdded ? (
                 <Box>
                   <ImportRow
                       token={searchToken}
                       openNewTokenModal={setOpenNewTokenModal}
                   />
-                  {searchTokens.map((token) => (
-                      <ImportRow
-                          token={token}
-                          openNewTokenModal={setOpenNewTokenModal}
-                      />
-                  ))}
-                  <Text>This is where new tokens should go.</Text>
                 </Box>
 
             ) : searchQuery !== "" ? (
@@ -303,12 +255,12 @@ const SelectToken: React.FC<IModal> = ({
         openNewTokenModal={openNewTokenModal}
         handleCurrencySelect={handleCurrencySelect}
       />
-      {searchToken && openNewTokenModal ? (
+      {searchToken && openNewTokenModal || searchNewTokens && openNewTokenModal ? (
         <NewToken
           open={openNewTokenModal}
           handleCurrencySelect={handleCurrencySelect}
           setDisplayImportedToken={setOpenNewTokenModal}
-          tokens={[searchToken]}
+          tokens={searchToken ? [searchToken] : [newImportToken]}
         />
       ) : null}
     </>
