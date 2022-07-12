@@ -217,7 +217,7 @@ export function Index() {
               setSelected(farmSection.NEW_LP);
               dispatch(updateSelectedField({value: farmSection.NEW_LP}));
               setTabIndex(5)
-            } else if (location && location.includes("second-farm")) {
+            } else if (location && location.includes("stable-lp")) {
             setSelected(farmSection.SECOND_NEW_LP);
             dispatch(updateSelectedField({value: farmSection.SECOND_NEW_LP}));
             setTabIndex(6)
@@ -289,7 +289,7 @@ export function Index() {
     } else if (parseInt(event.target.value, 10) === 6) {
       setNewFarmIndex(6);
       setTabIndex(6);
-      history.push("/farming-v2/second-farm");
+      history.push("/farming-v2/stable-lp");
     }
   };
 
@@ -390,7 +390,7 @@ export function Index() {
       setSelected(farmSection.SECOND_NEW_LP);
       dispatch(updateSelectedField({value: farmSection.SECOND_NEW_LP}));
       setSwitchTab(!switchTab);
-      changeVersion("/farming-V2/second-farm");
+      changeVersion("/farming-V2/stable-lp");
     } else if (value === farmSection.STAKING) {
       setSwitchTab(!switchTab);
       setSelected(farmSection.STAKING);
@@ -2312,21 +2312,15 @@ export function Index() {
                           </Stack>
                         </MenuItem>
 
-                        {
-                          Number(chainId) === Number(SupportedChainId.POLYGONTEST) ||  Number(chainId) === Number(SupportedChainId.POLYGON) ? (
-                              <MenuItem onClick={() => handleSelect(farmSection.SECOND_NEW_LP)}>
-                                <Stack direction={'column'} spacing={0}>
-                                  <Text my={2}>Uniswap</Text>
-                                </Stack>
-                              </MenuItem>
-                          ) : null
-                        }
+                        <MenuItem onClick={() => handleSelect(farmSection.SECOND_NEW_LP)}>
+                          <Stack direction={'column'} spacing={0}>
+                            <Text my={2}>Stable LP</Text>
+                          </Stack>
+                        </MenuItem>
                       </MenuList>
                     </Menu>
-                {/*<HamburgerIcon w={'80%'} h={'80%'} color={titleColor} onClick={() => setShowDropDown(!showDropDown)}/>*/}
               </Tab>
-              ) : (
-                    Number(chainId) === Number(SupportedChainId.POLYGONTEST) ||  Number(chainId) === Number(SupportedChainId.POLYGON) ? (
+              ) :
                       <Tab
                           border='1px solid #DEE5ED'
                           background={selected === farmSection.NEW_LP || selected === farmSection.SECOND_NEW_LP ?
@@ -2361,29 +2355,13 @@ export function Index() {
                             flex-grow='0'
                             margin='10px 16px'
                         >
-                          <option value={5}>QuickSwap</option>
-                          <option value={6}>UniSwap</option>
+                          <option value={5}>{
+                            Number(chainId) === Number(SupportedChainId.POLYGONTEST) ||  Number(chainId) === Number(SupportedChainId.POLYGON) ?
+                                'QuickSwap' : 'Pancake LP'
+                          }</option>
+                          <option value={6}>Stable LP</option>
                         </Select>
                       </Tab>
-                  ) : (
-                      <Tab
-                          display='flex'
-                          flex-direction='row'
-                          justify-content='center'
-                          align-items='center'
-                          flexWrap={isMobileDevice ? "wrap" : undefined}
-                          padding={isMobileDevice ? "2px 4px" : undefined}
-                          border='1px solid #DEE5ED'
-                          background={selected === farmSection.NEW_LP ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
-                          color={useSelectedColor}
-                          value={farmSection.NEW_LP}
-                          fontSize={isMobileDevice ? '12px' : '14px'}
-                          onClick={() => handleSelect(farmSection.NEW_LP)}
-                          borderRadius={isMobileDevice ? "0px 10px 10px 0px" : 0}
-                      >
-                        <Text className={"liquidity"} color={titleColor}>Pancake LP Farm</Text>
-                      </Tab>
-                  ))
             }
 
           </TabList>
