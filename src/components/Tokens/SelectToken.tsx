@@ -37,6 +37,7 @@ import {
 } from "../../utils/hooks/useUpdateBalances";
 import {useSelector} from "react-redux";
 import {RootState} from "../../state";
+import {SupportedChainId} from "../../constants/chains";
 
 type IModal = {
   tokenModal: boolean;
@@ -69,6 +70,8 @@ const SelectToken: React.FC<IModal> = ({
     setSearchQuery("");
   }, [tokenModal]);
 
+  const bsc = Number(chainId) === Number(SupportedChainId.BINANCE);
+
   const [displayManageToken, setDisplayManageToken] = useState(false);
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
@@ -78,13 +81,13 @@ const SelectToken: React.FC<IModal> = ({
   );
 
   const getTokens = async () => {
-    if (searchQuery !== '') {
+    if (debouncedQuery && bsc) {
       try {
         const tokenList = await fetch(CMC);
         const filtered = await tokenList.json();
         setInactiveList(filtered.tokens)
       } catch (e) {
-        console.log(e)
+        console.log('Wrong Network')
       }
     }
   };
@@ -130,7 +133,10 @@ const SelectToken: React.FC<IModal> = ({
   useEffect(() => {
     if (!searchToken && !(filteredTokenListWithETH?.length > 0) ) {
       setIsSearchingForToken(true);
-    }  else {
+    } else if (!chainId) {
+      setIsSearchingForToken(false);
+    }
+    else {
       setIsSearchingForToken(false);
     }
   }, [searchToken, filteredTokenListWithETH, debouncedQuery]);
@@ -182,10 +188,14 @@ const SelectToken: React.FC<IModal> = ({
             </Box>
           </Box>
           <ModalBody maxHeight='60vh' overflowY='scroll' p={0}>
-            {isSearchingForToken ? (
+            {!chainId ? (
+                <Text textAlign='center' py='7'>
+                  Connect Wallet to view tokens.
+                </Text>
+            ) : isSearchingForToken ? (
                 <Box>
                   <Text textAlign='center' py='7'>
-                   {inactiveList.length > 0 ? 'Expanded from Inactive List' :  'Searching...'}
+                   {inactiveList.length > 0 ? 'Expanded from Inactive List' :  'No tokens found.'}
                   </Text>
                   {searchNewTokens.map((token) => (
                       <ImportRow
@@ -204,17 +214,35 @@ const SelectToken: React.FC<IModal> = ({
                 </Box>
 
             ) : searchQuery !== "" ? (
-              filteredTokenListWithETH.map((currency, index) => {
-                return (
-                      <CurrencyList
-                          onCurrencySelect={handleCurrencySelect}
-                          key={index}
-                          currency={currency}
-                          selectedCurrency={selectedCurrency}
-                          otherSelectedCurrency={otherSelectedCurrency}
-                      />
-                );
-              })
+                <Box>
+                  {
+                    filteredTokenListWithETH.map((currency, index) => (
+                        <CurrencyList
+                            onCurrencySelect={handleCurrencySelect}
+                            key={index}
+                            currency={currency}
+                            selectedCurrency={selectedCurrency}
+                            otherSelectedCurrency={otherSelectedCurrency}
+                        />
+                    ))
+                  }
+                  <Box>
+                    {
+                      inactiveList.length > 0 && (
+                          <Box>
+                            <Text textAlign='center' py='7'>
+                             Expanded from Inactive List
+                            </Text>
+                            {searchNewTokens.map((token) => (
+                                <ImportRow
+                                    token={token}
+                                    openNewTokenModal={setOpenNewTokenModal}
+                                />
+                            ))}
+                          </Box>
+                      )}
+                  </Box>
+                </Box>
             ) : sortedTokenList?.length > 0 ? (
               sortedTokenList.map((currency, index) => {
                 return (
