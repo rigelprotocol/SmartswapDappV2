@@ -2333,7 +2333,6 @@ export function Index() {
                           align-items='center'
                           flexWrap={isMobileDevice ? "wrap" : undefined}
                           padding={isMobileDevice ? "2px 4px" : undefined}
-                          value={farmSection.LIQUIDITY}
                           fontSize={isMobileDevice ? '12px' : '14px'}
                           borderRadius={isMobileDevice ? "0px 10px 10px 0px" : 0}
                       >
