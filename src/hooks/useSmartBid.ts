@@ -8,6 +8,7 @@ import {getERC20Token} from "../utils/utilsFunctions";
 import {ethers} from "ethers";
 import {SmartBidWinners} from "../pages/SmartBid/Components/cardData";
 import useState from "react-usestateref";
+import {SupportedChainId} from "../constants/chains";
 
 
 export const useSmartBid = (id: number, exclusive: boolean) => {
@@ -20,6 +21,8 @@ export const useSmartBid = (id: number, exclusive: boolean) => {
     const [addresses, setAddresses] = useState(3);
     const [rewardArray, setRewardArray] = useState<string[]>(  []);
     const [totalBid, setTotalBid] = useState('');
+
+    const tokenDecimals = Number(chainId) === Number(SupportedChainId.POLYGON);
 
     const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
     const stateChanged: boolean = trxState === 2;
@@ -70,8 +73,8 @@ export const useSmartBid = (id: number, exclusive: boolean) => {
 
                         setTotalBid(bidData.totalBidding.toString());
 
-                        setRewardArray([ethers.utils.formatUnits(bidData.positionOneSharedPercentage.toString(), 18), ethers.utils.formatUnits(bidData.positionTwoSharedPercentage.toString(), 18),
-                            ethers.utils.formatUnits(bidData.positionThreeSharedPercentage.toString(), 18), ethers.utils.formatUnits(bidData.randomUserSharedPercentage.toString(), 18)]);
+                        setRewardArray([ethers.utils.formatUnits(bidData.positionOneSharedPercentage.toString(),  18), ethers.utils.formatUnits(bidData.positionTwoSharedPercentage.toString(),  18),
+                            ethers.utils.formatUnits(bidData.positionThreeSharedPercentage.toString(),  18), ethers.utils.formatUnits(bidData.randomUserSharedPercentage.toString(),  18)]);
 
                         setLoadData(false);
 
@@ -185,6 +188,8 @@ export const useBidWinners = (id: number, exclusive: boolean) => {
     const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
     const stateChanged: boolean = trxState === 2;
 
+    const tokenDecimals = Number(chainId) === Number(SupportedChainId.POLYGON);
+
 
     useEffect(() => {
         setLoadWinners(true);
@@ -211,9 +216,9 @@ export const useBidWinners = (id: number, exclusive: boolean) => {
                             const secondPrize = Number(setRewardArrayRef.current[1])/100 * Number(bidData.totalBidding.toString());
                             const thirdPrize = Number(setRewardArrayRef.current[2])/100 * Number(bidData.totalBidding.toString());
 
-                            winnerDetails[0].price = ethers.utils.formatUnits(firstPrize.toString(), 18);
-                            winnerDetails[1].price = ethers.utils.formatUnits(secondPrize.toString(), 18);
-                            winnerDetails[2].price = ethers.utils.formatUnits(thirdPrize.toString(), 18);
+                            winnerDetails[0].price = ethers.utils.formatUnits(firstPrize.toString(),  18);
+                            winnerDetails[1].price = ethers.utils.formatUnits(secondPrize.toString(),  18);
+                            winnerDetails[2].price = ethers.utils.formatUnits(thirdPrize.toString(),  18);
                         }
 
                         setLoadWinners(false);
@@ -239,16 +244,16 @@ export const useBidWinners = (id: number, exclusive: boolean) => {
                             const bidData = await bidContract.request_data_in_Bidding(id);
                             setTotalBid(bidData.totalBidding.toString());
 
-                            setRewardArray([ethers.utils.formatUnits(bidData.positionOneSharedPercentage.toString(), 18), ethers.utils.formatUnits(bidData.positionTwoSharedPercentage.toString(), 18),
-                                ethers.utils.formatUnits(bidData.positionThreeSharedPercentage.toString(), 18), ethers.utils.formatUnits(bidData.randomUserSharedPercentage.toString(), 18)]);
+                            setRewardArray([ethers.utils.formatUnits(bidData.positionOneSharedPercentage.toString(),  18), ethers.utils.formatUnits(bidData.positionTwoSharedPercentage.toString(), 18),
+                                ethers.utils.formatUnits(bidData.positionThreeSharedPercentage.toString(),  18), ethers.utils.formatUnits(bidData.randomUserSharedPercentage.toString(),  18)]);
 
                             const firstPrize = Number(setRewardArrayRef.current[0])/100 * Number(bidData.totalBidding.toString());
                             const secondPrize = Number(setRewardArrayRef.current[1])/100 * Number(bidData.totalBidding.toString());
                             const thirdPrize = Number(setRewardArrayRef.current[2])/100 * Number(bidData.totalBidding.toString());
 
-                            winnerDetails[0].price = ethers.utils.formatUnits(firstPrize.toString(), 18);
-                            winnerDetails[1].price = ethers.utils.formatUnits(secondPrize.toString(), 18);
-                            winnerDetails[2].price = ethers.utils.formatUnits(thirdPrize.toString(), 18);
+                            winnerDetails[0].price = ethers.utils.formatUnits(firstPrize.toString(),  18);
+                            winnerDetails[1].price = ethers.utils.formatUnits(secondPrize.toString(),  18);
+                            winnerDetails[2].price = ethers.utils.formatUnits(thirdPrize.toString(),  18);
                         }
 
                         setLoadWinners(false);

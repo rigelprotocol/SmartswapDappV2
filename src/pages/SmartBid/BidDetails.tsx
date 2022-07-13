@@ -304,7 +304,7 @@ const BidDetails = () => {
         <>
             <BidHeader/>
             {
-                chainId === SupportedChainId.BINANCETEST ?
+                chainId !== SupportedChainId.POLYGONTEST ?
                     <Box width={'90%'} margin={'0px auto'}>
                         <Box display={'flex'} my={'90px'} flexDirection={isMobileDeviceSm ? 'column' : 'row'} justifyContent={'space-between'} width={'100%'} mx={'auto'}>
                             <Box width={isMobileDeviceSm ? '100%' : '60%'}>

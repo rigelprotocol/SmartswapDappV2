@@ -60,18 +60,18 @@ export const SMARTSWAPNFTTWO: { [key: string]: string } = {
 export const SMARTBID1: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
-  "56": "0x",
+  "56": "0xB51E0828B9b92F580276abf4bD73d45B44D72694",
   "97": "0x96C65EFeEDb7a7dDa8A8e2630BD5e07534ED294B",
-  "137": "0x",
+  "137": "0x9b5af1EcC50b0676cA004Dd5b693d9aaDe85F4A8",
   "80001": "0x"
 };
 
 export const SMARTBID2: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
-  "56": "0x",
-  "97": "0x17458023cAcbB071daFB7380F4020a0ca5DD109B",
-  "137": "0x",
+  "56": "0x4d6642Fb1f8e57359D06BD33442579eCBC1F7229",
+  "97": "0xA24B732838793Afb53731C84f2A613cf2709BBfB",
+  "137": "0x8236774AE8d4D9d52cd5C5930Eb8b5f1e2CA67D2",
   "80001": "0x"
 };
 

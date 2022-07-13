@@ -1,15 +1,12 @@
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useEffect} from "react";
 import {
     Box, Text, Flex, useColorModeValue, VStack, Heading,
     Button, SimpleGrid, GridItem, useMediaQuery, Spinner
 } from '@chakra-ui/react';
 import {AddIcon} from "@chakra-ui/icons";
 import SmartBidCard from "./Components/Card";
-import {SmartBidData, SmartBidNFTData} from "./Components/cardData";
 import BidCarousel from "./Components/BidCarousel";
-import {RigelSmartBidTwo, RigelSmartBid} from "../../utils/Contracts";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
-import {SMARTBID2, SMARTBID1} from "../../utils/addresses";
 import {SupportedChainId} from "../../constants/chains";
 import {useBidInfo} from "../../state/smartbid/hooks";
 
@@ -18,11 +15,8 @@ const SmartBid = () => {
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     const headerColor = useColorModeValue("#0760A8", "#F1F5F8");
     const [isMobileDeviceSm] = useMediaQuery("(max-width: 450px)");
-    const {chainId, library} = useActiveWeb3React();
+    const {chainId} = useActiveWeb3React();
     const {loadBid, bidItemsNFT } = useBidInfo();
-
-
-  //  const NoNftReqArray = bidItemsNFT.sort((x, y) => (x.time === y.time) ? 0 : y?  -1 : 1);
 
     return (
         <Box width={'95%'} margin={'30px auto'}>
@@ -59,7 +53,7 @@ const SmartBid = () => {
                     />
                 </Flex> : null }
             {
-                chainId === SupportedChainId.BINANCETEST ?
+                chainId !== SupportedChainId.POLYGONTEST ?
 
                     <SimpleGrid width={'100%'} p={'10px'} mx={'auto'} minChildWidth={'305px'} spacingX={'10px'}
                                 spacingY={'20px'} alignItems={'start'}>
