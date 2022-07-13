@@ -154,11 +154,20 @@ setMinNav2(!minNav2)
                 </a>
                </li>
                <li className='list'>
-               <a
-  data-toggle="tooltip"
-  data-placement="bottom"
-  title="coming soon"
-  href="#" style={{cursor:"not-allowed"}}>
+               <a href="https://smartswap.rigelprotocol.com/#/auto-period" target="_blank">
+                {/* <a
+                href="smartbid.html"
+                > */}
+                 <div className="multi_navbar_ul_div_item">
+                   <p className="multi_nav_head">Auto Period</p>
+                  <div>
+                   <p>Auto invests in any crypto of your choice</p>
+                  </div>
+                 </div>
+                </a>
+               </li>
+               <li className='list'>
+               <a href="https://smartswap.rigelprotocol.com/#/smartbid" target="_blank">
                 {/* <a
                 href="smartbid.html"
                 > */}
@@ -171,18 +180,11 @@ setMinNav2(!minNav2)
                 </a>
                </li>
                <li className='list'>
-               <a
-  data-toggle="tooltip"
-  data-placement="bottom"
-  title="coming soon"
-  href="#" style={{cursor:"not-allowed"}}>
-                {/* <a
-                href="leverage-exchange.html"
-                > */}
+               <a  href="https://smartswap.rigelprotocol.com/#/farming-v2" target="_blank">
                  <div className="multi_navbar_ul_div_item">
-                   <p className="multi_nav_head">Leverage Exchange</p>
+                   <p className="multi_nav_head">Farms</p>
                   <div>
-                   <p>Trade using decentralized tokens.</p>
+                   <p>Stake Liquidity Pair Tokens from any pool.</p>
                   </div>
                  </div>
                 </a>
@@ -191,13 +193,9 @@ setMinNav2(!minNav2)
                 {/* <a
                  href="launchpad.html"
                 > */}
-                   <a
-  data-toggle="tooltip"
-  data-placement="bottom"
-  title="coming soon"
-  href="#" style={{cursor:"not-allowed"}}>
+                   <a href="https://launchpad.rigelprotocol.com" target="_blank" >
                  <div className="multi_navbar_ul_div_item">
-                   <p className="multi_nav_head">LanchPad</p>
+                   <p className="multi_nav_head">LaunchPad</p>
                   <div>
                    <p>Join Project hosted on rigelProtocol</p>
                   </div>
