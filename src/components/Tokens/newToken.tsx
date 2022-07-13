@@ -34,7 +34,7 @@ const NewToken:React.FC<IModal> = ({
   setDisplayImportedToken,
   handleCurrencySelect}) => {
 
-  const addToken = useAddUserToken()
+  const addToken = useAddUserToken();
 
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const boxShadow= useColorModeValue('#DEE6ED', '#324D68');

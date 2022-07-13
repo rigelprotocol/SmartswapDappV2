@@ -103,6 +103,8 @@ const CurrencyLogo: FunctionComponent<CurrencyLogoProps> = ({
         return ["https://bscscan.com/token/images/rigelprotocol_32.png"];
       } else if (currency.isToken && currency.symbol === "WARS") {
         return ["https://s2.coinmarketcap.com/static/img/coins/64x64/13105.png"];
+      } else if (currency.logoURI) {
+        return [currency.logoURI]
       }
     } catch (e) {
       console.log("cannot read property chainID");
