@@ -100,13 +100,13 @@ const ComfirmPurchase = ({ isOpen,
                         })
                     );
                 }
-            } catch (err:any) {
+            } catch (err) {
                 console.log(err);
                 GNFTFailedApprovalTransaction(
                     "NFT",
                     "approving token",
                     err.message,
-                    symbol)
+                    symbol);
                 dispatch(
                     setOpenModal({
                         message: `${symbol} Approval`,
@@ -163,7 +163,7 @@ const ComfirmPurchase = ({ isOpen,
                 }
 
 
-            } catch (e:any) {
+            } catch (e) {
                 console.log(e);
                 GNFTFailedTransaction(
                     "NFT",
