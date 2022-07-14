@@ -24,7 +24,7 @@ const BidHeader = () => {
                 <Button position={'absolute'} background={'#ffffff'}
                         variant={'brand'} bottom={'25px'} left={'80px'} color={'#319EF6'}
                         _hover={{color: '#319EF6'}}
-                        onClick={() => history.goBack()}
+                        onClick={() => history.push('/smartbid')}
                         zIndex={100} leftIcon={<ArrowBackIcon _hover={{color: '#319EF6'}} color={'#319EF6'}/>}>Back</Button>
             </Box>
         </>

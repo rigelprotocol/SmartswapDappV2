@@ -95,7 +95,7 @@ import Faq from "./SmartBid/Faq";
               <Route exact path="/farming" component={FarmingV1} />
               <Route path="/farming-V2" component={FarmingV2} />
               <Route path="/farming-V2/:deposit" component={YieldFarm} />
-              <Route exact path={'/smartbid'} component={SmartBid}/>
+              <Route exact strict path={'/smartbid'} component={SmartBid}/>
               <Route path={'/smartbid/:id'} component={BidDetails}/>
 
               {/* <Route path="*">
