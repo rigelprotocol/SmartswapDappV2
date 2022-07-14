@@ -6,8 +6,7 @@ import {
   typeInput,
   replaceSwapState,
   switchCurrencies,
-  selectMarketFactory,
-  selectMarketRouterAddress
+  selectMarketFactory
 } from "./actions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import { ParsedQs } from "qs";
@@ -156,7 +155,7 @@ const [,, unitAmount, ,,oppositeAmount ] = useSwap(
     inputCurrency,
     // isExactIn ? outputCurrency : inputCurrency,
     outputCurrency,
-    "1000000000000000000",
+     `${10**inputCurrency?.decimals}`,
     marketFactory,
     marketRouterAddress,
     "unit"
@@ -170,7 +169,6 @@ const [,, unitAmount, ,,oppositeAmount ] = useSwap(
 
   const showWrap = wrap;
   const bestTrade = amount;
-  // console.log(pathArray);
 
   const getMaxValue = async (currency: Currency, library: Web3Provider) => {
     if (currency.isNative) {
@@ -288,6 +286,19 @@ function queryParametersToSwapState(parsedQs: any, chainId: number) {
     recipient,
   };
 }
+export const binanceMarketArray = [
+  {name:"Smartswap",image:"Smartswap.png"},
+  {name:"Pancakeswap",image:"Pancakeswap.png"},
+]
+
+export const polygonMarketArray = [
+  {name:"Smartswap",image:"Smartswap.png"},
+  {name:"Quickswap",image:"Quickswap.png"}
+]
+
+export const binanceTestMarketArray = [
+  {name:"Smartswap",image:"Smartswap.png"},
+]
 
 // updates the swap state to use the defaults for a given network
 export function useDefaultsFromURLSearch() {

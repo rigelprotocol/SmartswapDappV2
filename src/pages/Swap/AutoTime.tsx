@@ -11,6 +11,7 @@ import {
   useSwapActionHandlers,
   useSwapState,
 } from '../../state/swap/hooks';
+import { binanceTestMarketArray,polygonMarketArray,binanceMarketArray } from "../../state/swap/hooks"
 import { getERC20Token } from '../../utils/utilsFunctions';
 import { Field } from '../../state/swap/actions';
 import Web3 from 'web3';
@@ -39,31 +40,36 @@ import {
   TabList,
   Tab,
   Img,
-  AlertDescription
+  AlertDescription,
+  Spinner
 } from '@chakra-ui/react';
 import AutoTimeModal from './modals/autoTimeModal';
 import { useUserSlippageTolerance } from "../../state/user/hooks";
 import { useSelector,useDispatch } from 'react-redux';
 import { RootState } from "../../state";
-import { autoSwapV2, rigelToken, SmartSwapRouter, otherMarketPriceContract } from '../../utils/Contracts';
-import { RGPADDRESSES, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES, SMARTSWAPROUTER, OTHERMARKETADDRESSES,MARKETAUTOSWAPADDRESSES, OTHERMARKETFACTORYADDRESSES, RGP } from '../../utils/addresses';
+import { autoSwapV2, rigelToken } from '../../utils/Contracts';
+import { RGPADDRESSES, OTHERMARKETADDRESSES,MARKETAUTOSWAPADDRESSES, OTHERMARKETFACTORYADDRESSES, RGP } from '../../utils/addresses';
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { changeFrequencyTodays } from '../../utils/utilsFunctions';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { refreshTransactionTab } from '../../state/transaction/actions';
 import MarketDropDown from '../../components/MarketDropDown';
+import { GButtonClick, GFailedTransaction, GSuccessfullyTransaction } from '../../components/G-analytics/gIndex';
+import { useHistory, useLocation } from 'react-router-dom';
+import { GetAddressTokenBalance } from '../../state/wallet/hooks';
 
 
 
 const SetPrice = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
   const dispatch = useDispatch();
+  const location = useLocation().pathname;
   const borderColor = useColorModeValue('#DEE6ED', '#324D68');
   const iconColor = useColorModeValue('#666666', '#DCE6EF');
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
-  const bgColor = useColorModeValue('#ffffff', '#15202B');
   const buttonBgcolor = useColorModeValue('#F2F5F8', '#213345');
   const color = useColorModeValue('#999999', '#7599BD');
+  const switchBgcolor = useColorModeValue("#F2F5F8", "#213345");
   const lightmode = useColorModeValue(true, false);
   const borderTwo = useColorModeValue('#319EF6', '#4CAFFF');
   const { account, library, chainId } = useActiveWeb3React()
@@ -76,7 +82,6 @@ const SetPrice = () => {
   const [selectedFrequency, setSelectedFrequency] = useState("5")
   const [marketType, setMarketType] = useState("Smartswap")
   const [percentageChange, setPercentageChange] = useState<string>("0")
-  const [otherMarketprice, setOtherMarketprice] = useState<string>("0")
   const [approval, setApproval] = useState<string[]>([])
   const [approvalForFee, setApprovalForFee] = useState("")
   const [fee, setFee] = useState("")
@@ -88,12 +93,13 @@ const SetPrice = () => {
   const [userOutputPrice, setUserOutputPrice] = useState<number>(0)
   const [currentToPrice,setCurrentToPrice] = useState("0")
   const [showNewChangesText,setShowNewChangesText] = useState(false)
+  const [insufficientBalance, setInsufficientBalance] = useState(false);
   const [dataSignature,setDataSignature] = useState<{mess:string,signature:string}>({
     mess:"",
     signature:""
   })
 
-
+  const routerHistory = useHistory()
   const { onCurrencySelection, onUserInput, onSwitchTokens, onMarketSelection, } = useSwapActionHandlers();
 
   const {
@@ -119,6 +125,11 @@ const SetPrice = () => {
     },
     [onUserInput]
   );
+ useEffect(()=>{
+   let market = location.split("/").length===3? location.split("/")[2]:""
+   checkIfMarketExists(market,chainId)
+
+ },[location,chainId])
   useEffect(() => {
     async function runCheck() {
       if (account && currencies[Field.INPUT]) {
@@ -126,11 +137,14 @@ const SetPrice = () => {
       }
     }
     runCheck()
-  }, [currencies[Field.INPUT],typedValue, account,marketType])
- 
+  }, [currencies[Field.INPUT],typedValue, account])
+
+  const switchMarket = (market:string)=>{
+    routerHistory.push(`/auto-period/${market}`)
+  }
   useEffect(() => {
     async function checkIfSignatureExists() {
-      let user = await fetch(`http://178.62.13.26/auto/data/${account}`)//http://localhost:7000
+      let user = await fetch(`https://autoperiod.rigelprotocol.com/auto/data/${account}`)//https://autoperiod.rigelprotocol.com
       let data = await user.json()
       if (data) {
         setDataSignature(data.dataSignature)
@@ -152,6 +166,8 @@ const SetPrice = () => {
     setCheckedItem(false)
   }, [account])
 
+
+  
   const deadline = useSelector<RootState, number>(
     (state) => state.user.userDeadline
   );
@@ -161,6 +177,17 @@ const SetPrice = () => {
     const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
     setFee(fee)
+    return fee
+  }
+  const checkIfMarketExists = (market:string,chainId:number| undefined) => {
+    let marketArray:any
+    if(chainId === 56) marketArray = binanceMarketArray
+    else if(chainId === 97) marketArray = binanceTestMarketArray
+    else if(chainId === 137) marketArray = polygonMarketArray
+    if(marketArray && marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())){
+      let item = marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())
+      setMarketType(item.name.charAt(0).toUpperCase() + item.name.slice(1))
+    }
   }
   const parsedAmounts = useMemo(
     () =>
@@ -186,8 +213,30 @@ const SetPrice = () => {
       : parsedAmounts[dependentField] ?? "", //?.toSignificant(6) ?? '',
   };
   const receivedAmount = Number(formattedAmounts[Field.OUTPUT]).toFixed(4);
-
-
+  const [balance] = GetAddressTokenBalance(
+    currencies[Field.INPUT] ?? undefined
+  );
+  useEffect(async () => {
+    const checkBalance = async ()=>{
+     if(currencies[Field.INPUT]?.symbol==="RGP"){
+      let fee =await getFee()
+      let amount = parseFloat(formattedAmounts[Field.INPUT]) + parseFloat(fee) 
+      if(amount > parseFloat(balance) ){
+        setInsufficientBalance(true);
+      }else{
+        setInsufficientBalance(false);
+      }
+    }else{
+     if (balance < parseFloat(formattedAmounts[Field.INPUT])) {
+      setInsufficientBalance(true);
+    } else {
+      setInsufficientBalance(false);
+    } 
+    } 
+    }
+    
+   await checkBalance()
+  }, [balance, formattedAmounts[Field.INPUT]]);
   useMemo(() => {
     if(parseFloat(percentageChange) >0 && formattedAmounts[Field.OUTPUT]){
         const actualRecievedAmount = (parseFloat(percentageChange) / 100) * parseFloat(formattedAmounts[Field.OUTPUT]) + parseFloat(formattedAmounts[Field.OUTPUT])
@@ -223,7 +272,7 @@ const SetPrice = () => {
       }
     }
   }, [currentToPrice, receivedAmount]);
-
+ 
   useEffect(() => {
     let interval;
     if (showNewChangesText) {
@@ -250,9 +299,8 @@ const SetPrice = () => {
     const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
     const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
     const amountToApprove = await autoSwapV2Contract.fee()
-    const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
+    const fee = ethers.utils.formatUnits(amountToApprove.toString(), 18)
   
-    console.log({autoSwapV2Contract,RGPBalance,fee},parseFloat(RGPBalance))
     let approvalArray:any=[]
     if (parseFloat(RGPBalance) >= parseFloat(fee)) {
       setHasBeenApproved(true)
@@ -262,7 +310,7 @@ const SetPrice = () => {
     }else{
       setApprovalForFee("RGP")
     }
-    if(parseFloat(tokenBalance) >= parseFloat(formattedAmounts[Field.INPUT])){
+    if(parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT])+parseFloat(fee))){
       setHasBeenApproved(true)
       approvalArray=[]
       // setApprovalForFee("")
@@ -296,8 +344,6 @@ const SetPrice = () => {
         
          if(account && mess){
           let signature = await web3.eth.personal.sign(mess, account,"12348844");
-       var sig = ethers.utils.splitSignature(signature)
-        const ecRec = await web3.eth.personal.ecRecover(mess,signature)
         setDataSignature({mess,signature})
         setTransactionSigned(true)
          }
@@ -315,21 +361,21 @@ const SetPrice = () => {
   }
 
   const approveOneOrTwoTokens = async (tokenApprovingFor:string) => {
-  console.log({approvalForFee,approvalForToken})
     if (currencies[Field.INPUT]?.isNative) {
       setHasBeenApproved(true);
       setApproval(approval.filter(t => t !== currencies[Field.INPUT]?.name))
     }
-    console.log({tokenApprovingFor})
-    // let setArr = Array.from(new Set(approval))
-    // if (setArr.length > 0) {
-      // try {
+    
+    GButtonClick("auto_period",`Approve ${tokenApprovingFor} ${tokenApprovingFor ==="RGP" ? "for fee" : ""}`,currencies[Field.INPUT]?.symbol)
+
         dispatch(
           setOpenModal({
             message: `Approve ${tokenApprovingFor} ${tokenApprovingFor ==="RGP" ? "for fee" : ""}`,
             trxState: TrxState.WaitingForConfirmation,
           })
         );
+        try{
+
         if (tokenApprovingFor === "RGP") {
           const address = RGPADDRESSES[chainId as number];
           const rgp = await rigelToken(RGP[chainId as number], library);
@@ -353,6 +399,7 @@ const SetPrice = () => {
               })
             );
           }
+          GSuccessfullyTransaction("auto_period",`Approval ${tokenApprovingFor} ${tokenApprovingFor ==="RGP" ? "for fee" : ""}`,currencies[Field.INPUT]?.symbol)
             setApprovalForFee("")
           // setArr && setApproval(setArr)
         } else {
@@ -375,24 +422,20 @@ const SetPrice = () => {
               })
             );
           }
-          // setArr && setApproval(setArr.filter(item=>item!==currencies[Field.INPUT]?.wrapped.symbol))
+          
+          GSuccessfullyTransaction("auto_period","Approval",currencies[Field.INPUT]?.symbol)
         }
+      }catch(e:any){
+        GFailedTransaction("straight_swap","approval",e.message,currencies[Field.INPUT]?.symbol)
+      }
         setApprovalForToken("")
-      // } catch (e) {
-      //   console.log(e)
-      // }
-    // } else {
-    //   dispatch(
-    //     setOpenModal({
-    //       message: `Approval Failed.`,
-    //       trxState: TrxState.TransactionFailed,
-    //     })
-    //   );
-    // }
+      
 
   }
   const sendTransactionToDatabase = async () => {
-
+    GButtonClick("auto_period","sending transaction to database",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
+    try{
+      
     const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
     dispatch(
       setOpenModal({
@@ -403,13 +446,13 @@ const SetPrice = () => {
     let currentDate = new Date();
     let futureDate = currentDate.getTime() + deadline;
     let data, response
-    console.log({pathArray,futureDate},Web3.utils.toWei(typedValue, 'ether'))
     if (currencies[Field.INPUT]?.isNative) {
-      
+      let quantity = typedValue && parseFloat(typedValue) * parseInt(totalNumberOfTransaction)
+      console.log({typedValue},quantity)
       data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
         pathArray,
         futureDate,
-        { value: Web3.utils.toWei(typedValue, 'ether') }
+        { value: Web3.utils.toWei(quantity.toString(), 'ether') }
       )
       const fetchTransactionData = async (sendTransaction: any) => {
         const { confirmations, status, logs } = await sendTransaction.wait(1);
@@ -433,8 +476,7 @@ const SetPrice = () => {
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)//
-      console.log({pathSymbol,pathArray})
-      const response = await fetch(`http://178.62.13.26/auto/add`, {
+      const response = await fetch(`https://autoperiod.rigelprotocol.com/auto/add`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -454,6 +496,7 @@ const SetPrice = () => {
           toAddress: currencies[Field.OUTPUT]?.isNative ? "native" : currencies[Field.OUTPUT]?.wrapped.address,
           dataSignature,
           percentageChange,
+          fromNumberOfDecimals: currencies[Field.INPUT]?.isNative ? 18 : currencies[Field.INPUT]?.wrapped.decimals,
           toNumberOfDecimals: currencies[Field.OUTPUT]?.isNative ? 18 : currencies[Field.OUTPUT]?.wrapped.decimals,
           fromPrice: typedValue,
           currentToPrice: formattedAmounts[Field.OUTPUT],
@@ -469,13 +512,14 @@ const SetPrice = () => {
           market:marketType
         })
       })
-      const res = await response.json()
+      await response.json()
       dispatch(
         setOpenModal({
           message: "Successfully stored Transaction",
           trxState: TrxState.TransactionSuccessful,
         })
       );
+      GSuccessfullyTransaction("auto_period","storing transaction to the database",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
       dispatch(refreshTransactionTab({ refresh:Math.random() }))
       onUserInput(Field.INPUT, "");
       setApproval([])
@@ -483,6 +527,9 @@ const SetPrice = () => {
       setCheckedItem(false)
       setShowNewChangesText(false);
     }
+  }catch(e){
+    GFailedTransaction("auto_period","storing transaction to database","error",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
+  }
 
   }
 
@@ -492,7 +539,6 @@ const SetPrice = () => {
       return setHasBeenApproved(true);
     }
     // try {
-      console.log(1111111111)
       const status = await getERC20Token(tokenAddress, library);
       const check = await status.allowance(
         account,
@@ -501,10 +547,8 @@ const SetPrice = () => {
           from: account,
         }
       )
-      console.log(222222222)
 
-      const approveBalance = ethers.utils.formatEther(check).toString();
-      console.log({check,approveBalance})
+      const approveBalance = ethers.utils.formatUnits(check.toString(), currencies[Field.INPUT]?.decimals);
       return approveBalance
     // } catch (e) {
     //   console.log(e)
@@ -515,7 +559,6 @@ const SetPrice = () => {
 
     // try {
       const status = await rigelToken(tokenAddress, library);
-      console.log(MARKETAUTOSWAPADDRESSES[marketType][chainId as number])
       const check = await status.allowance(
         account,
         MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
@@ -523,11 +566,8 @@ const SetPrice = () => {
           from: account,
         }
       )
-      console.log(3333333,{tokenAddress,status,check})
-      console.log({tokenAddress,status,check})
 
       const approveBalance = ethers.utils.formatEther(check).toString();
-      console.log({check,approveBalance},9939939)
       return approveBalance
     // } catch (e) {
     //   console.log(e)
@@ -584,7 +624,7 @@ const SetPrice = () => {
                 </Box>
                 <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={buttonBgcolor}>
                   <Flex>
-                  <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId}/>
+                  <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
 
                     <Spacer />
                     <VStack>
@@ -607,10 +647,10 @@ const SetPrice = () => {
                 {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
                   <>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.INPUT]?.symbol} = {unitAmount} {currencies[Field.OUTPUT]?.symbol}
+                      1 {currencies[Field.INPUT]?.symbol} = {unitAmount && parseFloat(unitAmount) >0 ? unitAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.OUTPUT]?.symbol}
                     </Text>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount} {currencies[Field.INPUT]?.symbol}
+                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount && parseFloat(oppositeAmount)>0 ? oppositeAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.INPUT]?.symbol}
                     </Text>
                     <ExclamationIcon />
                   </>
@@ -737,30 +777,35 @@ const SetPrice = () => {
                 </VStack>
               </Flex>
               <Box mt={5}>
-                {inputError ?
-                  <Button
+              {insufficientBalance || inputError ?( 
+            <Button
+              w='100%'
+              borderRadius='6px'
+              border={lightmode ? "2px" : "none"}
+              borderColor={borderColor}
+              h='48px'
+              p='5px'
+              mt={1}
+              disabled={inputError !== undefined || insufficientBalance}
+              color={inputError ? color : "#FFFFFF"}
+              bgColor={inputError ? switchBgcolor : buttonBgcolor}
+              fontSize='18px'
+              boxShadow={lightmode ? "base" : "lg"}
+              _hover={{ bgColor: buttonBgcolor }}
+            >
+              {inputError
+                ? inputError
+                : `Insufficient ${currencies[Field.INPUT]?.symbol} Balance ${currencies[Field.INPUT]?.symbol==="RGP" && "for fee"}`}
+            </Button>) : !transactionSigned ? <Button
                     w="100%"
                     borderRadius="6px"
                     border={lightmode ? '2px' : 'none'}
                     borderColor={borderColor}
-                    h="48px"
-                    p="5px"
-                    color={color}
-                    bgColor={buttonBgcolor}
-                    fontSize="18px"
-                    boxShadow={lightmode ? 'base' : 'lg'}
-                    _hover={{ bgColor: buttonBgcolor }}
-                  >
-                    {inputError}
-                  </Button> : !transactionSigned ? <Button
-                    w="100%"
-                    borderRadius="6px"
-                    border={lightmode ? '2px' : 'none'}
-                    borderColor={borderColor}
-                    // onClick={signTransaction}
+                    
                     onClick={() => {
                       setCurrentToPrice(receivedAmount)
                       setShowModal(!showModal)
+                      GButtonClick("auto_period","sign wallet",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
                     }}
                     h="48px"
                     p="5px"
@@ -877,33 +922,26 @@ const SetPrice = () => {
               
                 <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={buttonBgcolor}>
                   <Flex>
-                  <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId}/>
+                  <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
 
                     <Spacer />
                     <VStack>
                       <Text fontSize="24px" color={textColorOne} textAlign="right" isTruncated width="160px" >
                       {formattedAmounts[Field.OUTPUT]}
                       </Text>
-                      {/* <Text fontSize="14px" color={color}  width="160px" textAlign="right">
-                        -2.67
-                      </Text> */}
                     </VStack>
                   </Flex>
                 </Box>
               </Box>
 
               <Box mt={5}>
-                {/* <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px" cursor="pointer">
-                  <VectorIcon />
-                </Center>
-                <Spacer /> */}
-                {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
+              {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
                   <>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                    1 {currencies[Field.INPUT]?.symbol} = {unitAmount} {currencies[Field.OUTPUT]?.symbol}
+                      1 {currencies[Field.INPUT]?.symbol} = {unitAmount && parseFloat(unitAmount) >0 ? unitAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.OUTPUT]?.symbol}
                     </Text>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount} {currencies[Field.INPUT]?.symbol}
+                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount && parseFloat(oppositeAmount)>0 ? oppositeAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.INPUT]?.symbol}
                     </Text>
                     <ExclamationIcon />
                   </>
@@ -1031,28 +1069,36 @@ const SetPrice = () => {
                 </VStack>
               </Flex>
               <Box mt={5}>
-                {inputError ?
-                  <Button
+                {insufficientBalance || inputError ?( 
+            <Button
+              w='100%'
+              borderRadius='6px'
+              border={lightmode ? "2px" : "none"}
+              borderColor={borderColor}
+              h='48px'
+              p='5px'
+              mt={1}
+              disabled={inputError !== undefined || insufficientBalance}
+              color={inputError ? color : "#FFFFFF"}
+              bgColor={inputError ? switchBgcolor : buttonBgcolor}
+              fontSize='18px'
+              boxShadow={lightmode ? "base" : "lg"}
+              _hover={{ bgColor: buttonBgcolor }}
+            >
+              {inputError
+                ? inputError
+                : `Insufficient ${currencies[Field.INPUT]?.symbol} Balance ${currencies[Field.INPUT]?.symbol==="RGP" && "for fee"}`}
+            </Button>) : !transactionSigned ? <Button
                     w="100%"
                     borderRadius="6px"
                     border={lightmode ? '2px' : 'none'}
                     borderColor={borderColor}
-                    h="48px"
-                    p="5px"
-                    color={color}
-                    bgColor={buttonBgcolor}
-                    fontSize="18px"
-                    boxShadow={lightmode ? 'base' : 'lg'}
-                    _hover={{ bgColor: buttonBgcolor }}
-                  >
-                    {inputError}
-                  </Button> : !transactionSigned ? <Button
-                    w="100%"
-                    borderRadius="6px"
-                    border={lightmode ? '2px' : 'none'}
-                    borderColor={borderColor}
-                    // onClick={signTransaction}
-                    onClick={() => setShowModal(!showModal)}
+                    
+                    onClick={() => {
+                      setCurrentToPrice(receivedAmount)
+                      setShowModal(!showModal)
+                      GButtonClick("auto_period","sign wallet",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
+                    }}
                     h="48px"
                     p="5px"
                     color={color}
@@ -1092,7 +1138,7 @@ const SetPrice = () => {
                     _hover={{ bgColor: buttonBgcolor }}
                   >
                     Approve RGP for fee
-                  </Button> :<Button
+                  </Button> : <Button
                     w="100%"
                     borderRadius="6px"
                     border={lightmode ? '2px' : 'none'}

@@ -3,6 +3,7 @@ import SmartFactory from "./abis/SmartSwapFactoryForSwap.json";
 import LiquidityPairAbi from "./abis/smartSwapLPToken.json";
 import SmartSwapRouterV2Abi from "./abis/SmartSwapRouterV2.json";
 import masterChefV2 from "./abis/masterChefV2.json";
+import masterChefNewLP from "./abis/masterchefNewLP.json";
 import specialPool from "./abis/specialPool.json";
 import specialPool2 from "./abis/specialPool2.json";
 import { allowanceAbi, approveAbi } from "../constants";
@@ -116,6 +117,14 @@ export const MasterChefV2Contract = async (address: string, library: Web3Provide
     address,
     masterChefV2,
     library?.getSigner()
+  );
+};
+
+export const MasterChefNEWLPContract = async (address: string, library: Web3Provider | undefined) => {
+  return new Contract(
+      address,
+      masterChefNewLP,
+      library?.getSigner()
   );
 };
 

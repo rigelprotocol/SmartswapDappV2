@@ -130,27 +130,51 @@ export const MASTERCHEFV2ADDRESSES: { [key: string]: string } = {
   "42261": "0xFCAD25Ce875EA7eaBdcf99cdF57692376F1DbdF1",
   "42262": "0x1A700c1810387F4178b3944373388de76A88F804",
 };
+
+export const MASTERCHEFNEWLPADDRESSES: { [key: string]: string | any } = {
+  "56": {
+    "1": "0x35d5eDaeebfB3D084d8ff796514fc9fd8c103357",
+    "2": "0xf644041A995Af3b57b131D67510de74c03a33cC0"
+  },
+  "97": {
+    "1": "0x94822127C89C589Fa6335ED43E1D92a21AA49E22",
+    "2": "0x94822127C89C589Fa6335ED43E1D92a21AA49E22"
+  },
+  "137": {
+    "1": "0x3F28D26A5e01C603c194d22D6eb07e34e2A65844",
+    "2": "0x15149Ddd85b51270dd5983083Fb178364BCB4d71"
+  },
+  "80001": {
+    "1": "0x14deaEA03b5b9B5B817dB11985B622F0A8Db077e",
+    "2": "0x13f9d9e1bb03C3e7155447d5C07D6Eb74589C839"
+  },
+  "42261": "0x",
+  "42262": "0x",
+};
+
+
 export const AUTOSWAPV2ADDRESSES: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
-  "56": "0x80297998b4b7bd7Bf3c71c9E800Ad3AB403437cB",
+  "56": "0x8eAc699588e46E7426375D945dD0330b0ad11814",
   "97": "0xf767A2b636494c98afB8452633ba61F3A1400dd7",
   "137": "0xCA4f379b674e2d72c8144b5c521BdD24657C8949",
   "80001": "0x",
 };
 export const MARKETAUTOSWAPADDRESSES : { [key: string]: {[key:string]: string} } = {
   "Smartswap": {
-    "56": "0xB6e99D7a37Bbf4C45fA54929C9E1c6DE213962de",
+    "56": "0x85dc8445aCc4ef06ABB7Dc223C26F6D666A4b55C",
     // "56": "0x80297998b4b7bd7Bf3c71c9E800Ad3AB403437cB",
-    "97": "0xf767A2b636494c98afB8452633ba61F3A1400dd7",
-    "137": "0xCA4f379b674e2d72c8144b5c521BdD24657C8949",
+    "97": "0xE21DbC4B76e527032Bfe0F95B7412C896f937498",
+    // "97": "0xf767A2b636494c98afB8452633ba61F3A1400dd7",
+    "137": "0x77F2fe1dd5eB0d10E366b70122Dd601d1c624556",
   },
   "Pancakeswap":{
-    "56": "0x0024Cc4036776e7314d08faAA0B079A625Fd2ACd",
+    "56": "0x19C16cfb79E7f2Af99C3487cddbF1DC80125d59A",
     "97": "0x"
   },
   "Quickswap":{
-    "137":"0x70b2Bd618C0Fa0253E125Ff4b4c671D0496238a0"
+    "137":"0x85e6864D382988c402823811F8E418C7c9eB71D2"
   }
 };
 export const OTHERMARKETADDRESSES: { [key: string]: {[key:string]: string} } = {
@@ -159,7 +183,7 @@ export const OTHERMARKETADDRESSES: { [key: string]: {[key:string]: string} } = {
     "97": "0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3"
   },
   "Quickswap":{
-    "137":"0x831753DD7087CaC61aB5644b308642cc1c33Dc13"
+    "137":"0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"
   },
   "Smartswap":{
     "1": "0x",
@@ -200,6 +224,14 @@ export const OTHERMARKETFACTORYADDRESSES: { [key: string]: {[key:string]: string
   // }
 };
 
+export const AUTOSWAPSTATEADDRESSES: { [key: string]: string } = {
+  "1": "0x",
+  "3": "0x",
+  "56": "0xeBD0329E00B92898C9Ad614b001FdBD1d0e3E19D",
+  "97": "0x97C982a4033d5fceD06Eedbee1Be10778E811D85",
+  "137": "0xeBD0329E00B92898C9Ad614b001FdBD1d0e3E19D",
+  "80001": "0x",
+};
 export const RGPSPECIALPOOLADDRESSES: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",

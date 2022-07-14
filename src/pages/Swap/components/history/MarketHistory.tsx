@@ -1,4 +1,4 @@
-import { Flex,Grid, Text, Box,useColorModeValue, Tooltip, Link } from '@chakra-ui/react'
+import { Flex,Grid, Text, Box,useColorModeValue, Tooltip, Link, Img } from '@chakra-ui/react'
 import React from 'react'
 import { ArrowRightIcon } from '../../../../theme/components/Icons';
 import {DataType} from "./TransactionHistory";
@@ -24,6 +24,7 @@ const MarketHistory = ({data} : {data: DataType}) => {
           borderColor={borderColor}
           borderRadius={'6px'}
         >
+          <Flex justifyContent="space-between">
             <Text
               color={activeTabColor}
               fontSize="14px"
@@ -33,6 +34,16 @@ const MarketHistory = ({data} : {data: DataType}) => {
             >
               Operation
             </Text>
+            <Box>
+        {data.market &&<Img 
+           src={`./images/${data.market}.png`} 
+           width="30px" 
+           height="30px"
+           alt="83883" 
+           mr={2} />}
+        </Box>
+          </Flex>
+            
             <Flex py={2}>
             <Flex mr={4}>
               <img src={data.token1Icon || TokenIcon} width={25} height={25} alt="logo" />

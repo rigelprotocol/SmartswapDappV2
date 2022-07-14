@@ -30,7 +30,7 @@ const History = () => {
 
   useEffect(
     () => {
-  setSocket(io("http://178.62.13.26"));//http://localhost:7000
+  setSocket(io("https://autoperiod.rigelprotocol.com"));//https://autoperiod.rigelprotocol.com
   
     },
     []
@@ -39,11 +39,11 @@ const History = () => {
 
   const [show, setShow] = useState<Boolean>(true);
   const [typeOfModal, setTypeOfModal] = useState(0);
-  const [open, setOpen] = useState<Boolean>(true);
+  const [open, setOpen] = useState<Boolean>(false);
   const [showMarketHistory, setShowMarketHistory] = useState(false);
   const [notification, setNotification] = useState(0);
   const [address, setAddress] = useState("");
-  const [URL, setURL] = useState("http://178.62.13.26")//http://localhost:7000
+  const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")//https://autoperiod.rigelprotocol.com
   const [showOrder, setShowOrder] = useState(false);
 
   const sideBarRemoved = useSelector((state: RootState) => state.transactions.removeSideTab);
@@ -234,6 +234,8 @@ const History = () => {
             <Text fontWeight="400" cursor="pointer" fontSize="16px" color={showMarketHistory ? activeTabColor : nonActiveTabColor} onClick={() => {
               GMarketHistoryTab()
               setShowMarketHistory(true);
+              setShowOrder(false);
+              setShow(false)
             }}>
               Market History
             </Text>
@@ -269,6 +271,8 @@ const History = () => {
                 setOpen(true);
                 GMarketHistoryTab()
                 setShow(true);
+                setShowMarketHistory(false);
+                setShowOrder(false);
               }}
             >
               <AddIcon onClick={() => setOpen(true)} />

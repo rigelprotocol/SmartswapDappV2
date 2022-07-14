@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react"
 import { ChevronDownIcon } from "@chakra-ui/icons"
 import { Button, Flex, Img, Menu, MenuButton, MenuItem, MenuList, Text, useColorModeValue } from "@chakra-ui/react"
+import { binanceTestMarketArray,polygonMarketArray,binanceMarketArray } from "../state/swap/hooks"
 
+// const binanceMarketArray = [
+//   {name:"Smartswap",image:"Smartswap.png"},
+//   {name:"Pancakeswap",image:"Pancakeswap.png"},
+// ]
 
-const binanceMarketArray = [
-  {name:"Smartswap",image:"Smartswap.png"},
-  {name:"Pancakeswap",image:"Pancakeswap.png"},
-]
+// const polygonMarketArray = [
+//   {name:"Smartswap",image:"Smartswap.png"},
+//   {name:"Quickswap",image:"Quickswap.png"}
+// ]
 
-const polygonMarketArray = [
-  {name:"Smartswap",image:"Smartswap.png"},
-  {name:"Quickswap",image:"Quickswap.png"}
-]
-
-const binanceTestMarketArray = [
-  {name:"Smartswap",image:"Smartswap.png"},
-]
-const MarketDropDown = ({marketType,setMarketType,chainID}:{marketType:string,setMarketType:React.Dispatch<React.SetStateAction<string>>,chainID:number | undefined}) => {
+// const binanceTestMarketArray = [
+//   {name:"Smartswap",image:"Smartswap.png"},
+// ]
+const MarketDropDown = ({marketType,setMarketType,chainID,switchMarket}:{marketType:string,setMarketType:React.Dispatch<React.SetStateAction<string>>,chainID:number | undefined,switchMarket:(market:string)=>void}) => {
   const [marketArray,setMarketArray] = useState(binanceTestMarketArray)
   useEffect(()=>{
     if(chainID === 56) setMarketArray(binanceMarketArray)
@@ -47,7 +47,10 @@ const MarketDropDown = ({marketType,setMarketType,chainID}:{marketType:string,se
             <MenuItem
             key={index}
             _focus={{ color: "#319EF6" }}
-            onClick={() => setMarketType(item.name)} fontSize="13px">
+            onClick={() => {
+              setMarketType(item.name)
+              switchMarket(item.name.toLowerCase())
+              }} fontSize="13px">
            <Img 
            src={`./images/${item.image}`} 
            width="30px" 

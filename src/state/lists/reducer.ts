@@ -2,7 +2,8 @@ import { createReducer } from '@reduxjs/toolkit'
 import { getVersionUpgrade, TokenList, VersionUpgrade } from '@uniswap/token-lists'
 import { DEFAULT_ACTIVE_LIST_URLS, UNSUPPORTED_LIST_URLS, DEFAULT_LIST_OF_LISTS } from '../../utils/constants/lists'
 import { updateVersion } from '../global/actions'
-import { acceptListUpdate, addList, fetchTokenList, removeList, enableList, disableList  } from './actions'
+import { acceptListUpdate, addList, fetchTokenList, removeList, enableList, disableList, addImportedToken  } from './actions'
+import {Token} from "@uniswap/sdk";
 
 
 
@@ -20,7 +21,8 @@ export interface ListsState {
   readonly lastInitializedDefaultListOfLists?: string[]
 
   // currently active lists
-  readonly activeListUrls: string[] | undefined
+  readonly activeListUrls: string[] | undefined,
+  importedToken: Token | undefined;
 }
 
 type ListState = ListsState['byUrl'][string]
@@ -43,7 +45,8 @@ const initialState: ListsState = {
     }, {}),
   },
   activeListUrls: DEFAULT_ACTIVE_LIST_URLS,
-}
+  importedToken: undefined
+};
 
 export default createReducer(initialState, (builder) =>
   builder
@@ -182,5 +185,11 @@ export default createReducer(initialState, (builder) =>
           return true
         })
       }
-    }),
+    })
+      .addCase(addImportedToken, (state, { payload }) => {
+        return {
+          ...state,
+          importedToken: payload.newToken
+        }
+      })
 )

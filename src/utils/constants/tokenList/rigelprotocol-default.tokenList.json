@@ -428,6 +428,14 @@
       "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/9177.png"
     },
     {
+      "name": "RocketFi",
+      "address": "0x6e61579c22F9a6dA63a33e819f29B6697d2a126E",
+      "symbol": "ROCKETFI",
+      "decimals": 9,
+      "chainId": 56,
+      "logoURI": "https://bscscan.com/token/images/rocketfi_32.png"
+    },
+    {
       "name": "DAI Token",
       "address": "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
       "symbol": "DAI",

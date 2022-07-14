@@ -1,58 +1,62 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { ethers } from "ethers";
+import React, {useEffect, useState} from "react";
+import {ethers} from "ethers";
 import Web3 from "web3";
 import {
-  ModalOverlay,
-  ModalContent,
-  useDisclosure,
+  Box,
+  Button,
+  Checkbox,
+  Circle,
+  Divider,
+  Flex,
+  Input,
+  InputGroup,
+  InputRightElement,
   Modal,
   ModalBody,
   ModalCloseButton,
+  ModalContent,
   ModalHeader,
-  InputRightElement,
-  InputGroup,
-  Input,
-  useColorModeValue,
-  Box,
-  Flex,
-  Button,
-  Text,
-  Circle,
-  Divider,
-  Tooltip,
-  Spinner,
-  useMediaQuery,
-  Checkbox,
+  ModalOverlay,
   Skeleton,
-  SkeletonText,
+  Spinner,
+  Text,
+  Tooltip,
+  useColorModeValue,
+  useDisclosure,
+  useMediaQuery,
 } from "@chakra-ui/react";
-import { QuestionOutlineIcon } from "@chakra-ui/icons";
-import { SupportedChainId } from "../../constants/chains";
+import {QuestionOutlineIcon} from "@chakra-ui/icons";
+import {SupportedChainId} from "../../constants/chains";
 import Switch from "react-switch";
-import { DARK_THEME } from "./index";
-import { addToast } from "../../components/Toast/toastSlice";
-import { useDispatch } from "react-redux";
-import { setOpenModal, TrxState } from "../../state/application/reducer";
-import { getExplorerLink, ExplorerDataType } from "../../utils/getExplorerLink";
+import {DARK_THEME, farmSection} from "./index";
+import {addToast} from "../../components/Toast/toastSlice";
+import {useDispatch, useSelector} from "react-redux";
+import {setOpenModal, TrxState} from "../../state/application/reducer";
+import {ExplorerDataType, getExplorerLink} from "../../utils/getExplorerLink";
 import {
   MasterChefV2Contract,
   RGPSpecialPool,
   RGPSpecialPool2,
-  smartSwapLPTokenPoolOne,
-  smartSwapLPTokenPoolTwo,
-  smartSwapLPTokenPoolThree,
-  smartSwapLPTokenV2PoolFour,
-  smartSwapLPTokenV2PoolFive,
   rigelToken,
-  smartSwapLPTokenV2PoolSix,
-  smartSwapLPTokenV2PoolSeven,
+  smartSwapLPTokenPoolOne,
+  smartSwapLPTokenPoolThree,
+  smartSwapLPTokenPoolTwo,
   smartSwapLPTokenV2PoolEight,
+  smartSwapLPTokenV2PoolFive,
+  smartSwapLPTokenV2PoolFour,
   smartSwapLPTokenV2PoolNine,
-  smartSwapLPTokenV2PoolTwelve,
+  smartSwapLPTokenV2PoolSeven,
+  smartSwapLPTokenV2PoolSix,
   smartSwapLPTokenV2PoolThirteen,
+  smartSwapLPTokenV2PoolTwelve,
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
+  RGP,
+  RGPSPECIALPOOLADDRESSES,
+  RGPSPECIALPOOLADDRESSES2,
+  SMARTSWAPLP_TOKEN12ADDRESSES,
+  SMARTSWAPLP_TOKEN13ADDRESSES,
   SMARTSWAPLP_TOKEN1ADDRESSES,
   SMARTSWAPLP_TOKEN2ADDRESSES,
   SMARTSWAPLP_TOKEN3ADDRESSES,
@@ -62,31 +66,28 @@ import {
   SMARTSWAPLP_TOKEN7ADDRESSES,
   SMARTSWAPLP_TOKEN8ADDRESSES,
   SMARTSWAPLP_TOKEN9ADDRESSES,
-  SMARTSWAPLP_TOKEN12ADDRESSES,
-  SMARTSWAPLP_TOKEN13ADDRESSES,
-  RGP,
-  RGPADDRESSES,
-  RGPSPECIALPOOLADDRESSES,
-  RGPSPECIALPOOLADDRESSES2,
 } from "../../utils/addresses";
-import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
-import { useRGPBalance } from "../../utils/hooks/useBalances";
-import { updateFarmAllowances } from "../../state/farm/actions";
-import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
+import {clearInputInfo, convertFromWei, convertToNumber} from "../../utils";
+import {useRGPBalance} from "../../utils/hooks/useBalances";
+import {updateFarmAllowances} from "../../state/farm/actions";
+import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 import Joyride from "react-joyride";
-import { steps } from "../../components/Onboarding/YieldSteps";
-import { Web3Provider } from "@ethersproject/providers";
-import { Contract } from "@ethersproject/contracts";
-import { getERC20Token } from "../../utils/utilsFunctions";
-import { calculateGas } from "../Swap/components/sendToken";
-import { useUserGasPricePercentage } from "../../state/gas/hooks";
+import {steps} from "../../components/Onboarding/YieldSteps";
+import {Contract} from "@ethersproject/contracts";
+import {calculateGas} from "../Swap/components/sendToken";
+import {useUserGasPricePercentage} from "../../state/gas/hooks";
 
+import {useFetchYieldFarmDetails, useUpdateFarm} from "../../state/newfarm/hooks";
+import {useNewYieldFarmDetails, useUpdateNewFarm} from "../../state/LPFarm/hooks";
 import {
-  useUpdateFarm,
-  useFetchYieldFarmDetails,
-} from "../../state/newfarm/hooks";
-import { GButtonClicked, GButtonIntialized, GFarmingFailedTransaction, GFarmingSpecialPoolReferral, GFarmingSuccessTransaction } from "../../components/G-analytics/gFarming";
-import { ZERO_ADDRESS } from "../../constants";
+  GButtonClicked,
+  GButtonIntialized,
+  GFarmingFailedTransaction,
+  GFarmingSpecialPoolReferral,
+  GFarmingSuccessTransaction
+} from "../../components/G-analytics/gFarming";
+import {ZERO_ADDRESS} from "../../constants";
+import {State} from "../../state/types";
 
 const ShowYieldFarmDetails = ({
   content,
@@ -160,14 +161,17 @@ const ShowYieldFarmDetails = ({
 
   // const data = useGetFarmData(reload, setReload);
 
-  const { loadingState } = useUpdateFarm({ reload, setReload, content });
 
-  useFetchYieldFarmDetails({
-    content,
-    section,
-    setLoading,
-    loading,
-  });
+  const {loadingState} = useUpdateFarm({reload, setReload, content});
+
+  useFetchYieldFarmDetails({content, section, setLoading, loading});
+
+  //const {loadingFarm} = useUpdateNewFarm({reload, setReload, content});
+
+ // useNewYieldFarmDetails({content, section, setLoading, loading});
+
+
+
 
   const closeModal = () => {
     GButtonIntialized("close unstaked",content.deposit,"v2")
@@ -1626,7 +1630,7 @@ useEffect(()=>{
           </Flex>
         </Box>
       ) : (
-        <Skeleton isLoaded={!loadingState ? true : false}>
+        <Skeleton isLoaded={ !loadingState}>
           <Joyride
             steps={steps}
             run={run}

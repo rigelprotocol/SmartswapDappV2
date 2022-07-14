@@ -1,4 +1,4 @@
-import { Flex, Grid, Text, Box, useColorModeValue, Button, Tooltip,Link } from '@chakra-ui/react';
+import { Flex, Grid, Text, Box, useColorModeValue, Button, Tooltip,Link, Img } from '@chakra-ui/react';
 import React from 'react';
 import { ArrowRightIcon } from '../../../../theme/components/Icons';
 import TokenIcon from '../../../../assets/Null-24.svg';
@@ -31,11 +31,11 @@ export interface DataType {
   initialToPrice?:string,
   rate?:string,
   situation?:string,
-  pathSymbol?:string
+  pathSymbol?:string,
+  market?:string
 }
 
 const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: any }) => {
-  console.log({data})
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
   const nonActiveTabColor = useColorModeValue('#666666', '#4A739B');
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');
@@ -55,7 +55,8 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
         borderColor={borderColor}
         borderRadius={'6px'}
       >
-        <Text
+        <Flex justifyContent="space-between">
+           <Text
           color={activeTabColor}
           fontSize="14px"
           lineHeight="0"
@@ -64,6 +65,16 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
         >
           Operation
         </Text>
+        <Box>
+        {data.market &&<Img 
+           src={`./images/${data.market}.png`} 
+           width="30px" 
+           height="30px"
+           alt="83883" 
+           mr={2} />}
+        </Box>
+        </Flex>
+       
         <Flex py={2}>
           <Flex mr={4}>
             <img src={data.token1Icon || TokenIcon} width={25} height={25} alt="logo" />
