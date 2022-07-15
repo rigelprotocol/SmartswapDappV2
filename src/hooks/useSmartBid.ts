@@ -8,7 +8,6 @@ import {getERC20Token} from "../utils/utilsFunctions";
 import {ethers} from "ethers";
 import {SmartBidWinners} from "../pages/SmartBid/Components/cardData";
 import useState from "react-usestateref";
-import {SupportedChainId} from "../constants/chains";
 
 
 export const useSmartBid = (id: number, exclusive: boolean) => {
@@ -21,8 +20,6 @@ export const useSmartBid = (id: number, exclusive: boolean) => {
     const [addresses, setAddresses] = useState(3);
     const [rewardArray, setRewardArray] = useState<string[]>(  []);
     const [totalBid, setTotalBid] = useState('');
-
-    const tokenDecimals = Number(chainId) === Number(SupportedChainId.POLYGON);
 
     const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
     const stateChanged: boolean = trxState === 2;
@@ -188,8 +185,6 @@ export const useBidWinners = (id: number, exclusive: boolean) => {
     const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
     const stateChanged: boolean = trxState === 2;
 
-    const tokenDecimals = Number(chainId) === Number(SupportedChainId.POLYGON);
-
 
     useEffect(() => {
         setLoadWinners(true);
@@ -199,9 +194,12 @@ export const useBidWinners = (id: number, exclusive: boolean) => {
                 if (chainId !== undefined) {
                     try {
                         const bidContract = await RigelSmartBid(SMARTBID1[chainId as number], library);
-                        const winnersList = bidContract.Top3Bidders(id);
-                        setTopBidders(winnersList);
-                        if (winnersList !== undefined) {
+                        const bidders = await bidContract.projID(id);
+
+                        if (Number(bidders.toString()) > 2) {
+                            const winnersList = await bidContract.Top3Bidders(id);
+                            setTopBidders(winnersList);
+
                             winnerDetails[0].address = winnersList[0];
                             winnerDetails[1].address = winnersList[1];
                             winnerDetails[2].address = winnersList[2];
@@ -219,6 +217,20 @@ export const useBidWinners = (id: number, exclusive: boolean) => {
                             winnerDetails[0].price = ethers.utils.formatUnits(firstPrize.toString(),  18);
                             winnerDetails[1].price = ethers.utils.formatUnits(secondPrize.toString(),  18);
                             winnerDetails[2].price = ethers.utils.formatUnits(thirdPrize.toString(),  18);
+                        } else {
+                            const winnersInfo = await bidContract.getTopBid(id);
+
+                            const bidData = await bidContract.request_data_in_Bidding(id);
+                            setTotalBid(bidData.totalBidding.toString());
+
+                            const percent = ethers.utils.formatUnits(bidData.positionOneSharedPercentage.toString(),  18);
+                            const total = ethers.utils.formatUnits(bidData.totalBidding.toString(),  18);
+
+                            const price = Number(percent)/100 * Number(total);
+
+                            setWinnerDetails([{id: 1, address: winnersInfo[0],
+                                colors: ['#FDEB64', '#FED443', '#D4840E'], price: price}]);
+
                         }
 
                         setLoadWinners(false);
@@ -234,9 +246,12 @@ export const useBidWinners = (id: number, exclusive: boolean) => {
                 if (chainId !== undefined) {
                     try {
                         const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
-                        const winnersList = await bidContract.Top3Bidders(id);
-                        setTopBidders(winnersList);
-                        if (winnersList !== undefined) {
+                        const bidders = await bidContract.projID(id);
+
+                        if (Number(bidders.toString()) > 2) {
+                            const winnersList: string[] = await bidContract.Top3Bidders(id);
+                            setTopBidders(winnersList);
+
                             winnerDetails[0].address = winnersList[0];
                             winnerDetails[1].address = winnersList[1];
                             winnerDetails[2].address = winnersList[2];
@@ -255,6 +270,20 @@ export const useBidWinners = (id: number, exclusive: boolean) => {
                             winnerDetails[1].price = ethers.utils.formatUnits(secondPrize.toString(),  18);
                             winnerDetails[2].price = ethers.utils.formatUnits(thirdPrize.toString(),  18);
                         }
+                        else {
+                            const winnersInfo = await bidContract.getTopBid(id);
+
+                            const bidData = await bidContract.request_data_in_Bidding(id);
+                            setTotalBid(bidData.totalBidding.toString());
+
+                            const percent = ethers.utils.formatUnits(bidData.positionOneSharedPercentage.toString(),  18);
+                            const total = ethers.utils.formatUnits(bidData.totalBidding.toString(),  18);
+
+                            const price = Number(percent)/100 * Number(total);
+
+                            setWinnerDetails([{id: 1, address: winnersInfo[0],
+                                colors: ['#FDEB64', '#FED443', '#D4840E'], price: price}]);
+                        }
 
                         setLoadWinners(false);
 
@@ -267,7 +296,7 @@ export const useBidWinners = (id: number, exclusive: boolean) => {
 
         };
         fetchBidWinners();
-    }, [ chainId, totalBid, id, stateChanged]);
+    }, [ chainId, totalBid, id, stateChanged, account]);
 
     return {loadWinners, winnerDetails}
 };
