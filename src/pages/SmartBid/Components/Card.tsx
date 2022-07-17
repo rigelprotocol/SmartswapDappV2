@@ -4,6 +4,10 @@ import {MdPeopleOutline, AiOutlineGift, RiMedalFill} from "react-icons/all";
 import {Link} from 'react-router-dom';
 import {useSmartBid} from "../../../hooks/useSmartBid";
 import {NftProps} from "../../Nft/ViewNFT";
+import {RigelSmartBid, RigelSmartBidTwo} from "../../../utils/Contracts";
+import {SMARTBID1, SMARTBID2} from "../../../utils/addresses";
+import {getERC20Token} from "../../../utils/utilsFunctions";
+import {useActiveWeb3React} from "../../../utils/hooks/useActiveWeb3React";
 
 export type CardDetails = {
     exclusive: boolean,
@@ -33,6 +37,41 @@ export const countDownDate = (time: number) => (timeConverter(time));
 const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDetails) => {
 
     const { loadData , bidTime } = useSmartBid(id, exclusive);
+    const { chainId, library } = useActiveWeb3React();
+
+    const [symbol, setSymbol] = useState('');
+
+    useEffect(() => {
+        const getTokenSymbol = async () => {
+            try {
+                if (exclusive) {
+                    const bidContract = await RigelSmartBid(SMARTBID1[chainId as number], library);
+                    const bidToken = await bidContract.request_token_info(id);
+
+                    const token = await getERC20Token(bidToken.token, library);
+
+                    const [tokenSymbol] = await Promise.all([token.symbol()]);
+                    setSymbol(tokenSymbol);
+
+                } else {
+                    const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
+                    const bidToken = await bidContract.requestToken(id);
+
+                    const token = await getERC20Token(bidToken._token, library);
+
+                    const [tokenSymbol] = await Promise.all([token.symbol()]);
+                    setSymbol(tokenSymbol);
+
+                }
+            } catch (e) {
+                console.log(e)
+            }
+        };
+        getTokenSymbol();
+
+    }, []);
+
+
 
 
     const [currentClock, setCurrentClock] = useState('');
@@ -105,7 +144,7 @@ const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDe
                                         w={isMobileDevice ? "330px" : "100%"}
                                     />
                                 }
-                                <Text color={'#666666'} fontSize={'14px'}>90% RGP Token</Text>
+                                <Text color={'#666666'} fontSize={'14px'}>90% {symbol} Token</Text>
                             </Box>
                             {
                                 exclusive &&
