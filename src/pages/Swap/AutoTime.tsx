@@ -67,7 +67,8 @@ const SetPrice = () => {
   const borderColor = useColorModeValue('#DEE6ED', '#324D68');
   const iconColor = useColorModeValue('#666666', '#DCE6EF');
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
-  const buttonBgcolor = useColorModeValue('#F2F5F8', '#213345');
+  const routerBgcolor = useColorModeValue('#F2F5F8', '#213345');
+  const buttonBgcolor = useColorModeValue("#319EF6", "#4CAFFF");
   const color = useColorModeValue('#999999', '#7599BD');
   const switchBgcolor = useColorModeValue("#F2F5F8", "#213345");
   const lightmode = useColorModeValue(true, false);
@@ -82,16 +83,15 @@ const SetPrice = () => {
   const [selectedFrequency, setSelectedFrequency] = useState("5")
   const [marketType, setMarketType] = useState("Smartswap")
   const [percentageChange, setPercentageChange] = useState<string>("0")
-  const [approval, setApproval] = useState<string[]>([])
   const [approvalForFee, setApprovalForFee] = useState("")
   const [fee, setFee] = useState("")
   const [approvalForToken, setApprovalForToken] = useState("")
   const [showModal, setShowModal] = useState(false)
   const [totalNumberOfTransaction,setTotalNumberOfTransaction] = useState("1")
   const [situation,setSituation] = useState("above")
-  const [checkedItem, setCheckedItem] = useState(false)
   const [userOutputPrice, setUserOutputPrice] = useState<number>(0)
   const [currentToPrice,setCurrentToPrice] = useState("0")
+  const [quantity,setQuantity] = useState< string>("0")
   const [showNewChangesText,setShowNewChangesText] = useState(false)
   const [insufficientBalance, setInsufficientBalance] = useState(false);
   const [dataSignature,setDataSignature] = useState<{mess:string,signature:string}>({
@@ -130,21 +130,13 @@ const SetPrice = () => {
    checkIfMarketExists(market,chainId)
 
  },[location,chainId])
-  useEffect(() => {
-    async function runCheck() {
-      if (account && currencies[Field.INPUT]) {
-        await checkForApproval()
-      }
-    }
-    runCheck()
-  }, [currencies[Field.INPUT],typedValue, account])
 
   const switchMarket = (market:string)=>{
     routerHistory.push(`/auto-period/${market}`)
   }
   useEffect(() => {
     async function checkIfSignatureExists() {
-      let user = await fetch(`https://autoperiod.rigelprotocol.com/auto/data/${account}`)//https://autoperiod.rigelprotocol.com
+      let user = await fetch(`https://autoswap-server.herokuapp.com/auto/data/${account}`)//https://autoswap-server.herokuapp.com
       let data = await user.json()
       if (data) {
         setDataSignature(data.dataSignature)
@@ -163,7 +155,6 @@ const SetPrice = () => {
       checkIfSignatureExists()
       getFee()
     }
-    setCheckedItem(false)
   }, [account])
 
 
@@ -174,10 +165,16 @@ const SetPrice = () => {
   const [allowedSlippage] = useUserSlippageTolerance();
   const getFee =async () => {
     const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
-    const amountToApprove = await autoSwapV2Contract.fee()
+    try{
+      const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
+    // const fee= "10"
     setFee(fee)
-    return fee
+    return fee 
+    }catch(e){
+      console.log("ERROR",e)
+    }
+   
   }
   const checkIfMarketExists = (market:string,chainId:number| undefined) => {
     let marketArray:any
@@ -237,6 +234,15 @@ const SetPrice = () => {
     
    await checkBalance()
   }, [balance, formattedAmounts[Field.INPUT]]);
+  useEffect(() => {
+    async function runCheck() {
+      if (!inputError) {
+        await checkForApproval()
+      }
+    }
+    runCheck()
+  }, [inputError, formattedAmounts[Field.INPUT], currencies[Field.INPUT]])
+
   useMemo(() => {
     if(parseFloat(percentageChange) >0 && formattedAmounts[Field.OUTPUT]){
         const actualRecievedAmount = (parseFloat(percentageChange) / 100) * parseFloat(formattedAmounts[Field.OUTPUT]) + parseFloat(formattedAmounts[Field.OUTPUT])
@@ -299,20 +305,18 @@ const SetPrice = () => {
     const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
     const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
     const amountToApprove = await autoSwapV2Contract.fee()
-    const fee = ethers.utils.formatUnits(amountToApprove.toString(), 18)
-  
-    let approvalArray:any=[]
+    const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
+    // const fee ="10"
+    
     if (parseFloat(RGPBalance) >= parseFloat(fee)) {
       setHasBeenApproved(true)
-      approvalArray=[]
       setApprovalForFee("")
       // setApprovalForToken("")
     }else{
       setApprovalForFee("RGP")
     }
-    if(parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT])+parseFloat(fee))){
+    if(parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT])+parseFloat(fee)) || currencies[Field.INPUT]?.isNative ){
       setHasBeenApproved(true)
-      approvalArray=[]
       // setApprovalForFee("")
       setApprovalForToken("")
     } else{
@@ -320,18 +324,20 @@ const SetPrice = () => {
     }
     if (parseFloat(RGPBalance) < parseFloat(fee) || (parseFloat(tokenBalance) < Number(formattedAmounts[Field.INPUT]) && (!currencies[Field.INPUT]?.isNative && currencies[Field.INPUT]?.wrapped?.symbol === "RGP" ))) {
       setHasBeenApproved(false)
-      approvalArray.push("RGP")
       setApprovalForFee("RGP")
       setApprovalForToken("RGP")
     }
     if (parseFloat(tokenBalance) < Number(formattedAmounts[Field.INPUT]) && (!currencies[Field.INPUT]?.isNative &&currencies[Field.INPUT]?.wrapped.symbol !== "RGP")) {
       setHasBeenApproved(false)
-      approvalArray.push(currencies[Field.INPUT]?.wrapped?.symbol)
+     
       setApprovalForToken(currencies[Field.INPUT]?.wrapped?.symbol ?? "")
     }
+  }
+
+  const runTransaction = () =>{
+    setShowModal(!showModal);
+   setQuantityValue()
    
-    setApproval(Array.from(new Set(approvalArray)))
-    
   }
 
   const signTransaction = async () => {
@@ -432,10 +438,26 @@ const SetPrice = () => {
       
 
   }
+
+
+const setQuantityValue =() =>{
+  let value
+ const quantity = typedValue && parseFloat(typedValue) * parseInt(totalNumberOfTransaction)
+ if(currencies[Field.INPUT]?.isNative){
+     setQuantity(`${quantity}`)
+     value=quantity
+}else{
+  setQuantity(typedValue)
+  value = typedValue
+}
+ return value
+}
+
   const sendTransactionToDatabase = async () => {
     GButtonClick("auto_period","sending transaction to database",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
     try{
       
+     
     const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
     dispatch(
       setOpenModal({
@@ -446,17 +468,19 @@ const SetPrice = () => {
     let currentDate = new Date();
     let futureDate = currentDate.getTime() + deadline;
     let data, response
-    if (currencies[Field.INPUT]?.isNative) {
-      let quantity = typedValue && parseFloat(typedValue) * parseInt(totalNumberOfTransaction)
-      console.log({typedValue},quantity)
+    let value = setQuantityValue()
+    try{ 
+       
+       if (currencies[Field.INPUT]?.isNative) {
+   
+      
       data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
         pathArray,
         futureDate,
-        { value: Web3.utils.toWei(quantity.toString(), 'ether') }
+        { value: Web3.utils.toWei(value.toString(), 'ether') }
       )
       const fetchTransactionData = async (sendTransaction: any) => {
         const { confirmations, status, logs } = await sendTransaction.wait(1);
-
         return { confirmations, status, logs };
       };
       const { confirmations, status, logs } = await fetchTransactionData(data)
@@ -465,10 +489,21 @@ const SetPrice = () => {
       }
     } else {
       response = true
-
+      // quantity = typedValue
     }
+    }catch(e){
+      console.log({e})
+      dispatch(
+      setOpenModal({
+        message: "Signing initial transaction",
+        trxState: TrxState.TransactionFailed,
+      })
+    );
+    }
+    // setQuantity(quantity)
     let orderID = await autoSwapV2Contract.orderCount()
-    if (response) {
+   
+    if (response && value) {
       dispatch(
         setOpenModal({
           message: "Storing Transaction",
@@ -476,7 +511,7 @@ const SetPrice = () => {
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)//
-      const response = await fetch(`https://autoperiod.rigelprotocol.com/auto/add`, {
+      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/add`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -498,7 +533,7 @@ const SetPrice = () => {
           percentageChange,
           fromNumberOfDecimals: currencies[Field.INPUT]?.isNative ? 18 : currencies[Field.INPUT]?.wrapped.decimals,
           toNumberOfDecimals: currencies[Field.OUTPUT]?.isNative ? 18 : currencies[Field.OUTPUT]?.wrapped.decimals,
-          fromPrice: typedValue,
+          fromPrice: `${value}`,
           currentToPrice: formattedAmounts[Field.OUTPUT],
           orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1,
           type: "Auto Time",
@@ -512,7 +547,7 @@ const SetPrice = () => {
           market:marketType
         })
       })
-      await response.json()
+      let res =await response.json()
       dispatch(
         setOpenModal({
           message: "Successfully stored Transaction",
@@ -522,13 +557,19 @@ const SetPrice = () => {
       GSuccessfullyTransaction("auto_period","storing transaction to the database",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
       dispatch(refreshTransactionTab({ refresh:Math.random() }))
       onUserInput(Field.INPUT, "");
-      setApproval([])
       setSignatureFromDataBase(true)
-      setCheckedItem(false)
+      // setCheckedItem(false)
       setShowNewChangesText(false);
     }
   }catch(e){
+    console.log({e})
     GFailedTransaction("auto_period","storing transaction to database","error",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
+    dispatch(
+      setOpenModal({
+        message: "Storing Transaction failed",
+        trxState: TrxState.TransactionFailed,
+      })
+    );
   }
 
   }
@@ -622,7 +663,7 @@ const SetPrice = () => {
                     display={true}
                   />
                 </Box>
-                <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={buttonBgcolor}>
+                <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={routerBgcolor}>
                   <Flex>
                   <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
 
@@ -757,10 +798,9 @@ const SetPrice = () => {
                   </Box>
           
                 </VStack>
-                <Box mt={10}>
-                  <Text fontSize="16px">Fee: <span style={{color:borderColor}}>{fee} RGP</span></Text>
-                  <Text></Text>
-                </Box>
+                <Flex mt={10} justifyContent="space-between">
+                  <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{fee} RGP</Text>
+                </Flex>
                 <VStack>
                   <Flex>
                     <Text fontSize="14px" mr={2}>
@@ -809,7 +849,7 @@ const SetPrice = () => {
                     }}
                     h="48px"
                     p="5px"
-                    color={color}
+                    color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
@@ -824,7 +864,7 @@ const SetPrice = () => {
                     h="48px"
                     p="5px"
                     onClick={()=>approveOneOrTwoTokens(approvalForToken)}
-                    color={color}
+                    color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
@@ -839,7 +879,7 @@ const SetPrice = () => {
                     h="48px"
                     p="5px"
                     onClick={()=>approveOneOrTwoTokens(approvalForFee)}
-                    color={color}
+                    color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
@@ -853,7 +893,7 @@ const SetPrice = () => {
                     borderColor={borderColor}
                     h="48px"
                     p="5px"
-                    color={color}
+                    color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     onClick={()=>
                       {
@@ -920,7 +960,7 @@ const SetPrice = () => {
                 </Box>
 
               
-                <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={buttonBgcolor}>
+                <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={routerBgcolor}>
                   <Flex>
                   <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
 
@@ -991,10 +1031,10 @@ const SetPrice = () => {
         border ="1px solid white"
         padding={1}
       >
-      5 minutes
+      {parseInt(selectedFrequency) ? `${selectedFrequency} minutes` : selectedFrequency}
       </MenuButton>
       <MenuList>
-        {["5","30","60","daily","weekly","monthly"].map((item:string,index)=>(
+        {["5","10","30","60","daily","weekly","monthly"].map((item:string,index)=>(
           <MenuItem key={index} _focus={{ color: "#319EF6" }} onClick={(e) => setSelectedFrequency(item)} fontSize="13px">
          {parseInt(item) ? `${item} minutes` : item}
         </MenuItem>
@@ -1050,9 +1090,9 @@ const SetPrice = () => {
                   </Box>
           
                 </VStack>
-                <Box mt={10}>
-                  <Text fontSize="16px">Fee: <span style={{color:borderColor}}>{fee} RGP</span></Text>
-                </Box>
+                <Flex mt={10} justifyContent="space-between">
+                  <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{fee} RGP</Text>
+                </Flex>
                 <VStack>
                   <Flex>
                     <Text fontSize="14px" mr={2}>
@@ -1101,7 +1141,7 @@ const SetPrice = () => {
                     }}
                     h="48px"
                     p="5px"
-                    color={color}
+                    color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
@@ -1116,7 +1156,7 @@ const SetPrice = () => {
                     h="48px"
                     p="5px"
                     onClick={()=>approveOneOrTwoTokens(approvalForToken)}
-                    color={color}
+                   color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
@@ -1131,7 +1171,7 @@ const SetPrice = () => {
                     h="48px"
                     p="5px"
                     onClick={()=>approveOneOrTwoTokens(approvalForFee)}
-                    color={color}
+                   color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
@@ -1145,14 +1185,12 @@ const SetPrice = () => {
                     borderColor={borderColor}
                     h="48px"
                     p="5px"
-                    color={color}
+                    color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     onClick={()=>
                       {
                       setCurrentToPrice(receivedAmount)
-                      signatureFromDataBase ? 
-                      setShowModal(!showModal)
-                     : sendTransactionToDatabase()
+                      signatureFromDataBase ? runTransaction() : sendTransactionToDatabase()
                     }}
                     // onClick={sendTransactionToDatabase}
                     fontSize="18px"
@@ -1187,13 +1225,13 @@ const SetPrice = () => {
         fromDeposited={formattedAmounts[Field.INPUT]}
         toDeposited={userOutputPrice.toString()}
         signSignature={signatureFromDataBase ? sendTransactionToDatabase : signTransaction}
-        setCheckedItem={setCheckedItem}
-        checkedItem={checkedItem}
         minimumAmountToRecieve={minimum}
         slippage={Number(allowedSlippage / 100)}
         showNewChangesText={showNewChangesText}
         pathSymbol={pathSymbol}
         situation={situation}
+        quantity={currencies[Field.INPUT]?.isNative ? quantity : ""}
+        market={marketType}
       />
     </Box>
   )

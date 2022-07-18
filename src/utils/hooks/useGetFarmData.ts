@@ -160,7 +160,6 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
           token0Address === USDT[chainId as number] ? decimal1 : decimal0
         );
         rgpPrice = totalUSDT / totalRGP;
-        console.log("second", totalUSDT / totalRGP);
 
         console.log(reserves[0].toString(), reserves[1].toString());
       }

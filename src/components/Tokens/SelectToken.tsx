@@ -111,6 +111,7 @@ const SelectToken: React.FC<IModal> = ({
     return filterTokens(Object.values(allTokens), debouncedQuery);
   }, [allTokens, debouncedQuery]);
 
+ 
   const filteredTokenListWithETH = useMemo((): Currency[] => {
     const s = debouncedQuery.toLowerCase().trim();
     if (s === "" || s === "e" || s === "et" || s === "eth") {
@@ -128,7 +129,6 @@ const SelectToken: React.FC<IModal> = ({
     const checksummedInput = isAddress(input);
     setSearchQuery(checksummedInput || input);
   }, []);
-
   const [isSearchingForToken, setIsSearchingForToken] = useState(false);
   useEffect(() => {
     if (!searchToken && !(filteredTokenListWithETH?.length > 0) ) {

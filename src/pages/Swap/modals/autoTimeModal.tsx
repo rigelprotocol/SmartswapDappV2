@@ -12,7 +12,8 @@ import {
     Text,
     Button,
     Image,
-    Checkbox
+    Checkbox,
+    Img
 } from "@chakra-ui/react";
 import { InfoOutlineIcon, ArrowDownIcon } from "@chakra-ui/icons";
 import RGPImage from "./../../../assets/tokens/RGP.svg";
@@ -40,7 +41,9 @@ export type IModal = {
     setCheckedItem: Function;
     checkedItem: boolean;
   showNewChangesText:boolean;
-  numberOfTransaction:string
+  numberOfTransaction:string;
+  quantity:string | number | undefined;
+  market:string
 };
 
 const AutoTimeModal: React.FC<IModal> = ({
@@ -60,12 +63,14 @@ const AutoTimeModal: React.FC<IModal> = ({
     percentageChange,
     situation,
     buttonText,
-    setCheckedItem,
-    checkedItem,
+    // setCheckedItem,
+    // checkedItem,
     slippage,
     minimumAmountToRecieve,
     showNewChangesText,
-    numberOfTransaction
+    numberOfTransaction,
+    quantity,
+    market
 }) => {
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
@@ -75,7 +80,7 @@ const AutoTimeModal: React.FC<IModal> = ({
     const boxColor = useColorModeValue("#F2F5F8", "#213345");
     const { onClose } = useDisclosure();
 
-
+    const [checkedItem,setCheckedItem] = useState(false);
     const tokenPrice = (Number(toDeposited) / Number(fromDeposited)).toFixed(4);
 
     return (
@@ -194,6 +199,7 @@ const AutoTimeModal: React.FC<IModal> = ({
                                 </Box>
                                 <Text color={heavyTextColor}>{frequency === "5" || frequency === "30" ? `${frequency} minutes` : `${frequency}`}</Text>
                             </Flex>
+                           
                             <Flex justifyContent='space-between' my='4'>
                                 <Box color={lightTextColor}>
                                     Route <InfoOutlineIcon />
@@ -202,7 +208,12 @@ const AutoTimeModal: React.FC<IModal> = ({
                                     {pathSymbol}
                                 </Text>
                             </Flex>
-                          
+                            {quantity && <Flex justifyContent='space-between'>
+                                <Box color={lightTextColor}>
+                                    Amount withdrawed to contract <InfoOutlineIcon />
+                                </Box>
+                                <Text color={heavyTextColor}>{quantity}</Text>
+                            </Flex>}
                             <Flex justifyContent='space-between' my='4'>
                                 <Box color={lightTextColor}>
                                     Number of transaction <InfoOutlineIcon />
@@ -210,6 +221,14 @@ const AutoTimeModal: React.FC<IModal> = ({
                                 <Text color={heavyTextColor} fontWeight='500'>
                                     {numberOfTransaction}
                                 </Text>
+                            </Flex>
+                            <Flex justifyContent='space-between' my='4'>
+                                <Box color={lightTextColor}>
+                                   Market Router <InfoOutlineIcon />
+                                </Box>
+                                <Flex>
+            <Img src={`./images/${market}.png`} width="25px" height="25px" mr="1" /> <Text mt="1">{market}</Text>
+          </Flex>
                             </Flex>
                             <Flex justifyContent='space-between' my='4'>
                                 <Box color={lightTextColor}>
@@ -248,9 +267,12 @@ const AutoTimeModal: React.FC<IModal> = ({
                             <Text>The swap will occur   <Text as='span' color={textColor}>{frequency === "5" || frequency === "30" ? `${frequency} minutes` : `${frequency}`}</Text> only when the <Text as='span' color={textColor}>{to}</Text> price is greater than or equal to the current <Text as='span' color={textColor}>{to}</Text>  price plus <Text as='span' color={textColor}>{percentageChange}</Text>  % of the <Text as='span' color={textColor}>{to}</Text>  price.</Text>
                         </Box>
                         <Box mb="1">
-                            <Checkbox size='sm' colorScheme={textColor} checked={checkedItem} onChange={(e) => setCheckedItem(e.target.checked)}>
-                                I agree to this changes
-                            </Checkbox>
+                            <Checkbox
+          isChecked={checkedItem}
+          onChange={(e) => setCheckedItem(e.target.checked)}
+        >
+             I agree to this changes
+        </Checkbox>
                         </Box>
                         <Button
                             bgColor={textColor}
