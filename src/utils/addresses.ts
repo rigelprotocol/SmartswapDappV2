@@ -168,11 +168,11 @@ export const MARKETAUTOSWAPADDRESSES : { [key: string]: {[key:string]: string} }
     "137": "0xd4d76dDAA597aE0B8B20d801EE7e528DE2E9f033",
   },
   "Pancakeswap":{
-    "56": "0x19C16cfb79E7f2Af99C3487cddbF1DC80125d59A",
+    "56": "0xffD1e82d1B46B0d5D6Caf1BCdF5edb6FCA0A2455",
     "97": "0x"
   },
   "Quickswap":{
-    "137":"0x85e6864D382988c402823811F8E418C7c9eB71D2"
+    "137":"0x8F83C8012e705B04141FDF6A2fc2f7a8243A2345"
   }
 };
 export const OTHERMARKETADDRESSES: { [key: string]: {[key:string]: string} } = {
