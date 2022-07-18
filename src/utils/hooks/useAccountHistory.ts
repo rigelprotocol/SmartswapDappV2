@@ -15,6 +15,7 @@ import { ParseFloat } from '..';
 import { notificationTab } from '../../state/transaction/actions';
 import { ZERO_ADDRESS } from '../../constants';
 import { SupportedChainName, SupportedChainSymbols } from '../constants/chains';
+import { useActiveWeb3React } from './useActiveWeb3React';
 
 const abiDecoder = require('abi-decoder');
 
@@ -66,11 +67,13 @@ interface DataIncoming {
     status: number,
     currentToPrice?: string,
     chainID?:string,
+    orderID?:string,
     initialFromPrice?:string,
     initialToPrice?:string,
     situation?:string,
     pathSymbol?:string,
-    market?:string
+    market?:string,
+    totalTransaction?:string
 }
 let web3 = new Web3(Web3.givenProvider);
 export const formatAmount = (number: string, decimals: any) => {
@@ -95,12 +98,12 @@ export const getTokenSymbol = (symbol: string) => {
 
 
 const useAccountHistory = (socket:any) => {
-    const { account, chainId, library } = useWeb3React();
+    const { account, chainId, library } = useActiveWeb3React();
     const [loading, setLoading] = useState(false);
     const [historyData, setHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")//
+    const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//
     const dispatch =useDispatch()
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const tokenList = async (addressName: string) => {
@@ -195,7 +198,9 @@ const useAccountHistory = (socket:any) => {
                         // name: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).name,
                         transactionHash: items.hash,
                         status: 10,
-                        chainID:items.chainID 
+                        chainID:items.chainID ,
+                        market:"",
+                        orderID:"",
                     }));
 
                 const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(0, 5) : dataFiltered;
@@ -222,7 +227,9 @@ const useAccountHistory = (socket:any) => {
                     error: [],
                     status: "10",
                     situation:"",
-                    chainID:chainId
+                    chainID:chainId,
+                    market:"",
+                    orderID:"",
                 }));
             } else if ( location.includes("auto-period") || location.includes("set-price")) {
                 const { transaction, database } = await getTransactionFromDatabase(account)
@@ -261,11 +268,13 @@ const useAccountHistory = (socket:any) => {
                             status: data.status,
                             currentToPrice: data.typeOfTransaction === "Set Price" ? data.currentToPrice : data.percentageChange,
                             chainID:data.chainID ,
+                            orderID:data.orderID ,
                             initialFromPrice:data.initialFromPrice,
                             initialToPrice:data.initialToPrice,
                             situation:data.situation,
                             pathSymbol:data.pathSymbol,
-                            market:data.market
+                            market:data.market,
+                            totalTransaction:data.totalNumberOfTransaction
                         }
                     })
                     )
@@ -303,7 +312,9 @@ const useAccountHistory = (socket:any) => {
                     initialToPrice:data.initialToPrice,
                     situation:data.situation,
                     pathSymbol:data.pathSymbol,
-                    market:data.market                       
+                    market:data.market,
+                    orderID:data.orderID,  
+                    totalTransaction:data.totalTransaction                    
                 })),
             );
             const userSwapHistory = swapDataForWallet.map((data: any) => ({
@@ -313,7 +324,7 @@ const useAccountHistory = (socket:any) => {
                     getTokenSymbol(data.tokenOut.symbol),
                 token1: data.tokenIn,
                 token2: data.tokenOut,
-                amountIn: formatAmount(data.amountIn, data.tokenIn.decimals),
+                amountIn: data.tokenIn?.name === SupportedChainName[data.chainID as number] ? parseFloat(formatAmount(data.amountIn, data.tokenIn.decimals))/ data.totalTransaction : formatAmount(data.amountIn, data.tokenIn.decimals)  ,
                 amountOut:  data.name==="Set Price" || data.name==="Auto Time" ? data.amountOut : 
                 formatAmount(data.amountOut, data.tokenOut.decimals),
 
@@ -330,8 +341,8 @@ const useAccountHistory = (socket:any) => {
                 initialToPrice:data.initialToPrice,
                 situation:data.situation,
                 pathSymbol:data.pathSymbol,
-                market:data.market
-          
+                market:data.market,
+                orderID:data.orderID,
             }));
             setHistoryData(userSwapHistory);
 

@@ -54,7 +54,7 @@ function DappsDropdown() {
               </Stack>
             </Link>
           </MenuItem>
-          <MenuItem>
+          {/* <MenuItem>
 
             <Stack direction={'column'} spacing={0} >
               <Text>  Smart Bid </Text>
@@ -70,12 +70,15 @@ function DappsDropdown() {
               <Text color={'gray.500'}>  Trade using decentralized tokens.</Text>
             </Stack>
 
-          </MenuItem>
+          </MenuItem> */}
           <MenuItem>
-            <Stack direction={'column'} spacing={0} >
+          <Link href="https://launchpad.rigelprotocol.com/" isExternal>
+          <Stack direction={'column'} spacing={0} >
               <Text>  LaunchPad </Text>
               <Text color={'gray.500'}>  Join projects hosted on RigelProtocol.</Text>
             </Stack>
+          </Link>
+            
           </MenuItem>
         </MenuList>
       </Menu>

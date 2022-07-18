@@ -60,7 +60,8 @@ const SetPrice = () => {
   const iconColor = useColorModeValue('#666666', '#DCE6EF');
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
   const lightmode = useColorModeValue(true, false);
-  const buttonBgcolor = useColorModeValue('#F2F5F8', '#213345');
+  const routerBgcolor = useColorModeValue('#F2F5F8', '#213345');
+  const buttonBgcolor = useColorModeValue("#319EF6", "#4CAFFF");
   const switchBgcolor = useColorModeValue("#F2F5F8", "#213345");
   const dispatch = useDispatch();
   const color = useColorModeValue('#999999', '#7599BD');
@@ -82,7 +83,7 @@ const SetPrice = () => {
     oppositeAmount
   } = useDerivedSwapInfo();
 
-  const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")//https://autoperiod.rigelprotocol.com
+  const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//https://autoswap-server.herokuapp.com
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [disableInput, setDisableInput] = useState(true)
   const [initialFromPrice, setInitialFromPrice] = useState("")
@@ -96,7 +97,6 @@ const SetPrice = () => {
   const [showTooltip, setShowTooltip] = useState(false)
   const [toPrice, setToPrice] = useState(0)
   const [showModal, setShowModal] = useState(false)
-  const [checkedItem, setCheckedItem] = useState(false)
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
   const [approvalForFee, setApprovalForFee] = useState("")
   const [marketType, setMarketType] = useState("Smartswap")
@@ -234,8 +234,7 @@ const SetPrice = () => {
     const checkBalance = async ()=>{
      if(currencies[Field.INPUT]?.symbol==="RGP"){
       let fee =await getFee()
-      let amount = parseFloat(formattedAmounts[Field.INPUT]) + parseFloat(fee) 
-      console.log({amount,balance,fee},currencies[Field.INPUT]?.symbol,parseFloat(formattedAmounts[Field.INPUT]))
+      let amount = parseFloat(formattedAmounts[Field.INPUT]) + parseFloat(fee)
       if(amount > parseFloat(balance) ){
         setInsufficientBalance(true);
       }else{
@@ -288,8 +287,9 @@ const SetPrice = () => {
     let minutesToAdd = 20;
     let currentDate = new Date();
     let futureDate = currentDate.getTime() + minutesToAdd;
-    let data, response
+    let data, response,quantity
     if (currencies[Field.INPUT]?.isNative) {
+      quantity = typedValue && parseFloat(typedValue) * parseInt(totalNumberOfTransaction)
       data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
 
         currencies[Field.OUTPUT]?.wrapped.address,
@@ -298,7 +298,7 @@ const SetPrice = () => {
         // signedTransaction?.r,
         // signedTransaction?.s,
         // signedTransaction?.v,
-        { value: Web3.utils.toWei(typedValue, 'ether') }
+        { value: Web3.utils.toWei(quantity.toString(), 'ether') }
       )
       const fetchTransactionData = async (sendTransaction: any) => {
         const { confirmations, status, logs } = await sendTransaction.wait(1);
@@ -311,6 +311,7 @@ const SetPrice = () => {
       }
     } else {
       response = true
+      quantity= typedValue
     }
 
 
@@ -343,10 +344,10 @@ const SetPrice = () => {
           fromAddress: currencies[Field.INPUT]?.isNative ? "native" : currencies[Field.INPUT]?.wrapped.address,
           toAddress: currencies[Field.OUTPUT]?.isNative ? "native" : currencies[Field.OUTPUT]?.wrapped.address,
           userExpectedPrice: toPrice,
-          percentageChange:"",
+          percentageChange:"100",
           fromNumberOfDecimals: currencies[Field.INPUT]?.isNative ? 18 : currencies[Field.INPUT]?.wrapped.decimals,
           toNumberOfDecimals: currencies[Field.OUTPUT]?.isNative ? 18 : currencies[Field.OUTPUT]?.wrapped.decimals,
-          fromPrice: typedValue,
+          fromPrice: quantity,
           currentToPrice: formattedAmounts[Field.OUTPUT],
           orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1,
           type: "Set Price",
@@ -543,7 +544,6 @@ const SetPrice = () => {
         }
       )
         const balance =await status.balanceOf(account)
-        console.log({balance})
       const approveBalance = ethers.utils.formatEther(check).toString();
       return approveBalance
     } catch (e) {
@@ -672,9 +672,9 @@ const SetPrice = () => {
           {/* <Input placeholder="0.00" size="lg" borderRadius={4} borderColor={borderColor} /> */}
 
           <Flex justifyContent="space-between">
-          <Box>
-                  <Text fontSize="16px" mb={2}>Fee: <span style={{color:borderColor}}>{fee} RGP</span></Text>
-                </Box>
+          <Flex mt={10} justifyContent="space-between">
+                  <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{fee} RGP</Text>
+                </Flex>
             <SliderComponent 
           setSliderValue={setPositiveSliderValue}
           sliderValue={positiveSliderValue}
@@ -753,7 +753,7 @@ const SetPrice = () => {
                 onClick={() => setShowModal(!showModal)}
                 h="48px"
                 p="5px"
-                color={color}
+                color={inputError ? color : "#FFFFFF"}
                 bgColor={buttonBgcolor}
                 fontSize="18px"
                 boxShadow={lightmode ? 'base' : 'lg'}
@@ -768,7 +768,7 @@ const SetPrice = () => {
                     h="48px"
                     p="5px"
                     onClick={()=>approveOneOrTwoTokens(approvalForToken)}
-                    color={color}
+                    color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
@@ -783,7 +783,7 @@ const SetPrice = () => {
                     h="48px"
                     p="5px"
                     onClick={()=>approveOneOrTwoTokens(approvalForFee)}
-                    color={color}
+                    color={inputError ? color : "#FFFFFF"}
                     bgColor={buttonBgcolor}
                     fontSize="18px"
                     boxShadow={lightmode ? 'base' : 'lg'}
@@ -797,7 +797,7 @@ const SetPrice = () => {
                 borderColor={borderColor}
                 h="48px"
                 p="5px"
-                color={color}
+                color={inputError ? color : "#FFFFFF"}
                 bgColor={buttonBgcolor}
                 onClick={() => signatureFromDataBase ? setShowModal(!showModal) : sendTransactionToDatabase()}
                 // onClick={sendTransactionToDatabase}
@@ -831,8 +831,6 @@ const SetPrice = () => {
         toDeposited={toPrice}
         frequency={totalNumberOfTransaction}
         signSignature={signatureFromDataBase ? sendTransactionToDatabase : signTransaction}
-        setCheckedItem={setCheckedItem}
-        checkedItem={checkedItem}
         fromPrice={typedValue}
         pathSymbol={pathSymbol}
         minimumAmountToRecieve={minimum}

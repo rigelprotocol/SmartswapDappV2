@@ -16,6 +16,12 @@ import useOpenOrders from '../../../../utils/hooks/useOpenOrders';
 import { io } from "socket.io-client";
 
 import { GMarketHistoryTab } from '../../../../components/G-analytics/gIndex';
+import { SupportedChainSymbols } from '../../../../utils/constants/chains';
+import { autoSwapV2 } from '../../../../utils/Contracts';
+import { MARKETAUTOSWAPADDRESSES } from '../../../../utils/addresses';
+import { useActiveWeb3React } from '../../../../utils/hooks/useActiveWeb3React';
+import Web3 from 'web3';
+import { useLocation } from 'react-router-dom';
 
 const History = () => {
   
@@ -30,21 +36,23 @@ const History = () => {
 
   useEffect(
     () => {
-  setSocket(io("https://autoperiod.rigelprotocol.com"));//https://autoperiod.rigelprotocol.com
+  setSocket(io("https://autoswap-server.herokuapp.com"));//https://autoswap-server.herokuapp.com
   
     },
     []
   )
  
-
+  const { account, chainId, library } = useActiveWeb3React()
   const [show, setShow] = useState<Boolean>(true);
   const [typeOfModal, setTypeOfModal] = useState(0);
   const [open, setOpen] = useState<Boolean>(false);
   const [showMarketHistory, setShowMarketHistory] = useState(false);
   const [notification, setNotification] = useState(0);
+  const location = useLocation().pathname;
   const [address, setAddress] = useState("");
-  const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")//https://autoperiod.rigelprotocol.com
+  const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//https://autoswap-server.herokuapp.com
   const [showOrder, setShowOrder] = useState(false);
+  const [type, setType] = useState("");
 
   const sideBarRemoved = useSelector((state: RootState) => state.transactions.removeSideTab);
 
@@ -69,6 +77,11 @@ const History = () => {
 
   }, []);
   useEffect(() => {
+    if (location.includes("auto-period") || location.includes("set-price")) {
+        setOpen(true)
+    }
+}, [location, chainId])
+  useEffect(() => {
     if(locationData ==="auto"){
       setNotification(autoTimeNotification)
     }else if(locationData==="price"){
@@ -80,11 +93,34 @@ const History = () => {
  
   const deleteDataFromDatabase = async () => {
     // if (data && data.name === "Auto Time") {
+      console.log({typeOfModal})
       if(data && typeOfModal===1){
-         setOpenModal({
-        message: "Deleting Order...",
-        trxState: TrxState.WaitingForConfirmation,
-      })
+        dispatch(
+          setOpenModal({
+            message: "Deleting Order...",
+            trxState: TrxState.WaitingForConfirmation,
+          })
+        );
+        let response;
+      if(data.token1.symbol ===SupportedChainSymbols[data.chainID]){
+       
+        const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[data.market][chainId as number], library);
+        console.log({data})
+        console.log(data.orderID)
+       const res= await autoSwapV2Contract.cancelOrder(data.orderID)
+        const fetchTransactionData = async (sendTransaction: any) => {
+          const { confirmations, status, logs } = await sendTransaction.wait(1);
+  
+          return { confirmations, status, logs };
+        };
+        const { confirmations, status, logs } = await fetchTransactionData(res)
+        if (confirmations >= 1 && status) {
+          response = true
+        }
+       
+      }else{
+        response = true
+      }
       const result = await fetch(`${URL}/auto/data/${data._id}/${data.id}`, { method: 'DELETE' })
       const res = await result.json()
       if (res === "success") {
@@ -126,40 +162,15 @@ const History = () => {
       }
 
      
-    // } else if (data && data.name === "Set Price") {
-    //   setOpenModal({
-    //     message: data.status === 2 ? "Suspending Transaction..." : "Resuming Transaction",
-    //     trxState: TrxState.WaitingForConfirmation,
-    //   })
-    //   const result = await fetch(`${URL}/auto/update/${data.id}`, {
-    //     mode: "cors",
-    //     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-    //     credentials: 'same-origin', // include, *same-origin, omit
-    //     headers: {
-    //       'Content-Type': 'application/json'
-    //       // 'Content-Type': 'application/x-www-form-urlencoded',
-    //     },
-    //     method: "PUT",
-    //     body: data.status === 2 ? JSON.stringify({ status: 3 }) : JSON.stringify({ status: 2 })
-    //   })
-    //   const res = await result.json()
-    //   if (res === "success") {
-    //     dispatch(
-    //       setOpenModal({
-    //         message: `Data deleted Successful.`,
-    //         trxState: TrxState.TransactionSuccessful,
-    //       })
-    //     );
-    //   }
-    //   dispatch(refreshTransactionTab({ refresh:Math.random() }))
-    // }
+
     setShowModal(false)
     
     dispatch(refreshTransactionTab({ refresh:Math.random() }))
   }
-  const confirmDeletion = async (data: DataType,value:number) => {
+  const confirmDeletion = async (data: DataType,value:number,type:string) => {
     setData(data)
     setTypeOfModal(value)
+    setType(type)
     setShowModal(true)
   }
 
@@ -305,7 +316,10 @@ const History = () => {
         maxHeight={'80vh'}
       >
         <Flex justifyContent={'center'}>
-          {open && loadMarketData || open && loading || open && loadOpenOrders && <Spinner my={3} size={'md'} />}
+          {(open && loadMarketData )|| (open && loading )|| (open && loadOpenOrders) ?
+            (<Spinner my={3} size={'md'} />)
+          : <></>
+         }
         </Flex>
               {/* market history */}
         {open && showMarketHistory && marketHistoryData && historyArray.map((data: DataType,index) =>{
@@ -328,7 +342,7 @@ const History = () => {
         showModal={showModal}
         setShowModal={setShowModal}
         deleteDataFromDatabase={deleteDataFromDatabase}
-        text={`You are about to ${ data?.status===3 ? "resume" :  data?.status===2 ? "suspend" : "delete"} an ${data?.name} transaction. ${data?.status===3 ?"This will continue running all transaction that was stopped." : "This will prevent future transaction from been auto enabled for you. Do you want to continue"}`}
+        text={`You are about to ${ data?.status===3 ? "resume" :  type==="delete" ? "delete" :"suspend" } an ${data?.name} transaction. ${data?.status===3 ?"This will continue running all transaction that was stopped." : "This will prevent future transaction from been auto enabled for you. Do you want to continue"}`}
       />
     </Flex>
   );

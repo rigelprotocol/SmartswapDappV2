@@ -22,13 +22,11 @@ export const useNativeBalance = () => {
     const getBalance = async () => {
 
       if (account && chainId) {
-        console.log({chainId})
         try {
            const balance = await library?.getBalance(account as string);
           setBalance(
             parseFloat(ethers.utils.formatEther(balance as any)).toFixed(4)
           );
-          console.log(SupportedChainSymbols[chainId as number])
           setSymbol(SupportedChainSymbols[chainId as number]);
           setName(SupportedChainName[chainId as number]);
           setLogo(SupportedChainLogo[chainId as number]);

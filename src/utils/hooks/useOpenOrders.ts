@@ -37,7 +37,7 @@ const useOpenOrders = (socket:any) => {
     const [openOrderData, setopenOrderData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("https://autoperiod.rigelprotocol.com")
+    const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const refreshPage = useSelector((state: RootState) => state.transactions.refresh);
     const location = useLocation().pathname;
@@ -71,7 +71,7 @@ const useOpenOrders = (socket:any) => {
             getOpenOrders();
         })
         
-    }, [socket]);
+    }, [socket,account]);
 
     const tokenList = async (addressName: string) => {
         const token = await getERC20Token(addressName, library);
@@ -99,7 +99,7 @@ const useOpenOrders = (socket:any) => {
 
 
         const getOpenOrders = async () => {
-            if ((account && contractAddress && locationData)) {
+            if ((account && locationData)) {
                 setloadOpenOrders(true);
                 try {
                     let dataToUse =[]
@@ -128,13 +128,15 @@ const useOpenOrders = (socket:any) => {
                                 status: data.status,
                                 currentToPrice: data.typeOfTransaction === "Set Price" ? data.currentToPrice : data.percentageChange,
                                 chainID:data.chainID ,
-                                rate:`${data.currentNumber -1} / ${data.totalNumberOfTransaction}`,
+                                rate:`${data.currentNumber} / ${data.totalNumberOfTransaction}`,
                                 initialFromPrice:data.initialFromPrice,
                                 initialToPrice:data.initialToPrice,
                                 situation:data.situation,
                                 _id:data._id,
                                 pathSymbol:data.pathSymbol,
-                                market:data.market
+                                market:data.market,
+                                orderID:data.orderID,
+                                totalTransaction:data.totalNumberOfTransaction
                             }
                         })
                         )
@@ -171,9 +173,12 @@ const useOpenOrders = (socket:any) => {
                         initialToPrice:data.initialToPrice,
                         _id:data._id,
                         pathSymbol:data.pathSymbol,
-                        market:data.market
+                        market:data.market,
+                        orderID:data.orderID,
+                        totalTransaction:data.totalTransaction
                     })),
                 );
+                console.log({marketSwap})
                     const marketHistory = marketSwap.map((data) => ({
                         token1Icon:data.tokenIn &&
                             getTokenSymbol(data.tokenIn.symbol),
@@ -181,7 +186,7 @@ const useOpenOrders = (socket:any) => {
                             data.tokenOut && getTokenSymbol(data.tokenOut.symbol),
                         token1: data.tokenIn,
                         token2: data.tokenOut,
-                        amountIn: data.tokenIn && formatAmount(data.amountIn, data.tokenIn.decimals),
+                        amountIn: data.tokenIn &&  data.tokenIn?.name === SupportedChainName[data.chainID as number]  ? parseFloat(formatAmount(data.amountIn, data.tokenIn.decimals)) / data.totalTransaction : data.tokenIn &&  formatAmount(data.amountIn, data.tokenIn.decimals),
                         amountOut:  parseFloat(data.amountOut).toFixed(4),
         
                         time: data.time,
@@ -200,6 +205,7 @@ const useOpenOrders = (socket:any) => {
                         _id:data._id,
                         pathSymbol:data.pathSymbol,
                         market:data.market,
+                        orderID:data.orderID,
                     }));
                     setopenOrderData(marketHistory);
                     setloadOpenOrders(false);

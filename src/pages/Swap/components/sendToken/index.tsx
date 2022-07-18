@@ -514,7 +514,6 @@ const SendToken = () => {
         setShowNewChangesText(false);
       }
     } catch (e) {
-      console.log(449404);
       setSendingTrx(false);
       dispatch(
         setOpenModal({

@@ -667,7 +667,6 @@ const getUserValue = async ()=> {
           productFarm.userInfo(account),
           productFarm.userData(account),
         ]);
-        console.log({userInfo,FarmTokenBalance})
       const tokenStaked = await FarmTokenBalance.tokenQuantity
       console.log({tokenStaked},tokenStaked.toString(),Web3.utils.fromWei(tokenStaked.toString()))
 
