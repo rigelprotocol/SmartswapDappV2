@@ -44,7 +44,7 @@ const History = () => {
   const { account, chainId, library } = useActiveWeb3React()
   const [show, setShow] = useState<Boolean>(true);
   const [typeOfModal, setTypeOfModal] = useState(0);
-  const [open, setOpen] = useState<Boolean>(true);
+  const [open, setOpen] = useState<Boolean>(false);
   const [showMarketHistory, setShowMarketHistory] = useState(false);
   const [notification, setNotification] = useState(0);
   const [address, setAddress] = useState("");

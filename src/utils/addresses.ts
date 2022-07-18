@@ -51,10 +51,30 @@ export const SMARTSWAPNFTTWO: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
   "56": "0xb9494f0086e3004314d0fC7AEA4fA4476D0d281c",
-  "97": "0x5BE1d480B696E46FdE74EC599b0472fCA1A67f5D",
+  "97": "0x0694aD39a394A05C24f842612c3E86051A723cF1",
   "137": "0xCff5eb5f88b40905035310118B7dDF4bef8155dd",
   "80001": "0x4798a90d74ba3Fef77D38B0a07E8172FC5602629"
 };
+
+//SmartBid
+export const SMARTBID1: { [key: string]: string } = {
+  "1": "0x",
+  "3": "0x",
+  "56": "0xB51E0828B9b92F580276abf4bD73d45B44D72694",
+  "97": "0x96C65EFeEDb7a7dDa8A8e2630BD5e07534ED294B",
+  "137": "0x9b5af1EcC50b0676cA004Dd5b693d9aaDe85F4A8",
+  "80001": "0x"
+};
+
+export const SMARTBID2: { [key: string]: string } = {
+  "1": "0x",
+  "3": "0x",
+  "56": "0x4d6642Fb1f8e57359D06BD33442579eCBC1F7229",
+  "97": "0xA24B732838793Afb53731C84f2A613cf2709BBfB",
+  "137": "0x8236774AE8d4D9d52cd5C5930Eb8b5f1e2CA67D2",
+  "80001": "0x"
+};
+
 
 //Native Wrapped
 export const WNATIVEADDRESSES: { [key: string]: string } = {
@@ -113,13 +133,16 @@ export const MASTERCHEFV2ADDRESSES: { [key: string]: string } = {
 
 export const MASTERCHEFNEWLPADDRESSES: { [key: string]: string | any } = {
   "56": {
-    "1": "0x35d5eDaeebfB3D084d8ff796514fc9fd8c103357"
+    "1": "0x35d5eDaeebfB3D084d8ff796514fc9fd8c103357",
+    "2": "0xf644041A995Af3b57b131D67510de74c03a33cC0"
   },
   "97": {
-    "1": "0x94822127C89C589Fa6335ED43E1D92a21AA49E22"
+    "1": "0x94822127C89C589Fa6335ED43E1D92a21AA49E22",
+    "2": "0x94822127C89C589Fa6335ED43E1D92a21AA49E22"
   },
   "137": {
-    "1": "0x14deaEA03b5b9B5B817dB11985B622F0A8Db077e"
+    "1": "0x3F28D26A5e01C603c194d22D6eb07e34e2A65844",
+    "2": "0x15149Ddd85b51270dd5983083Fb178364BCB4d71"
   },
   "80001": {
     "1": "0x14deaEA03b5b9B5B817dB11985B622F0A8Db077e",

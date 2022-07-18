@@ -434,6 +434,22 @@
       "decimals": 9,
       "chainId": 56,
       "logoURI": "https://bscscan.com/token/images/rocketfi_32.png"
+    },
+    {
+      "name": "DAI Token",
+      "address": "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
+      "symbol": "DAI",
+      "decimals": 18,
+      "chainId": 56,
+      "logoURI": "https://bscscan.com/token/images/dai_32.png"
+    },
+    {
+      "name": "DAI StableCoin",
+      "address": "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
+      "symbol": "DAI",
+      "decimals": 18,
+      "chainId": 137,
+      "logoURI": "https://polygonscan.com/token/images/mcdDai_32.png"
     }
   ]
 }

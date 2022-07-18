@@ -11,6 +11,8 @@ import {
     Button
 } from "@chakra-ui/react"
 import { useIsTokenActive, useIsUserAddedToken } from "../../hooks/Tokens"
+import {useDispatch} from "react-redux";
+import {addImportedToken} from "../../state/lists/actions";
 type IImportRow = {
     token:Token,
     openNewTokenModal: React.Dispatch<React.SetStateAction<boolean>>
@@ -25,6 +27,14 @@ const ImportRow =({
      // check if already active on list or local storage tokens
   const isAdded = useIsUserAddedToken(token)
   const isActive = useIsTokenActive(token)
+
+    const importedToken = {
+        ...token,
+        isToken: true
+    };
+
+    const dispatch = useDispatch();
+
     return (
         <>
         <Flex 
@@ -35,6 +45,7 @@ const ImportRow =({
          opacity='1'
          px="4"
          borderRadius="10px"
+        m={2}
          >
             <Flex>
         
@@ -53,14 +64,15 @@ const ImportRow =({
 
                 <Button
                 cursor= "pointer"
-                onClick={() => openNewTokenModal(true)}>
+                onClick={() => {
+                    openNewTokenModal(true);
+                    dispatch(addImportedToken({newToken: importedToken}))
+                }}>
                     import
-                </Button> :
-<Text>active</Text>
+                </Button> : <Text>active</Text>
             }
              </Box>
         </Flex> 
-
 
 </>
     )

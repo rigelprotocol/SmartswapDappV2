@@ -141,7 +141,7 @@ const YieldFarm = ({
             {selectedBSC && (Number(chainId) === Number(SupportedChainId.POLYGONTEST) || Number(chainId) === Number(SupportedChainId.POLYGON)) ?
                 <Img boxSize={'25px'} m={'10px'} src={'https://s2.coinmarketcap.com/static/img/coins/64x64/8206.png'} /> : null}
             {selectedField === farmSection.SECOND_NEW_LP ?
-                <Img boxSize={'25px'} m={'10px'} src={'https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png'} /> : null}
+                <Img boxSize={'25px'} m={'10px'} src={"https://bscscan.com/token/images/rigelprotocol_32.png"} /> : null}
           </Flex>
         </Flex>
         <Flex justifyContent='space-between' width='100%'>

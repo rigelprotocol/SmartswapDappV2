@@ -150,9 +150,7 @@ try{
  };
     
     getToken(tokenAddress,chainId ?? 56)
-  }, [ tokenAddress,
-    chainId,
-    ]);
+  }, [ tokenAddress, chainId,]);
 
   return token;
 // 0x03fF0ff224f904be3118461335064bB48Df47938
