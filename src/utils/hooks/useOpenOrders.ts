@@ -178,6 +178,7 @@ const useOpenOrders = (socket:any) => {
                         totalTransaction:data.totalTransaction
                     })),
                 );
+                console.log({marketSwap})
                     const marketHistory = marketSwap.map((data) => ({
                         token1Icon:data.tokenIn &&
                             getTokenSymbol(data.tokenIn.symbol),

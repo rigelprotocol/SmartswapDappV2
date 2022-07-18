@@ -21,6 +21,7 @@ import { autoSwapV2 } from '../../../../utils/Contracts';
 import { MARKETAUTOSWAPADDRESSES } from '../../../../utils/addresses';
 import { useActiveWeb3React } from '../../../../utils/hooks/useActiveWeb3React';
 import Web3 from 'web3';
+import { useLocation } from 'react-router-dom';
 
 const History = () => {
   
@@ -47,6 +48,7 @@ const History = () => {
   const [open, setOpen] = useState<Boolean>(false);
   const [showMarketHistory, setShowMarketHistory] = useState(false);
   const [notification, setNotification] = useState(0);
+  const location = useLocation().pathname;
   const [address, setAddress] = useState("");
   const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//https://autoswap-server.herokuapp.com
   const [showOrder, setShowOrder] = useState(false);
@@ -74,6 +76,11 @@ const History = () => {
     dispatch(transactionTab({ removeSideTab: isActive }))
 
   }, []);
+  useEffect(() => {
+    if (location.includes("auto-period") || location.includes("set-price")) {
+        setOpen(true)
+    }
+}, [location, chainId])
   useEffect(() => {
     if(locationData ==="auto"){
       setNotification(autoTimeNotification)
