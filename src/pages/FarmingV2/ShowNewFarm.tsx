@@ -2303,6 +2303,22 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                                                     >
                                                         {depositValue}
                                                     </Button>
+                                                ) : !depositTokenValue ? (
+                                                    <Button
+                                                        my='2'
+                                                        mx='auto'
+                                                        variant='brand'
+                                                        width='100%'
+                                                        disabled={true}
+                                                        cursor='pointer'
+                                                        border='none'
+                                                        borderRadius='0px'
+                                                        padding='10px'
+                                                        height='50px'
+                                                        fontSize='16px'
+                                                    >
+                                                        Enter Amount
+                                                    </Button>
                                                 ) : (
                                                     approvalButton(content.deposit)
                                                 )}
@@ -2437,6 +2453,22 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                                                         onClick={() => confirmDeposit(content.deposit)}
                                                     >
                                                         {depositValue}
+                                                    </Button>
+                                                ) : !depositTokenValue ? (
+                                                    <Button
+                                                        my='2'
+                                                        mx='auto'
+                                                        variant='brand'
+                                                        width='100%'
+                                                        disabled={true}
+                                                        cursor='pointer'
+                                                        border='none'
+                                                        borderRadius='0px'
+                                                        padding='10px'
+                                                        height='50px'
+                                                        fontSize='16px'
+                                                    >
+                                                        Enter Amount
                                                     </Button>
                                                 ) : (
                                                     approvalButton(content.deposit)
