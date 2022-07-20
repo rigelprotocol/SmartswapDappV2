@@ -2360,6 +2360,22 @@ useEffect(()=>{
                           >
                             {depositValue}
                           </Button>
+                        ) : !depositTokenValue ? (
+                            <Button
+                                my='2'
+                                mx='auto'
+                                variant='brand'
+                                width='100%'
+                                disabled={true}
+                                cursor='pointer'
+                                border='none'
+                                borderRadius='0px'
+                                padding='10px'
+                                height='50px'
+                                fontSize='16px'
+                            >
+                              Enter Amount
+                            </Button>
                         ) : (
                           approvalButton(content.deposit)
                         )}
@@ -2495,6 +2511,22 @@ useEffect(()=>{
                           >
                             {depositValue}
                           </Button>
+                        ) :  !depositTokenValue ? (
+                            <Button
+                                my='2'
+                                mx='auto'
+                                variant='brand'
+                                width='100%'
+                                disabled={true}
+                                cursor='pointer'
+                                border='none'
+                                borderRadius='0px'
+                                padding='10px'
+                                height='50px'
+                                fontSize='16px'
+                            >
+                              Enter Amount
+                            </Button>
                         ) : (
                           approvalButton(content.deposit)
                         )}
