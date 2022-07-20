@@ -229,15 +229,6 @@ export function Index() {
             }
       },[location, selector]);
 
-
-  // console.log(count);
-
-  // useMemo(() => {
-  //   if (searchedDataResult !== undefined) {
-  //     setSearchedFarmData(searchedDataResult);
-  //   }
-  // }, [searchedDataResult]);
-
   useUpdateUserGasPreference();
 
   useFilterFarms({
@@ -345,23 +336,6 @@ export function Index() {
   const searchResults = useSearchResults();
 
   const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
-
-  //temporary
-  // useEffect(() => {
-  //   getFarmData();
-  //   getTokenStaked();
-  //   getFarmTokenBalance();
-  // }, [account, chainId, stateChanged]);
-  //
-  // const refreshData = () => {
-  //   getFarmData();
-  //   getTokenStaked();
-  //   getFarmTokenBalance();
-  // };
-  //
-  // useEffect(() => {
-  //   refreshData();
-  // }, []);
 
   const changeVersion = (version: string, external?: boolean) => {
     if (external) {
