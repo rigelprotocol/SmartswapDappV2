@@ -3109,9 +3109,9 @@ export function Index() {
                     <Text/>
                   </Flex>
 
-                  {!account ? null : ChainId !== chainId ? (
+                  {!account ? null : ChainId !== chainId || loadingLP ? (
                           <Stack mt={2}>
-                            {new Array(5).fill("1").map((item,index)=>{
+                            {new Array(4).fill("1").map((item,index)=>{
                               return (
                                   <Box
                                       p={isMobileDevice ? "3" : "6"}
@@ -3162,7 +3162,7 @@ export function Index() {
                                           key={content?.id}
                                           section={"search"}
                                           wallet={wallet}
-                                          LoadingState={loadingState}
+                                          LoadingState={loadingLP}
                                       />
                                   )
                               )
@@ -3175,7 +3175,7 @@ export function Index() {
                                           key={content?.id}
                                           section={"search"}
                                           wallet={wallet}
-                                          LoadingState={loadingState}
+                                          LoadingState={loadingLP}
                                       />
                                   )
                               )
@@ -3190,7 +3190,7 @@ export function Index() {
                                           section={"filter"}
                                           key={content?.id}
                                           wallet={wallet}
-                                          LoadingState={loadingState}
+                                          LoadingState={loadingLP}
                                       />
                                   )
                               )
@@ -3203,7 +3203,7 @@ export function Index() {
                                           key={content?.id}
                                           section={"filter"}
                                           wallet={wallet}
-                                          LoadingState={loadingState}
+                                          LoadingState={loadingLP}
                                       />
                                   )
                               )
