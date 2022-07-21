@@ -446,10 +446,7 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
       data.push(farm);
     }
 
-    const iterated = data.filter(
-      (item) => item?.allocPoint !== 0 && item !== undefined
-    );
-
+    const iterated = data.filter((item) => item !== undefined);
 
     return iterated;
   };
@@ -470,7 +467,6 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
         const farms = await loopFarms(LpAddress, rgpPrice);
 
         setLoading(false);
-
 
         handleLoading(false);
         handleUpdateChainId(chainId);
