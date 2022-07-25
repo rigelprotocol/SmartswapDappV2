@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import BidHeader from "./Components/BidHeader";
 import BidTabs from "./Components/BidTabs";
-import {useBidWinners, useSmartBid} from "../../hooks/useSmartBid";
+import { useSmartBid} from "../../hooks/useSmartBid";
 import {countDownDate} from "./Components/Card";
 import { useLocation } from "react-router-dom";
 import BidModal from "./Components/BidModal";
@@ -21,14 +21,14 @@ import {SMARTBID2, SMARTBID1} from "../../utils/addresses";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../state";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
-import {getERC20Token} from "../../utils/utilsFunctions";
+import {getERC20Token, useProvider} from "../../utils/utilsFunctions";
 import {getNftTokenID} from "../../state/nft/bidTest";
 import {RiErrorWarningLine} from "react-icons/all";
 import {ethers} from "ethers";
 import {SupportedChainId} from "../../constants/chains";
 
 const BidDetails = () => {
-    const { chainId, library, account } = useActiveWeb3React();
+    const { library, account } = useActiveWeb3React();
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     const [isMobileDeviceSm] = useMediaQuery("(max-width: 750px)");
     const headerColor = useColorModeValue("#0760A8", "#F1F5F8");
@@ -39,6 +39,7 @@ const BidDetails = () => {
     const viewId = Number(idBid[2]);
     const typeVal = idBid[3];
     const exc = (typeVal === 'true');
+    const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
 
 
     const [bidModal, setBidModal] = useState(false);
@@ -56,16 +57,19 @@ const BidDetails = () => {
     const [tokenAddress, setTokenAddress] = useState('');
     const [bidAmount, setBidAmount] = useState('');
 
+    const {prov} = useProvider();
+    const lib = library ? library : prov;
+
 
     useMemo(() => {
         const getTokenData = async () => {
             if (exc) {
                 try {
-                    const bidContract = await RigelSmartBid(SMARTBID1[chainId as number], library);
+                    const bidContract = await RigelSmartBid(SMARTBID1[ChainId as number], lib);
                     const bidToken = await bidContract.request_token_info(viewId);
                     setTokenAddress(bidToken.token);
 
-                    const token = await getERC20Token(bidToken.token, library);
+                    const token = await getERC20Token(bidToken.token, lib);
 
                     const [tokenSymbol, tokenBalance, tokenDecimals] = await Promise.all(
                         [token.symbol(), token.balanceOf(account), token.decimals()]);
@@ -78,11 +82,11 @@ const BidDetails = () => {
                 }
             } else {
                 try {
-                    const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
+                    const bidContract = await RigelSmartBidTwo(SMARTBID2[ChainId as number], lib);
                     const bidToken = await bidContract.requestToken(viewId);
                     setTokenAddress(bidToken._token);
 
-                    const token = await getERC20Token(bidToken._token, library);
+                    const token = await getERC20Token(bidToken._token, lib);
 
                     const [tokenSymbol, tokenBalance, tokenDecimals] = await Promise.all(
                         [token.symbol(), token.balanceOf(account), token.decimals()]);
@@ -99,7 +103,7 @@ const BidDetails = () => {
 
         };
         getTokenData();
-    }, [account, chainId, totalBid]);
+    }, [account, ChainId, totalBid, prov]);
 
     useEffect(() => {
         const timeFunction = setInterval(function() {
@@ -130,9 +134,9 @@ const BidDetails = () => {
     const checkEvents = async () => {
         let bidContract;
         if (exc) {
-            bidContract = await RigelSmartBid(SMARTBID1[chainId as number], library);
+            bidContract = await RigelSmartBid(SMARTBID1[ChainId as number], library);
         } else {
-            bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
+            bidContract = await RigelSmartBidTwo(SMARTBID2[ChainId as number], library);
         }
 
 
@@ -153,7 +157,7 @@ const BidDetails = () => {
         if (exc) {
             try {
                 setBidLoadData(true);
-                const bidContract = await RigelSmartBid(SMARTBID1[chainId as number], library);
+                const bidContract = await RigelSmartBid(SMARTBID1[ChainId as number], library);
                 const data = await bidContract.request_token_info(viewId);
                 const singleID = await bidContract.getSetURI(viewId);
                 const {NFTContractAddress} = data;
@@ -204,7 +208,7 @@ const BidDetails = () => {
         } else {
             try {
                 setBidLoadData(true);
-                const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
+                const bidContract = await RigelSmartBidTwo(SMARTBID2[ChainId as number], library);
                 const data = await bidContract.requestToken(viewId);
                 const {nftCont, nftReq} = data;
                 const nameOfNFTsContracts = [ "RigelProtocol Smartswap NFTs", "Rigel Protocol LaunchPad NFTs", "Rigel Protocol GiftDapp NFT"];
@@ -283,7 +287,7 @@ const BidDetails = () => {
 
         };
         getBidEvent();
-    }, [stateChanged, account, chainId]);
+    }, [stateChanged, account, ChainId]);
 
     useMemo(() => {
         const getNFTInfo = async () => {
@@ -296,7 +300,7 @@ const BidDetails = () => {
 
         };
         getNFTInfo();
-    }, [account, chainId]);
+    }, [account, ChainId]);
 
 
 
@@ -304,7 +308,7 @@ const BidDetails = () => {
         <>
             <BidHeader/>
             {
-                chainId !== SupportedChainId.POLYGONTEST ?
+                ChainId !== SupportedChainId.POLYGONTEST ?
                     <Box width={'90%'} margin={'0px auto'}>
                         <Box display={'flex'} my={'90px'} flexDirection={isMobileDeviceSm ? 'column' : 'row'} justifyContent={'space-between'} width={'100%'} mx={'auto'}>
                             <Box width={isMobileDeviceSm ? '100%' : '60%'}>

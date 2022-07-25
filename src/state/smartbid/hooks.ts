@@ -1,10 +1,13 @@
-import {useEffect, useState, useMemo} from "react";
+import {useEffect, useState} from "react";
 import cardbid from "../../assets/smartbid/cardbid2.svg";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 import {RigelSmartBid, RigelSmartBidTwo} from "../../utils/Contracts";
 import {SMARTBID1, SMARTBID2} from "../../utils/addresses";
 import {countDownDate} from "../../pages/SmartBid/Components/Card";
 import bidNFT from "../../assets/smartbid/nftbid.svg";
+import {useSelector} from "react-redux";
+import {RootState} from "../index";
+import { useProvider} from "../../utils/utilsFunctions";
 
 export class BidStructure {
     time: boolean;
@@ -31,15 +34,18 @@ export class BidStructure {
 export const useBidInfo = () => {
 
     const [bidItemsNFT, setBidItemsNFT] = useState<Array<BidStructure>>([]);
-    const {chainId, library} = useActiveWeb3React();
+    const {account, chainId, library} = useActiveWeb3React();
     const [loadBid, setLoadBid] = useState<boolean>(false);
+    const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
+    const {prov} = useProvider();
+    const lib = library ? library : prov;
 
     useEffect(() => {
         const getSmartBidArray = async () => {
             try {
                 setLoadBid(true);
                 setBidItemsNFT([]);
-                const bidContract = await RigelSmartBid(SMARTBID1[chainId as number], library);
+                const bidContract = await RigelSmartBid(SMARTBID1[ChainId as number], lib);
                 const item = await bidContract.bidLength();
 
                 for (let i = 0; i <= Number(item.toString()) - 1; i++) {
@@ -56,7 +62,7 @@ export const useBidInfo = () => {
                     setBidItemsNFT((prevState => [...prevState, newData]))
                 }
 
-                const bidContractTwo = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
+                const bidContractTwo = await RigelSmartBidTwo(SMARTBID2[ChainId as number], lib);
                 const noNftLength = await bidContractTwo.bidLength();
 
                 for (let i = 0; i <= Number(noNftLength.toString()) - 1; i++) {
@@ -81,7 +87,7 @@ export const useBidInfo = () => {
             }
         };
         getSmartBidArray();
-    }, [chainId]);
+    }, [ChainId, account, library, prov]);
 
     return {loadBid, bidItemsNFT}
 };

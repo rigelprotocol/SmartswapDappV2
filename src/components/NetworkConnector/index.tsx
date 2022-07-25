@@ -8,17 +8,20 @@ import {
   ModalContent,
   ModalOverlay,
   useDisclosure,
-  Img, Tooltip
+  Img
 } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { BinanceIcon, EthereumIcon } from "./Icons";
 import { useColorModeValue } from "@chakra-ui/react";
 import { CHAIN_INFO } from "../../constants/chains";
-import { switchNetwork } from "../../utils/utilsFunctions";
+import { switchNetwork, useProvider} from "../../utils/utilsFunctions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import OASISLOGO from "../../assets/oasis.png";
 import MATICLOGO from "../../assets/maticlogo.png";
 import { GNetworkConnectedTo } from "../G-analytics/gIndex";
+import {useDispatch, useSelector} from "react-redux";
+import {RootState} from "../../state";
+import {updateChainId} from "../../state/newfarm/actions";
 
 function NetworkIndicator() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -26,24 +29,35 @@ function NetworkIndicator() {
   const { chainId, library, account } = useActiveWeb3React();
   const buttonBgColor = useColorModeValue("#EBF6FE", "#213345");
   const textColor = useColorModeValue("#319EF6", "#4CAFFF");
+  const dispatch = useDispatch();
 
-  const info = chainId ? CHAIN_INFO[chainId] : undefined;
-  useEffect(()=>{
-    GNetworkConnectedTo(info?.label)
-  
-},[info])
-  const networkConnected = window.localStorage.getItem('connectv2');
-  console.log(networkConnected);
-  const wallet: boolean = networkConnected === 'injected';
+  const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
+  console.log(ChainId, chainId);
 
-  const changeNetwork = (network: string) => {
-    onClose();
-    if (wallet) {
-      switchNetwork(network, account as string, library)
+  const info = chainId ? CHAIN_INFO[chainId] : CHAIN_INFO[ChainId as number];
+  useEffect(() => {
+    GNetworkConnectedTo(info?.label);
+    if (chainId && chainId !== ChainId) {
+      dispatch(updateChainId({ value : chainId }));
     }
+
+  },[info, chainId]);
+
+  const {prov} = useProvider();
+
+  const changeNetwork = async (network: string, id: number) => {
+    onClose();
+    const lib = library ? library : prov;
+    switchNetwork(network, account as string, lib).then(() => {
+      console.log('Successful.');
+      dispatch(updateChainId({ value : id }));
+    }).catch(() => {
+      console.log('Rejected.');
+    })
+
   };
 
-  if (!chainId || !info || !library) {
+  if (!ChainId || !info) {
     return null;
   }
   return (
@@ -127,24 +141,16 @@ function NetworkIndicator() {
               mb={3}
               cursor='pointer'
               textAlign={'left'}
-              onClick={() => changeNetwork('0x3')}
-              background={!wallet ? '#999999' : ""}
-              opacity={!wallet ? 0.4 : ""}
+              onClick={() => {
+                changeNetwork('0x3', 3)
+              }}
             >
-              <Tooltip
-                  hasArrow
-                  label="Not Supported by this Wallet."
-                  aria-label="A tooltip"
-                  placement="top"
-                  isDisabled={wallet}
-              >
                 <Flex>
                   <Box px={2}>
                     <EthereumIcon />
                   </Box>
                   <Box>{CHAIN_INFO[3]?.label}</Box>
                 </Flex>
-              </Tooltip>
             </Flex>
             <Flex
               backgroundColor={mode === "dark" ? "#15202B" : "#FFFFFF"}
@@ -156,7 +162,9 @@ function NetworkIndicator() {
               px={3}
               mb={3}
               cursor='pointer'
-              onClick={() => changeNetwork('0x38')}
+              onClick={() => {
+                changeNetwork('0x38', 56);
+              }}
             >
               <Box px={2}>
                 <BinanceIcon />
@@ -173,24 +181,16 @@ function NetworkIndicator() {
               py={4}
               mb={4}
               cursor='pointer'
-              onClick={() => changeNetwork('0x89')}
-              background={!wallet ? '#999999' : ""}
-              opacity={!wallet ? 0.4 : ""}
+              onClick={() => {
+                changeNetwork('0x89', 137);
+              }}
             >
-              <Tooltip
-                  hasArrow
-                  label="Not Supported by this Wallet."
-                  aria-label="A tooltip"
-                  placement="top"
-                  isDisabled={wallet}
-              >
                 <Flex>
                   <Box px={2}>
                     <Img w='30px' src={MATICLOGO} />
                   </Box>
                   <Box>{CHAIN_INFO[137].label}</Box>
                 </Flex>
-              </Tooltip>
             </Flex>
             <Flex
               backgroundColor={mode === 'dark' ? '#15202B' : '#FFFFFF'}
@@ -202,24 +202,14 @@ function NetworkIndicator() {
               py={4}
               mb={4}
               cursor="pointer"
-              onClick={() => changeNetwork('0xa516')}
-              background={!wallet ? '#999999' :""}
-              opacity={!wallet ? 0.4 : ""}
+              onClick={() => changeNetwork('0xa516', 42262)}
             >
-              <Tooltip
-                  hasArrow
-                  label="Not Supported by this Wallet."
-                  aria-label="A tooltip"
-                  placement="top"
-                  isDisabled={wallet}
-              >
                 <Flex>
                   <Box px={2}>
                     <Img w='30px' src={OASISLOGO} />
                   </Box>
                   <Box>{CHAIN_INFO[42262].label}</Box>
                 </Flex>
-              </Tooltip>
             </Flex>
           </Flex>
         </ModalContent>

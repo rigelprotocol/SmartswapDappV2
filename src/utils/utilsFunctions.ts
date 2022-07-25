@@ -7,6 +7,10 @@ import { ethers } from "ethers";
 import { escapeRegExp } from ".";
 import { inputRegex } from "../components/Farming/Modals/Filter";
 import { farmStateInterface } from "../state/farm/reducer";
+import {updateChainId} from "../state/newfarm/actions";
+import {useDispatch, useSelector} from "react-redux";
+import {useEffect, useState} from "react";
+import {RootState} from "../state";
 
 export const removeSideTab = (sideBarName: string): void => {
   localStorage.setItem(sideBarName, "removed");
@@ -157,6 +161,21 @@ export const changeFrequencyTodays = (frequency: string): { today: number,interv
   return {today,interval,days}
 }
 
+export const useProvider = () => {
+  const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
+  const [prov, setProv] = useState<Web3Provider>();
+
+  useEffect(() => {
+    const getProvider = async () => {
+      const defaultProvider = await provider();
+      setProv(defaultProvider);
+    };
+    getProvider();
+
+  }, [ChainId]);
+  return {prov}
+};
+
 export const provider = async () => {
   try {
     let ethProvider = await detectEthereumProvider();
@@ -198,7 +217,7 @@ export const getDecimals = async (
 export const switchNetwork = async (
   chainId: string,
   account: string,
-  library: Web3Provider | undefined
+  library: Web3Provider | undefined,
 ) => {
   const polygonParams = {
     chainId: "0x89",
