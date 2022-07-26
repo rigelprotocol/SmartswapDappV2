@@ -282,6 +282,8 @@ export const switchNetwork = async (
           // handle "add" error
           console.error(`Add chain error ${addError}`);
         }
+      } else if (switchError.code === 4001) {
+        throw new Error('User rejected this request');
       }
       console.error(`Switch chain error ${switchError}`);
       // handle other "switch" errors
@@ -303,6 +305,8 @@ export const switchNetwork = async (
           // handle "add" error
           console.error(`Add chain error ${addError}`);
         }
+      } else if (switchError.code === 4001) {
+        throw new Error('User rejected this request');
       }
       console.error(`Switch chain error ${switchError}`);
       // handle other "switch" errors
@@ -324,6 +328,8 @@ export const switchNetwork = async (
           // handle "add" error
           console.error(`Add chain error ${addError}`);
         }
+      } else if (switchError.code === 4001) {
+        throw new Error('User rejected this request');
       }
       console.error(`Switch chain error ${switchError}`);
       // handle other "switch" errors
@@ -345,6 +351,8 @@ export const switchNetwork = async (
           // handle "add" error
           console.error(`Add chain error ${addError}`);
         }
+      } else if (switchError.code === 4001) {
+        throw new Error('User rejected this request');
       }
       console.error(`Switch chain error ${switchError}`);
       // handle other "switch" errors

@@ -15,6 +15,8 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 import {useActiveWeb3React} from "../../../../utils/hooks/useActiveWeb3React";
 import {SupportedChainId} from "../../../../constants/chains";
 import { GBuyNFT, GViewNFT } from '../../../../components/G-analytics/gNFTs';
+import {useSelector} from "react-redux";
+import {RootState} from "../../../../state";
 
 
 export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, isFeatured = false }: NftProps) {
@@ -25,11 +27,13 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
     const [isMobileDevice] = useMediaQuery("(max-width: 767px)");
 
   const { firstToken, secondToken ,prices, unsoldItems , nftId, loadData} = useNft(id);
-    const { chainId } = useActiveWeb3React();
+  const { account } = useActiveWeb3React();
 
-  const {name, nftImage, loading} = useNftName(nftId[0]);
+  const {name, nftImage, loading} = useNftName(id);
 
   const rgpPrice = (100.54 * parseFloat(prices.firstTokenPrice)).toFixed(2);
+
+  const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
 
   const data : NftProps = {
       nftName: name,
@@ -55,7 +59,7 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
                     height='100%'
                     w={isMobileDevice ? "330px" : "100%"}
                     rounded={'lg'}
-                /> :  chainId === Number(SupportedChainId.BINANCETEST) || chainId === Number(SupportedChainId.POLYGONTEST) ? (
+                /> :  ChainId === Number(SupportedChainId.BINANCETEST) || ChainId === Number(SupportedChainId.POLYGONTEST) ? (
                     <Image
                         src={nftImage}
                         alt={`Picture`}
@@ -74,6 +78,8 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
                     {name}
                 </Text>
             </Box>
+
+              { account && ( <>
 
             <Flex mt="2" justifyContent="space-between" alignContent="center">
               <Text textColor={lightTextColor}>Sold:</Text>
@@ -122,6 +128,8 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
                   }}>View NFT</Link>
               </Button>
             </Flex>
+                  </>
+                  )}
             
           </Box>
               <ComfirmPurchase isOpen={purchaseModal}

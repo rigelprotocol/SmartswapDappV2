@@ -32,29 +32,45 @@ function NetworkIndicator() {
   const dispatch = useDispatch();
 
   const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
-  console.log(ChainId, chainId);
+  const {ethereum} = window;
+  const {prov} = useProvider();
+
+  useEffect(() => {
+    const getNetwork = () => {
+      try {
+        if (ethereum) {
+          const networkId = ethereum.networkVersion;
+          dispatch(updateChainId({ value : Number(networkId) }));
+        }
+      } catch (e) {
+        console.log(e, 'Could not fetch Metamask network.')
+      }
+    };
+
+    getNetwork();
+
+  }, []);
 
   const info = chainId ? CHAIN_INFO[chainId] : CHAIN_INFO[ChainId as number];
+
   useEffect(() => {
     GNetworkConnectedTo(info?.label);
     if (chainId && chainId !== ChainId) {
       dispatch(updateChainId({ value : chainId }));
     }
 
-  },[info, chainId]);
+  },[chainId]);
 
-  const {prov} = useProvider();
+
 
   const changeNetwork = async (network: string, id: number) => {
     onClose();
     const lib = library ? library : prov;
     switchNetwork(network, account as string, lib).then(() => {
-      console.log('Successful.');
       dispatch(updateChainId({ value : id }));
-    }).catch(() => {
-      console.log('Rejected.');
+    }).catch((e) => {
+      console.log(e)
     })
-
   };
 
   if (!ChainId || !info) {
