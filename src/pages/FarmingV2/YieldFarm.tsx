@@ -36,6 +36,7 @@ const YieldFarm = ({
     poolAllowance: any;
     RGPEarned: string;
     poolVersion: number | string;
+    type?:string
   };
   farmDataLoading: boolean;
   content2?: {
@@ -45,11 +46,11 @@ const YieldFarm = ({
     symbol0: string;
     symbol1: string;
     earn: string;
-    type: string;
     totalLiquidity: number;
     LPLocked: number;
     APY: number;
     address: string;
+    type?:string
   };
   wallet: any;
   URLReferrerAddress: string;

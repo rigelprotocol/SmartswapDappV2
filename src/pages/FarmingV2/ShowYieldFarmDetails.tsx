@@ -111,6 +111,7 @@ const ShowYieldFarmDetails = ({
     poolAllowance: any;
     RGPEarned: string;
     poolVersion: number | string;
+    type?:string;
   };
   wallet: any;
   URLReferrerAddress:string;
@@ -196,11 +197,13 @@ const ShowYieldFarmDetails = ({
   };
 useEffect(()=>{
   const checkEnoughApproval = (allowance: any, balance: any) => {
+    console.log("checkEnoughApproval",allowance,balance);
     if (allowance && balance) {
 
       let approve = content.type === "RGP"
         ? allowance.gt(ethers.utils.parseEther(balance))
         : parseFloat(allowance) >= parseFloat(depositTokenValue);
+        console.log(parseFloat(allowance), parseFloat(depositTokenValue))
         approve ? setEnoughApproval(true) : setEnoughApproval(false)
     }
     return true;
@@ -214,8 +217,6 @@ useEffect(()=>{
           account,
           MASTERCHEFV2ADDRESSES[chainId as number]
         );
-        console.log({contract,account},contract.symbol())
-        console.log({rgpApproval},rgpApproval.toString())
         return !(rgpApproval.toString() <= 0);
       }
     };
@@ -542,6 +543,7 @@ useEffect(()=>{
           allowance(pool13),
         ]);
         let rigelAllowance;
+        let rigelAllowance2;
         if (RGPSPECIALPOOLADDRESSES[chainId as number]) {
           rigelAllowance = await rigel.allowance(
             account,
@@ -550,38 +552,49 @@ useEffect(()=>{
         } else {
           rigelAllowance = pool1Allowance;
         }
+        
+        if (RGPSPECIALPOOLADDRESSES2[chainId as number]) {
+          rigelAllowance2 = await rigel.allowance(
+            account,
+            RGPSPECIALPOOLADDRESSES2[chainId as number]
+          );
+        }
+
+
         if (Number(chainId) === Number(SupportedChainId.BINANCE)) {
           dispatch(
             updateFarmAllowances([
-              rigelAllowance,
-              pool2Allowance,
-              pool1Allowance,
-              pool3Allowance,
-              pool4Allowance,
-              pool5Allowance,
-              pool6Allowance,
-              pool7Allowance,
-              pool8Allowance,
-              pool9Allowance,
-              pool12Allowance,
-              pool13Allowance,
+              // rigelAllowance,
+              // pool2Allowance,
+              // pool1Allowance,
+              // pool3Allowance,
+              // pool4Allowance,
+              // pool5Allowance,
+              // pool6Allowance,
+              // pool7Allowance,
+              // pool8Allowance,
+              // pool9Allowance,
+              // pool12Allowance,
+              // pool13Allowance,
+              rigelAllowance2
             ])
           );
         } else {
           dispatch(
             updateFarmAllowances([
-              rigelAllowance,
-              pool2Allowance,
-              pool1Allowance,
-              pool3Allowance,
-              pool4Allowance,
-              pool5Allowance,
-              pool6Allowance,
-              pool7Allowance,
-              pool8Allowance,
-              pool9Allowance,
-              pool12Allowance,
-              pool13Allowance,
+              // rigelAllowance,
+              // pool2Allowance,
+              // pool1Allowance,
+              // pool3Allowance,
+              // pool4Allowance,
+              // pool5Allowance,
+              // pool6Allowance,
+              // pool7Allowance,
+              // pool8Allowance,
+              // pool9Allowance,
+              // pool12Allowance,
+              // pool13Allowance,
+              rigelAllowance2
             ])
           );
         }
