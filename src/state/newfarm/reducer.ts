@@ -27,7 +27,7 @@ export interface farmDataInterface {
       }>
     | undefined;
   loading: boolean;
-  chainId: number | undefined;
+  chainId: number;
   specialPool:
     | Array<{
         id: number;

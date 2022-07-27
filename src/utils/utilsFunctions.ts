@@ -1,14 +1,13 @@
-import { Web3Provider } from "@ethersproject/providers";
-import { Contract } from "@ethersproject/contracts";
+import {Web3Provider} from "@ethersproject/providers";
+import {Contract} from "@ethersproject/contracts";
 import ERC20Token from "./abis/erc20.json";
-import { SupportedChainSymbols, WrappedSymbols } from "./constants/chains";
+import {SupportedChainSymbols, WrappedSymbols} from "./constants/chains";
 import detectEthereumProvider from "@metamask/detect-provider";
-import { ethers } from "ethers";
-import { escapeRegExp } from ".";
-import { inputRegex } from "../components/Farming/Modals/Filter";
-import { farmStateInterface } from "../state/farm/reducer";
-import {updateChainId} from "../state/newfarm/actions";
-import {useDispatch, useSelector} from "react-redux";
+import {ethers} from "ethers";
+import {escapeRegExp} from ".";
+import {inputRegex} from "../components/Farming/Modals/Filter";
+import {farmStateInterface} from "../state/farm/reducer";
+import {useSelector} from "react-redux";
 import {useEffect, useState} from "react";
 import {RootState} from "../state";
 
@@ -162,7 +161,7 @@ export const changeFrequencyTodays = (frequency: string): { today: number,interv
 }
 
 export const useProvider = () => {
-  const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
+  const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
   const [prov, setProv] = useState<Web3Provider>();
 
   useEffect(() => {
@@ -181,7 +180,7 @@ export const provider = async () => {
     let ethProvider = await detectEthereumProvider();
     if (ethProvider !== window.ethereum && window.ethereum !== "undefined") {
       ethProvider = window.ethereum;
-      return new Web3Provider(ethProvider as any);
+      return new Web3Provider(ethProvider as any)
     }
     return new Web3Provider(ethProvider as any);
   } catch (e) {

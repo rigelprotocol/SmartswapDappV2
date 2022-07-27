@@ -39,7 +39,7 @@ const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDe
 
     const { loadData , bidTime } = useSmartBid(id, exclusive);
     const { chainId, library } = useActiveWeb3React();
-    const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
+    const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
 
     const [symbol, setSymbol] = useState('');
     const {prov} = useProvider();

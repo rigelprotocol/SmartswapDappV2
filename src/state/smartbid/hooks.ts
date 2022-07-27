@@ -36,7 +36,7 @@ export const useBidInfo = () => {
     const [bidItemsNFT, setBidItemsNFT] = useState<Array<BidStructure>>([]);
     const {account, chainId, library} = useActiveWeb3React();
     const [loadBid, setLoadBid] = useState<boolean>(false);
-    const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
+    const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
     const {prov} = useProvider();
     const lib = library ? library : prov;
 

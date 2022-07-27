@@ -33,7 +33,7 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
 
   const rgpPrice = (100.54 * parseFloat(prices.firstTokenPrice)).toFixed(2);
 
-  const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
+  const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
 
   const data : NftProps = {
       nftName: name,

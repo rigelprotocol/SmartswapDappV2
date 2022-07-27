@@ -24,7 +24,7 @@ export const useSmartBid = (id: number, exclusive: boolean) => {
 
     const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
     const stateChanged: boolean = trxState === 2;
-    const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
+    const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
     const lib = library ? library : prov;
 
     useEffect(() => {
@@ -86,8 +86,6 @@ export const useSmartBid = (id: number, exclusive: boolean) => {
 
         };
         fetchBidData();
-
-
 
     }, [account, ChainId, stateChanged, library, prov]);
 

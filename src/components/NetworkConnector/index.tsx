@@ -10,7 +10,7 @@ import {
   useDisclosure,
   Img
 } from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import { BinanceIcon, EthereumIcon } from "./Icons";
 import { useColorModeValue } from "@chakra-ui/react";
 import { CHAIN_INFO } from "../../constants/chains";
@@ -21,7 +21,7 @@ import MATICLOGO from "../../assets/maticlogo.png";
 import { GNetworkConnectedTo } from "../G-analytics/gIndex";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../state";
-import {updateChainId} from "../../state/newfarm/actions";
+import {setChainId} from "../../state/chainId/actions";
 
 function NetworkIndicator() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -30,33 +30,39 @@ function NetworkIndicator() {
   const buttonBgColor = useColorModeValue("#EBF6FE", "#213345");
   const textColor = useColorModeValue("#319EF6", "#4CAFFF");
   const dispatch = useDispatch();
-
-  const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
   const {ethereum} = window;
+
+  const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
   const {prov} = useProvider();
+  const [network, setNetwork] = useState();
+
+  const handleUpdateChainId = useCallback(
+      (value) => {
+        dispatch(setChainId({ value }));
+      },
+      [dispatch]
+  );
 
   useEffect(() => {
     const getNetwork = () => {
-      try {
-        if (ethereum) {
-          const networkId = ethereum.networkVersion;
-          dispatch(updateChainId({ value : Number(networkId) }));
+      const chain = ethereum?.networkVersion;
+      setNetwork(chain);
+      console.log(chain, 'networkId');
+        if (chain) {
+          handleUpdateChainId(Number(chain))
         }
-      } catch (e) {
-        console.log(e, 'Could not fetch Metamask network.')
-      }
     };
 
     getNetwork();
 
-  }, []);
+  }, [network]);
 
   const info = chainId ? CHAIN_INFO[chainId] : CHAIN_INFO[ChainId as number];
 
   useEffect(() => {
     GNetworkConnectedTo(info?.label);
     if (chainId && chainId !== ChainId) {
-      dispatch(updateChainId({ value : chainId }));
+      handleUpdateChainId(chainId)
     }
 
   },[chainId]);
@@ -67,11 +73,13 @@ function NetworkIndicator() {
     onClose();
     const lib = library ? library : prov;
     switchNetwork(network, account as string, lib).then(() => {
-      dispatch(updateChainId({ value : id }));
+      handleUpdateChainId(id)
     }).catch((e) => {
       console.log(e)
     })
   };
+
+  console.log(ChainId, info);
 
   if (!ChainId || !info) {
     return null;

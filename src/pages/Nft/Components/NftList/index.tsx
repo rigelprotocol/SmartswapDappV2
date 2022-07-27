@@ -9,7 +9,7 @@ import {useSelector} from "react-redux";
 import {RootState} from "../../../../state";
 
 const NftList = () => {
-    const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
+    const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
     const [isMobileDevice] = useMediaQuery("(max-width: 750px)");
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     const breakpointColumnsObj = {

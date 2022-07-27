@@ -39,7 +39,7 @@ const BidDetails = () => {
     const viewId = Number(idBid[2]);
     const typeVal = idBid[3];
     const exc = (typeVal === 'true');
-    const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
+    const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
 
 
     const [bidModal, setBidModal] = useState(false);
