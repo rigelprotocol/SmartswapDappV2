@@ -10,7 +10,7 @@ import {
   useDisclosure,
   Img
 } from "@chakra-ui/react";
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useMemo} from "react";
 import { BinanceIcon, EthereumIcon } from "./Icons";
 import { useColorModeValue } from "@chakra-ui/react";
 import { CHAIN_INFO } from "../../constants/chains";
@@ -22,6 +22,9 @@ import { GNetworkConnectedTo } from "../G-analytics/gIndex";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../state";
 import {setChainId} from "../../state/chainId/actions";
+import {RigelSmartBidTwo} from "../../utils/Contracts";
+import {SMARTBID2} from "../../utils/addresses";
+import {connectorKey} from "../../connectors";
 
 function NetworkIndicator() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -30,11 +33,10 @@ function NetworkIndicator() {
   const buttonBgColor = useColorModeValue("#EBF6FE", "#213345");
   const textColor = useColorModeValue("#319EF6", "#4CAFFF");
   const dispatch = useDispatch();
-  const {ethereum} = window;
+  const {prov} = useProvider();
+  const lib = library ? library : prov;
 
   const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
-  const {prov} = useProvider();
-  const [network, setNetwork] = useState();
 
   const handleUpdateChainId = useCallback(
       (value) => {
@@ -44,24 +46,33 @@ function NetworkIndicator() {
   );
 
   useEffect(() => {
-    const getNetwork = () => {
-      const chain = ethereum?.networkVersion;
-      setNetwork(chain);
-      console.log(chain, 'networkId');
-        if (chain) {
-          handleUpdateChainId(Number(chain))
-        }
-    };
+    fetchToken();
 
-    getNetwork();
+  }, [ChainId]);
 
-  }, [network]);
+  const fetchToken = async () => {
+    try {
+      const newContract = await RigelSmartBidTwo(SMARTBID2[ChainId as number], lib);
+
+      const length = await newContract.bidLength();
+      console.log(length.toString())
+
+    } catch (e) {
+      console.log(e)
+    }
+  };
+
+
 
   const info = chainId ? CHAIN_INFO[chainId] : CHAIN_INFO[ChainId as number];
 
+  const connect = window.localStorage.getItem(connectorKey);
+  console.log(connect);
+
   useEffect(() => {
     GNetworkConnectedTo(info?.label);
-    if (chainId && chainId !== ChainId) {
+
+    if (account) {
       handleUpdateChainId(chainId)
     }
 
@@ -71,15 +82,12 @@ function NetworkIndicator() {
 
   const changeNetwork = async (network: string, id: number) => {
     onClose();
-    const lib = library ? library : prov;
-    switchNetwork(network, account as string, lib).then(() => {
-      handleUpdateChainId(id)
-    }).catch((e) => {
-      console.log(e)
-    })
-  };
+    switchNetwork(network, account as string, library);
 
-  console.log(ChainId, info);
+    if (!chainId) {
+      handleUpdateChainId(id)
+    }
+  };
 
   if (!ChainId || !info) {
     return null;

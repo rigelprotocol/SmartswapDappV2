@@ -4,10 +4,15 @@ import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 import { BscConnector } from "@binance-chain/bsc-connector";
 import { NetworkConnector } from "./NetworkConnector";
 import { ALL_SUPPORTED_CHAIN_IDS, SupportedChainId } from "../constants/chains";
+import { JsonRpcProvider } from '@ethersproject/providers'
+import {useMemo, useState} from 'react';
+import {useActiveWeb3React} from "../utils/hooks/useActiveWeb3React";
+import {useSelector} from "react-redux";
+import {RootState} from "../state";
 
 const NETWORK_URL = process.env.REACT_APP_NETWORK_URL;
 
-const RPC = {
+export const RPC = {
   [SupportedChainId.BINANCE]: `https://bsc-dataseed.binance.org`,
   [SupportedChainId.BINANCETEST]:
     "https://data-seed-prebsc-2-s3.binance.org:8545",
@@ -42,8 +47,18 @@ if (typeof NETWORK_URL === "undefined") {
 }
 
 export const network = new NetworkConnector({
-  urls: { [NETWORK_CHAIN_ID]: NETWORK_URL },
+  urls: RPC,
+  defaultChainId: 56
 });
+
+export const simpleRpcProvider = new JsonRpcProvider(RPC[137], 137);
+
+const useProvider = () => {
+  const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
+  console.log(ChainId, 'new chain id')
+
+
+};
 
 let networkLibrary: Web3Provider | undefined;
 export function getNetworkLibrary(): Web3Provider {

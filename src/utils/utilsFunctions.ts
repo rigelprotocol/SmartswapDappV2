@@ -1,4 +1,4 @@
-import {Web3Provider} from "@ethersproject/providers";
+import {JsonRpcProvider, Web3Provider} from "@ethersproject/providers";
 import {Contract} from "@ethersproject/contracts";
 import ERC20Token from "./abis/erc20.json";
 import {SupportedChainSymbols, WrappedSymbols} from "./constants/chains";
@@ -8,8 +8,9 @@ import {escapeRegExp} from ".";
 import {inputRegex} from "../components/Farming/Modals/Filter";
 import {farmStateInterface} from "../state/farm/reducer";
 import {useSelector} from "react-redux";
-import {useEffect, useState} from "react";
+import {useCallback, useMemo, useState} from "react";
 import {RootState} from "../state";
+import { RPC } from "../connectors";
 
 export const removeSideTab = (sideBarName: string): void => {
   localStorage.setItem(sideBarName, "removed");
@@ -162,17 +163,21 @@ export const changeFrequencyTodays = (frequency: string): { today: number,interv
 
 export const useProvider = () => {
   const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
-  const [prov, setProv] = useState<Web3Provider>();
+  const [prov, setProv] = useState<JsonRpcProvider>(new JsonRpcProvider(`https://bsc-dataseed.binance.org`, 56));
 
-  useEffect(() => {
-    const getProvider = async () => {
-      const defaultProvider = await provider();
+  // const provider = useCallback(() => {
+  //
+  // }, [ChainId]);
+
+  useMemo(() => {
+    const getProvider = () => {
+      const defaultProvider = new JsonRpcProvider(RPC[ChainId], ChainId as number);
       setProv(defaultProvider);
     };
     getProvider();
 
   }, [ChainId]);
-  return {prov}
+  return { prov }
 };
 
 export const provider = async () => {
@@ -198,10 +203,11 @@ export const signer = async (library: Web3Provider | undefined) => {
 
 export const getERC20Token = async (
   address: string,
-  library: Web3Provider | undefined
+  library: Web3Provider | JsonRpcProvider | undefined
 ) => {
-  const token = new Contract(address, ERC20Token, library?.getSigner());
-  return token;
+   const type = library instanceof Web3Provider;
+   const signerOrProvider =  type ? library?.getSigner() : library;
+   return new Contract(address, ERC20Token, signerOrProvider);
 };
 
 export const getDecimals = async (
@@ -304,8 +310,6 @@ export const switchNetwork = async (
           // handle "add" error
           console.error(`Add chain error ${addError}`);
         }
-      } else if (switchError.code === 4001) {
-        throw new Error('User rejected this request');
       }
       console.error(`Switch chain error ${switchError}`);
       // handle other "switch" errors
@@ -327,8 +331,6 @@ export const switchNetwork = async (
           // handle "add" error
           console.error(`Add chain error ${addError}`);
         }
-      } else if (switchError.code === 4001) {
-        throw new Error('User rejected this request');
       }
       console.error(`Switch chain error ${switchError}`);
       // handle other "switch" errors
@@ -350,8 +352,6 @@ export const switchNetwork = async (
           // handle "add" error
           console.error(`Add chain error ${addError}`);
         }
-      } else if (switchError.code === 4001) {
-        throw new Error('User rejected this request');
       }
       console.error(`Switch chain error ${switchError}`);
       // handle other "switch" errors

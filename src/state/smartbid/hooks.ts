@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import cardbid from "../../assets/smartbid/cardbid2.svg";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 import {RigelSmartBid, RigelSmartBidTwo} from "../../utils/Contracts";
@@ -7,7 +7,7 @@ import {countDownDate} from "../../pages/SmartBid/Components/Card";
 import bidNFT from "../../assets/smartbid/nftbid.svg";
 import {useSelector} from "react-redux";
 import {RootState} from "../index";
-import { useProvider} from "../../utils/utilsFunctions";
+import {useProvider} from "../../utils/utilsFunctions";
 
 export class BidStructure {
     time: boolean;
@@ -38,9 +38,12 @@ export const useBidInfo = () => {
     const [loadBid, setLoadBid] = useState<boolean>(false);
     const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
     const {prov} = useProvider();
-    const lib = library ? library : prov;
+
+
 
     useEffect(() => {
+        const lib = library ? library : prov;
+
         const getSmartBidArray = async () => {
             try {
                 setLoadBid(true);
@@ -87,7 +90,7 @@ export const useBidInfo = () => {
             }
         };
         getSmartBidArray();
-    }, [ChainId, account, library, prov]);
+    }, [ChainId, account, library]);
 
     return {loadBid, bidItemsNFT}
 };

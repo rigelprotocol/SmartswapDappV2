@@ -2,7 +2,7 @@ import { createReducer } from "@reduxjs/toolkit";
 import {setChainId} from "./actions";
 
 export interface ChainID {
-    chainId: number;
+    chainId: number | undefined;
 }
 
 const initialState: ChainID = {

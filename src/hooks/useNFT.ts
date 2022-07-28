@@ -211,7 +211,7 @@ export const useNftName =  (id: number) => {
         };
         fetchDetails();
 
-    }, [ChainId, library, prov]);
+    }, [ChainId, library]);
 
     return {name, nftImage, loading}
 

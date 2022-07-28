@@ -12,7 +12,6 @@ import useState from "react-usestateref";
 
 export const useSmartBid = (id: number, exclusive: boolean) => {
     const {library, account} = useActiveWeb3React();
-    const {prov} = useProvider();
 
 
     const [bidTime, setBidTime] = useState(0);
@@ -25,10 +24,11 @@ export const useSmartBid = (id: number, exclusive: boolean) => {
     const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
     const stateChanged: boolean = trxState === 2;
     const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
-    const lib = library ? library : prov;
+    const {prov} = useProvider();
 
     useEffect(() => {
         setLoadData(true);
+        const lib = library ? library : prov;
 
         const fetchBidData = async () => {
             if (exclusive) {
@@ -87,7 +87,7 @@ export const useSmartBid = (id: number, exclusive: boolean) => {
         };
         fetchBidData();
 
-    }, [account, ChainId, stateChanged, library, prov]);
+    }, [account, ChainId, stateChanged, library]);
 
     return {loadData, bidTime, bidDetails, addresses, rewardArray, totalBid}
 };

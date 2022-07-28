@@ -58,7 +58,7 @@ const BidDetails = () => {
     const [bidAmount, setBidAmount] = useState('');
 
     const {prov} = useProvider();
-    const lib = library ? library : prov;
+    const lib = library ?? prov;
 
 
     useMemo(() => {
@@ -103,7 +103,7 @@ const BidDetails = () => {
 
         };
         getTokenData();
-    }, [account, ChainId, totalBid, prov]);
+    }, [account, ChainId, totalBid, library]);
 
     useEffect(() => {
         const timeFunction = setInterval(function() {

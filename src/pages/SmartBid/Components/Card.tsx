@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {Box, Text, Flex, Image, HStack, Icon, Skeleton, useMediaQuery} from '@chakra-ui/react';
 import {MdPeopleOutline, AiOutlineGift, RiMedalFill} from "react-icons/all";
 import {Link} from 'react-router-dom';
@@ -41,12 +41,13 @@ const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDe
     const { chainId, library } = useActiveWeb3React();
     const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
 
-    const [symbol, setSymbol] = useState('');
     const {prov} = useProvider();
     const lib = library ? library : prov;
 
+    const [symbol, setSymbol] = useState('');
 
-    useEffect(() => {
+
+    useMemo(() => {
         const getTokenSymbol = async () => {
             try {
                 if (exclusive) {
@@ -75,7 +76,7 @@ const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDe
         };
         getTokenSymbol();
 
-    }, [ChainId, library, prov]);
+    }, [ChainId, library]);
 
 
 
