@@ -215,16 +215,17 @@ const SetPrice = () => {
   );
   useEffect(async () => {
     const checkBalance = async ()=>{
+      let frequency = parseInt(totalNumberOfTransaction)>1 ? parseInt(totalNumberOfTransaction) : 1
      if(currencies[Field.INPUT]?.symbol==="RGP"){
       let fee =await getFee()
-      let amount = parseFloat(formattedAmounts[Field.INPUT]) + parseFloat(fee) 
-      if(amount > parseFloat(balance) ){
+      let amount = fee ? parseFloat(formattedAmounts[Field.INPUT]) + parseFloat(fee) : parseFloat(formattedAmounts[Field.INPUT])
+      if(amount * frequency > parseFloat(balance) ){
         setInsufficientBalance(true);
       }else{
         setInsufficientBalance(false);
       }
     }else{
-     if (balance < parseFloat(formattedAmounts[Field.INPUT])) {
+     if (balance < parseFloat(formattedAmounts[Field.INPUT]) * frequency) {
       setInsufficientBalance(true);
     } else {
       setInsufficientBalance(false);
@@ -233,7 +234,7 @@ const SetPrice = () => {
     }
     
    await checkBalance()
-  }, [balance, formattedAmounts[Field.INPUT]]);
+  }, [balance, formattedAmounts[Field.INPUT],totalNumberOfTransaction]);
   useEffect(() => {
     async function runCheck() {
       if (!inputError) {
@@ -241,7 +242,7 @@ const SetPrice = () => {
       }
     }
     runCheck()
-  }, [inputError, formattedAmounts[Field.INPUT], currencies[Field.INPUT]])
+  }, [inputError, formattedAmounts[Field.INPUT], currencies[Field.INPUT],totalNumberOfTransaction])
 
   useMemo(() => {
     if(parseFloat(percentageChange) >0 && formattedAmounts[Field.OUTPUT]){
@@ -304,10 +305,11 @@ const SetPrice = () => {
     // check approval for RGP and the other token
     const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
     const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
+    console.log({tokenBalance,RGPBalance})
     const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
     // const fee ="10"
-    
+    const frequency = parseInt(totalNumberOfTransaction) > 1 ? parseInt(totalNumberOfTransaction) : 1
     if (parseFloat(RGPBalance) >= parseFloat(fee)) {
       setHasBeenApproved(true)
       setApprovalForFee("")
@@ -315,19 +317,25 @@ const SetPrice = () => {
     }else{
       setApprovalForFee("RGP")
     }
-    if(parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT])+parseFloat(fee)) || currencies[Field.INPUT]?.isNative ){
+    if((parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT]) * frequency)+parseFloat(fee)) && currencies[Field.INPUT]?.wrapped.symbol === "RGP"){
+      setHasBeenApproved(true)
+      // setApprovalForFee("")
+      setApprovalForToken("")
+    }
+    if(parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT]) * frequency) || currencies[Field.INPUT]?.isNative ){
       setHasBeenApproved(true)
       // setApprovalForFee("")
       setApprovalForToken("")
     } else{
       setApprovalForToken(currencies[Field.INPUT]?.wrapped?.symbol ?? "")
     }
-    if (parseFloat(RGPBalance) < parseFloat(fee) || (parseFloat(tokenBalance) < Number(formattedAmounts[Field.INPUT]) && (!currencies[Field.INPUT]?.isNative && currencies[Field.INPUT]?.wrapped?.symbol === "RGP" ))) {
+    console.log(parseFloat(RGPBalance),parseFloat(tokenBalance),parseFloat(formattedAmounts[Field.INPUT]) * frequency)
+    if (parseFloat(RGPBalance) < parseFloat(fee) || (parseFloat(tokenBalance) < parseFloat(formattedAmounts[Field.INPUT]) * frequency && (!currencies[Field.INPUT]?.isNative && currencies[Field.INPUT]?.wrapped?.symbol === "RGP" ))) {
       setHasBeenApproved(false)
       setApprovalForFee("RGP")
       setApprovalForToken("RGP")
     }
-    if (parseFloat(tokenBalance) < Number(formattedAmounts[Field.INPUT]) && (!currencies[Field.INPUT]?.isNative &&currencies[Field.INPUT]?.wrapped.symbol !== "RGP")) {
+    if (parseFloat(tokenBalance) < parseFloat(formattedAmounts[Field.INPUT]) * frequency && (!currencies[Field.INPUT]?.isNative &&currencies[Field.INPUT]?.wrapped.symbol !== "RGP")) {
       setHasBeenApproved(false)
      
       setApprovalForToken(currencies[Field.INPUT]?.wrapped?.symbol ?? "")
@@ -579,7 +587,7 @@ const setQuantityValue =() =>{
     if (currencies[Field.INPUT]?.isNative) {
       return setHasBeenApproved(true);
     }
-    // try {
+    try {
       const status = await getERC20Token(tokenAddress, library);
       const check = await status.allowance(
         account,
@@ -588,17 +596,18 @@ const setQuantityValue =() =>{
           from: account,
         }
       )
+      let frequency = parseInt(totalNumberOfTransaction) > 1 ? parseInt(totalNumberOfTransaction) : 1
 
-      const approveBalance = ethers.utils.formatUnits(check.toString(), currencies[Field.INPUT]?.decimals);
-      return approveBalance
-    // } catch (e) {
-    //   console.log(e)
-    // }
+      const approveBalance = ethers.utils.formatUnits(check.toString(), currencies[Field.INPUT]?.decimals) 
+      return parseFloat(approveBalance)
+    } catch (e) {
+      console.log(e)
+    }
 
   }
   const checkApprovalForRGP = async (tokenAddress: string) => {
 
-    // try {
+    try {
       const status = await rigelToken(tokenAddress, library);
       const check = await status.allowance(
         account,
@@ -607,12 +616,11 @@ const setQuantityValue =() =>{
           from: account,
         }
       )
-
-      const approveBalance = ethers.utils.formatEther(check).toString();
+      const approveBalance = ethers.utils.formatEther(check).toString()
       return approveBalance
-    // } catch (e) {
-    //   console.log(e)
-    // }
+    } catch (e) {
+      console.log(e)
+    }
 
   }
 
@@ -835,7 +843,7 @@ const setQuantityValue =() =>{
             >
               {inputError
                 ? inputError
-                : `Insufficient ${currencies[Field.INPUT]?.symbol} Balance ${currencies[Field.INPUT]?.symbol==="RGP" && "for fee"}`}
+                : `Insufficient ${currencies[Field.INPUT]?.symbol} Balance ${currencies[Field.INPUT]?.symbol==="RGP" ? "for fee":""}`}
             </Button>) : !transactionSigned ? <Button
                     w="100%"
                     borderRadius="6px"
