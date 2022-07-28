@@ -197,17 +197,19 @@ const ShowYieldFarmDetails = ({
   };
 useEffect(()=>{
   const checkEnoughApproval = (allowance: any, balance: any) => {
-    console.log("checkEnoughApproval",allowance,balance);
+    // console.log("checkEnoughApproval",allowance.toString(),balance);
     if (allowance && balance) {
 
-      let approve = content.type === "RGP"
-        ? allowance.gt(ethers.utils.parseEther(balance))
-        : parseFloat(allowance) >= parseFloat(depositTokenValue);
-        console.log(parseFloat(allowance), parseFloat(depositTokenValue))
+      let approve = parseFloat(allowance) >= parseFloat(depositTokenValue);
+      // let approve = content.type === "RGP"
+      //   ? allowance.gte(ethers.utils.parseEther(balance))
+      //   : parseFloat(allowance) >= parseFloat(depositTokenValue);
+        console.log(parseFloat(allowance), parseFloat(depositTokenValue),{approve})
         approve ? setEnoughApproval(true) : setEnoughApproval(false)
     }
     return true;
   };
+  console.log({content})
   checkEnoughApproval(content.poolAllowance,content.availableToken)
 },[depositTokenValue])
   useEffect(() => {
@@ -241,6 +243,7 @@ useEffect(()=>{
           account,
           RGPSPECIALPOOLADDRESSES2[chainId as number]
         );
+        console.log({rgpApproval})
         return !(rgpApproval.toString() <= 0);
       }
     };
@@ -252,7 +255,9 @@ useEffect(()=>{
         const specialPoolV1Approval = await specialPoolV1Allowance(rgp);
         changeApprovalButton(true, specialPoolV1Approval);
       } else if (content.deposit === "RGP" && Number(content.id) === 13) {
+       
         const specialPoolV2Approval = await specialPoolV2Allowance(rgp);
+
         changeApprovalButton(true, specialPoolV2Approval);
       } else {
         const pool = await smartSwapLPTokenPoolTwo(content.address, library);
@@ -381,6 +386,7 @@ useEffect(()=>{
   };
 
   const setApprove = (val: string) => {
+    console.log({approveValueForOtherToken,approveValueForRGP})
     if (approveValueForOtherToken && approveValueForRGP) {
       GButtonClicked("unstake",content.deposit,"v2")
       modal2Disclosure.onOpen();
@@ -459,88 +465,18 @@ useEffect(()=>{
         const [
           rigel,
           pool1,
-          pool2,
-          pool3,
-          pool4,
-          pool5,
-          pool6,
-          pool7,
-          pool8,
-          pool9,
-          pool12,
-          pool13,
         ] = await Promise.all([
           rigelToken(RGP[chainId as number], library),
           smartSwapLPTokenPoolOne(
             SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
             library
           ),
-          smartSwapLPTokenPoolTwo(
-            SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenPoolThree(
-            SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenV2PoolFour(
-            SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenV2PoolFive(
-            SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenV2PoolSix(
-            SMARTSWAPLP_TOKEN6ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenV2PoolSeven(
-            SMARTSWAPLP_TOKEN7ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenV2PoolEight(
-            SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenV2PoolNine(
-            SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenV2PoolTwelve(
-            SMARTSWAPLP_TOKEN12ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenV2PoolThirteen(
-            SMARTSWAPLP_TOKEN13ADDRESSES[chainId as number],
-            library
-          ),
         ]);
 
         const [
           pool1Allowance,
-          pool2Allowance,
-          pool3Allowance,
-          pool4Allowance,
-          pool5Allowance,
-          pool6Allowance,
-          pool7Allowance,
-          pool8Allowance,
-          pool9Allowance,
-          pool12Allowance,
-          pool13Allowance,
         ] = await Promise.all([
           allowance(pool1),
-          allowance(pool2),
-          allowance(pool3),
-          allowance(pool4),
-          allowance(pool5),
-          allowance(pool6),
-          allowance(pool7),
-          allowance(pool8),
-          allowance(pool9),
-          allowance(pool12),
-          allowance(pool13),
         ]);
         let rigelAllowance;
         let rigelAllowance2;
@@ -564,36 +500,12 @@ useEffect(()=>{
         if (Number(chainId) === Number(SupportedChainId.BINANCE)) {
           dispatch(
             updateFarmAllowances([
-              // rigelAllowance,
-              // pool2Allowance,
-              // pool1Allowance,
-              // pool3Allowance,
-              // pool4Allowance,
-              // pool5Allowance,
-              // pool6Allowance,
-              // pool7Allowance,
-              // pool8Allowance,
-              // pool9Allowance,
-              // pool12Allowance,
-              // pool13Allowance,
               rigelAllowance2
             ])
           );
         } else {
           dispatch(
             updateFarmAllowances([
-              // rigelAllowance,
-              // pool2Allowance,
-              // pool1Allowance,
-              // pool3Allowance,
-              // pool4Allowance,
-              // pool5Allowance,
-              // pool6Allowance,
-              // pool7Allowance,
-              // pool8Allowance,
-              // pool9Allowance,
-              // pool12Allowance,
-              // pool13Allowance,
               rigelAllowance2
             ])
           );

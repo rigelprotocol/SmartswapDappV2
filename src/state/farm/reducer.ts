@@ -176,10 +176,6 @@ export default createReducer(initialState, (builder) =>
 
     .addCase(updateFarmBalances, (state, action) => {
       const balances = action.payload;
-      console.log({balances})
-      // balances.forEach((item, index) => {
-      //   state.contents[index].availableToken = item;
-      // });
       let index =state.contents.findIndex((item)=>item?.poolVersion ==="2")
        
         state.contents[index].availableToken = balances[0];
