@@ -165,10 +165,6 @@ export const useProvider = () => {
   const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
   const [prov, setProv] = useState<JsonRpcProvider>(new JsonRpcProvider(`https://bsc-dataseed.binance.org`, 56));
 
-  // const provider = useCallback(() => {
-  //
-  // }, [ChainId]);
-
   useMemo(() => {
     const getProvider = () => {
       const defaultProvider = new JsonRpcProvider(RPC[ChainId], ChainId as number);

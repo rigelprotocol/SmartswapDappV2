@@ -72,8 +72,11 @@ function NetworkIndicator() {
   useEffect(() => {
     GNetworkConnectedTo(info?.label);
 
-    if (account) {
+    if (chainId) {
       handleUpdateChainId(chainId)
+    }
+    if (!connect && !ChainId) {
+      handleUpdateChainId(56)
     }
 
   },[chainId]);

@@ -6,7 +6,7 @@ export interface ChainID {
 }
 
 const initialState: ChainID = {
-    chainId: 56,
+    chainId: undefined,
 };
 
 export default createReducer(initialState, (builder) =>
