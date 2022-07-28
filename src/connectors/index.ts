@@ -4,11 +4,6 @@ import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 import { BscConnector } from "@binance-chain/bsc-connector";
 import { NetworkConnector } from "./NetworkConnector";
 import { ALL_SUPPORTED_CHAIN_IDS, SupportedChainId } from "../constants/chains";
-import { JsonRpcProvider } from '@ethersproject/providers'
-import {useMemo, useState} from 'react';
-import {useActiveWeb3React} from "../utils/hooks/useActiveWeb3React";
-import {useSelector} from "react-redux";
-import {RootState} from "../state";
 
 const NETWORK_URL = process.env.REACT_APP_NETWORK_URL;
 
@@ -24,7 +19,7 @@ export const RPC = {
     "https://eth-goerli.alchemyapi.io/v2/Dkk5d02QjttYEoGmhZnJG37rKt8Yl3Im",
   [SupportedChainId.KOVAN]:
     "https://eth-kovan.alchemyapi.io/v2/6OVAa_B_rypWWl9HqtiYK26IRxXiYqER",
-  [SupportedChainId.POLYGON]: `https://rpc-mainnet.maticvigil.com/`,
+  [SupportedChainId.POLYGON]: `https://polygon-rpc.com/`,
   [SupportedChainId.POLYGONTEST]: "https://rpc-mumbai.matic.today",
   [SupportedChainId.OASISTEST]: "https://testnet.emerald.oasis.dev",
   [SupportedChainId.OASISMAINNET]: "https://emerald.oasis.dev",
@@ -50,15 +45,6 @@ export const network = new NetworkConnector({
   urls: RPC,
   defaultChainId: 56
 });
-
-export const simpleRpcProvider = new JsonRpcProvider(RPC[137], 137);
-
-const useProvider = () => {
-  const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
-  console.log(ChainId, 'new chain id')
-
-
-};
 
 let networkLibrary: Web3Provider | undefined;
 export function getNetworkLibrary(): Web3Provider {

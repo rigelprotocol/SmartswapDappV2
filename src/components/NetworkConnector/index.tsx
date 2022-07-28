@@ -10,11 +10,11 @@ import {
   useDisclosure,
   Img
 } from "@chakra-ui/react";
-import React, {useCallback, useEffect, useMemo} from "react";
+import React, {useCallback, useEffect} from "react";
 import { BinanceIcon, EthereumIcon } from "./Icons";
 import { useColorModeValue } from "@chakra-ui/react";
 import { CHAIN_INFO } from "../../constants/chains";
-import { switchNetwork, useProvider} from "../../utils/utilsFunctions";
+import { switchNetwork } from "../../utils/utilsFunctions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import OASISLOGO from "../../assets/oasis.png";
 import MATICLOGO from "../../assets/maticlogo.png";
@@ -22,8 +22,6 @@ import { GNetworkConnectedTo } from "../G-analytics/gIndex";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../state";
 import {setChainId} from "../../state/chainId/actions";
-import {RigelSmartBidTwo} from "../../utils/Contracts";
-import {SMARTBID2} from "../../utils/addresses";
 import {connectorKey} from "../../connectors";
 
 function NetworkIndicator() {
@@ -33,8 +31,6 @@ function NetworkIndicator() {
   const buttonBgColor = useColorModeValue("#EBF6FE", "#213345");
   const textColor = useColorModeValue("#319EF6", "#4CAFFF");
   const dispatch = useDispatch();
-  const {prov} = useProvider();
-  const lib = library ? library : prov;
 
   const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
 
@@ -45,29 +41,8 @@ function NetworkIndicator() {
       [dispatch]
   );
 
-  useEffect(() => {
-    fetchToken();
-
-  }, [ChainId]);
-
-  const fetchToken = async () => {
-    try {
-      const newContract = await RigelSmartBidTwo(SMARTBID2[ChainId as number], lib);
-
-      const length = await newContract.bidLength();
-      console.log(length.toString())
-
-    } catch (e) {
-      console.log(e)
-    }
-  };
-
-
-
   const info = chainId ? CHAIN_INFO[chainId] : CHAIN_INFO[ChainId as number];
-
   const connect = window.localStorage.getItem(connectorKey);
-  console.log(connect);
 
   useEffect(() => {
     GNetworkConnectedTo(info?.label);
@@ -80,8 +55,6 @@ function NetworkIndicator() {
     }
 
   },[chainId]);
-
-
 
   const changeNetwork = async (network: string, id: number) => {
     onClose();

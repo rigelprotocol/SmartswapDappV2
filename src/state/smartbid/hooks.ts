@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useState} from "react";
 import cardbid from "../../assets/smartbid/cardbid2.svg";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 import {RigelSmartBid, RigelSmartBidTwo} from "../../utils/Contracts";

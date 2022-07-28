@@ -21,7 +21,6 @@ import NFTAbi from './abis/nft.json';
 import NFTTwoAbi from './abis/nftTwo.json';
 import BidAbi from './abis/smartBid.json';
 import BidAbiTwo from './abis/smartBidTwo.json';
-import {getNetworkLibrary, simpleRpcProvider} from "../connectors";
 
 export function isAddress(value: any): string | false {
   try {
@@ -118,13 +117,13 @@ export const MasterChefNEWLPContract = async (address: string, library: Web3Prov
 export const RigelNFT = async (address: string, library: Web3Provider | JsonRpcProvider | undefined) => {
   const type = library instanceof Web3Provider;
   const signerOrProvider =  type ? library?.getSigner() : library;
-  return new Contract(address, BidAbiTwo, signerOrProvider)
+  return new Contract(address, NFTAbi, signerOrProvider)
 };
 
 export const RigelNFTTwo = async (address: string, library: Web3Provider | JsonRpcProvider | undefined) => {
   const type = library instanceof Web3Provider;
   const signerOrProvider =  type ? library?.getSigner() : library;
-  return new Contract(address, BidAbiTwo, signerOrProvider)
+  return new Contract(address, NFTTwoAbi, signerOrProvider)
 };
 
 export const RigelSmartBid = async (address: string, library: Web3Provider | JsonRpcProvider | undefined) => {
