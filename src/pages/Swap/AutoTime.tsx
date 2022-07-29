@@ -215,17 +215,16 @@ const SetPrice = () => {
   );
   useEffect(async () => {
     const checkBalance = async ()=>{
-      let frequency = parseInt(totalNumberOfTransaction)>1 ? parseInt(totalNumberOfTransaction) : 1
      if(currencies[Field.INPUT]?.symbol==="RGP"){
       let fee =await getFee()
       let amount = fee ? parseFloat(formattedAmounts[Field.INPUT]) + parseFloat(fee) : parseFloat(formattedAmounts[Field.INPUT])
-      if(amount * frequency > parseFloat(balance) ){
+      if(amount > parseFloat(balance) ){
         setInsufficientBalance(true);
       }else{
         setInsufficientBalance(false);
       }
     }else{
-     if (balance < parseFloat(formattedAmounts[Field.INPUT]) * frequency) {
+     if (balance < parseFloat(formattedAmounts[Field.INPUT])) {
       setInsufficientBalance(true);
     } else {
       setInsufficientBalance(false);
@@ -377,7 +376,7 @@ const SetPrice = () => {
   const approveOneOrTwoTokens = async (tokenApprovingFor:string) => {
     if (currencies[Field.INPUT]?.isNative) {
       setHasBeenApproved(true);
-      setApproval(approval.filter(t => t !== currencies[Field.INPUT]?.name))
+      setApprovalForToken("")
     }
     
     GButtonClick("auto_period",`Approve ${tokenApprovingFor} ${tokenApprovingFor ==="RGP" ? "for fee" : ""}`,currencies[Field.INPUT]?.symbol)
@@ -395,10 +394,16 @@ const SetPrice = () => {
           const rgp = await rigelToken(RGP[chainId as number], library);
           const token = await getERC20Token(address, library);
 
+        const frequency = parseInt(totalNumberOfTransaction) > 1 ? parseInt(totalNumberOfTransaction) : 1
           const walletBal = (await token.balanceOf(account));
+         let walletBalString = parseFloat(ethers.utils.formatUnits(walletBal.toString(), currencies[Field.INPUT]?.decimals)) 
+
+                   const amountToApprove = walletBalString > parseFloat(formattedAmounts[Field.INPUT]) * frequency ? walletBalString : parseFloat(formattedAmounts[Field.INPUT]) * frequency
+          console.log({amountToApprove,walletBal,walletBalString})
+          
           const approveTransaction = await rgp.approve(
             MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
-            walletBal,
+            ethers.utils.parseUnits(amountToApprove.toString(),currencies[Field.INPUT]?.decimals).toString(),
             {
               from: account,
             }
@@ -417,12 +422,16 @@ const SetPrice = () => {
             setApprovalForFee("")
           // setArr && setApproval(setArr)
         } else {
+        const frequency = parseInt(totalNumberOfTransaction) > 1 ? parseInt(totalNumberOfTransaction) : 1
           const address = currencies[Field.INPUT]?.wrapped.address;
           const token = address && await getERC20Token(address, library);
-          const walletBal = (await token?.balanceOf(account));
-          const approveTransaction = await token?.approve(
+          const walletBal = token && (await token?.balanceOf(account));
+          let walletBalString = parseFloat(ethers.utils.formatUnits(walletBal.toString(), currencies[Field.INPUT]?.decimals)) 
+          const amountToApprove = walletBalString > parseFloat(formattedAmounts[Field.INPUT]) * frequency ? walletBalString : parseFloat(formattedAmounts[Field.INPUT]) * frequency
+          console.log({amountToApprove,walletBal})
+          const approveTransaction = token && await token?.approve(
             MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
-            walletBal,
+            ethers.utils.parseUnits(amountToApprove.toString(),currencies[Field.INPUT]?.decimals).toString(),
             {
               from: account,
             }

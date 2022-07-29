@@ -932,18 +932,7 @@ useEffect(()=>{
       try {
         if (parseFloat(content.tokenStaked[1]) == 0) {
           if (parseFloat(RGPBalance) < parseFloat(farmingFee)) {
-            // alert({
-            //   title: "Insufficient Balance",
-            //   body: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
-            //   type: "error",
-            // });
-            // dispatch(
-            //   addToast({
-            //     message: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
-            //     error: true
-            //   })
-            // );
-            // throw new Error()
+            
             dispatch(
               setOpenModal({
                 trxState: TrxState.TransactionFailed,
@@ -1094,74 +1083,7 @@ useEffect(()=>{
     clearInputInfo(setDepositTokenValue, setDepositValue, "Confirm");
   };
 
-  //Deposit
-  // const confirmDeposit = async (val: any) => {
-  //   console.log("deposit", { val, content });
-  //   setDepositValue("Pending Confirmation");
-  //   dispatch(
-  //     setOpenModal({
-  //       message: `Staking ${depositTokenValue} ${val}`,
-  //       trxState: TrxState.WaitingForConfirmation,
-  //     })
-  //   );
-  //   try {
-  //     if (account) {
-  //       if (val === "RGP" && Number(content.id) === 1) {
-  //         await RGPuseStake(depositTokenValue);
-  //       } else if (val === "RGP" && Number(content.id) === 13) {
-  //         await RGPuseStakeV2(depositTokenValue, referrerAddress);
-  //       } else if (
-  //         val === "RGP-BNB" ||
-  //         val === "RGP-USDT" ||
-  //         val === "USDT-RGP"
-  //       ) {
-  //         await LPDeposit(2);
-  //       } else if (
-  //         val === "BNB-BUSD" ||
-  //         val === "RGP-USDC" ||
-  //         val === "ROSE-USDT"
-  //       ) {
-  //         await LPDeposit(3);
-  //       } else if (
-  //         val === "RGP-BUSD" ||
-  //         val === "MATIC-RGP" ||
-  //         val === "RGP-MATIC" ||
-  //         val === "RGP-ROSE" ||
-  //         val === "ROSE-RGP"
-  //       ) {
-  //         await LPDeposit(1);
-  //       } else if (val === "AXS-RGP") {
-  //         await LPDeposit(4);
-  //       } else if (val === "AXS-BUSD") {
-  //         await LPDeposit(5);
-  //       } else if (val === "PLACE-RGP") {
-  //         await LPDeposit(6);
-  //       } else if (val === "MHT-RGP") {
-  //         await LPDeposit(7);
-  //       } else if (val === "SHIB-RGP") {
-  //         await LPDeposit(8);
-  //       } else if (val === "MBOX-RGP") {
-  //         await LPDeposit(9);
-  //       } else if (val === "WARS-RGP") {
-  //         await LPDeposit(12);
-  //       } else if (val === "METO-RGP") {
-  //         await LPDeposit(13);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     dispatch(
-  //       setOpenModal({
-  //         message: `Failed to deposit LP tokens.`,
-  //         trxState: TrxState.TransactionFailed,
-  //       })
-  //     );
-  //   }
-  //   setTimeout(() => closeDepositeModal(), 400);
-  //   //setDeposit(true);
-
-  //   clearInputInfo(setDepositTokenValue, setDepositValue, "Confirm");
-  // };
+ 
 
   const RGPuseStake = async () => {
     if (account) {
@@ -1247,6 +1169,7 @@ useEffect(()=>{
           })
         );
         // callRefreshFarm(confirmations, status);
+        setReload(true);
       } catch (error:any) {
         console.log(error);
         GFarmingFailedTransaction("special pool", "stake", error.message, "RGP","v2")
