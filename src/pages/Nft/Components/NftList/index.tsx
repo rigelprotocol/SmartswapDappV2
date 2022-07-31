@@ -5,9 +5,11 @@ import { NFTsMockData } from "../../mockData"
 import Nft from "../Nft"
 import {useActiveWeb3React} from "../../../../utils/hooks/useActiveWeb3React";
 import {SupportedChainId} from "../../../../constants/chains";
+import {useSelector} from "react-redux";
+import {RootState} from "../../../../state";
 
 const NftList = () => {
-    const { chainId, account } = useActiveWeb3React();
+    const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
     const [isMobileDevice] = useMediaQuery("(max-width: 750px)");
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     const breakpointColumnsObj = {
@@ -18,8 +20,7 @@ const NftList = () => {
       };
     return (
         <>
-            {
-                !account ? null :
+
                     <Box>
                         <Text color={textColor} fontWeight={700} py={10} fontSize={24}>
                             NFTs
@@ -31,7 +32,7 @@ const NftList = () => {
                                 columnClassName="my-masonry-grid_column"
                             >
 
-                                {Number(chainId) === Number(SupportedChainId.BINANCETEST) || Number(chainId) === Number(SupportedChainId.BINANCE)
+                                {Number(ChainId) === Number(SupportedChainId.BINANCETEST) || Number(ChainId) === Number(SupportedChainId.BINANCE)
                                     ? NFTsMockData.map((nft: any, index: number) =>
                                         index !== -1 &&
                                         index < 15 ? (
@@ -40,7 +41,7 @@ const NftList = () => {
                                             </Box>
                                         ) : null
                                     ) :
-                                    Number(chainId) === Number(SupportedChainId.POLYGONTEST) || chainId === Number(SupportedChainId.POLYGON)
+                                    Number(ChainId) === Number(SupportedChainId.POLYGONTEST) || ChainId === Number(SupportedChainId.POLYGON)
                                         ? NFTsMockData.map((nft: any, index: number) =>
                                             index !== -1 &&
                                             index < 12 ? (
@@ -53,7 +54,6 @@ const NftList = () => {
                             </Masonry>
                         </Box>
                     </Box>
-            }
         </>
     )
 };

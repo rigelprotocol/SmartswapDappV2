@@ -27,7 +27,7 @@ export interface farmDataInterface {
       }>
     | undefined;
   loading: boolean;
-  chainId: number | undefined;
+  chainId: number;
   specialPool:
     | Array<{
         id: number;
@@ -50,7 +50,7 @@ const initialState: farmDataInterface = {
   loading: false,
   contents: undefined,
   specialPool: undefined,
-  chainId: undefined,
+  chainId: 56,
 };
 
 export default createReducer(initialState, (builder) =>

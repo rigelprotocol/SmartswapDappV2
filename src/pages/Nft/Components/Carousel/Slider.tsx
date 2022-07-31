@@ -37,7 +37,7 @@ const SliderTab = ({title, sideImage, background, smallText, widthSize}: SliderP
                             lineHeight={isMobileDevice ? '44px' : '88px'}
                             background={'linear-gradient(180deg, rgba(247, 181, 60, 0) 0%, #AA6E00 113.7%), #F7B53C'}
                             backgroundClip={'text'}
-                            textFillColor={'transparent'}
+                            //textFillColor={'transparent'}
                             m={'30px 50px'}
                             zIndex={'100'}
                         >{title}</Text>

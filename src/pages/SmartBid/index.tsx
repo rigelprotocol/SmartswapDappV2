@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {
     Box, Text, Flex, useColorModeValue, VStack, Heading,
     Button, SimpleGrid, GridItem, useMediaQuery, Spinner
@@ -6,17 +6,18 @@ import {
 import {AddIcon} from "@chakra-ui/icons";
 import SmartBidCard from "./Components/Card";
 import BidCarousel from "./Components/BidCarousel";
-import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 import {SupportedChainId} from "../../constants/chains";
 import {useBidInfo} from "../../state/smartbid/hooks";
+import {useSelector} from "react-redux";
+import {RootState} from "../../state";
 
 
 const SmartBid = () => {
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     const headerColor = useColorModeValue("#0760A8", "#F1F5F8");
     const [isMobileDeviceSm] = useMediaQuery("(max-width: 450px)");
-    const {chainId} = useActiveWeb3React();
     const {loadBid, bidItemsNFT } = useBidInfo();
+    const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
 
     return (
         <Box width={'95%'} margin={'30px auto'}>
@@ -53,7 +54,7 @@ const SmartBid = () => {
                     />
                 </Flex> : null }
             {
-                chainId !== SupportedChainId.POLYGONTEST ?
+                ChainId !== SupportedChainId.POLYGONTEST ?
 
                     <SimpleGrid width={'100%'} p={'10px'} mx={'auto'} minChildWidth={'305px'} spacingX={'10px'}
                                 spacingY={'20px'} alignItems={'start'}>
