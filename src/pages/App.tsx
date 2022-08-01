@@ -1,5 +1,5 @@
 import React, {Suspense} from "react";
-import { HashRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import AddLiquidity from "./AddLiquidity";
 import Pool from "./Pool";
 import RemoveLiquidity from "./RemoveLiquidity";
@@ -43,7 +43,7 @@ import BidDetails from "./SmartBid/BidDetails";
     <Suspense fallback={null}>
       <Fonts />
       <AppWrapper>
-        <HashRouter>
+        <Router>
         <Switch>
               <Route exact strict path="/" component={Index} />
               </Switch>
@@ -102,7 +102,7 @@ import BidDetails from "./SmartBid/BidDetails";
 
             </Switch>
           </ErrorBoundary>
-        </HashRouter>
+        </Router>
       </AppWrapper>
     </Suspense>
   );
