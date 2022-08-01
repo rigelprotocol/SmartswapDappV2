@@ -565,6 +565,7 @@ const setQuantityValue =() =>{
         })
       })
       let res =await response.json()
+      console.log({res})
       dispatch(
         setOpenModal({
           message: "Successfully stored Transaction",
