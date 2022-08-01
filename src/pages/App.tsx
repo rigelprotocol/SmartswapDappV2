@@ -25,9 +25,6 @@ import gtag from "ga-gtag"
 import YieldFarm from "./FarmingV2/YieldFarm";
 import SmartBid from "./SmartBid";
 import BidDetails from "./SmartBid/BidDetails";
-import BidHistory from "./SmartBid/Components/History";
-import BidNotification from "./SmartBid/Notifications";
-import Faq from "./SmartBid/Faq";
 
  function App() {
   useConnectWallet();
@@ -81,21 +78,21 @@ import Faq from "./SmartBid/Faq";
                 path="/remove/:currencyIdA/:currencyIdB"
                 component={RemoveLiquidity}
               />
-              <Route
-                exact
-                strict
-                path="/farming-V2/staking-RGP"
-                component={FarmingV2}
-              />
-              <Route
-                exact
-                strict
-                path="/farming-V2/product-farm"
-                component={FarmingV2}
-              />
+              {/*<Route*/}
+              {/*  exact*/}
+              {/*  strict*/}
+              {/*  path="/farming-V2/staking-RGP"*/}
+              {/*  component={FarmingV2}*/}
+              {/*/>*/}
+              {/*<Route*/}
+              {/*  exact*/}
+              {/*  strict*/}
+              {/*  path="/farming-V2/product-farm"*/}
+              {/*  component={FarmingV2}*/}
+              {/*/>*/}
               <Route exact path="/farming" component={FarmingV1} />
-              <Route path="/farming-V2" component={FarmingV2} />
-              <Route path="/farming-V2/:deposit" component={YieldFarm} />
+              <Route path="/farm" component={FarmingV2} />
+              <Route path="/farm/:deposit" component={YieldFarm} />
               <Route exact strict path={'/smartbid'} component={SmartBid}/>
               <Route path={'/smartbid/:id'} component={BidDetails}/>
 

@@ -63,10 +63,10 @@ function EarnDropdown() {
             <Nav label="Liquidity" to="/pool" active={name === '/add' || name === '/remove'} />
          </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
-            <Nav label="Farming" to="/farming-v2"  />
+            <Nav label="Farming" to="/farm"  />
          </MenuItem>
           <MenuItem _focus={{ color: "#319EF6" }}>
-              <Nav label="New LP Farm" to="/farming-v2/new-farm"  />
+              <Nav label="New LP Farm" to="/farm/new-farm"  />
           </MenuItem>
 
         </MenuList>

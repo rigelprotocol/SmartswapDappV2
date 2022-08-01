@@ -263,11 +263,11 @@ export function Index() {
     if (parseInt(event.target.value, 10) === 1) {
       setStakingIndex(1);
       setTabIndex(1);
-      history.push("/farming-v2/staking-RGPv2");
+      history.push("/farm/RGPv2");
     } else if (parseInt(event.target.value, 10) === 3) {
       setStakingIndex(3);
       setTabIndex(3);
-      history.push("/farming-v2/staking-RGPv1");
+      history.push("/farm/RGPv1");
     }
   };
 
@@ -285,17 +285,17 @@ export function Index() {
     if (parseInt(event.target.value, 10) === 5) {
       setNewFarmIndex(5);
       setTabIndex(5);
-      history.push("/farming-v2/new-farm");
+      history.push("/farm/new-farm");
     } else if (parseInt(event.target.value, 10) === 6) {
       setNewFarmIndex(6);
       setTabIndex(6);
-      history.push("/farming-v2/stable-lp");
+      history.push("/farm/stable-lp");
     }
   };
 
   const { account, chainId, library } = useActiveWeb3React();
   const dispatch = useDispatch();
-  let match = useRouteMatch("/farming-V2/staking-RGPv2");
+  let match = useRouteMatch("/farm/RGPv2");
   const FarmData = useFarms();
   const { farmdata, loadingState } = useGetFarmData();
   const { LPData, loadingLP } = useGetNewFarms(selected === farmSection.SECOND_NEW_LP ? 2 : 1);
@@ -375,22 +375,22 @@ export function Index() {
       setSwitchTab(!switchTab);
       setSelected(farmSection.LIQUIDITY);
       dispatch(updateSelectedField({value: farmSection.LIQUIDITY}));
-      changeVersion("/farming-v2");
+      changeVersion("/farm");
     }else if(value === farmSection.PRODUCT_FARM) {
       setSelected(farmSection.PRODUCT_FARM);
       dispatch(updateSelectedField({value: farmSection.PRODUCT_FARM}));
       setSwitchTab(!switchTab);
-      changeVersion("/farming-V2/product-farm");
+      changeVersion("/farm/product-farm");
     }else if(value === farmSection.NEW_LP) {
       setSelected(farmSection.NEW_LP);
       dispatch(updateSelectedField({value: farmSection.NEW_LP}));
       setSwitchTab(!switchTab);
-      changeVersion("/farming-V2/new-farm");
+      changeVersion("/farm/new-farm");
     }else if(value === farmSection.SECOND_NEW_LP) {
       setSelected(farmSection.SECOND_NEW_LP);
       dispatch(updateSelectedField({value: farmSection.SECOND_NEW_LP}));
       setSwitchTab(!switchTab);
-      changeVersion("/farming-V2/stable-lp");
+      changeVersion("/farm/stable-lp");
     } else if (value === farmSection.STAKING) {
       setSwitchTab(!switchTab);
       setSelected(farmSection.STAKING);
@@ -398,10 +398,10 @@ export function Index() {
       GOpenedSpecialPool(tabIndex);
       if (tabIndex === 1) {
         setStakingIndex(1);
-        changeVersion("/farming-v2/staking-RGPv2");
+        changeVersion("/farm/RGPv2");
       } else {
         setStakingIndex(3);
-        changeVersion("/farming-v2/staking-RGPv1");
+        changeVersion("/farm/RGPv1");
       }
     } else {
       setSwitchTab(true);
