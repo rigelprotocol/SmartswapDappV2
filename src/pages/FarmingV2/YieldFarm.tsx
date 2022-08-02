@@ -18,6 +18,7 @@ const YieldFarm = ({
   farmDataLoading,
   wallet,
   URLReferrerAddress,
+  refreshSpecialData,
   LoadingState,
   section,
     contractID
@@ -52,6 +53,7 @@ const YieldFarm = ({
     address: string;
     type?:string
   };
+  refreshSpecialData:()=>void;
   wallet: any;
   URLReferrerAddress: string;
   LoadingState: boolean;
@@ -284,6 +286,7 @@ const YieldFarm = ({
                   // content2={content2}
                   LoadingState={LoadingState}
                   section={section}
+                  refreshSpecialData={() =>refreshSpecialData()}
                   // content2={content2}
                   // showYieldfarm={loading}
                   wallet={wallet}

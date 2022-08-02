@@ -32,6 +32,7 @@ import {DARK_THEME, farmSection} from "./index";
 import {addToast} from "../../components/Toast/toastSlice";
 import {useDispatch, useSelector} from "react-redux";
 import {setOpenModal, TrxState} from "../../state/application/reducer";
+import { setLoadingState } from "../../state/farm/actions";
 import {ExplorerDataType, getExplorerLink} from "../../utils/getExplorerLink";
 import {
   MasterChefV2Contract,
@@ -39,33 +40,14 @@ import {
   RGPSpecialPool2,
   rigelToken,
   smartSwapLPTokenPoolOne,
-  smartSwapLPTokenPoolThree,
   smartSwapLPTokenPoolTwo,
-  smartSwapLPTokenV2PoolEight,
-  smartSwapLPTokenV2PoolFive,
-  smartSwapLPTokenV2PoolFour,
-  smartSwapLPTokenV2PoolNine,
-  smartSwapLPTokenV2PoolSeven,
-  smartSwapLPTokenV2PoolSix,
-  smartSwapLPTokenV2PoolThirteen,
-  smartSwapLPTokenV2PoolTwelve,
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
   RGP,
   RGPSPECIALPOOLADDRESSES,
   RGPSPECIALPOOLADDRESSES2,
-  SMARTSWAPLP_TOKEN12ADDRESSES,
-  SMARTSWAPLP_TOKEN13ADDRESSES,
   SMARTSWAPLP_TOKEN1ADDRESSES,
-  SMARTSWAPLP_TOKEN2ADDRESSES,
-  SMARTSWAPLP_TOKEN3ADDRESSES,
-  SMARTSWAPLP_TOKEN4ADDRESSES,
-  SMARTSWAPLP_TOKEN5ADDRESSES,
-  SMARTSWAPLP_TOKEN6ADDRESSES,
-  SMARTSWAPLP_TOKEN7ADDRESSES,
-  SMARTSWAPLP_TOKEN8ADDRESSES,
-  SMARTSWAPLP_TOKEN9ADDRESSES,
 } from "../../utils/addresses";
 import {clearInputInfo, convertFromWei, convertToNumber} from "../../utils";
 import {useRGPBalance} from "../../utils/hooks/useBalances";
@@ -87,12 +69,12 @@ import {
   GFarmingSuccessTransaction
 } from "../../components/G-analytics/gFarming";
 import {ZERO_ADDRESS} from "../../constants";
-import {State} from "../../state/types";
 
 const ShowYieldFarmDetails = ({
   content,
   wallet,
   URLReferrerAddress,
+   refreshSpecialData,
   LoadingState,
   section,
   showYieldfarm,
@@ -115,6 +97,7 @@ const ShowYieldFarmDetails = ({
   };
   wallet: any;
   URLReferrerAddress:string;
+  refreshSpecialData:()=>void;
   LoadingState: boolean;
   section: string;
   showYieldfarm: boolean;
@@ -173,7 +156,6 @@ const ShowYieldFarmDetails = ({
 
 
 
-
   const closeModal = () => {
     GButtonIntialized("close unstaked",content.deposit,"v2")
     modal2Disclosure.onClose();
@@ -209,7 +191,6 @@ useEffect(()=>{
     }
     return true;
   };
-  console.log({content})
   checkEnoughApproval(content.poolAllowance,content.availableToken)
 },[depositTokenValue])
   useEffect(() => {
@@ -844,6 +825,7 @@ useEffect(()=>{
 
           if (confirmations >= 1 && status) {
             GFarmingSuccessTransaction("special pool", "harvest", "RGP","v2")
+            refreshSpecialData()
             dispatch(
               setOpenModal({
                 trxState: TrxState.TransactionSuccessful,
@@ -852,6 +834,7 @@ useEffect(()=>{
                 )} RGP `,
               })
             );
+
           }
         } else {
           const lpTokens = await MasterChefV2Contract(
@@ -897,6 +880,7 @@ useEffect(()=>{
                 )} RGP `,
               })
             );
+            refreshSpecialData()
           }
 
           const explorerLink = getExplorerLink(
@@ -922,6 +906,7 @@ useEffect(()=>{
             message: `Transaction was not successful`,
           })
         );
+
       }
     }
   };
@@ -1142,7 +1127,6 @@ useEffect(()=>{
       }
     }
   };
-
   const RGPuseStakeV2 = async () => {
     if (account) {
       try {
@@ -1161,7 +1145,10 @@ useEffect(()=>{
           }
         );
         await fetchTransactionData(data);
-        GFarmingSuccessTransaction("special pool", "stake", "RGP","v2")
+        GFarmingSuccessTransaction("special pool", "stake", "RGP","v2") //122
+      
+      refreshSpecialData()
+        
         dispatch(
           setOpenModal({
             trxState: TrxState.TransactionSuccessful,
@@ -1169,7 +1156,7 @@ useEffect(()=>{
           })
         );
         // callRefreshFarm(confirmations, status);
-        setReload(true);
+        setReload(true); 
       } catch (error:any) {
         console.log(error);
         GFarmingFailedTransaction("special pool", "stake", error.message, "RGP","v2")
@@ -1227,6 +1214,7 @@ useEffect(()=>{
             message: `Successfully unstaked ${unstakeToken} RGP `,
           })
         );
+        refreshSpecialData()
         // dispatch the getTokenStaked action from here when data changes
         //  callRefreshFarm(confirmations, status);
       } catch (e:any) {
@@ -1284,6 +1272,8 @@ useEffect(()=>{
             message: `Successfully unstaked ${unstakeToken} RGP `,
           })
         );
+        
+        refreshSpecialData()
         // dispatch the getTokenStaked action from here when data changes
         //  callRefreshFarm(confirmations, status);
       } catch (error:any) {

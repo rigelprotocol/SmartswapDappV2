@@ -181,6 +181,7 @@ export function Index() {
   const [oldestToNewest, setOldestToNewest] = useState(true);
   const [range0, setRange0] = useState<number | string>(0);
   const [range1, setRange1] = useState<number | string>(10000);
+  const [refreshSpecialPool,setRefreshSpecialPool] = useState(false);
   const [searchedFarmData, setSearchedFarmData] =
     useState<farmStateInterface>();
 
@@ -189,9 +190,13 @@ export function Index() {
   const [keyword, setKeyword] = useState("");
 
 
+const refreshSpecialData =()=>{
+  setRefreshSpecialPool(!refreshSpecialPool);
+}
 
   // 👇 look here
   const previousKeyword = usePrevious(keyword);
+  
 
   const filter = useSearch();
   useClearFarm();
@@ -361,7 +366,7 @@ export function Index() {
   //
   useEffect(() => {
     refreshData();
-  }, []);
+  }, [refreshSpecialPool]);
 
   const changeVersion = (version: string, external?: boolean) => {
     if (external) {
@@ -1748,6 +1753,7 @@ export function Index() {
                             content2={content}
                             key={content?.id}
                             section={"search"}
+                            refreshSpecialData={refreshSpecialData}
                             wallet={wallet}
                             LoadingState={loadingState}
                           />
@@ -1760,6 +1766,7 @@ export function Index() {
                             farmDataLoading={farmDataLoading}
                             content2={content}
                             key={content?.id}
+                            refreshSpecialData={refreshSpecialData}
                             section={"search"}
                             wallet={wallet}
                             LoadingState={loadingState}
@@ -1775,6 +1782,7 @@ export function Index() {
                             farmDataLoading={farmDataLoading}
                             content2={content}
                             section={"filter"}
+                            refreshSpecialData={refreshSpecialData}
                             key={content?.id}
                             wallet={wallet}
                             LoadingState={loadingState}
@@ -1788,6 +1796,7 @@ export function Index() {
                             farmDataLoading={farmDataLoading}
                             content2={content}
                             key={content?.id}
+                            refreshSpecialData={refreshSpecialData}
                             section={"filter"}
                             wallet={wallet}
                             LoadingState={loadingState}
@@ -1802,6 +1811,7 @@ export function Index() {
                           farmDataLoading={farmDataLoading}
                           content2={content}
                           key={content?.id}
+                          refreshSpecialData={refreshSpecialData}
                           section={"normal"}
                           wallet={wallet}
                           LoadingState={loadingState}
@@ -1813,6 +1823,7 @@ export function Index() {
                           farmDataLoading={farmDataLoading}
                           content2={content}
                           key={content?.id}
+                          refreshSpecialData={refreshSpecialData}
                           section={"normal"}
                           wallet={wallet}
                           LoadingState={loadingState}
@@ -1887,6 +1898,7 @@ export function Index() {
                       <YieldFarm
                         farmDataLoading={farmDataLoading}
                         content={content}
+                        refreshSpecialData={refreshSpecialData}
                         key={content.pid}
                         wallet={wallet}
                         URLReferrerAddress={refAddress}
@@ -1900,94 +1912,6 @@ export function Index() {
 
           <TabPanel padding='0px'>
            
-            {/* <Flex
-              justifyContent='center'
-              alignItems='center'
-              rounded='lg'
-              mb={4}
-            >
-              <Box
-                bg='#120136'
-                minHeight='89vh'
-                w={["100%", "100%", "100%"]}
-                background={
-                  mode === LIGHT_THEME && selected === farmSection.STAKING
-                    ? "#FFFFFF !important"
-                    : mode === DARK_THEME && selected === farmSection.LIQUIDITY
-                    ? "#15202B !important"
-                    : mode === DARK_THEME && selected === farmSection.STAKING
-                    ? "#15202B !important"
-                    : mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
-                    ? "#FFFFFF !important"
-                    : "#FFFFFF !important"
-                }
-                rounded='lg'
-              >
-                <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
-                  <Flex
-                    alignItems='center'
-                    justifyContent='space-between'
-                    px={4}
-                    py={4}
-                    background={
-                      mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
-                        ? "#F2F5F8  !important"
-                        : mode === DARK_THEME && selected === farmSection.LIQUIDITY
-                        ? "#213345"
-                        : mode === DARK_THEME && selected === farmSection.STAKING
-                        ? "#213345"
-                        : mode === LIGHT_THEME && selected === farmSection.STAKING
-                        ? "#F2F5F8"
-                        : "#F2F5F8 !important"
-                    }
-                    color={
-                      mode === LIGHT_THEME && selected === farmSection.LIQUIDITY
-                        ? "#333333"
-                        : mode === DARK_THEME && selected === farmSection.STAKING
-                        ? "#F1F5F8"
-                        : mode === DARK_THEME && selected === farmSection.LIQUIDITY
-                        ? "#F1F5F8"
-                        : mode === LIGHT_THEME && selected === farmSection.STAKING
-                        ? "#333333"
-                        : "#333333"
-                    }
-                    w={["100%", "100%", "100%"]}
-                    align='left'
-                    border={
-                      mode === LIGHT_THEME
-                        ? "1px solid #DEE5ED !important"
-                        : mode === DARK_THEME
-                        ? "1px solid #324D68 !important"
-                        : "1px solid #324D68"
-                    }
-                    display={{ base: "none", md: "flex", lg: "flex" }}
-                  >
-                    <Text>
-                      Please Migrate your LP token farming from farming V1 to
-                      this V2
-                    </Text>
-                  </Flex>
-
-                  <Link
-                    href='https://smartswapv1.rigelprotocol.com/farming'
-                    isExternal
-                  >
-                    <Button
-                      background='#4CAFFF'
-                      boxShadow='0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)'
-                      borderRadius='6px'
-                      mx={[5, 10, 15, 20]}
-                      position={{ base: "relative", md: "absolute" }}
-                      padding=' 12px 32px'
-                      mt={3}
-                      variant='brand'
-                    >
-                      Go to farming V1
-                    </Button>
-                  </Link>
-                </Box>
-              </Box>
-            </Flex> */}
               <Flex
               justifyContent='center'
               alignItems='center'
@@ -2052,6 +1976,7 @@ export function Index() {
                         farmDataLoading={farmDataLoading}
                         content={content}
                         key={content.pid}
+                        refreshSpecialData={refreshSpecialData}
                         wallet={wallet}
                         URLReferrerAddress={refAddress}
                       />
@@ -2126,6 +2051,7 @@ export function Index() {
                         farmDataLoading={farmDataLoading}
                         content={content}
                         key={content.pid}
+                        refreshSpecialData={refreshSpecialData}
                         wallet={wallet}
                       />
                     ) : null
@@ -2353,6 +2279,7 @@ export function Index() {
                                           section={"search"}
                                           wallet={wallet}
                                           LoadingState={loadingLP}
+                                         refreshSpecialData={refreshSpecialData}
                                       />
                                   )
                               )
@@ -2366,6 +2293,7 @@ export function Index() {
                                           section={"search"}
                                           wallet={wallet}
                                           LoadingState={loadingLP}
+                                         refreshSpecialData={refreshSpecialData}
                                       />
                                   )
                               )
@@ -2381,6 +2309,7 @@ export function Index() {
                                           key={content?.id}
                                           wallet={wallet}
                                           LoadingState={loadingLP}
+                                         refreshSpecialData={refreshSpecialData}
                                       />
                                   )
                               )
@@ -2394,6 +2323,7 @@ export function Index() {
                                           section={"filter"}
                                           wallet={wallet}
                                           LoadingState={loadingLP}
+                                         refreshSpecialData={refreshSpecialData}
                                       />
                                   )
                               )
@@ -2409,6 +2339,7 @@ export function Index() {
                                       wallet={wallet}
                                       LoadingState={loadingLP}
                                       contractID={1}
+                                      refreshSpecialData={refreshSpecialData}
                                   />
                               ))
                           )
@@ -2422,6 +2353,7 @@ export function Index() {
                                       wallet={wallet}
                                       LoadingState={loadingLP}
                                       contractID={1}
+                                      refreshSpecialData={refreshSpecialData}
                                   />
                               ))
                           )
@@ -2557,6 +2489,7 @@ export function Index() {
                                           section={"search"}
                                           wallet={wallet}
                                           LoadingState={loadingState}
+                                      refreshSpecialData={refreshSpecialData}
                                       />
                                   )
                               )
@@ -2569,6 +2502,7 @@ export function Index() {
                                           key={content?.id}
                                           section={"search"}
                                           wallet={wallet}
+                                           refreshSpecialData={refreshSpecialData}
                                           LoadingState={loadingState}
                                       />
                                   )
@@ -2584,6 +2518,7 @@ export function Index() {
                                           section={"filter"}
                                           key={content?.id}
                                           wallet={wallet}
+                                          refreshSpecialData={refreshSpecialData}
                                           LoadingState={loadingState}
                                       />
                                   )
@@ -2597,6 +2532,7 @@ export function Index() {
                                           key={content?.id}
                                           section={"filter"}
                                           wallet={wallet}
+                                          refreshSpecialData={refreshSpecialData}
                                           LoadingState={loadingState}
                                       />
                                   )
@@ -2613,6 +2549,7 @@ export function Index() {
                                               wallet={wallet}
                                               LoadingState={loadingLP}
                                               contractID={2}
+                                              refreshSpecialData={refreshSpecialData}
                                           />
                                       ))
                                   )
@@ -2625,6 +2562,7 @@ export function Index() {
                                               section={"normal"}
                                               wallet={wallet}
                                               LoadingState={loadingLP}
+                                              refreshSpecialData={refreshSpecialData}
                                               contractID={2}
                                           />
                                       ))

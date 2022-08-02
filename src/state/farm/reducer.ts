@@ -9,10 +9,11 @@ import {
   updatePoolId,
   updateFarmProductLiquidity,
   updateProductStaked,
+  setLoadingState
 } from "./actions";
 
 export interface farmStateInterface {
-  loading?: boolean;
+  loadingValue?: boolean;
   error?: any;
   contents: Array<{
     id: string;
@@ -37,7 +38,7 @@ export interface farmStateInterface {
 }
 
 export const initialState: farmStateInterface = {
-  loading: false,
+  loadingValue: false,
   error: null,
   contents: [
     // {
@@ -67,7 +68,7 @@ export const initialState: farmStateInterface = {
       earn: "RGP",
       type: "RGP",
       ARYValue: "0",
-      totalLiquidity: "111", //"1223",
+      totalLiquidity: "", //"1223",
       tokensStaked: ["RGP", "0"],
       RGPEarned: "0",
       availableToken: "",
@@ -186,5 +187,9 @@ export default createReducer(initialState, (builder) =>
       poolIds.forEach((item, index) => {
         state.contents[index].pId = item;
       });
+    })
+    .addCase(setLoadingState, (state, action) => {
+      
+      state.loadingValue = !state.loadingValue;
     })
 );
