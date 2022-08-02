@@ -588,7 +588,6 @@ const ShowProductFarmDetails = ({
       fontSize='16px'
       _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
       onClick={() => {
-        alert(12388)
         GButtonIntialized("approval",content.deposit,"v2")
         approveLPToken(LPToken)}}
     >
