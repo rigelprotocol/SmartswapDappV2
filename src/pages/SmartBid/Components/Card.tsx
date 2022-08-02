@@ -1,13 +1,14 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {Box, Text, Flex, Image, HStack, Icon, Skeleton, useMediaQuery} from '@chakra-ui/react';
 import {MdPeopleOutline, AiOutlineGift, RiMedalFill} from "react-icons/all";
 import {Link} from 'react-router-dom';
 import {useSmartBid} from "../../../hooks/useSmartBid";
-import {NftProps} from "../../Nft/ViewNFT";
 import {RigelSmartBid, RigelSmartBidTwo} from "../../../utils/Contracts";
 import {SMARTBID1, SMARTBID2} from "../../../utils/addresses";
-import {getERC20Token} from "../../../utils/utilsFunctions";
+import {getERC20Token, useProvider} from "../../../utils/utilsFunctions";
 import {useActiveWeb3React} from "../../../utils/hooks/useActiveWeb3React";
+import {useSelector} from "react-redux";
+import {RootState} from "../../../state";
 
 export type CardDetails = {
     exclusive: boolean,
@@ -38,26 +39,32 @@ const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDe
 
     const { loadData , bidTime } = useSmartBid(id, exclusive);
     const { chainId, library } = useActiveWeb3React();
+    const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
+
+    const {prov} = useProvider();
+    const lib = library ? library : prov;
 
     const [symbol, setSymbol] = useState('');
 
-    useEffect(() => {
+
+    useMemo(() => {
         const getTokenSymbol = async () => {
             try {
                 if (exclusive) {
-                    const bidContract = await RigelSmartBid(SMARTBID1[chainId as number], library);
+
+                    const bidContract = await RigelSmartBid(SMARTBID1[ChainId as number], lib);
                     const bidToken = await bidContract.request_token_info(id);
 
-                    const token = await getERC20Token(bidToken.token, library);
+                    const token = await getERC20Token(bidToken.token, lib);
 
                     const [tokenSymbol] = await Promise.all([token.symbol()]);
                     setSymbol(tokenSymbol);
 
                 } else {
-                    const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
+                    const bidContract = await RigelSmartBidTwo(SMARTBID2[ChainId as number], lib);
                     const bidToken = await bidContract.requestToken(id);
 
-                    const token = await getERC20Token(bidToken._token, library);
+                    const token = await getERC20Token(bidToken._token, lib);
 
                     const [tokenSymbol] = await Promise.all([token.symbol()]);
                     setSymbol(tokenSymbol);
@@ -69,7 +76,7 @@ const SmartBidCard = ({exclusive, title, image, tileColor, bgColor, id} : CardDe
         };
         getTokenSymbol();
 
-    }, []);
+    }, [ChainId, library]);
 
 
 

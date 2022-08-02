@@ -2,7 +2,7 @@ import {useEffect} from "react";
 import {RigelNFT, RigelNFTTwo} from "../utils/Contracts";
 import { SMARTSWAPNFTSALES, SMARTSWAPNFTTWO} from "../utils/addresses";
 import {useActiveWeb3React} from "../utils/hooks/useActiveWeb3React";
-import {getERC20Token} from "../utils/utilsFunctions";
+import {getERC20Token, useProvider} from "../utils/utilsFunctions";
 import {useSelector} from "react-redux";
 import {RootState} from "../state";
 import {formatAmount} from "../utils/hooks/useAccountHistory";
@@ -147,32 +147,45 @@ export const useNFTAllowance = (
 
 
 export const useNftName =  (id: number) => {
-    const { chainId, library, account } = useActiveWeb3React();
+    const { chainId, library } = useActiveWeb3React();
     const [name, setName] = useState('');
     const [nftImage, setNftImage] = useState('');
     const [loading, setLoading] = useState(false);
+    const [nftId, setNftId, nftIdRef] = useState<number[]>([]);
+
+    const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
+    const {prov} = useProvider();
+    const lib = library ? library : prov;
 
     let validSmartAddress: string;
-    if (SMARTSWAPNFTTWO[chainId as number] !== "0x") {
-        validSmartAddress = SMARTSWAPNFTTWO[chainId as number];
+    if (SMARTSWAPNFTTWO[ChainId as number] !== "0x") {
+        validSmartAddress = SMARTSWAPNFTTWO[ChainId as number];
     }
 
     useEffect(() => {
         setLoading(true);
         const fetchDetails = async () => {
-            if (id) {
-                    try {
-                        const nftContract = await RigelNFTTwo(validSmartAddress, library);
 
-                        const nftDetails = await nftContract.uri(id);
+            if (ChainId === SupportedChainId.POLYGONTEST || ChainId === Number(SupportedChainId.POLYGON)) {
+                const nftArray = getNftTokenPolygon(id);
+                setNftId(nftArray);
+            } else if (ChainId === SupportedChainId.BINANCETEST || ChainId === Number(SupportedChainId.BINANCE)) {
+                const nftArray = getNftToken(id);
+                setNftId(nftArray);
+            }
+
+                    try {
+                        const nftContract = await RigelNFTTwo(validSmartAddress, lib);
+
+                        const nftDetails = await nftContract.uri(nftIdRef.current[0]);
                         const newArray = nftDetails.split('/');
 
                         let url;
 
-                        if (chainId === SupportedChainId.BINANCETEST) {
-                            url = `https://ipfs.io/ipfs/${newArray[2]}/${id}.json`;
+                        if (ChainId === SupportedChainId.BINANCETEST) {
+                            url = `https://ipfs.io/ipfs/${newArray[2]}/${nftIdRef.current[0]}.json`;
                         } else {
-                            url = `https://ipfs.io/ipfs/${newArray[2]}/RigelJson/${id}.json`;
+                            url = `https://ipfs.io/ipfs/${newArray[2]}/RigelJson/${nftIdRef.current[0]}.json`;
                         }
                         const data = await fetch(url);
                         const jsonData = await data.json();
@@ -183,22 +196,22 @@ export const useNftName =  (id: number) => {
                         const imageArr = jsonData.image.split('/');
                         let imageUrl;
 
-                        if (chainId === SupportedChainId.BINANCETEST) {
-                            imageUrl = `https://ipfs.io/ipfs/${imageArr[2]}/${id}.png`;
+                        if (ChainId === SupportedChainId.BINANCETEST) {
+                            imageUrl = `https://ipfs.io/ipfs/${imageArr[2]}/${nftIdRef.current[0]}.png`;
                         } else {
-                            imageUrl = `https://ipfs.io/ipfs/${imageArr[2]}/Rigel/${id}.png`;
+                            imageUrl = `https://ipfs.io/ipfs/${imageArr[2]}/Rigel/${nftIdRef.current[0]}.png`;
                         }
                         setNftImage(imageUrl);
                         setLoading(false);
 
                     } catch (e) {
-                        console.log(e)
+                        console.log(e);
+                        setLoading(false);
                     }
-            }
         };
         fetchDetails();
 
-    }, [id, account, chainId]);
+    }, [ChainId, library]);
 
     return {name, nftImage, loading}
 

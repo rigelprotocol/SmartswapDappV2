@@ -4,35 +4,37 @@ import {RootState} from "../state";
 import { SMARTBID1, SMARTBID2} from "../utils/addresses";
 import {useEffect} from "react";
 import {RigelSmartBid, RigelSmartBidTwo} from "../utils/Contracts";
-import {getERC20Token} from "../utils/utilsFunctions";
+import {getERC20Token, useProvider} from "../utils/utilsFunctions";
 import {ethers} from "ethers";
 import {SmartBidWinners} from "../pages/SmartBid/Components/cardData";
 import useState from "react-usestateref";
 
 
 export const useSmartBid = (id: number, exclusive: boolean) => {
-    const {chainId, library, account} = useActiveWeb3React();
+    const {library, account} = useActiveWeb3React();
 
 
     const [bidTime, setBidTime] = useState(0);
     const [loadData, setLoadData] = useState(false);
     const [bidDetails, setBidDetails] = useState({initial: '', max: 0});
     const [addresses, setAddresses] = useState(3);
-    const [rewardArray, setRewardArray] = useState<string[]>(  []);
+    const [rewardArray, setRewardArray] = useState<string[]>([]);
     const [totalBid, setTotalBid] = useState('');
 
     const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
     const stateChanged: boolean = trxState === 2;
-
+    const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
+    const {prov} = useProvider();
 
     useEffect(() => {
         setLoadData(true);
+        const lib = library ? library : prov;
 
         const fetchBidData = async () => {
             if (exclusive) {
-                if (chainId !== undefined) {
+                if (ChainId !== undefined) {
                     try {
-                        const bidContract = await RigelSmartBid(SMARTBID1[chainId as number], library);
+                        const bidContract = await RigelSmartBid(SMARTBID1[ChainId as number], lib);
                         const bidData = await bidContract.request_data_in_Bidding(id);
                         setBidTime(bidData.timeOut.toString());
                         setAddresses(bidData.numberOfRandomAddress.toString());
@@ -56,9 +58,9 @@ export const useSmartBid = (id: number, exclusive: boolean) => {
                     }
                 }
             } else {
-                if (chainId !== undefined) {
+                if (ChainId !== undefined) {
                     try {
-                        const bidContract = await RigelSmartBidTwo(SMARTBID2[chainId as number], library);
+                        const bidContract = await RigelSmartBidTwo(SMARTBID2[ChainId as number], lib);
                         const bidData = await bidContract.request_data_in_Bidding(id);
                         setBidTime(bidData.timeOut.toString());
                         setAddresses(bidData.numberOfRandomAddress.toString());
@@ -85,9 +87,7 @@ export const useSmartBid = (id: number, exclusive: boolean) => {
         };
         fetchBidData();
 
-
-
-    }, [account, chainId, stateChanged]);
+    }, [account, ChainId, stateChanged, library]);
 
     return {loadData, bidTime, bidDetails, addresses, rewardArray, totalBid}
 };
