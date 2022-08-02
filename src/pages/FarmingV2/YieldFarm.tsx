@@ -18,6 +18,7 @@ const YieldFarm = ({
   farmDataLoading,
   wallet,
   URLReferrerAddress,
+  refreshSpecialData,
   LoadingState,
   section,
     contractID
@@ -36,6 +37,7 @@ const YieldFarm = ({
     poolAllowance: any;
     RGPEarned: string;
     poolVersion: number | string;
+    type?:string
   };
   farmDataLoading: boolean;
   content2?: {
@@ -45,12 +47,13 @@ const YieldFarm = ({
     symbol0: string;
     symbol1: string;
     earn: string;
-    type: string;
     totalLiquidity: number;
     LPLocked: number;
     APY: number;
     address: string;
+    type?:string
   };
+  refreshSpecialData:()=>void;
   wallet: any;
   URLReferrerAddress: string;
   LoadingState: boolean;
@@ -283,6 +286,7 @@ const YieldFarm = ({
                   // content2={content2}
                   LoadingState={LoadingState}
                   section={section}
+                  refreshSpecialData={() =>refreshSpecialData()}
                   // content2={content2}
                   // showYieldfarm={loading}
                   wallet={wallet}

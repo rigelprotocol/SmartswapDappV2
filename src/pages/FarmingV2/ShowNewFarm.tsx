@@ -1000,18 +1000,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
             try {
                 if (parseFloat(content.tokenStaked[1]) == 0) {
                     if (parseFloat(RGPBalance) < parseFloat(farmingFee)) {
-                        // alert({
-                        //   title: "Insufficient Balance",
-                        //   body: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
-                        //   type: "error",
-                        // });
-                        // dispatch(
-                        //   addToast({
-                        //     message: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
-                        //     error: true
-                        //   })
-                        // );
-                        // throw new Error()
+                        
                         dispatch(
                             setOpenModal({
                                 trxState: TrxState.TransactionFailed,

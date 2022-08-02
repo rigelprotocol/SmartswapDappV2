@@ -18,3 +18,4 @@ export const updateFarmAllowances = createAction<any[]>('farm/updateFarmAllowanc
 export const updateFarmProductAllowances = createAction<any[]>('farm/updateFarmProductAllowances');
 export const updateFarmBalances = createAction<any[]>('farm/updateFarmBalances');
 export const updatePoolId = createAction<number[]>('farm/updatePoolId');
+export const setLoadingState = createAction('farm/setLoadingState');

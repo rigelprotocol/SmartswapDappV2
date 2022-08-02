@@ -32,6 +32,7 @@ import {DARK_THEME, farmSection} from "./index";
 import {addToast} from "../../components/Toast/toastSlice";
 import {useDispatch, useSelector} from "react-redux";
 import {setOpenModal, TrxState} from "../../state/application/reducer";
+import { setLoadingState } from "../../state/farm/actions";
 import {ExplorerDataType, getExplorerLink} from "../../utils/getExplorerLink";
 import {
   MasterChefV2Contract,
@@ -39,33 +40,14 @@ import {
   RGPSpecialPool2,
   rigelToken,
   smartSwapLPTokenPoolOne,
-  smartSwapLPTokenPoolThree,
   smartSwapLPTokenPoolTwo,
-  smartSwapLPTokenV2PoolEight,
-  smartSwapLPTokenV2PoolFive,
-  smartSwapLPTokenV2PoolFour,
-  smartSwapLPTokenV2PoolNine,
-  smartSwapLPTokenV2PoolSeven,
-  smartSwapLPTokenV2PoolSix,
-  smartSwapLPTokenV2PoolThirteen,
-  smartSwapLPTokenV2PoolTwelve,
 } from "../../utils/Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
   RGP,
   RGPSPECIALPOOLADDRESSES,
   RGPSPECIALPOOLADDRESSES2,
-  SMARTSWAPLP_TOKEN12ADDRESSES,
-  SMARTSWAPLP_TOKEN13ADDRESSES,
   SMARTSWAPLP_TOKEN1ADDRESSES,
-  SMARTSWAPLP_TOKEN2ADDRESSES,
-  SMARTSWAPLP_TOKEN3ADDRESSES,
-  SMARTSWAPLP_TOKEN4ADDRESSES,
-  SMARTSWAPLP_TOKEN5ADDRESSES,
-  SMARTSWAPLP_TOKEN6ADDRESSES,
-  SMARTSWAPLP_TOKEN7ADDRESSES,
-  SMARTSWAPLP_TOKEN8ADDRESSES,
-  SMARTSWAPLP_TOKEN9ADDRESSES,
 } from "../../utils/addresses";
 import {clearInputInfo, convertFromWei, convertToNumber} from "../../utils";
 import {useRGPBalance} from "../../utils/hooks/useBalances";
@@ -87,12 +69,12 @@ import {
   GFarmingSuccessTransaction
 } from "../../components/G-analytics/gFarming";
 import {ZERO_ADDRESS} from "../../constants";
-import {State} from "../../state/types";
 
 const ShowYieldFarmDetails = ({
   content,
   wallet,
   URLReferrerAddress,
+   refreshSpecialData,
   LoadingState,
   section,
   showYieldfarm,
@@ -111,9 +93,11 @@ const ShowYieldFarmDetails = ({
     poolAllowance: any;
     RGPEarned: string;
     poolVersion: number | string;
+    type?:string;
   };
   wallet: any;
   URLReferrerAddress:string;
+  refreshSpecialData:()=>void;
   LoadingState: boolean;
   section: string;
   showYieldfarm: boolean;
@@ -172,7 +156,6 @@ const ShowYieldFarmDetails = ({
 
 
 
-
   const closeModal = () => {
     GButtonIntialized("close unstaked",content.deposit,"v2")
     modal2Disclosure.onClose();
@@ -196,11 +179,14 @@ const ShowYieldFarmDetails = ({
   };
 useEffect(()=>{
   const checkEnoughApproval = (allowance: any, balance: any) => {
+    // console.log("checkEnoughApproval",allowance.toString(),balance);
     if (allowance && balance) {
 
-      let approve = content.type === "RGP"
-        ? allowance.gt(ethers.utils.parseEther(balance))
-        : parseFloat(allowance) >= parseFloat(depositTokenValue);
+      let approve = parseFloat(allowance) >= parseFloat(depositTokenValue);
+      // let approve = content.type === "RGP"
+      //   ? allowance.gte(ethers.utils.parseEther(balance))
+      //   : parseFloat(allowance) >= parseFloat(depositTokenValue);
+        console.log(parseFloat(allowance), parseFloat(depositTokenValue),{approve})
         approve ? setEnoughApproval(true) : setEnoughApproval(false)
     }
     return true;
@@ -214,8 +200,6 @@ useEffect(()=>{
           account,
           MASTERCHEFV2ADDRESSES[chainId as number]
         );
-        console.log({contract,account},contract.symbol())
-        console.log({rgpApproval},rgpApproval.toString())
         return !(rgpApproval.toString() <= 0);
       }
     };
@@ -240,6 +224,7 @@ useEffect(()=>{
           account,
           RGPSPECIALPOOLADDRESSES2[chainId as number]
         );
+        console.log({rgpApproval})
         return !(rgpApproval.toString() <= 0);
       }
     };
@@ -251,7 +236,9 @@ useEffect(()=>{
         const specialPoolV1Approval = await specialPoolV1Allowance(rgp);
         changeApprovalButton(true, specialPoolV1Approval);
       } else if (content.deposit === "RGP" && Number(content.id) === 13) {
+       
         const specialPoolV2Approval = await specialPoolV2Allowance(rgp);
+
         changeApprovalButton(true, specialPoolV2Approval);
       } else {
         const pool = await smartSwapLPTokenPoolTwo(content.address, library);
@@ -380,6 +367,7 @@ useEffect(()=>{
   };
 
   const setApprove = (val: string) => {
+    console.log({approveValueForOtherToken,approveValueForRGP})
     if (approveValueForOtherToken && approveValueForRGP) {
       GButtonClicked("unstake",content.deposit,"v2")
       modal2Disclosure.onOpen();
@@ -458,90 +446,21 @@ useEffect(()=>{
         const [
           rigel,
           pool1,
-          pool2,
-          pool3,
-          pool4,
-          pool5,
-          pool6,
-          pool7,
-          pool8,
-          pool9,
-          pool12,
-          pool13,
         ] = await Promise.all([
           rigelToken(RGP[chainId as number], library),
           smartSwapLPTokenPoolOne(
             SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
             library
           ),
-          smartSwapLPTokenPoolTwo(
-            SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenPoolThree(
-            SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenV2PoolFour(
-            SMARTSWAPLP_TOKEN4ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenV2PoolFive(
-            SMARTSWAPLP_TOKEN5ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenV2PoolSix(
-            SMARTSWAPLP_TOKEN6ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenV2PoolSeven(
-            SMARTSWAPLP_TOKEN7ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenV2PoolEight(
-            SMARTSWAPLP_TOKEN8ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenV2PoolNine(
-            SMARTSWAPLP_TOKEN9ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenV2PoolTwelve(
-            SMARTSWAPLP_TOKEN12ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenV2PoolThirteen(
-            SMARTSWAPLP_TOKEN13ADDRESSES[chainId as number],
-            library
-          ),
         ]);
 
         const [
           pool1Allowance,
-          pool2Allowance,
-          pool3Allowance,
-          pool4Allowance,
-          pool5Allowance,
-          pool6Allowance,
-          pool7Allowance,
-          pool8Allowance,
-          pool9Allowance,
-          pool12Allowance,
-          pool13Allowance,
         ] = await Promise.all([
           allowance(pool1),
-          allowance(pool2),
-          allowance(pool3),
-          allowance(pool4),
-          allowance(pool5),
-          allowance(pool6),
-          allowance(pool7),
-          allowance(pool8),
-          allowance(pool9),
-          allowance(pool12),
-          allowance(pool13),
         ]);
         let rigelAllowance;
+        let rigelAllowance2;
         if (RGPSPECIALPOOLADDRESSES[chainId as number]) {
           rigelAllowance = await rigel.allowance(
             account,
@@ -550,38 +469,25 @@ useEffect(()=>{
         } else {
           rigelAllowance = pool1Allowance;
         }
+        
+        if (RGPSPECIALPOOLADDRESSES2[chainId as number]) {
+          rigelAllowance2 = await rigel.allowance(
+            account,
+            RGPSPECIALPOOLADDRESSES2[chainId as number]
+          );
+        }
+
+
         if (Number(chainId) === Number(SupportedChainId.BINANCE)) {
           dispatch(
             updateFarmAllowances([
-              rigelAllowance,
-              pool2Allowance,
-              pool1Allowance,
-              pool3Allowance,
-              pool4Allowance,
-              pool5Allowance,
-              pool6Allowance,
-              pool7Allowance,
-              pool8Allowance,
-              pool9Allowance,
-              pool12Allowance,
-              pool13Allowance,
+              rigelAllowance2
             ])
           );
         } else {
           dispatch(
             updateFarmAllowances([
-              rigelAllowance,
-              pool2Allowance,
-              pool1Allowance,
-              pool3Allowance,
-              pool4Allowance,
-              pool5Allowance,
-              pool6Allowance,
-              pool7Allowance,
-              pool8Allowance,
-              pool9Allowance,
-              pool12Allowance,
-              pool13Allowance,
+              rigelAllowance2
             ])
           );
         }
@@ -919,6 +825,7 @@ useEffect(()=>{
 
           if (confirmations >= 1 && status) {
             GFarmingSuccessTransaction("special pool", "harvest", "RGP","v2")
+            refreshSpecialData()
             dispatch(
               setOpenModal({
                 trxState: TrxState.TransactionSuccessful,
@@ -927,6 +834,7 @@ useEffect(()=>{
                 )} RGP `,
               })
             );
+
           }
         } else {
           const lpTokens = await MasterChefV2Contract(
@@ -972,6 +880,7 @@ useEffect(()=>{
                 )} RGP `,
               })
             );
+            refreshSpecialData()
           }
 
           const explorerLink = getExplorerLink(
@@ -997,6 +906,7 @@ useEffect(()=>{
             message: `Transaction was not successful`,
           })
         );
+
       }
     }
   };
@@ -1007,18 +917,7 @@ useEffect(()=>{
       try {
         if (parseFloat(content.tokenStaked[1]) == 0) {
           if (parseFloat(RGPBalance) < parseFloat(farmingFee)) {
-            // alert({
-            //   title: "Insufficient Balance",
-            //   body: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
-            //   type: "error",
-            // });
-            // dispatch(
-            //   addToast({
-            //     message: `Insufficient RGP, you need at least ${farmingFee} RGP to enter this pool`,
-            //     error: true
-            //   })
-            // );
-            // throw new Error()
+            
             dispatch(
               setOpenModal({
                 trxState: TrxState.TransactionFailed,
@@ -1169,74 +1068,7 @@ useEffect(()=>{
     clearInputInfo(setDepositTokenValue, setDepositValue, "Confirm");
   };
 
-  //Deposit
-  // const confirmDeposit = async (val: any) => {
-  //   console.log("deposit", { val, content });
-  //   setDepositValue("Pending Confirmation");
-  //   dispatch(
-  //     setOpenModal({
-  //       message: `Staking ${depositTokenValue} ${val}`,
-  //       trxState: TrxState.WaitingForConfirmation,
-  //     })
-  //   );
-  //   try {
-  //     if (account) {
-  //       if (val === "RGP" && Number(content.id) === 1) {
-  //         await RGPuseStake(depositTokenValue);
-  //       } else if (val === "RGP" && Number(content.id) === 13) {
-  //         await RGPuseStakeV2(depositTokenValue, referrerAddress);
-  //       } else if (
-  //         val === "RGP-BNB" ||
-  //         val === "RGP-USDT" ||
-  //         val === "USDT-RGP"
-  //       ) {
-  //         await LPDeposit(2);
-  //       } else if (
-  //         val === "BNB-BUSD" ||
-  //         val === "RGP-USDC" ||
-  //         val === "ROSE-USDT"
-  //       ) {
-  //         await LPDeposit(3);
-  //       } else if (
-  //         val === "RGP-BUSD" ||
-  //         val === "MATIC-RGP" ||
-  //         val === "RGP-MATIC" ||
-  //         val === "RGP-ROSE" ||
-  //         val === "ROSE-RGP"
-  //       ) {
-  //         await LPDeposit(1);
-  //       } else if (val === "AXS-RGP") {
-  //         await LPDeposit(4);
-  //       } else if (val === "AXS-BUSD") {
-  //         await LPDeposit(5);
-  //       } else if (val === "PLACE-RGP") {
-  //         await LPDeposit(6);
-  //       } else if (val === "MHT-RGP") {
-  //         await LPDeposit(7);
-  //       } else if (val === "SHIB-RGP") {
-  //         await LPDeposit(8);
-  //       } else if (val === "MBOX-RGP") {
-  //         await LPDeposit(9);
-  //       } else if (val === "WARS-RGP") {
-  //         await LPDeposit(12);
-  //       } else if (val === "METO-RGP") {
-  //         await LPDeposit(13);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     dispatch(
-  //       setOpenModal({
-  //         message: `Failed to deposit LP tokens.`,
-  //         trxState: TrxState.TransactionFailed,
-  //       })
-  //     );
-  //   }
-  //   setTimeout(() => closeDepositeModal(), 400);
-  //   //setDeposit(true);
-
-  //   clearInputInfo(setDepositTokenValue, setDepositValue, "Confirm");
-  // };
+ 
 
   const RGPuseStake = async () => {
     if (account) {
@@ -1295,7 +1127,6 @@ useEffect(()=>{
       }
     }
   };
-
   const RGPuseStakeV2 = async () => {
     if (account) {
       try {
@@ -1314,7 +1145,10 @@ useEffect(()=>{
           }
         );
         await fetchTransactionData(data);
-        GFarmingSuccessTransaction("special pool", "stake", "RGP","v2")
+        GFarmingSuccessTransaction("special pool", "stake", "RGP","v2") //122
+      
+      refreshSpecialData()
+        
         dispatch(
           setOpenModal({
             trxState: TrxState.TransactionSuccessful,
@@ -1322,6 +1156,7 @@ useEffect(()=>{
           })
         );
         // callRefreshFarm(confirmations, status);
+        setReload(true); 
       } catch (error:any) {
         console.log(error);
         GFarmingFailedTransaction("special pool", "stake", error.message, "RGP","v2")
@@ -1379,6 +1214,7 @@ useEffect(()=>{
             message: `Successfully unstaked ${unstakeToken} RGP `,
           })
         );
+        refreshSpecialData()
         // dispatch the getTokenStaked action from here when data changes
         //  callRefreshFarm(confirmations, status);
       } catch (e:any) {
@@ -1436,6 +1272,8 @@ useEffect(()=>{
             message: `Successfully unstaked ${unstakeToken} RGP `,
           })
         );
+        
+        refreshSpecialData()
         // dispatch the getTokenStaked action from here when data changes
         //  callRefreshFarm(confirmations, status);
       } catch (error:any) {
