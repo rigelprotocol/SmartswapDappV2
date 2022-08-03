@@ -100,6 +100,7 @@ export function Index() {
   const [oldestToNewest, setOldestToNewest] = useState(true);
   const [range0, setRange0] = useState<number | string>(0);
   const [range1, setRange1] = useState<number | string>(10000);
+  const [refreshSpecialPool,setRefreshSpecialPool] = useState(false);
   const [searchedFarmData, setSearchedFarmData] =
     useState<farmStateInterface>();
 
@@ -108,9 +109,13 @@ export function Index() {
   const [keyword, setKeyword] = useState("");
 
 
+const refreshSpecialData =()=>{
+  setRefreshSpecialPool(!refreshSpecialPool);
+}
 
   // 👇 look here
   const previousKeyword = usePrevious(keyword);
+  
 
   const filter = useSearch();
   useClearFarm();
@@ -930,6 +935,7 @@ export function Index() {
                             content2={content}
                             key={content?.id}
                             section={"search"}
+                            refreshSpecialData={refreshSpecialData}
                             wallet={wallet}
                             LoadingState={loadingState}
                           />
@@ -942,6 +948,7 @@ export function Index() {
                             farmDataLoading={farmDataLoading}
                             content2={content}
                             key={content?.id}
+                            refreshSpecialData={refreshSpecialData}
                             section={"search"}
                             wallet={wallet}
                             LoadingState={loadingState}
@@ -957,6 +964,7 @@ export function Index() {
                             farmDataLoading={farmDataLoading}
                             content2={content}
                             section={"filter"}
+                            refreshSpecialData={refreshSpecialData}
                             key={content?.id}
                             wallet={wallet}
                             LoadingState={loadingState}
@@ -970,6 +978,7 @@ export function Index() {
                             farmDataLoading={farmDataLoading}
                             content2={content}
                             key={content?.id}
+                            refreshSpecialData={refreshSpecialData}
                             section={"filter"}
                             wallet={wallet}
                             LoadingState={loadingState}
@@ -984,6 +993,7 @@ export function Index() {
                           farmDataLoading={farmDataLoading}
                           content2={content}
                           key={content?.id}
+                          refreshSpecialData={refreshSpecialData}
                           section={"normal"}
                           wallet={wallet}
                           LoadingState={loadingState}
@@ -995,6 +1005,7 @@ export function Index() {
                           farmDataLoading={farmDataLoading}
                           content2={content}
                           key={content?.id}
+                          refreshSpecialData={refreshSpecialData}
                           section={"normal"}
                           wallet={wallet}
                           LoadingState={loadingState}
@@ -1069,6 +1080,7 @@ export function Index() {
                       <YieldFarm
                         farmDataLoading={farmDataLoading}
                         content={content}
+                        refreshSpecialData={refreshSpecialData}
                         key={content.pid}
                         wallet={wallet}
                         URLReferrerAddress={refAddress}
@@ -1144,6 +1156,7 @@ export function Index() {
                         farmDataLoading={farmDataLoading}
                         content={content}
                         key={content.pid}
+                        refreshSpecialData={refreshSpecialData}
                         wallet={wallet}
                         URLReferrerAddress={refAddress}
                       />
@@ -1218,6 +1231,7 @@ export function Index() {
                         farmDataLoading={farmDataLoading}
                         content={content}
                         key={content.pid}
+                        refreshSpecialData={refreshSpecialData}
                         wallet={wallet}
                       />
                     ) : null
@@ -1445,6 +1459,7 @@ export function Index() {
                                           section={"search"}
                                           wallet={wallet}
                                           LoadingState={loadingLP}
+                                         refreshSpecialData={refreshSpecialData}
                                       />
                                   )
                               )
@@ -1458,6 +1473,7 @@ export function Index() {
                                           section={"search"}
                                           wallet={wallet}
                                           LoadingState={loadingLP}
+                                         refreshSpecialData={refreshSpecialData}
                                       />
                                   )
                               )
@@ -1473,6 +1489,7 @@ export function Index() {
                                           key={content?.id}
                                           wallet={wallet}
                                           LoadingState={loadingLP}
+                                         refreshSpecialData={refreshSpecialData}
                                       />
                                   )
                               )
@@ -1486,6 +1503,7 @@ export function Index() {
                                           section={"filter"}
                                           wallet={wallet}
                                           LoadingState={loadingLP}
+                                         refreshSpecialData={refreshSpecialData}
                                       />
                                   )
                               )
@@ -1501,6 +1519,7 @@ export function Index() {
                                       wallet={wallet}
                                       LoadingState={loadingLP}
                                       contractID={1}
+                                      refreshSpecialData={refreshSpecialData}
                                   />
                               ))
                           )
@@ -1514,6 +1533,7 @@ export function Index() {
                                       wallet={wallet}
                                       LoadingState={loadingLP}
                                       contractID={1}
+                                      refreshSpecialData={refreshSpecialData}
                                   />
                               ))
                           )
@@ -1649,6 +1669,7 @@ export function Index() {
                                           section={"search"}
                                           wallet={wallet}
                                           LoadingState={loadingState}
+                                      refreshSpecialData={refreshSpecialData}
                                       />
                                   )
                               )
@@ -1661,6 +1682,7 @@ export function Index() {
                                           key={content?.id}
                                           section={"search"}
                                           wallet={wallet}
+                                           refreshSpecialData={refreshSpecialData}
                                           LoadingState={loadingState}
                                       />
                                   )
@@ -1676,6 +1698,7 @@ export function Index() {
                                           section={"filter"}
                                           key={content?.id}
                                           wallet={wallet}
+                                          refreshSpecialData={refreshSpecialData}
                                           LoadingState={loadingState}
                                       />
                                   )
@@ -1689,6 +1712,7 @@ export function Index() {
                                           key={content?.id}
                                           section={"filter"}
                                           wallet={wallet}
+                                          refreshSpecialData={refreshSpecialData}
                                           LoadingState={loadingState}
                                       />
                                   )
@@ -1705,6 +1729,7 @@ export function Index() {
                                               wallet={wallet}
                                               LoadingState={loadingLP}
                                               contractID={2}
+                                              refreshSpecialData={refreshSpecialData}
                                           />
                                       ))
                                   )
@@ -1717,6 +1742,7 @@ export function Index() {
                                               section={"normal"}
                                               wallet={wallet}
                                               LoadingState={loadingLP}
+                                              refreshSpecialData={refreshSpecialData}
                                               contractID={2}
                                           />
                                       ))

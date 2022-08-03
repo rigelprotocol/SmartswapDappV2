@@ -67,10 +67,12 @@ type FarmDetails = {
   };
   URLReferrerAddress?:string;
   wallet:any;
+  refreshSpecialData:() =>void
 }
 const ShowProductFarmDetails = ({
   content,
   URLReferrerAddress,
+  refreshSpecialData,
   wallet}:FarmDetails)=>{
 
   const { account, chainId, library } = useActiveWeb3React();
@@ -283,6 +285,7 @@ const ShowProductFarmDetails = ({
         );
         const { confirmations, status } = await fetchTransactionData(data);
         GFarmingSuccessTransaction("special pool", "unstake", "RGP","v2")
+        refreshSpecialData()
         dispatch(
           setOpenModal({
             trxState: TrxState.TransactionSuccessful,
@@ -350,85 +353,6 @@ const ShowProductFarmDetails = ({
     }
   };
 
-  // const tokensWithdrawal = async (pid: number,val:string) => {
-  //   if (account) {
-  //     try {
-  //       const lpTokens = await MasterChefV2Contract(
-  //         MASTERCHEFV2ADDRESSES[chainId as number],
-  //         library
-  //       );
-
-  //       const { format1, format2, format3 } = await calculateGas(
-  //         userGasPricePercentage,
-  //         library,
-  //         chainId as number
-  //       );
-
-  //       const isEIP1559 = await library?.getFeeData();
-  //       const data = await lpTokens.withdraw(
-  //         pid,
-  //         ethers.utils.parseEther(unstakeToken.toString()),
-  //         {
-  //           from: account,
-  //           maxPriorityFeePerGas:
-  //             isEIP1559 && chainId === 137
-  //               ? ethers.utils.parseUnits(format1, 9).toString()
-  //               : null,
-  //           maxFeePerGas:
-  //             isEIP1559 && chainId === 137
-  //               ? ethers.utils.parseUnits(format2, 9).toString()
-  //               : null,
-  //           gasPrice:
-  //             chainId === 137
-  //               ? null
-  //               : chainId === 80001
-  //               ? null
-  //               : ethers.utils.parseUnits(format3, 9).toString(),
-  //         }
-  //       );
-  //       const { confirmations, status, logs } = await fetchTransactionData(
-  //         data
-  //       );
-  //       const { hash } = data;
-  //       const amountUnstaked = convertToNumber(logs[1].data);
-
-  //       const explorerLink = getExplorerLink(
-  //         chainId as number,
-  //         hash,
-  //         ExplorerDataType.TRANSACTION
-  //       );
-  //       GFarmingSuccessTransaction("product token", "unstake", val,"v2")
-  //       dispatch(
-  //         setOpenModal({
-  //           trxState: TrxState.TransactionSuccessful,
-  //           message: `Successfully unstaked ${convertFromWei(
-  //             amountUnstaked
-  //           )} RGP `,
-  //         })
-  //       );
-
-  //       dispatch(
-  //         addToast({
-  //           message: `Successfully unstaked ${convertFromWei(
-  //             amountUnstaked
-  //           )} RGP `,
-  //           URL: explorerLink,
-  //         })
-  //       );
-  //       setReload(true);
-  //       // dispatch the getTokenStaked action from here when data changes
-  //       //callRefreshFarm(confirmations, status);
-  //     } catch (e:any) {
-  //       console.log(e);
-  //       GFarmingFailedTransaction("Product farm | auto period", "unstake", e.message, val,"v1")
-  //       dispatch(
-  //         setOpenModal({
-  //           trxState: TrxState.TransactionFailed,
-  //         })
-  //       );
-  //     }
-  //   }
-  // };
 
   const openDepositeModal = () => {
     //if (approveValueForOtherToken && approveValueForRGP) {
@@ -582,6 +506,7 @@ const ShowProductFarmDetails = ({
         );
         await fetchTransactionData(data);
         GFarmingSuccessTransaction("Product farm | auto period", "stake", "RGP","v1")
+        refreshSpecialData()
         dispatch(
           setOpenModal({
             trxState: TrxState.TransactionSuccessful,
@@ -624,6 +549,7 @@ const ShowProductFarmDetails = ({
           await RGPProductStake();
         // } else {
         //   LPDeposit(content.id,val);
+      
         // }
       }
     } catch (error:any) {
@@ -662,7 +588,6 @@ const ShowProductFarmDetails = ({
       fontSize='16px'
       _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
       onClick={() => {
-        alert(12388)
         GButtonIntialized("approval",content.deposit,"v2")
         approveLPToken(LPToken)}}
     >
