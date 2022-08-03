@@ -23,6 +23,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../state";
 import {setChainId} from "../../state/chainId/actions";
 import {connectorKey} from "../../connectors";
+import {useLocation, useHistory} from 'react-router-dom';
+import {CHAINDETAILS} from "../../utils/addresses";
 
 function NetworkIndicator() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -31,6 +33,8 @@ function NetworkIndicator() {
   const buttonBgColor = useColorModeValue("#EBF6FE", "#213345");
   const textColor = useColorModeValue("#319EF6", "#4CAFFF");
   const dispatch = useDispatch();
+  const location = useLocation();
+  const history = useHistory();
 
   const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
 
@@ -40,6 +44,12 @@ function NetworkIndicator() {
       },
       [dispatch]
   );
+
+  function useQuery() {
+    return new URLSearchParams(location.search);
+  }
+  let query = useQuery();
+  const param = query.get('chain');
 
   const info = chainId ? CHAIN_INFO[chainId] : CHAIN_INFO[ChainId as number];
   const connect = window.localStorage.getItem(connectorKey);
@@ -51,17 +61,45 @@ function NetworkIndicator() {
       handleUpdateChainId(chainId)
     }
     if (!connect && !ChainId) {
-      handleUpdateChainId(56)
+      handleUpdateChainId(56);
     }
 
   },[chainId]);
 
+  useEffect(() => {
+    if (!param && !chainId) {
+      history.push(`${location.pathname}?chain=bsc`)
+    }
+
+    if (chainId) {
+      history.push(`${location.pathname}?chain=${CHAINDETAILS[chainId]}`);
+    }
+
+    if (!connect && param) {
+      if (param === 'bsc') {
+        handleUpdateChainId(56);
+      } else if (param === 'pn') {
+        handleUpdateChainId(137);
+      } else if (param === 'oasis') {
+        handleUpdateChainId(42262);
+      } else {
+        history.push(`${location.pathname}?chain=bsc`)
+      }
+    }
+
+  },[param, chainId]);
+
   const changeNetwork = async (network: string, id: number) => {
     onClose();
-    switchNetwork(network, account as string, library);
+    switchNetwork(network, account as string, library).then(() => {
+      history.push(`${location.pathname}?chain=${CHAINDETAILS[id]}`);
+    });
+
 
     if (!chainId) {
-      handleUpdateChainId(id)
+      handleUpdateChainId(id);
+      history.push(`${location.pathname}?chain=${CHAINDETAILS[id]}`);
+
     }
   };
 
