@@ -4,7 +4,7 @@ import {
     Button,
     Center,
     Flex,
-    Image, Skeleton, Spinner,
+    Image, Skeleton,
     Stack,
     Text,
     useColorModeValue, useMediaQuery,
@@ -16,7 +16,7 @@ import {NftProps} from "../../ViewNFT";
 import {useActiveWeb3React} from "../../../../utils/hooks/useActiveWeb3React";
 
 
-export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, priceRGP, isFeatured = false }: NftProps) {
+export const FeaturedNft = function ({ id  }: {id: number}) {
 
     const [ purchaseModal,setOpenPerchaseModal] = useState(false);
 
@@ -28,7 +28,7 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
 
     const { firstToken, secondToken ,prices, unsoldItems , nftId, loadData} = useNft(id);
 
-    const {name, nftImage, loading} = useNftName(nftId[0]);
+    const {name, nftImage, loading} = useNftName(id);
 
     const rgpPrice = (100.54 * parseFloat(prices.firstTokenPrice)).toFixed(2);
 
@@ -44,9 +44,7 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
 
     return (
         <>
-            {!account ? (<Flex justifyContent={'center'} my={4} alignItems={'center'}>
-                     <Text color={textColor} fontWeight={800} fontSize={'40px'}>Connect Wallet to View NFTs</Text>
-                </Flex>) :
+
                 <Box>
                     <Text color={textColor} fontWeight={700} py={6} fontSize={24}>
                         Featured NFT
@@ -84,45 +82,49 @@ export const FeaturedNft = function ({ nftName, image, number, id, priceUSD, pri
                                     {name}
                                 </Text>
 
-                                <Text align={'left'} pt={10} textColor={lightTextColor}>
-                                    Price
-                                </Text>
+                                { account &&
+                                (<>
+                                        <Text align={'left'} pt={10} textColor={lightTextColor}>
+                                            Price
+                                        </Text>
 
-                                {loadData ? <Skeleton height={'30px'} w={'100px'}/> :
-                                    <Text color={textColor}  fontWeight={700} fontSize={28}>
-                                        {prices.secondTokenPrice} USD
-                                    </Text>
-                                }
+                                        {loadData ? <Skeleton height={'30px'} w={'100px'}/> :
+                                            <Text color={textColor}  fontWeight={700} fontSize={28}>
+                                                {prices.secondTokenPrice} USD
+                                            </Text>
+                                        }
 
-                                {loadData ?  <Skeleton height={'30px'} w={'100px'}/> :
-                                    <Text align={'left'}  textColor={lightTextColor}>
-                                        {(100.54 * parseFloat(prices.firstTokenPrice)).toFixed(2)} RGP
-                                    </Text>
-                                }
+                                        {loadData ?  <Skeleton height={'30px'} w={'100px'}/> :
+                                            <Text align={'left'}  textColor={lightTextColor}>
+                                                {(100.54 * parseFloat(prices.firstTokenPrice)).toFixed(2)} RGP
+                                            </Text>
+                                        }
 
-                                <Flex  pt={20} alignContent="center" >
-                                    <Button  onClick={()=>setOpenPerchaseModal(true) } width={'45%'} variant={'brand'}>Buy NFT</Button>
-                                    <Button
-                                        ml={5}
-                                        textColor={'#319EF6'}
-                                        borderRadius="6px"
-                                        borderColor={'#319EF6'}
-                                        variant='outline'
-                                        width={'45%'}
-                                    >
-                                        <Link to={{
-                                            pathname: `/nfts/${id}`,
-                                            state: data
-                                        }}>View NFT</Link>
-                                    </Button>
-                                </Flex>
+                                        <Flex  pt={20} alignContent="center" >
+                                            <Button  onClick={()=>setOpenPerchaseModal(true) } width={'45%'} variant={'brand'}>Buy NFT</Button>
+                                            <Button
+                                                ml={5}
+                                                textColor={'#319EF6'}
+                                                borderRadius="6px"
+                                                borderColor={'#319EF6'}
+                                                variant='outline'
+                                                width={'45%'}
+                                            >
+                                                <Link to={{
+                                                    pathname: `/nfts/${id}`,
+                                                    state: data
+                                                }}>View NFT</Link>
+                                            </Button>
+                                        </Flex>
+                                </>
+                                )}
 
                             </Stack>
                         </Stack>
                     </Center>
                     <ComfirmPurchase isOpen={purchaseModal} close={()=>setOpenPerchaseModal(false)} id={1} image={nftImage} name={name} />
                 </Box>
-            }
+
         </>
     )
 };

@@ -21,6 +21,7 @@ const ProductFarm = ({
   farmDataLoading,
   wallet,
   URLReferrerAddress,
+  refreshSpecialData,
   LoadingState,
   section,
 }: {
@@ -36,6 +37,7 @@ const ProductFarm = ({
     type:string
     RGPStaked:string
   };
+    refreshSpecialData:() => void
   farmDataLoading: boolean;
   wallet: any;
   URLReferrerAddress?: string;
@@ -222,6 +224,7 @@ const ProductFarm = ({
         // <Skeleton>
         <ShowProductFarmDetails
           content={content}
+          refreshSpecialData={refreshSpecialData}
           // content2={content2}
           LoadingState={LoadingState}
           section={section}

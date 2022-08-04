@@ -7,7 +7,7 @@ import {TokenAddressMap} from "../state/lists/hooks"
 import {useState, useEffect } from "react"
 import { checkSupportedIds } from "../connectors"
 import { isAddress } from "../utils"
-import { getERC20Token } from "../utils/utilsFunctions"
+import {getERC20Token} from "../utils/utilsFunctions"
 import { useNativeBalance } from "../utils/hooks/useBalances"
 import { useCombinedInactiveList } from "../state/lists/hooks"
 // reduce token map into standard address <-> Token mapping, optionally include user added tokens
