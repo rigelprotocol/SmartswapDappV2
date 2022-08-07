@@ -18,7 +18,7 @@ import { useLocation } from "react-router-dom";
 import BidModal from "./Components/BidModal";
 import {RigelNFTTwo, RigelSmartBidTwo, RigelSmartBid} from "../../utils/Contracts";
 import {SMARTBID2, SMARTBID1} from "../../utils/addresses";
-import {useDispatch, useSelector} from "react-redux";
+import { useSelector} from "react-redux";
 import {RootState} from "../../state";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 import {getERC20Token, useProvider} from "../../utils/utilsFunctions";
@@ -43,7 +43,6 @@ const BidDetails = () => {
 
 
     const [bidModal, setBidModal] = useState(false);
-    const dispatch = useDispatch();
 
     const { loadData , bidTime, bidDetails , addresses, rewardArray, totalBid} = useSmartBid(viewId, exc);
 
@@ -128,26 +127,6 @@ const BidDetails = () => {
         }, 1000);
 
     }, [bidTime]);
-
-    const [eventData, setEventData] = useState([]);
-
-    const checkEvents = async () => {
-        let bidContract;
-        if (exc) {
-            bidContract = await RigelSmartBid(SMARTBID1[ChainId as number], library);
-        } else {
-            bidContract = await RigelSmartBidTwo(SMARTBID2[ChainId as number], library);
-        }
-
-
-        const filter = bidContract.filters.bidding();
-        const events = await bidContract.queryFilter(filter, library.getBlockNumber().then((b) => b - 4000), "latest");
-        const sortedEvents = events.sort(function(x, y){
-            return y.blockNumber - x.blockNumber;
-        });
-        const tabEvent = sortedEvents.filter((item) => Number(item.args[1].toString()) === viewId);
-        setEventData(tabEvent);
-    };
 
     const [placeBid, setPlaceBid] = useState({address: '', id: 0});
     const [bidloadData, setBidLoadData] = useState(false);
@@ -278,7 +257,6 @@ const BidDetails = () => {
     useMemo(() => {
         const getBidEvent = async () => {
             try {
-                await checkEvents();
                 await nftCheck();
 
             } catch (e) {
@@ -407,7 +385,7 @@ const BidDetails = () => {
                             max={bidDetails.max.toString()}
                             tokenInfo={tokenInfo} address={tokenAddress} placeBid={placeBid} bidLoad={bidloadData} exclusive={exc} />
 
-                        <BidTabs time={time} id={viewId} events={eventData} tokenInfo={tokenInfo.symbol} exclusive={exc} bidAmount={bidAmount}/>
+                        <BidTabs time={time} id={viewId} tokenInfo={tokenInfo.symbol} exclusive={exc} bidAmount={bidAmount}/>
 
                     </Box>
 

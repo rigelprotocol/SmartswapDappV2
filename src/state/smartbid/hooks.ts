@@ -8,6 +8,7 @@ import bidNFT from "../../assets/smartbid/nftbid.svg";
 import {useSelector} from "react-redux";
 import {RootState} from "../index";
 import {useProvider} from "../../utils/utilsFunctions";
+import gql from "graphql-tag";
 
 export class BidStructure {
     time: boolean;
@@ -94,3 +95,14 @@ export const useBidInfo = () => {
 
     return {loadBid, bidItemsNFT}
 };
+
+export const GET_BIDS = gql`
+    query FetchBids ($id: Int) {
+        bids(first: 3, orderBy: createdAt, orderDirection: desc, where: {eventID: $id}) {
+            address
+            eventID
+            stakedAmount
+            createdAt
+        }
+    }
+`;
