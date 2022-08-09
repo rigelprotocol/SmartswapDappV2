@@ -9,6 +9,17 @@ export const RGPADDRESSES: { [key: string]: string } = {
   "42262": "0x4AF5ff1A60a6eF6C7c8f9C4E304cD9051fCa3Ec0",
 };
 
+export const CHAINDETAILS = {
+  "1": "eth",
+  "3": "eth_test",
+  "56": "bsc",
+  "97": "bsc_test",
+  "137": "pn",
+  "80001": "pn_mumbai",
+  "42261": "oasis_test",
+  "42262": "oasis",
+};
+
 //Smartswap factory addresses
 export const SMARTSWAPFACTORYADDRESSES: { [key: string]: string } = {
   "1": "0x",

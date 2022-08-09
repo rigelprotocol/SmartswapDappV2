@@ -1,8 +1,9 @@
-import React from "react";
-import {Box, Text, Flex,
+import React, {useEffect} from "react";
+import {
+    Box, Text, Flex,
     useColorModeValue, Tabs,
     useMediaQuery, TabList, Tab,
-    TabPanel, TabPanels, Image, Button
+    TabPanel, TabPanels, Image, Button, Spinner
 } from '@chakra-ui/react';
 import bidLogo from '../../../assets/smartbid/bidRGP.svg';
 import {useActiveWeb3React} from "../../../utils/hooks/useActiveWeb3React";
@@ -14,7 +15,22 @@ import {RigelSmartBid, RigelSmartBidTwo} from "../../../utils/Contracts";
 import {SMARTBID1, SMARTBID2} from "../../../utils/addresses";
 import {ExplorerDataType, getExplorerLink} from "../../../utils/getExplorerLink";
 import {addToast} from "../../../components/Toast/toastSlice";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {GET_BIDS} from "../../../state/smartbid/hooks";
+import {RootState} from "../../../state";
+import {SupportedChainId} from "../../../constants/chains";
+import { Query } from "react-apollo";
+import ApolloClient from "apollo-boost";
+
+
+const customClient = new ApolloClient({
+    uri: "https://api.thegraph.com/subgraphs/name/joshuarotimi/matic-bid"
+});
+
+const defaultClient = new ApolloClient({
+    uri: `https://api.thegraph.com/subgraphs/name/joshuarotimi/smart-bid`
+});
+
 
 export function timeConverter(UNIX_timestamp: any) {
     const a = new Date(UNIX_timestamp * 1000);
@@ -29,13 +45,12 @@ export function timeConverter(UNIX_timestamp: any) {
 
 type ActivityID = {
     address: string,
-    id: number,
     amount: string,
     time: string,
     tokenInfo: string
 }
 
-const ActivityPanel = ({address, id, amount, time, tokenInfo}: ActivityID) => {
+const ActivityPanel = ({address, amount, time, tokenInfo}: ActivityID) => {
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     const [isMobileDevice] = useMediaQuery("(max-width: 550px)");
     return (
@@ -182,18 +197,28 @@ const WinnersPanel = ({id, colors, price, address, tokenInfo, exclusive, bidAmou
 type BidTabsDetails = {
     time: number,
     id: number,
-    events: [],
     tokenInfo: string,
     exclusive: boolean,
     bidAmount: string
 }
 
 
-const BidTabs = ({time, id, events, tokenInfo, exclusive, bidAmount} : BidTabsDetails) => {
+const BidTabs = ({time, id, tokenInfo, exclusive, bidAmount} : BidTabsDetails) => {
     const [isMobileDevice] = useMediaQuery("(max-width: 950px)");
     const textColor = useColorModeValue("#333333", "#F1F5F8");
+    const {account} = useActiveWeb3React();
+
+    const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
+    const stateChanged: boolean = trxState === 2;
+    const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
 
     const {loadWinners, winnerDetails} = useBidWinners(id, exclusive);
+
+    useEffect(() => {
+
+    }, [stateChanged]);
+
+    const clientUrl = ChainId === SupportedChainId.BINANCE ? defaultClient : customClient;
 
     return (
         <>
@@ -201,21 +226,85 @@ const BidTabs = ({time, id, events, tokenInfo, exclusive, bidAmount} : BidTabsDe
                 <Tabs isFitted variant={'line'} color={'#CCCCCC'}>
                     <TabList>
                         <Tab color={textColor}>Bid Activity</Tab>
+                        <Tab color={textColor}>My Bids</Tab>
                         <Tab>Recent Winners</Tab>
                     </TabList>
 
                     <TabPanels mb={'80px'}>
+
                         <TabPanel>
-                            {events.map((item, index) => (
-                                <ActivityPanel key={index}
-                                               address={item.args[0]}
-                                               id={item.args[1].toString()}
-                                               amount={item.args[2].toString()}
-                                               time={item.args[3].toString()}
-                                               tokenInfo={tokenInfo}
-                                />
-                            ))}
+                            <Query query={GET_BIDS} client={clientUrl} variables={{id: id}}>
+                                {({ error, loading, data }) => {
+
+                                    if (loading) return (
+                                        <Flex justifyContent={'center'}>
+                                            <Spinner
+                                                thickness="4px"
+                                                speed="0.53s"
+                                                emptyColor="transparent"
+                                                color="#319EF6"
+                                                size="sm"
+                                                width="20px"
+                                                height="20px"
+                                                my={10}
+                                            />
+                                        </Flex>
+                                    );
+
+                                    if (data) {
+                                        const events = data.bids;
+                                        return (
+                                            events.map((item: any) => (
+                                                <ActivityPanel key={item.createdAt}
+                                                               address={item.address}
+                                                               amount={item.stakedAmount}
+                                                               time={item.createdAt}
+                                                               tokenInfo={tokenInfo}
+                                                />
+                                            ))
+                                        );
+                                    }
+                                }}
+                            </Query>
+
                         </TabPanel>
+
+                        <TabPanel>
+                            <Query query={GET_BIDS} client={clientUrl} variables={{id: id}}>
+                                {({ error, loading, data }) => {
+
+                                    if (loading) return (
+                                        <Flex justifyContent={'center'}>
+                                            <Spinner
+                                                thickness="4px"
+                                                speed="0.53s"
+                                                emptyColor="transparent"
+                                                color="#319EF6"
+                                                size="sm"
+                                                width="20px"
+                                                height="20px"
+                                                my={10}
+                                            />
+                                        </Flex>
+                                    );
+
+                                    if (data) {
+                                        const usersBids = data.bids.filter((item: any) => item.address === account);
+                                        return (
+                                            usersBids.map((item: any) => (
+                                                <ActivityPanel key={item.createdAt}
+                                                               address={item.address}
+                                                               amount={item.stakedAmount}
+                                                               time={item.createdAt}
+                                                               tokenInfo={tokenInfo}
+                                                />
+                                            ))
+                                        );
+                                    }
+                                }}
+                            </Query>
+                        </TabPanel>
+
                         <TabPanel>
                             {time < 0 ?
                             <Box>
@@ -240,4 +329,3 @@ const BidTabs = ({time, id, events, tokenInfo, exclusive, bidAmount} : BidTabsDe
 };
 
 export default BidTabs;
-
