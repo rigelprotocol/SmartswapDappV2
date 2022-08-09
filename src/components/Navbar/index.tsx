@@ -42,6 +42,7 @@ const Index = () => {
   const Logo = useColorModeValue(LightLogo, DarkLogo);
   const mobileNavColor = useColorModeValue("#FFFFFF", "#15202B");
   const mobileNavBorderColor = useColorModeValue("#DEE5ED", "#324D68");
+  const {search} = useLocation();
 
   return (
     <>
@@ -106,8 +107,8 @@ const Index = () => {
                   <EarnDropdown />
                   {/* <Nav label="Liquidity" to="/pool" active={location === '/add' || location === '/remove' ? true : false} />
                   <Nav label="Farming" to="/farming-v2"  /> */}
-                  <Nav label="NFT" to="/nft" />
-                  <Nav label="Smart Bid" to={'/smartbid'}/>
+                  <Nav label="NFT" to={`/nft${search}`} />
+                  <Nav label="Smart Bid" to={`/smartbid${search}`}/>
                 </Flex>
               </Flex>
               <Spacer />

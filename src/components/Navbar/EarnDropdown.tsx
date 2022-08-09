@@ -33,6 +33,7 @@ function EarnDropdown() {
   
   const { chainId } = useActiveWeb3React();
   const name = location.pathname;
+    const {search} = useLocation();
 
   const useName = () => {
     if (name == '/farming-v2' || name == '/pool'  || name == '/add') {
@@ -60,13 +61,13 @@ function EarnDropdown() {
       </MenuButton>
       <MenuList>
         <MenuItem _focus={{ color: "#319EF6" }}>
-            <Nav label="Liquidity" to="/pool" active={name === '/add' || name === '/remove'} />
+            <Nav label="Liquidity" to={`/pool${search}`} active={name === '/add' || name === '/remove'} />
          </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
-            <Nav label="Farming" to="/farming-v2"  />
+            <Nav label="Farming" to={`/farm${search}`}  />
          </MenuItem>
           <MenuItem _focus={{ color: "#319EF6" }}>
-              <Nav label="New LP Farm" to="/farming-v2/new-farm"  />
+              <Nav label="New LP Farm" to={`/farm/new-farm${search}`}  />
           </MenuItem>
 
         </MenuList>
