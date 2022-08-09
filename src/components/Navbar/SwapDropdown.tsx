@@ -84,6 +84,7 @@ export function BridgeDropdown() {
   const { chainId } = useActiveWeb3React();
   const boxShadow=useColorModeValue("0px 4px 6px -4px rgba(178, 193, 230, 0.12), 0px 8px 8px -4px rgba(178, 193, 230, 0.08);","0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)")
   const bg= useColorModeValue("linear-gradient(90deg, #EEF0FC 0%, #EEFCFC 100%)","linear-gradient(90deg, #0E1644 0%, #0D4544 100%)")
+  const background=useColorModeValue("white","#15202B")
   return (
     <Menu >
     <MenuButton
@@ -107,7 +108,7 @@ export function BridgeDropdown() {
 borderRadius="6px"
 boxSizing="border-box"
 padding="16px 16px 24px 16px"
-    background="white">
+    background={background}>
       <MenuItem cursor="pointer" _focus={{ color: "#319EF6" }}
       py="10px"
       _hover={{background:`${bg}`,boxShadow:`${boxShadow}`,borderRadius:"6px"}}
