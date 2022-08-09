@@ -19,6 +19,44 @@ import { ChevronDownIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import { AiOutlineAppstore } from "react-icons/ai";
 
 function DappsDropdown() {
+  const swapItems = [
+    {
+      name:"SmartSwap",
+      text:" Swap tokens directly.",
+      link:"/#/swap",
+      icon:""
+    },
+    {
+      name:"GiftDApp",
+      text:"Gift tokens in a fun way.",
+      link:"https://giftdapp.rigelprotocol.com/",
+      icon:""
+    },
+    {
+      name:"LaunchPad",
+      text:"Join projects hosted on RigelProtocol.",
+      link:"https://launchpad.rigelprotocol.com/",
+      icon:""
+    },
+    {
+      name:"SmartBid",
+      text:"Bid on tokens",
+      link:"https://smartswap.rigelprotocol.com/#/smartbid",
+      icon:""
+    },
+    {
+      name:"Auto Period",
+      text:"Auto invest in any crypto of your choice",
+      link:"https://smartswap.rigelprotocol.com/#/auto-period",
+      icon:""
+    },
+    {
+      name:"Farms",
+      text:"Stake Liquidity Pair Tokens from any pool",
+      link:"https://smartswap.rigelprotocol.com/#/farming-v2",
+      icon:""
+    },
+  ]
   return (
     <>
       <Menu>
@@ -39,47 +77,27 @@ function DappsDropdown() {
           DApps
         </MenuButton>
         <MenuList>
-          <MenuItem>
+          {/* <MenuItem>
             <Stack direction={'column'} spacing={0} >
               <Text>SmartSwap</Text>
               <Text color={'gray.500'}>  Swap tokens directly.</Text>
             </Stack>
 
-          </MenuItem>
-          <MenuItem>
-            <Link href="https://gift.rigelprotocol.com/" isExternal>
+          </MenuItem> */}
+          {swapItems.map((item,index)=>{
+            return (
+              <MenuItem key={index}>
+            <Link href={item.link} isExternal ={item.link==="/#/swap" ?false:true} >
               <Stack direction={'column'} spacing={0} >
-                <Text> GiftDApp</Text>
-                <Text color={'gray.500'}>  Gift tokens in a fun way.</Text>
+                <Text>{item.name}</Text>
+                <Text color={'gray.500'}>{item.text}</Text>
               </Stack>
             </Link>
           </MenuItem>
-          {/* <MenuItem>
-
-            <Stack direction={'column'} spacing={0} >
-              <Text>  Smart Bid </Text>
-              <Text color={'gray.500'}>  Bid on tokens.</Text>
-            </Stack>
-
-
-          </MenuItem>
-          <MenuItem>
-
-            <Stack direction={'column'} spacing={0} >
-              <Text>  Leverage Exchange </Text>
-              <Text color={'gray.500'}>  Trade using decentralized tokens.</Text>
-            </Stack>
-
-          </MenuItem> */}
-          <MenuItem>
-          <Link href="https://launchpad.rigelprotocol.com/" isExternal>
-          <Stack direction={'column'} spacing={0} >
-              <Text>  LaunchPad </Text>
-              <Text color={'gray.500'}>  Join projects hosted on RigelProtocol.</Text>
-            </Stack>
-          </Link>
-            
-          </MenuItem>
+   
+            )
+          })}
+          
         </MenuList>
       </Menu>
     </>

@@ -13,6 +13,7 @@ import {
   Collapse,
   useMediaQuery,
   MenuItem,
+  Img,
 } from "@chakra-ui/react";
 import {
   HamburgerIcon,
@@ -20,6 +21,10 @@ import {
   ExternalLinkIcon,
   ChevronUpIcon,
 } from "@chakra-ui/icons";
+import DappIcon from "../../assets/Dapps.svg";
+import SwapIcon from "../../assets/swapIcon.svg";
+import SmartbidIcon from "../../assets/SmartbidIcon.svg";
+import NFTIcon from "../../assets/NFTIcon.svg";
 import { CloseIcon } from "../../theme/components/Icons";
 import { NavLink, useLocation } from "react-router-dom";
 import {Nav} from "./index"
@@ -101,7 +106,7 @@ const MobileNavDrawer = () => {
                     bgColor={isOn ? SwapBgColor : "transparent"}
                   >
                     <Flex ml={6}>
-                      <Nav label="Swap" to="/swap" />
+                      <Nav label="Swap" to="/swap" img={<Img src={SwapIcon} />} />
                     </Flex>
                     {isOn ? (
                       <ChevronUpIcon mr={2} />
@@ -151,13 +156,13 @@ const MobileNavDrawer = () => {
                   </Flex>
                 </Collapse>
                 <Flex ml={6} mb={3} onClick={onClose}>
-                  <Nav label="Liquidity" to="/pool" active={location === '/add' || location === '/remove' ? true : false}/>
+                  <Nav label="Liquidity" to="/pool" active={location === '/add' || location === '/remove' ? true : false} />
                 </Flex>
                 <Flex ml={6} mb={3} onClick={onClose}>
                   <Nav label="Farming" to="/farming-v2" />
                 </Flex>
                 <Flex ml={6} mb={3} onClick={onClose}>
-                  <Nav label="NFT" to="/nft" />
+                  <Nav label="NFT" to="/nft" img={<Img src={NFTIcon} />} />
                 </Flex>
                 <Flex ml={6} mb={3}>
                   <Link href="#" isExternal onClick={onClose}>
@@ -165,7 +170,7 @@ const MobileNavDrawer = () => {
                   </Link>
                 </Flex>
                 <Text ml={6} color="#999999" mt={5} fontSize="12px" mb={2}>
-                  DAPPS
+                <Img src={DappIcon} />  DAPPS
                 </Text>
                 <Flex mb={3} alignItems="center" ml={6} onClick={onClose}>
                   <Nav label="SmartSwap" to="/swap" />

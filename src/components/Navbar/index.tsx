@@ -7,20 +7,21 @@ import {
   Link,
   useColorModeValue,
   useMediaQuery,
+  Text,
 } from "@chakra-ui/react";
 import { NavLink, useLocation } from "react-router-dom";
 import { ColorModeSwitcher } from "../ColorModeSwitcher";
 import SocialMedia from "./SocialMedia";
 import DappsDropdown from "./DappsDropdown";
 import WalletConnection from "./WalletConnection";
-import SwapDropdown from "./SwapDropdown";
+import {SwapDropdown,BridgeDropdown} from "./SwapDropdown";
 import LightLogo from "./../../assets/logo/logo-light.svg";
 import DarkLogo from "./../../assets/logo/logo-dark.svg";
 import MobileNavDrawer from "./MobileNavDrawer";
 import NetworkConnector from "../NetworkConnector";
 import EarnDropdown from "./EarnDropdown";
 
-export const Nav = ({ to, label, active }: { to: string; label: string, active?:boolean }) => {
+export const Nav = ({ to, label, active,img }: { to: string; label: string, active?:boolean,img?:any }) => {
   const mobileNavColor = useColorModeValue("#FFFFFF", "#15202B");
   return (
 
@@ -31,8 +32,12 @@ export const Nav = ({ to, label, active }: { to: string; label: string, active?:
     }}
     color={active ? "#319EF6" : mobileNavColor}
     style={active ? {color:"#319EF6"}: {color:""}}
+    
   >
-    {label}
+    <Flex >
+      {img} <Text ml="8px">{label}</Text>
+    </Flex>
+    
   </NavLink>
 )};
 
@@ -103,6 +108,7 @@ const Index = () => {
                   className="HeaderRide"
                 >
                   <SwapDropdown />
+                  <BridgeDropdown />
                   <EarnDropdown />
                   {/* <Nav label="Liquidity" to="/pool" active={location === '/add' || location === '/remove' ? true : false} />
                   <Nav label="Farming" to="/farming-v2"  /> */}

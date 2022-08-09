@@ -28,6 +28,7 @@ import BidDetails from "./SmartBid/BidDetails";
 import BidHistory from "./SmartBid/Components/History";
 import BidNotification from "./SmartBid/Notifications";
 import Faq from "./SmartBid/Faq";
+import ROuterBridge from "./Swap/Bridge/RouterBridge";
 
  function App() {
   useConnectWallet();
@@ -75,6 +76,7 @@ import Faq from "./SmartBid/Faq";
               <Route exact strict path="/set-price/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? SetPrice : Swap } />
               <Route exact strict path="/auto-period" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? AutoTime : Swap } />
               <Route exact strict path="/auto-period/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? AutoTime : Swap } />
+              <Route exact strict path="/bridge/router" component={ROuterBridge} />
               <Route
                 exact
                 strict

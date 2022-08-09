@@ -61,10 +61,7 @@ import { Web3Provider } from "@ethersproject/providers";
 import NetworkModal from "./../../../../components/Navbar/modals/networkModal";
 import { clearSearchResult } from "../../../../state/farming/action";
 import { GButtonClick, GFailedTransaction, GSuccessfullyTransaction } from "../../../../components/G-analytics/gIndex";
-import {
-  useTokenBalance,
-  useUpdateBalance,
-} from "../../../../utils/hooks/useUpdateBalances";
+
 
 export const calculateGas = async (
   percentage: number,
@@ -156,6 +153,7 @@ const SendToken = () => {
     setDismissTokenWarning(true);
     history.push("/swap");
   }, [history]);
+
 
   const borderColor = useColorModeValue("#DEE5ED", "#324D68");
   const color = useColorModeValue("#999999", "#7599BD");
@@ -1198,6 +1196,8 @@ const SendToken = () => {
               Swap Tokens
             </Button>
           )}
+
+
           <NetworkModal
             displayNetwork={displayNetwork}
             setDisplayNetwork={setDisplayNetwork}
@@ -1222,6 +1222,7 @@ const SendToken = () => {
           pathSymbol={pathSymbol}
         />
       </Box>
+     
     </div>
   );
 };
