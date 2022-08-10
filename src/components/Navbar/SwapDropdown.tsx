@@ -26,6 +26,7 @@ function SwapDropdown() {
   const location = useLocation();
   const { chainId } = useActiveWeb3React();
   const name = location.pathname;
+  const {search} = useLocation();
 
   const useName = () => {
     console.log(name);
@@ -54,13 +55,13 @@ function SwapDropdown() {
       </MenuButton>
       <MenuList>
         <MenuItem _focus={{ color: "#319EF6" }}>
-          <Nav label="Straight Swap" to="/swap" />
+          <Nav label="Straight Swap" to={`/swap${search}`} />
         </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
-          <Nav label="Auto-period" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' : '/auto-period'} />
+          <Nav label="Auto-period" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' : `/auto-period${search}`} />
         </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
-          <Nav label="Set Price" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' :'/set-price' } />
+          <Nav label="Set Price" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' :`/set-price${search}`} />
         </MenuItem>
       </MenuList>
     </Menu>

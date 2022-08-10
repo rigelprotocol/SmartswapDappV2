@@ -1,128 +1,47 @@
 /** @format */
 
-import React, { useEffect, useMemo, useState, useCallback } from "react";
-import { Box, Flex, Text } from "@chakra-ui/layout";
-import {
-  Alert,
-  AlertDescription,
-  Button,
-  CloseButton,
-  Link,
-  Select,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  useColorModeValue,
-  useMediaQuery,
-  Tooltip,
-  IconButton,
-  useClipboard,
-  InputGroup,
-  InputLeftAddon,
-  Input,
-  Grid,
-  Stack,
-  Skeleton,
-  MenuList,
-  MenuItem,
-  Menu,
-  MenuButton,
+import React, {useCallback, useEffect, useMemo, useState} from "react";
+import {Box, Flex, Text} from "@chakra-ui/layout";
+import {Alert, AlertDescription, Button, CloseButton,
+  Grid, IconButton, Input, InputGroup, InputLeftAddon,
+  Link, Menu, MenuButton, MenuItem, MenuList,
+  Select, Skeleton, Stack, Tab, TabList,
+  TabPanel, TabPanels, Tabs, Tooltip,
+  useClipboard, useColorModeValue, useMediaQuery,
 } from "@chakra-ui/react";
-import { CopyIcon } from "../../theme/components/Icons";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import {CopyIcon} from "../../theme/components/Icons";
+import {useHistory, useLocation, useRouteMatch} from "react-router-dom";
 import YieldFarm from "./YieldFarm";
-import { AlertSvg } from "./Icon";
-import {HamburgerIcon} from "@chakra-ui/icons";
+import {AlertSvg} from "./Icon";
+import {ChevronDownIcon, HamburgerIcon, SearchIcon} from "@chakra-ui/icons";
 
-import { useDispatch, useSelector } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import bigNumber from "bignumber.js";
-import { ethers } from "ethers";
-import {
-  updateFarmBalances,
-  updatePoolId,
-  updateTokenStaked,
-  updateTotalLiquidity,
-  updateFarmProductLiquidity,
-  updateProductStaked
-} from "../../state/farm/actions";
-import { useFarms } from "../../state/farm/hooks";
-import {
-  MasterChefV2Contract,
-  RGPSpecialPool,
-  RGPSpecialPool2,
-  rigelToken,
-  smartSwapLPTokenPoolOne,
-  smartSwapLPTokenPoolThree,
-  smartSwapLPTokenPoolTwo,
-  smartSwapLPTokenV2,
-  smartSwapLPTokenV2PoolFive,
-  smartSwapLPTokenV2PoolFour,
-  smartSwapLPTokenV2PoolSeven,
-  smartSwapLPTokenV2PoolSix,
-  smartSwapLPTokenV2PoolEight,
-  smartSwapLPTokenV2PoolNine,
-  smartSwapLPTokenV2PoolTwelve,
-  smartSwapLPTokenV2PoolThirteen,
-  productStakingContract,
-} from "../../utils/Contracts";
-import {
-  MASTERCHEFV2ADDRESSES,
-  RGP,
-  RGPSPECIALPOOLADDRESSES,
-  RGPSPECIALPOOLADDRESSES2,
-  SMARTSWAPLP_TOKEN1ADDRESSES,
-  SMARTSWAPLP_TOKEN2ADDRESSES,
-  SMARTSWAPLP_TOKEN3ADDRESSES,
-  SMARTSWAPLP_TOKEN4ADDRESSES,
-  SMARTSWAPLP_TOKEN5ADDRESSES,
-  SMARTSWAPLP_TOKEN6ADDRESSES,
-  SMARTSWAPLP_TOKEN7ADDRESSES,
-  SMARTSWAPLP_TOKEN8ADDRESSES,
-  SMARTSWAPLP_TOKEN9ADDRESSES,
-  SMARTSWAPLP_TOKEN12ADDRESSES,
-  SMARTSWAPLP_TOKEN13ADDRESSES,
-  PRODUCTSTAKINGADDRESSES,
-} from "../../utils/addresses";
-import { formatBigNumber } from "../../utils";
-import { RootState } from "../../state";
-import { SupportedChainId } from "../../constants/chains";
+import {useFarms} from "../../state/farm/hooks";
+import {shortenCode} from "../../utils";
+import {RootState} from "../../state";
+import {SupportedChainId} from "../../constants/chains";
 import ProductFarm from "./ProductFarm"
-import { useNativeBalance } from "../../utils/hooks/useBalances";
-import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
+import {useNativeBalance} from "../../utils/hooks/useBalances";
+import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 import Joyride from "react-joyride";
-import { steps } from "../../components/Onboarding/FarmingSteps";
+import {steps} from "../../components/Onboarding/FarmingSteps";
 import WelcomeModal from "../../components/Onboarding/WelcomeModal";
 import CryptoJS from "crypto-js";
-import { shortenCode } from "../../utils";
-import { useLocation } from "react-router-dom";
-import { setOpenModal, TrxState } from "../../state/application/reducer";
-import { useUpdateUserGasPreference } from "../../state/gas/hooks";
-import { ChevronDownIcon, SearchIcon } from "@chakra-ui/icons";
+import {useUpdateUserGasPreference} from "../../state/gas/hooks";
 import Filter from "../../components/Farming/Modals/Filter";
-import { filterFarms } from "../../utils/utilsFunctions";
-import { farmStateInterface } from "../../state/farm/reducer";
-import {
-  useFarmSearch,
-  usePrevious,
-  useSearch,
-  useFilterFarms,
-  useSearchResults,
-} from "../../state/farming/hooks";
-import {
-  clearSearchResult,
-  updateSearchResult,
-} from "../../state/farming/action";
-import { useGetFarmData } from "../../utils/hooks/useGetFarmData";
+import {filterFarms} from "../../utils/utilsFunctions";
+import {farmStateInterface} from "../../state/farm/reducer";
+import {useClearFarm, useFarmSearch, useFilterFarms,
+  usePrevious, useSearch, useSearchResults} from "../../state/farming/hooks";
+import {clearSearchResult, updateSearchResult, updateSelectedField,} from "../../state/farming/action";
+import {useGetFarmData} from "../../utils/hooks/useGetFarmData";
 import {useGetNewFarms} from "../../utils/hooks/useGetNewFarms";
-import { useClearFarm } from "../../state/farming/hooks";
 
-import { useFarmData } from "../../state/newfarm/hooks";
-import { useNewLPData} from "../../state/LPFarm/hooks";
-import { GFarmingClickListYourProject, GFarmingInputSearchFarm, GOpenedSpecialPool } from "../../components/G-analytics/gFarming";
-import { ZERO_ADDRESS } from "../../constants";
-import {updateSelectedField} from "../../state/farming/action";
+import {useFarmData} from "../../state/newfarm/hooks";
+import {useNewLPData} from "../../state/LPFarm/hooks";
+import {GFarmingClickListYourProject, GFarmingInputSearchFarm, GOpenedSpecialPool} from "../../components/G-analytics/gFarming";
+import {ZERO_ADDRESS} from "../../constants";
 import {State} from "../../state/types";
 import {clearAllFarms} from "../../state/newFarming/action";
 
@@ -268,11 +187,11 @@ const refreshSpecialData =()=>{
     if (parseInt(event.target.value, 10) === 1) {
       setStakingIndex(1);
       setTabIndex(1);
-      history.push("/farming-v2/staking-RGPv2");
+      history.push("/farm/RGPv2");
     } else if (parseInt(event.target.value, 10) === 3) {
       setStakingIndex(3);
       setTabIndex(3);
-      history.push("/farming-v2/staking-RGPv1");
+      history.push("/farm/RGPv1");
     }
   };
 
@@ -290,17 +209,17 @@ const refreshSpecialData =()=>{
     if (parseInt(event.target.value, 10) === 5) {
       setNewFarmIndex(5);
       setTabIndex(5);
-      history.push("/farming-v2/new-farm");
+      history.push("/farm/new-farm");
     } else if (parseInt(event.target.value, 10) === 6) {
       setNewFarmIndex(6);
       setTabIndex(6);
-      history.push("/farming-v2/stable-lp");
+      history.push("/farm/stable-lp");
     }
   };
 
   const { account, chainId, library } = useActiveWeb3React();
   const dispatch = useDispatch();
-  let match = useRouteMatch("/farming-V2/staking-RGPv2");
+  let match = useRouteMatch("/farm/RGPv2");
   const FarmData = useFarms();
   const { farmdata, loadingState } = useGetFarmData();
   const { LPData, loadingLP } = useGetNewFarms(selected === farmSection.SECOND_NEW_LP ? 2 : 1);
@@ -351,23 +270,6 @@ const refreshSpecialData =()=>{
 
   const ChainId = useSelector<RootState>((state) => state.newfarm.chainId);
 
-  //temporary
-  useEffect(() => {
-    getFarmData();
-    getTokenStaked();
-    getFarmTokenBalance();
-  }, [account, chainId]);
-  
-  const refreshData = () => {
-    getFarmData();
-    getTokenStaked();
-    getFarmTokenBalance();
-  };
-  //
-  useEffect(() => {
-    refreshData();
-  }, [refreshSpecialPool]);
-
   const changeVersion = (version: string, external?: boolean) => {
     if (external) {
       window.open(version);
@@ -380,22 +282,22 @@ const refreshSpecialData =()=>{
       setSwitchTab(!switchTab);
       setSelected(farmSection.LIQUIDITY);
       dispatch(updateSelectedField({value: farmSection.LIQUIDITY}));
-      changeVersion("/farming-v2");
+      changeVersion("/farm");
     }else if(value === farmSection.PRODUCT_FARM) {
       setSelected(farmSection.PRODUCT_FARM);
       dispatch(updateSelectedField({value: farmSection.PRODUCT_FARM}));
       setSwitchTab(!switchTab);
-      changeVersion("/farming-V2/product-farm");
+      changeVersion("/farm/product-farm");
     }else if(value === farmSection.NEW_LP) {
       setSelected(farmSection.NEW_LP);
       dispatch(updateSelectedField({value: farmSection.NEW_LP}));
       setSwitchTab(!switchTab);
-      changeVersion("/farming-V2/new-farm");
+      changeVersion("/farm/new-farm");
     }else if(value === farmSection.SECOND_NEW_LP) {
       setSelected(farmSection.SECOND_NEW_LP);
       dispatch(updateSelectedField({value: farmSection.SECOND_NEW_LP}));
       setSwitchTab(!switchTab);
-      changeVersion("/farming-V2/stable-lp");
+      changeVersion("/farm/stable-lp");
     } else if (value === farmSection.STAKING) {
       setSwitchTab(!switchTab);
       setSelected(farmSection.STAKING);
@@ -403,10 +305,10 @@ const refreshSpecialData =()=>{
       GOpenedSpecialPool(tabIndex);
       if (tabIndex === 1) {
         setStakingIndex(1);
-        changeVersion("/farming-v2/staking-RGPv2");
+        changeVersion("/farm/RGPv2");
       } else {
         setStakingIndex(3);
-        changeVersion("/farming-v2/staking-RGPv1");
+        changeVersion("/farm/RGPv1");
       }
     } else {
       setSwitchTab(true);
@@ -471,719 +373,6 @@ const refreshSpecialData =()=>{
       chainId as number
     );
     setShowPopover(false);
-  };
-
-  const getFarmTokenBalance = async () => {
-    if (account) {
-      try {
-        if (
-          Number(chainId) === Number(SupportedChainId.POLYGON) ||
-          (account && Number(chainId) === Number(SupportedChainId.POLYGONTEST))
-        ) {
-          const  RGPToken2 =await rigelToken(RGP[chainId as number], library)
-
-          const RGPbalance2 = await RGPToken2.balanceOf(account)
-          dispatch(
-            updateFarmBalances([
-              formatBigNumber(RGPbalance2),
-            ])
-          );
-          // dispatch(updatePoolId([0, 1, 2, 3]));
-        } else if (Number(chainId) === Number(SupportedChainId.OASISTEST)) {
-          const [RGPToken, poolOne, poolTwo, poolThree] = await Promise.all([
-            rigelToken(RGP[chainId as number], library),
-            smartSwapLPTokenPoolOne(
-              SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
-              library
-            ),
-            smartSwapLPTokenPoolTwo(
-              SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
-              library
-            ),
-            smartSwapLPTokenPoolThree(
-              SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
-              library
-            ),
-          ]);
-
-         
-
-        } else if (Number(chainId) === Number(SupportedChainId.OASISMAINNET)) {
-          const [RGPToken, poolOne, poolTwo, poolThree] = await Promise.all([
-            rigelToken(RGP[chainId as number], library),
-            smartSwapLPTokenPoolOne(
-              SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
-              library
-            ),
-            smartSwapLPTokenPoolTwo(
-              SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
-              library
-            ),
-            smartSwapLPTokenPoolThree(
-              SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
-              library
-            ),
-          ]);
-
-        } else {
-          const [ RGPToken2 ] = await Promise.all([
-            rigelToken(RGP[chainId as number], library)
-          ]);
-
-          const [
-            RGPbalance2,
-          ] = await Promise.all([
-            RGPToken2.balanceOf(account),
-          ]);
-
-
-
-          dispatch(
-            updateFarmBalances([
-              formatBigNumber(RGPbalance2),
-            ])
-          );
-        }
-      } catch (error) {
-        console.error(error, "getFarmTokenBalance => Farminv2");
-      }
-    }
-  };
-
-  const getFarmData = async () => {
-    setfarmDataLoading(true);
-
-    try {
-      const deposit = async (token0: any, token1: any) => {
-        let sym0 = await (
-          await smartSwapLPTokenV2(await token0(), library)
-        ).symbol();
-        let sym1 = await (
-          await smartSwapLPTokenV2(await token1(), library)
-        ).symbol();
-        if (sym0 === "WMATIC") sym0 = "MATIC";
-        if (sym1 === "WMATIC") sym1 = "MATIC";
-        if (sym0 === "WROSE") sym0 = "ROSE";
-        if (sym1 === "WROSE") sym1 = "ROSE";
-        if (sym0 === "wROSE") sym0 = "ROSE";
-        if (sym1 === "wROSE") sym1 = "ROSE";
-
-        return `${sym0}-${sym1}`;
-      };
-
-      if (Number(chainId) === Number(SupportedChainId.POLYGONTEST)) {
-        const [specialPool, pool1, pool2, pool3, specialPool2] =
-          await Promise.all([
-            RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library),
-            smartSwapLPTokenPoolOne(
-              SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
-              library
-            ),
-            smartSwapLPTokenPoolTwo(
-              SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
-              library
-            ),
-            smartSwapLPTokenPoolThree(
-              SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
-              library
-            ),
-            RGPSpecialPool2(
-              RGPSPECIALPOOLADDRESSES2[chainId as number],
-              library
-            ),
-          ]);
-
-        const [
-          rgpTotalStaking,
-          pool1Reserve,
-          pool2Reserve,
-          pool3Reserve,
-          rgpTotalStakingV2,
-        ] = await Promise.all([
-          await specialPool.totalStaking(),
-          pool1.getReserves(),
-          pool2.getReserves(),
-          pool3.getReserves(),
-          await specialPool2.totalStaking(),
-        ]);
-
-        const totalUSDT2: number | any = ethers.utils.formatUnits(
-          pool2Reserve[0],
-          18
-        );
-        const totalRGP2: number | any = ethers.utils.formatUnits(
-          pool2Reserve[1],
-          18
-        );
-        const totalRGP1: number | any = ethers.utils.formatUnits(
-          pool1Reserve[0],
-          18
-        );
-        const totalRGP3: number | any = ethers.utils.formatUnits(
-          pool3Reserve[0],
-          18
-        );
-
-        const rgpPrice = totalUSDT2 / totalRGP2;
-
-        const RGPprice: number | any = ethers.utils.formatUnits(
-          pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
-          3
-        );
-
-
-        const RGPLiquidityV2 =
-          (ethers.utils.formatUnits(rgpTotalStakingV2, 18) * rgpPrice) / 2;
-
-        dispatch(
-          updateTotalLiquidity([
-            {
-              deposit: "RGP",
-              liquidity: RGPLiquidityV2,
-              apy: 8.756,
-            },
-          ])
-        );
-      } else if (Number(chainId) === Number(SupportedChainId.POLYGON)) {
-        const [specialPool, pool1, pool2, pool3, specialPool2, farmProductContract] =
-          await Promise.all([
-            RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number], library),
-            smartSwapLPTokenPoolOne(
-              SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
-              library
-            ),
-            smartSwapLPTokenPoolTwo(
-              SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
-              library
-            ),
-            smartSwapLPTokenPoolThree(
-              SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
-              library
-            ),
-            RGPSpecialPool2(
-              RGPSPECIALPOOLADDRESSES2[chainId as number],
-              library
-            ),
-            productStakingContract(
-              PRODUCTSTAKINGADDRESSES[chainId as number],
-              library
-            )
-          ]);
-
-        const [
-          // rgpTotalStaking,
-          pool1Reserve,
-          pool2Reserve,
-          pool3Reserve,
-          rgpTotalStakingV2,
-          farmProductTotalStaking
-          // pool4Reserve,
-          // pool5Reserve,
-        ] = await Promise.all([
-          // await specialPool.totalStaking(),
-          pool1.getReserves(),
-          pool2.getReserves(),
-          pool3.getReserves(),
-          await specialPool2.totalStaking(),
-          farmProductContract.totalStaking()
-          // pool4.getReserves(),
-          // pool5.getReserves(),
-        ]);
-        const MRGPprice: number | any = ethers.utils.formatUnits(
-          pool3Reserve[0].mul(1000).div(pool3Reserve[1]),
-          3
-        );
-
-        const totalUSDT2: number | any = ethers.utils.formatUnits(
-          pool2Reserve[1],
-          6
-        );
-        const totalRGP2: number | any = ethers.utils.formatUnits(
-          pool2Reserve[0],
-          18
-        );
-        const totalRGP1: number | any = ethers.utils.formatUnits(
-          pool1Reserve[1],
-          18
-        );
-        const totalRGP3: number | any = ethers.utils.formatUnits(
-          pool3Reserve[1],
-          18
-        );
-        const rgpPrice = totalUSDT2 / totalRGP2;
-
-        const RGP_USDTLiquidity = totalUSDT2 * 2;
-
-        const RGP_WMATICLiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
-        const USDC_RGPLiq = totalRGP3 * rgpPrice * 2;
-
-        const productFarmLiquidity = ethers.utils
-        .formatUnits(farmProductTotalStaking.mul(Math.floor(1000 * rgpPrice)), 21)
-        .toString();
-        console.log({productFarmLiquidity});
-
-        const RGPLiquidityV2 =
-          (ethers.utils.formatUnits(rgpTotalStakingV2, 18) * rgpPrice) / 2;
-
-        dispatch(
-          updateTotalLiquidity([
-          
-            {
-              deposit: "RGP",
-              liquidity: RGPLiquidityV2,
-              apy: "8.756",
-            },
-          ])
-        );
-        dispatch(updateFarmProductLiquidity([
-          {
-            deposit:"RGP",
-            liquidity:productFarmLiquidity
-          }
-        ]))
-      } else if (Number(chainId) === Number(SupportedChainId.OASISTEST)) {
-        const [pool1, pool2, pool3] = await Promise.all([
-          // RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
-          smartSwapLPTokenPoolOne(
-            SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenPoolTwo(
-            SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenPoolThree(
-            SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
-            library
-          ),
-        ]);
-
-        const [
-          // rgpTotalStaking,
-          pool1Reserve,
-          pool2Reserve,
-          pool3Reserve,
-          // pool4Reserve,
-          // pool5Reserve,
-        ] = await Promise.all([
-          // await specialPool.totalStaking(),
-          pool1.getReserves(),
-          pool2.getReserves(),
-          pool3.getReserves(),
-          // pool4.getReserves(),
-          // pool5.getReserves(),
-        ]);
-
-        const totalUSDT2: number | any = ethers.utils.formatUnits(
-          pool2Reserve[1],
-          6
-        );
-        const totalRGP2: number | any = ethers.utils.formatUnits(
-          pool2Reserve[0],
-          18
-        );
-        const totalRGP1: number | any = ethers.utils.formatUnits(
-          pool1Reserve[0],
-          18
-        );
-        const totalUSDT3: number | any = ethers.utils.formatUnits(
-          pool3Reserve[1],
-          6
-        );
-        const rgpPrice = totalUSDT2 / totalRGP2;
-
-      } else if (Number(chainId) === Number(SupportedChainId.OASISMAINNET)) {
-        const [pool1, pool2, pool3] = await Promise.all([
-          // RGPSpecialPool(RGPSPECIALPOOLADDRESSES[chainId as number]),
-          smartSwapLPTokenPoolOne(
-            SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenPoolTwo(
-            SMARTSWAPLP_TOKEN2ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenPoolThree(
-            SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
-            library
-          ),
-        ]);
-
-        const [
-          // rgpTotalStaking,
-          pool1Reserve,
-          pool2Reserve,
-          pool3Reserve,
-          // pool4Reserve,
-          // pool5Reserve,
-        ] = await Promise.all([
-          // await specialPool.totalStaking(),
-          pool1.getReserves(),
-          pool2.getReserves(),
-          pool3.getReserves(),
-          // pool4.getReserves(),
-          // pool5.getReserves(),
-        ]);
-
-        const totalUSDT2: number | any = ethers.utils.formatUnits(
-          pool2Reserve[1],
-          6
-        );
-        const totalRGP2: number | any = ethers.utils.formatUnits(
-          pool2Reserve[0],
-          18
-        );
-        const totalRGP1: number | any = ethers.utils.formatUnits(
-          pool1Reserve[0],
-          18
-        );
-        const totalUSDT3: number | any = ethers.utils.formatUnits(
-          pool3Reserve[1],
-          6
-        );
-        const rgpPrice = totalUSDT2 / totalRGP2;
-        const RGP_USDTLiq = totalUSDT2 * 2;
-
-        const RGP_WROSELiquidity = Number(totalRGP1) * Number(rgpPrice) * 2;
-        const USDT_WROSELiquidity = totalUSDT3 * 2;
-
-        dispatch(
-          updateTotalLiquidity([
-            {
-              deposit: "RGP",
-              liquidity: "0",
-              apy: "0",
-            },
-            {
-              deposit: await deposit(pool1.token0, pool1.token1),
-              liquidity: RGP_WROSELiquidity,
-              apy: calculateApy(rgpPrice, RGP_WROSELiquidity, 1200),
-            },
-            {
-              deposit: await deposit(pool2.token0, pool2.token1),
-              liquidity: RGP_USDTLiq,
-              apy: calculateApy(rgpPrice, RGP_USDTLiq, 700),
-            },
-            {
-              deposit: await deposit(pool3.token0, pool3.token1), //await deposit(pool3.token0, pool3.token1),
-              liquidity: USDT_WROSELiquidity,
-              apy: calculateApy(rgpPrice, USDT_WROSELiquidity, 100),
-            },
-          ])
-        );
-      } else {
-        const [
-          pool1,
-          pool3,
-          specialPool2,
-          farmProductContract
-        ] = await Promise.all([
-          smartSwapLPTokenPoolOne(
-            SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number],
-            library
-          ),
-          smartSwapLPTokenPoolThree(
-            SMARTSWAPLP_TOKEN3ADDRESSES[chainId as number],
-            library
-          ), 
-          RGPSpecialPool2(RGPSPECIALPOOLADDRESSES2[chainId as number], library),
-            productStakingContract(
-              PRODUCTSTAKINGADDRESSES[chainId as number],
-              library
-            )
-        ]);
-
-        const [
-          pool1Reserve,
-          pool3Reserve,
-          rgpTotalStakingV2,
-          farmProductTotalStaking
-        ] = await Promise.all([
-          pool1.getReserves(),
-          pool3.getReserves(),
-          await specialPool2.totalStaking(),
-          farmProductContract.totalStaking()
-        ]);
-        const RGPprice: number | any = ethers.utils.formatUnits(
-          pool1Reserve[0].mul(1000).div(pool1Reserve[1]),
-          3
-        );
-        const BNBprice = getBnbPrice(pool3, pool3Reserve);
-        const RGPLiquidityV2 = ethers.utils
-          .formatUnits(rgpTotalStakingV2.mul(Math.floor(1000 * RGPprice)), 21)
-          .toString();
-          const productFarmLiquidity = ethers.utils
-          .formatUnits(farmProductTotalStaking.mul(Math.floor(1000 * RGPprice)), 21)
-          .toString();
-          console.log({productFarmLiquidity});
-
-        dispatch(
-          updateTotalLiquidity([
-           
-            {
-              deposit: "RGP",
-              liquidity: RGPLiquidityV2,
-              apy: 8.756,
-            },
-          ])
-        );
-        dispatch(updateFarmProductLiquidity([
-          {
-            deposit:"RGP",
-            liquidity:productFarmLiquidity
-          }
-        ]))
-      }
-    } catch (error) {
-      console.log(error, "get farm data");
-      setfarmDataLoading(false);
-      //if (!toast.isActive(id)) {
-      //  showErrorToast();
-    }
-    setfarmDataLoading(false);
-  };
-
-  const specialPoolStaked = async () => {
-    if (account) {
-      try {
-        const specialPool = await RGPSpecialPool(
-          RGPSPECIALPOOLADDRESSES[chainId as number],
-          library
-        );
-        const RGPStakedEarned = await Promise.all([
-          await specialPool.userData(account),
-          await specialPool.calculateRewards(account),
-        ]);
-        return RGPStakedEarned;
-      } catch (error) {
-        return error;
-      }
-    }
-  };
-
-  const specialPoolStakedV2 = async () => {
-    if (account) {
-      try {
-        const specialPool = await RGPSpecialPool2(
-          RGPSPECIALPOOLADDRESSES2[chainId as number],
-          library
-        );
-        const RGPStakedEarnedV2 = await Promise.all([
-          await specialPool.userData(account),
-          await specialPool.calculateRewards(account),
-        ]);
-        return RGPStakedEarnedV2;
-      } catch (error) {
-        return error;
-      }
-    }
-  };
-  const productFarmStaked = async () => {
-    if (account) {
-      try {
-        const productFarm = await productStakingContract(
-          PRODUCTSTAKINGADDRESSES[chainId as number],
-          library
-        );
-        console.log({productFarm});
-        const productFarmStakedEarned =  await Promise.all([
-          productFarm.userInfo(account),
-          productFarm.userData(account),
-        ]);
-        return productFarmStakedEarned;
-      } catch (error) {
-        return error;
-      }
-    }
-  };
-
-  const getTokenStaked = async () => {
-    try {
-      if (
-        (account && Number(chainId) === Number(SupportedChainId.POLYGON)) ||
-        (account && Number(chainId) === Number(SupportedChainId.POLYGONTEST))
-      ) {
-        const masterChefV2 = await MasterChefV2Contract(
-          MASTERCHEFV2ADDRESSES[chainId as number],
-          library
-        );
-       
-
-        const RGPStakedEarnedV2 = await specialPoolStakedV2();
-       
-        let RGPStakedV2;
-        let RGPEarnedV2;
-
-        if (RGPStakedEarnedV2) {
-          const [specialPoolStakedV2, specialPoolEarnedV2] = RGPStakedEarnedV2;
-
-          RGPStakedV2 = formatBigNumber(specialPoolStakedV2.tokenQuantity);
-          RGPEarnedV2 = formatBigNumber(specialPoolEarnedV2);
-        } else {
-          RGPStakedV2 = 0;
-          RGPEarnedV2 = 0;
-        }
-
-        dispatch(
-          updateTokenStaked([
-            { staked: RGPStakedV2, earned: RGPEarnedV2, symbol: "RGP" },
-          ])
-        );
-        const productFarmStakedEarn = await productFarmStaked();
-        let productStakedValue;
-        if(productFarmStakedEarn){
-          const [productStaked] = productFarmStakedEarn;
-          productStakedValue = formatBigNumber(productStaked.tokenQuantity)
-
-        }
-        dispatch(
-          updateProductStaked([{staked:productStakedValue}])
-        );
-       
-
-        setInitialLoad(false);
-      } else if (
-        account &&
-        Number(chainId) === Number(SupportedChainId.OASISTEST)
-      ) {
-        const masterChefV2 = await MasterChefV2Contract(
-          MASTERCHEFV2ADDRESSES[chainId as number],
-          library
-        );
-
-
-        setInitialLoad(false);
-      } else if (
-        account &&
-        Number(chainId) === Number(SupportedChainId.OASISMAINNET)
-      ) {
-        const masterChefV2 = await MasterChefV2Contract(
-          MASTERCHEFV2ADDRESSES[chainId as number],
-          library
-        );
-       
-
-
-        setInitialLoad(false);
-      } else if (
-        account &&
-        Number(chainId) !== Number(SupportedChainId.POLYGON)
-      ) {
-        const masterChefV2 = await MasterChefV2Contract(
-          MASTERCHEFV2ADDRESSES[chainId as number],
-          library
-        );
-
-        const RGPStakedEarned = await specialPoolStaked();
-        const RGPStakedEarnedV2 = await specialPoolStakedV2();
-
-        let RGPStaked;
-        let RGPEarned;
-
-        let RGPStakedV2;
-        let RGPEarnedV2;
-        const productFarmStakedEarn = await productFarmStaked();
-        let productStakedValue;
-        if(productFarmStakedEarn){
-          const [productStaked,productEarned] = productFarmStakedEarn;
-          productStakedValue = formatBigNumber(productStaked.tokenQuantity)
-
-        }
-        dispatch(
-          updateProductStaked([{staked:productStakedValue}])
-        );
-        if (RGPStakedEarned) {
-          const [specialPoolStaked, specialPoolEarned] = RGPStakedEarned;
-
-          RGPStaked = formatBigNumber(specialPoolStaked.tokenQuantity);
-          RGPEarned = formatBigNumber(specialPoolEarned);
-        } else {
-          RGPStaked = 0;
-          RGPEarned = 0;
-        }
-
-        if (RGPStakedEarnedV2) {
-          const [specialPoolStakedV2, specialPoolEarnedV2] = RGPStakedEarnedV2;
-
-          RGPStakedV2 = formatBigNumber(specialPoolStakedV2.tokenQuantity);
-          RGPEarnedV2 = formatBigNumber(specialPoolEarnedV2);
-        } else {
-          RGPStakedV2 = 0;
-          RGPEarnedV2 = 0;
-        }
-
-        dispatch(
-          updateTokenStaked([
-
-            { staked: RGPStakedV2, earned: RGPEarnedV2, symbol: "RGP" },
-          ])
-        );
-
-        setInitialLoad(false);
-      }
-    } catch (error) {
-      if (error.code == -32603) {
-        dispatch(
-          setOpenModal({
-            message: `RPC URL Error. Failed to load accurate data.`,
-            trxState: TrxState.TransactionFailed,
-          })
-        );
-      }
-      console.error(error, "getTokenStaked =>Farming v2");
-    }
-  };
-
-  const calculateApy = (rgpPrice: any, totalLiquidity: any, inflation: any) =>
-    (rgpPrice * inflation * 365 * 100) / totalLiquidity;
-
-  const getBusdBnbLiquidity = (pool3: any, pool3Reserve: any) => {
-    const pool3Testnet = "0x120f3E6908899Af930715ee598BE013016cde8A5";
-    let BUSD_BNBLiquidity;
-    if (pool3 && pool3.address === pool3Testnet) {
-      BUSD_BNBLiquidity = ethers.utils
-        .formatEther(pool3Reserve[0].mul(2))
-        .toString();
-    } else {
-      BUSD_BNBLiquidity = ethers.utils
-        .formatEther(pool3Reserve[1].mul(2))
-        .toString();
-    }
-    return BUSD_BNBLiquidity;
-  };
-
-  const getBnbPrice = (pool3: any, pool3Reserve: any): number => {
-    const pool3testnet = "0x120f3E6908899Af930715ee598BE013016cde8A5";
-    let BNBprice;
-    if (pool3 && pool3.address === pool3testnet) {
-      BNBprice = ethers.utils.formatUnits(
-        pool3Reserve[0].mul(1000).div(pool3Reserve[1]),
-        3
-      );
-    } else {
-      BNBprice = ethers.utils.formatUnits(
-        pool3Reserve[1].mul(1000).div(pool3Reserve[0]),
-        3
-      );
-    }
-    return Number(BNBprice);
-  };
-
-  const getAXSBUSDLiquidity = (pool5: any, pool5Reserve: any) => {
-    const pool5Testnet = "0x816b823d9C7F30327B2c626DEe4aD731Dc9D3641";
-    let AXS_BUSDLiquidity;
-    // BUSD is token0 on testnet but token1 on mainnet, thus the reason to check
-    // before calculating the liquidity based on BUSD
-    if (pool5 && pool5.address === pool5Testnet) {
-      AXS_BUSDLiquidity = ethers.utils
-        .formatEther(pool5Reserve[0].mul(2))
-        .toString();
-    } else {
-      AXS_BUSDLiquidity = ethers.utils
-        .formatEther(pool5Reserve[1].mul(2))
-        .toString();
-    }
-    return AXS_BUSDLiquidity;
   };
 
   const [welcomeModal, setWelcomeModal] = useState(false);
@@ -1383,9 +572,6 @@ const refreshSpecialData =()=>{
               background={selected === farmSection.STAKING ? useSelectedBackgroundColor : useNotSelectedBackgroundColor}
               color={useSelectedColor}
               fontSize={isMobileDevice ? '12px' : '14px'}
-              // px={5}
-              // py={4}
-              // minWidth={{ base: "none", md: "200px", lg: "200px" }}
 
               onClick={() => {
                 handleSelect(farmSection.STAKING);
@@ -1559,7 +745,6 @@ const refreshSpecialData =()=>{
             }
 
           </TabList>
-          {/* <Divider display={isMobileDevice ? undefined : "none"} my='4' /> */}
           <Flex
             ml={5}
             display={isMobileDevice ? "none" : undefined}
@@ -1736,10 +921,7 @@ const refreshSpecialData =()=>{
                          })}
                         </Flex>
                       </Box>
-    )
-                         })}
-                     
-                     
+                           )})}
                     </Stack>
                   ) : // </Stack>
                   keyword &&
@@ -1911,7 +1093,7 @@ const refreshSpecialData =()=>{
           </TabPanel>
 
           <TabPanel padding='0px'>
-           
+
               <Flex
               justifyContent='center'
               alignItems='center'
@@ -1933,8 +1115,6 @@ const refreshSpecialData =()=>{
               >
                 <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
                   <Grid
-                    // alignItems='center'
-                    // justifyContent='space-between'
                     templateColumns={["repeat(1,1fr)","repeat(1,1fr)","repeat(6,1fr)"]}
                     px={4}
                     py={4}
