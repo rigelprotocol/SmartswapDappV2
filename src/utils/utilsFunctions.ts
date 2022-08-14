@@ -1,15 +1,15 @@
-import {JsonRpcProvider, Web3Provider} from "@ethersproject/providers";
-import {Contract} from "@ethersproject/contracts";
+import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
+import { Contract } from "@ethersproject/contracts";
 import ERC20Token from "./abis/erc20.json";
-import {SupportedChainSymbols, WrappedSymbols} from "./constants/chains";
+import { SupportedChainSymbols, WrappedSymbols } from "./constants/chains";
 import detectEthereumProvider from "@metamask/detect-provider";
-import {ethers} from "ethers";
-import {escapeRegExp} from ".";
-import {inputRegex} from "../components/Farming/Modals/Filter";
-import {farmStateInterface} from "../state/farm/reducer";
-import {useSelector} from "react-redux";
-import {useCallback, useMemo, useState} from "react";
-import {RootState} from "../state";
+import { ethers } from "ethers";
+import { escapeRegExp } from ".";
+import { inputRegex } from "../components/Farming/Modals/Filter";
+import { farmStateInterface } from "../state/farm/reducer";
+import { useSelector } from "react-redux";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { RootState } from "../state";
 import { RPC } from "../connectors";
 
 export const removeSideTab = (sideBarName: string): void => {
@@ -139,41 +139,47 @@ export const checkSideTab = (sideBarName: string): boolean => {
   }
 };
 
-export const changeFrequencyTodays = (frequency: string): { today: number,interval:number,days:number} => {
-  let interval = 60 * 24
-  let date = new Date()
-  let today = (date.getTime() /(1000*60))
-  let days = 1
+export const changeFrequencyTodays = (
+  frequency: string
+): { today: number; interval: number; days: number } => {
+  let interval = 60 * 24;
+  let date = new Date();
+  let today = date.getTime() / (1000 * 60);
+  let days = 1;
   if (frequency === "daily") {
-    interval = 60*24 
+    interval = 60 * 24;
   } else if (frequency === "weekly") {
-    days= 7
-    interval = days * 24 * 60
-    today=today+1
+    days = 7;
+    interval = days * 24 * 60;
+    today = today + 1;
   } else if (frequency === "monthly") {
-    days =30
+    days = 30;
     // interval = days * 24 * 60
-    today=today+1
+    today = today + 1;
   } else if (frequency === "30" || frequency === "5") {
-    interval = parseInt(frequency)
-    today=today+1
+    interval = parseInt(frequency);
+    today = today + 1;
   }
-  return {today,interval,days}
-}
+  return { today, interval, days };
+};
 
 export const useProvider = () => {
   const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
-  const [prov, setProv] = useState<JsonRpcProvider>(new JsonRpcProvider(`https://bsc-dataseed.binance.org`, 56));
+  const [prov, setProv] = useState<JsonRpcProvider>(
+    new JsonRpcProvider(`https://bsc-dataseed.binance.org`, 56)
+  );
 
-  useMemo(() => {
+  useEffect(() => {
     const getProvider = () => {
-      const defaultProvider = new JsonRpcProvider(RPC[ChainId], ChainId as number);
+      const defaultProvider = new JsonRpcProvider(
+        RPC[ChainId],
+        ChainId as number
+      );
       setProv(defaultProvider);
     };
     getProvider();
-
   }, [ChainId]);
-  return { prov }
+  return { prov };
 };
 
 export const provider = async () => {
@@ -181,7 +187,7 @@ export const provider = async () => {
     let ethProvider = await detectEthereumProvider();
     if (ethProvider !== window.ethereum && window.ethereum !== "undefined") {
       ethProvider = window.ethereum;
-      return new Web3Provider(ethProvider as any)
+      return new Web3Provider(ethProvider as any);
     }
     return new Web3Provider(ethProvider as any);
   } catch (e) {
@@ -201,9 +207,9 @@ export const getERC20Token = async (
   address: string,
   library: Web3Provider | JsonRpcProvider | undefined
 ) => {
-   const type = library instanceof Web3Provider;
-   const signerOrProvider =  type ? library?.getSigner() : library;
-   return new Contract(address, ERC20Token, signerOrProvider);
+  const type = library instanceof Web3Provider;
+  const signerOrProvider = type ? library?.getSigner() : library;
+  return new Contract(address, ERC20Token, signerOrProvider);
 };
 
 export const getDecimals = async (
@@ -218,7 +224,7 @@ export const getDecimals = async (
 export const switchNetwork = async (
   chainId: string,
   account: string,
-  library: Web3Provider | undefined,
+  library: Web3Provider | undefined
 ) => {
   const polygonParams = {
     chainId: "0x89",
@@ -284,7 +290,7 @@ export const switchNetwork = async (
           console.error(`Add chain error ${addError}`);
         }
       } else if (switchError.code === 4001) {
-        throw new Error('User rejected this request');
+        throw new Error("User rejected this request");
       }
       console.error(`Switch chain error ${switchError}`);
       // handle other "switch" errors
@@ -396,7 +402,7 @@ export const getOutPutDataFromEvent = async (
   eventsArray,
   decimal
 ) => {
-  const duplicateArray:any = [];
+  const duplicateArray: any = [];
   eventsArray.map((event) => {
     if (event.address.toLowerCase() === tokenAddress.toLowerCase()) {
       duplicateArray.push(event);

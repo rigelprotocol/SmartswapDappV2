@@ -8,7 +8,7 @@ import { ALL_SUPPORTED_CHAIN_IDS, SupportedChainId } from "../constants/chains";
 const NETWORK_URL = process.env.REACT_APP_NETWORK_URL;
 
 export const RPC = {
-  [SupportedChainId.BINANCE]: `https://bsc-dataseed.binance.org`,
+  [SupportedChainId.BINANCE]: `https://bsc-dataseed4.binance.org`,
   [SupportedChainId.BINANCETEST]:
     "https://data-seed-prebsc-2-s3.binance.org:8545",
   [SupportedChainId.ROPSTEN]:
@@ -19,7 +19,7 @@ export const RPC = {
     "https://eth-goerli.alchemyapi.io/v2/Dkk5d02QjttYEoGmhZnJG37rKt8Yl3Im",
   [SupportedChainId.KOVAN]:
     "https://eth-kovan.alchemyapi.io/v2/6OVAa_B_rypWWl9HqtiYK26IRxXiYqER",
-  [SupportedChainId.POLYGON]: `https://polygon-rpc.com/`,
+  [SupportedChainId.POLYGON]: `https://rpc-mainnet.matic.network`,
   [SupportedChainId.POLYGONTEST]: "https://rpc-mumbai.matic.today",
   [SupportedChainId.OASISTEST]: "https://testnet.emerald.oasis.dev",
   [SupportedChainId.OASISMAINNET]: "https://emerald.oasis.dev",
@@ -43,7 +43,7 @@ if (typeof NETWORK_URL === "undefined") {
 
 export const network = new NetworkConnector({
   urls: RPC,
-  defaultChainId: 56
+  defaultChainId: 56,
 });
 
 let networkLibrary: Web3Provider | undefined;

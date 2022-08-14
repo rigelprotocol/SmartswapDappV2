@@ -3,33 +3,25 @@ import { useWeb3React } from "@web3-react/core";
 import {
   LiquidityPairInstance,
   MasterChefV2Contract,
-  RGPSpecialPool2,
   smartFactory,
-  SmartSwapRouter,
 } from "../Contracts";
 import {
   MASTERCHEFV2ADDRESSES,
-  SMARTSWAPROUTER,
   SMARTSWAPFACTORYADDRESSES,
   RGPADDRESSES,
-  WNATIVEADDRESSES,
   BUSD,
   USDT,
   USDC,
-  RGPSPECIALPOOLADDRESSES,
-  RGPSPECIALPOOLADDRESSES2,
 } from "../addresses";
 import { Contract, ethers } from "ethers";
-import BigNumber from "bignumber.js";
-import { JSBI } from "@uniswap/sdk";
-import { getERC20Token } from "../utilsFunctions";
+import { getERC20Token, useProvider } from "../utilsFunctions";
 import { useDispatch, useSelector } from "react-redux";
 import {
   updateChainId,
   updateFarms,
   updateLoadingState,
-  updateSpecialPool,
 } from "../../state/newfarm/actions";
+import { RootState } from "../../state";
 
 export const useGetFarmData = (reload?: boolean, setReload?: any) => {
   const { chainId, account, library } = useWeb3React();
@@ -50,6 +42,9 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
   >([]);
 
   const dispatch = useDispatch();
+  const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
+  const { prov } = useProvider();
+  const lib = library ? library : prov;
 
   const handleUpdateFarms = useCallback(
     (value) => {
@@ -88,25 +83,22 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
     try {
       let rgpPrice;
       const pair = await smartFactory(
-        SMARTSWAPFACTORYADDRESSES[chainId as number],
-        library
+        SMARTSWAPFACTORYADDRESSES[ChainId as number],
+        lib
       );
 
-      if (chainId === 56 || chainId === 97) {
+      if (ChainId === 56 || ChainId === 97) {
         const pairAddress = await pair.getPair(
-          RGPADDRESSES[chainId as number],
-          BUSD[chainId as number]
+          RGPADDRESSES[ChainId as number],
+          BUSD[ChainId as number]
         );
-        const LpTokenContract = await LiquidityPairInstance(
-          pairAddress,
-          library
-        );
+        const LpTokenContract = await LiquidityPairInstance(pairAddress, lib);
         const token0Address = await LpTokenContract.token0();
         const token1Address = await LpTokenContract.token1();
 
         const [token0Contract, token1Contract] = await Promise.all([
-          getERC20Token(token0Address, library),
-          getERC20Token(token1Address, library),
+          getERC20Token(token0Address, lib),
+          getERC20Token(token1Address, lib),
         ]);
 
         const [decimal0, decimal1] = await Promise.all([
@@ -116,30 +108,27 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
 
         const reserves = await LpTokenContract.getReserves();
         const totalBUSD: number | any = ethers.utils.formatUnits(
-          token0Address === BUSD[chainId as number] ? reserves[0] : reserves[1],
-          token0Address === BUSD[chainId as number] ? decimal0 : decimal1
+          token0Address === BUSD[ChainId as number] ? reserves[0] : reserves[1],
+          token0Address === BUSD[ChainId as number] ? decimal0 : decimal1
         );
 
         const totalRGP: number | any = ethers.utils.formatUnits(
-          token0Address === BUSD[chainId as number] ? reserves[1] : reserves[0],
-          token0Address === BUSD[chainId as number] ? decimal1 : decimal0
+          token0Address === BUSD[ChainId as number] ? reserves[1] : reserves[0],
+          token0Address === BUSD[ChainId as number] ? decimal1 : decimal0
         );
 
         rgpPrice = totalBUSD / totalRGP;
       } else {
         const pairAddress = await pair.getPair(
-          RGPADDRESSES[chainId as number],
-          USDT[chainId as number]
+          RGPADDRESSES[ChainId as number],
+          USDT[ChainId as number]
         );
-        const LpTokenContract = await LiquidityPairInstance(
-          pairAddress,
-          library
-        );
+        const LpTokenContract = await LiquidityPairInstance(pairAddress, lib);
         const token0Address = await LpTokenContract.token0();
         const token1Address = await LpTokenContract.token1();
         const [token0Contract, token1Contract] = await Promise.all([
-          getERC20Token(token0Address, library),
-          getERC20Token(token1Address, library),
+          getERC20Token(token0Address, lib),
+          getERC20Token(token1Address, lib),
         ]);
         const [symbol0, symbol1] = await Promise.all([
           token0Contract.symbol(),
@@ -152,12 +141,12 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
         ]);
         const reserves = await LpTokenContract.getReserves();
         const totalUSDT: number | any = ethers.utils.formatUnits(
-          token0Address === USDT[chainId as number] ? reserves[0] : reserves[1],
-          token0Address === USDT[chainId as number] ? decimal0 : decimal1
+          token0Address === USDT[ChainId as number] ? reserves[0] : reserves[1],
+          token0Address === USDT[ChainId as number] ? decimal0 : decimal1
         );
         const totalRGP: number | any = ethers.utils.formatUnits(
-          token0Address === USDT[chainId as number] ? reserves[1] : reserves[0],
-          token0Address === USDT[chainId as number] ? decimal1 : decimal0
+          token0Address === USDT[ChainId as number] ? reserves[1] : reserves[0],
+          token0Address === USDT[ChainId as number] ? decimal1 : decimal0
         );
         rgpPrice = totalUSDT / totalRGP;
 
@@ -173,7 +162,7 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
   const getLpTokenReserve = async (address: string) => {
     //this function gets the reserves of an LP token, it takes the LP token address as an argument
     try {
-      const LpTokenContract = await LiquidityPairInstance(address, library);
+      const LpTokenContract = await LiquidityPairInstance(address, lib);
       const [totalReserves, token0, token1] = await Promise.all([
         LpTokenContract.getReserves(),
         LpTokenContract.token0(),
@@ -181,8 +170,8 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
       ]);
 
       const [token0Contract, token1Contract] = await Promise.all([
-        getERC20Token(token0, library),
-        getERC20Token(token1, library),
+        getERC20Token(token0, lib),
+        getERC20Token(token1, lib),
       ]);
       const [symbol0, decimals0, symbol1, decimals1] = await Promise.all([
         token0Contract.symbol(),
@@ -235,21 +224,21 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
   ) => {
     try {
       const masterchef = await MasterChefV2Contract(
-        MASTERCHEFV2ADDRESSES[chainId as number],
-        library
+        MASTERCHEFV2ADDRESSES[ChainId as number],
+        lib
       );
-      const LPInstance = await LiquidityPairInstance(address, library);
+      const LPInstance = await LiquidityPairInstance(address, lib);
       const reserves = await getLpTokenReserve(address);
       const totalRGP = reserves
-        ? RGPADDRESSES[chainId as number] === reserves.tokenAddress0
+        ? RGPADDRESSES[ChainId as number] === reserves.tokenAddress0
           ? reserves.reserves0.toString()
           : reserves.reserves1.toString()
         : "1";
 
       const totalStable = reserves
-        ? BUSD[chainId as number] === reserves.tokenAddress0 ||
-          USDT[chainId as number] === reserves.tokenAddress0 ||
-          USDC[chainId as number] === reserves.tokenAddress0
+        ? BUSD[ChainId as number] === reserves.tokenAddress0 ||
+          USDT[ChainId as number] === reserves.tokenAddress0 ||
+          USDC[ChainId as number] === reserves.tokenAddress0
           ? ethers.utils.formatUnits(
               reserves.reserves0.toString(),
               reserves.decimals0
@@ -260,8 +249,8 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
             )
         : "1";
       const [token0, token1] = await Promise.all([
-        getERC20Token(reserves && reserves.tokenAddress0, library),
-        getERC20Token(reserves && reserves.tokenAddress1, library),
+        getERC20Token(reserves && reserves.tokenAddress0, lib),
+        getERC20Token(reserves && reserves.tokenAddress1, lib),
       ]);
 
       const [symbol0, symbol1] = await Promise.all([
@@ -296,7 +285,7 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
       //     LPInstance.balanceOf(account),
       //     LPInstance.allowance(
       //       account,
-      //       MASTERCHEFV2ADDRESSES[chainId as number]
+      //       MASTERCHEFV2ADDRESSES[ChainId as number]
       //     ),
       //   ]);
       // const tokenStaked = await userInfo.amount;
@@ -336,21 +325,21 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
   // ) => {
   //   try {
   //     const masterchef = await MasterChefV2Contract(
-  //       MASTERCHEFV2ADDRESSES[chainId as number],
-  //       library
+  //       MASTERCHEFV2ADDRESSES[ChainId as number],
+  //       lib
   //     );
-  //     const LPInstance = await LiquidityPairInstance(address, library);
+  //     const LPInstance = await LiquidityPairInstance(address, lib);
   //     const reserves = await getLpTokenReserve(address);
   //     const totalRGP = reserves
-  //       ? RGPADDRESSES[chainId as number] === reserves.tokenAddress0
+  //       ? RGPADDRESSES[ChainId as number] === reserves.tokenAddress0
   //         ? reserves.reserves0.toString()
   //         : reserves.reserves1.toString()
   //       : "1";
 
   //     const totalStable = reserves
-  //       ? BUSD[chainId as number] === reserves.tokenAddress0 ||
-  //         USDT[chainId as number] === reserves.tokenAddress0 ||
-  //         USDC[chainId as number] === reserves.tokenAddress0
+  //       ? BUSD[ChainId as number] === reserves.tokenAddress0 ||
+  //         USDT[ChainId as number] === reserves.tokenAddress0 ||
+  //         USDC[ChainId as number] === reserves.tokenAddress0
   //         ? ethers.utils.formatUnits(
   //             reserves.reserves0.toString(),
   //             reserves.decimals0
@@ -362,8 +351,8 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
   //       : "1";
   //     const rgpPrice = await calculateRigelPrice();
   //     const [token0, token1] = await Promise.all([
-  //       getERC20Token(reserves && reserves.tokenAddress0, library),
-  //       getERC20Token(reserves && reserves.tokenAddress1, library),
+  //       getERC20Token(reserves && reserves.tokenAddress0, lib),
+  //       getERC20Token(reserves && reserves.tokenAddress1, lib),
   //     ]);
 
   //     const [symbol0, symbol1] = await Promise.all([
@@ -398,7 +387,7 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
   //         LPInstance.balanceOf(account),
   //         LPInstance.allowance(
   //           account,
-  //           MASTERCHEFV2ADDRESSES[chainId as number]
+  //           MASTERCHEFV2ADDRESSES[ChainId as number]
   //         ),
   //       ]);
   //     const tokenStaked = await userInfo.amount;
@@ -435,11 +424,11 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
         LpAddress[i],
         rgpPrice,
         i,
-        chainId === 137 || chainId === 80001
+        ChainId === 137 || ChainId === 80001
           ? 2014.83125
-          : chainId === 56 || chainId === 97
+          : ChainId === 56 || ChainId === 97
           ? 4300
-          : chainId === 42262 || chainId === 42261
+          : ChainId === 42262 || ChainId === 42261
           ? 1343.220833
           : undefined
       );
@@ -452,13 +441,13 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
   };
 
   useMemo(async () => {
-    if (account) {
+    if (ChainId) {
       try {
         setLoading(true);
         handleLoading(true);
         const masterchef = await MasterChefV2Contract(
-          MASTERCHEFV2ADDRESSES[chainId as number],
-          library
+          MASTERCHEFV2ADDRESSES[ChainId as number],
+          lib
         );
         const rgpPrice = await calculateRigelPrice();
 
@@ -469,16 +458,17 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
         setLoading(false);
 
         handleLoading(false);
-        handleUpdateChainId(chainId);
+        handleUpdateChainId(ChainId);
 
         handleUpdateFarms(farms);
         setFarmData(farms);
         setReload(false);
       } catch (err) {
         console.log(err);
+        setLoading(false);
       }
     }
-  }, [chainId, reload]);
+  }, [ChainId, reload]);
 
   return { farmdata, loadingState };
 };
