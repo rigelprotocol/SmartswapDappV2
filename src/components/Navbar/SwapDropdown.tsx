@@ -113,7 +113,7 @@ padding="16px 16px 24px 16px"
       py="10px"
       _hover={{background:`${bg}`,boxShadow:`${boxShadow}`,borderRadius:"6px"}}
       mt="3px">
-        <Nav to="/bridge/router">
+        <Nav to="/bridge/spherium">
           <Flex justifyContent="space-between">
             <Flex>
               <Box>
@@ -144,11 +144,11 @@ padding="16px 16px 24px 16px"
        py="10px"
        _hover={{background:`${bg}`,boxShadow:`${boxShadow}`,borderRadius:"6px"}}
       >
-        <Nav to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' : '/auto-period'}>
+        <Nav to="/bridge/router">
           <Flex justifyContent="space-between">
   <Flex>
         <Box>
-          <Img src={Router} alt="Spherium" mt="10px" />
+          <Img src={Router} alt="Router" mt="10px" />
         </Box>
         <Box ml="20px">
         <Text

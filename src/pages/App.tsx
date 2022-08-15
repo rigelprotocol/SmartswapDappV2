@@ -26,6 +26,7 @@ import YieldFarm from "./FarmingV2/YieldFarm";
 import SmartBid from "./SmartBid";
 import BidDetails from "./SmartBid/BidDetails";
 import ROuterBridge from "./Swap/Bridge/RouterBridge";
+import SpheriumBridge from "./Swap/Bridge/SpheriumBridge";
 
 
  function App() {
@@ -75,6 +76,7 @@ import ROuterBridge from "./Swap/Bridge/RouterBridge";
               <Route exact strict path="/auto-period" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? AutoTime : Swap } />
               <Route exact strict path="/auto-period/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? AutoTime : Swap } />
               <Route exact strict path="/bridge/router" component={ROuterBridge} />
+              <Route exact strict path="/bridge/spherium" component={SpheriumBridge} />
               <Route
                 exact
                 strict

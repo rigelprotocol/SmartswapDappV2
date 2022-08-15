@@ -16,11 +16,8 @@ const useGenerateRouterProtocolLink = () => {
       fromChain: "56",
       toChain: "137",
       fromToken: "0xfa262f303aa244f9cc66f312f0755d89c3793192",
-      toToken: "0xfa262f303aa244f9cc66f312f0755d89c3793192",
-      dstChains: "137,56,26863,97",
-      srcChains: "137,56,26863,97",
-      dstTokens:
-        "0xfa262f303aa244f9cc66f312f0755d89c3793192,0xfa262f303aa244f9cc66f312f0755d89c3793192",
+      dstChains: "137,56",
+      srcChains: "137,56",
       ctaColor: "#319EF6",
       textColor: "white",
       backgroundColor: "#213345",

@@ -35,7 +35,7 @@ export const Nav = ({ to, label, active,img }: { to: string; label: string, acti
     
   >
     <Flex >
-      {img} <Text ml="8px">{label}</Text>
+      {img} <Text ml="8px" fontSize="16px">{label}</Text>
     </Flex>
     
   </NavLink>
