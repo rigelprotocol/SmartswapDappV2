@@ -760,7 +760,7 @@ export function Index() {
                             Number(SupportedChainId.POLYGONTEST) ||
                           Number(ChainId) === Number(SupportedChainId.POLYGON)
                             ? "QuickSwap"
-                            : "Pancake LP Farm"}
+                            : "Pancake LP"}
                         </Text>
                       </Stack>
                     </MenuItem>
