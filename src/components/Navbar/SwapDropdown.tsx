@@ -113,8 +113,8 @@ padding="16px 16px 24px 16px"
       py="10px"
       _hover={{background:`${bg}`,boxShadow:`${boxShadow}`,borderRadius:"6px"}}
       mt="3px">
-        <Nav to="/bridge/spherium">
-          <Flex justifyContent="space-between">
+        <Nav to="#">
+          <Flex justifyContent="space-between" w="360px">
             <Flex>
               <Box>
           <Img src={Spherium} alt="Spherium" mt="10px" />
@@ -145,7 +145,7 @@ padding="16px 16px 24px 16px"
        _hover={{background:`${bg}`,boxShadow:`${boxShadow}`,borderRadius:"6px"}}
       >
         <Nav to="/bridge/router">
-          <Flex justifyContent="space-between">
+          <Flex justifyContent="space-between" w="360px">
   <Flex>
         <Box>
           <Img src={Router} alt="Router" mt="10px" />

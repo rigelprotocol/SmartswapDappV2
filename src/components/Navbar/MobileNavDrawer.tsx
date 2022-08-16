@@ -236,7 +236,7 @@ const MobileNavDrawer = () => {
                   <Nav label="Bridge RGPs on Spherium" to="/bridge/spherium" />
                 </Flex>
                 <Flex ml={6} mb={3} onClick={onClose}>
-                  <Nav label="Bridge RGPs on Router" to="/bridge/router" />
+                  <Nav label="Bridge RGPs on Router" to="#" />
                 </Flex>
                   </Flex>
                 </Collapse>
