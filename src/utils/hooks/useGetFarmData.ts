@@ -3,6 +3,7 @@ import { useWeb3React } from "@web3-react/core";
 import {
   LiquidityPairInstance,
   MasterChefV2Contract,
+  RGPSpecialPool2,
   smartFactory,
 } from "../Contracts";
 import {
@@ -12,6 +13,7 @@ import {
   BUSD,
   USDT,
   USDC,
+  RGPSPECIALPOOLADDRESSES2,
 } from "../addresses";
 import { Contract, ethers } from "ethers";
 import { getERC20Token, useProvider } from "../utilsFunctions";
@@ -20,6 +22,7 @@ import {
   updateChainId,
   updateFarms,
   updateLoadingState,
+  updateSpecialPool,
 } from "../../state/newfarm/actions";
 
 import { RootState } from "../../state";
@@ -465,7 +468,7 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
 
         const specialPool = await RGPSpecialPool2(
           RGPSPECIALPOOLADDRESSES2[chainId as number],
-          library
+          lib
         );
 
         const rgpPrice = await calculateRigelPrice()
@@ -510,9 +513,7 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
           poolVersion: "2",
         }])
 
-        console.log("specialPoolAPY", specialPoolAPY)
         
-        console.log("specialPoolLiquidity", RGPLiquidity)
 
         const farms = await loopFarms(LpAddress, rgpPrice);
 
