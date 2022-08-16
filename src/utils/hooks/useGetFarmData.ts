@@ -30,6 +30,7 @@ import {
   updateLoadingState,
   updateSpecialPool,
 } from "../../state/newfarm/actions";
+import useGetSpecialPool from "./useGetSpecialPool";
 
 export const useGetFarmData = (reload?: boolean, setReload?: any) => {
   const { chainId, account, library } = useWeb3React();
@@ -57,6 +58,15 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
     },
     [dispatch]
   );
+
+  const handleUpdateSpecialPool = useCallback(
+    (value) => {
+      dispatch(updateSpecialPool({ value }));
+    },
+    [dispatch]
+  );
+
+
 
   const handleUpdateChainId = useCallback(
     (value) => {
@@ -445,11 +455,14 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
       );
       data.push(farm);
     }
-
     const iterated = data.filter((item) => item !== undefined);
 
     return iterated;
   };
+
+  const calculateApy = (rgpPrice : number, totalLiquidity: any, inflation: number) =>
+  (rgpPrice * inflation * 365 * 100) / totalLiquidity;
+
 
   useMemo(async () => {
     if (account) {
@@ -460,11 +473,60 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
           MASTERCHEFV2ADDRESSES[chainId as number],
           library
         );
-        const rgpPrice = await calculateRigelPrice();
+
+        const specialPool = await RGPSpecialPool2(
+          RGPSPECIALPOOLADDRESSES2[chainId as number],
+          library
+        );
+
+        const rgpPrice = await calculateRigelPrice()
+        
+        const rgpTotalStaking = await specialPool.totalStaking()
+
+        const RGPLiquidity = ethers.utils
+        .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * rgpPrice)), 21)
+        .toString();
+
+        const specialPoolAPY = calculateApy(rgpPrice, RGPLiquidity, 250)
+
+
+
+
 
         const farmLength = await masterchef.poolLength();
         const LpAddress = await getLpfarmAddresses(farmLength, masterchef);
+        
+
+
+        //this is temporal
+
+        handleUpdateSpecialPool([{
+          id: "0",
+          img: "rgp.svg",
+          // deposit: 'RGP',
+          deposit: "RGP",
+          earn: "RGP",
+          type: "RGP",
+          ARYValue: specialPoolAPY,
+          totalLiquidity: RGPLiquidity, //"1223",
+          tokensStaked: ["RGP", "0"],
+          RGPEarned: "0",
+          availableToken: "",
+          inflationPerDay: 0,
+          tokenPrice: 0,
+          totalVolumePerPool: 0,
+          farmingFee: 0,
+          pId: 10793,
+          poolAllowance: "",
+          poolVersion: "2",
+        }])
+
+        console.log("specialPoolAPY", specialPoolAPY)
+        
+        console.log("specialPoolLiquidity", RGPLiquidity)
+
         const farms = await loopFarms(LpAddress, rgpPrice);
+
 
         setLoading(false);
 

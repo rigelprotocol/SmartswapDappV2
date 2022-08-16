@@ -224,12 +224,16 @@ const refreshSpecialData =()=>{
   const { farmdata, loadingState } = useGetFarmData();
   const { LPData, loadingLP } = useGetNewFarms(selected === farmSection.SECOND_NEW_LP ? 2 : 1);
 
+  console.log("FD new", FarmData)
   const data = useFarmData();
   const newLP = useNewLPData();
   const farms = useSelector((state) => state.farming.content);
   const recentFarms = useSelector((state) => state.newFarming.content);
   const searchSection = useSelector((state) => state.farming);
   const newSearchSection = useSelector((state) => state.newFarming);
+  
+  const {specialPool} = useSelector((state) => state.newfarm);
+
 
   useEffect(() => {
     dispatch(clearAllFarms())
@@ -1075,8 +1079,8 @@ const refreshSpecialData =()=>{
                     <Text>Total Liquidity</Text>
                     <Text />
                   </Flex>
-                  {FarmData.contents.map((content: any, index: number) =>
-                    content.id === "13" ? (
+                  {specialPool?.map((content: any, index: number) =>
+                     (
                       <YieldFarm
                         farmDataLoading={farmDataLoading}
                         content={content}
@@ -1085,7 +1089,7 @@ const refreshSpecialData =()=>{
                         wallet={wallet}
                         URLReferrerAddress={refAddress}
                       />
-                    ) : null
+                    ) 
                   )}
                 </Box>
               </Box>
