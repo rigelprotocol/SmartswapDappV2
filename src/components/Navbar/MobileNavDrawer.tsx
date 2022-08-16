@@ -204,7 +204,7 @@ const MobileNavDrawer = () => {
                   activeStyle={{
                     color: "#319EF6",
                   }}
-                  to="/bridge/spherium"
+                  to="#"
                 >
                   <Flex
                     mb={2}
@@ -216,7 +216,7 @@ const MobileNavDrawer = () => {
                     bgColor={isOnBridge ? SwapBgColor : "transparent"}
                   >
                     <Flex ml={6}>
-                      <Nav label="Bridge" to="/bridge/spherium" img={<Img src={BridgeIcon} />} />
+                      <Nav label="Bridge" to="#" img={<Img src={BridgeIcon} />} />
                     </Flex>
                     {isOnBridge ? (
                       <ChevronUpIcon mr={2} />
@@ -233,7 +233,7 @@ const MobileNavDrawer = () => {
                     mb={3}
                   >
                           <Flex ml={6} mb={3} onClick={onClose}>
-                  <Nav label="Bridge RGPs on Spherium" to="/bridge/spherium" />
+                  <Nav label="Bridge RGPs on Spherium" to="#" />
                 </Flex>
                 <Flex ml={6} mb={3} onClick={onClose}>
                   <Nav label="Bridge RGPs on Router" to="#" />
