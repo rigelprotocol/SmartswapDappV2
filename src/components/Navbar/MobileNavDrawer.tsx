@@ -22,7 +22,7 @@ import {
 } from "@chakra-ui/icons";
 import { CloseIcon } from "../../theme/components/Icons";
 import { NavLink, useLocation } from "react-router-dom";
-import {Nav} from "./index"
+import { Nav } from "./index";
 import useToggle from "../../utils/hooks/useToggle";
 import { SupportedChainId } from "../../constants/chains";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
@@ -38,7 +38,8 @@ const MobileNavDrawer = () => {
 
   const { chainId } = useActiveWeb3React();
   const location = useLocation().pathname;
-  
+  const { search } = useLocation();
+
   return (
     <>
       <Flex
@@ -122,7 +123,7 @@ const MobileNavDrawer = () => {
                       mb={2}
                       onClick={onClose}
                     >
-                      <Nav label="Straight Swap" to="/swap" />
+                      <Nav label="Straight Swap" to={`/swap${search}`} />
                     </Text>
                     <Text
                       _hover={{ color: "#319EF6" }}
@@ -132,7 +133,9 @@ const MobileNavDrawer = () => {
                       <Nav
                         label="auto-period"
                         to={
-                          chainId === SupportedChainId.BINANCETEST ? "/auto-period" : "#"
+                          chainId === SupportedChainId.BINANCETEST
+                            ? "/auto-period"
+                            : "#"
                         }
                       />
                     </Text>
@@ -144,20 +147,26 @@ const MobileNavDrawer = () => {
                       <Nav
                         label="Set Price"
                         to={
-                          chainId === SupportedChainId.BINANCETEST ? "/set-price" : "#"
+                          chainId === SupportedChainId.BINANCETEST
+                            ? "/set-price"
+                            : "#"
                         }
                       />
                     </Text>
                   </Flex>
                 </Collapse>
                 <Flex ml={6} mb={3} onClick={onClose}>
-                  <Nav label="Liquidity" to="/pool" active={location === '/add' || location === '/remove' ? true : false}/>
+                  <Nav
+                    label="Liquidity"
+                    to={`/pool${search}`}
+                    active={location === "/add" || location === "/remove"}
+                  />
                 </Flex>
                 <Flex ml={6} mb={3} onClick={onClose}>
-                  <Nav label="Farming" to="/farming-v2" />
+                  <Nav label="Farming" to={`/farm${search}`} />
                 </Flex>
                 <Flex ml={6} mb={3} onClick={onClose}>
-                  <Nav label="NFT" to="/nft" />
+                  <Nav label="NFT" to={`/nft${search}`} />
                 </Flex>
                 <Flex ml={6} mb={3}>
                   <Link href="#" isExternal onClick={onClose}>
@@ -168,7 +177,7 @@ const MobileNavDrawer = () => {
                   DAPPS
                 </Text>
                 <Flex mb={3} alignItems="center" ml={6} onClick={onClose}>
-                  <Nav label="SmartSwap" to="/swap" />
+                  <Nav label="SmartSwap" to={`/swap${search}`} />
                 </Flex>
                 <Flex ml={6} mb={3}>
                   <Link href="https://gift.rigelprotocol.com/" isExternal>
