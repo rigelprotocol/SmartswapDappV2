@@ -33,53 +33,32 @@ const ROuterBridge = () => {
 const [routerProtocolLink] = useGenerateRouterProtocolLink()
   return (
     <>
-      <Joyride
-        steps={tourSteps}
-        run={run}
-        continuous={true}
-        scrollToFirstStep={true}
-        showSkipButton={true}
-        styles={{
-          options: {
-            arrowColor: bgColor,
-            backgroundColor: bgColor,
-            textColor: "#FFFFFF",
-            primaryColor: bgColor,
-          },
-        }}
-      />
-      <WelcomeModal
-        startToure={strartWelcomeRide}
-        openModal={welcomeModal}
-        closeModal={() => setWelcomeModal((state) => !state)}
-        textHeader={"Welcome to RigelProtocol SmartSwap"}
-        welcomeText='We would like to get you introduced to this platform and help you find your way around it.
-                     If you’d love that, then take this short tour.'
-      />
-      <Box fontSize='xl'>
-        <Flex
+      
+      <Box fontSize='xl' minH='100vh' zIndex={1}>
+        {/* <Flex
           minH='100vh'
           zIndex={1}
-          mt={6}
-          justifyContent='center'
+          mt="40px"
+          // justifyContent='center'
           flexWrap='wrap'
-        >
+          background="red"
+        > */}
           {isMobileDevice ? (
             <Box mb='110px'>
-              <Box mx={3} mt={8} w={["95%", "95%", "65%", "29.5%"]} mb={4}>
+              <Box  mt={8} w="96%" mx="auto" mb={4}>
               {routerProtocolLink && <iframe id="widget__iframe" height="610px" width="100%" 
   src={routerProtocolLink}
   style={{border: "none", borderRadius: "11px", boxShadow: "3px 3px 10px 4px rgba(0, 0, 0, 0.05)"}}>
   </iframe>}
               </Box>
 
-              <Box mx={3} w={["95%", "95%", "45%", "29.5%"]} mb={4}>
+              {/* <Box mx={3} w={["95%", "95%", "45%", "29.5%"]} mb={4}>
                 <ShowDetails />
               </Box>
 
               <Box mx={3} w={["95%", "95%", "45%", "29.5%"]} mb={4}>
                 <History />
-              </Box>
+              </Box> */}
             </Box>
           ) : (
             <>
@@ -99,7 +78,7 @@ const [routerProtocolLink] = useGenerateRouterProtocolLink()
               </Box> */}
             </>
           )}
-        </Flex>
+        {/* </Flex> */}
       </Box>
     </>
   );
