@@ -28,7 +28,7 @@ import FarmingIcon from "../../assets/farmingIcon.svg";
 import NFTIcon from "../../assets/NFTIcon.svg";
 import { CloseIcon } from "../../theme/components/Icons";
 import { NavLink, useLocation } from "react-router-dom";
-import {Nav} from "./index"
+import { Nav } from "./index";
 import useToggle from "../../utils/hooks/useToggle";
 import { SupportedChainId } from "../../constants/chains";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
@@ -46,7 +46,8 @@ const MobileNavDrawer = () => {
 
   const { chainId } = useActiveWeb3React();
   const location = useLocation().pathname;
-  
+  const { search } = useLocation();
+
   return (
     <>
       <Flex
@@ -130,7 +131,7 @@ const MobileNavDrawer = () => {
                       mb={2}
                       onClick={onClose}
                     >
-                      <Nav label="Straight Swap" to="/swap" />
+                      <Nav label="Straight Swap" to={`/swap${search}`} />
                     </Text>
                     <Text
                       _hover={{ color: "#319EF6" }}
@@ -140,7 +141,9 @@ const MobileNavDrawer = () => {
                       <Nav
                         label="auto-period"
                         to={
-                          chainId === SupportedChainId.BINANCETEST ? "/auto-period" : "#"
+                          chainId === SupportedChainId.BINANCETEST
+                            ? "/auto-period"
+                            : "#"
                         }
                       />
                     </Text>
@@ -152,12 +155,15 @@ const MobileNavDrawer = () => {
                       <Nav
                         label="Set Price"
                         to={
-                          chainId === SupportedChainId.BINANCETEST ? "/set-price" : "#"
+                          chainId === SupportedChainId.BINANCETEST
+                            ? "/set-price"
+                            : "#"
                         }
                       />
                     </Text>
                   </Flex>
                 </Collapse>
+<<<<<<< HEAD
 
                 <NavLink
                   activeStyle={{
@@ -193,9 +199,17 @@ const MobileNavDrawer = () => {
                   >
                           <Flex ml={6} mb={3} onClick={onClose}>
                   <Nav label="Liquidity" to="/pool" active={location === '/add' || location === '/remove' ? true : false} />
+=======
+                <Flex ml={6} mb={3} onClick={onClose}>
+                  <Nav
+                    label="Liquidity"
+                    to={`/pool${search}`}
+                    active={location === "/add" || location === "/remove"}
+                  />
+>>>>>>> develop
                 </Flex>
                 <Flex ml={6} mb={3} onClick={onClose}>
-                  <Nav label="Farming" to="/farming-v2" />
+                  <Nav label="Farming" to={`/farm${search}`} />
                 </Flex>
                   </Flex>
                 </Collapse>
@@ -236,7 +250,11 @@ const MobileNavDrawer = () => {
                   <Nav label="Bridge RGPs on Spherium" to="#" />
                 </Flex>
                 <Flex ml={6} mb={3} onClick={onClose}>
+<<<<<<< HEAD
                   <Nav label="Bridge RGPs on Router" to="#" />
+=======
+                  <Nav label="NFT" to={`/nft${search}`} />
+>>>>>>> develop
                 </Flex>
                   </Flex>
                 </Collapse>
@@ -253,10 +271,18 @@ const MobileNavDrawer = () => {
                 <Flex ml={6} color="#999999" mt={5} fontSize="16px" mb={2}>
                 <Img src={DappIcon} mr={4}/>  DAPPS
                 </Flex>
+<<<<<<< HEAD
                 <Flex ml={6} mb={3}>
                   <Link href="/swap">
                       <Text>SmartSwap</Text>
                   </Link>
+=======
+                <Text ml={6} color="#999999" mt={5} fontSize="12px" mb={2}>
+                  DAPPS
+                </Text>
+                <Flex mb={3} alignItems="center" ml={6} onClick={onClose}>
+                  <Nav label="SmartSwap" to={`/swap${search}`} />
+>>>>>>> develop
                 </Flex>
                 <Flex ml={6} mb={3}>
                   <Link href="https://giftdapp.rigelprotocol.com/" isExternal>
