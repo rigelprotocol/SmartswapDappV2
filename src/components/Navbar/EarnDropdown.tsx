@@ -11,36 +11,43 @@ import {
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import { SupportedChainId } from "../../constants/chains";
-export const Nav = ({ to, label, active }: { to: string; label: string, active?:boolean }) => {
-    const mobileNavColor = useColorModeValue("#FFFFFF", "#15202B");
-    return (
-  
+export const Nav = ({
+  to,
+  label,
+  active,
+}: {
+  to: string;
+  label: string;
+  active?: boolean;
+}) => {
+  const mobileNavColor = useColorModeValue("#FFFFFF", "#15202B");
+  return (
     <NavLink
       to={to}
       activeStyle={{
         color: "#319EF6",
       }}
       color={active ? "#319EF6" : mobileNavColor}
-      style={active ? {color:"#319EF6"}: {color:""}}
+      style={active ? { color: "#319EF6" } : { color: "" }}
     >
       {label}
     </NavLink>
-  )};
-  
+  );
+};
 
 function EarnDropdown() {
   const location = useLocation();
-  
+
   const { chainId } = useActiveWeb3React();
   const name = location.pathname;
-    const {search} = useLocation();
+  const { search } = useLocation();
 
   const useName = () => {
-    if (name == '/farming-v2' || name == '/pool'  || name == '/add') {
+    if (name == "/farming-v2" || name == "/pool" || name == "/add") {
       console.log(`Correct name is ${name}`);
-      return name=== "/add" ? "pool" :name.substring(1).split("-")[0];
+      return name === "/add" ? "pool" : name.substring(1).split("-")[0];
     } else {
-      return 'Farming'
+      return "Farming";
     }
   };
 
@@ -55,22 +62,25 @@ function EarnDropdown() {
         _focus={{ color: "#319EF6" }}
         fontSize="14px"
         padding="5px 6px"
-        textTransform={'capitalize'}
+        textTransform={"capitalize"}
       >
         {useName()}
       </MenuButton>
       <MenuList>
         <MenuItem _focus={{ color: "#319EF6" }}>
-            <Nav label="Liquidity" to={`/pool${search}`} active={name === '/add' || name === '/remove'} />
-         </MenuItem>
+          <Nav
+            label="Liquidity"
+            to={`/pool${search}`}
+            active={name === "/add" || name === "/remove"}
+          />
+        </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
-            <Nav label="Farming" to={`/farm${search}`}  />
-         </MenuItem>
-          <MenuItem _focus={{ color: "#319EF6" }}>
-              <Nav label="New LP Farm" to={`/farm/new-farm${search}`}  />
-          </MenuItem>
-
-        </MenuList>
+          <Nav label="Farming" to={`/farm${search}`} />
+        </MenuItem>
+        <MenuItem _focus={{ color: "#319EF6" }}>
+          <Nav label="New LP Farm" to={`/farm/new-farm${search}`} />
+        </MenuItem>
+      </MenuList>
     </Menu>
   );
 }
