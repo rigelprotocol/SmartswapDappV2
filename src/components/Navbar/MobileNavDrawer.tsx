@@ -163,7 +163,6 @@ const MobileNavDrawer = () => {
                     </Text>
                   </Flex>
                 </Collapse>
-<<<<<<< HEAD
 
                 <NavLink
                   activeStyle={{
@@ -199,14 +198,6 @@ const MobileNavDrawer = () => {
                   >
                           <Flex ml={6} mb={3} onClick={onClose}>
                   <Nav label="Liquidity" to="/pool" active={location === '/add' || location === '/remove' ? true : false} />
-=======
-                <Flex ml={6} mb={3} onClick={onClose}>
-                  <Nav
-                    label="Liquidity"
-                    to={`/pool${search}`}
-                    active={location === "/add" || location === "/remove"}
-                  />
->>>>>>> develop
                 </Flex>
                 <Flex ml={6} mb={3} onClick={onClose}>
                   <Nav label="Farming" to={`/farm${search}`} />
@@ -250,11 +241,7 @@ const MobileNavDrawer = () => {
                   <Nav label="Bridge RGPs on Spherium" to="#" />
                 </Flex>
                 <Flex ml={6} mb={3} onClick={onClose}>
-<<<<<<< HEAD
                   <Nav label="Bridge RGPs on Router" to="#" />
-=======
-                  <Nav label="NFT" to={`/nft${search}`} />
->>>>>>> develop
                 </Flex>
                   </Flex>
                 </Collapse>
@@ -271,18 +258,10 @@ const MobileNavDrawer = () => {
                 <Flex ml={6} color="#999999" mt={5} fontSize="16px" mb={2}>
                 <Img src={DappIcon} mr={4}/>  DAPPS
                 </Flex>
-<<<<<<< HEAD
                 <Flex ml={6} mb={3}>
                   <Link href="/swap">
                       <Text>SmartSwap</Text>
                   </Link>
-=======
-                <Text ml={6} color="#999999" mt={5} fontSize="12px" mb={2}>
-                  DAPPS
-                </Text>
-                <Flex mb={3} alignItems="center" ml={6} onClick={onClose}>
-                  <Nav label="SmartSwap" to={`/swap${search}`} />
->>>>>>> develop
                 </Flex>
                 <Flex ml={6} mb={3}>
                   <Link href="https://giftdapp.rigelprotocol.com/" isExternal>
