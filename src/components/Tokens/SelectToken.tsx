@@ -26,7 +26,11 @@ import {
   useToken,
   useIsUserAddedToken,
 } from "../../hooks/Tokens";
-import {DEFAULT_LIST_OF_LISTS, CMC} from "../../utils/constants/lists";
+import {
+  DEFAULT_LIST_OF_LISTS,
+  CMC,
+  MAIN_LIST,
+} from "../../utils/constants/lists";
 import { isAddress } from "../../utils";
 import { filterTokens } from "./filtering";
 import ImportRow from "./ImportRow";
@@ -35,9 +39,9 @@ import {
   useTokenBalance,
   useUpdateBalance,
 } from "../../utils/hooks/useUpdateBalances";
-import {useSelector} from "react-redux";
-import {RootState} from "../../state";
-import {SupportedChainId} from "../../constants/chains";
+import { useSelector } from "react-redux";
+import { RootState } from "../../state";
+import { SupportedChainId } from "../../constants/chains";
 
 type IModal = {
   tokenModal: boolean;
@@ -46,7 +50,6 @@ type IModal = {
   selectedCurrency?: Currency | null;
   otherSelectedCurrency?: Currency | null;
 };
-
 
 const SelectToken: React.FC<IModal> = ({
   tokenModal,
@@ -71,6 +74,7 @@ const SelectToken: React.FC<IModal> = ({
   }, [tokenModal]);
 
   const bsc = Number(chainId) === Number(SupportedChainId.BINANCE);
+  const polygon = Number(chainId) === Number(SupportedChainId.POLYGON);
 
   const [displayManageToken, setDisplayManageToken] = useState(false);
   const handleCurrencySelect = useCallback(
@@ -81,22 +85,33 @@ const SelectToken: React.FC<IModal> = ({
   );
 
   const getTokens = async () => {
-    if (debouncedQuery && bsc) {
+    setInactiveList([]);
+    if (bsc) {
       try {
         const tokenList = await fetch(CMC);
         const filtered = await tokenList.json();
-        setInactiveList(filtered.tokens)
+        setInactiveList(filtered.tokens);
       } catch (e) {
-        console.log('Wrong Network')
+        console.log("Wrong Network");
+      }
+    } else if (polygon) {
+      try {
+        const tokenList = await fetch(MAIN_LIST);
+        const filtered = await tokenList.json();
+        const poly = filtered.tokens.filter(
+          (token) => token.chainId === SupportedChainId.POLYGON
+        );
+        setInactiveList(poly);
+        console.log(poly);
+      } catch (e) {
+        console.error("Polygon network not working");
       }
     }
   };
 
   useEffect(() => {
     getTokens();
-  }, [chainId, debouncedQuery]);
-
-  const searchNewTokens = inactiveList.filter((token) => token.name.toLowerCase().includes(debouncedQuery)).slice(0, 10);
+  }, [chainId]);
 
   const allTokens = useAllTokens();
   // useUpdateBalance("");
@@ -107,11 +122,16 @@ const SelectToken: React.FC<IModal> = ({
   const [Balance, Symbol, Name, Logo] = useNativeBalance();
   const ether = chainId && ExtendedEther(chainId, Symbol, Name, Logo);
 
+  const searchNewTokens = useMemo(() => {
+    return inactiveList
+      .filter((token) => token.name.toLowerCase().includes(debouncedQuery))
+      .slice(0, 10);
+  }, [inactiveList, debouncedQuery]);
+
   const filteredTokens: Token[] = useMemo(() => {
     return filterTokens(Object.values(allTokens), debouncedQuery);
   }, [allTokens, debouncedQuery]);
 
- 
   const filteredTokenListWithETH = useMemo((): Currency[] => {
     const s = debouncedQuery.toLowerCase().trim();
     if (s === "" || s === "e" || s === "et" || s === "eth") {
@@ -131,20 +151,20 @@ const SelectToken: React.FC<IModal> = ({
   }, []);
   const [isSearchingForToken, setIsSearchingForToken] = useState(false);
   useEffect(() => {
-    if (!searchToken && !(filteredTokenListWithETH?.length > 0) ) {
+    if (!searchToken && !(filteredTokenListWithETH?.length > 0)) {
       setIsSearchingForToken(true);
     } else if (!chainId) {
       setIsSearchingForToken(false);
-    }
-    else {
+    } else {
       setIsSearchingForToken(false);
     }
   }, [searchToken, filteredTokenListWithETH, debouncedQuery]);
 
   const [sortedTokenList] = useUpdateBalance("");
 
-  const newImportToken = useSelector<RootState>((state) => state.lists.importedToken);
-
+  const newImportToken = useSelector<RootState>(
+    (state) => state.lists.importedToken
+  );
 
   return (
     <>
@@ -155,119 +175,117 @@ const SelectToken: React.FC<IModal> = ({
       >
         <ModalOverlay />
         <ModalContent
-          width='95vw'
-          borderRadius='6px'
+          width="95vw"
+          borderRadius="6px"
           bgColor={bgColor}
-          minHeight='40vh'
+          minHeight="40vh"
         >
-          <ModalHeader fontSize='18px' fontWeight='regular'>
+          <ModalHeader fontSize="18px" fontWeight="regular">
             Select a token
           </ModalHeader>
           <ModalCloseButton
-            bg='none'
+            bg="none"
             size={"sm"}
             mt={3}
             mr={3}
-            cursor='pointer'
+            cursor="pointer"
             _focus={{ outline: "none" }}
             p={"7px"}
-            border='1px solid'
+            border="1px solid"
           />
 
           <Box
-            width='100%'
-            fontSize='14px'
+            width="100%"
+            fontSize="14px"
             boxShadow={`0px 1px 0px ${boxShadow}`}
           >
-            <Box width='90%' margin='0 auto' pb='5'>
+            <Box width="90%" margin="0 auto" pb="5">
               <ModalInput
-                placeholder='Search name or paste address'
+                placeholder="Search name or paste address"
                 searchQuery={searchQuery}
                 changeInput={handleInput}
               />
             </Box>
           </Box>
-          <ModalBody maxHeight='60vh' overflowY='scroll' p={0}>
+          <ModalBody maxHeight="60vh" overflowY="scroll" p={0}>
             {!chainId ? (
-                <Text textAlign='center' py='7'>
-                  Connect Wallet to view tokens.
-                </Text>
+              <Text textAlign="center" py="7">
+                Connect Wallet to view tokens.
+              </Text>
             ) : isSearchingForToken ? (
+              <Box>
+                <Text textAlign="center" py="7">
+                  {inactiveList.length > 0
+                    ? "Expanded from Inactive List"
+                    : "No tokens found."}
+                </Text>
+                {searchNewTokens.map((token, index) => (
+                  <ImportRow
+                    key={index}
+                    token={token}
+                    openNewTokenModal={setOpenNewTokenModal}
+                  />
+                ))}
+              </Box>
+            ) : searchToken && !searchTokenIsAdded ? (
+              <Box>
+                <ImportRow
+                  token={searchToken}
+                  openNewTokenModal={setOpenNewTokenModal}
+                />
+              </Box>
+            ) : searchQuery !== "" ? (
+              <Box>
+                {filteredTokenListWithETH.map((currency, index) => (
+                  <CurrencyList
+                    onCurrencySelect={handleCurrencySelect}
+                    key={index}
+                    currency={currency}
+                    selectedCurrency={selectedCurrency}
+                    otherSelectedCurrency={otherSelectedCurrency}
+                  />
+                ))}
                 <Box>
-                  <Text textAlign='center' py='7'>
-                   {inactiveList.length > 0 ? 'Expanded from Inactive List' :  'No tokens found.'}
-                  </Text>
-                  {searchNewTokens.map((token) => (
-                      <ImportRow
+                  {inactiveList.length > 0 && (
+                    <Box>
+                      <Text textAlign="center" py="7">
+                        Expanded from Inactive List
+                      </Text>
+                      {searchNewTokens.map((token) => (
+                        <ImportRow
                           token={token}
                           openNewTokenModal={setOpenNewTokenModal}
-                      />
-                  ))}
-                </Box>
-
-            ) : searchToken && !searchTokenIsAdded ? (
-                <Box>
-                  <ImportRow
-                      token={searchToken}
-                      openNewTokenModal={setOpenNewTokenModal}
-                  />
-                </Box>
-
-            ) : searchQuery !== "" ? (
-                <Box>
-                  {
-                    filteredTokenListWithETH.map((currency, index) => (
-                        <CurrencyList
-                            onCurrencySelect={handleCurrencySelect}
-                            key={index}
-                            currency={currency}
-                            selectedCurrency={selectedCurrency}
-                            otherSelectedCurrency={otherSelectedCurrency}
                         />
-                    ))
-                  }
-                  <Box>
-                    {
-                      inactiveList.length > 0 && (
-                          <Box>
-                            <Text textAlign='center' py='7'>
-                             Expanded from Inactive List
-                            </Text>
-                            {searchNewTokens.map((token) => (
-                                <ImportRow
-                                    token={token}
-                                    openNewTokenModal={setOpenNewTokenModal}
-                                />
-                            ))}
-                          </Box>
-                      )}
-                  </Box>
+                      ))}
+                    </Box>
+                  )}
                 </Box>
+              </Box>
             ) : sortedTokenList?.length > 0 ? (
               sortedTokenList.map((currency, index) => {
                 return (
-                      <CurrencyList
-                          onCurrencySelect={handleCurrencySelect}
-                          key={index}
-                          currency={currency[0]}
-                          selectedCurrency={selectedCurrency}
-                          otherSelectedCurrency={otherSelectedCurrency}
-                      />
+                  <CurrencyList
+                    onCurrencySelect={handleCurrencySelect}
+                    key={index}
+                    currency={currency[0]}
+                    selectedCurrency={selectedCurrency}
+                    otherSelectedCurrency={otherSelectedCurrency}
+                  />
                 );
               })
             ) : (
-              <Text textAlign='center' py='7'>
+              <Text textAlign="center" py="7">
                 No Result found...
               </Text>
             )}
           </ModalBody>
 
-          <ModalFooter py='4' bg={boxColor} borderRadius='6px'>
-            <Box w='100%' textAlign='center'>
+          <ModalFooter py="4" bg={boxColor} borderRadius="6px">
+            <Box w="100%" textAlign="center">
               <Text
-                fontSize='16px'
+                fontSize="16px"
                 color={textColor}
-                cursor='pointer'
+                cursor="pointer"
                 onClick={() => openManageToken()}
               >
                 Manage Tokens
@@ -283,7 +301,8 @@ const SelectToken: React.FC<IModal> = ({
         openNewTokenModal={openNewTokenModal}
         handleCurrencySelect={handleCurrencySelect}
       />
-      {searchToken && openNewTokenModal || searchNewTokens && openNewTokenModal ? (
+      {(searchToken && openNewTokenModal) ||
+      (searchNewTokens && openNewTokenModal) ? (
         <NewToken
           open={openNewTokenModal}
           handleCurrencySelect={handleCurrencySelect}
