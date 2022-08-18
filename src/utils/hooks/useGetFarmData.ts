@@ -452,10 +452,7 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
     return iterated;
   };
 
-  const calculateApy = (rgpPrice : number, totalLiquidity: any, inflation: number) =>
-  (rgpPrice * inflation * 365 * 100) / totalLiquidity;
-
-
+  
   useMemo(async () => {
     if (ChainId) {
       try {
@@ -472,23 +469,16 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
         );
 
         const rgpPrice = await calculateRigelPrice()
-        
-        const rgpTotalStaking = await specialPool.totalStaking()
-
-        const RGPLiquidity = ethers.utils
-        .formatUnits(rgpTotalStaking.mul(Math.floor(1000 * rgpPrice)), 21)
-        .toString();
-
-        const specialPoolAPY = calculateApy(rgpPrice, RGPLiquidity, 250)
-
-
-
+                const yeaRate = await specialPool.YEAR_RATE()
+                const rgp = await getERC20Token(RGPADDRESSES[chainId as number], lib)
+                const RGPBallance = await rgp.balanceOf( RGPSPECIALPOOLADDRESSES2[chainId as number])
+                 const RGPLiquidity =  parseFloat(ethers.utils.formatUnits(RGPBallance)) * rgpPrice 
+     
 
 
         const farmLength = await masterchef.poolLength();
         const LpAddress = await getLpfarmAddresses(farmLength, masterchef);
         
-
 
         //this is temporal
 
@@ -499,8 +489,8 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
           deposit: "RGP",
           earn: "RGP",
           type: "RGP",
-          ARYValue: specialPoolAPY,
-          totalLiquidity: RGPLiquidity, //"1223",
+          ARYValue: ethers.utils.formatUnits(yeaRate) ,
+          totalLiquidity: RGPLiquidity,
           tokensStaked: ["RGP", "0"],
           RGPEarned: "0",
           availableToken: "",
