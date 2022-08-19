@@ -102,7 +102,6 @@ const SelectToken: React.FC<IModal> = ({
           (token) => token.chainId === SupportedChainId.POLYGON
         );
         setInactiveList(poly);
-        console.log(poly);
       } catch (e) {
         console.error("Polygon network not working");
       }
