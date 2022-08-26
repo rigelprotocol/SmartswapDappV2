@@ -56,7 +56,10 @@ import {
   useUpdateUserGasPreference,
 } from "../../state/gas/hooks";
 import { clearSearchResult } from "../../state/farming/action";
-import { GFailedTransaction, GSuccessfullyTransaction } from "../../components/G-analytics/gIndex";
+import {
+  GFailedTransaction,
+  GSuccessfullyTransaction,
+} from "../../components/G-analytics/gIndex";
 
 export default function AddLiquidity({
   match: {
@@ -127,7 +130,7 @@ export default function AddLiquidity({
     if (!visits) {
       window.localStorage.setItem("continueLiquidtyVisit", "1");
     }
-    if (!visits && liquidityVisits!=="2") {
+    if (!visits && liquidityVisits !== "2") {
       startWelcomeRide();
       window.localStorage.setItem("firstYieldVisit", "1");
     }
@@ -227,7 +230,7 @@ export default function AddLiquidity({
             trxState: TrxState.WaitingForConfirmation,
           })
         );
-        const walletBal = (await token.balanceOf(account));
+        const walletBal = await token.balanceOf(account);
         const approval = await token.approve(
           SMARTSWAPROUTER[chainId as number],
           walletBal,
@@ -244,14 +247,17 @@ export default function AddLiquidity({
             ExplorerDataType.TRANSACTION
           );
           setCheckTokenApproval(checkTokenApproval + 1);
-          console.log(checkTokenApproval);
           dispatch(
             setOpenModal({
               message: `${symbol} Approval Successful`,
               trxState: TrxState.TransactionSuccessful,
             })
           );
-          GSuccessfullyTransaction("liquidity","liquidity approval token", symbol)
+          GSuccessfullyTransaction(
+            "liquidity",
+            "liquidity approval token",
+            symbol
+          );
           dispatch(
             addToast({
               message: `Approve ${symbol}`,
@@ -267,7 +273,7 @@ export default function AddLiquidity({
             trxState: TrxState.TransactionFailed,
           })
         );
-        GFailedTransaction("liquidity","liquidity approval token", symbol)
+        GFailedTransaction("liquidity", "liquidity approval token", symbol);
       }
     }
   };
@@ -378,7 +384,12 @@ export default function AddLiquidity({
               trxState: TrxState.TransactionSuccessful,
             })
           );
-          GSuccessfullyTransaction("liquidity","liquidity supplied successful", currencyA.symbol,currencyB.symbol)
+          GSuccessfullyTransaction(
+            "liquidity",
+            "liquidity supplied successful",
+            currencyA.symbol,
+            currencyB.symbol
+          );
           dispatch(
             addToast({
               message: `Add ${parseFloat(inputValueForTokenA as string).toFixed(
@@ -390,16 +401,21 @@ export default function AddLiquidity({
             })
           );
         }
-      } catch (err:any) {
+      } catch (err) {
         console.log(err);
-        GFailedTransaction("liquidity","liquidity supplied failed",err.message, currencyA.symbol,currencyB.symbol)
+        GFailedTransaction(
+          "liquidity",
+          "liquidity supplied failed",
+          err.message,
+          currencyA.symbol,
+          currencyB.symbol
+        );
         dispatch(
           setOpenModal({
             message: `Transaction Failed`,
             trxState: TrxState.TransactionFailed,
           })
         );
-        
       }
     }
   };
@@ -500,7 +516,12 @@ export default function AddLiquidity({
               trxState: TrxState.TransactionSuccessful,
             })
           );
-          GSuccessfullyTransaction("liquidity","liquidity supplied successfully",currencyA.symbol,currencyB.symbol)
+          GSuccessfullyTransaction(
+            "liquidity",
+            "liquidity supplied successfully",
+            currencyA.symbol,
+            currencyB.symbol
+          );
           dispatch(
             addToast({
               message: `Add ${parseFloat(inputValueForTokenA as string).toFixed(
@@ -512,9 +533,15 @@ export default function AddLiquidity({
             })
           );
         }
-      } catch (err:any) {
+      } catch (err: any) {
         console.log(err);
-        GFailedTransaction("liquidity","liquidity supplied failed",err.message, currencyA.symbol,currencyB.symbol)
+        GFailedTransaction(
+          "liquidity",
+          "liquidity supplied failed",
+          err.message,
+          currencyA.symbol,
+          currencyB.symbol
+        );
         dispatch(
           setOpenModal({
             message: `Transaction Failed`,
@@ -577,12 +604,12 @@ export default function AddLiquidity({
         }}
       />
       <Box
-        maxW='496px'
-        borderWidth='1px'
-        borderRadius='md'
+        maxW="496px"
+        borderWidth="1px"
+        borderRadius="md"
         borderColor={genBorder}
-        overflow='hidden'
-        alignItems='center'
+        overflow="hidden"
+        alignItems="center"
         p={4}
         mb={["110px", "110px", "4"]}
       >
@@ -592,18 +619,18 @@ export default function AddLiquidity({
             w={6}
             h={6}
             color={topIcons}
-            cursor='pointer'
+            cursor="pointer"
           />
           <Spacer />
-          <Heading as='h4' size='md'>
+          <Heading as="h4" size="md">
             Add Liquidity
           </Heading>
           <Spacer />
           <TransactionSettings />
           <TimeIcon w={6} h={7} color={topIcons} />
         </Flex>
-        <Box bg={infoBg} borderRadius='md' p={4} mt={4} mb={5}>
-          <Text color='#319EF6' fontWeight='400' fontSize='14px'>
+        <Box bg={infoBg} borderRadius="md" p={4} mt={4} mb={5}>
+          <Text color="#319EF6" fontWeight="400" fontSize="14px">
             Tip: When you add liquidity, you will receive pool tokens
             representing your position. These tokens automatically earn fees
             proportional to your share of the pool, and can be redeemed at any
@@ -611,12 +638,12 @@ export default function AddLiquidity({
           </Text>
         </Box>
         <Box
-          borderRadius='md'
-          borderWidth='1px'
+          borderRadius="md"
+          borderWidth="1px"
           pt={2}
           pb={2}
           borderColor={genBorder}
-          className='AddLiquidity'
+          className="AddLiquidity"
         >
           <InputCurrency
             onUserInput={handleTypeInput}
@@ -628,15 +655,15 @@ export default function AddLiquidity({
             setBalanceA={setBalanceA}
           />
         </Box>
-        <Flex justifyContent='center'>
+        <Flex justifyContent="center">
           <Center
-            w='40px'
-            h='40px'
+            w="40px"
+            h="40px"
             bg={bgColor}
-            borderWidth='3px'
+            borderWidth="3px"
             borderColor={genBorder}
-            color='#333333'
-            borderRadius='xl'
+            color="#333333"
+            borderRadius="xl"
             mt={5}
             mb={5}
           >
@@ -644,12 +671,12 @@ export default function AddLiquidity({
           </Center>
         </Flex>
         <Box
-          borderRadius='md'
-          border='1px solid #DEE6ED'
+          borderRadius="md"
+          border="1px solid #DEE6ED"
           pt={2}
           pb={2}
           borderColor={genBorder}
-          className='AddLiquidity2'
+          className="AddLiquidity2"
         >
           <OutputCurrecy
             onCurrencySelection={onCurrencySelection}
@@ -661,17 +688,17 @@ export default function AddLiquidity({
           />
         </Box>
         <Box
-          borderRadius='md'
-          borderWidth='1px'
+          borderRadius="md"
+          borderWidth="1px"
           borderColor={genBorder}
-          mt='5'
-          mb='3'
+          mt="5"
+          mb="3"
         >
-          <Text p='4' fontWeight='400'>
+          <Text p="4" fontWeight="400">
             Prices & pool share
           </Text>
-          <Divider orientation='horizontal' borderColor={genBorder} />
-          <Flex p='4'>
+          <Divider orientation="horizontal" borderColor={genBorder} />
+          <Flex p="4">
             <VStack>
               <Text color={textColorOne}>
                 {priceBToA && pairAvailable
@@ -717,12 +744,12 @@ export default function AddLiquidity({
           </Flex>
         </Box>
         <Button
-          size='lg'
-          height='48px'
-          width='200px'
+          size="lg"
+          height="48px"
+          width="200px"
           bgColor={approveButtonBgColor}
           color={approveButtonColor}
-          w='100%'
+          w="100%"
           mb={3}
           _hover={{ bgColor: "none" }}
           _active={{ bgColor: "none" }}
@@ -748,13 +775,13 @@ export default function AddLiquidity({
           {`Approve ${currencies[Field.INPUT]?.symbol}`}
         </Button>
         <Button
-          size='lg'
-          height='48px'
-          width='200px'
+          size="lg"
+          height="48px"
+          width="200px"
           mb={3}
           bgColor={approveButtonBgColor}
           color={approveButtonColor}
-          w='100%'
+          w="100%"
           _hover={{ bgColor: "none" }}
           _active={{ bgColor: "none" }}
           display={
@@ -780,14 +807,14 @@ export default function AddLiquidity({
         </Button>
         {isLoadingValue ? (
           <Button
-            size='lg'
-            height='48px'
-            width='200px'
-            border='2px'
+            size="lg"
+            height="48px"
+            width="200px"
+            border="2px"
             borderColor={genBorder}
             color={btnTextColor}
-            className='AddLiquidity3'
-            w='100%'
+            className="AddLiquidity3"
+            w="100%"
             _hover={{ bgColor: "none" }}
             _active={{ bgColor: "none" }}
             disabled={true}
@@ -796,14 +823,14 @@ export default function AddLiquidity({
           </Button>
         ) : (
           <Button
-            size='lg'
-            height='48px'
-            width='200px'
-            border='2px'
-            className='AddLiquidity3'
+            size="lg"
+            height="48px"
+            width="200px"
+            border="2px"
+            className="AddLiquidity3"
             borderColor={genBorder}
             color={btnTextColor}
-            w='100%'
+            w="100%"
             _hover={{ bgColor: "none" }}
             _active={{ bgColor: "none" }}
             display={
@@ -817,9 +844,9 @@ export default function AddLiquidity({
         )}
 
         <Button
-          size='lg'
-          height='48px'
-          width='200px'
+          size="lg"
+          height="48px"
+          width="200px"
           display={
             formattedAmounts[Field.INPUT] && formattedAmounts[Field.OUTPUT]
               ? undefined
@@ -864,7 +891,7 @@ export default function AddLiquidity({
               : btnTextColor
           }
           // color={btnTextColor}
-          w='100%'
+          w="100%"
           _hover={{ bgColor: "none" }}
           _active={{ bgColor: "none" }}
           onClick={() => {
