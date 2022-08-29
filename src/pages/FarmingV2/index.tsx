@@ -179,14 +179,11 @@ export function Index() {
       dispatch(updateSelectedField({ value: farmSection.SECOND_NEW_LP }));
       setTabIndex(6);
     } else {
-      // setSelected(LIQUIDITY)
       setSelected(farmSection.LIQUIDITY);
       dispatch(updateSelectedField({ value: farmSection.LIQUIDITY }));
       setTabIndex(0);
     }
   }, [location, selector]);
-
-  // console.log(count);
 
   // useMemo(() => {
   //   if (searchedDataResult !== undefined) {
@@ -266,16 +263,14 @@ export function Index() {
   const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
   const { search } = useLocation();
 
-  console.log("FD new", FarmData)
   const data = useFarmData();
   const newLP = useNewLPData();
   const farms = useSelector((state) => state.farming.content);
   const recentFarms = useSelector((state) => state.newFarming.content);
   const searchSection = useSelector((state) => state.farming);
   const newSearchSection = useSelector((state) => state.newFarming);
-  
-  const {specialPool} = useSelector((state) => state.newfarm);
 
+  const { specialPool } = useSelector((state) => state.newfarm);
 
   useEffect(() => {
     dispatch(clearAllFarms());
@@ -1160,18 +1155,16 @@ export function Index() {
                     <Text>Total Liquidity</Text>
                     <Text />
                   </Flex>
-                  {specialPool?.map((content: any, index: number) =>
-                     (
-                      <YieldFarm
-                        farmDataLoading={farmDataLoading}
-                        content={content}
-                        refreshSpecialData={refreshSpecialData}
-                        key={content.pid}
-                        wallet={wallet}
-                        URLReferrerAddress={refAddress}
-                      />
-                    ) 
-                  )}
+                  {specialPool?.map((content: any, index: number) => (
+                    <YieldFarm
+                      farmDataLoading={farmDataLoading}
+                      content={content}
+                      refreshSpecialData={refreshSpecialData}
+                      key={content.pid}
+                      wallet={wallet}
+                      URLReferrerAddress={refAddress}
+                    />
+                  ))}
                 </Box>
               </Box>
             </Flex>
