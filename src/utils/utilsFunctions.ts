@@ -8,7 +8,7 @@ import { escapeRegExp } from ".";
 import { inputRegex } from "../components/Farming/Modals/Filter";
 import { farmStateInterface } from "../state/farm/reducer";
 import { useSelector } from "react-redux";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { RootState } from "../state";
 import { RPC } from "../connectors";
 
@@ -132,11 +132,7 @@ export const filterFarms = (
 
 export const checkSideTab = (sideBarName: string): boolean => {
   const isSidebarActive = localStorage.getItem(sideBarName);
-  if (isSidebarActive === "removed") {
-    return true;
-  } else {
-    return false;
-  }
+  return isSidebarActive === "removed";
 };
 
 export const changeFrequencyTodays = (
@@ -362,24 +358,15 @@ export const switchNetwork = async (
 };
 
 export const getDeadline = (userDeadline: number) => {
-  const time = Math.floor(new Date().getTime() / 1000 + userDeadline);
-  return time;
+  return Math.floor(new Date().getTime() / 1000 + userDeadline);
 };
 
 export const isNative = (symbol: string, chainId: number): boolean => {
-  if (symbol === WrappedSymbols[chainId as number]) {
-    return true;
-  } else {
-    return false;
-  }
+  return symbol === WrappedSymbols[chainId as number];
 };
 
 export const ISNATIVE = (symbol: string, chainId: number): boolean => {
-  if (symbol === SupportedChainSymbols[chainId as number]) {
-    return true;
-  } else {
-    return false;
-  }
+  return symbol === SupportedChainSymbols[chainId as number];
 };
 
 export const formatAmountIn = (amount: any, decimals: number) => {

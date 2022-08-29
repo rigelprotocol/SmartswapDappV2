@@ -32,7 +32,6 @@ export const SMARTSWAPFACTORYADDRESSES: { [key: string]: string } = {
   "42262": "0xCE2ca7C47813E86008B0f9D5d5661356c130997f",
 };
 
-
 //SMARTSWAP ROUTER
 export const SMARTSWAPROUTER: { [key: string]: string } = {
   "1": "0x",
@@ -53,7 +52,7 @@ export const SMARTSWAPNFTSALES: { [key: string]: string } = {
   "56": "0x6f3BB73e30a24412C1202f58439f4fe5Cb712979",
   "97": "0x4aEFdbed61128de1483D2B9e739251466DCa29Bb",
   "137": "0xA5c488716f83A6C74bAC8712a457b7BeCF7C3DD5",
-  "80001": "0xB15f7A4bA76B702e49FA3233FD455C5F13CB01d8"
+  "80001": "0xB15f7A4bA76B702e49FA3233FD455C5F13CB01d8",
 };
 
 //SmartSwapNFTTwo
@@ -64,7 +63,7 @@ export const SMARTSWAPNFTTWO: { [key: string]: string } = {
   "56": "0xb9494f0086e3004314d0fC7AEA4fA4476D0d281c",
   "97": "0x0694aD39a394A05C24f842612c3E86051A723cF1",
   "137": "0xCff5eb5f88b40905035310118B7dDF4bef8155dd",
-  "80001": "0x4798a90d74ba3Fef77D38B0a07E8172FC5602629"
+  "80001": "0x4798a90d74ba3Fef77D38B0a07E8172FC5602629",
 };
 
 //SmartBid
@@ -74,7 +73,7 @@ export const SMARTBID1: { [key: string]: string } = {
   "56": "0xB51E0828B9b92F580276abf4bD73d45B44D72694",
   "97": "0x96C65EFeEDb7a7dDa8A8e2630BD5e07534ED294B",
   "137": "0x9b5af1EcC50b0676cA004Dd5b693d9aaDe85F4A8",
-  "80001": "0x"
+  "80001": "0x",
 };
 
 export const SMARTBID2: { [key: string]: string } = {
@@ -83,9 +82,8 @@ export const SMARTBID2: { [key: string]: string } = {
   "56": "0x4d6642Fb1f8e57359D06BD33442579eCBC1F7229",
   "97": "0xA24B732838793Afb53731C84f2A613cf2709BBfB",
   "137": "0x8236774AE8d4D9d52cd5C5930Eb8b5f1e2CA67D2",
-  "80001": "0x"
+  "80001": "0x",
 };
-
 
 //Native Wrapped
 export const WNATIVEADDRESSES: { [key: string]: string } = {
@@ -98,8 +96,6 @@ export const WNATIVEADDRESSES: { [key: string]: string } = {
   "42261": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
   "42262": "0x21C718C22D52d0F3a789b752D4c2fD5908a8A733",
 };
-
-
 
 export const WNATIVEADDRESSESSYMBOL: { [key: string]: string } = {
   "1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
@@ -145,24 +141,29 @@ export const MASTERCHEFV2ADDRESSES: { [key: string]: string } = {
 export const MASTERCHEFNEWLPADDRESSES: { [key: string]: string | any } = {
   "56": {
     "1": "0x35d5eDaeebfB3D084d8ff796514fc9fd8c103357",
-    "2": "0xf644041A995Af3b57b131D67510de74c03a33cC0"
+    "2": "0xf644041A995Af3b57b131D67510de74c03a33cC0",
   },
   "97": {
     "1": "0x94822127C89C589Fa6335ED43E1D92a21AA49E22",
-    "2": "0x94822127C89C589Fa6335ED43E1D92a21AA49E22"
+    "2": "0x94822127C89C589Fa6335ED43E1D92a21AA49E22",
   },
   "137": {
     "1": "0x3F28D26A5e01C603c194d22D6eb07e34e2A65844",
-    "2": "0x15149Ddd85b51270dd5983083Fb178364BCB4d71"
+    "2": "0x15149Ddd85b51270dd5983083Fb178364BCB4d71",
   },
   "80001": {
     "1": "0x14deaEA03b5b9B5B817dB11985B622F0A8Db077e",
-    "2": "0x13f9d9e1bb03C3e7155447d5C07D6Eb74589C839"
+    "2": "0x13f9d9e1bb03C3e7155447d5C07D6Eb74589C839",
   },
-  "42261": "0x",
-  "42262": "0x",
+  "42261": {
+    "1": "0xFCAD25Ce875EA7eaBdcf99cdF57692376F1DbdF1",
+    "2": "0xFCAD25Ce875EA7eaBdcf99cdF57692376F1DbdF1",
+  },
+  "42262": {
+    "1": "0x1A700c1810387F4178b3944373388de76A88F804",
+    "2": "0x1A700c1810387F4178b3944373388de76A88F804",
+  },
 };
-
 
 export const AUTOSWAPV2ADDRESSES: { [key: string]: string } = {
   "1": "0x",
@@ -172,61 +173,67 @@ export const AUTOSWAPV2ADDRESSES: { [key: string]: string } = {
   "137": "0xCA4f379b674e2d72c8144b5c521BdD24657C8949",
   "80001": "0x",
 };
-export const MARKETAUTOSWAPADDRESSES : { [key: string]: {[key:string]: string} } = {
-  "Smartswap": {
+export const MARKETAUTOSWAPADDRESSES: {
+  [key: string]: { [key: string]: string };
+} = {
+  Smartswap: {
     "56": "0x599cdB1A76b5cc3906585de2ED6c790a8bAA528f",
     "97": "0xc1F5014098DBb6CCCc28F9365316533905f591EB",
     "137": "0xd4d76dDAA597aE0B8B20d801EE7e528DE2E9f033",
   },
-  "Pancakeswap":{
+  Pancakeswap: {
     "56": "0xffD1e82d1B46B0d5D6Caf1BCdF5edb6FCA0A2455",
-    "97": "0x"
+    "97": "0x",
   },
-  "Quickswap":{
-    "137":"0x8F83C8012e705B04141FDF6A2fc2f7a8243A2345"
-  }
+  Quickswap: {
+    "137": "0x8F83C8012e705B04141FDF6A2fc2f7a8243A2345",
+  },
 };
-export const OTHERMARKETADDRESSES: { [key: string]: {[key:string]: string} } = {
-  "Pancakeswap":{
+export const OTHERMARKETADDRESSES: {
+  [key: string]: { [key: string]: string };
+} = {
+  Pancakeswap: {
     "56": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
-    "97": "0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3"
+    "97": "0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3",
   },
-  "Quickswap":{
-    "137":"0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"
+  Quickswap: {
+    "137": "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff",
   },
-  "Smartswap":{
+  Smartswap: {
     "1": "0x",
-  "3": "0x3175bfbc3e620FaF654309186f66908073cF9CBB",
-  "56": "0xf78234E21f1F34c4D8f65faF1BC82bfc0fa24920",
-  "97": "0x00749e00af4359df5e8c156af6dfbdf30dd53f44",
-  "137": "0x5f5acbd6c1c98d380aa12e614510bacf39fbd531",
-  "80001": "0xaEBC5E5aC2Ad8680978Ce11d03048A4E2889DEbA",
-  "42261": "0x3c5AAa6cAA82CC62327C7A0849e4d854B1905A3d",
-  "42262": "0xFf672dB2558c8A78813EA3F61303460fcec656F7",
-  }
+    "3": "0x3175bfbc3e620FaF654309186f66908073cF9CBB",
+    "56": "0xf78234E21f1F34c4D8f65faF1BC82bfc0fa24920",
+    "97": "0x00749e00af4359df5e8c156af6dfbdf30dd53f44",
+    "137": "0x5f5acbd6c1c98d380aa12e614510bacf39fbd531",
+    "80001": "0xaEBC5E5aC2Ad8680978Ce11d03048A4E2889DEbA",
+    "42261": "0x3c5AAa6cAA82CC62327C7A0849e4d854B1905A3d",
+    "42262": "0xFf672dB2558c8A78813EA3F61303460fcec656F7",
+  },
   // "Sushiswap":{
   //   "56": "0x",
   //   "97": "0x"
   // }
 };
-export const OTHERMARKETFACTORYADDRESSES: { [key: string]: {[key:string]: string} } = {
-  "Pancakeswap":{
+export const OTHERMARKETFACTORYADDRESSES: {
+  [key: string]: { [key: string]: string };
+} = {
+  Pancakeswap: {
     "56": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
-    "97": "0x"
+    "97": "0x",
   },
-  "Quickswap":{
-    "137": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32"
+  Quickswap: {
+    "137": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
   },
-  "Smartswap": {
-      "1": "0x",
-      "3": "0xc33b4cB9eAFE64BEa3c96e723bEBdB961d462288",
-      "56": "0x655333A1cD74232C404049AF9d2d6cF1244E71F6",
-      "97": "0x7B14Ab51fAF91926a2214c91Ce9CDaB5C0E1A1c3",
-      "137": "0xbb0fa753ae6fddb78bb66d70fc223e4a10d5f4d4",
-      "80001": "0xC8F273a1656d26BB8ECBc8B267e53304533600c4",
-      "42261": "0xF9d14C9516AF795ee2b5dca7479f927EEaC1EDdb",
-      "42262": "0xCE2ca7C47813E86008B0f9D5d5661356c130997f",
-  }
+  Smartswap: {
+    "1": "0x",
+    "3": "0xc33b4cB9eAFE64BEa3c96e723bEBdB961d462288",
+    "56": "0x655333A1cD74232C404049AF9d2d6cF1244E71F6",
+    "97": "0x7B14Ab51fAF91926a2214c91Ce9CDaB5C0E1A1c3",
+    "137": "0xbb0fa753ae6fddb78bb66d70fc223e4a10d5f4d4",
+    "80001": "0xC8F273a1656d26BB8ECBc8B267e53304533600c4",
+    "42261": "0xF9d14C9516AF795ee2b5dca7479f927EEaC1EDdb",
+    "42262": "0xCE2ca7C47813E86008B0f9D5d5661356c130997f",
+  },
   // "Sushiswap":{
   //   "56": "0x",
   //   "97": "0x"
