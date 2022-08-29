@@ -3,6 +3,7 @@ import { useWeb3React } from "@web3-react/core";
 import {
   LiquidityPairInstance,
   MasterChefV2Contract,
+  RGPSpecialPool2,
   smartFactory,
 } from "../Contracts";
 import {
@@ -12,6 +13,7 @@ import {
   BUSD,
   USDT,
   USDC,
+  RGPSPECIALPOOLADDRESSES2,
 } from "../addresses";
 import { Contract, ethers } from "ethers";
 import { getERC20Token, useProvider } from "../utilsFunctions";
@@ -20,7 +22,9 @@ import {
   updateChainId,
   updateFarms,
   updateLoadingState,
+  updateSpecialPool,
 } from "../../state/newfarm/actions";
+
 import { RootState } from "../../state";
 
 export const useGetFarmData = (reload?: boolean, setReload?: any) => {
@@ -52,6 +56,15 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
     },
     [dispatch]
   );
+
+  const handleUpdateSpecialPool = useCallback(
+    (value) => {
+      dispatch(updateSpecialPool({ value }));
+    },
+    [dispatch]
+  );
+
+
 
   const handleUpdateChainId = useCallback(
     (value) => {
@@ -434,12 +447,12 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
       );
       data.push(farm);
     }
-
     const iterated = data.filter((item) => item !== undefined);
 
     return iterated;
   };
 
+  
   useMemo(async () => {
     if (ChainId) {
       try {
@@ -449,11 +462,51 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
           MASTERCHEFV2ADDRESSES[ChainId as number],
           lib
         );
-        const rgpPrice = await calculateRigelPrice();
+
+        const specialPool = await RGPSpecialPool2(
+          RGPSPECIALPOOLADDRESSES2[chainId as number],
+          lib
+        );
+
+        const rgpPrice = await calculateRigelPrice()
+                const yeaRate = await specialPool.YEAR_RATE()
+                const rgp = await getERC20Token(RGPADDRESSES[chainId as number], lib)
+                const RGPBallance = await rgp.balanceOf( RGPSPECIALPOOLADDRESSES2[chainId as number])
+                 const RGPLiquidity =  parseFloat(ethers.utils.formatUnits(RGPBallance)) * rgpPrice 
+     
+
 
         const farmLength = await masterchef.poolLength();
         const LpAddress = await getLpfarmAddresses(farmLength, masterchef);
+        
+
+        //this is temporal
+
+        handleUpdateSpecialPool([{
+          id: "0",
+          img: "rgp.svg",
+          // deposit: 'RGP',
+          deposit: "RGP",
+          earn: "RGP",
+          type: "RGP",
+          ARYValue: ethers.utils.formatUnits(yeaRate) ,
+          totalLiquidity: RGPLiquidity,
+          tokensStaked: ["RGP", "0"],
+          RGPEarned: "0",
+          availableToken: "",
+          inflationPerDay: 0,
+          tokenPrice: 0,
+          totalVolumePerPool: 0,
+          farmingFee: 0,
+          pId: 10793,
+          poolAllowance: "",
+          poolVersion: "2",
+        }])
+
+        
+
         const farms = await loopFarms(LpAddress, rgpPrice);
+
 
         setLoading(false);
 

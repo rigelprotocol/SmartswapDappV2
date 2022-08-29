@@ -266,12 +266,16 @@ export function Index() {
   const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
   const { search } = useLocation();
 
+  console.log("FD new", FarmData)
   const data = useFarmData();
   const newLP = useNewLPData();
   const farms = useSelector((state) => state.farming.content);
   const recentFarms = useSelector((state) => state.newFarming.content);
   const searchSection = useSelector((state) => state.farming);
   const newSearchSection = useSelector((state) => state.newFarming);
+  
+  const {specialPool} = useSelector((state) => state.newfarm);
+
 
   useEffect(() => {
     dispatch(clearAllFarms());
@@ -1156,8 +1160,8 @@ export function Index() {
                     <Text>Total Liquidity</Text>
                     <Text />
                   </Flex>
-                  {FarmData.contents.map((content: any, index: number) =>
-                    content.id === "13" ? (
+                  {specialPool?.map((content: any, index: number) =>
+                     (
                       <YieldFarm
                         farmDataLoading={farmDataLoading}
                         content={content}
@@ -1166,7 +1170,7 @@ export function Index() {
                         wallet={wallet}
                         URLReferrerAddress={refAddress}
                       />
-                    ) : null
+                    ) 
                   )}
                 </Box>
               </Box>
@@ -1779,7 +1783,7 @@ export function Index() {
                             key={content?.id}
                             section={"search"}
                             wallet={wallet}
-                            LoadingState={loadingState}
+                            LoadingState={loadingLP}
                             refreshSpecialData={refreshSpecialData}
                           />
                         )
@@ -1794,7 +1798,7 @@ export function Index() {
                             section={"search"}
                             wallet={wallet}
                             refreshSpecialData={refreshSpecialData}
-                            LoadingState={loadingState}
+                            LoadingState={loadingLP}
                           />
                         )
                       )
@@ -1810,7 +1814,7 @@ export function Index() {
                             key={content?.id}
                             wallet={wallet}
                             refreshSpecialData={refreshSpecialData}
-                            LoadingState={loadingState}
+                            LoadingState={loadingLP}
                           />
                         )
                       )
@@ -1824,7 +1828,7 @@ export function Index() {
                             section={"filter"}
                             wallet={wallet}
                             refreshSpecialData={refreshSpecialData}
-                            LoadingState={loadingState}
+                            LoadingState={loadingLP}
                           />
                         )
                       )
