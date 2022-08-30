@@ -60,8 +60,11 @@ import { useUserGasPricePercentage } from "../../../../state/gas/hooks";
 import { Web3Provider } from "@ethersproject/providers";
 import NetworkModal from "./../../../../components/Navbar/modals/networkModal";
 import { clearSearchResult } from "../../../../state/farming/action";
-import { GButtonClick, GFailedTransaction, GSuccessfullyTransaction } from "../../../../components/G-analytics/gIndex";
-
+import {
+  GButtonClick,
+  GFailedTransaction,
+  GSuccessfullyTransaction,
+} from "../../../../components/G-analytics/gIndex";
 
 export const calculateGas = async (
   percentage: number,
@@ -154,7 +157,6 @@ const SendToken = () => {
     history.push("/swap");
   }, [history]);
 
-
   const borderColor = useColorModeValue("#DEE5ED", "#324D68");
   const color = useColorModeValue("#999999", "#7599BD");
   const lightmode = useColorModeValue(true, false);
@@ -194,15 +196,15 @@ const SendToken = () => {
     () =>
       showWrap
         ? {
-          [Field.INPUT]: typedValue,
-          [Field.OUTPUT]: typedValue,
-        }
+            [Field.INPUT]: typedValue,
+            [Field.OUTPUT]: typedValue,
+          }
         : {
-          [Field.INPUT]:
-            independentField === Field.INPUT ? parsedAmount : bestTrade,
-          [Field.OUTPUT]:
-            independentField === Field.OUTPUT ? parsedAmount : bestTrade,
-        },
+            [Field.INPUT]:
+              independentField === Field.INPUT ? parsedAmount : bestTrade,
+            [Field.OUTPUT]:
+              independentField === Field.OUTPUT ? parsedAmount : bestTrade,
+          },
     [independentField, parsedAmount, showWrap, bestTrade]
   );
 
@@ -344,7 +346,6 @@ const SendToken = () => {
       return setHasBeenApproved(true);
     }
     try {
-      console.log(parsedAmount);
       dispatch(
         setOpenModal({
           message: `Approve Tokens for Swap`,
@@ -380,7 +381,11 @@ const SendToken = () => {
             trxState: TrxState.TransactionSuccessful,
           })
         );
-        GSuccessfullyTransaction("straight_swap","approval",currencies[Field.INPUT]?.symbol)
+        GSuccessfullyTransaction(
+          "straight_swap",
+          "approval",
+          currencies[Field.INPUT]?.symbol
+        );
         dispatch(
           addToast({
             message: `Swap approval successful`,
@@ -388,9 +393,13 @@ const SendToken = () => {
           })
         );
       }
-    } catch (e:any) {
-      console.log(e.message,"1838")
-      GFailedTransaction("straight_swap","approval",e.message,currencies[Field.INPUT]?.symbol)
+    } catch (e) {
+      GFailedTransaction(
+        "straight_swap",
+        "approval",
+        e.message,
+        currencies[Field.INPUT]?.symbol
+      );
       console.log(e);
       dispatch(
         setOpenModal({
@@ -410,7 +419,6 @@ const SendToken = () => {
             currencies[Field.OUTPUT]?.decimals
           )
         : parsedAmounts[Field.OUTPUT];
-      console.log({ data });
       return data;
     }
   }, [parsedAmounts]);
@@ -428,9 +436,11 @@ const SendToken = () => {
       setSendingTrx(true);
       dispatch(
         setOpenModal({
-          message: `Swapping ${formattedAmounts[Field.INPUT]} ${currencies[Field.INPUT]?.symbol
-            } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol
-            }`,
+          message: `Swapping ${formattedAmounts[Field.INPUT]} ${
+            currencies[Field.INPUT]?.symbol
+          } for ${formattedAmounts[Field.OUTPUT]} ${
+            currencies[Field.OUTPUT]?.symbol
+          }`,
           trxState: TrxState.WaitingForConfirmation,
         })
       );
@@ -470,25 +480,20 @@ const SendToken = () => {
               : ethers.utils.parseUnits(format3, 9).toString(),
         }
       );
+      const { confirmations, events } = await sendTransaction.wait(3);
       const { hash } = sendTransaction;
-      const { confirmations, status } = await sendTransaction.wait(1);
-      const receipt = await sendTransaction.wait();
       const outputAmount = await getOutPutDataFromEvent(
         to,
-        receipt.events,
+        events,
         currencies[Field.OUTPUT]?.decimals
       );
       const inputAmount = await getInPutDataFromEvent(
         from,
-        receipt.events,
+        events,
         outputToken(),
         currencies[Field.INPUT]?.decimals
       );
-      if (
-        typeof sendTransaction.hash !== "undefined" &&
-        confirmations >= 3 &&
-        status
-      ) {
+      if (typeof sendTransaction.hash !== "undefined" && confirmations >= 3) {
         setSendingTrx(false);
         const explorerLink = getExplorerLink(
           chainId as number,
@@ -503,8 +508,9 @@ const SendToken = () => {
         );
         dispatch(
           addToast({
-            message: `Swap ${inputAmount} ${currencies[Field.INPUT]?.symbol
-              } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${inputAmount} ${
+              currencies[Field.INPUT]?.symbol
+            } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
@@ -536,9 +542,11 @@ const SendToken = () => {
       setSendingTrx(true);
       dispatch(
         setOpenModal({
-          message: `Swapping ${formattedAmounts[Field.INPUT]} ${currencies[Field.INPUT]?.symbol
-            } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol
-            }`,
+          message: `Swapping ${formattedAmounts[Field.INPUT]} ${
+            currencies[Field.INPUT]?.symbol
+          } for ${formattedAmounts[Field.OUTPUT]} ${
+            currencies[Field.OUTPUT]?.symbol
+          }`,
           trxState: TrxState.WaitingForConfirmation,
         })
       );
@@ -549,7 +557,7 @@ const SendToken = () => {
       );
 
       const isEIP1559 = await library?.getFeeData();
-      console.log({pathArray,parsedAmount,formatAmount,dl},parsedOutput(currencies[Field.OUTPUT]?.decimals as number))
+
       const sendTransaction = await route.swapETHForExactTokens(
         parsedOutput(currencies[Field.OUTPUT]?.decimals as number),
         // [from, to],
@@ -575,26 +583,21 @@ const SendToken = () => {
         }
       );
       const { hash } = sendTransaction;
-      const { confirmations, status } = await sendTransaction.wait(1);
-      const receipt = await sendTransaction.wait();
+      const { confirmations, events } = await sendTransaction.wait(3);
 
       const outputAmountForDisplay = await getOutPutDataFromEvent(
         to,
-        receipt.events,
+        events,
         currencies[Field.OUTPUT]?.decimals
       );
       const inputAmountForDisplay = await getInPutDataFromEvent(
         from,
-        receipt.events,
+        events,
         parsedAmount,
         currencies[Field.INPUT]?.decimals
       );
 
-      if (
-        typeof sendTransaction.hash !== "undefined" &&
-        confirmations >= 1 &&
-        status
-      ) {
+      if (typeof sendTransaction.hash !== "undefined" && confirmations >= 3) {
         setSendingTrx(false);
         const explorerLink = getExplorerLink(
           chainId as number,
@@ -609,9 +612,11 @@ const SendToken = () => {
         );
         dispatch(
           addToast({
-            message: `Swap ${inputAmountForDisplay} ${currencies[Field.INPUT]?.symbol
-              } for ${outputAmountForDisplay} ${currencies[Field.OUTPUT]?.symbol
-              }`,
+            message: `Swap ${inputAmountForDisplay} ${
+              currencies[Field.INPUT]?.symbol
+            } for ${outputAmountForDisplay} ${
+              currencies[Field.OUTPUT]?.symbol
+            }`,
             URL: explorerLink,
           })
         );
@@ -643,9 +648,11 @@ const SendToken = () => {
       setSendingTrx(true);
       dispatch(
         setOpenModal({
-          message: `Swapping ${formattedAmounts[Field.INPUT]} ${currencies[Field.INPUT]?.symbol
-            } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol
-            }`,
+          message: `Swapping ${formattedAmounts[Field.INPUT]} ${
+            currencies[Field.INPUT]?.symbol
+          } for ${formattedAmounts[Field.OUTPUT]} ${
+            currencies[Field.OUTPUT]?.symbol
+          }`,
           trxState: TrxState.WaitingForConfirmation,
         })
       );
@@ -709,26 +716,21 @@ const SendToken = () => {
                   : ethers.utils.parseUnits(format3, 9).toString(),
             }
       );
-      const { confirmations, status } = await sendTransaction.wait(1);
+      const { confirmations, events } = await sendTransaction.wait(3);
       const { hash } = sendTransaction;
-      const receipt = await sendTransaction.wait();
       const outputAmount = await getOutPutDataFromEvent(
         to,
-        receipt.events,
+        events,
         currencies[Field.OUTPUT]?.decimals
       );
       const inputAmount = await getInPutDataFromEvent(
         from,
-        receipt.events,
+        events,
         parsedAmount,
         currencies[Field.INPUT]?.decimals
       );
 
-      if (
-        typeof sendTransaction.hash !== "undefined" &&
-        confirmations >= 1 &&
-        status
-      ) {
+      if (typeof sendTransaction.hash !== "undefined" && confirmations >= 3) {
         setSendingTrx(false);
         const explorerLink = getExplorerLink(
           chainId as number,
@@ -737,24 +739,37 @@ const SendToken = () => {
         );
         dispatch(
           setOpenModal({
-            message: `Swap tokens for ${currencies[Field.OUTPUT]?.symbol
-              } Successful.`,
+            message: `Swap tokens for ${
+              currencies[Field.OUTPUT]?.symbol
+            } Successful.`,
             trxState: TrxState.TransactionSuccessful,
           })
         );
-        GSuccessfullyTransaction("straight_swap","swapping",currencies[Field.INPUT]?.symbol, currencies[Field.OUTPUT]?.symbol)
+        GSuccessfullyTransaction(
+          "straight_swap",
+          "swapping",
+          currencies[Field.INPUT]?.symbol,
+          currencies[Field.OUTPUT]?.symbol
+        );
         dispatch(
           addToast({
-            message: `Swap ${inputAmount} ${currencies[Field.INPUT]?.symbol
-              } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${inputAmount} ${
+              currencies[Field.INPUT]?.symbol
+            } for ${outputAmount} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
         onUserInput(Field.INPUT, "");
       }
-    } catch (e:any) {
-      console.log(e?.message,"swapping",);
-      GFailedTransaction("straight_swap","swapping",e?.message,currencies[Field.INPUT]?.symbol, currencies[Field.OUTPUT]?.symbol)
+    } catch (e) {
+      console.log(e?.message);
+      GFailedTransaction(
+        "straight_swap",
+        "swapping",
+        e?.message,
+        currencies[Field.INPUT]?.symbol,
+        currencies[Field.OUTPUT]?.symbol
+      );
 
       setSendingTrx(false);
       dispatch(
@@ -772,8 +787,9 @@ const SendToken = () => {
     setSendingTrx(true);
     dispatch(
       setOpenModal({
-        message: `Swapping ${typedValue} ${currencies[Field.INPUT]?.symbol
-          } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
+        message: `Swapping ${typedValue} ${
+          currencies[Field.INPUT]?.symbol
+        } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
         trxState: TrxState.WaitingForConfirmation,
       })
     );
@@ -785,33 +801,27 @@ const SendToken = () => {
       );
 
       const isEIP1559 = await library?.getFeeData();
-      const sendTransaction = await weth.deposit(
-        {
-          value: isExactIn ? parsedAmount : formatAmount,
-          maxPriorityFeePerGas:
-            chainId === 137
-              ? ethers.utils.parseUnits(format1, 9).toString()
-              : null,
-          maxFeePerGas:
-            chainId === 137
-              ? ethers.utils.parseUnits(format2, 9).toString()
-              : null,
-          gasPrice:
-            chainId === 137
-              ? null
-              : chainId === 80001
-              ? null
-              : ethers.utils.parseUnits(format3, 9).toString(),
-          }
-        );
+      const sendTransaction = await weth.deposit({
+        value: isExactIn ? parsedAmount : formatAmount,
+        maxPriorityFeePerGas:
+          chainId === 137
+            ? ethers.utils.parseUnits(format1, 9).toString()
+            : null,
+        maxFeePerGas:
+          chainId === 137
+            ? ethers.utils.parseUnits(format2, 9).toString()
+            : null,
+        gasPrice:
+          chainId === 137
+            ? null
+            : chainId === 80001
+            ? null
+            : ethers.utils.parseUnits(format3, 9).toString(),
+      });
 
-      const { confirmations, status } = await sendTransaction.wait(1);
+      const { confirmations } = await sendTransaction.wait(3);
       const { hash } = sendTransaction;
-      if (
-        typeof sendTransaction.hash !== "undefined" &&
-        confirmations >= 1 &&
-        status
-      ) {
+      if (typeof sendTransaction.hash !== "undefined" && confirmations >= 3) {
         setSendingTrx(false);
         dispatch(
           setOpenModal({
@@ -824,18 +834,30 @@ const SendToken = () => {
           hash,
           ExplorerDataType.TRANSACTION
         );
-        GSuccessfullyTransaction("straight_swap","swapping",currencies[Field.INPUT]?.symbol, currencies[Field.OUTPUT]?.symbol)
+        GSuccessfullyTransaction(
+          "straight_swap",
+          "swapping",
+          currencies[Field.INPUT]?.symbol,
+          currencies[Field.OUTPUT]?.symbol
+        );
         dispatch(
           addToast({
-            message: `Swap ${typedValue} ${currencies[Field.INPUT]?.symbol
-              } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${typedValue} ${
+              currencies[Field.INPUT]?.symbol
+            } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
         onUserInput(Field.INPUT, "");
       }
-    } catch (e:any) {
-      GFailedTransaction("straight_swap","swapping",e.message,currencies[Field.INPUT]?.symbol, currencies[Field.OUTPUT]?.symbol)
+    } catch (e) {
+      GFailedTransaction(
+        "straight_swap",
+        "swapping",
+        e.message,
+        currencies[Field.INPUT]?.symbol,
+        currencies[Field.OUTPUT]?.symbol
+      );
       console.log(e);
       setSendingTrx(false);
       dispatch(
@@ -853,8 +875,9 @@ const SendToken = () => {
     setSendingTrx(true);
     dispatch(
       setOpenModal({
-        message: `Swapping ${typedValue} ${currencies[Field.INPUT]?.symbol
-          } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
+        message: `Swapping ${typedValue} ${
+          currencies[Field.INPUT]?.symbol
+        } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
         trxState: TrxState.WaitingForConfirmation,
       })
     );
@@ -888,13 +911,9 @@ const SendToken = () => {
                   : ethers.utils.parseUnits(format3, 9).toString(),
             }
       );
-      const { confirmations, status } = await sendTransaction.wait(3);
+      const { confirmations } = await sendTransaction.wait(3);
       const { hash } = sendTransaction;
-      if (
-        typeof sendTransaction.hash !== "undefined" &&
-        confirmations >= 1 &&
-        status
-      ) {
+      if (typeof sendTransaction.hash !== "undefined" && confirmations >= 3) {
         setSendingTrx(false);
         dispatch(
           setOpenModal({
@@ -909,16 +928,28 @@ const SendToken = () => {
         );
         dispatch(
           addToast({
-            message: `Swap ${typedValue} ${currencies[Field.INPUT]?.symbol
-              } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
+            message: `Swap ${typedValue} ${
+              currencies[Field.INPUT]?.symbol
+            } for ${typedValue} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
-        GSuccessfullyTransaction("straight_swap","swapping",currencies[Field.INPUT]?.symbol, currencies[Field.OUTPUT]?.symbol)
+        GSuccessfullyTransaction(
+          "straight_swap",
+          "swapping",
+          currencies[Field.INPUT]?.symbol,
+          currencies[Field.OUTPUT]?.symbol
+        );
         onUserInput(Field.INPUT, "");
       }
-    } catch (e:any) {
-      GFailedTransaction("straight_swap","swapping",e.message,currencies[Field.INPUT]?.symbol, currencies[Field.OUTPUT]?.symbol)
+    } catch (e) {
+      GFailedTransaction(
+        "straight_swap",
+        "swapping",
+        e.message,
+        currencies[Field.INPUT]?.symbol,
+        currencies[Field.OUTPUT]?.symbol
+      );
       console.log(e);
       setSendingTrx(false);
       dispatch(
@@ -932,7 +963,10 @@ const SendToken = () => {
   };
 
   const swapTokens = async () => {
-    if (chainId === SupportedChainId.POLYGONTEST || chainId === SupportedChainId.POLYGON) {
+    if (
+      chainId === SupportedChainId.POLYGONTEST ||
+      chainId === SupportedChainId.POLYGON
+    ) {
       if (
         currencies[Field.INPUT]?.symbol === "MATIC" &&
         currencies[Field.OUTPUT]?.symbol === "WMATIC"
@@ -1053,17 +1087,17 @@ const SendToken = () => {
   }, [formattedAmounts[Field.OUTPUT]]);
 
   return (
-    <div className='Swap'>
+    <div className="Swap">
       <NewToken
         open={importTokensNotInDefault.length > 0 && !dismissTokenWarning}
         tokens={importTokensNotInDefault}
         setDisplayImportedToken={handleDismissTokenWarning}
       />
       <Box
-        border='1px'
+        border="1px"
         borderColor={borderColor}
-        borderRadius='6px'
-        h='420px'
+        borderRadius="6px"
+        h="420px"
         pl={3}
         pr={3}
       >
@@ -1077,7 +1111,7 @@ const SendToken = () => {
           value={formattedAmounts[Field.INPUT]}
           placeholder="0.0"
         />
-        <Flex justifyContent='center' onClick={onSwitchTokens}>
+        <Flex justifyContent="center" onClick={onSwitchTokens}>
           <SwitchIcon />
         </Flex>
         <To
@@ -1089,20 +1123,20 @@ const SendToken = () => {
           placeholder="0.0"
         />
 
-        <Flex alignItems='center' className='SwapToken'>
+        <Flex alignItems="center" className="SwapToken">
           {!account ? (
             <Button
-              w='100%'
-              borderRadius='6px'
+              w="100%"
+              borderRadius="6px"
               border={lightmode ? "2px" : "none"}
               borderColor={borderColor}
-              h='48px'
-              p='5px'
+              h="48px"
+              p="5px"
               mt={1}
               disabled={false}
               color={color}
               bgColor={switchBgcolor}
-              fontSize='18px'
+              fontSize="18px"
               boxShadow={lightmode ? "base" : "lg"}
               _hover={{ bgColor: buttonBgcolor, color: "#FFFFFF" }}
               onClick={() => {
@@ -1114,17 +1148,17 @@ const SendToken = () => {
             </Button>
           ) : insufficientBalance || inputError ? (
             <Button
-              w='100%'
-              borderRadius='6px'
+              w="100%"
+              borderRadius="6px"
               border={lightmode ? "2px" : "none"}
               borderColor={borderColor}
-              h='48px'
-              p='5px'
+              h="48px"
+              p="5px"
               mt={1}
               disabled={inputError !== undefined || insufficientBalance}
               color={inputError ? color : "#FFFFFF"}
               bgColor={inputError ? switchBgcolor : buttonBgcolor}
-              fontSize='18px'
+              fontSize="18px"
               boxShadow={lightmode ? "base" : "lg"}
               _hover={{ bgColor: buttonBgcolor }}
             >
@@ -1134,21 +1168,25 @@ const SendToken = () => {
             </Button>
           ) : !hasBeenApproved ? (
             <Button
-              w='100%'
-              borderRadius='6px'
+              w="100%"
+              borderRadius="6px"
               border={lightmode ? "2px" : "none"}
               borderColor={borderColor}
-              h='48px'
-              p='5px'
+              h="48px"
+              p="5px"
               mt={1}
               disabled={inputError !== undefined || insufficientBalance}
               color={inputError ? color : "#FFFFFF"}
               bgColor={inputError ? switchBgcolor : buttonBgcolor}
-              fontSize='18px'
+              fontSize="18px"
               boxShadow={lightmode ? "base" : "lg"}
               _hover={{ bgColor: buttonBgcolor }}
               onClick={() => {
-                GButtonClick("straight_swap","approve tokens",currencies[Field.INPUT]?.symbol)
+                GButtonClick(
+                  "straight_swap",
+                  "approve tokens",
+                  currencies[Field.INPUT]?.symbol
+                );
                 approveSwap();
               }}
             >
@@ -1156,16 +1194,16 @@ const SendToken = () => {
             </Button>
           ) : inputError ? (
             <Button
-              w='100%'
-              borderRadius='6px'
+              w="100%"
+              borderRadius="6px"
               border={lightmode ? "2px" : "none"}
               borderColor={borderColor}
-              h='48px'
-              p='5px'
+              h="48px"
+              p="5px"
               mt={1}
               disabled={true}
               bgColor={inputError ? switchBgcolor : buttonBgcolor}
-              fontSize='18px'
+              fontSize="18px"
               boxShadow={lightmode ? "base" : "lg"}
               _hover={{ bgColor: buttonBgcolor }}
             >
@@ -1173,21 +1211,26 @@ const SendToken = () => {
             </Button>
           ) : (
             <Button
-              w='100%'
-              borderRadius='6px'
+              w="100%"
+              borderRadius="6px"
               border={lightmode ? "2px" : "none"}
               borderColor={borderColor}
-              h='48px'
-              p='5px'
+              h="48px"
+              p="5px"
               mt={1}
               disabled={inputError !== undefined || insufficientBalance}
               color={inputError ? color : "#FFFFFF"}
               bgColor={inputError ? switchBgcolor : buttonBgcolor}
-              fontSize='18px'
+              fontSize="18px"
               boxShadow={lightmode ? "base" : "lg"}
               _hover={{ bgColor: buttonBgcolor }}
               onClick={() => {
-                GButtonClick("straight_swap","swapping",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
+                GButtonClick(
+                  "straight_swap",
+                  "swapping",
+                  currencies[Field.INPUT]?.symbol,
+                  currencies[Field.OUTPUT]?.symbol
+                );
 
                 setCurrentToPrice(receivedAmount);
                 setShowModal(!showModal);
@@ -1196,7 +1239,6 @@ const SendToken = () => {
               Swap Tokens
             </Button>
           )}
-
 
           <NetworkModal
             displayNetwork={displayNetwork}
@@ -1222,7 +1264,6 @@ const SendToken = () => {
           pathSymbol={pathSymbol}
         />
       </Box>
-     
     </div>
   );
 };

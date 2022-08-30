@@ -266,16 +266,14 @@ export function Index() {
   const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
   const { search } = useLocation();
 
-  console.log("FD new", FarmData)
   const data = useFarmData();
   const newLP = useNewLPData();
   const farms = useSelector((state) => state.farming.content);
   const recentFarms = useSelector((state) => state.newFarming.content);
   const searchSection = useSelector((state) => state.farming);
   const newSearchSection = useSelector((state) => state.newFarming);
-  
-  const {specialPool} = useSelector((state) => state.newfarm);
 
+  const { specialPool } = useSelector((state) => state.newfarm);
 
   useEffect(() => {
     dispatch(clearAllFarms());
@@ -725,7 +723,8 @@ export function Index() {
               </Tab>
             )}
 
-            {isMobileDevice ? (
+            {Number(ChainId) === Number(SupportedChainId.OASISTEST) ||
+            Number(ChainId) === Number(SupportedChainId.OASISMAINNET) ? null : (
               <Tab
                 border="1px solid #DEE5ED"
                 background={
@@ -735,61 +734,6 @@ export function Index() {
                     : useNotSelectedBackgroundColor
                 }
                 color={useSelectedColor}
-                display="flex"
-                flex-direction="row"
-                justify-content="center"
-                align-items="center"
-                flexWrap={"wrap"}
-                padding={"2px 4px"}
-                fontSize={"12px"}
-                borderRadius={"0px 10px 0px 0px"}
-              >
-                <Menu>
-                  <MenuButton
-                    variant="ghost"
-                    fontSize={"14px"}
-                    as={Button}
-                    transition="all 0.2s"
-                    borderRadius="md"
-                    _hover={{ bg: "none" }}
-                    _focus={{ boxShadow: "none" }}
-                  >
-                    <HamburgerIcon w={6} h={6} color={titleColor} />
-                  </MenuButton>
-                  <MenuList>
-                    <MenuItem onClick={() => handleSelect(farmSection.NEW_LP)}>
-                      <Stack direction={"column"} spacing={0}>
-                        <Text my={2}>
-                          {Number(ChainId) ===
-                            Number(SupportedChainId.POLYGONTEST) ||
-                          Number(ChainId) === Number(SupportedChainId.POLYGON)
-                            ? "QuickSwap"
-                            : "Pancake LP"}
-                        </Text>
-                      </Stack>
-                    </MenuItem>
-
-                    <MenuItem
-                      onClick={() => handleSelect(farmSection.SECOND_NEW_LP)}
-                    >
-                      <Stack direction={"column"} spacing={0}>
-                        <Text my={2}>Stable LP</Text>
-                      </Stack>
-                    </MenuItem>
-                  </MenuList>
-                </Menu>
-              </Tab>
-            ) : (
-              <Tab
-                border="1px solid #DEE5ED"
-                background={
-                  selected === farmSection.NEW_LP ||
-                  selected === farmSection.SECOND_NEW_LP
-                    ? useSelectedBackgroundColor
-                    : useNotSelectedBackgroundColor
-                }
-                color={useSelectedColor}
-                onClick={() => handleSelect(farmSection.NEW_LP)}
                 display="flex"
                 flex-direction="row"
                 justify-content="center"
@@ -799,42 +743,193 @@ export function Index() {
                 fontSize={isMobileDevice ? "12px" : "14px"}
                 borderRadius={isMobileDevice ? "0px 10px 10px 0px" : 0}
               >
-                <Text color={titleColor}>New Farms</Text>
-                <Select
-                  size={isMobileDevice ? undefined : "sm"}
-                  borderColor={
-                    selected === farmSection.NEW_LP
-                      ? useNotSelectedBorderColor
-                      : useSelectedBorderColor
-                  }
-                  color={
-                    selected === farmSection.NEW_LP
-                      ? useNotSelectedTextColor
-                      : useSelectedTextColor
-                  }
-                  onChange={handleNewFarmTab}
-                  background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
-                  onClick={(e) => e.stopPropagation()}
-                  border=" 1px solid #008DFF"
-                  box-sizing="border-box"
-                  borderRadius="50px"
-                  /* Inside auto layout */
-                  width={isMobileDevice ? undefined : "fit-content"}
-                  flex="none"
-                  order="1"
-                  flex-grow="0"
-                  margin="10px 16px"
-                >
-                  <option value={5}>
-                    {Number(ChainId) === Number(SupportedChainId.POLYGONTEST) ||
-                    Number(ChainId) === Number(SupportedChainId.POLYGON)
-                      ? "QuickSwap"
-                      : "Pancake LP"}
-                  </option>
-                  <option value={6}>Stable LP</option>
-                </Select>
+                {isMobileDevice ? (
+                  <Menu>
+                    <MenuButton
+                      variant="ghost"
+                      fontSize={"14px"}
+                      as={Button}
+                      transition="all 0.2s"
+                      borderRadius="md"
+                      _hover={{ bg: "none" }}
+                      _focus={{ boxShadow: "none" }}
+                    >
+                      <HamburgerIcon w={6} h={6} color={titleColor} />
+                    </MenuButton>
+                    <MenuList>
+                      <MenuItem
+                        onClick={() => handleSelect(farmSection.NEW_LP)}
+                      >
+                        <Stack direction={"column"} spacing={0}>
+                          <Text my={2}>
+                            {Number(ChainId) ===
+                              Number(SupportedChainId.POLYGONTEST) ||
+                            Number(ChainId) === Number(SupportedChainId.POLYGON)
+                              ? "QuickSwap"
+                              : "Pancake LP"}
+                          </Text>
+                        </Stack>
+                      </MenuItem>
+
+                      <MenuItem
+                        onClick={() => handleSelect(farmSection.SECOND_NEW_LP)}
+                      >
+                        <Stack direction={"column"} spacing={0}>
+                          <Text my={2}>Stable LP</Text>
+                        </Stack>
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
+                ) : (
+                  <>
+                    <Text color={titleColor}>New Farms</Text>
+                    <Select
+                      size={isMobileDevice ? undefined : "sm"}
+                      borderColor={
+                        selected === farmSection.NEW_LP
+                          ? useNotSelectedBorderColor
+                          : useSelectedBorderColor
+                      }
+                      color={
+                        selected === farmSection.NEW_LP
+                          ? useNotSelectedTextColor
+                          : useSelectedTextColor
+                      }
+                      onChange={handleNewFarmTab}
+                      background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}
+                      onClick={(e) => e.stopPropagation()}
+                      border=" 1px solid #008DFF"
+                      box-sizing="border-box"
+                      borderRadius="50px"
+                      width={isMobileDevice ? undefined : "fit-content"}
+                      flex="none"
+                      order="1"
+                      flex-grow="0"
+                      margin="10px 16px"
+                    >
+                      <option value={5}>
+                        {Number(ChainId) ===
+                          Number(SupportedChainId.POLYGONTEST) ||
+                        Number(ChainId) === Number(SupportedChainId.POLYGON)
+                          ? "QuickSwap"
+                          : "Pancake LP"}
+                      </option>
+                      <option value={6}>Stable LP</option>
+                    </Select>
+                  </>
+                )}
               </Tab>
             )}
+
+            {/*{isMobileDevice ? (*/}
+            {/*  <Tab*/}
+            {/*    border="1px solid #DEE5ED"*/}
+            {/*    background={*/}
+            {/*      selected === farmSection.NEW_LP ||*/}
+            {/*      selected === farmSection.SECOND_NEW_LP*/}
+            {/*        ? useSelectedBackgroundColor*/}
+            {/*        : useNotSelectedBackgroundColor*/}
+            {/*    }*/}
+            {/*    color={useSelectedColor}*/}
+            {/*    display="flex"*/}
+            {/*    flex-direction="row"*/}
+            {/*    justify-content="center"*/}
+            {/*    align-items="center"*/}
+            {/*    flexWrap={isMobileDevice ? "wrap" : undefined}*/}
+            {/*    padding={isMobileDevice ? "2px 4px" : undefined}*/}
+            {/*    fontSize={isMobileDevice ? "12px" : "14px"}*/}
+            {/*    borderRadius={isMobileDevice ? "0px 10px 10px 0px" : 0}*/}
+            {/*  >*/}
+            {/*    <Menu>*/}
+            {/*      <MenuButton*/}
+            {/*        variant="ghost"*/}
+            {/*        fontSize={"14px"}*/}
+            {/*        as={Button}*/}
+            {/*        transition="all 0.2s"*/}
+            {/*        borderRadius="md"*/}
+            {/*        _hover={{ bg: "none" }}*/}
+            {/*        _focus={{ boxShadow: "none" }}*/}
+            {/*      >*/}
+            {/*        <HamburgerIcon w={6} h={6} color={titleColor} />*/}
+            {/*      </MenuButton>*/}
+            {/*      <MenuList>*/}
+            {/*        <MenuItem onClick={() => handleSelect(farmSection.NEW_LP)}>*/}
+            {/*          <Stack direction={"column"} spacing={0}>*/}
+            {/*            <Text my={2}>*/}
+            {/*              {Number(ChainId) ===*/}
+            {/*                Number(SupportedChainId.POLYGONTEST) ||*/}
+            {/*              Number(ChainId) === Number(SupportedChainId.POLYGON)*/}
+            {/*                ? "QuickSwap"*/}
+            {/*                : "Pancake LP"}*/}
+            {/*            </Text>*/}
+            {/*          </Stack>*/}
+            {/*        </MenuItem>*/}
+
+            {/*        <MenuItem*/}
+            {/*          onClick={() => handleSelect(farmSection.SECOND_NEW_LP)}*/}
+            {/*        >*/}
+            {/*          <Stack direction={"column"} spacing={0}>*/}
+            {/*            <Text my={2}>Stable LP</Text>*/}
+            {/*          </Stack>*/}
+            {/*        </MenuItem>*/}
+            {/*      </MenuList>*/}
+            {/*    </Menu>*/}
+            {/*  </Tab>*/}
+            {/*) : (*/}
+            {/*  <Tab*/}
+            {/*    border="1px solid #DEE5ED"*/}
+            {/*    background={*/}
+            {/*      selected === farmSection.NEW_LP ||*/}
+            {/*      selected === farmSection.SECOND_NEW_LP*/}
+            {/*        ? useSelectedBackgroundColor*/}
+            {/*        : useNotSelectedBackgroundColor*/}
+            {/*    }*/}
+            {/*    color={useSelectedColor}*/}
+            {/*    onClick={() => handleSelect(farmSection.NEW_LP)}*/}
+            {/*    display="flex"*/}
+            {/*    flex-direction="row"*/}
+            {/*    justify-content="center"*/}
+            {/*    align-items="center"*/}
+            {/*    flexWrap={isMobileDevice ? "wrap" : undefined}*/}
+            {/*    padding={isMobileDevice ? "2px 4px" : undefined}*/}
+            {/*    fontSize={isMobileDevice ? "12px" : "14px"}*/}
+            {/*    borderRadius={isMobileDevice ? "0px 10px 10px 0px" : 0}*/}
+            {/*  >*/}
+            {/*    <Text color={titleColor}>New Farms</Text>*/}
+            {/*    <Select*/}
+            {/*      size={isMobileDevice ? undefined : "sm"}*/}
+            {/*      borderColor={*/}
+            {/*        selected === farmSection.NEW_LP*/}
+            {/*          ? useNotSelectedBorderColor*/}
+            {/*          : useSelectedBorderColor*/}
+            {/*      }*/}
+            {/*      color={*/}
+            {/*        selected === farmSection.NEW_LP*/}
+            {/*          ? useNotSelectedTextColor*/}
+            {/*          : useSelectedTextColor*/}
+            {/*      }*/}
+            {/*      onChange={handleNewFarmTab}*/}
+            {/*      background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}*/}
+            {/*      onClick={(e) => e.stopPropagation()}*/}
+            {/*      border=" 1px solid #008DFF"*/}
+            {/*      box-sizing="border-box"*/}
+            {/*      borderRadius="50px"*/}
+            {/*      width={isMobileDevice ? undefined : "fit-content"}*/}
+            {/*      flex="none"*/}
+            {/*      order="1"*/}
+            {/*      flex-grow="0"*/}
+            {/*      margin="10px 16px"*/}
+            {/*    >*/}
+            {/*      <option value={5}>*/}
+            {/*        {Number(ChainId) === Number(SupportedChainId.POLYGONTEST) ||*/}
+            {/*        Number(ChainId) === Number(SupportedChainId.POLYGON)*/}
+            {/*          ? "QuickSwap"*/}
+            {/*          : "Pancake LP"}*/}
+            {/*      </option>*/}
+            {/*      <option value={6}>Stable LP</option>*/}
+            {/*    </Select>*/}
+            {/*  </Tab>*/}
+            {/*)}*/}
           </TabList>
           <Flex
             ml={5}
@@ -1172,18 +1267,16 @@ export function Index() {
                     <Text>Total Liquidity</Text>
                     <Text />
                   </Flex>
-                  {specialPool?.map((content: any, index: number) =>
-                     (
-                      <YieldFarm
-                        farmDataLoading={farmDataLoading}
-                        content={content}
-                        refreshSpecialData={refreshSpecialData}
-                        key={content.pid}
-                        wallet={wallet}
-                        URLReferrerAddress={refAddress}
-                      />
-                    ) 
-                  )}
+                  {specialPool?.map((content: any, index: number) => (
+                    <YieldFarm
+                      farmDataLoading={farmDataLoading}
+                      content={content}
+                      refreshSpecialData={refreshSpecialData}
+                      key={content.pid}
+                      wallet={wallet}
+                      URLReferrerAddress={refAddress}
+                    />
+                  ))}
                 </Box>
               </Box>
             </Flex>
