@@ -336,6 +336,7 @@ const SendToken = () => {
     pathArray,
     parseFloat(receivedAmount),
     fromAmount,
+    currencies[Field.INPUT] as Currency,
     currencies[Field.OUTPUT] as Currency
   );
 
@@ -1048,34 +1049,6 @@ const SendToken = () => {
       setRouteAddress([fromAddress, toAddress]);
     }
   };
-  // useEffect(async () => {
-  //   await checkLiquidityPair();
-  // }, [fromAddress, toAddress, path]);
-
-  // const calculatePriceImpact = async () => {
-  //   if (routeAddress.length === 2) {
-  //     try {
-  //       const SwapRouter = await SmartSwapRouter(
-  //         SMARTSWAPROUTER[(chainId as number) ?? 56],
-  //         library
-  //       );
-  //       const price = await SwapRouter.getAmountsOut(
-  //         "1000000000000000000",
-  //         routeAddress
-  //       );
-  //       const marketPrice = ethers.utils.formatEther(price[1].toString());
-  //       const swapPrice = receivedAmount / fromAmount;
-  //       const priceDifference = swapPrice - marketPrice;
-  //       const priceImpact = (priceDifference / marketPrice) * 100;
-  //       setPriceImpact(parseFloat(priceImpact).toFixed(2));
-  //     } catch (e) {
-  //       setPriceImpact(0);
-  //     }
-  //   }
-  // };
-  // useEffect(async () => {
-  //   calculatePriceImpact();
-  // }, [fromAmount, receivedAmount, chainId]);
 
   const [isLoadingValue, setIsLoadingValue] = useState(false);
   useEffect(() => {

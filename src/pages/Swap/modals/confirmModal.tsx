@@ -36,7 +36,7 @@ export type IModal = {
   outputLogo: string;
   handleSwap: () => void;
   pathSymbol: string;
-  showNewChangesText:boolean
+  showNewChangesText: boolean;
 };
 
 const ConfirmModal: React.FC<IModal> = ({
@@ -56,7 +56,7 @@ const ConfirmModal: React.FC<IModal> = ({
   outputLogo,
   handleSwap,
   pathSymbol,
-  showNewChangesText
+  showNewChangesText,
 }) => {
   const bgColor = useColorModeValue("#FFF", "#15202B");
   const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
@@ -75,58 +75,58 @@ const ConfirmModal: React.FC<IModal> = ({
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} isCentered>
         <ModalOverlay />
         <ModalContent
-          width='95vw'
-          borderRadius='6px'
-          paddingBottom='20px'
+          width="95vw"
+          borderRadius="6px"
+          paddingBottom="20px"
           bgColor={bgColor}
-          minHeight='40vh'
+          minHeight="40vh"
         >
-          <ModalHeader fontSize='18px' fontWeight='regular'>
+          <ModalHeader fontSize="18px" fontWeight="regular">
             {title}
           </ModalHeader>
           <ModalCloseButton
-            bg='none'
+            bg="none"
             size={"sm"}
             mt={3}
             mr={3}
-            cursor='pointer'
+            cursor="pointer"
             _focus={{ outline: "none" }}
             onClick={onClose}
             p={"7px"}
             border={"1px solid"}
           />
-          <Box width='90%' margin='0 auto' fontSize='14px'>
+          <Box width="90%" margin="0 auto" fontSize="14px">
             <Box
               bgColor={boxColor}
               border={`1px solid ${borderColor}`}
-              borderRadius='6px'
-              padding='10px'
-              fontWeight='normal'
-              fontSize='24px'
+              borderRadius="6px"
+              padding="10px"
+              fontWeight="normal"
+              fontSize="24px"
             >
-              <Text fontSize='16px' color={lightTextColor}>
+              <Text fontSize="16px" color={lightTextColor}>
                 From
               </Text>
-              <Flex justifyContent='space-between' mt='2'>
+              <Flex justifyContent="space-between" mt="2">
                 <Flex>
-                  <Image src={inputLogo || RGPImage} boxSize={"24px"} mr='2' />{" "}
+                  <Image src={inputLogo || RGPImage} boxSize={"24px"} mr="2" />{" "}
                   <Text>{from}</Text>
                 </Flex>
                 <Text color={heavyTextColor}>{fromDeposited}</Text>
               </Flex>
             </Box>
-            <Box display='flex' justifyContent='center' my='-4'>
+            <Box display="flex" justifyContent="center" my="-4">
               <Box
-                display='flex'
-                flexDirection='row'
-                justifyContent='center'
-                alignItems='center'
-                width='40px'
-                height='40px'
+                display="flex"
+                flexDirection="row"
+                justifyContent="center"
+                alignItems="center"
+                width="40px"
+                height="40px"
                 bgColor={boxColor}
                 border={`3px solid ${borderColor}`}
-                boxSizing='border-box'
-                borderRadius='12px'
+                boxSizing="border-box"
+                borderRadius="12px"
               >
                 <ArrowDownIcon w={5} h={10} />
               </Box>
@@ -135,77 +135,103 @@ const ConfirmModal: React.FC<IModal> = ({
             <Box
               bgColor={boxColor}
               border={`1px solid ${borderColor}`}
-              borderRadius='6px'
-              padding='10px'
-              fontWeight='normal'
-              fontSize='24px'
+              borderRadius="6px"
+              padding="10px"
+              fontWeight="normal"
+              fontSize="24px"
             >
-              <Text fontSize='16px' color={lightTextColor}>
+              <Text fontSize="16px" color={lightTextColor}>
                 To
               </Text>
-              <Flex justifyContent='space-between' mt='2'>
+              <Flex justifyContent="space-between" mt="2">
                 <Flex>
                   <Image
                     boxSize={"24px"}
                     src={outputLogo || USDTImage}
-                    mr='2'
+                    mr="2"
                   />{" "}
                   <Text>{to}</Text>
                 </Flex>
                 <Text color={heavyTextColor}>{toDeposited}</Text>
               </Flex>
             </Box>
-          {showNewChangesText===true &&   <Box my="2" color="red.200">
-            <InfoOutlineIcon /> Price changed 
-            </Box>}
-            <Box my='5'>
-              <Flex justifyContent='space-between' fontSize='14px'>
+            {showNewChangesText && (
+              <Box my="2" color="red.200">
+                <InfoOutlineIcon /> Price changed
+              </Box>
+            )}
+            <Box my="5">
+              <Flex justifyContent="space-between" fontSize="14px">
                 <Text color={lightTextColor}>Price</Text>
-                <Text color={heavyTextColor} fontWeight='bold'>
+                <Text color={heavyTextColor} fontWeight="bold">
                   1 {from} = {tokenPrice} {to}
                 </Text>
               </Flex>
             </Box>
             <Box
               border={`1px solid ${borderColor}`}
-              borderRadius='6px'
-              padding='10px'
-              fontWeight='normal'
+              borderRadius="6px"
+              padding="10px"
+              fontWeight="normal"
               background={boxColor}
-              fontSize='14px'
-              margin='15px 0'
+              fontSize="14px"
+              margin="15px 0"
             >
-              <Flex justifyContent='space-between'>
+              <Flex justifyContent="space-between">
                 <Box color={lightTextColor}>
-                  Minimum received <Tooltip hasArrow label='Your transaction will revert if there is a large, unfavorable price movement before it is confirmed.' bg={bgColor} color={lightTextColor}>
-  <InfoOutlineIcon />
-</Tooltip>
+                  Minimum received{" "}
+                  <Tooltip
+                    hasArrow
+                    label="Your transaction will revert if there is a large, unfavorable price movement before it is confirmed."
+                    bg={bgColor}
+                    color={lightTextColor}
+                  >
+                    <InfoOutlineIcon />
+                  </Tooltip>
                 </Box>
                 <Text color={heavyTextColor}>{minRecieved}</Text>
               </Flex>
-              <Flex justifyContent='space-between' my='4'>
+              <Flex justifyContent="space-between" my="4">
                 <Box color={lightTextColor}>
-                  Route <Tooltip hasArrow label='We picked the best route which your transaction will go to, to minimize gas fee' bg={bgColor} color={lightTextColor}>
-  <InfoOutlineIcon />
-</Tooltip>
+                  Route{" "}
+                  <Tooltip
+                    hasArrow
+                    label="We picked the best route which your transaction will go to, to minimize gas fee"
+                    bg={bgColor}
+                    color={lightTextColor}
+                  >
+                    <InfoOutlineIcon />
+                  </Tooltip>
                 </Box>
-                <Text color={heavyTextColor} fontWeight='500'>
+                <Text color={heavyTextColor} fontWeight="500">
                   {pathSymbol}
                 </Text>
               </Flex>
-              <Flex justifyContent='space-between'>
+              <Flex justifyContent="space-between">
                 <Box color={lightTextColor}>
-                  Allowed Slippage <Tooltip hasArrow label='Your transactions will revert if the price changes unfavorably by more than this percentage.' bg={bgColor} color={lightTextColor}>
-  <InfoOutlineIcon />
-</Tooltip>
+                  Allowed Slippage{" "}
+                  <Tooltip
+                    hasArrow
+                    label="Your transactions will revert if the price changes unfavorably by more than this percentage."
+                    bg={bgColor}
+                    color={lightTextColor}
+                  >
+                    <InfoOutlineIcon />
+                  </Tooltip>
                 </Box>
                 <Text color={heavyTextColor}>{slippage}%</Text>
               </Flex>
-              <Flex justifyContent='space-between' my='4'>
+              <Flex justifyContent="space-between" my="4">
                 <Box color={lightTextColor}>
-                  Price Impact <Tooltip hasArrow label='The difference between the market price and your price due to trade size.' bg={bgColor} color={lightTextColor}>
-  <InfoOutlineIcon />
-</Tooltip>
+                  Price Impact{" "}
+                  <Tooltip
+                    hasArrow
+                    label="The difference between the market price and your price due to trade size."
+                    bg={bgColor}
+                    color={lightTextColor}
+                  >
+                    <InfoOutlineIcon />
+                  </Tooltip>
                 </Box>
                 <Text
                   color={(priceImpact as number) < -5 ? "red" : heavyTextColor}
@@ -213,28 +239,40 @@ const ConfirmModal: React.FC<IModal> = ({
                   {priceImpact}%
                 </Text>
               </Flex>
-              <Flex justifyContent='space-between' my='4'>
+              <Flex justifyContent="space-between" my="4">
                 <Box color={lightTextColor}>
-                  Liquidity Provider Fee <Tooltip hasArrow label='For each trade a 0.3% fee is paid' bg={bgColor} color={lightTextColor}>
-  <InfoOutlineIcon />
-</Tooltip>
+                  Liquidity Provider Fee{" "}
+                  <Tooltip
+                    hasArrow
+                    label="For each trade a 0.3% fee is paid"
+                    bg={bgColor}
+                    color={lightTextColor}
+                  >
+                    <InfoOutlineIcon />
+                  </Tooltip>
                 </Box>
                 <Text color={heavyTextColor}>
                   {fee} {from}
                 </Text>
               </Flex>
-              <Flex justifyContent='space-between'>
+              <Flex justifyContent="space-between">
                 <Box color={lightTextColor}>
-                  Gas Fee Increased By <Tooltip hasArrow label='Value of increase in gas fee, to prevent transaction from falling' bg={bgColor} color={lightTextColor}>
-  <InfoOutlineIcon />
-</Tooltip>
+                  Gas Fee Increased By{" "}
+                  <Tooltip
+                    hasArrow
+                    label="Value of increase in gas fee, to prevent transaction from falling"
+                    bg={bgColor}
+                    color={lightTextColor}
+                  >
+                    <InfoOutlineIcon />
+                  </Tooltip>
                 </Box>
                 <Text color={heavyTextColor}>{userGasPricePercentage}%</Text>
               </Flex>
             </Box>
-            <Text mb='2' color={lightTextColor}>
+            <Text mb="2" color={lightTextColor}>
               Output is estimated. You will receive at least{" "}
-              <Text as='span' color={heavyTextColor}>
+              <Text as="span" color={heavyTextColor}>
                 {amountIn} {to}
               </Text>{" "}
               or the transaction will revert.
@@ -244,10 +282,10 @@ const ConfirmModal: React.FC<IModal> = ({
               _hover={{
                 bgColor: (priceImpact as number) < -5 ? "none" : undefined,
               }}
-              variant='brand'
+              variant="brand"
               isFullWidth
-              padding='24px 0'
-              boxShadow='none'
+              padding="24px 0"
+              boxShadow="none"
               onClick={() => {
                 handleSwap();
                 setShowModal(!showModal);
