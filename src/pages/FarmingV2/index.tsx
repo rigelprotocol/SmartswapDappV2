@@ -1878,6 +1878,7 @@ export function Index() {
         mx={[5, 10, 15, 20]}
         my={4}
         isFitted={isMobileDevice}
+        onChange={(index) => handleSelect(index)}
       >
         <TabList>
           <Tab>Liquidity Pool</Tab>
@@ -1907,129 +1908,23 @@ export function Index() {
                 showPopOver={showPopOver}
                 setShowPopover={setShowPopover}
                 setSavedChanges={setSavedChanges}
-                tabOneName={
+                tabTwoName={
                   Number(ChainId) === Number(SupportedChainId.POLYGON) ||
                   Number(ChainId) === Number(SupportedChainId.POLYGONTEST) ||
                   Number(ChainId) === Number(SupportedChainId.OASISMAINNET)
                     ? null
                     : "Version 1"
                 }
-                tabTwoName={"Version 2"}
+                tabOneName={"Version 2"}
                 setKeyword={searchSingleFarm}
               />
               <TabPanels>
-                {Number(ChainId) === Number(SupportedChainId.POLYGON) ||
-                Number(ChainId) === Number(SupportedChainId.POLYGONTEST) ||
-                Number(ChainId) ===
-                  Number(SupportedChainId.OASISMAINNET) ? null : (
-                  <TabPanel px={0} py={"40px"}>
-                    <Flex
-                      justifyContent="center"
-                      alignItems="center"
-                      rounded="lg"
-                      mb={4}
-                    >
-                      <Box
-                        bg="#120136"
-                        minHeight="89vh"
-                        w={["100%", "100%", "100%"]}
-                        background={
-                          mode === LIGHT_THEME &&
-                          selected === farmSection.STAKING
-                            ? "#FFFFFF !important"
-                            : mode === DARK_THEME &&
-                              selected === farmSection.LIQUIDITY
-                            ? "#15202B !important"
-                            : mode === DARK_THEME &&
-                              selected === farmSection.STAKING
-                            ? "#15202B !important"
-                            : mode === LIGHT_THEME &&
-                              selected === farmSection.LIQUIDITY
-                            ? "#FFFFFF !important"
-                            : "#FFFFFF !important"
-                        }
-                        rounded="lg"
-                      >
-                        <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">
-                          <Flex
-                            alignItems="center"
-                            justifyContent="space-between"
-                            px={4}
-                            py={4}
-                            background={
-                              mode === LIGHT_THEME &&
-                              selected === farmSection.LIQUIDITY
-                                ? "#F2F5F8  !important"
-                                : mode === DARK_THEME &&
-                                  selected === farmSection.LIQUIDITY
-                                ? "#213345"
-                                : mode === DARK_THEME &&
-                                  selected === farmSection.STAKING
-                                ? "#213345"
-                                : mode === LIGHT_THEME &&
-                                  selected === farmSection.STAKING
-                                ? "#F2F5F8"
-                                : "#F2F5F8 !important"
-                            }
-                            color={
-                              mode === LIGHT_THEME &&
-                              selected === farmSection.LIQUIDITY
-                                ? "#333333"
-                                : mode === DARK_THEME &&
-                                  selected === farmSection.STAKING
-                                ? "#F1F5F8"
-                                : mode === DARK_THEME &&
-                                  selected === farmSection.LIQUIDITY
-                                ? "#F1F5F8"
-                                : mode === LIGHT_THEME &&
-                                  selected === farmSection.STAKING
-                                ? "#333333"
-                                : "#333333"
-                            }
-                            w={["100%", "100%", "100%"]}
-                            align="left"
-                            border={
-                              mode === LIGHT_THEME
-                                ? "1px solid #DEE5ED !important"
-                                : mode === DARK_THEME
-                                ? "1px solid #324D68 !important"
-                                : "1px solid #324D68"
-                            }
-                            display={{ base: "none", md: "flex", lg: "flex" }}
-                          >
-                            <Text>
-                              Please Migrate your LP farm tokens from V1 to V2
-                            </Text>
-                          </Flex>
-
-                          <Link
-                            href="https://smartswapv1.rigelprotocol.com/farming"
-                            isExternal
-                          >
-                            <Button
-                              background="#4CAFFF"
-                              boxShadow="0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)"
-                              borderRadius="6px"
-                              mx={[5, 10, 15, 20]}
-                              position={{ base: "relative", md: "absolute" }}
-                              padding=" 12px 32px"
-                              mt={3}
-                              variant="brand"
-                            >
-                              Go to farming V1
-                            </Button>
-                          </Link>
-                        </Box>
-                      </Box>
-                    </Flex>
-                  </TabPanel>
-                )}
                 <TabPanel px={0} py={"40px"}>
                   <FarmHeader />
                   <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">
                     {loadingState ? (
                       <Stack mt={2}>
-                        {new Array(5).fill("1").map((item, index) => {
+                        {new Array(4).fill("1").map((item, index) => {
                           return (
                             <Box
                               p={isMobileDevice ? "3" : "6"}
@@ -2048,7 +1943,7 @@ export function Index() {
                                   isMobileDevice ? "center" : undefined
                                 }
                               >
-                                {new Array(5).fill("1").map((item, index) => {
+                                {new Array(4).fill("1").map((item, index) => {
                                   return (
                                     <Flex
                                       ml={isMobileDevice ? undefined : 2}
@@ -2160,6 +2055,112 @@ export function Index() {
                     ) : null}
                   </Box>
                 </TabPanel>
+                {Number(ChainId) === Number(SupportedChainId.POLYGON) ||
+                Number(ChainId) === Number(SupportedChainId.POLYGONTEST) ||
+                Number(ChainId) ===
+                  Number(SupportedChainId.OASISMAINNET) ? null : (
+                  <TabPanel px={0} py={"40px"}>
+                    <Flex
+                      justifyContent="center"
+                      alignItems="center"
+                      rounded="lg"
+                      mb={4}
+                    >
+                      <Box
+                        bg="#120136"
+                        minHeight="89vh"
+                        w={["100%", "100%", "100%"]}
+                        background={
+                          mode === LIGHT_THEME &&
+                          selected === farmSection.STAKING
+                            ? "#FFFFFF !important"
+                            : mode === DARK_THEME &&
+                              selected === farmSection.LIQUIDITY
+                            ? "#15202B !important"
+                            : mode === DARK_THEME &&
+                              selected === farmSection.STAKING
+                            ? "#15202B !important"
+                            : mode === LIGHT_THEME &&
+                              selected === farmSection.LIQUIDITY
+                            ? "#FFFFFF !important"
+                            : "#FFFFFF !important"
+                        }
+                        rounded="lg"
+                      >
+                        <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">
+                          <Flex
+                            alignItems="center"
+                            justifyContent="space-between"
+                            px={4}
+                            py={4}
+                            background={
+                              mode === LIGHT_THEME &&
+                              selected === farmSection.LIQUIDITY
+                                ? "#F2F5F8  !important"
+                                : mode === DARK_THEME &&
+                                  selected === farmSection.LIQUIDITY
+                                ? "#213345"
+                                : mode === DARK_THEME &&
+                                  selected === farmSection.STAKING
+                                ? "#213345"
+                                : mode === LIGHT_THEME &&
+                                  selected === farmSection.STAKING
+                                ? "#F2F5F8"
+                                : "#F2F5F8 !important"
+                            }
+                            color={
+                              mode === LIGHT_THEME &&
+                              selected === farmSection.LIQUIDITY
+                                ? "#333333"
+                                : mode === DARK_THEME &&
+                                  selected === farmSection.STAKING
+                                ? "#F1F5F8"
+                                : mode === DARK_THEME &&
+                                  selected === farmSection.LIQUIDITY
+                                ? "#F1F5F8"
+                                : mode === LIGHT_THEME &&
+                                  selected === farmSection.STAKING
+                                ? "#333333"
+                                : "#333333"
+                            }
+                            w={["100%", "100%", "100%"]}
+                            align="left"
+                            border={
+                              mode === LIGHT_THEME
+                                ? "1px solid #DEE5ED !important"
+                                : mode === DARK_THEME
+                                ? "1px solid #324D68 !important"
+                                : "1px solid #324D68"
+                            }
+                            display={{ base: "none", md: "flex", lg: "flex" }}
+                          >
+                            <Text>
+                              Please Migrate your LP farm tokens from V1 to V2
+                            </Text>
+                          </Flex>
+
+                          <Link
+                            href="https://smartswapv1.rigelprotocol.com/farming"
+                            isExternal
+                          >
+                            <Button
+                              background="#4CAFFF"
+                              boxShadow="0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)"
+                              borderRadius="6px"
+                              mx={[5, 10, 15, 20]}
+                              position={{ base: "relative", md: "absolute" }}
+                              padding=" 12px 32px"
+                              mt={3}
+                              variant="brand"
+                            >
+                              Go to farming V1
+                            </Button>
+                          </Link>
+                        </Box>
+                      </Box>
+                    </Flex>
+                  </TabPanel>
+                )}
               </TabPanels>
             </Tabs>
           </TabPanel>
@@ -2477,7 +2478,7 @@ export function Index() {
                                       isMobileDevice ? "center" : undefined
                                     }
                                   >
-                                    {new Array(5)
+                                    {new Array(4)
                                       .fill("1")
                                       .map((item, index) => {
                                         return (
@@ -2503,8 +2504,7 @@ export function Index() {
                               );
                             })}
                           </Stack>
-                        ) : // </Stack>
-                        keyword &&
+                        ) : keyword &&
                           searchResults.searchResult ===
                             undefined ? null : keyword &&
                           searchResults.searchResult !== undefined ? (
