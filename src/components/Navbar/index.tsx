@@ -14,32 +14,43 @@ import { ColorModeSwitcher } from "../ColorModeSwitcher";
 import SocialMedia from "./SocialMedia";
 import DappsDropdown from "./DappsDropdown";
 import WalletConnection from "./WalletConnection";
-import {SwapDropdown,BridgeDropdown} from "./SwapDropdown";
+import { SwapDropdown, BridgeDropdown } from "./SwapDropdown";
 import LightLogo from "./../../assets/logo/logo-light.svg";
 import DarkLogo from "./../../assets/logo/logo-dark.svg";
 import MobileNavDrawer from "./MobileNavDrawer";
 import NetworkConnector from "../NetworkConnector";
 import EarnDropdown from "./EarnDropdown";
 
-export const Nav = ({ to, label, active,img }: { to: string; label: string, active?:boolean,img?:any }) => {
+export const Nav = ({
+  to,
+  label,
+  active,
+  img,
+}: {
+  to: string;
+  label: string;
+  active?: boolean;
+  img?: any;
+}) => {
   const mobileNavColor = useColorModeValue("#FFFFFF", "#15202B");
   return (
-
-  <NavLink
-    to={to}
-    activeStyle={{
-      color: "#319EF6",
-    }}
-    color={active ? "#319EF6" : mobileNavColor}
-    style={active ? {color:"#319EF6"}: {color:""}}
-    
-  >
-    <Flex >
-      {img} <Text ml="8px" fontSize="16px">{label}</Text>
-    </Flex>
-    
-  </NavLink>
-)};
+    <NavLink
+      to={to}
+      activeStyle={{
+        color: "#319EF6",
+      }}
+      color={active ? "#319EF6" : mobileNavColor}
+      style={active ? { color: "#319EF6" } : { color: "" }}
+    >
+      <Flex>
+        {img}{" "}
+        <Text ml="8px" fontSize="14px">
+          {label}
+        </Text>
+      </Flex>
+    </NavLink>
+  );
+};
 
 const Index = () => {
   const [isMobileDevice] = useMediaQuery("(max-width: 750px)");
@@ -47,7 +58,7 @@ const Index = () => {
   const Logo = useColorModeValue(LightLogo, DarkLogo);
   const mobileNavColor = useColorModeValue("#FFFFFF", "#15202B");
   const mobileNavBorderColor = useColorModeValue("#DEE5ED", "#324D68");
-  const {search} = useLocation();
+  const { search } = useLocation();
 
   return (
     <>
@@ -113,8 +124,8 @@ const Index = () => {
                   <EarnDropdown />
                   {/* <Nav label="Liquidity" to="/pool" active={location === '/add' || location === '/remove' ? true : false} />
                   <Nav label="Farming" to="/farming-v2"  /> */}
-                  <Nav label="NFT" to={`/nft${search}`} />
-                  <Nav label="Smart Bid" to={`/smartbid${search}`}/>
+                  <Nav label="NFTs" to={`/nft${search}`} />
+                  <Nav label="SmartBid" to={`/smartbid${search}`} />
                 </Flex>
               </Flex>
               <Spacer />
