@@ -8,9 +8,9 @@ import {
   ModalContent,
   ModalOverlay,
   useDisclosure,
-  Img
+  Img,
 } from "@chakra-ui/react";
-import React, {useCallback, useEffect} from "react";
+import React, { useCallback, useEffect } from "react";
 import { BinanceIcon, EthereumIcon } from "./Icons";
 import { useColorModeValue } from "@chakra-ui/react";
 import { CHAIN_INFO } from "../../constants/chains";
@@ -19,12 +19,13 @@ import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import OASISLOGO from "../../assets/oasis.png";
 import MATICLOGO from "../../assets/maticlogo.png";
 import { GNetworkConnectedTo } from "../G-analytics/gIndex";
-import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "../../state";
-import {setChainId} from "../../state/chainId/actions";
-import {connectorKey} from "../../connectors";
-import {useLocation, useHistory} from 'react-router-dom';
-import {CHAINDETAILS} from "../../utils/addresses";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../state";
+import { setChainId } from "../../state/chainId/actions";
+import { connectorKey } from "../../connectors";
+import { useLocation, useHistory } from "react-router-dom";
+import { CHAINDETAILS } from "../../utils/addresses";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 function NetworkIndicator() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -39,17 +40,17 @@ function NetworkIndicator() {
   const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
 
   const handleUpdateChainId = useCallback(
-      (value) => {
-        dispatch(setChainId({ value }));
-      },
-      [dispatch]
+    (value) => {
+      dispatch(setChainId({ value }));
+    },
+    [dispatch]
   );
 
   function useQuery() {
     return new URLSearchParams(location.search);
   }
   let query = useQuery();
-  const param = query.get('chain');
+  const param = query.get("chain");
 
   const info = chainId ? CHAIN_INFO[chainId] : CHAIN_INFO[ChainId as number];
   const connect = window.localStorage.getItem(connectorKey);
@@ -58,17 +59,16 @@ function NetworkIndicator() {
     GNetworkConnectedTo(info?.label);
 
     if (chainId) {
-      handleUpdateChainId(chainId)
+      handleUpdateChainId(chainId);
     }
     if (!connect && !ChainId) {
       handleUpdateChainId(56);
     }
-
-  },[chainId]);
+  }, [chainId]);
 
   useEffect(() => {
     if (!param && !chainId) {
-      history.push(`${location.pathname}?chain=bsc`)
+      history.push(`${location.pathname}?chain=bsc`);
     }
 
     if (chainId) {
@@ -76,18 +76,17 @@ function NetworkIndicator() {
     }
 
     if (!connect && param) {
-      if (param === 'bsc') {
+      if (param === "bsc") {
         handleUpdateChainId(56);
-      } else if (param === 'pn') {
+      } else if (param === "pn") {
         handleUpdateChainId(137);
-      } else if (param === 'oasis') {
+      } else if (param === "oasis") {
         handleUpdateChainId(42262);
       } else {
-        history.push(`${location.pathname}?chain=bsc`)
+        history.push(`${location.pathname}?chain=bsc`);
       }
     }
-
-  },[param, chainId]);
+  }, [param, chainId]);
 
   const changeNetwork = async (network: string, id: number) => {
     onClose();
@@ -95,11 +94,9 @@ function NetworkIndicator() {
       history.push(`${location.pathname}?chain=${CHAINDETAILS[id]}`);
     });
 
-
     if (!chainId) {
       handleUpdateChainId(id);
       history.push(`${location.pathname}?chain=${CHAINDETAILS[id]}`);
-
     }
   };
 
@@ -115,37 +112,36 @@ function NetworkIndicator() {
         onClick={onOpen}
         mr={2}
         className="Network"
-
       >
-        <Flex alignItems='center'>
+        <Flex alignItems="center">
           <Box mr={2}>
             {info.label == "Binance" ? (
               <BinanceIcon />
             ) : // <EthereumIcon />
-              info.label == "BSC Testnet" ? (
-                <BinanceIcon />
-              ) : info.label == "Polygon" ? (
-                <Img w='30px' src={MATICLOGO} />
-              ) : info.label == "Mumbai Testnet" ? (
-                <Img w='30px' src={MATICLOGO} />
-              ) : info.label == "Oasis Emerald Testnet" ? (
-                <Img w='30px' src={OASISLOGO} />
-              ) : info.label == "Oasis Emerald Mainnet" ? (
-                <Img w='30px' src={OASISLOGO} />
-              ) : (
-                <EthereumIcon />
-              )}
+            info.label == "BSC Testnet" ? (
+              <BinanceIcon />
+            ) : info.label == "Polygon" ? (
+              <Img w="30px" src={MATICLOGO} />
+            ) : info.label == "Mumbai Testnet" ? (
+              <Img w="30px" src={MATICLOGO} />
+            ) : info.label == "Oasis Emerald Testnet" ? (
+              <Img w="30px" src={OASISLOGO} />
+            ) : info.label == "Oasis Emerald Mainnet" ? (
+              <Img w="30px" src={OASISLOGO} />
+            ) : (
+              <EthereumIcon />
+            )}
           </Box>
-          <Text textColor={textColor} fontSize='14px'>
+          <Text textColor={textColor} fontSize="14px">
             {info.label}
           </Text>
         </Flex>
       </Button>
 
-      <Modal isOpen={isOpen} onClose={onClose} size='sm'>
+      <Modal isOpen={isOpen} onClose={onClose} size="sm">
         <ModalOverlay />
         <ModalContent>
-          <Flex flexDirection='column' mx={5}>
+          <Flex flexDirection="column" mx={5}>
             <Flex my={4}>
               <ModalCloseButton
                 border={
@@ -155,8 +151,8 @@ function NetworkIndicator() {
             </Flex>
             <Flex mt={8}>
               <Text
-                fontSize='20px'
-                lineHeight='28px'
+                fontSize="20px"
+                lineHeight="28px"
                 color={mode === "dark" ? "#F1F5F8" : "#333333"}
               >
                 Change Network
@@ -164,8 +160,8 @@ function NetworkIndicator() {
             </Flex>
             <Flex>
               <Text
-                fontSize='16px'
-                lineHeight='28px'
+                fontSize="16px"
+                lineHeight="28px"
                 color={mode === "dark" ? "#F1F5F8" : "#333333"}
                 mb={3}
               >
@@ -181,35 +177,35 @@ function NetworkIndicator() {
               border={
                 mode === "dark" ? "1px solid #324D68" : "1px solid #DEE6ED"
               }
-              borderRadius='6px'
+              borderRadius="6px"
               py={4}
               px={3}
               mb={3}
-              cursor='pointer'
-              textAlign={'left'}
+              cursor="pointer"
+              textAlign={"left"}
               onClick={() => {
-                changeNetwork('0x3', 3)
+                changeNetwork("0x3", 3);
               }}
             >
-                <Flex>
-                  <Box px={2}>
-                    <EthereumIcon />
-                  </Box>
-                  <Box>{CHAIN_INFO[3]?.label}</Box>
-                </Flex>
+              <Flex>
+                <Box px={2}>
+                  <EthereumIcon />
+                </Box>
+                <Box>{CHAIN_INFO[3]?.label}</Box>
+              </Flex>
             </Flex>
             <Flex
               backgroundColor={mode === "dark" ? "#15202B" : "#FFFFFF"}
               border={
                 mode === "dark" ? "1px solid #324D68" : "1px solid #DEE6ED"
               }
-              borderRadius='6px'
+              borderRadius="6px"
               py={4}
               px={3}
               mb={3}
-              cursor='pointer'
+              cursor="pointer"
               onClick={() => {
-                changeNetwork('0x38', 56);
+                changeNetwork("0x38", 56);
               }}
             >
               <Box px={2}>
@@ -222,40 +218,40 @@ function NetworkIndicator() {
               border={
                 mode === "dark" ? "1px solid #324D68" : "1px solid #DEE6ED"
               }
-              borderRadius='6px'
+              borderRadius="6px"
               px={3}
               py={4}
               mb={4}
-              cursor='pointer'
+              cursor="pointer"
               onClick={() => {
-                changeNetwork('0x89', 137);
+                changeNetwork("0x89", 137);
               }}
             >
-                <Flex>
-                  <Box px={2}>
-                    <Img w='30px' src={MATICLOGO} />
-                  </Box>
-                  <Box>{CHAIN_INFO[137].label}</Box>
-                </Flex>
+              <Flex>
+                <Box px={2}>
+                  <Img w="30px" src={MATICLOGO} />
+                </Box>
+                <Box>{CHAIN_INFO[137].label}</Box>
+              </Flex>
             </Flex>
             <Flex
-              backgroundColor={mode === 'dark' ? '#15202B' : '#FFFFFF'}
+              backgroundColor={mode === "dark" ? "#15202B" : "#FFFFFF"}
               border={
-                mode === 'dark' ? '1px solid #324D68' : '1px solid #DEE6ED'
+                mode === "dark" ? "1px solid #324D68" : "1px solid #DEE6ED"
               }
               borderRadius="6px"
               px={3}
               py={4}
               mb={4}
               cursor="pointer"
-              onClick={() => changeNetwork('0xa516', 42262)}
+              onClick={() => changeNetwork("0xa516", 42262)}
             >
-                <Flex>
-                  <Box px={2}>
-                    <Img w='30px' src={OASISLOGO} />
-                  </Box>
-                  <Box>{CHAIN_INFO[42262].label}</Box>
-                </Flex>
+              <Flex>
+                <Box px={2}>
+                  <Img w="30px" src={OASISLOGO} />
+                </Box>
+                <Box>{CHAIN_INFO[42262].label}</Box>
+              </Flex>
             </Flex>
           </Flex>
         </ModalContent>

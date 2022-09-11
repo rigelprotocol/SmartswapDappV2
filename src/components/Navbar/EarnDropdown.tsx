@@ -43,8 +43,7 @@ function EarnDropdown() {
   const { search } = useLocation();
 
   const useName = () => {
-    if (name == "/farming-v2" || name == "/pool" || name == "/add") {
-      console.log(`Correct name is ${name}`);
+    if (name == "/farm" || name == "/pool" || name == "/add") {
       return name === "/add" ? "pool" : name.substring(1).split("-")[0];
     } else {
       return "Farming";
