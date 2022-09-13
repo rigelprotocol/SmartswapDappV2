@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { SmartSwapRouter } from "../utils/Contracts";
 import { SMARTSWAPROUTER } from "../utils/addresses";
 import { ethers } from "ethers";
@@ -9,9 +9,10 @@ export const useCalculatePriceImpact = (
   routeAddress: any,
   amountIn: number,
   fromAmount: number,
+  currencyA: Currency,
   currencyB: Currency
 ) => {
-  const { account, chainId, library } = useActiveWeb3React();
+  const { chainId, library } = useActiveWeb3React();
   const [priceImpact, setPriceImpact] = useState("");
 
   useMemo(async () => {
@@ -20,12 +21,10 @@ export const useCalculatePriceImpact = (
         SMARTSWAPROUTER[chainId as number],
         library
       );
+      const priceCheck = ethers.utils.parseUnits("1", currencyA.decimals);
       if (routeAddress.length === 2) {
         try {
-          const price = await rout.getAmountsOut(
-            "1000000000000000000",
-            routeAddress
-          );
+          const price = await rout.getAmountsOut(priceCheck, routeAddress);
 
           const marketPrice = ethers.utils.formatUnits(
             price[1].toString(),
@@ -40,7 +39,7 @@ export const useCalculatePriceImpact = (
         }
       } else if (routeAddress.length === 3) {
         try {
-          const price1 = await rout.getAmountsOut("1000000000000000000", [
+          const price1 = await rout.getAmountsOut(priceCheck, [
             routeAddress[0],
             routeAddress[1],
           ]);
@@ -65,7 +64,7 @@ export const useCalculatePriceImpact = (
         }
       } else if (routeAddress.length === 4) {
         try {
-          const price1 = await rout.getAmountsOut("1000000000000000000", [
+          const price1 = await rout.getAmountsOut(priceCheck, [
             routeAddress[0],
             routeAddress[1],
           ]);

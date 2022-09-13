@@ -38,7 +38,6 @@ export const useGetNewFarms = (
     (state) => state.farming.selectedField
   );
   const selected = selectedField === farmSection.SECOND_NEW_LP;
-  const mainLP = selectedField === farmSection.NEW_LP;
   const [LPData, setLPData] = useState<
     Array<{
       id: number | undefined;
@@ -421,7 +420,7 @@ export const useGetNewFarms = (
         setLoading(false);
       }
     }
-  }, [ChainId, reload, selected, mainLP]);
+  }, [ChainId, reload, selected, id]);
 
   return { LPData, loadingLP };
 };

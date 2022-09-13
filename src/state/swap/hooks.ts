@@ -6,7 +6,7 @@ import {
   typeInput,
   replaceSwapState,
   switchCurrencies,
-  selectMarketFactory
+  selectMarketFactory,
 } from "./actions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import { ParsedQs } from "qs";
@@ -51,12 +51,13 @@ export function useSwapState(): RootState["swap"] {
 
 export function useSwapActionHandlers(): {
   onCurrencySelection: (field: Field, currency: Currency) => void;
-  onMarketSelection: (marketFactory:string,marketRouterAddress:string) =>void
+  onMarketSelection: (
+    marketFactory: string,
+    marketRouterAddress: string
+  ) => void;
   onUserInput: (field: Field, typedValue: string) => void;
   onSwitchTokens: () => void;
 } {
-
-
   const dispatch = useDispatch<AppDispatch>();
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
@@ -74,11 +75,11 @@ export function useSwapActionHandlers(): {
     [dispatch]
   );
   const onMarketSelection = useCallback(
-    (marketFactory:string,marketRouterAddress:string) => {
+    (marketFactory: string, marketRouterAddress: string) => {
       dispatch(
         selectMarketFactory({
           marketFactory,
-          marketRouterAddress
+          marketRouterAddress,
         })
       );
     },
@@ -113,8 +114,8 @@ export function useDerivedSwapInfo(): {
   pathSymbol: string;
   isExactIn: boolean;
   formatAmount: string;
- unitAmount: string| undefined,
- oppositeAmount: string | undefined
+  unitAmount: string | undefined;
+  oppositeAmount: string | undefined;
 } {
   const { account } = useActiveWeb3React();
   const [Balance] = useNativeBalance();
@@ -125,7 +126,7 @@ export function useDerivedSwapInfo(): {
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
     recipient,
     marketFactory,
-    marketRouterAddress
+    marketRouterAddress,
   } = useSwapState();
   const inputCurrency = useCurrency(inputCurrencyId);
   const outputCurrency = useCurrency(outputCurrencyId);
@@ -150,22 +151,21 @@ export function useDerivedSwapInfo(): {
     marketFactory,
     marketRouterAddress
   );
-const [,, unitAmount, ,,oppositeAmount ] = useSwap(
+  const [, , unitAmount, , , oppositeAmount] = useSwap(
     // isExactIn ? inputCurrency : outputCurrency,
     inputCurrency,
     // isExactIn ? outputCurrency : inputCurrency,
     outputCurrency,
-     `${10**inputCurrency?.decimals}`,
+    `${10 ** inputCurrency?.decimals}`,
     marketFactory,
     marketRouterAddress,
     "unit"
-  ); 
+  );
 
   const formatAmount = tryParseAmount(
     amount as string,
     inputCurrency as Currency
   );
-
 
   const showWrap = wrap;
   const bestTrade = amount;
@@ -181,8 +181,6 @@ const [,, unitAmount, ,,oppositeAmount ] = useSwap(
         library
       );
 
-      // const balance = await token.balanceOf(account);
-      // const amount = ethers.utils.formatEther(balance);
       const [balance, decimals] = await Promise.all([
         token.balanceOf(account),
         token.decimals(),
@@ -192,9 +190,8 @@ const [,, unitAmount, ,,oppositeAmount ] = useSwap(
     }
   };
 
-
   let inputError: string | undefined;
-  
+
   if (
     (inputCurrency && outputCurrency && !typedValue) ||
     (inputCurrency && outputCurrency && typedValue == 0)
@@ -222,10 +219,9 @@ const [,, unitAmount, ,,oppositeAmount ] = useSwap(
     isExactIn,
     formatAmount,
     unitAmount,
-    oppositeAmount
+    oppositeAmount,
   };
 }
-
 
 function parseTokenAmountURLParameter(urlParam: any): string {
   // eslint-disable-next-line no-restricted-globals
@@ -287,18 +283,18 @@ function queryParametersToSwapState(parsedQs: any, chainId: number) {
   };
 }
 export const binanceMarketArray = [
-  {name:"Smartswap",image:"Smartswap.png"},
-  {name:"Pancakeswap",image:"Pancakeswap.png"},
-]
+  { name: "Smartswap", image: "Smartswap.png" },
+  { name: "Pancakeswap", image: "Pancakeswap.png" },
+];
 
 export const polygonMarketArray = [
-  {name:"Smartswap",image:"Smartswap.png"},
-  {name:"Quickswap",image:"Quickswap.png"}
-]
+  { name: "Smartswap", image: "Smartswap.png" },
+  { name: "Quickswap", image: "Quickswap.png" },
+];
 
 export const binanceTestMarketArray = [
-  {name:"Smartswap",image:"Smartswap.png"},
-]
+  { name: "Smartswap", image: "Smartswap.png" },
+];
 
 // updates the swap state to use the defaults for a given network
 export function useDefaultsFromURLSearch() {
