@@ -41,7 +41,7 @@ export const GetAddressTokenBalance = (currency: Currency | undefined) => {
           }
         } catch (err) {
           setBalance("");
-          console.log(err);
+          console.log(err, "Cannot fetch balance");
         }
       } else {
         console.log("Connect wallet");

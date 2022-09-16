@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState } from "react";
 import {
   ModalOverlay,
   ModalContent,
@@ -15,30 +15,31 @@ import {
   IconButton,
   Link,
   Image,
-} from "@chakra-ui/react"
+} from "@chakra-ui/react";
 import { shortenAddress } from "../../../utils";
-import { ExplorerDataType, getExplorerLink } from '../../../utils/getExplorerLink'
+import {
+  ExplorerDataType,
+  getExplorerLink,
+} from "../../../utils/getExplorerLink";
 import { CopyIcon } from "../../../theme/components/Icons";
 import StatusIcon from "../StatusIcon";
 import { useWeb3React } from "@web3-react/core";
 import NetworkModal from "./networkModal";
-import ROUTESQUARELIGHT from '../../../assets/routesquare-light.svg';
-import ROUTESQUAREDARK from '../../../assets/routesquare-dark.svg';
+import ROUTESQUARELIGHT from "../../../assets/routesquare-light.svg";
+import ROUTESQUAREDARK from "../../../assets/routesquare-dark.svg";
 import useAuth from "../../../utils/hooks/useAuth";
 import { GDisconnectWallet, GSwitchWallet } from "../../G-analytics/gIndex";
 
-
-
 export type IModal = {
-  displayWallet: boolean,
-  accounts: string,
-  setDisplayWallet: React.Dispatch<React.SetStateAction<boolean>>
-}
+  displayWallet: boolean;
+  accounts: string;
+  setDisplayWallet: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
 const WalletModal: React.FC<IModal> = ({
   displayWallet,
   accounts,
-  setDisplayWallet
+  setDisplayWallet,
 }) => {
   const bgColor = useColorModeValue("#FFF", "#15202B");
   const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
@@ -53,12 +54,17 @@ const WalletModal: React.FC<IModal> = ({
   const { logout } = useAuth();
 
   const disconnectWallet = () => {
-    GDisconnectWallet()
+    GDisconnectWallet();
     logout();
+    localStorage.removeItem("reload");
   };
   return (
     <>
-      <Modal isCentered isOpen={displayWallet} onClose={() => setDisplayWallet(false)}>
+      <Modal
+        isCentered
+        isOpen={displayWallet}
+        onClose={() => setDisplayWallet(false)}
+      >
         <ModalOverlay />
         <ModalContent
           width="95vw"
@@ -67,27 +73,21 @@ const WalletModal: React.FC<IModal> = ({
           bgColor={bgColor}
           minHeight="40vh"
         >
-          <ModalHeader
-            fontSize="24px"
-            fontWeight="regular"
-          >Wallet</ModalHeader>
+          <ModalHeader fontSize="24px" fontWeight="regular">
+            Wallet
+          </ModalHeader>
           <ModalCloseButton
             bg="none"
-            size={'sm'}
+            size={"sm"}
             mt={3}
             mr={3}
             cursor="pointer"
-            _focus={{ outline: 'none' }}
+            _focus={{ outline: "none" }}
             onClick={() => setDisplayWallet(false)}
-            p={'7px'}
-            border={'1px solid'}
-
+            p={"7px"}
+            border={"1px solid"}
           />
-          <Box
-            width="90%"
-            margin="0 auto"
-            fontSize="14px"
-          >
+          <Box width="90%" margin="0 auto" fontSize="14px">
             <Flex
               border={`1px solid ${borderColor}`}
               borderRadius="6px"
@@ -95,40 +95,54 @@ const WalletModal: React.FC<IModal> = ({
               justifyContent="space-between"
             >
               <Button
-                variant={'ghost'}
-                leftIcon={
-                  <StatusIcon connector={connector} />
-                }
+                variant={"ghost"}
+                leftIcon={<StatusIcon connector={connector} />}
               >
                 {shortenAddress(accounts)}
               </Button>
-              <Tooltip hasArrow label={hasCopied ? "Copied!" : "Copy"} bg="gray.300" color="black">
-                <IconButton onClick={onCopy} aria-label="Copy address" icon={<CopyIcon />} colorScheme="ghost" />
+              <Tooltip
+                hasArrow
+                label={hasCopied ? "Copied!" : "Copy"}
+                bg="gray.300"
+                color="black"
+              >
+                <IconButton
+                  onClick={onCopy}
+                  aria-label="Copy address"
+                  icon={<CopyIcon />}
+                  colorScheme="ghost"
+                />
               </Tooltip>
             </Flex>
             <Box mt="4" fontSize="16px" color={lightTextColor}>
-              <Link href={getExplorerLink(chainId as number, accounts, ExplorerDataType.ADDRESS)} isExternal>
+              <Link
+                href={getExplorerLink(
+                  chainId as number,
+                  accounts,
+                  ExplorerDataType.ADDRESS
+                )}
+                isExternal
+              >
                 <Box display="flex">
                   <Image mr={1} h="24px" w="24px" src={routeSquareIcon} />
                   <Text>
                     View on
-                    {
-                      chainId === 3 || chainId === 4 || chainId === 5 || chainId === 6
-                        ? (" Etherscan")
-                        : chainId === 56 || chainId === 97
-                          ? (" Bscscan")
-                          : chainId === 137 || chainId === 80001
-                            ? (" Polygonscan")
-                            : (" Explorer")
-                    }
+                    {chainId === 3 ||
+                    chainId === 4 ||
+                    chainId === 5 ||
+                    chainId === 6
+                      ? " Etherscan"
+                      : chainId === 56 || chainId === 97
+                      ? " Bscscan"
+                      : chainId === 137 || chainId === 80001
+                      ? " Polygonscan"
+                      : " Explorer"}
                   </Text>
                 </Box>
               </Link>
             </Box>
             <Box>
-              <Flex
-                justifyContent="space-between"
-                my="6">
+              <Flex justifyContent="space-between" my="6">
                 <Button
                   background="transparent"
                   border={`1px solid ${activeButtonColor}`}
@@ -140,12 +154,16 @@ const WalletModal: React.FC<IModal> = ({
                   isFullWidth
                   _hover={{ background: `${activeButtonColor}`, color: "#fff" }}
                   onClick={() => {
-                    GSwitchWallet()
-                    setDisplayNetwork(state => !state)}}
+                    GSwitchWallet();
+                    setDisplayNetwork((state) => !state);
+                  }}
                 >
                   Switch Wallet
                 </Button>
-                <NetworkModal displayNetwork={displayNetwork} setDisplayNetwork={setDisplayNetwork} />
+                <NetworkModal
+                  displayNetwork={displayNetwork}
+                  setDisplayNetwork={setDisplayNetwork}
+                />
                 <Button
                   border={`1px solid ${buttonColor}`}
                   box-sizing="border-box"
@@ -163,15 +181,22 @@ const WalletModal: React.FC<IModal> = ({
                 </Button>
               </Flex>
             </Box>
-            <Box padding="15px" border={`1px dashed ${dashedColor}`} borderRadius="6px" fontSize="16px" mt="9">
-              <Text color={lightTextColor} mb="6" textAlign="center">Your recent transactions will appear here</Text>
+            <Box
+              padding="15px"
+              border={`1px dashed ${dashedColor}`}
+              borderRadius="6px"
+              fontSize="16px"
+              mt="9"
+            >
+              <Text color={lightTextColor} mb="6" textAlign="center">
+                Your recent transactions will appear here
+              </Text>
             </Box>
           </Box>
-
         </ModalContent>
       </Modal>
     </>
-  )
+  );
 };
 
-export default WalletModal
+export default WalletModal;
