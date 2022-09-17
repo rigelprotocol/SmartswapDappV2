@@ -91,9 +91,11 @@ export const LiquidityPairInstance = async (
 
 export const SmartSwapRouter = async (
   address: string,
-  library: Web3Provider | undefined
+  library: Web3Provider | JsonRpcProvider | undefined
 ) => {
-  return new Contract(address, SmartSwapRouterV2Abi, library?.getSigner());
+  const type = library instanceof Web3Provider;
+  const signerOrProvider = type ? library?.getSigner() : library;
+  return new Contract(address, SmartSwapRouterV2Abi, signerOrProvider);
 };
 
 export const ApprovalRouter = async (

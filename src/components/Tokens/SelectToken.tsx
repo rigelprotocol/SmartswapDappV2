@@ -120,6 +120,7 @@ const SelectToken: React.FC<IModal> = ({
   const searchTokenIsAdded = useIsUserAddedToken(searchToken);
   const [Balance, Symbol, Name, Logo] = useNativeBalance();
   const ether = chainId && ExtendedEther(chainId, Symbol, Name, Logo);
+  const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
 
   const searchNewTokens = useMemo(() => {
     return inactiveList
@@ -137,7 +138,7 @@ const SelectToken: React.FC<IModal> = ({
       return ether ? [ether, ...filteredTokens] : filteredTokens;
     }
     return filteredTokens;
-  }, [debouncedQuery, ether, filteredTokens]);
+  }, [debouncedQuery, ether, filteredTokens, ChainId]);
   const { onClose } = useDisclosure();
   const openManageToken = (): void => {
     setDisplayManageToken((state) => !state);
@@ -207,10 +208,18 @@ const SelectToken: React.FC<IModal> = ({
             </Box>
           </Box>
           <ModalBody maxHeight="60vh" overflowY="scroll" p={0}>
-            {!chainId ? (
-              <Text textAlign="center" py="7">
-                Connect Wallet to view tokens.
-              </Text>
+            {!account ? (
+              <Box>
+                {filteredTokenListWithETH.map((currency, index) => (
+                  <CurrencyList
+                    onCurrencySelect={handleCurrencySelect}
+                    key={index}
+                    currency={currency}
+                    selectedCurrency={selectedCurrency}
+                    otherSelectedCurrency={otherSelectedCurrency}
+                  />
+                ))}
+              </Box>
             ) : isSearchingForToken ? (
               <Box>
                 <Text textAlign="center" py="7">
