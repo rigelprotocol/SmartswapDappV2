@@ -11,7 +11,9 @@ import {
   useDisclosure,
   useColorModeValue,
   Box,
+  Flex,
   Text,
+  Spinner,
 } from "@chakra-ui/react";
 import ModalInput from "./input";
 import Manage from "./Manage";
@@ -160,7 +162,7 @@ const SelectToken: React.FC<IModal> = ({
     }
   }, [searchToken, filteredTokenListWithETH, debouncedQuery]);
 
-  const [sortedTokenList] = useUpdateBalance("");
+  const { sortedTokenList } = useUpdateBalance("");
 
   const newImportToken = useSelector<RootState>(
     (state) => state.lists.importedToken
@@ -269,6 +271,10 @@ const SelectToken: React.FC<IModal> = ({
                   )}
                 </Box>
               </Box>
+            ) : sortedTokenList?.length === 0 ? (
+              <Flex py={4} justifyContent={"center"} alignItems={"center"}>
+                <Spinner color="#319EF6" size="md" />
+              </Flex>
             ) : sortedTokenList?.length > 0 ? (
               sortedTokenList.map((currency, index) => {
                 return (

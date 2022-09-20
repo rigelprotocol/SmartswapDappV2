@@ -1,26 +1,22 @@
 import { useCombinedActiveList } from "../state/lists/hooks";
 import { Currency, Token } from "@uniswap/sdk-core";
-import { useMemo } from "react";
 import { useUserAddedTokens } from "../state/user/hooks";
 import { useActiveWeb3React } from "../utils/hooks/useActiveWeb3React";
-import { TokenAddressMap } from "../state/lists/hooks";
-import { useState, useEffect } from "react";
-import { checkSupportedIds } from "../connectors";
+import { useState, useEffect, useMemo } from "react";
 import { isAddress } from "../utils";
 import { getERC20Token } from "../utils/utilsFunctions";
 import { useNativeBalance } from "../utils/hooks/useBalances";
-import { useCombinedInactiveList } from "../state/lists/hooks";
+import { useCombinedInactiveList, TokenAddressMap } from "../state/lists/hooks";
 import { useSelector } from "react-redux";
-import { RootState } from "../state";
+
 // reduce token map into standard address <-> Token mapping, optionally include user added tokens
 function useTokensFromMap(
   tokenMap: TokenAddressMap,
   includeUserAdded: boolean
 ): { [address: string]: Token } {
-  //  const { chainId } = useActiveWeb3React()
-  const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
+  const { chainId, account } = useActiveWeb3React();
+  const ChainId: number = useSelector((state) => state.chainId.chainId);
   const userAddedTokens = useUserAddedTokens();
-  //
 
   return useMemo(() => {
     if (!ChainId) {
@@ -34,7 +30,7 @@ function useTokensFromMap(
       newMap[address] = tokenMap[ChainId][address].token;
       return newMap;
     }, {});
-    if (includeUserAdded) {
+    if (includeUserAdded && account) {
       return (
         userAddedTokens
           // reduce into all ALL_TOKENS filtered by the current chain
