@@ -88,7 +88,7 @@
       "address": "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd",
       "chainId": 97,
       "decimals": 18,
-      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/USDT-6D8/logo.png"
+      "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
     },
     {
       "name": "WBNB Token",
@@ -168,7 +168,7 @@
       "symbol": "USDT",
       "decimals": 18,
       "chainId": 80001,
-      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png"
+      "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
     },
 
     {

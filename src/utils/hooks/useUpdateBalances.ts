@@ -77,6 +77,7 @@ export const useUpdateBalance = (searchQuery: string) => {
   };
 
   const { TokenList } = useTokenBalance(filteredTokens, "");
+  console.log(filteredTokens);
 
   const sortedTokenList = sortTokens(TokenList);
 
@@ -163,7 +164,7 @@ export const useTokenBalance = (
     };
 
     getBalances();
-  }, [account, ChainId, Symbol, Name]);
+  }, [ChainId, Symbol, Name]);
 
   return { TokenList };
 };
