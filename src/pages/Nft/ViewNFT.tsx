@@ -39,7 +39,9 @@ export const ViewNFT = function () {
     const { chainId } = useActiveWeb3React();
 
     const { firstToken, secondToken ,prices, unsoldItems , nftId, loadData} = useNft(viewId);
-    const {name, nftImage, loading} = useNftName(nftId[0]);
+    // console.log({viewId, firstToken, secondToken ,prices, unsoldItems , nftId, loadData});
+    // const {name, nftImage, loading} = useNftName(nftId[0]);
+    const {name, nftImage, loading} = useNftName(viewId);
 
     const [isMobileDevice] = useMediaQuery("(max-width: 750px)");
 
@@ -91,7 +93,7 @@ export const ViewNFT = function () {
                                 templateRows='repeat(1, 1fr)'
                                 templateColumns='repeat(5, 1fr)'
                             >
-                                <GridItem rowSpan={2}><Image mt={3} src="/images/cirlce.png" /> </GridItem>
+                                <GridItem rowSpan={2}><Image mt={3} src="/images/Smartswap.png" /> </GridItem>
                                 <GridItem colSpan={2}><Text color={lightTextColor} >Creator</Text> </GridItem>
                                 <GridItem colSpan={4}><Text color={textColor}  >Rigel Protocol</Text> </GridItem>
                             </Grid>
@@ -100,7 +102,7 @@ export const ViewNFT = function () {
                                 justifyContent="center"
                             >
                                 <Text color={lightTextColor}>Number</Text>
-                                <Text color={textColor}>{unsoldItems}</Text>
+                                <Text color={textColor}>{viewId}</Text>
                             </Flex>
                         </Flex>
                         <Text mt={2}>

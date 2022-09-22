@@ -84,7 +84,7 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
             <Flex mt="2" justifyContent="space-between" alignContent="center">
               <Text textColor={lightTextColor}>Sold:</Text>
                 {loadData ?  <Skeleton height={'20px'} w={'80px'}/> :
-              <Text  color={textColor}>{unsoldItems - nftId[0]} of {nftId.length}</Text> }
+              <Text  color={textColor}>{unsoldItems} of {nftId.length}</Text> }
             </Flex>
   
             <Flex mt="2" justifyContent="space-between" alignContent="center">

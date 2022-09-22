@@ -36,10 +36,7 @@ const ComfirmPurchase = ({ isOpen,
     const dispatch = useDispatch();
 
     const {firstToken, secondToken, prices, unsoldItems, nftId} = useNft(id);
-
-
-    const {hasTokenABeenApproved, hasTokenBBeenApproved, loadInfo} = useNFTAllowance(checkTokenApproval, prices.firstTokenPrice,
-        prices.secondTokenPrice, currency, nftId[0]);
+    const {hasTokenABeenApproved, hasTokenBBeenApproved, loadInfo} = useNFTAllowance(checkTokenApproval, prices.firstTokenPrice, currency, nftId[0],firstToken.address,secondToken.address);
 
      const [error, setError] = useState('');
 
@@ -100,7 +97,7 @@ const ComfirmPurchase = ({ isOpen,
                         })
                     );
                 }
-            } catch (err) {
+            } catch (err:any) {
                 console.log(err);
                 GNFTFailedApprovalTransaction(
                     "NFT",
@@ -127,8 +124,8 @@ const ComfirmPurchase = ({ isOpen,
                     })
                 );
                 const nftContract = await RigelNFT(SMARTSWAPNFTSALES[chainId as number], library);
-
-                const data = await nftContract.buy(unsoldItems, currency === 'USDT' ?  secondToken.address : firstToken.address);
+                console.log({id,firstToken,secondToken},SMARTSWAPNFTSALES[chainId as number],chainId, library)
+                const data = await nftContract.mint(id, currency === 'USDT' ?  secondToken.address : firstToken.address);
 
                 const { confirmations } = await data.wait(3);
                 const { hash } = data;
@@ -163,7 +160,7 @@ const ComfirmPurchase = ({ isOpen,
                 }
 
 
-            } catch (e) {
+            } catch (e:any) {
                 console.log(e);
                 GNFTFailedTransaction(
                     "NFT",
@@ -208,7 +205,7 @@ const ComfirmPurchase = ({ isOpen,
                             <Image width={54} height={54} src={image} alt="logo" />
                             <Text paddingTop={3} fontSize={20} color={textColor} >{name}</Text>
 
-                            <Text paddingTop={3} fontSize={20} color={textColor} >NFT ID: {unsoldItems}</Text>
+                            <Text paddingTop={3} fontSize={20} color={textColor} >NFT ID: {id}</Text>
 
                             <Text paddingTop={2} textColor={textColor} > <span style={{color: lightTextColor}}>Created by:</span>  RigelProtocol</Text>
                         </Flex>
@@ -336,4 +333,4 @@ const ComfirmPurchase = ({ isOpen,
     )
 };
 
-export default ComfirmPurchase
+export default React.memo(ComfirmPurchase)
