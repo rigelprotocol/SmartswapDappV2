@@ -27,6 +27,7 @@ import SmartBid from "./SmartBid";
 import BidDetails from "./SmartBid/BidDetails";
 import ROuterBridge from "./Swap/Bridge/RouterBridge";
 import SpheriumBridge from "./Swap/Bridge/SpheriumBridge";
+import InstantSwap from "./Swap/InstantSwap";
 
 
  function App() {
@@ -74,6 +75,7 @@ import SpheriumBridge from "./Swap/Bridge/SpheriumBridge";
 
               <Route exact strict path="/set-price/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? SetPrice : Swap } />
               <Route exact strict path="/auto-period" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? AutoTime : Swap } />
+              <Route exact strict path="/instant-swap" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? InstantSwap : Swap } />
               <Route exact strict path="/auto-period/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? AutoTime : Swap } />
               <Route exact strict path="/bridge/router" component={ROuterBridge} />
               <Route exact strict path="/bridge/spherium" component={SpheriumBridge} />

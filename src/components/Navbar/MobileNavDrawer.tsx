@@ -138,28 +138,21 @@ const MobileNavDrawer = () => {
                       mb={2}
                       onClick={onClose}
                     >
-                      <Nav
-                        label="auto-period"
-                        to={
-                          chainId === SupportedChainId.BINANCETEST
-                            ? "/auto-period"
-                            : "#"
-                        }
-                      />
+                                <Nav label="Auto-period" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' : `/auto-period${search}`} />
                     </Text>
                     <Text
                       _hover={{ color: "#319EF6" }}
                       mb={2}
                       onClick={onClose}
                     >
-                      <Nav
-                        label="Set Price"
-                        to={
-                          chainId === SupportedChainId.BINANCETEST
-                            ? "/set-price"
-                            : "#"
-                        }
-                      />
+                                <Nav label="Set Price" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' :`/set-price${search}`} />
+                    </Text>
+                    <Text
+                      _hover={{ color: "#319EF6" }}
+                      mb={2}
+                      onClick={onClose}
+                    >
+                                  <Nav label="Instant Swap" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' :`/instant-swap${search}`} />
                     </Text>
                   </Flex>
                 </Collapse>

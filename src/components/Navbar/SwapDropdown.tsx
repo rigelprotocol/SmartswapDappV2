@@ -74,8 +74,11 @@ export function SwapDropdown() {
         <MenuItem _focus={{ color: "#319EF6" }}>
           <Nav label="Set Price" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' :`/set-price${search}`} />
         </MenuItem>
+        <MenuItem _focus={{ color: "#319EF6" }}>
+          <Nav label="Instant Swap" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' :`/instant-swap${search}`} />
+        </MenuItem>
       </MenuList>
-    </Menu>
+    </Menu> 
   );
 }
 

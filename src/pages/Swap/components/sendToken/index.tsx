@@ -394,7 +394,7 @@ const SendToken = () => {
           })
         );
       }
-    } catch (e) {
+    } catch (e:any) {
       GFailedTransaction(
         "straight_swap",
         "approval",

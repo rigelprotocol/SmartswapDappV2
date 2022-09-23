@@ -50,17 +50,18 @@ import { RootState } from "../../state";
 import { autoSwapV2, rigelToken } from '../../utils/Contracts';
 import { RGPADDRESSES, OTHERMARKETADDRESSES,MARKETAUTOSWAPADDRESSES, OTHERMARKETFACTORYADDRESSES, RGP } from '../../utils/addresses';
 import { setOpenModal, TrxState } from "../../state/application/reducer";
-import { changeFrequencyTodays } from '../../utils/utilsFunctions';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { refreshTransactionTab } from '../../state/transaction/actions';
 import MarketDropDown from '../../components/MarketDropDown';
 import { GButtonClick, GFailedTransaction, GSuccessfullyTransaction } from '../../components/G-analytics/gIndex';
 import { useHistory, useLocation } from 'react-router-dom';
 import { GetAddressTokenBalance } from '../../state/wallet/hooks';
+import { addToast } from '../../components/Toast/toastSlice';
+import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink';
 
 
 
-const SetPrice = () => {
+const InstantSwap = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
   const dispatch = useDispatch();
   const location = useLocation().pathname;
@@ -134,28 +135,28 @@ const SetPrice = () => {
   const switchMarket = (market:string)=>{
     routerHistory.push(`/auto-period/${market}`)
   }
-  useEffect(() => {
-    async function checkIfSignatureExists() {
-      let user = await fetch(`http://localhost:7000/auto/data/${account}`)//http://localhost:7000
-      let data = await user.json()
-      if (data) {
-        setDataSignature(data.dataSignature)
-        setTransactionSigned(true)
-        setSignatureFromDataBase(true)
-      } else {
-        setDataSignature({
-          mess: "",
-          signature:""
-        })
-        setTransactionSigned(false)
-        setSignatureFromDataBase(false)
-      }
-    }
-    if (account) {
-      checkIfSignatureExists()
-      getFee()
-    }
-  }, [account])
+  // useEffect(() => {
+  //   async function checkIfSignatureExists() {
+  //     let user = await fetch(`http://localhost:7000/auto/data/${account}`)//http://localhost:7000
+  //     let data = await user.json()
+  //     if (data) {
+  //       setDataSignature(data.dataSignature)
+  //       setTransactionSigned(true)
+  //       setSignatureFromDataBase(true)
+  //     } else {
+  //       setDataSignature({
+  //         mess: "",
+  //         signature:""
+  //       })
+  //       setTransactionSigned(false)
+  //       setSignatureFromDataBase(false)
+  //     }
+  //   }
+  //   if (account) {
+  //     checkIfSignatureExists()
+  //     getFee()
+  //   }
+  // }, [account])
 
 
   
@@ -258,7 +259,7 @@ const SetPrice = () => {
   const minimumAmountToReceive = useCallback(
     () =>{
       let data
-      if(percentageChange && userOutputPrice){
+      if(userOutputPrice){
        data = ((100 - Number(allowedSlippage / 100)) / 100) * userOutputPrice
       }else{
         data=0
@@ -352,7 +353,7 @@ const SetPrice = () => {
       // try {
         let web3 = new Web3(Web3.givenProvider);
         const permitHash = process.env.REACT_APP_PERMIT_HASH;
-
+      console.log({permitHash})
          const mess = permitHash &&  web3.utils.soliditySha3(permitHash)
         
          if(account && mess){
@@ -511,24 +512,23 @@ const setQuantityValue =() =>{
     }catch(e){
       console.log({e})
       dispatch(
-      setOpenModal({
-        message: "Signing initial transaction",
-        trxState: TrxState.TransactionFailed,
-      })
-    );
+        setOpenModal({
+          message: `Swapping ${value} ${
+            currencies[Field.INPUT]?.symbol
+          } for ${formattedAmounts[Field.OUTPUT]} ${
+            currencies[Field.OUTPUT]?.symbol
+          }`,
+          trxState: TrxState.WaitingForConfirmation,
+        })
+      );
     }
     // setQuantity(quantity)
     let orderID = await autoSwapV2Contract.orderCount()
    
     if (response && value) {
-      dispatch(
-        setOpenModal({
-          message: "Storing Transaction",
-          trxState: TrxState.WaitingForConfirmation,
-        })
-      );
-      const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)//
-      const response = await fetch(`http://localhost:7000/auto/add`, {
+     
+     
+      const response = await fetch(`http://localhost:7000/instant`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -540,10 +540,6 @@ const setQuantityValue =() =>{
         body: JSON.stringify({
           address: account,
           chainID: chainId,
-          frequency: selectedFrequency,
-          frequencyNumber: changeFrequencyToday.days,
-          presentDate: changeFrequencyToday.today,
-          presentInterval: changeFrequencyToday.interval,
           fromAddress: currencies[Field.INPUT]?.isNative ? "native" : currencies[Field.INPUT]?.wrapped.address,
           toAddress: currencies[Field.OUTPUT]?.isNative ? "native" : currencies[Field.OUTPUT]?.wrapped.address,
           dataSignature,
@@ -553,26 +549,38 @@ const setQuantityValue =() =>{
           fromPrice: `${value}`,
           currentToPrice: formattedAmounts[Field.OUTPUT],
           orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1,
-          type: "Auto Time",
-          userExpectedPrice: userOutputPrice,
-          totalNumberOfTransaction:parseInt(totalNumberOfTransaction),
           slippage:Number(allowedSlippage / 100),
           pathArray,
           minimum,
-          situation,
           pathSymbol,
           market:marketType
         })
       })
       let res =await response.json()
       console.log({res})
-      dispatch(
-        setOpenModal({
-          message: "Successfully stored Transaction",
-          trxState: TrxState.TransactionSuccessful,
-        })
-      );
-      GSuccessfullyTransaction("auto_period","storing transaction to the database",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
+      if(res.type==="success"){
+        setHasBeenApproved(true);
+        const explorerLink = getExplorerLink(
+          chainId as number,
+          res.information.transactionHash,
+          ExplorerDataType.TRANSACTION
+        );
+        dispatch(
+          setOpenModal({
+            message: `Swap Successful.`,
+            trxState: TrxState.TransactionSuccessful,
+          })
+        );
+        dispatch(
+          addToast({
+            message: `Swap ${value} ${
+              currencies[Field.INPUT]?.symbol
+            } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol}`,
+            URL: explorerLink,
+          })
+        );
+      }
+      GSuccessfullyTransaction("instant_swap","swapping transaction in the database",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
       dispatch(refreshTransactionTab({ refresh:Math.random() }))
       onUserInput(Field.INPUT, "");
       setSignatureFromDataBase(true)
@@ -584,7 +592,7 @@ const setQuantityValue =() =>{
     GFailedTransaction("auto_period","storing transaction to database","error",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
     dispatch(
       setOpenModal({
-        message: "Storing Transaction failed",
+        message: "Swapping Transaction failed",
         trxState: TrxState.TransactionFailed,
       })
     );
@@ -698,142 +706,10 @@ const setQuantityValue =() =>{
                 </Box>
               </Box>
 
-              <Box mt={5}>
-                <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px" cursor="pointer">
-                  <VectorIcon />
-                </Center>
-                <Spacer />
-                {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
-                  <>
-                    <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.INPUT]?.symbol} = {unitAmount && parseFloat(unitAmount) >0 ? unitAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.OUTPUT]?.symbol}
-                    </Text>
-                    <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount && parseFloat(oppositeAmount)>0 ? oppositeAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.INPUT]?.symbol}
-                    </Text>
-                    <ExclamationIcon />
-                  </>
-
-                }
-
-              </Box>
-              <Box display="flex" mt={5}>
-                <VStack>
-                  <Flex>
-                    <Text fontSize="14px" mr={2}>
-                      Swap if price changes by
-                    </Text>
-                    <ExclamationIcon />
-                  </Flex>
-                  <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
-                    <Input placeholder="0" w="60px" value={percentageChange} type="number" onChange={e => {
-                      if (parseFloat(e.target.value) > 100) {
-                        setPercentageChange("100")
-                      } else {
-                        setPercentageChange(e.target.value)
-                      }
-
-                    }} />
-                    <InputRightAddon children="%" fontSize="16px" />
-                  </InputGroup>
-                </VStack>
-                <Spacer />
-                <VStack>
-                  <Flex>
-                    <Text fontSize="14px" mr={2}>
-                      Swap Every
-                    </Text>
-                    <ExclamationIcon />
-                  </Flex>
-                  <Menu>
-      <MenuButton
-        variant="ghost"
-        as={Button}
-        transition="all 0.2s"
-        rightIcon={<ChevronDownIcon />}
-        fontWeight={200}
-        _focus={{ color: "#319EF6" }}
-        fontSize="13px"
-        textTransform={'capitalize'}
-        border ="1px solid white"
-      >
-      5 minutes
-      </MenuButton>
-      <MenuList>
-        {["5","30","60","daily","weekly","monthly"].map((item:string,index)=>(
-          <MenuItem key={index} _focus={{ color: "#319EF6" }} onClick={(e) => setSelectedFrequency(item)} fontSize="13px">
-         {parseInt(item) ? `${item} minutes` : item}
-        </MenuItem>
-        ))
-
-        }
-        
-      </MenuList>
-    </Menu>
-                </VStack>
-              </Box>
-              <Flex mt={5} justifyContent="space-between">
-                <VStack>
-                  <Flex>
-                  <Text fontSize="14px" mr={2} ml="-63px">
-                      Range
-                    </Text>
-                    <ExclamationIcon />
-                  </Flex>
-                  <Box>
-                    <Tabs
-            colorScheme="#2D276A"
-            background="#F2F5F8"
-            borderRadius="4px"
-            // ml="-63px"
-          >
-            <TabList>
-              <Tab
-                // padding="8px 34px"
-                padding="7px"
-                background={situation==="above" ? "#319EF6" : ""}
-                color={situation!=="above" ? "#319EF6" : ""}
-                borderRadius="4px"
-                border="none"
-                onClick={() => setSituation('above')}
-                                isDisabled ={parseFloat(percentageChange)<=0 || percentageChange ===""?true:false}
-              >
-                Above
-              </Tab>
-              <Tab
-                padding="7px"
-                background={situation==="below" ? "#319EF6" : ""}
-                color={situation!=="below" ? "#319EF6" : ""}
-                border="none"
-                borderRadius="4px"
-                onClick={() => setSituation('below')}
-                                isDisabled ={parseFloat(percentageChange)<=0 || percentageChange ===""?true:false}
-              >
-                Below
-              </Tab>
-            </TabList>
-          </Tabs>
-                  </Box>
-          
-                </VStack>
-                <Flex mt={10} justifyContent="space-between">
+              <Flex mt={10} justifyContent="space-between">
                   <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{fee} RGP</Text>
                 </Flex>
-                <VStack>
-                  <Flex>
-                    <Text fontSize="14px" mr={2}>
-                      Frequency
-                    </Text>
-                    <ExclamationIcon />
-                  </Flex>
-                  <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
-                    <Input placeholder="0" w="80px" value={totalNumberOfTransaction} type="number" onChange={e => {
-                      setTotalNumberOfTransaction(e.target.value)
-                    }} />
-                    <InputRightAddon children="times" fontSize="16px"padding="3px" />
-                  </InputGroup>
-                </VStack>
-              </Flex>
+            
               <Box mt={5}>
               {insufficientBalance || inputError ?( 
             <Button
@@ -992,140 +868,10 @@ const setQuantityValue =() =>{
                 </Box>
               </Box>
 
-              <Box mt={5}>
-              {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
-                  <>
-                    <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.INPUT]?.symbol} = {unitAmount && parseFloat(unitAmount) >0 ? unitAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.OUTPUT]?.symbol}
-                    </Text>
-                    <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount && parseFloat(oppositeAmount)>0 ? oppositeAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.INPUT]?.symbol}
-                    </Text>
-                    <ExclamationIcon />
-                  </>
-
-                }
-
-
-              </Box>
-              <Box display="flex" mt={5}>
-                <VStack>
-                  <Flex>
-                    <Text fontSize="14px" mr={2}>
-                      Swap if price changes by
-                    </Text>
-                    <ExclamationIcon />
-                  </Flex>
-                  <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
-                    <Input placeholder="0" w="60px" value={percentageChange} type="number" onChange={e => {
-                      if (parseFloat(e.target.value) > 100) {
-                        setPercentageChange("100")
-                      } else {
-                        setPercentageChange(e.target.value)
-                      }
-
-                    }} />
-                    <InputRightAddon children="%" fontSize="16px" />
-                  </InputGroup>
-                </VStack>
-                <Spacer />
-                <VStack>
-                  <Flex>
-                    <Text fontSize="14px" mr={2}>
-                      Swap Every
-                    </Text>
-                    <ExclamationIcon />
-                  </Flex>
-                  <Menu>
-      <MenuButton
-        variant="ghost"
-        as={Button}
-        transition="all 0.2s"
-        rightIcon={<ChevronDownIcon />}
-        fontWeight={200}
-        _focus={{ color: "#319EF6" }}
-        fontSize="13px"
-        textTransform={'capitalize'}
-        border ="1px solid white"
-        padding={1}
-      >
-      {parseInt(selectedFrequency) ? `${selectedFrequency} minutes` : selectedFrequency}
-      </MenuButton>
-      <MenuList>
-        {["5","10","30","60","daily","weekly","monthly"].map((item:string,index)=>(
-          <MenuItem key={index} _focus={{ color: "#319EF6" }} onClick={(e) => setSelectedFrequency(item)} fontSize="13px">
-         {parseInt(item) ? `${item} minutes` : item}
-        </MenuItem>
-        ))
-
-        }
-        
-      </MenuList>
-    </Menu>
-                </VStack>
-              </Box>
-              <Flex mt={5} justifyContent="space-between">
-                <VStack>
-                  <Flex>
-                  <Text fontSize="14px" mr={2} ml="-63px">
-                      Range
-                    </Text>
-                    <ExclamationIcon />
-                  </Flex>
-                  <Box>
-                    <Tabs
-            colorScheme="#2D276A"
-            background="#F2F5F8"
-            borderRadius="4px"
-            // ml="-63px"
-          >
-            <TabList>
-              <Tab
-                // padding="8px 34px"
-                padding="7px"
-                background={situation==="above" ? "#319EF6" : ""}
-                color={situation!=="above" ? "#319EF6" : ""}
-                borderRadius="4px"
-                border="none"
-                onClick={() => setSituation('above')}
-                                isDisabled ={parseFloat(percentageChange)<=0 || percentageChange ===""?true:false}
-              >
-                Above
-              </Tab>
-              <Tab
-                padding="7px"
-                background={situation==="below" ? "#319EF6" : ""}
-                color={situation!=="below" ? "#319EF6" : ""}
-                border="none"
-                borderRadius="4px"
-                onClick={() => setSituation('below')}
-                                isDisabled ={parseFloat(percentageChange)<=0 || percentageChange ===""?true:false}
-              >
-                Below
-              </Tab>
-            </TabList>
-          </Tabs>
-                  </Box>
-          
-                </VStack>
-                <Flex mt={10} justifyContent="space-between">
+             
+               <Flex mt={10} justifyContent="space-between">
                   <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{fee} RGP</Text>
                 </Flex>
-                <VStack>
-                  <Flex>
-                    <Text fontSize="14px" mr={2}>
-                      Frequency
-                    </Text>
-                    <ExclamationIcon />
-                  </Flex>
-                  <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
-                    <Input placeholder="0" w="80px" value={totalNumberOfTransaction} type="number" onChange={e => {
-                      setTotalNumberOfTransaction(e.target.value)
-                    }} />
-                    <InputRightAddon children="times" fontSize="16px"padding="3px" />
-                  </InputGroup>
-                </VStack>
-              </Flex>
               <Box mt={5}>
                 {insufficientBalance || inputError ?( 
             <Button
@@ -1233,12 +979,10 @@ const setQuantityValue =() =>{
         setShowModal={setShowModal}
         from={currencies[Field.INPUT]?.symbol}
         to={currencies[Field.OUTPUT]?.symbol}
-        title="Confirm Auto time"
+        title="Confirm Instant swap"
         inputLogo={currencies[Field.INPUT]?.logoURI}
+        instant={true}
         outputLogo={currencies[Field.OUTPUT]?.logoURI}
-        frequency={selectedFrequency}
-        numberOfTransaction={totalNumberOfTransaction}
-        percentageChange={percentageChange}
         buttonText={signatureFromDataBase ? "Send Transaction" : "Sign Wallet"}
         fromDeposited={formattedAmounts[Field.INPUT]}
         toDeposited={userOutputPrice.toString()}
@@ -1247,7 +991,6 @@ const setQuantityValue =() =>{
         slippage={Number(allowedSlippage / 100)}
         showNewChangesText={showNewChangesText}
         pathSymbol={pathSymbol}
-        situation={situation}
         quantity={currencies[Field.INPUT]?.isNative ? quantity : ""}
         market={marketType}
       />
@@ -1255,4 +998,4 @@ const setQuantityValue =() =>{
   )
 }
 
-export default SetPrice
+export default InstantSwap
