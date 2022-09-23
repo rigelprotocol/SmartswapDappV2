@@ -83,7 +83,7 @@ const SetPrice = () => {
     oppositeAmount
   } = useDerivedSwapInfo();
 
-  const [URL, setURL] = useState("http://localhost:7000")//http://localhost:7000
+  const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//https://autoswap-server.herokuapp.com
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [disableInput, setDisableInput] = useState(true)
   const [initialFromPrice, setInitialFromPrice] = useState("")
