@@ -350,7 +350,8 @@ const InstantSwap = () => {
     if (account !== undefined) {
       // try {
         let web3 = new Web3(Web3.givenProvider);
-        const permitHash = process.env.REACT_APP_PERMIT_HASH;
+        const permitHash = "0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9";
+        // const permitHash = process.env.REACT_APP_PERMIT_HASH;
          const mess = permitHash &&  web3.utils.soliditySha3(permitHash)
         
          if(account && mess){
