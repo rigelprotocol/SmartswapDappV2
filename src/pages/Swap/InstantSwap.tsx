@@ -474,26 +474,30 @@ const setQuantityValue =() =>{
       
      
     const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
+    let value = setQuantityValue()
     dispatch(
       setOpenModal({
-        message: `Signing initial transaction between ${currencies[Field.INPUT]?.symbol} and ${currencies[Field.OUTPUT]?.symbol}`,
+        message: `Swapping ${value} ${
+          currencies[Field.INPUT]?.symbol
+        } for ${formattedAmounts[Field.OUTPUT]} ${
+          currencies[Field.OUTPUT]?.symbol
+        }`,
         trxState: TrxState.WaitingForConfirmation,
       })
     );
-    let currentDate = new Date();
-    let futureDate = currentDate.getTime() + deadline;
+    // let currentDate = new Date();
+    // let futureDate = currentDate.getTime() + deadline;
     let data, response
-    let value = setQuantityValue()
     try{ 
        
        if (currencies[Field.INPUT]?.isNative) {
    
       
-      data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
-        pathArray,
-        futureDate,
-        { value: Web3.utils.toWei(value.toString(), 'ether') }
-      )
+      // data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
+      //   pathArray,
+      //   futureDate,
+      //   { value: Web3.utils.toWei(value.toString(), 'ether') }
+      // )
       const fetchTransactionData = async (sendTransaction: any) => {
         const { confirmations, status, logs } = await sendTransaction.wait(1);
         return { confirmations, status, logs };
@@ -508,16 +512,7 @@ const setQuantityValue =() =>{
     }
     }catch(e){
       console.log({e})
-      dispatch(
-        setOpenModal({
-          message: `Swapping ${value} ${
-            currencies[Field.INPUT]?.symbol
-          } for ${formattedAmounts[Field.OUTPUT]} ${
-            currencies[Field.OUTPUT]?.symbol
-          }`,
-          trxState: TrxState.WaitingForConfirmation,
-        })
-      );
+    
     }
     // setQuantity(quantity)
     let orderID = await autoSwapV2Contract.orderCount()
