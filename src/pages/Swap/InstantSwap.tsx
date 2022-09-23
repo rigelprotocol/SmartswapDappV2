@@ -305,7 +305,6 @@ const InstantSwap = () => {
     // check approval for RGP and the other token
     const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
     const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
-    console.log({tokenBalance,RGPBalance})
     const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
     // const fee ="10"
@@ -329,7 +328,6 @@ const InstantSwap = () => {
     } else{
       setApprovalForToken(currencies[Field.INPUT]?.wrapped?.symbol ?? "")
     }
-    console.log(parseFloat(RGPBalance),parseFloat(tokenBalance),parseFloat(formattedAmounts[Field.INPUT]) * frequency)
     if (parseFloat(RGPBalance) < parseFloat(fee) || (parseFloat(tokenBalance) < parseFloat(formattedAmounts[Field.INPUT]) * frequency && (!currencies[Field.INPUT]?.isNative && currencies[Field.INPUT]?.wrapped?.symbol === "RGP" ))) {
       setHasBeenApproved(false)
       setApprovalForFee("RGP")
@@ -353,7 +351,6 @@ const InstantSwap = () => {
       // try {
         let web3 = new Web3(Web3.givenProvider);
         const permitHash = process.env.REACT_APP_PERMIT_HASH;
-      console.log({permitHash})
          const mess = permitHash &&  web3.utils.soliditySha3(permitHash)
         
          if(account && mess){
