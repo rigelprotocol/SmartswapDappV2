@@ -152,7 +152,7 @@ const ComfirmPurchase = ({ isOpen,
 
                     dispatch(
                         addToast({
-                            message: `Successfully Purchased RIGEL GIFT CARD ${unsoldItems} NFT`,
+                            message: `Successfully Purchased RIGEL GIFT CARD ${id} NFT`,
                             URL: explorerLink,
                         })
                     );
