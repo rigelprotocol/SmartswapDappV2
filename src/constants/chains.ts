@@ -12,6 +12,7 @@ export enum SupportedChainId {
   POLYGONTEST = 80001,
   OASISTEST = 42261,
   OASISMAINNET = 42262,
+  AVALANCHE = 43114,
 }
 
 export const ALL_SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
@@ -27,6 +28,7 @@ export const ALL_SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
   SupportedChainId.KOVAN,
   SupportedChainId.OASISTEST,
   SupportedChainId.OASISMAINNET,
+  SupportedChainId.AVALANCHE,
 ];
 
 export const L1_CHAIN_IDS = [
@@ -41,6 +43,7 @@ export const L1_CHAIN_IDS = [
   SupportedChainId.POLYGONTEST,
   SupportedChainId.OASISTEST,
   SupportedChainId.OASISMAINNET,
+  SupportedChainId.AVALANCHE,
 ] as const;
 
 export type SupportedL1ChainId = typeof L1_CHAIN_IDS[number];
@@ -83,6 +86,13 @@ export const CHAIN_INFO: ChainInfo = {
     infoLink: "",
     label: "Binance",
     nativeCurrency: { name: "Binance", symbol: "BNB", decimals: 18 },
+  },
+  [SupportedChainId.AVALANCHE]: {
+    docs: "",
+    explorer: "https://snowtrace.io/",
+    infoLink: "",
+    label: "Avalanche",
+    nativeCurrency: { name: "Avalanche", symbol: "AVAX", decimals: 18 },
   },
   [SupportedChainId.BINANCETEST]: {
     docs: "",

@@ -253,6 +253,25 @@ function NetworkIndicator() {
                 <Box>{CHAIN_INFO[42262].label}</Box>
               </Flex>
             </Flex>
+            <Flex
+              backgroundColor={mode === "dark" ? "#15202B" : "#FFFFFF"}
+              border={
+                mode === "dark" ? "1px solid #324D68" : "1px solid #DEE6ED"
+              }
+              borderRadius="6px"
+              px={3}
+              py={4}
+              mb={4}
+              cursor="pointer"
+              onClick={() => changeNetwork("0xA86A", 43114)}
+            >
+              <Flex>
+                <Box px={2}>
+                  <Img w="30px" src={OASISLOGO} />
+                </Box>
+                <Box>{CHAIN_INFO[43114].label}</Box>
+              </Flex>
+            </Flex>
           </Flex>
         </ModalContent>
       </Modal>

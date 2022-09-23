@@ -7,6 +7,7 @@ export const RGPADDRESSES: { [key: string]: string } = {
   "80001": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
   "42261": "0x2d2cd8ED2ec05A55162308332C40C3eF1994F59D",
   "42262": "0x4AF5ff1A60a6eF6C7c8f9C4E304cD9051fCa3Ec0",
+  "43114":"0x"
 };
 
 export const CHAINDETAILS = {
@@ -18,6 +19,7 @@ export const CHAINDETAILS = {
   "80001": "pn_mumbai",
   "42261": "oasis_test",
   "42262": "oasis",
+  "43114":"avalanche"
 };
 
 //Smartswap factory addresses
@@ -30,6 +32,7 @@ export const SMARTSWAPFACTORYADDRESSES: { [key: string]: string } = {
   "80001": "0xC8F273a1656d26BB8ECBc8B267e53304533600c4",
   "42261": "0xF9d14C9516AF795ee2b5dca7479f927EEaC1EDdb",
   "42262": "0xCE2ca7C47813E86008B0f9D5d5661356c130997f",
+  "43114":"0x"
 };
 
 //SMARTSWAP ROUTER
@@ -42,6 +45,7 @@ export const SMARTSWAPROUTER: { [key: string]: string } = {
   "80001": "0xaEBC5E5aC2Ad8680978Ce11d03048A4E2889DEbA",
   "42261": "0x3c5AAa6cAA82CC62327C7A0849e4d854B1905A3d",
   "42262": "0xFf672dB2558c8A78813EA3F61303460fcec656F7",
+  "43114":"0x"
 };
 
 //SmartSwapNFT
@@ -53,6 +57,7 @@ export const SMARTSWAPNFTSALES: { [key: string]: string } = {
   "97": "0x4aEFdbed61128de1483D2B9e739251466DCa29Bb",
   "137": "0xA5c488716f83A6C74bAC8712a457b7BeCF7C3DD5",
   "80001": "0xB15f7A4bA76B702e49FA3233FD455C5F13CB01d8",
+  "43114":"0x"
 };
 
 //SmartSwapNFTTwo
@@ -64,6 +69,7 @@ export const SMARTSWAPNFTTWO: { [key: string]: string } = {
   "97": "0x0694aD39a394A05C24f842612c3E86051A723cF1",
   "137": "0xCff5eb5f88b40905035310118B7dDF4bef8155dd",
   "80001": "0x4798a90d74ba3Fef77D38B0a07E8172FC5602629",
+  "43114":"0x"
 };
 
 //SmartBid
@@ -74,6 +80,7 @@ export const SMARTBID1: { [key: string]: string } = {
   "97": "0x96C65EFeEDb7a7dDa8A8e2630BD5e07534ED294B",
   "137": "0x9b5af1EcC50b0676cA004Dd5b693d9aaDe85F4A8",
   "80001": "0x",
+  "43114":"0x"
 };
 
 export const SMARTBID2: { [key: string]: string } = {
@@ -83,6 +90,7 @@ export const SMARTBID2: { [key: string]: string } = {
   "97": "0xA24B732838793Afb53731C84f2A613cf2709BBfB",
   "137": "0x8236774AE8d4D9d52cd5C5930Eb8b5f1e2CA67D2",
   "80001": "0x",
+  "43114":"0x"
 };
 
 //Native Wrapped
@@ -95,6 +103,7 @@ export const WNATIVEADDRESSES: { [key: string]: string } = {
   "80001": "0x9d91d1f8Ac4CF6C698a1a15c738323E2ad6F23E4",
   "42261": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
   "42262": "0x21C718C22D52d0F3a789b752D4c2fD5908a8A733",
+  "43114":"0x"
 };
 
 export const WNATIVEADDRESSESSYMBOL: { [key: string]: string } = {
@@ -106,6 +115,7 @@ export const WNATIVEADDRESSESSYMBOL: { [key: string]: string } = {
   "80001": "0x9d91d1f8Ac4CF6C698a1a15c738323E2ad6F23E4",
   "42261": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
   "42262": "0x21C718C22D52d0F3a789b752D4c2fD5908a8A733",
+  "43114":"0x"
 };
 
 export const SYMBOLS: { [key: string]: { [key: string]: string } } = {
@@ -125,6 +135,9 @@ export const SYMBOLS: { [key: string]: { [key: string]: string } } = {
     "42261": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
     "42262": "0x21C718C22D52d0F3a789b752D4c2fD5908a8A733",
   },
+  AVAX: {
+    "43114":"0x",
+  },
 };
 
 export const MASTERCHEFV2ADDRESSES: { [key: string]: string } = {
@@ -136,6 +149,7 @@ export const MASTERCHEFV2ADDRESSES: { [key: string]: string } = {
   "80001": "0x4B3B531bbbf7821A6f3019f82B461da760a184Ae",
   "42261": "0xFCAD25Ce875EA7eaBdcf99cdF57692376F1DbdF1",
   "42262": "0x1A700c1810387F4178b3944373388de76A88F804",
+  "43114":"0x"
 };
 
 export const MASTERCHEFNEWLPADDRESSES: { [key: string]: string | any } = {
@@ -163,6 +177,10 @@ export const MASTERCHEFNEWLPADDRESSES: { [key: string]: string | any } = {
     "1": "0x1A700c1810387F4178b3944373388de76A88F804",
     "2": "0x1A700c1810387F4178b3944373388de76A88F804",
   },
+  "43114": {
+    "1": "0x",
+    "2": "0x",
+  },
 };
 
 export const AUTOSWAPV2ADDRESSES: { [key: string]: string } = {
@@ -172,6 +190,7 @@ export const AUTOSWAPV2ADDRESSES: { [key: string]: string } = {
   "97": "0xc1F5014098DBb6CCCc28F9365316533905f591EB",
   "137": "0xCA4f379b674e2d72c8144b5c521BdD24657C8949",
   "80001": "0x",
+  "43114":"0x"
 };
 export const MARKETAUTOSWAPADDRESSES: {
   [key: string]: { [key: string]: string };
@@ -180,6 +199,7 @@ export const MARKETAUTOSWAPADDRESSES: {
     "56": "0x599cdB1A76b5cc3906585de2ED6c790a8bAA528f",
     "97": "0xc1F5014098DBb6CCCc28F9365316533905f591EB",
     "137": "0xd4d76dDAA597aE0B8B20d801EE7e528DE2E9f033",
+    "43114":"0x"
   },
   Pancakeswap: {
     "56": "0xffD1e82d1B46B0d5D6Caf1BCdF5edb6FCA0A2455",
@@ -208,6 +228,7 @@ export const OTHERMARKETADDRESSES: {
     "80001": "0xaEBC5E5aC2Ad8680978Ce11d03048A4E2889DEbA",
     "42261": "0x3c5AAa6cAA82CC62327C7A0849e4d854B1905A3d",
     "42262": "0xFf672dB2558c8A78813EA3F61303460fcec656F7",
+    "43114":"0x"
   },
   // "Sushiswap":{
   //   "56": "0x",
@@ -233,6 +254,7 @@ export const OTHERMARKETFACTORYADDRESSES: {
     "80001": "0xC8F273a1656d26BB8ECBc8B267e53304533600c4",
     "42261": "0xF9d14C9516AF795ee2b5dca7479f927EEaC1EDdb",
     "42262": "0xCE2ca7C47813E86008B0f9D5d5661356c130997f",
+    "43114":"0x"
   },
   // "Sushiswap":{
   //   "56": "0x",
@@ -247,6 +269,7 @@ export const AUTOSWAPSTATEADDRESSES: { [key: string]: string } = {
   "97": "0x97C982a4033d5fceD06Eedbee1Be10778E811D85",
   "137": "0xeBD0329E00B92898C9Ad614b001FdBD1d0e3E19D",
   "80001": "0x",
+  "43114":"0x"
 };
 export const RGPSPECIALPOOLADDRESSES: { [key: string]: string } = {
   "1": "0x",
@@ -255,6 +278,7 @@ export const RGPSPECIALPOOLADDRESSES: { [key: string]: string } = {
   "97": "0x7fE2Ec631716FeF3657BcB8d80CffBB2A34F7617",
   "137": "0x60715e85cba9892addc49830cf0655cf5fb09c3a",
   "80001": "0x60715e85cba9892addc49830cf0655cf5fb09c3a",
+  "43114":"0x"
 };
 export const PRODUCTSTAKINGADDRESSES: { [key: string]: string } = {
   "1": "0x",
@@ -263,6 +287,7 @@ export const PRODUCTSTAKINGADDRESSES: { [key: string]: string } = {
   "97": "0xD6D68fDCdDd66032de6bDdA2238C897419e194f1",
   "137": "0x5568f795aaf37b08274727b576567c580d3481d5",
   "80001": "0x",
+  "43114":"0x"
 };
 
 export const RGPSPECIALPOOLADDRESSES2: { [key: string]: string } = {
@@ -274,6 +299,7 @@ export const RGPSPECIALPOOLADDRESSES2: { [key: string]: string } = {
   "80001": "0x68faD2316B3f61516B2C35CEc4aCA5D5316dF00C",
   "42261": "0x9D5b588E5DaAC8055886D055418425c96faF9F56",
   "42262": "0x9D5b588E5DaAC8055886D055418425c96faF9F56",
+  "43114":"0x"
 };
 
 export const SMARTSWAPLP_TOKEN1ADDRESSES: { [key: string]: string } = {
@@ -285,6 +311,7 @@ export const SMARTSWAPLP_TOKEN1ADDRESSES: { [key: string]: string } = {
   "80001": "0x3D1f9e40cF80bdaadE5b38D45F136b9c3188c94F",
   "42261": "0xE25250b58CA392c708Dd81E1D3929618842ae1e1",
   "42262": "0xd483159966Ad9E91aC9DD092FCbB0070Ce9fE31e",
+  "43114":"0x"
 };
 export const SMARTSWAPLP_TOKEN2ADDRESSES: { [key: string]: string } = {
   "1": "0x",
@@ -295,6 +322,7 @@ export const SMARTSWAPLP_TOKEN2ADDRESSES: { [key: string]: string } = {
   "80001": "0x04D71B3c43744bc2cDD30b57209C8EC189511AD6",
   "42261": "0x7cd4f262E0b9C41A462f4994F080d693aBC77c25",
   "42262": "0x93b2F92E302834103fF007fa677cd4141C2A6042",
+  "43114":"0x"
 };
 export const SMARTSWAPLP_TOKEN3ADDRESSES: { [key: string]: string } = {
   "1": "0x",
@@ -305,6 +333,7 @@ export const SMARTSWAPLP_TOKEN3ADDRESSES: { [key: string]: string } = {
   "80001": "0x636a3eAacc6ab7B443305F0b39aaDe9DCB3f2A14",
   "42261": "0x2a3288Fda2eC1C6C6C91cA327A5060d3d5aef43D",
   "42262": "0x1a7D29455A551Cb778746AecaB43f1d26A262Bc3",
+  "43114":"0x"
 };
 export const SMARTSWAPLP_TOKEN4ADDRESSES: { [key: string]: string } = {
   "1": "0x",
@@ -313,6 +342,7 @@ export const SMARTSWAPLP_TOKEN4ADDRESSES: { [key: string]: string } = {
   "97": "0x30d8621d919b69c0D7920A7dC8936d457F3f8965",
   "137": "0x0e879267413b63d7d354a8b88aeeba013b13d6c9",
   "80001": "0x0E879267413B63D7d354A8b88AEEBa013b13d6C9",
+  "43114":"0x"
 };
 export const SMARTSWAPLP_TOKEN5ADDRESSES: { [key: string]: string } = {
   "1": "0x",
@@ -321,6 +351,7 @@ export const SMARTSWAPLP_TOKEN5ADDRESSES: { [key: string]: string } = {
   "97": "0x816b823d9C7F30327B2c626DEe4aD731Dc9D3641",
   "137": "0x7f14147c97efdc682ec4dda8b557dfc0b495517f",
   "80001": "0x7f14147C97EfDc682eC4dDA8B557DFC0b495517F",
+  "43114":"0x"
 };
 
 export const SMARTSWAPLP_TOKEN6ADDRESSES: { [key: string]: string } = {
@@ -330,6 +361,7 @@ export const SMARTSWAPLP_TOKEN6ADDRESSES: { [key: string]: string } = {
   "97": "0x5906a2f01a2fC5d6147f233970531797aD03F624",
   "137": "0x",
   "80001": "",
+  "43114":"0x"
 };
 
 export const SMARTSWAPLP_TOKEN7ADDRESSES: { [key: string]: string } = {
@@ -339,6 +371,7 @@ export const SMARTSWAPLP_TOKEN7ADDRESSES: { [key: string]: string } = {
   "97": "0xE25E2907749df9B21C23196469ff40C597c4914D",
   "137": "0x",
   "80001": "",
+  "43114":"0x"
 };
 
 export const SMARTSWAPLP_TOKEN8ADDRESSES: { [key: string]: string } = {
@@ -348,6 +381,7 @@ export const SMARTSWAPLP_TOKEN8ADDRESSES: { [key: string]: string } = {
   "97": "0x52D48BcDe6EE6f31c8d80fCDd7ac0B07710f9449",
   "137": "0x",
   "80001": "",
+  "43114":"0x"
 };
 
 export const SMARTSWAPLP_TOKEN9ADDRESSES: { [key: string]: string } = {
@@ -357,6 +391,7 @@ export const SMARTSWAPLP_TOKEN9ADDRESSES: { [key: string]: string } = {
   "97": "0x6F2eF79CB0f64D3Ad0f72174Aae8EC47033E82Fb",
   "137": "0x",
   "80001": "",
+  "43114":"0x"
 };
 
 export const SMARTSWAPLP_TOKEN12ADDRESSES: { [key: string]: string } = {
@@ -366,6 +401,7 @@ export const SMARTSWAPLP_TOKEN12ADDRESSES: { [key: string]: string } = {
   "97": "0x67475ffAb02F2d1061077d2519404AFCEDe2FCb6",
   "137": "0x",
   "80001": "",
+  "43114":"0x"
 };
 
 export const SMARTSWAPLP_TOKEN13ADDRESSES: { [key: string]: string } = {
@@ -375,6 +411,7 @@ export const SMARTSWAPLP_TOKEN13ADDRESSES: { [key: string]: string } = {
   "97": "0x612fAC88D7310f4371018E8d76111Efd2221D30c",
   "137": "0x",
   "80001": "",
+  "43114":"0x"
 };
 
 export const RGP: { [key: string]: string } = {
@@ -386,6 +423,7 @@ export const RGP: { [key: string]: string } = {
   "80001": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
   "42261": "0x2d2cd8ED2ec05A55162308332C40C3eF1994F59D",
   "42262": "0x4AF5ff1A60a6eF6C7c8f9C4E304cD9051fCa3Ec0",
+  "43114":"0x"
 };
 
 //BUSD addresses
@@ -396,6 +434,7 @@ export const BUSD: { [key: string]: string } = {
   "97": "0x10249E900B919FDEe9e2ED38b4cd83C4df857254",
   "137": "0xdAb529f40E671A1D4bF91361c21bf9f0C9712ab7",
   "8001": "",
+  "43114":"0x"
 };
 
 //USDT addresses
@@ -408,6 +447,7 @@ export const USDT: { [key: string]: string } = {
   "80001": "0x7E1cF971de65eB065A72595B3Ac9e1b9Cc630564",
   "42262": "0xdC19A122e268128B5eE20366299fc7b5b199C8e3",
   "42261": "0xa30b641533D2509089CeF6F097a5BFB62dF7BC8b",
+  "43114":"0x"
 };
 
 export const USDC: { [key: string]: string } = {
