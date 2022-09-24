@@ -47,9 +47,9 @@ export const SMARTSWAPROUTER: { [key: string]: string } = {
 export const IPFS: { [key: string]: string } = {
   "1": "0x",
   "3": "",
-  "56": "",
+  "56": "QmcScJHZV8VpksmK1TEXRGGdk2uACXDBqFgvtfr84JdygF",
   "97": "QmcScJHZV8VpksmK1TEXRGGdk2uACXDBqFgvtfr84JdygF",
-  "137": "",
+  "137": "QmPdDoKJEoPZMCEwswEYcbPdMBCpG8N6fYaCBQUTmES76E",
   "80001": "QmPdDoKJEoPZMCEwswEYcbPdMBCpG8N6fYaCBQUTmES76E",
   "42261": "",
   "42262": "",
@@ -60,10 +60,10 @@ export const IPFS: { [key: string]: string } = {
 export const SMARTSWAPNFTSALES: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
-  "56": "0x6f3BB73e30a24412C1202f58439f4fe5Cb712979",
-  "97": "0xD25B798dbC7740C79b3a14eeDB8ec86a49306E89",
+  "56": "0x813E4a8C2C4bC25e58Ca2252bC4A1CA075139210",
+  "97": "0x813E4a8C2C4bC25e58Ca2252bC4A1CA075139210",
   "137": "0xA5c488716f83A6C74bAC8712a457b7BeCF7C3DD5",
-  "80001": "0xe8c70E56E8B52Ca9d57148436B61F93EEa685cA2",
+  "80001": "0xC6D205ffFA9b1EB6061f4FCBd645994dc112A6A9",
 };
 
 //SmartSwapNFTTwo

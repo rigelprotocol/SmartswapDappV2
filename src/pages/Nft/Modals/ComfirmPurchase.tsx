@@ -39,6 +39,8 @@ const ComfirmPurchase = ({ isOpen,
     const {hasTokenABeenApproved, hasTokenBBeenApproved, loadInfo} = useNFTAllowance(checkTokenApproval, prices.firstTokenPrice, currency, nftId[0],firstToken.address,secondToken.address);
 
      const [error, setError] = useState('');
+     const [mint, setMint] = useState(true);
+
 
      useEffect(() => {
          if (currency === firstToken.symbol && parseFloat(firstToken.balance) < parseFloat(prices.firstTokenPrice)) {
@@ -49,6 +51,20 @@ const ComfirmPurchase = ({ isOpen,
              setError('')
          }
      }, [currency]);
+    //  useEffect(()=>{
+    //     let didCancel= false
+    //     const checkForMint = async ()=>{
+    //         const nftContract = await RigelNFT(SMARTSWAPNFTSALES[chainId as number], library);
+    //         const isMinted = await nftContract.checkStatus();
+    //         if(!didCancel){
+    //             setMint(isMinted)
+    //         }
+    //     }
+    //     checkForMint()
+    //     return ()=>{
+    //         didCancel = true
+    //     }
+    //  },[])
 
 
     const approveTokens = async (address: string, symbol: string) => {
@@ -268,7 +284,22 @@ const ComfirmPurchase = ({ isOpen,
                                 {error}
                             </Button>
 
-                            : currency === firstToken.symbol && !hasTokenABeenApproved ?
+                            :mint ?  <Button
+                            mt={5}
+                            mb={2}
+                            w={'full'}
+                            variant='brand'
+                            color={'white'}
+                            disabled={!mint}
+                            boxShadow={'0 5px 20px 0px rgba(24, 39, 75, 0.06),'}
+                            _hover={{bg: 'blue.500'}}
+                            _focus={{bg: 'blue.500'}}
+                            onClick={() => buyNFT()}
+                        >
+                            Confirm
+                        </Button>
+
+                        : currency === firstToken.symbol && !hasTokenABeenApproved ?
                             <Button
                                 mt={5}
                                 mb={2}

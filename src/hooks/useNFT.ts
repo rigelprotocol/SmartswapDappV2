@@ -57,6 +57,7 @@ export const useNft = (id: number) => {
             if (chainId !== undefined) {
                 // try {
                     const nftContract = await RigelNFT(validSmartAddress, library);
+                    console.log({nftContract})
                     const purchaseData = await nftContract.nftsPurchaseData(nftClassRef.current);
                     const tokenA = await nftContract.tokenA();
                     const tokenB = await nftContract.tokenB();
@@ -179,7 +180,7 @@ export const useNftName =  (id: number) => {
                 nftArray = getNftToken(id);
                 setNftId(nftArray);
             }
-    
+    console.log({nftArray})
                     try {
                         const chain = chainId ?? ChainId
                         let url=`https://ipfs.io/ipfs/${IPFS[chain]}/${nftArray[0]}.json`
