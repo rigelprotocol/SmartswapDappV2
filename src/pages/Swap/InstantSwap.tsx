@@ -521,7 +521,7 @@ const setQuantityValue =() =>{
     if (response && value) {
      
      
-      const response = await fetch(`https://autoswap-server.herokuapp.com/instant`, {
+      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/instant`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
