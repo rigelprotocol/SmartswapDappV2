@@ -49,8 +49,8 @@ export const IPFS: { [key: string]: string } = {
   "3": "",
   "56": "QmcScJHZV8VpksmK1TEXRGGdk2uACXDBqFgvtfr84JdygF",
   "97": "QmcScJHZV8VpksmK1TEXRGGdk2uACXDBqFgvtfr84JdygF",
-  "137": "QmPdDoKJEoPZMCEwswEYcbPdMBCpG8N6fYaCBQUTmES76E",
-  "80001": "QmPdDoKJEoPZMCEwswEYcbPdMBCpG8N6fYaCBQUTmES76E",
+  "137": "QmUDyQPMoRsRZ7jUUrn1Sz5sFrzrZA9kYxjrZ6Xo9JXfgv",
+  "80001": "QmUDyQPMoRsRZ7jUUrn1Sz5sFrzrZA9kYxjrZ6Xo9JXfgv",
   "42261": "",
   "42262": "",
 };

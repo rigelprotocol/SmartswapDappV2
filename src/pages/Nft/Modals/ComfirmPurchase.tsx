@@ -22,11 +22,12 @@ type comfirmPurchaseModalProps = {
     close: () => void,
     id: number,
     image: string,
-    name: string
+    name: string,
+    mint?:boolean
 }
 
 const ComfirmPurchase = ({ isOpen,
-                             close, id, image, name }:
+                             close, id, image, name, mint }:
                              comfirmPurchaseModalProps) => {
     const { chainId, library, account } = useActiveWeb3React();
     const textColor = useColorModeValue("#333333", "#F1F5F8");
@@ -34,12 +35,10 @@ const ComfirmPurchase = ({ isOpen,
     const [currency, setCurrency] = useState('');
     const [checkTokenApproval, setCheckTokenApproval] = useState(0);
     const dispatch = useDispatch();
-
     const {firstToken, secondToken, prices, unsoldItems, nftId} = useNft(id);
     const {hasTokenABeenApproved, hasTokenBBeenApproved, loadInfo} = useNFTAllowance(checkTokenApproval, prices.firstTokenPrice, currency, nftId[0],firstToken.address,secondToken.address);
 
      const [error, setError] = useState('');
-     const [mint, setMint] = useState(true);
 
 
      useEffect(() => {
@@ -51,20 +50,6 @@ const ComfirmPurchase = ({ isOpen,
              setError('')
          }
      }, [currency]);
-    //  useEffect(()=>{
-    //     let didCancel= false
-    //     const checkForMint = async ()=>{
-    //         const nftContract = await RigelNFT(SMARTSWAPNFTSALES[chainId as number], library);
-    //         const isMinted = await nftContract.checkStatus();
-    //         if(!didCancel){
-    //             setMint(isMinted)
-    //         }
-    //     }
-    //     checkForMint()
-    //     return ()=>{
-    //         didCancel = true
-    //     }
-    //  },[])
 
 
     const approveTokens = async (address: string, symbol: string) => {
@@ -140,7 +125,6 @@ const ComfirmPurchase = ({ isOpen,
                     })
                 );
                 const nftContract = await RigelNFT(SMARTSWAPNFTSALES[chainId as number], library);
-                console.log({id,firstToken,secondToken},SMARTSWAPNFTSALES[chainId as number],chainId, library)
                 const data = await nftContract.mint(id, currency === 'USDT' ?  secondToken.address : firstToken.address);
 
                 const { confirmations } = await data.wait(3);
@@ -284,21 +268,6 @@ const ComfirmPurchase = ({ isOpen,
                                 {error}
                             </Button>
 
-                            :mint ?  <Button
-                            mt={5}
-                            mb={2}
-                            w={'full'}
-                            variant='brand'
-                            color={'white'}
-                            disabled={!mint}
-                            boxShadow={'0 5px 20px 0px rgba(24, 39, 75, 0.06),'}
-                            _hover={{bg: 'blue.500'}}
-                            _focus={{bg: 'blue.500'}}
-                            onClick={() => buyNFT()}
-                        >
-                            Confirm
-                        </Button>
-
                         : currency === firstToken.symbol && !hasTokenABeenApproved ?
                             <Button
                                 mt={5}
@@ -348,7 +317,7 @@ const ComfirmPurchase = ({ isOpen,
                                 w={'full'}
                                 variant='brand'
                                 color={'white'}
-                                disabled={currency === '' || error !== ''}
+                                disabled={currency === '' || error !== '' || !mint}
                                 boxShadow={'0 5px 20px 0px rgba(24, 39, 75, 0.06),'}
                                 _hover={{bg: 'blue.500'}}
                                 _focus={{bg: 'blue.500'}}

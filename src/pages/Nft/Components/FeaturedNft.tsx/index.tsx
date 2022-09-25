@@ -26,7 +26,7 @@ export const FeaturedNft = function ({ id  }: {id: number}) {
     const { chainId, account } = useActiveWeb3React();
     const [isMobileDevice] = useMediaQuery("(max-width: 750px)");
 
-    const { firstToken, secondToken ,prices, unsoldItems , nftId, loadData} = useNft(id);
+    const { firstToken, secondToken ,prices, unsoldItems , nftId, loadData,mint} = useNft(id);
 
     const {name, nftImage, loading} = useNftName(id);
 
@@ -122,7 +122,7 @@ export const FeaturedNft = function ({ id  }: {id: number}) {
                             </Stack>
                         </Stack>
                     </Center>
-                    <ComfirmPurchase isOpen={purchaseModal} close={()=>setOpenPerchaseModal(false)} id={1} image={nftImage} name={name} />
+                    <ComfirmPurchase isOpen={purchaseModal} close={()=>setOpenPerchaseModal(false)} id={1} image={nftImage} name={name} mint ={mint} />
                 </Box>
 
         </>

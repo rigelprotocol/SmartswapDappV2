@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import {
     Button,
     Center, Flex, Grid,
@@ -38,7 +38,7 @@ export const ViewNFT = function () {
 
     const { chainId } = useActiveWeb3React();
 
-    const { firstToken, secondToken ,prices, unsoldItems , nftId, loadData} = useNft(viewId);
+    const { firstToken, secondToken ,prices, unsoldItems , nftId, loadData,mint} = useNft(viewId);
     // console.log({viewId, firstToken, secondToken ,prices, unsoldItems , nftId, loadData});
     // const {name, nftImage, loading} = useNftName(nftId[0]);
     const {name, nftImage, loading} = useNftName(viewId);
@@ -47,6 +47,7 @@ export const ViewNFT = function () {
 
     const textColor = useColorModeValue("#333333", "#F1F5F8");
     const lightTextColor = useColorModeValue("#666666", "grey");
+  
     return (
         <>
             <Link to={'/nft'}>
@@ -175,7 +176,7 @@ export const ViewNFT = function () {
                     </Stack>
                 </Stack>
             </Center>
-            <ComfirmPurchase isOpen={purchaseModal} close={() => setOpenPerchaseModal(false)} id={viewId} image={nftImage} name={name}/>
+            <ComfirmPurchase isOpen={purchaseModal} close={() => setOpenPerchaseModal(false)} id={viewId} image={nftImage} name={name} mint={mint}/>
             <ClaimNFTModal isOpen={clamModal} close={() => setOpenClamModal(false)} />
 
         </>

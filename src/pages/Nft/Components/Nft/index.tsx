@@ -26,7 +26,7 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
   const [ purchaseModal,setOpenPerchaseModal] = useState(false);
     const [isMobileDevice] = useMediaQuery("(max-width: 767px)");
 
-  const { firstToken, secondToken ,prices, unsoldItems , nftId, loadData} = useNft(id);
+  const { firstToken, secondToken ,prices, unsoldItems , nftId, loadData,mint} = useNft(id);
   const { account } = useActiveWeb3React();
 
   const {name, nftImage, loading} = useNftName(id);
@@ -137,6 +137,7 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
                                id={id}
                                image={nftImage}
                                name={name}
+                               mint={mint}
               />
         </Box>
     )

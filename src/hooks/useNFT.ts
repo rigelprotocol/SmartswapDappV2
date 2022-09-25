@@ -27,6 +27,7 @@ export const useNft = (id: number) => {
     const [nftId, setNftId, nftIdRef] = useState<number[]>([]);
     const [nftClass, setNftClass, nftClassRef] = useState<number>();
     const [loadData, setLoadData] = useState(false);
+    const [mint, setMint] = useState(false);
 
 
     const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
@@ -46,32 +47,27 @@ export const useNft = (id: number) => {
             const nftArray = getNftTokenPolygon(id);
             setNftClass(id);
             setNftId(nftArray);
-            console.log({nftArray,id},"123")
         } else if (chainId === SupportedChainId.BINANCETEST || chainId === Number(SupportedChainId.BINANCE)) {
             const nftArray = getNftToken(id);
             setNftId(nftArray)
-            console.log("456")
             setNftClass(id);
         }
         const fetchNftData = async () => {
             if (chainId !== undefined) {
                 // try {
                     const nftContract = await RigelNFT(validSmartAddress, library);
-                    console.log({nftContract})
                     const purchaseData = await nftContract.nftsPurchaseData(nftClassRef.current);
+                    const checkMint = await nftContract.checkStatus()
+
                     const tokenA = await nftContract.tokenA();
                     const tokenB = await nftContract.tokenB();
-                    console.log({validSmartAddress, purchaseData, tokenA, tokenB}, "123")
+                    setMint(checkMint)
                     const tokenOne = await getERC20Token(tokenA, library);
                     const [tokenOneSymbol, tokenOneBalance, tokenOneDecimals] = await Promise.all(
                         [tokenOne.symbol(), tokenOne.balanceOf(account), tokenOne.decimals()]);
-                        console.log({tokenOneSymbol, tokenOneBalance, tokenOneDecimals}, "123")
                     setFirstToken({symbol: tokenOneSymbol,
                         balance: parseFloat(ethers.utils.formatUnits(tokenOneBalance, tokenOneDecimals)).toFixed(4),
                         address: tokenA});
-                       console.log({symbol: tokenOneSymbol,
-                        balance: parseFloat(ethers.utils.formatUnits(tokenOneBalance, tokenOneDecimals)).toFixed(4),
-                        address: tokenA})
 
                     const tokenTwo = await getERC20Token(tokenB, library);
                     const [tokenTwoSymbol, tokenTwoBalance, tokenTwoDecimals] = await Promise.all(
@@ -84,19 +80,17 @@ export const useNft = (id: number) => {
                         secondTokenPrice: formatAmount(purchaseData.tokenPrice, tokenTwoDecimals)});
 
                     const views = await nftContract.getAllNFTsSoldFromClass(id);
-                    console.log({views}, "123")
                     if (views) {
                                 setUnsoldItems(views.all.toString());
                         //         break;
                             }
                     setLoadData(false);
-                    console.log({firstToken, secondToken, prices, unsoldItems, nftId, loadData})
             }
         };
         fetchNftData();
     }, [account, chainId, stateChanged]);
    
-    return {firstToken, secondToken, prices, unsoldItems, nftId, loadData}
+    return {firstToken, secondToken, prices, unsoldItems, nftId, loadData,mint}
 };
 
 export const useNFTAllowance = (
@@ -116,7 +110,7 @@ export const useNFTAllowance = (
         const getAllowance = async () => {
             if (account && tokenPrice) {
                     // 
-                // try {
+                try {
                     setLoadInfo(true);
                     const nftContract = await RigelNFT(SMARTSWAPNFTSALES[chainId as number], library);
                     
@@ -136,11 +130,10 @@ export const useNFTAllowance = (
                         setHasTokenABeenApproved(isTokenAApproved);
                         setHasTokenBBeenApproved(isTokenBApproved);
                         setLoadInfo(false);
-                        console.log(18393939)
                     }
-                // } catch (e) {
-                //     console.log(e)
-                // }
+                } catch (e) {
+                    console.log(e)
+                }
             }
         };
         getAllowance();
@@ -169,7 +162,6 @@ export const useNftName =  (id: number) => {
 
     useEffect(() => {
         setLoading(true);
-        console.log({ChainId,id})
         const fetchDetails = async () => {
             let nftArray
             if (chainId === SupportedChainId.POLYGONTEST || chainId === Number(SupportedChainId.POLYGON)) {
@@ -180,7 +172,6 @@ export const useNftName =  (id: number) => {
                 nftArray = getNftToken(id);
                 setNftId(nftArray);
             }
-    console.log({nftArray})
                     try {
                         const chain = chainId ?? ChainId
                         let url=`https://ipfs.io/ipfs/${IPFS[chain]}/${nftArray[0]}.json`
@@ -190,7 +181,6 @@ export const useNftName =  (id: number) => {
                         setName(nftName);
 
                         const imageArr = jsonData.image.split('/');
-                        console.log({jsonData,nftName,chain})
                         let imageUrl;
 
                         if (ChainId === SupportedChainId.BINANCETEST) {
