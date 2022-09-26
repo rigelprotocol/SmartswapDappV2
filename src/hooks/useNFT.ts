@@ -28,6 +28,7 @@ export const useNft = (id: number) => {
     const [nftClass, setNftClass, nftClassRef] = useState<number>();
     const [loadData, setLoadData] = useState(false);
     const [mint, setMint] = useState(false);
+    const [nftNameInfo,setID] = useState(0);
 
 
     const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
@@ -72,7 +73,7 @@ export const useNft = (id: number) => {
                     const tokenTwo = await getERC20Token(tokenB, library);
                     const [tokenTwoSymbol, tokenTwoBalance, tokenTwoDecimals] = await Promise.all(
                         [tokenTwo.symbol(), tokenTwo.balanceOf(account), tokenTwo.decimals()]);
-                 
+                        setID(purchaseData.nextAvailableID.toString())
                     setSecondToken({symbol: tokenTwoSymbol,
                         balance: parseFloat(ethers.utils.formatUnits(tokenTwoBalance, tokenTwoDecimals)).toFixed(4),
                         address: tokenB});
@@ -90,7 +91,7 @@ export const useNft = (id: number) => {
         fetchNftData();
     }, [account, chainId, stateChanged]);
    
-    return {firstToken, secondToken, prices, unsoldItems, nftId, loadData,mint}
+    return {firstToken, secondToken, prices, unsoldItems, nftId, loadData,mint,nftNameInfo}
 };
 
 export const useNFTAllowance = (
@@ -112,7 +113,6 @@ export const useNFTAllowance = (
                     // 
                 try {
                     setLoadInfo(true);
-                    const nftContract = await RigelNFT(SMARTSWAPNFTSALES[chainId as number], library);
                     
                     if (tokenA && tokenB) {
                         const [tokenAData, tokenBData] = await Promise.all([
@@ -143,7 +143,7 @@ export const useNFTAllowance = (
 };
 
 
-export const useNftName =  (id: number) => {
+export const useNftName =  (id: number,nftID:number) => {
     const { chainId, library } = useActiveWeb3React();
     const [name, setName] = useState('');
     const [nftImage, setNftImage] = useState('');
@@ -173,12 +173,13 @@ export const useNftName =  (id: number) => {
                 setNftId(nftArray);
             }
                     try {
-                        const chain = chainId ?? ChainId
+                        const chain = chainId ?? ChainId as number
                         let url=`https://ipfs.io/ipfs/${IPFS[chain]}/${nftArray[0]}.json`
                         const data = await fetch(url);
                         const jsonData = await data.json();
                         const nftName = jsonData.name;
-                        setName(nftName);
+                        const totalName = nftName.split("#")[0] + `#${nftID}`;
+                        setName(totalName);
 
                         const imageArr = jsonData.image.split('/');
                         let imageUrl;
@@ -199,7 +200,7 @@ export const useNftName =  (id: number) => {
         };
         fetchDetails();
 
-    }, [ChainId, library,id]);
+    }, [ChainId, library,id,nftID]);
 
     return {name, nftImage, loading}
 
