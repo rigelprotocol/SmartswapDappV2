@@ -372,6 +372,43 @@ const InstantSwap = () => {
 
   }
 
+//   useEffect(()=>{
+// const fet = async () => {
+//   const response = await fetch(`https://autoswap-server.herokuapp.com/auto/i`, {
+//     method: "POST",
+//     mode: "cors",
+//     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+//     credentials: 'same-origin', // include, *same-origin, omit
+//     headers: {
+//       'Content-Type': 'application/json'
+//       // 'Content-Type': 'application/x-www-form-urlencoded',
+//     },
+//     body: JSON.stringify({
+//       address: "account",
+//       chainID: "chainId",
+//       fromAddress:"jej",
+//       toAddress:"iejue1",
+//       fromNumberOfDecimals: "jej",
+//       toNumberOfDecimals: "jej",
+//       fromPrice: `jejj`,
+//       currentToPrice: "kejj",
+//       orderID: ":kej",
+//       slippage:"kjej",
+//       pathArray:"ehh",
+//       minimum:"jej",
+//       pathSymbol:"jej",
+//       market:`marketType`
+//     })
+//   })
+//   console.log({response})
+//   const text =await response.json()
+//   console.log({text})
+
+// }
+
+// fet()
+//   },[])
+
   const approveOneOrTwoTokens = async (tokenApprovingFor:string) => {
     if (currencies[Field.INPUT]?.isNative) {
       setHasBeenApproved(true);
@@ -519,9 +556,23 @@ const setQuantityValue =() =>{
     let orderID = await autoSwapV2Contract.orderCount()
    
     if (response && value) {
+     console.log({ address: account,
+      chainID: chainId,
+      fromAddress: currencies[Field.INPUT]?.isNative ? "native" : currencies[Field.INPUT]?.wrapped.address,
+      toAddress: currencies[Field.OUTPUT]?.isNative ? "native" : currencies[Field.OUTPUT]?.wrapped.address,
+      dataSignature,
+      fromNumberOfDecimals: currencies[Field.INPUT]?.isNative ? 18 : currencies[Field.INPUT]?.wrapped.decimals,
+      toNumberOfDecimals: currencies[Field.OUTPUT]?.isNative ? 18 : currencies[Field.OUTPUT]?.wrapped.decimals,
+      fromPrice: `${value}`,
+      currentToPrice: formattedAmounts[Field.OUTPUT],
+      orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1,
+      slippage:Number(allowedSlippage / 100),
+      pathArray,
+      minimum,
+      pathSymbol,
+      market:marketType})
      
-     
-      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/instant`, {
+      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/i`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
