@@ -58,7 +58,7 @@ function NetworkIndicator() {
   useEffect(() => {
     GNetworkConnectedTo(info?.label);
 
-    if (chainId) {
+    if (chainId && chainId !== ChainId) {
       handleUpdateChainId(chainId);
     }
     if (!connect && !ChainId) {

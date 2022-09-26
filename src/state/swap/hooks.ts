@@ -299,8 +299,8 @@ export const binanceTestMarketArray = [
 
 // updates the swap state to use the defaults for a given network
 export function useDefaultsFromURLSearch() {
-  const { account } = useActiveWeb3React();
-  const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
+  const { account, chainId } = useActiveWeb3React();
+  const ChainId = useSelector((state) => state.chainId.chainId);
   const dispatch = useDispatch<AppDispatch>();
   const parsedQs = useParsedQueryString();
   const [result, setResult] = useState<
@@ -327,6 +327,6 @@ export function useDefaultsFromURLSearch() {
       inputCurrencyId: parsed[Field.INPUT].currencyId,
       outputCurrencyId: parsed[Field.OUTPUT].currencyId,
     });
-  }, [dispatch, ChainId, account]);
+  }, [dispatch, ChainId]);
   return result;
 }
