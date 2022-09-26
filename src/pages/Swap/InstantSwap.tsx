@@ -572,7 +572,7 @@ const setQuantityValue =() =>{
       pathSymbol,
       market:marketType})
      
-      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/i`, {
+      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/instant`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -622,6 +622,13 @@ const setQuantityValue =() =>{
             URL: explorerLink,
           })
         );
+      }else{
+        dispatch(
+          setOpenModal({
+            message: `Swap Failed.`,
+            trxState: TrxState.TransactionFailed,
+          })
+        ); 
       }
       GSuccessfullyTransaction("instant_swap","swapping transaction in the database",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
       dispatch(refreshTransactionTab({ refresh:Math.random() }))

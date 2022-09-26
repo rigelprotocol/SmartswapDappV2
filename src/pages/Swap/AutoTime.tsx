@@ -316,7 +316,7 @@ const SetPrice = () => {
     }else{
       setApprovalForFee("RGP")
     }
-    if((parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT]) * frequency)+parseFloat(fee)) && currencies[Field.INPUT]?.wrapped.symbol === "RGP"){
+    if((parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT]) * frequency)+parseFloat(fee)) && currencies[Field.INPUT]?.wrapped?.symbol === "RGP"){
       setHasBeenApproved(true)
       // setApprovalForFee("")
       setApprovalForToken("")
