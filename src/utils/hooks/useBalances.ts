@@ -19,6 +19,8 @@ export const useNativeBalance = () => {
   const [Name, setName] = useState(SupportedChainName[56]);
   const [Logo, setLogo] = useState(SupportedChainLogo[56]);
 
+  const reloadBalance = localStorage.getItem("reload");
+
   const trxState = useSelector<RootState>(
     (state) => state.application.modal?.trxState
   );
@@ -37,8 +39,10 @@ export const useNativeBalance = () => {
           setLogo(SupportedChainLogo[chainId as number]);
         } catch (err) {
           console.log(err);
-          // Needs Fixing
-          window.location.reload();
+          if (!reloadBalance) {
+            window.location.reload();
+            localStorage.setItem("reload", "true");
+          }
         }
       }
     };

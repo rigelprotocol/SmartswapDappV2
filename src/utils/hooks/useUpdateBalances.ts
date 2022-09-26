@@ -5,7 +5,7 @@ import { Currency, Token } from "@uniswap/sdk-core";
 import { Web3Provider } from "@ethersproject/providers";
 import JSBI from "jsbi";
 import { ParseFloat } from "..";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import useDebounce from "../../hooks/useDebounce";
 import { useAllTokens } from "../../hooks/Tokens";
 import { ExtendedEther, useToken } from "../../hooks/Tokens";
@@ -13,7 +13,6 @@ import { useNativeBalance } from "./useBalances";
 import { useWeb3React } from "@web3-react/core";
 import { filterTokens } from "../../components/Tokens/filtering";
 import { useSelector } from "react-redux";
-// import { Currency } from "@uniswap/sdk";
 
 export const getBalance = async (
   currency: Currency,
@@ -77,7 +76,6 @@ export const useUpdateBalance = (searchQuery: string) => {
   };
 
   const { TokenList } = useTokenBalance(filteredTokens, "");
-  console.log(filteredTokens);
 
   const sortedTokenList = sortTokens(TokenList);
 
@@ -168,24 +166,3 @@ export const useTokenBalance = (
 
   return { TokenList };
 };
-//
-// export const loopCurrencies = async (
-//   tokens: Currency[],
-//   Balance: string,
-//   library: Web3Provider,
-//   chainId: number,
-//   account: string
-// ) => {
-//   const balances = [];
-//   for (let i = 0; i < tokens.length; i++) {
-//     const balance = await getBalance(
-//       tokens[i],
-//       Balance,
-//       library,
-//       chainId,
-//       account
-//     );
-//     balances.push(balance);
-//   }
-//   return balances;
-// };

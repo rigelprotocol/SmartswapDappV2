@@ -44,6 +44,7 @@ import {
 import { useSelector } from "react-redux";
 import { RootState } from "../../state";
 import { SupportedChainId } from "../../constants/chains";
+import { connectorKey } from "../../connectors";
 
 type IModal = {
   tokenModal: boolean;
@@ -70,6 +71,7 @@ const SelectToken: React.FC<IModal> = ({
   const boxColor = useColorModeValue("#F2F5F8", "#213345");
 
   const [inactiveList, setInactiveList] = useState([]);
+  const walletType = localStorage.getItem(connectorKey);
 
   useEffect(() => {
     setSearchQuery("");
@@ -210,7 +212,7 @@ const SelectToken: React.FC<IModal> = ({
             </Box>
           </Box>
           <ModalBody maxHeight="60vh" overflowY="scroll" p={0}>
-            {!account ? (
+            {!account || walletType === "bsc" ? (
               <Box>
                 {filteredTokenListWithETH.map((currency, index) => (
                   <CurrencyList
