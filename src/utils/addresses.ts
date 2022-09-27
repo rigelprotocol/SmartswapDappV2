@@ -47,7 +47,7 @@ export const SMARTSWAPROUTER: { [key: string]: string } = {
 export const IPFS: { [key: string]: string } = {
   "1": "0x",
   "3": "",
-  "56": "QmYidK4fzH8S3E5D81VQcauSewqEnjNgyEQhe9NEKmxZca",
+  "56": "QmYidK4fzH8S3E5D81VQcauSewqEnjNgyEQhe9NEKmxZcag",
   "97": "QmYidK4fzH8S3E5D81VQcauSewqEnjNgyEQhe9NEKmxZca",
   "137": "QmUDyQPMoRsRZ7jUUrn1Sz5sFrzrZA9kYxjrZ6Xo9JXfgv",
   "80001": "QmUDyQPMoRsRZ7jUUrn1Sz5sFrzrZA9kYxjrZ6Xo9JXfgv",
@@ -60,9 +60,9 @@ export const IPFS: { [key: string]: string } = {
 export const SMARTSWAPNFTSALES: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
-  "56": "0x813E4a8C2C4bC25e58Ca2252bC4A1CA075139210",
+  "56": "0x4A32b588c9ce5178dD25965b86cD7040292400a4",
   "97": "0x813E4a8C2C4bC25e58Ca2252bC4A1CA075139210",
-  "137": "0xC6D205ffFA9b1EB6061f4FCBd645994dc112A6A95",
+  "137": "0xcEE03C329b84a6e90a3Ea2F1E1017b2080116dA7",
   "80001": "0xC6D205ffFA9b1EB6061f4FCBd645994dc112A6A9",
 };
 
