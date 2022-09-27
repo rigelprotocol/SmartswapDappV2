@@ -4,6 +4,7 @@ import { SMARTSWAPROUTER } from "../utils/addresses";
 import { ethers } from "ethers";
 import { useActiveWeb3React } from "../utils/hooks/useActiveWeb3React";
 import { Currency } from "@uniswap/sdk-core";
+import { useProvider } from "../utils/utilsFunctions";
 
 export const useCalculatePriceImpact = (
   routeAddress: any,
@@ -12,14 +13,16 @@ export const useCalculatePriceImpact = (
   currencyA: Currency,
   currencyB: Currency
 ) => {
-  const { chainId, library } = useActiveWeb3React();
+  const { chainId, library, account } = useActiveWeb3React();
   const [priceImpact, setPriceImpact] = useState("");
+  const { prov } = useProvider();
+  const lib = library ? library : prov;
 
   useMemo(async () => {
-    if (routeAddress && amountIn && fromAmount) {
+    if (routeAddress && amountIn && fromAmount && account) {
       const rout = await SmartSwapRouter(
         SMARTSWAPROUTER[chainId as number],
-        library
+        lib
       );
       const priceCheck = ethers.utils.parseUnits("1", currencyA.decimals);
       if (routeAddress.length === 2) {

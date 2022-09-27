@@ -11,7 +11,9 @@ import {
   useDisclosure,
   useColorModeValue,
   Box,
+  Flex,
   Text,
+  Spinner,
 } from "@chakra-ui/react";
 import ModalInput from "./input";
 import Manage from "./Manage";
@@ -42,6 +44,7 @@ import {
 import { useSelector } from "react-redux";
 import { RootState } from "../../state";
 import { SupportedChainId } from "../../constants/chains";
+import { connectorKey } from "../../connectors";
 
 type IModal = {
   tokenModal: boolean;
@@ -68,6 +71,7 @@ const SelectToken: React.FC<IModal> = ({
   const boxColor = useColorModeValue("#F2F5F8", "#213345");
 
   const [inactiveList, setInactiveList] = useState([]);
+  const walletType = localStorage.getItem(connectorKey);
 
   useEffect(() => {
     setSearchQuery("");
@@ -120,6 +124,7 @@ const SelectToken: React.FC<IModal> = ({
   const searchTokenIsAdded = useIsUserAddedToken(searchToken);
   const [Balance, Symbol, Name, Logo] = useNativeBalance();
   const ether = chainId && ExtendedEther(chainId, Symbol, Name, Logo);
+  const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
 
   const searchNewTokens = useMemo(() => {
     return inactiveList
@@ -137,7 +142,7 @@ const SelectToken: React.FC<IModal> = ({
       return ether ? [ether, ...filteredTokens] : filteredTokens;
     }
     return filteredTokens;
-  }, [debouncedQuery, ether, filteredTokens]);
+  }, [debouncedQuery, ether, filteredTokens, ChainId]);
   const { onClose } = useDisclosure();
   const openManageToken = (): void => {
     setDisplayManageToken((state) => !state);
@@ -159,7 +164,7 @@ const SelectToken: React.FC<IModal> = ({
     }
   }, [searchToken, filteredTokenListWithETH, debouncedQuery]);
 
-  const [sortedTokenList] = useUpdateBalance("");
+  const { sortedTokenList } = useUpdateBalance("");
 
   const newImportToken = useSelector<RootState>(
     (state) => state.lists.importedToken
@@ -207,10 +212,18 @@ const SelectToken: React.FC<IModal> = ({
             </Box>
           </Box>
           <ModalBody maxHeight="60vh" overflowY="scroll" p={0}>
-            {!chainId ? (
-              <Text textAlign="center" py="7">
-                Connect Wallet to view tokens.
-              </Text>
+            {!account || walletType === "bsc" ? (
+              <Box>
+                {filteredTokenListWithETH.map((currency, index) => (
+                  <CurrencyList
+                    onCurrencySelect={handleCurrencySelect}
+                    key={index}
+                    currency={currency}
+                    selectedCurrency={selectedCurrency}
+                    otherSelectedCurrency={otherSelectedCurrency}
+                  />
+                ))}
+              </Box>
             ) : isSearchingForToken ? (
               <Box>
                 <Text textAlign="center" py="7">
@@ -260,6 +273,10 @@ const SelectToken: React.FC<IModal> = ({
                   )}
                 </Box>
               </Box>
+            ) : sortedTokenList?.length === 0 ? (
+              <Flex py={4} justifyContent={"center"} alignItems={"center"}>
+                <Spinner color="#319EF6" size="md" />
+              </Flex>
             ) : sortedTokenList?.length > 0 ? (
               sortedTokenList.map((currency, index) => {
                 return (
