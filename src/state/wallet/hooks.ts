@@ -43,8 +43,6 @@ export const GetAddressTokenBalance = (currency: Currency | undefined) => {
           setBalance("");
           console.log(err);
         }
-      } else {
-        console.log("Connect wallet");
       }
     };
 
@@ -52,22 +50,4 @@ export const GetAddressTokenBalance = (currency: Currency | undefined) => {
   }, [account, chainId, currency, Balance]);
 
   return [balance];
-};
-
-export const ExtendedEther = (
-  chainId: number = 56,
-  symbol: string,
-  name: string,
-  logo: string
-) => {
-  let native = {
-    chainId: chainId,
-    decimals: 18,
-    isNative: true,
-    isToken: false,
-    name,
-    symbol,
-    logoURI: logo,
-  };
-  return native;
 };
