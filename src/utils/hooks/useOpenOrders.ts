@@ -49,7 +49,7 @@ const useOpenOrders = (socket:any) => {
     }
     useEffect(() => {
        
-        if (location.includes("auto-period")) {
+        if (location.includes("autotrade")) {
             setLocationData("auto")
             setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])

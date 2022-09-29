@@ -132,7 +132,7 @@ const SetPrice = () => {
  },[location,chainId])
 
   const switchMarket = (market:string)=>{
-    routerHistory.push(`/auto-period/${market}`)
+    routerHistory.push(`/autotrade/${market}`)
   }
   useEffect(() => {
     async function checkIfSignatureExists() {

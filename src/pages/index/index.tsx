@@ -154,12 +154,12 @@ setMinNav2(!minNav2)
                 </a>
                </li>
                <li className='list'>
-               <a href="https://smartswap.rigelprotocol.com/#/auto-period" target="_blank">
+               <a href="https://smartswap.rigelprotocol.com/#/autotrade" target="_blank">
                 {/* <a
                 href="smartbid.html"
                 > */}
                  <div className="multi_navbar_ul_div_item">
-                   <p className="multi_nav_head">Auto Period</p>
+                   <p className="multi_nav_head">AutoTrade</p>
                   <div>
                    <p>Auto invests in any crypto of your choice</p>
                   </div>
@@ -180,7 +180,7 @@ setMinNav2(!minNav2)
                 </a>
                </li>
                <li className='list'>
-               <a  href="https://smartswap.rigelprotocol.com/#/farming-v2" target="_blank">
+               <a  href="https://smartswap.rigelprotocol.com/#/Farm-v2" target="_blank">
                  <div className="multi_navbar_ul_div_item">
                    <p className="multi_nav_head">Farms</p>
                   <div>
@@ -352,8 +352,8 @@ setMinNav3(!minNav3)
         
         <section className="section__3">
           <div className="section__3__heading">
-    <h2>Swap.Liquidity.Farming</h2>
-          <p>You have a wide range of functions to perfom with the SmartSwap, either swapping out tokens, providing liquidity or yield farming.</p>
+    <h2>Swap.Liquidity.Farm</h2>
+          <p>You have a wide range of functions to perfom with the SmartSwap, either swapping out tokens, providing liquidity or yield Farm.</p>
           </div>
          <div className="section__3__top">
           <div>
@@ -393,10 +393,10 @@ setMinNav3(!minNav3)
             <img src={YieldFarm} alt="" />
            </div>
            <div className="section__3__text">
-             <h3>Yield Farming</h3>
+             <h3>Yield Farm</h3>
              <p>When you trade with the leverage you earn more back. From your earning your leveraged tokens are automatically removed with interest and you get to keep more earnings.</p>
              <div className="section__3__top__button">
-               <Link to="/farming-V2">
+               <Link to="/Farm-V2">
                      <button className="button">
                  Launch DApp <span>&#8594;</span>
                </button>
@@ -469,8 +469,8 @@ setMinNav3(!minNav3)
        <div className='section__5__link'>
          <div>
            <h6>Swap</h6>
-           <p><Link to="/swap">Straight Swap</Link></p>
-           <p><Link to="/auto-period">Auto Time</Link></p>
+           <p><Link to="/swap">Swap</Link></p>
+           <p><Link to="/autotrade">Auto Time</Link></p>
            <p><Link to="/set-price">Set Price</Link></p>
          </div>
          <div>
@@ -480,9 +480,9 @@ setMinNav3(!minNav3)
            <p><Link to="/find">Import Liquidity Pool</Link></p>
          </div>
          <div>
-           <h6>Farming</h6>
-           <p><Link to="/farming-V2">Liquidity Pools</Link></p>
-           <p><Link to="/farming-V2/staking-RGP">Staking</Link></p>
+           <h6>Farm</h6>
+           <p><Link to="/Farm-V2">Liquidity Pools</Link></p>
+           <p><Link to="/Farm-V2/staking-RGP">Staking</Link></p>
            <p>Other Farms</p>
            <p><a href="" target="_blank">List your Project</a></p>
          </div>

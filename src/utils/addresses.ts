@@ -189,6 +189,22 @@ export const MARKETAUTOSWAPADDRESSES: {
     "137": "0x8F83C8012e705B04141FDF6A2fc2f7a8243A2345",
   },
 };
+export const MARKETFREESWAPADDRESSES: {
+  [key: string]: { [key: string]: string };
+} = {
+  Smartswap: {
+    "56": "0x599cdB1A76b5cc3906585de2ED6c790a8bAA528f",
+    "97": "0xc1F5014098DBb6CCCc28F9365316533905f591EB",
+    "137": "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff",
+  },
+  Pancakeswap: {
+    "56": "0xA91cD3141efb4EBC5CE33F0a2Fc640D56E1A5894",
+    "97": "0x",
+  },
+  Quickswap: {
+    "137": "0xa9B5cf99f2756e0047cA582bac17E2AF7ed11a66",
+  },
+};
 export const OTHERMARKETADDRESSES: {
   [key: string]: { [key: string]: string };
 } = {

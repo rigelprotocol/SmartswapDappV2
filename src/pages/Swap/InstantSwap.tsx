@@ -48,7 +48,7 @@ import { useUserSlippageTolerance } from "../../state/user/hooks";
 import { useSelector,useDispatch } from 'react-redux';
 import { RootState } from "../../state";
 import { autoSwapV2, rigelToken } from '../../utils/Contracts';
-import { RGPADDRESSES, OTHERMARKETADDRESSES,MARKETAUTOSWAPADDRESSES, OTHERMARKETFACTORYADDRESSES, RGP } from '../../utils/addresses';
+import { RGPADDRESSES, OTHERMARKETADDRESSES,MARKETFREESWAPADDRESSES, OTHERMARKETFACTORYADDRESSES, RGP } from '../../utils/addresses';
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { refreshTransactionTab } from '../../state/transaction/actions';
@@ -133,7 +133,7 @@ const InstantSwap = () => {
  },[location,chainId])
 
   const switchMarket = (market:string)=>{
-    routerHistory.push(`/auto-period/${market}`)
+    routerHistory.push(`/freeswap/${market}`)
   }
   // useEffect(() => {
   //   async function checkIfSignatureExists() {
@@ -165,7 +165,7 @@ const InstantSwap = () => {
   );
   const [allowedSlippage] = useUserSlippageTolerance();
   const getFee =async () => {
-    const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
+    const autoSwapV2Contract = await autoSwapV2(MARKETFREESWAPADDRESSES[marketType][chainId as number], library);
     try{
       const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
@@ -300,7 +300,7 @@ const InstantSwap = () => {
   }, [chainId,marketType])
   
   const checkForApproval = async () => {
-    const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
+    const autoSwapV2Contract = await autoSwapV2(MARKETFREESWAPADDRESSES[marketType][chainId as number], library);
     
     // check approval for RGP and the other token
     const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
@@ -438,7 +438,7 @@ const InstantSwap = () => {
           console.log({amountToApprove,walletBal,walletBalString})
           
           const approveTransaction = await rgp.approve(
-            MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
+            MARKETFREESWAPADDRESSES[marketType][chainId as number],
             ethers.utils.parseUnits(amountToApprove.toString(),currencies[Field.INPUT]?.decimals).toString(),
             {
               from: account,
@@ -466,7 +466,7 @@ const InstantSwap = () => {
           const amountToApprove = walletBalString > parseFloat(formattedAmounts[Field.INPUT]) * frequency ? walletBalString : parseFloat(formattedAmounts[Field.INPUT]) * frequency
           console.log({amountToApprove,walletBal})
           const approveTransaction = token && await token?.approve(
-            MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
+            MARKETFREESWAPADDRESSES[marketType][chainId as number],
             ethers.utils.parseUnits(amountToApprove.toString(),currencies[Field.INPUT]?.decimals).toString(),
             {
               from: account,
@@ -511,7 +511,7 @@ const setQuantityValue =() =>{
     try{
       
      
-    const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
+    const autoSwapV2Contract = await autoSwapV2(MARKETFREESWAPADDRESSES[marketType][chainId as number], library);
     let value = setQuantityValue()
     dispatch(
       setOpenModal({
@@ -659,7 +659,7 @@ const setQuantityValue =() =>{
       const status = await getERC20Token(tokenAddress, library);
       const check = await status.allowance(
         account,
-        MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
+        MARKETFREESWAPADDRESSES[marketType][chainId as number],
         {
           from: account,
         }
@@ -679,7 +679,7 @@ const setQuantityValue =() =>{
       const status = await rigelToken(tokenAddress, library);
       const check = await status.allowance(
         account,
-        MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
+        MARKETFREESWAPADDRESSES[marketType][chainId as number],
         {
           from: account,
         }
@@ -1029,7 +1029,7 @@ const setQuantityValue =() =>{
         setShowModal={setShowModal}
         from={currencies[Field.INPUT]?.symbol}
         to={currencies[Field.OUTPUT]?.symbol}
-        title="Confirm Instant swap"
+        title="Confirm Freeswap"
         inputLogo={currencies[Field.INPUT]?.logoURI}
         instant={true}
         outputLogo={currencies[Field.OUTPUT]?.logoURI}

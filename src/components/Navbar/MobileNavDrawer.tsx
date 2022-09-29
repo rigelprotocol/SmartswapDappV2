@@ -131,14 +131,14 @@ const MobileNavDrawer = () => {
                       mb={2}
                       onClick={onClose}
                     >
-                      <Nav label="Straight Swap" to={`/swap${search}`} />
+                      <Nav label="Swap" to={`/swap${search}`} />
                     </Text>
                     <Text
                       _hover={{ color: "#319EF6" }}
                       mb={2}
                       onClick={onClose}
                     >
-                                <Nav label="Auto-period" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' : `/auto-period${search}`} />
+                                <Nav label="AutoTrade" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' : `/auto-trade${search}`} />
                     </Text>
                     <Text
                       _hover={{ color: "#319EF6" }}
@@ -152,7 +152,7 @@ const MobileNavDrawer = () => {
                       mb={2}
                       onClick={onClose}
                     >
-                                  <Nav label="Instant Swap" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' :`/instant-swap${search}`} />
+                                  <Nav label="Freeswap" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' :`/freeswap${search}`} />
                     </Text>
                   </Flex>
                 </Collapse>
@@ -161,7 +161,7 @@ const MobileNavDrawer = () => {
                   activeStyle={{
                     color: "#319EF6",
                   }}
-                  to="/farming-v2"
+                  to="/farm-v2"
                 >
                   <Flex
                     mb={2}
@@ -173,7 +173,7 @@ const MobileNavDrawer = () => {
                     bgColor={isOnFarm ? SwapBgColor : "transparent"}
                   >
                     <Flex ml={6}>
-                      <Nav label="Farming" to="/swap" img={<Img src={FarmingIcon} />} />
+                      <Nav label="Farm" to="/swap" img={<Img src={FarmingIcon} />} />
                     </Flex>
                     {isOnFarm ? (
                       <ChevronUpIcon mr={2} />
@@ -193,7 +193,7 @@ const MobileNavDrawer = () => {
                   <Nav label="Liquidity" to="/pool" active={location === '/add' || location === '/remove' ? true : false} />
                 </Flex>
                 <Flex ml={6} mb={3} onClick={onClose}>
-                  <Nav label="Farming" to={`/farm${search}`} />
+                  <Nav label="Farm" to={`/farm${search}`} />
                 </Flex>
                   </Flex>
                 </Collapse>

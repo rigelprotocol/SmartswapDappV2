@@ -744,7 +744,7 @@ export const useProductFarmDetails = ({
         const tokenStaked = await FarmTokenBalance.tokenQuantity;
 
         return {
-            feature:"Auto Period",
+            feature:"AutoTrade",
             percentageProfitShare:"25%",
             profitTimeLine:"6 months",
             totalLiquidity:"188839",

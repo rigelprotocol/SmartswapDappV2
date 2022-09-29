@@ -46,7 +46,7 @@ function EarnDropdown() {
     if (name == "/farm" || name == "/pool" || name == "/add") {
       return name === "/add" ? "pool" : name.substring(1).split("-")[0];
     } else {
-      return "Farming";
+      return "Farm";
     }
   };
 
@@ -74,7 +74,7 @@ function EarnDropdown() {
           />
         </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
-          <Nav label="Farming" to={`/farm${search}`} />
+          <Nav label="Farm" to={`/farm${search}`} />
         </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
           <Nav label="New LP Farm" to={`/farm/new-farm${search}`} />

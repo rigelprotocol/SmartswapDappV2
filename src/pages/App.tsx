@@ -74,9 +74,10 @@ import InstantSwap from "./Swap/InstantSwap";
               <Route exact strict path="/set-price" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? SetPrice : Swap } />
 
               <Route exact strict path="/set-price/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? SetPrice : Swap } />
-              <Route exact strict path="/auto-period" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? AutoTime : Swap } />
-              <Route exact strict path="/instant-swap" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? InstantSwap : Swap } />
-              <Route exact strict path="/auto-period/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? AutoTime : Swap } />
+              <Route exact strict path="/autotrade" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? AutoTime : Swap } />
+              <Route exact strict path="/freeswap" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? InstantSwap : Swap } />
+              <Route exact strict path="/autotrade/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? AutoTime : Swap } />
+              <Route exact strict path="/freeswap/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? AutoTime : Swap } />
               <Route exact strict path="/bridge/router" component={ROuterBridge} />
               <Route exact strict path="/bridge/spherium" component={SpheriumBridge} />
               <Route
@@ -88,16 +89,16 @@ import InstantSwap from "./Swap/InstantSwap";
               {/*<Route*/}
               {/*  exact*/}
               {/*  strict*/}
-              {/*  path="/farming-V2/staking-RGP"*/}
-              {/*  component={FarmingV2}*/}
+              {/*  path="/farm-V2/staking-RGP"*/}
+              {/*  component={FarmsV2}*/}
               {/*/>*/}
               {/*<Route*/}
               {/*  exact*/}
               {/*  strict*/}
-              {/*  path="/farming-V2/product-farm"*/}
-              {/*  component={FarmingV2}*/}
+              {/*  path="/farms-V2/product-farm"*/}
+              {/*  component={FarmsV2}*/}
               {/*/>*/}
-              <Route exact path="/farming" component={FarmingV1} />
+              <Route exact path="/farms" component={FarmingV1} />
               <Route path="/farm" component={FarmingV2} />
               <Route path="/farm/:deposit" component={YieldFarm} />
               <Route exact strict path={'/smartbid'} component={SmartBid}/>

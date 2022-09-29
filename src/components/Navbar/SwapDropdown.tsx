@@ -41,7 +41,7 @@ export function SwapDropdown() {
 
   const useName = () => {
     console.log(name);
-    if (name.includes('swap') || name.includes('auto-period') || name.includes('set-price')) {
+    if (name.includes('swap') || name.includes('autotrade') || name.includes('set-price')) {
       console.log(`Correct name is ${name.split("/")}`);
       return name.split("/")[1];
     } else {
@@ -66,16 +66,16 @@ export function SwapDropdown() {
       </MenuButton>
       <MenuList>
         <MenuItem _focus={{ color: "#319EF6" }}>
-          <Nav label="Straight Swap" to={`/swap${search}`} />
+          <Nav label="Swap" to={`/swap${search}`} />
         </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
-          <Nav label="Auto-period" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' : `/auto-period${search}`} />
+          <Nav label="AutoTrade" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' : `/autotrade${search}`} />
         </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
           <Nav label="Set Price" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' :`/set-price${search}`} />
         </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
-          <Nav label="Instant Swap" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' :`/instant-swap${search}`} />
+          <Nav label="Freeswap" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' :`/freeswap${search}`} />
         </MenuItem>
       </MenuList>
     </Menu> 

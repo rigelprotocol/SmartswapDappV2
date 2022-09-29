@@ -77,7 +77,7 @@ const History = () => {
 
   }, []);
   useEffect(() => {
-    if (location.includes("auto-period") || location.includes("set-price")) {
+    if (location.includes("autotrade") || location.includes("set-price")) {
         setOpen(true)
     }
 }, [location, chainId])
