@@ -77,7 +77,7 @@ import InstantSwap from "./Swap/InstantSwap";
               <Route exact strict path="/autotrade" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? AutoTime : Swap } />
               <Route exact strict path="/freeswap" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? InstantSwap : Swap } />
               <Route exact strict path="/autotrade/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? AutoTime : Swap } />
-              <Route exact strict path="/freeswap/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? AutoTime : Swap } />
+              <Route exact strict path="/freeswap/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? InstantSwap : Swap } />
               <Route exact strict path="/bridge/router" component={ROuterBridge} />
               <Route exact strict path="/bridge/spherium" component={SpheriumBridge} />
               <Route

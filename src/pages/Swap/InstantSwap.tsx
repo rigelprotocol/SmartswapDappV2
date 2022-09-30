@@ -135,28 +135,17 @@ const InstantSwap = () => {
   const switchMarket = (market:string)=>{
     routerHistory.push(`/freeswap/${market}`)
   }
-  // useEffect(() => {
-  //   async function checkIfSignatureExists() {
-  //     let user = await fetch(`https://autoswap-server.herokuapp.com/auto/data/${account}`)//https://autoswap-server.herokuapp.com
-  //     let data = await user.json()
-  //     if (data) {
-  //       setDataSignature(data.dataSignature)
-  //       setTransactionSigned(true)
-  //       setSignatureFromDataBase(true)
-  //     } else {
-  //       setDataSignature({
-  //         mess: "",
-  //         signature:""
-  //       })
-  //       setTransactionSigned(false)
-  //       setSignatureFromDataBase(false)
-  //     }
-  //   }
-  //   if (account) {
-  //     checkIfSignatureExists()
-  //     getFee()
-  //   }
-  // }, [account])
+  useEffect(() => {
+    async function checkIfSignatureExists() {
+      
+        setTransactionSigned(false)
+        setSignatureFromDataBase(false)
+    }
+    if (account) {
+      checkIfSignatureExists()
+      getFee()
+    }
+  }, [account,chainId,marketType])
 
 
   
@@ -168,6 +157,7 @@ const InstantSwap = () => {
     const autoSwapV2Contract = await autoSwapV2(MARKETFREESWAPADDRESSES[marketType][chainId as number], library);
     try{
       const amountToApprove = await autoSwapV2Contract.fee()
+      console.log({amountToApprove},MARKETFREESWAPADDRESSES[marketType][chainId as number])
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
     // const fee= "10"
     setFee(fee)
@@ -214,7 +204,7 @@ const InstantSwap = () => {
   const [balance] = GetAddressTokenBalance(
     currencies[Field.INPUT] ?? undefined
   );
-  useEffect(async () => {
+  useEffect(() => {
     const checkBalance = async ()=>{
      if(currencies[Field.INPUT]?.symbol==="RGP"){
       let fee =await getFee()
@@ -233,7 +223,7 @@ const InstantSwap = () => {
     } 
     }
     
-   await checkBalance()
+   checkBalance()
   }, [balance, formattedAmounts[Field.INPUT],totalNumberOfTransaction]);
   useEffect(() => {
     async function runCheck() {
@@ -294,7 +284,7 @@ const InstantSwap = () => {
 
  
   
-    useEffect(async () => {      
+    useEffect(() => {      
       onMarketSelection(OTHERMARKETFACTORYADDRESSES[marketType][chainId as number],OTHERMARKETADDRESSES[marketType][chainId as number])
     // }
   }, [chainId,marketType])
@@ -304,6 +294,7 @@ const InstantSwap = () => {
     
     // check approval for RGP and the other token
     const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
+    console.log({RGPBalance})
     const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
     const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
@@ -316,7 +307,7 @@ const InstantSwap = () => {
     }else{
       setApprovalForFee("RGP")
     }
-    if((parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT]) * frequency)+parseFloat(fee)) && currencies[Field.INPUT]?.wrapped.symbol === "RGP"){
+    if((parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT]) * frequency)+parseFloat(fee)) && currencies[Field.INPUT]?.wrapped?.symbol === "RGP"){
       setHasBeenApproved(true)
       // setApprovalForFee("")
       setApprovalForToken("")
@@ -523,19 +514,19 @@ const setQuantityValue =() =>{
         trxState: TrxState.WaitingForConfirmation,
       })
     );
-    // let currentDate = new Date();
-    // let futureDate = currentDate.getTime() + deadline;
+    let currentDate = new Date();
+    let futureDate = currentDate.getTime() + deadline;
     let data, response
     try{ 
        
        if (currencies[Field.INPUT]?.isNative) {
    
       
-      // data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
-      //   pathArray,
-      //   futureDate,
-      //   { value: Web3.utils.toWei(value.toString(), 'ether') }
-      // )
+      data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
+        pathArray,
+        futureDate,
+        { value: Web3.utils.toWei(value.toString(), 'ether') }
+      )
       const fetchTransactionData = async (sendTransaction: any) => {
         const { confirmations, status, logs } = await sendTransaction.wait(1);
         return { confirmations, status, logs };
@@ -588,6 +579,7 @@ const setQuantityValue =() =>{
           toAddress: currencies[Field.OUTPUT]?.isNative ? "native" : currencies[Field.OUTPUT]?.wrapped.address,
           dataSignature,
           fromNumberOfDecimals: currencies[Field.INPUT]?.isNative ? 18 : currencies[Field.INPUT]?.wrapped.decimals,
+          type:"free",
           toNumberOfDecimals: currencies[Field.OUTPUT]?.isNative ? 18 : currencies[Field.OUTPUT]?.wrapped.decimals,
           fromPrice: `${value}`,
           currentToPrice: formattedAmounts[Field.OUTPUT],

@@ -136,20 +136,9 @@ const SetPrice = () => {
   }
   useEffect(() => {
     async function checkIfSignatureExists() {
-      let user = await fetch(`https://autoswap-server.herokuapp.com/auto/data/${account}`)//https://autoswap-server.herokuapp.com
-      let data = await user.json()
-      if (data) {
-        setDataSignature(data.dataSignature)
-        setTransactionSigned(true)
-        setSignatureFromDataBase(true)
-      } else {
-        setDataSignature({
-          mess: "",
-          signature:""
-        })
+      
         setTransactionSigned(false)
         setSignatureFromDataBase(false)
-      }
     }
     if (account) {
       checkIfSignatureExists()

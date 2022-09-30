@@ -113,34 +113,21 @@ const SetPrice = () => {
   })
   
   const routerHistory = useHistory()
-  useEffect(async () => {      
+  useEffect(() => {      
     onMarketSelection(OTHERMARKETFACTORYADDRESSES[marketType][chainId as number],OTHERMARKETADDRESSES[marketType][chainId as number])
   // }
 }, [chainId,marketType])
-  useEffect( () => {
-    async function checkIfSignatureExists() {
-
-      let user = await fetch(`${URL}/auto/data/${account}`)
-      let data = await user.json()
-      if (data) {
-        setDataSignature(data.dataSignature)
-        setTransactionSigned(true)
-        setSignatureFromDataBase(true)
-      } else {
-        setDataSignature({
-          mess:"",
-          signature:""
-        })
-        setTransactionSigned(false)
-        setSignatureFromDataBase(false)
-      }
-    }
-    if (account) {
+useEffect(() => {
+  async function checkIfSignatureExists() {
+    
+      setTransactionSigned(false)
+      setSignatureFromDataBase(false)
+  }
+  if (account) {
     checkIfSignatureExists()
-      getFee()
-
-    }
-  }, [account])
+    getFee()
+  }
+}, [account])
 
   const [balance] = GetAddressTokenBalance(
     currencies[Field.INPUT] ?? undefined
@@ -230,7 +217,7 @@ const SetPrice = () => {
       ? parsedAmounts[independentField] ?? '' //?.toExact() ?? ''
       : parsedAmounts[dependentField] ?? '', //?.toSignificant(6) ?? '',
   };
-  useEffect(async () => {
+  useEffect(() => {
     const checkBalance = async ()=>{
      if(currencies[Field.INPUT]?.symbol==="RGP"){
       let fee =await getFee()
@@ -249,7 +236,7 @@ const SetPrice = () => {
     } 
     }
     
-   await checkBalance()
+  checkBalance()
   }, [balance, formattedAmounts[Field.INPUT]]);
   const minimumAmountToReceive = useCallback(
     () =>{
