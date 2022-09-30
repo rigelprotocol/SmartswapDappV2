@@ -138,7 +138,7 @@ const MobileNavDrawer = () => {
                       mb={2}
                       onClick={onClose}
                     >
-                                <Nav label="AutoTrade" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' : `/auto-trade${search}`} />
+                                <Nav label="AutoTrade" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' : `/autotrade${search}`} />
                     </Text>
                     <Text
                       _hover={{ color: "#319EF6" }}
