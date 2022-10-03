@@ -15,6 +15,13 @@ import {useActiveWeb3React} from "../../../utils/hooks/useActiveWeb3React";
 import {useDispatch} from "react-redux";
 import {RigelNFT} from "../../../utils/Contracts";
 import { GNFTFailedApprovalTransaction, GNFTFailedTransaction, GNFTSuccessfullyApprovalTransaction, GNFTSuccessfullyTransaction } from '../../../components/G-analytics/gNFTs';
+import { Web3Provider } from '@ethersproject/providers';
+import { createAlchemyWeb3 } from '@alch/alchemy-web3';
+import { Percent } from '@uniswap/sdk-core';
+import JSBI from 'jsbi';
+import { ethers } from 'ethers';
+import { useUserGasPricePercentage } from '../../../state/gas/hooks';
+import { calculateGas } from '../../Swap/components/sendToken';
 
 
 type comfirmPurchaseModalProps = {
@@ -50,6 +57,9 @@ const ComfirmPurchase = ({ isOpen,
              setError('')
          }
      }, [currency]);
+
+
+     
 
 
     const approveTokens = async (address: string, symbol: string) => {
@@ -124,8 +134,40 @@ const ComfirmPurchase = ({ isOpen,
                         trxState: TrxState.WaitingForConfirmation,
                     })
                 );
+                console.log({firstToken,secondToken})
+
+                const isEIP1559 = await library?.getFeeData();
+                // const { format1, format2, format3 } = await calculateGas(
+                //     useUserGasPricePercentage,
+                //     library,
+                //     chainId as number
+                //   );
                 const nftContract = await RigelNFT(SMARTSWAPNFTSALES[chainId as number], library);
-                const data = await nftContract.mint(id, currency === 'USDT' ?  secondToken.address : firstToken.address);
+                const data = await nftContract.mint(id, currency === 'USDT' ?  secondToken.address : firstToken.address,
+                // {
+                //     from: account,
+                //     maxPriorityFeePerGas:
+                //       isEIP1559 && chainId === 137
+                //         ? ethers.utils.parseUnits(format1, 9).toString()
+                //         : null,
+                //     maxFeePerGas:
+                //       isEIP1559 && chainId === 137
+                //         ? ethers.utils.parseUnits(format2, 9).toString()
+                //         : null,
+                //     gasPrice:
+                //       chainId === 137
+                //         ? null
+                //         : chainId === 80001
+                //         ? null
+                //         : ethers.utils.parseUnits(format3, 9).toString(),
+                //   }
+                
+                // {
+                //     from: account,
+                //     gasLimit: 1000000,
+                //     gasPrice:20
+                // }
+                )
 
                 const { confirmations } = await data.wait(3);
                 const { hash } = data;
