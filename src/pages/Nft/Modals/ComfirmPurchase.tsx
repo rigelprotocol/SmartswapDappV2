@@ -296,23 +296,23 @@ const ComfirmPurchase = ({ isOpen,
                         </Flex>
                     </Box>
                     {
-                    // error ? 
-                    //  <Button
-                    //             mt={5}
-                    //             mb={2}
-                    //             w={'full'}
-                    //             variant='brand'
-                    //             color={'white'}
-                    //             disabled={currency === '' || error !== ''}
-                    //             boxShadow={'0 5px 20px 0px rgba(24, 39, 75, 0.06),'}
-                    //             _hover={{bg: 'blue.500'}}
-                    //             _focus={{bg: 'blue.500'}}
-                    //             onClick={() => buyNFT()}
-                    //         >
-                    //             {error}
-                    //         </Button>
+                    error ? 
+                     <Button
+                                mt={5}
+                                mb={2}
+                                w={'full'}
+                                variant='brand'
+                                color={'white'}
+                                disabled={currency === '' || error !== ''}
+                                boxShadow={'0 5px 20px 0px rgba(24, 39, 75, 0.06),'}
+                                _hover={{bg: 'blue.500'}}
+                                _focus={{bg: 'blue.500'}}
+                                onClick={() => buyNFT()}
+                            >
+                                {error}
+                            </Button>
 
-                    //     : 
+                        : 
                         currency === firstToken.symbol && !hasTokenABeenApproved ?
                             <Button
                                 mt={5}
