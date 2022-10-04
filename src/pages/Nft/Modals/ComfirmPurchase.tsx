@@ -296,7 +296,8 @@ const ComfirmPurchase = ({ isOpen,
                         </Flex>
                     </Box>
                     {
-                    error ? 
+                    error 
+                    ? 
                      <Button
                                 mt={5}
                                 mb={2}
@@ -312,35 +313,35 @@ const ComfirmPurchase = ({ isOpen,
                                 {error}
                             </Button>
 
-                        : 
-                        currency === firstToken.symbol && !hasTokenABeenApproved ?
-                            <Button
-                                mt={5}
-                                mb={2}
-                                w={'full'}
-                                variant='brand'
-                                color={'white'}
-                                boxShadow={'0 5px 20px 0px rgba(24, 39, 75, 0.06),'}
-                                _hover={{bg: 'blue.500'}}
-                                _focus={{bg: 'blue.500'}}
-                                onClick={() => approveTokens(firstToken.address, firstToken.symbol)}
-                            >
-                                 Approve {firstToken.symbol}
-                            </Button>
-                        : currency === secondToken.symbol && !hasTokenBBeenApproved ?
-                            <Button
-                                mt={5}
-                                mb={2}
-                                w={'full'}
-                                variant='brand'
-                                color={'white'}
-                                boxShadow={'0 5px 20px 0px rgba(24, 39, 75, 0.06),'}
-                                _hover={{bg: 'blue.500'}}
-                                _focus={{bg: 'blue.500'}}
-                                onClick={() => approveTokens(secondToken.address, secondToken.symbol)}
-                            >
-                                 Approve {secondToken.symbol}
-                            </Button>
+                        // : 
+                        // currency === firstToken.symbol && !hasTokenABeenApproved ?
+                        //     <Button
+                        //         mt={5}
+                        //         mb={2}
+                        //         w={'full'}
+                        //         variant='brand'
+                        //         color={'white'}
+                        //         boxShadow={'0 5px 20px 0px rgba(24, 39, 75, 0.06),'}
+                        //         _hover={{bg: 'blue.500'}}
+                        //         _focus={{bg: 'blue.500'}}
+                        //         onClick={() => approveTokens(firstToken.address, firstToken.symbol)}
+                        //     >
+                        //          Approve {firstToken.symbol}
+                        //     </Button>
+                        // : currency === secondToken.symbol && !hasTokenBBeenApproved ?
+                        //     <Button
+                        //         mt={5}
+                        //         mb={2}
+                        //         w={'full'}
+                        //         variant='brand'
+                        //         color={'white'}
+                        //         boxShadow={'0 5px 20px 0px rgba(24, 39, 75, 0.06),'}
+                        //         _hover={{bg: 'blue.500'}}
+                        //         _focus={{bg: 'blue.500'}}
+                        //         onClick={() => approveTokens(secondToken.address, secondToken.symbol)}
+                        //     >
+                        //          Approve {secondToken.symbol}
+                        //     </Button>
                             : loadInfo ?
                                 <Button
                                     mt={5}
@@ -362,7 +363,7 @@ const ComfirmPurchase = ({ isOpen,
                                 w={'full'}
                                 variant='brand'
                                 color={'white'}
-                                disabled={currency === '' || error !== '' || !mint}
+                                // disabled={currency === '' || error !== '' || !mint}
                                 boxShadow={'0 5px 20px 0px rgba(24, 39, 75, 0.06),'}
                                 _hover={{bg: 'blue.500'}}
                                 _focus={{bg: 'blue.500'}}
