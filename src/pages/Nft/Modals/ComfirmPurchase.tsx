@@ -143,8 +143,8 @@ const ComfirmPurchase = ({ isOpen,
                 //     chainId as number
                 //   );
                 const nftContract = await RigelNFT(SMARTSWAPNFTSALES[chainId as number], library);
-                const data = await nftContract._mintBatch(account,["1"],["1"], "0x0000000000000000000000000000000000000000000000000000000000000000")
-                // const data = await nftContract.mint(id, currency === 'USDT' ?  secondToken.address : firstToken.address)
+                // const data = await nftContract._mintBatch(account,["1"],["1"], "0x0000000000000000000000000000000000000000000000000000000000000000")
+                const data = await nftContract.mint(id, currency === 'USDT' ?  secondToken.address : firstToken.address)
 
                 const { confirmations } = await data.wait(3);
                 const { hash } = data;
@@ -290,35 +290,35 @@ const ComfirmPurchase = ({ isOpen,
                                 {error}
                             </Button>
 
-                        // : 
-                        // currency === firstToken.symbol && !hasTokenABeenApproved ?
-                        //     <Button
-                        //         mt={5}
-                        //         mb={2}
-                        //         w={'full'}
-                        //         variant='brand'
-                        //         color={'white'}
-                        //         boxShadow={'0 5px 20px 0px rgba(24, 39, 75, 0.06),'}
-                        //         _hover={{bg: 'blue.500'}}
-                        //         _focus={{bg: 'blue.500'}}
-                        //         onClick={() => approveTokens(firstToken.address, firstToken.symbol)}
-                        //     >
-                        //          Approve {firstToken.symbol}
-                        //     </Button>
-                        // : currency === secondToken.symbol && !hasTokenBBeenApproved ?
-                        //     <Button
-                        //         mt={5}
-                        //         mb={2}
-                        //         w={'full'}
-                        //         variant='brand'
-                        //         color={'white'}
-                        //         boxShadow={'0 5px 20px 0px rgba(24, 39, 75, 0.06),'}
-                        //         _hover={{bg: 'blue.500'}}
-                        //         _focus={{bg: 'blue.500'}}
-                        //         onClick={() => approveTokens(secondToken.address, secondToken.symbol)}
-                        //     >
-                        //          Approve {secondToken.symbol}
-                        //     </Button>
+                        : 
+                        currency === firstToken.symbol && !hasTokenABeenApproved ?
+                            <Button
+                                mt={5}
+                                mb={2}
+                                w={'full'}
+                                variant='brand'
+                                color={'white'}
+                                boxShadow={'0 5px 20px 0px rgba(24, 39, 75, 0.06),'}
+                                _hover={{bg: 'blue.500'}}
+                                _focus={{bg: 'blue.500'}}
+                                onClick={() => approveTokens(firstToken.address, firstToken.symbol)}
+                            >
+                                 Approve {firstToken.symbol}
+                            </Button>
+                        : currency === secondToken.symbol && !hasTokenBBeenApproved ?
+                            <Button
+                                mt={5}
+                                mb={2}
+                                w={'full'}
+                                variant='brand'
+                                color={'white'}
+                                boxShadow={'0 5px 20px 0px rgba(24, 39, 75, 0.06),'}
+                                _hover={{bg: 'blue.500'}}
+                                _focus={{bg: 'blue.500'}}
+                                onClick={() => approveTokens(secondToken.address, secondToken.symbol)}
+                            >
+                                 Approve {secondToken.symbol}
+                            </Button>
                             : loadInfo ?
                                 <Button
                                     mt={5}
@@ -340,7 +340,7 @@ const ComfirmPurchase = ({ isOpen,
                                 w={'full'}
                                 variant='brand'
                                 color={'white'}
-                                // disabled={currency === '' || error !== '' || !mint}
+                                disabled={currency === '' || error !== '' || !mint}
                                 boxShadow={'0 5px 20px 0px rgba(24, 39, 75, 0.06),'}
                                 _hover={{bg: 'blue.500'}}
                                 _focus={{bg: 'blue.500'}}
