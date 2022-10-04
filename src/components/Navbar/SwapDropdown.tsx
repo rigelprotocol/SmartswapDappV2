@@ -19,16 +19,18 @@ import Spherium from "../../assets/spherium1.svg";
 import Polygon from "../../assets/Chainpolygon1.svg";
 import Binance from "../../assets/binance1.svg";
 import Router from "../../assets/router1.svg";
+import VectorFire from "../../assets/VectorFIre.svg";
 import { SupportedChainId } from "../../constants/chains";
 
-const Nav = ({ to, label,children }: { to: string; label?: string,children?:React.ReactNode }) => (
+const Nav = ({ to, label,children,img }: { to: string; label?: string,children?:React.ReactNode,img?:any }) => (
   <NavLink
     to={to}
     activeStyle={{
       color: "#319EF6",
     }}
+
   >
-    {label}
+    <Flex justifyContent="space-between">{label} <Img src={img} ml="20px"/></Flex>
     {children}
   </NavLink>
 );
@@ -69,13 +71,13 @@ export function SwapDropdown() {
           <Nav label="Swap" to={`/swap${search}`} />
         </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
-          <Nav label="AutoTrade" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' : `/autotrade${search}`} />
+          <Nav label="AutoTrade" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' : `/autotrade${search}`} img={VectorFire}/>
         </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
           <Nav label="Set Price" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' :`/set-price${search}`} />
         </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
-          <Nav label="Freeswap" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' :`/freeswap${search}`} />
+          <Nav label="Freeswap" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' :`/freeswap${search}`} img={VectorFire}/>
         </MenuItem>
       </MenuList>
     </Menu> 

@@ -58,6 +58,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { GetAddressTokenBalance } from '../../state/wallet/hooks';
 import { addToast } from '../../components/Toast/toastSlice';
 import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink';
+import { maxAmountSpend } from '../../utils/maxAmountSpend';
 
 
 
@@ -107,6 +108,7 @@ const InstantSwap = () => {
     currencies,
     bestTrade,
     parsedAmount,
+    getMaxValue,
     inputError,
     showWrap,
     pathSymbol,
@@ -294,7 +296,6 @@ const InstantSwap = () => {
     
     // check approval for RGP and the other token
     const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
-    console.log({RGPBalance})
     const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
     const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
@@ -365,7 +366,7 @@ const InstantSwap = () => {
 
 //   useEffect(()=>{
 // const fet = async () => {
-//   const response = await fetch(`http://localhost:7000/auto/i`, {
+//   const response = await fetch(`https://autoswap-server.herokuapp.com/auto/i`, {
 //     method: "POST",
 //     mode: "cors",
 //     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -497,6 +498,14 @@ const setQuantityValue =() =>{
  return value
 }
 
+const handleMaxInput = async () => {
+  const value = await getMaxValue(currencies[Field.INPUT], library);
+  const maxAmountInput = maxAmountSpend(value, currencies[Field.INPUT]);
+  if (maxAmountInput) {
+    onUserInput(Field.INPUT, maxAmountInput);
+  }
+};
+
   const sendTransactionToDatabase = async () => {
     GButtonClick("auto_period","sending transaction to database",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
     try{
@@ -506,7 +515,7 @@ const setQuantityValue =() =>{
     let value = setQuantityValue()
     dispatch(
       setOpenModal({
-        message: `Swapping ${value} ${
+        message: `Swapping ${formattedAmounts[Field.INPUT]} ${
           currencies[Field.INPUT]?.symbol
         } for ${formattedAmounts[Field.OUTPUT]} ${
           currencies[Field.OUTPUT]?.symbol
@@ -515,13 +524,13 @@ const setQuantityValue =() =>{
       })
     );
     let currentDate = new Date();
-    let futureDate = currentDate.getTime() + deadline;
+    let futureDate = currentDate.getTime() + 20;
     let data, response
     try{ 
        
        if (currencies[Field.INPUT]?.isNative) {
    
-      
+      console.log({value},Web3.utils.toWei(value.toString(), 'ether'),"uuuu",futureDate,pathArray)
       data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
         pathArray,
         futureDate,
@@ -563,7 +572,7 @@ const setQuantityValue =() =>{
       pathSymbol,
       market:marketType})
      
-      const response = await fetch(`http://localhost:7000/auto/instant`, {
+      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/instant`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -594,6 +603,9 @@ const setQuantityValue =() =>{
       let res =await response.json()
       console.log({res})
       if(res.type==="success"){
+     
+         
+        
         setHasBeenApproved(true);
         const explorerLink = getExplorerLink(
           chainId as number,
@@ -608,12 +620,14 @@ const setQuantityValue =() =>{
         );
         dispatch(
           addToast({
-            message: `Swap ${value} ${
+            message: `Swap ${formattedAmounts[Field.INPUT]} ${
               currencies[Field.INPUT]?.symbol
             } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol}`,
             URL: explorerLink,
           })
         );
+        onUserInput(Field.INPUT, "");
+        setShowNewChangesText(false);
       }else{
         dispatch(
           setOpenModal({
@@ -709,27 +723,28 @@ const setQuantityValue =() =>{
             >
               <SwapSettings />
               <From
-                onUserInput={handleTypeInput}
-                onCurrencySelection={onCurrencySelection}
-                currency={currencies[Field.INPUT]}
-                otherCurrency={currencies[Field.OUTPUT]}
-                value={typedValue}
-              />
+          onUserInput={handleTypeInput}
+          onCurrencySelection={onCurrencySelection}
+          currency={currencies[Field.INPUT]}
+          otherCurrency={currencies[Field.OUTPUT]}
+          onMax={handleMaxInput}
+          value={formattedAmounts[Field.INPUT]}
+          placeholder="0.0"
+        />
               <Flex justifyContent="center" onClick={onSwitchTokens}>
                 <SwitchIcon />
               </Flex>
               <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px"  px={3} py={3}  mt={4}>
 
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={1} width="100%">
-                  <To
-                    onUserOutput={handleTypeOutput}
-                    onCurrencySelection={onCurrencySelection}
-                    currency={currencies[Field.OUTPUT]}
-                    otherCurrency={currencies[Field.INPUT]}
-                    value=""
-                    disable={true}
-                    display={true}
-                  />
+                <To
+          onCurrencySelection={onCurrencySelection}
+          currency={currencies[Field.OUTPUT]}
+          otherCurrency={currencies[Field.INPUT]}
+          value={formattedAmounts[Field.OUTPUT]}
+          onUserOutput={handleTypeOutput}
+          placeholder="0.0"
+        />
                 </Box>
                 <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={routerBgcolor}>
                   <Flex>
@@ -749,7 +764,7 @@ const setQuantityValue =() =>{
               </Box>
 
               <Flex mt={10} justifyContent="space-between">
-                  <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{fee} RGP</Text>
+                  <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{currencies[Field.INPUT]?.isNative ? "Not Free" : "Free"}</Text>
                 </Flex>
             
               <Box mt={5}>
@@ -871,12 +886,14 @@ const setQuantityValue =() =>{
             >
               <SwapSettings />
               <From
-                onUserInput={handleTypeInput}
-                onCurrencySelection={onCurrencySelection}
-                currency={currencies[Field.INPUT]}
-                otherCurrency={currencies[Field.OUTPUT]}
-                value={typedValue}
-              />
+          onUserInput={handleTypeInput}
+          onCurrencySelection={onCurrencySelection}
+          currency={currencies[Field.INPUT]}
+          otherCurrency={currencies[Field.OUTPUT]}
+          onMax={handleMaxInput}
+          value={formattedAmounts[Field.INPUT]}
+          placeholder="0.0"
+        />
               <Flex justifyContent="center" onClick={onSwitchTokens}>
                 <SwitchIcon />
               </Flex>
@@ -885,14 +902,15 @@ const setQuantityValue =() =>{
 
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
 
-                  <To
-                    onUserOutput={handleTypeOutput}
-                    onCurrencySelection={onCurrencySelection}
-                    currency={currencies[Field.OUTPUT]}
-                    otherCurrency={currencies[Field.INPUT]}
-                    display={true}
-                    value=""
-                  />
+                <To
+          onCurrencySelection={onCurrencySelection}
+          currency={currencies[Field.OUTPUT]}
+          otherCurrency={currencies[Field.INPUT]}
+          value={formattedAmounts[Field.OUTPUT]}
+          onUserOutput={handleTypeOutput}
+          placeholder="0.0"
+        />
+
                 </Box>
 
               
@@ -902,9 +920,9 @@ const setQuantityValue =() =>{
 
                     <Spacer />
                     <VStack>
-                      <Text fontSize="24px" color={textColorOne} textAlign="right" isTruncated width="160px" >
+                      {/* <Text fontSize="24px" color={textColorOne} textAlign="right" isTruncated width="160px" >
                       {formattedAmounts[Field.OUTPUT]}
-                      </Text>
+                      </Text> */}
                     </VStack>
                   </Flex>
                 </Box>
@@ -912,7 +930,7 @@ const setQuantityValue =() =>{
 
              
                <Flex mt={10} justifyContent="space-between">
-                  <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{fee} RGP</Text>
+               <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{currencies[Field.INPUT]?.isNative ? "Not Free" : "Free"}</Text>
                 </Flex>
               <Box mt={5}>
                 {insufficientBalance || inputError ?( 

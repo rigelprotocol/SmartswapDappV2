@@ -558,7 +558,6 @@ const SendToken = () => {
       );
 
       const isEIP1559 = await library?.getFeeData();
-
       const sendTransaction = await route.swapETHForExactTokens(
         parsedOutput(currencies[Field.OUTPUT]?.decimals as number),
         // [from, to],
@@ -682,6 +681,7 @@ const SendToken = () => {
 
       // const format1 = ethers.utils.formatUnits(addPriorityFee.toString(), 9);
       // const format2 = ethers.utils.formatUnits(maxFee.toString(), 9);
+        console.log({pathArray})
 
       const { format1, format2, format3 } = await calculateGas(
         userGasPricePercentage,
