@@ -143,31 +143,8 @@ const ComfirmPurchase = ({ isOpen,
                 //     chainId as number
                 //   );
                 const nftContract = await RigelNFT(SMARTSWAPNFTSALES[chainId as number], library);
-                const data = await nftContract.mint(id, currency === 'USDT' ?  secondToken.address : firstToken.address,
-                // {
-                //     from: account,
-                //     maxPriorityFeePerGas:
-                //       isEIP1559 && chainId === 137
-                //         ? ethers.utils.parseUnits(format1, 9).toString()
-                //         : null,
-                //     maxFeePerGas:
-                //       isEIP1559 && chainId === 137
-                //         ? ethers.utils.parseUnits(format2, 9).toString()
-                //         : null,
-                //     gasPrice:
-                //       chainId === 137
-                //         ? null
-                //         : chainId === 80001
-                //         ? null
-                //         : ethers.utils.parseUnits(format3, 9).toString(),
-                //   }
-                
-                // {
-                //     from: account,
-                //     gasLimit: 1000000,
-                //     gasPrice:20
-                // }
-                )
+                const data = await nftContract._mintBatch(account,[id],["2500000000000000000000"], "0x0000000000000000000000000000000000000000000000000000000000000000")
+                // const data = await nftContract.mint(id, currency === 'USDT' ?  secondToken.address : firstToken.address)
 
                 const { confirmations } = await data.wait(3);
                 const { hash } = data;
