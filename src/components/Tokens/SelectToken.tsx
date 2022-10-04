@@ -138,6 +138,7 @@ const SelectToken: React.FC<IModal> = ({
     }
     return filteredTokens;
   }, [debouncedQuery, ether, filteredTokens]);
+  console.log({filteredTokens,chainId})
   const { onClose } = useDisclosure();
   const openManageToken = (): void => {
     setDisplayManageToken((state) => !state);

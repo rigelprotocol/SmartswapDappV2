@@ -2,6 +2,7 @@ import BNBLOGO from "../../assets/BNB.svg";
 import ETHLOGO from "../../assets/eth.svg";
 import MATICLOGO from "../../assets/Matic.svg";
 import OASISLOGO from "../../assets/oasis.png";
+import AVAXLOGO from "../../assets/AVAX.svg";
 export const SupportedChainSymbols: { [key: string]: string } = {
   "1": "ETH",
   "3": "ETH",
@@ -12,6 +13,8 @@ export const SupportedChainSymbols: { [key: string]: string } = {
   "80001": "MATIC",
   "42261": "ROSE",
   "42262": "ROSE",
+  "43114": "AVAX",
+  "43113": "AVAX",
 };
 
 export const SupportedChainName: { [key: string]: string } = {
@@ -24,6 +27,8 @@ export const SupportedChainName: { [key: string]: string } = {
   "80001": "Matic",
   "42261": "ROSE",
   "42262": "ROSE",
+  "43114": "AVAX",
+  "43113": "AVAX",
 };
 
 export const SupportedChainLogo: { [key: string]: string } = {
@@ -36,6 +41,8 @@ export const SupportedChainLogo: { [key: string]: string } = {
   "80001": MATICLOGO,
   "42261": OASISLOGO,
   "42262": OASISLOGO,
+  "43114": AVAXLOGO,
+  "43113": AVAXLOGO,
 };
 
 export const WrappedSymbols: { [key: string]: string } = {
@@ -48,4 +55,6 @@ export const WrappedSymbols: { [key: string]: string } = {
   "137": "WMATIC",
   "42261": "WROSE",
   "42262": "WROSE",
+  "43114": "WAVAX",
+  "43113": "WAVAX",
 };

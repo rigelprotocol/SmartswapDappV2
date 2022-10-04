@@ -3977,6 +3977,14 @@
         "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg"
       },
       {
+        "name": "Rigel Protocol",
+        "address": "0x59F48ce93eb317f4628C68BbcF6CB7937a25662D",
+        "symbol": "RGP",
+        "decimals": 18,
+        "chainId": 43113,
+        "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13105.png"
+      },
+      {
         "name": "Tether USD",
         "symbol": "USDT",
         "address": "0x55d398326f99059fF775485246999027B3197955",
@@ -4357,6 +4365,14 @@
         "symbol": "WBNB",
         "address": "0x23967E68bB6FeA03fcc3676F8E55272106F44A4A",
         "chainId": 97,
+        "decimals": 18,
+        "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png"
+      },
+      {
+        "name": "WAVAX Token",
+        "symbol": "WAVAX",
+        "address": "0x9F34cca17962be33DEDDF0FD9EB6409744535e9b",
+        "chainId": 43113,
         "decimals": 18,
         "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png"
       },

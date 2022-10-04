@@ -17,6 +17,7 @@ import { CHAIN_INFO } from "../../constants/chains";
 import { switchNetwork } from "../../utils/utilsFunctions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import OASISLOGO from "../../assets/oasis.png";
+import AVAXLOGO from "../../assets/AVAX.svg";
 import MATICLOGO from "../../assets/maticlogo.png";
 import { GNetworkConnectedTo } from "../G-analytics/gIndex";
 import { useDispatch, useSelector } from "react-redux";
@@ -128,12 +129,14 @@ function NetworkIndicator() {
               <Img w="30px" src={OASISLOGO} />
             ) : info.label == "Oasis Emerald Mainnet" ? (
               <Img w="30px" src={OASISLOGO} />
+            ) : info.label.toLowerCase() === "Avalanche Fuji TestNet".toLowerCase() ? (
+              <Img w="30px" src={AVAXLOGO} />
             ) : (
               <EthereumIcon />
             )}
           </Box>
           <Text textColor={textColor} fontSize="14px">
-            {info.label}
+            {info.label}gi
           </Text>
         </Flex>
       </Button>
@@ -267,9 +270,28 @@ function NetworkIndicator() {
             >
               <Flex>
                 <Box px={2}>
-                  <Img w="30px" src={OASISLOGO} />
+                  <Img w="30px" src={AVAXLOGO} />
                 </Box>
                 <Box>{CHAIN_INFO[43114].label}</Box>
+              </Flex>
+            </Flex>
+            <Flex
+              backgroundColor={mode === "dark" ? "#15202B" : "#FFFFFF"}
+              border={
+                mode === "dark" ? "1px solid #324D68" : "1px solid #DEE6ED"
+              }
+              borderRadius="6px"
+              px={3}
+              py={4}
+              mb={4}
+              cursor="pointer"
+              onClick={() => changeNetwork("0xA86A", 43113)}
+            >
+              <Flex>
+                <Box px={2}>
+                  <Img w="30px" src={AVAXLOGO} />
+                </Box>
+                <Box>{CHAIN_INFO[43113].label}</Box>
               </Flex>
             </Flex>
           </Flex>

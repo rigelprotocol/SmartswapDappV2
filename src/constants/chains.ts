@@ -13,6 +13,7 @@ export enum SupportedChainId {
   OASISTEST = 42261,
   OASISMAINNET = 42262,
   AVALANCHE = 43114,
+  AVALANCHE_FUJI = 43113,
 }
 
 export const ALL_SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
@@ -29,6 +30,7 @@ export const ALL_SUPPORTED_CHAIN_IDS: SupportedChainId[] = [
   SupportedChainId.OASISTEST,
   SupportedChainId.OASISMAINNET,
   SupportedChainId.AVALANCHE,
+  SupportedChainId.AVALANCHE_FUJI,
 ];
 
 export const L1_CHAIN_IDS = [
@@ -44,6 +46,7 @@ export const L1_CHAIN_IDS = [
   SupportedChainId.OASISTEST,
   SupportedChainId.OASISMAINNET,
   SupportedChainId.AVALANCHE,
+  SupportedChainId.AVALANCHE_FUJI,
 ] as const;
 
 export type SupportedL1ChainId = typeof L1_CHAIN_IDS[number];
@@ -114,6 +117,14 @@ export const CHAIN_INFO: ChainInfo = {
     infoLink: "",
     label: "Mumbai Testnet",
     nativeCurrency: { name: "Polygon", symbol: "POL", decimals: 18 },
+  },
+  [SupportedChainId.AVALANCHE_FUJI]: {
+    docs: "",
+    explorer: "https://testnet.snowtrace.io/",
+    // explorer: "https://api.avax-test.network/ext/bc/C/rpc",
+    infoLink: "",
+    label: "Avalanche Fuji Testnet",
+    nativeCurrency: { name: "Avalanche", symbol: "AVAX", decimals: 18 },
   },
   /*
   [SupportedChainId.MAINNET]: {

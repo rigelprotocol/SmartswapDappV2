@@ -19,7 +19,8 @@ export const CHAINDETAILS = {
   "80001": "pn_mumbai",
   "42261": "oasis_test",
   "42262": "oasis",
-  "43114":"avalanche"
+  "43114":"avalanche",
+  "43113":"avalanche_fuji"
 };
 
 //Smartswap factory addresses
@@ -32,7 +33,8 @@ export const SMARTSWAPFACTORYADDRESSES: { [key: string]: string } = {
   "80001": "0xC8F273a1656d26BB8ECBc8B267e53304533600c4",
   "42261": "0xF9d14C9516AF795ee2b5dca7479f927EEaC1EDdb",
   "42262": "0xCE2ca7C47813E86008B0f9D5d5661356c130997f",
-  "43114":"0x"
+  "43114":"0x",
+  "43113":"0xdA0b4e0b60e874D056161900b81F045e77b24b18", //fuji testnet
 };
 
 //SMARTSWAP ROUTER
@@ -45,6 +47,7 @@ export const SMARTSWAPROUTER: { [key: string]: string } = {
   "80001": "0xaEBC5E5aC2Ad8680978Ce11d03048A4E2889DEbA",
   "42261": "0x3c5AAa6cAA82CC62327C7A0849e4d854B1905A3d",
   "42262": "0xFf672dB2558c8A78813EA3F61303460fcec656F7",
+  "43113":"0x869F66539297FFfE66216818889d50Dc2c24265B", // testnet fuji
   "43114":"0x"
 };
 
@@ -103,7 +106,8 @@ export const WNATIVEADDRESSES: { [key: string]: string } = {
   "80001": "0x9d91d1f8Ac4CF6C698a1a15c738323E2ad6F23E4",
   "42261": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
   "42262": "0x21C718C22D52d0F3a789b752D4c2fD5908a8A733",
-  "43114":"0x"
+  "43114":"0x",
+  "43113":"0x9F34cca17962be33DEDDF0FD9EB6409744535e9b", // testnet fuji
 };
 
 export const WNATIVEADDRESSESSYMBOL: { [key: string]: string } = {
@@ -115,7 +119,8 @@ export const WNATIVEADDRESSESSYMBOL: { [key: string]: string } = {
   "80001": "0x9d91d1f8Ac4CF6C698a1a15c738323E2ad6F23E4",
   "42261": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
   "42262": "0x21C718C22D52d0F3a789b752D4c2fD5908a8A733",
-  "43114":"0x"
+  "43114":"0x",
+  "43113":"0x9F34cca17962be33DEDDF0FD9EB6409744535e9b", // testnet fuji
 };
 
 export const SYMBOLS: { [key: string]: { [key: string]: string } } = {
@@ -189,8 +194,9 @@ export const AUTOSWAPV2ADDRESSES: { [key: string]: string } = {
   "56": "0x8eAc699588e46E7426375D945dD0330b0ad11814",
   "97": "0xc1F5014098DBb6CCCc28F9365316533905f591EB",
   "137": "0xCA4f379b674e2d72c8144b5c521BdD24657C8949",
-  "80001": "0x",
-  "43114":"0x"
+  "80001": "0x",  
+  "43114":"0x",
+  "43113":"0x013f3d0EF4D2EcDFF943C5Cd4f11F340E57dec65" // testnet fuji
 };
 export const MARKETAUTOSWAPADDRESSES: {
   [key: string]: { [key: string]: string };
@@ -199,7 +205,8 @@ export const MARKETAUTOSWAPADDRESSES: {
     "56": "0x599cdB1A76b5cc3906585de2ED6c790a8bAA528f",
     "97": "0xc1F5014098DBb6CCCc28F9365316533905f591EB",
     "137": "0xd4d76dDAA597aE0B8B20d801EE7e528DE2E9f033",
-    "43114":"0x"
+    "43114":"0x",
+    "43113":"0x013f3d0EF4D2EcDFF943C5Cd4f11F340E57dec65" // testnet fuji
   },
   Pancakeswap: {
     "56": "0xffD1e82d1B46B0d5D6Caf1BCdF5edb6FCA0A2455",
@@ -423,7 +430,9 @@ export const RGP: { [key: string]: string } = {
   "80001": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
   "42261": "0x2d2cd8ED2ec05A55162308332C40C3eF1994F59D",
   "42262": "0x4AF5ff1A60a6eF6C7c8f9C4E304cD9051fCa3Ec0",
-  "43114":"0x"
+  "43114":"0x",
+  "43113":"0x59F48ce93eb317f4628C68BbcF6CB7937a25662D" //fuji testnet
+
 };
 
 //BUSD addresses
