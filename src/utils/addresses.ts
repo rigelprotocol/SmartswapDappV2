@@ -205,6 +205,14 @@ export const MARKETFREESWAPADDRESSES: {
     "137": "0xa9B5cf99f2756e0047cA582bac17E2AF7ed11a66",
   },
 };
+
+export const FREESWAPACCOUNT: { [key: string]: string } = {
+  "56": "0xeBD0329E00B92898C9Ad614b001FdBD1d0e3E19D",
+  "97": "0x2fd48250aEdFE45D6BB9c22e4893F75A655D8e79",
+  "80001": "0x2fd48250aEdFE45D6BB9c22e4893F75A655D8e79",
+  "137": "0xeBD0329E00B92898C9Ad614b001FdBD1d0e3E19D",
+  
+}
 export const OTHERMARKETADDRESSES: {
   [key: string]: { [key: string]: string };
 } = {
