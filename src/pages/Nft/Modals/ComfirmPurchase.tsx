@@ -144,6 +144,7 @@ const ComfirmPurchase = ({ isOpen,
                 //   );
                 const nftContract = await RigelNFT(SMARTSWAPNFTSALES[chainId as number], library);
                 // const data = await nftContract._mintBatch(account,["1"],["1"], "0x0000000000000000000000000000000000000000000000000000000000000000")
+                console.log({firstToken,secondToken})
                 const data = await nftContract.mint(id, currency === 'USDT' ?  secondToken.address : firstToken.address)
 
                 const { confirmations } = await data.wait(3);
