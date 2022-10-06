@@ -136,7 +136,7 @@ function NetworkIndicator() {
             )}
           </Box>
           <Text textColor={textColor} fontSize="14px">
-            {info.label}gi
+            {info.label}
           </Text>
         </Flex>
       </Button>
