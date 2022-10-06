@@ -295,6 +295,19 @@ export const polygonMarketArray = [
 export const binanceTestMarketArray = [
   { name: "Smartswap", image: "Smartswap.png" },
 ];
+export const binanceFreeMarketArray = [
+  // { name: "Smartswap", image: "Smartswap.png" },
+  { name: "Pancakeswap", image: "Pancakeswap.png" },
+];
+
+export const polygonFreeMarketArray = [
+  { name: "Smartswap", image: "Smartswap.png" },
+  { name: "Quickswap", image: "Quickswap.png" },
+];
+
+export const binanceTestFreeMarketArray = [
+  { name: "Smartswap", image: "Smartswap.png" },
+];
 
 // updates the swap state to use the defaults for a given network
 export function useDefaultsFromURLSearch() {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { ChevronDownIcon } from "@chakra-ui/icons"
 import { Button, Flex, Img, Menu, MenuButton, MenuItem, MenuList, Text, useColorModeValue } from "@chakra-ui/react"
-import { binanceTestMarketArray,polygonMarketArray,binanceMarketArray } from "../state/swap/hooks"
+import { binanceTestMarketArray,polygonMarketArray,binanceMarketArray, binanceFreeMarketArray } from "../state/swap/hooks"
 
 // const binanceMarketArray = [
 //   {name:"Smartswap",image:"Smartswap.png"},
@@ -16,11 +16,16 @@ import { binanceTestMarketArray,polygonMarketArray,binanceMarketArray } from "..
 // const binanceTestMarketArray = [
 //   {name:"Smartswap",image:"Smartswap.png"},
 // ]
-const MarketDropDown = ({marketType,setMarketType,chainID,switchMarket}:{marketType:string,setMarketType:React.Dispatch<React.SetStateAction<string>>,chainID:number | undefined,switchMarket:(market:string)=>void}) => {
-  const [marketArray,setMarketArray] = useState(binanceTestMarketArray)
+const MarketDropDown = ({marketType,setMarketType,chainID,switchMarket,type}:{marketType:string,setMarketType:React.Dispatch<React.SetStateAction<string>>,chainID:number | undefined,switchMarket:(market:string)=>void,type?:string}) => {
+  const [marketArray,setMarketArray] = useState(binanceFreeMarketArray)
   useEffect(()=>{
-    if(chainID === 56) setMarketArray(binanceMarketArray)
-    else if(chainID === 97) setMarketArray(binanceTestMarketArray)
+    console.log({type})
+    if(chainID === 56 && type==="free"){
+      setMarketArray(binanceFreeMarketArray)
+    }else if(chainID===56 && type !=="free"){
+      setMarketArray(binanceMarketArray)
+    }
+    if(chainID === 97) setMarketArray(binanceTestMarketArray)
     else if(chainID === 137) setMarketArray(polygonMarketArray)
   },[chainID])
     const borderColor = useColorModeValue('#DEE6ED', '#324D68');

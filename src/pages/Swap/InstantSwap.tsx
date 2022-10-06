@@ -11,7 +11,7 @@ import {
   useSwapActionHandlers,
   useSwapState,
 } from '../../state/swap/hooks';
-import { binanceTestMarketArray,polygonMarketArray,binanceMarketArray } from "../../state/swap/hooks"
+import { binanceTestFreeMarketArray,binanceFreeMarketArray,polygonFreeMarketArray } from "../../state/swap/hooks"
 import { getERC20Token } from '../../utils/utilsFunctions';
 import { Field } from '../../state/swap/actions';
 import Web3 from 'web3';
@@ -83,7 +83,7 @@ const InstantSwap = () => {
   const [signatureFromDataBase, setSignatureFromDataBase] = useState(false)
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [selectedFrequency, setSelectedFrequency] = useState("5")
-  const [marketType, setMarketType] = useState("Smartswap")
+  const [marketType, setMarketType] = useState("Pancakeswap")
   const [percentageChange, setPercentageChange] = useState<string>("0")
   const [approvalForFee, setApprovalForFee] = useState("")
   const [fee, setFee] = useState("")
@@ -171,9 +171,9 @@ const InstantSwap = () => {
   }
   const checkIfMarketExists = (market:string,chainId:number| undefined) => {
     let marketArray:any
-    if(chainId === 56) marketArray = binanceMarketArray
-    else if(chainId === 97) marketArray = binanceTestMarketArray
-    else if(chainId === 137) marketArray = polygonMarketArray
+    if(chainId === 56) marketArray = binanceFreeMarketArray
+    else if(chainId === 97) marketArray = binanceTestFreeMarketArray
+    else if(chainId === 137) marketArray = polygonFreeMarketArray
     if(marketArray && marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())){
       let item = marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())
       setMarketType(item.name.charAt(0).toUpperCase() + item.name.slice(1))
@@ -748,7 +748,7 @@ const handleMaxInput = async () => {
                 </Box>
                 <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={routerBgcolor}>
                   <Flex>
-                  <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
+                  <MarketDropDown type="free" marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
 
                     <Spacer />
                     <VStack>
@@ -916,7 +916,7 @@ const handleMaxInput = async () => {
               
                 <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={routerBgcolor}>
                   <Flex>
-                  <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
+                  <MarketDropDown type="free" marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
 
                     <Spacer />
                     <VStack>
