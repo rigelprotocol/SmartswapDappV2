@@ -60,7 +60,7 @@ import SpheriumBridge from "./Swap/Bridge/SpheriumBridge";
 
               <Route exact strict path="/find" component={FindPool} />
               
-              <Route exact strict path="/nft" component={Nft} />
+              <Route exact strict path="/nft" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : Nft} />
               
               <Route exact strict path="/nfts/:id" component={ViewNFT} />
               <Route exact path="/add" component={AddLiquidity} />
@@ -95,11 +95,11 @@ import SpheriumBridge from "./Swap/Bridge/SpheriumBridge";
               {/*  path="/farming-V2/product-farm"*/}
               {/*  component={FarmingV2}*/}
               {/*/>*/}
-              <Route exact path="/farming" component={FarmingV1} />
-              <Route path="/farm" component={FarmingV2} />
-              <Route path="/farm/:deposit" component={YieldFarm} />
-              <Route exact strict path={'/smartbid'} component={SmartBid}/>
-              <Route path={'/smartbid/:id'} component={BidDetails}/>
+              <Route exact path="/farming" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : FarmingV1} />
+              <Route path="/farm" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : FarmingV2} />
+              <Route path="/farm/:deposit" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : YieldFarm} />
+              <Route exact strict path={'/smartbid'} component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap :SmartBid}/>
+              <Route path={'/smartbid/:id'} component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : BidDetails}/>
 
               {/* <Route path="*">
                 <Redirect to="/swap" />

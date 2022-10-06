@@ -4377,6 +4377,30 @@
         "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png"
       },
       {
+        "name": "USD Coin",
+        "address": "0x1Ad483798422423E3471d2fa8a7eF6EB83BD4926",
+        "symbol": "USDC",
+        "decimals": 6,
+        "chainId": 43113,
+        "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13105.png"
+      },
+      {
+        "name": "wETHUSDC 14th-october-2022 1350Call wETH Colateral",
+        "address": "0x35B0ba83B69776acB02935bA3268A6116685C2aC",
+        "symbol": "wETHUSDC",
+        "decimals": 8,
+        "chainId": 43113,
+        "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13105.png"
+      },
+      {
+        "name": "WAVAXUSDC 30-September-2022 12Put USDC Collateral",
+        "address": "0x4e6915bF261fc99C73575e616AE8766ecd36b9ad",
+        "symbol": "wAvAXUSDC",
+        "decimals": 8,
+        "chainId": 43113,
+        "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13105.png"
+      },
+      {
         "name": "Aave Token on xDai",
         "address": "0xDF613aF6B44a31299E48131e9347F034347E2F00",
         "symbol": "AAVE",
@@ -7000,14 +7024,7 @@
         "chainId": 42220,
         "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/eth.jpg"
       },
-      {
-        "name": "Wrapped AVAX",
-        "address": "0xd00ae08403B9bbb9124bB305C09058E32C39A48c",
-        "symbol": "WAVAX",
-        "decimals": 18,
-        "chainId": 43113,
-        "logoURI": "https://cryptologos.cc/logos/avalanche-avax-logo.png?v=010"
-      },
+    
       {
         "chainId": 43114,
         "address": "0x63a72806098Bd3D9520cC43356dD78afe5D386D9",

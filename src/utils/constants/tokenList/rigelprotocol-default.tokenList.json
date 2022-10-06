@@ -107,6 +107,14 @@
       "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png"
     },
     {
+      "chainId": 43114,
+      "address": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+      "decimals": 18,
+      "name": "Wrapped AVAX",
+      "symbol": "WAVAX",
+      "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/avax.jpg"
+    },
+    {
       "name": "Wrapped Matic",
       "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
       "symbol": "WMATIC",
@@ -384,6 +392,30 @@
       "address": "0x59F48ce93eb317f4628C68BbcF6CB7937a25662D",
       "symbol": "RGP",
       "decimals": 18,
+      "chainId": 43113,
+      "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13105.png"
+    },
+    {
+      "name": "USD Coin",
+      "address": "0x1Ad483798422423E3471d2fa8a7eF6EB83BD4926",
+      "symbol": "USDC",
+      "decimals": 6,
+      "chainId": 43113,
+      "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13105.png"
+    },
+    {
+      "name": "wETHUSDC 14th-october-2022 1350Call wETH Colateral",
+      "address": "0x35B0ba83B69776acB02935bA3268A6116685C2aC",
+      "symbol": "wETHUSDC",
+      "decimals": 8,
+      "chainId": 43113,
+      "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13105.png"
+    },
+    {
+      "name": "WAVAXUSDC 30-September-2022 12Put USDC Collateral",
+      "address": "0x4e6915bF261fc99C73575e616AE8766ecd36b9ad",
+      "symbol": "wAvAXUSDC",
+      "decimals": 8,
       "chainId": 43113,
       "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13105.png"
     },
