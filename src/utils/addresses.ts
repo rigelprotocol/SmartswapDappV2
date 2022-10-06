@@ -47,8 +47,8 @@ export const SMARTSWAPROUTER: { [key: string]: string } = {
 export const IPFS: { [key: string]: string } = {
   "1": "0x",
   "3": "",
-  "56": "QmYidK4fzH8S3E5D81VQcauSewqEnjNgyEQhe9NEKmxZca",
-  "97": "QmYidK4fzH8S3E5D81VQcauSewqEnjNgyEQhe9NEKmxZca",
+  "56": "QmVSMnx4BSYEfnbZSNTENXZSELVLGTM4KgCyFcN7SEKGqP",
+  "97": "QmVSMnx4BSYEfnbZSNTENXZSELVLGTM4KgCyFcN7SEKGqP",
   "137": "QmUDyQPMoRsRZ7jUUrn1Sz5sFrzrZA9kYxjrZ6Xo9JXfgv",
   "80001": "QmUDyQPMoRsRZ7jUUrn1Sz5sFrzrZA9kYxjrZ6Xo9JXfgv",
   "42261": "",
