@@ -16,6 +16,7 @@ export const useNativeBalance = () => {
   const [Logo, setLogo] = useState(SupportedChainLogo[56]);
 
   const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
+  const refresh = useSelector<RootState>((state) => state.application.refresh);
   const stateChanged : boolean = trxState === 2;
 
   useEffect(() => {
@@ -44,7 +45,7 @@ export const useNativeBalance = () => {
       }
     };
     getBalance();
-  }, [account, library, chainId, stateChanged]);
+  }, [account, library, chainId, stateChanged,refresh]);
 
   return [Balance, Symbol,Name,Logo];
 };
@@ -53,7 +54,8 @@ export const useRGPBalance = () => {
   const { chainId, account, library} = useActiveWeb3React();
   const [RGPBalance, setRGPBalance] = useState('');
 
-  const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
+  const trxState = useSelector<RootState>((state) => state.application.modal?.trxState); 
+  const refresh = useSelector<RootState>((state) => state.application.refresh);
   const stateChanged : boolean = trxState === 2;
 
   useEffect(() => {
@@ -75,7 +77,7 @@ export const useRGPBalance = () => {
     };
 
     getBalance();
-  }, [account, chainId, stateChanged]);
+  }, [account, chainId, stateChanged,refresh]);
 
   return [RGPBalance];
 };

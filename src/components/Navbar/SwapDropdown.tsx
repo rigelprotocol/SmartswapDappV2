@@ -74,10 +74,10 @@ export function SwapDropdown() {
           <Nav label="AutoTrade" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' : `/autotrade${search}`} img={VectorFire}/>
         </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
-          <Nav label="Set Price" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' :`/set-price${search}`} />
+          <Nav label="Set Price" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON && chainId !== SupportedChainId.POLYGONTEST  ? '#' :`/set-price${search}`} />
         </MenuItem>
         <MenuItem _focus={{ color: "#319EF6" }}>
-          <Nav label="Freeswap" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' :`/freeswap${search}`} img={VectorFire}/>
+          <Nav label="Freeswap" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON && chainId !== SupportedChainId.POLYGONTEST  ? '#' :`/freeswap${search}`} img={VectorFire}/>
         </MenuItem>
       </MenuList>
     </Menu> 

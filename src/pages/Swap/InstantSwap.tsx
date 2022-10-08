@@ -49,23 +49,25 @@ import { useSelector,useDispatch } from 'react-redux';
 import { RootState } from "../../state";
 import { autoSwapV2, rigelToken } from '../../utils/Contracts';
 import { RGPADDRESSES, OTHERMARKETADDRESSES,MARKETFREESWAPADDRESSES, OTHERMARKETFACTORYADDRESSES, RGP } from '../../utils/addresses';
-import { setOpenModal, TrxState } from "../../state/application/reducer";
+import { setOpenModal, setRefresh, TrxState } from "../../state/application/reducer";
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { refreshTransactionTab } from '../../state/transaction/actions';
-import MarketDropDown from '../../components/MarketDropDown';
 import { GButtonClick, GFailedTransaction, GSuccessfullyTransaction } from '../../components/G-analytics/gIndex';
 import { useHistory, useLocation } from 'react-router-dom';
 import { GetAddressTokenBalance } from '../../state/wallet/hooks';
 import { addToast } from '../../components/Toast/toastSlice';
 import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink';
 import { maxAmountSpend } from '../../utils/maxAmountSpend';
+import MarketFreeDropDown from '../../components/MarketFreeDropdown';
 
 
 
 const InstantSwap = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
   const dispatch = useDispatch();
-  const location = useLocation().pathname;
+  const location = useLocation();
+  const pathname = useLocation().pathname
+  console.log({location},location.search.includes("bsc_test"))
   const borderColor = useColorModeValue('#DEE6ED', '#324D68');
   const iconColor = useColorModeValue('#666666', '#DCE6EF');
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
@@ -83,7 +85,7 @@ const InstantSwap = () => {
   const [signatureFromDataBase, setSignatureFromDataBase] = useState(false)
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [selectedFrequency, setSelectedFrequency] = useState("5")
-  const [marketType, setMarketType] = useState("Pancakeswap")
+  const [marketType, setMarketType] = useState(location.search.includes("bsc_test") ? "Smartswap" : location.search.includes("bsc") ? "Pancakeswap" : "Smartswap")
   const [percentageChange, setPercentageChange] = useState<string>("0")
   const [approvalForFee, setApprovalForFee] = useState("")
   const [fee, setFee] = useState("")
@@ -129,10 +131,10 @@ const InstantSwap = () => {
     [onUserInput]
   );
  useEffect(()=>{
-   let market = location.split("/").length===3? location.split("/")[2]:""
+   let market = pathname.split("/").length===3? pathname.split("/")[2]:""
    checkIfMarketExists(market,chainId)
 
- },[location,chainId])
+ },[pathname,chainId])
 
   const switchMarket = (market:string)=>{
     routerHistory.push(`/freeswap/${market}`)
@@ -150,10 +152,8 @@ const InstantSwap = () => {
   }, [account,chainId,marketType])
 
 
+  const refresh = useSelector<RootState>((state) => state.application.refresh);
   
-  const deadline = useSelector<RootState, number>(
-    (state) => state.user.userDeadline
-  );
   const [allowedSlippage] = useUserSlippageTolerance();
   const getFee =async () => {
     const autoSwapV2Contract = await autoSwapV2(MARKETFREESWAPADDRESSES[marketType][chainId as number], library);
@@ -363,44 +363,6 @@ const InstantSwap = () => {
     }
 
   }
-
-//   useEffect(()=>{
-// const fet = async () => {
-//   const response = await fetch(`https://autoswap-server.herokuapp.com/auto/i`, {
-//     method: "POST",
-//     mode: "cors",
-//     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-//     credentials: 'same-origin', // include, *same-origin, omit
-//     headers: {
-//       'Content-Type': 'application/json'
-//       // 'Content-Type': 'application/x-www-form-urlencoded',
-//     },
-//     body: JSON.stringify({
-//       address: "account",
-//       chainID: "chainId",
-//       fromAddress:"jej",
-//       toAddress:"iejue1",
-//       fromNumberOfDecimals: "jej",
-//       toNumberOfDecimals: "jej",
-//       fromPrice: `jejj`,
-//       currentToPrice: "kejj",
-//       orderID: ":kej",
-//       slippage:"kjej",
-//       pathArray:"ehh",
-//       minimum:"jej",
-//       pathSymbol:"jej",
-//       market:`marketType`
-//     })
-//   })
-//   console.log({response})
-//   const text =await response.json()
-//   console.log({text})
-
-// }
-
-// fet()
-//   },[])
-
   const approveOneOrTwoTokens = async (tokenApprovingFor:string) => {
     if (currencies[Field.INPUT]?.isNative) {
       setHasBeenApproved(true);
@@ -474,10 +436,10 @@ const InstantSwap = () => {
             );
           }
           
-          GSuccessfullyTransaction("auto_period","Approval",currencies[Field.INPUT]?.symbol)
+          GSuccessfullyTransaction("freeswap","Approval",currencies[Field.INPUT]?.symbol)
         }
       }catch(e:any){
-        GFailedTransaction("straight_swap","approval",e.message,currencies[Field.INPUT]?.symbol)
+        GFailedTransaction("freeswap","approval",e.message,currencies[Field.INPUT]?.symbol)
       }
         setApprovalForToken("")
       
@@ -556,21 +518,6 @@ const handleMaxInput = async () => {
     let orderID = await autoSwapV2Contract.orderCount()
    
     if (response && value) {
-     console.log({ address: account,
-      chainID: chainId,
-      fromAddress: currencies[Field.INPUT]?.isNative ? "native" : currencies[Field.INPUT]?.wrapped.address,
-      toAddress: currencies[Field.OUTPUT]?.isNative ? "native" : currencies[Field.OUTPUT]?.wrapped.address,
-      dataSignature,
-      fromNumberOfDecimals: currencies[Field.INPUT]?.isNative ? 18 : currencies[Field.INPUT]?.wrapped.decimals,
-      toNumberOfDecimals: currencies[Field.OUTPUT]?.isNative ? 18 : currencies[Field.OUTPUT]?.wrapped.decimals,
-      fromPrice: `${value}`,
-      currentToPrice: formattedAmounts[Field.OUTPUT],
-      orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1,
-      slippage:Number(allowedSlippage / 100),
-      pathArray,
-      minimum,
-      pathSymbol,
-      market:marketType})
      
       const response = await fetch(`https://autoswap-server.herokuapp.com/auto/instant`, {
         method: "POST",
@@ -601,11 +548,14 @@ const handleMaxInput = async () => {
         })
       })
       let res =await response.json()
-      console.log({res})
+      console.log({res}) 
+         dispatch(refreshTransactionTab({ refresh:Math.random() }))
+        dispatch(setRefresh())
       if(res.type==="success"){
      
          
-        
+         onUserInput(Field.INPUT, "");
+        setShowNewChangesText(false);
         setHasBeenApproved(true);
         const explorerLink = getExplorerLink(
           chainId as number,
@@ -626,8 +576,7 @@ const handleMaxInput = async () => {
             URL: explorerLink,
           })
         );
-        onUserInput(Field.INPUT, "");
-        setShowNewChangesText(false);
+       
       }else{
         dispatch(
           setOpenModal({
@@ -637,7 +586,7 @@ const handleMaxInput = async () => {
         ); 
       }
       GSuccessfullyTransaction("instant_swap","swapping transaction in the database",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
-      dispatch(refreshTransactionTab({ refresh:Math.random() }))
+  
       onUserInput(Field.INPUT, "");
       setSignatureFromDataBase(true)
       // setCheckedItem(false)
@@ -748,7 +697,7 @@ const handleMaxInput = async () => {
                 </Box>
                 <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={routerBgcolor}>
                   <Flex>
-                  <MarketDropDown type="free" marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
+                  <MarketFreeDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
 
                     <Spacer />
                     <VStack>
@@ -916,7 +865,7 @@ const handleMaxInput = async () => {
               
                 <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={routerBgcolor}>
                   <Flex>
-                  <MarketDropDown type="free" marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
+                  <MarketFreeDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
 
                     <Spacer />
                     <VStack>

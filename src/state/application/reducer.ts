@@ -25,12 +25,14 @@ export interface modalState {
 type ModalState = {
     modal: modalState | null | undefined;
     tokenGroup: Array<IToken>,
-    message?: string
+    message?: string,
+    refresh: boolean,
 };
 
 const initialState: ModalState = {
     modal: null,
     message: "",
+    refresh: false,
     tokenGroup: [{
         id: 1,
         img: USDTLOGO,
@@ -70,12 +72,16 @@ const applicationSlice = createSlice({
                 }
             })
         },
+        setRefresh(state) {
+            state.refresh = !state.refresh
+        }
     }
 })
 
 export const {
     setOpenModal,
     setCloseModal,
-    setTokenGroup
+    setTokenGroup,
+    setRefresh
 } = applicationSlice.actions
 export default applicationSlice.reducer

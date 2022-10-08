@@ -762,7 +762,7 @@ const SendToken = () => {
         );
         onUserInput(Field.INPUT, "");
       }
-    } catch (e) {
+    } catch (e:any) {
       console.log(e?.message);
       GFailedTransaction(
         "straight_swap",
