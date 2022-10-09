@@ -193,7 +193,7 @@ export const MARKETFREESWAPADDRESSES: {
   [key: string]: { [key: string]: string };
 } = {
   Smartswap: {
-    "56": "0x599cdB1A76b5cc3906585de2ED6c790a8bAA528f",
+    "56": "0x",
     "97": "0x0Fb048390D8344039473E3C460eD4D2368c0cDDd",
     "137": "0x",
     "80001":"0x832c868A31DA33D40f69AF0c599E2C420a6e86c2"
