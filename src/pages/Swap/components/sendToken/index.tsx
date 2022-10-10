@@ -499,12 +499,12 @@ const SendToken = () => {
           hash,
           ExplorerDataType.TRANSACTION
         );
-        // dispatch(
-        //   setOpenModal({
-        //     message: `Swap Successful.`,
-        //     trxState: TrxState.TransactionSuccessful,
-        //   })
-        // );
+        dispatch(
+          setOpenModal({
+            message: `Swap Successful.`,
+            trxState: TrxState.TransactionSuccessful,
+          })
+        );
         dispatch(
           addToast({
             message: `Swap ${inputAmount} ${
