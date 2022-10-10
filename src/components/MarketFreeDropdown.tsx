@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { ChevronDownIcon } from "@chakra-ui/icons"
 import { Button, Flex, Img, Menu, MenuButton, MenuItem, MenuList, Text, useColorModeValue } from "@chakra-ui/react"
-import { binanceFreeMarketArray, binanceTestFreeMarketArray, polygonFreeMarketArray } from "../state/swap/hooks"
+import { binanceFreeMarketArray, binanceTestFreeMarketArray, polygonFreeMarketArray, polygonTestFreeMarketArray } from "../state/swap/hooks"
 import { useLocation } from "react-router-dom"
 
 
@@ -14,7 +14,7 @@ const MarketFreeDropDown = ({marketType,setMarketType,chainID,switchMarket,type}
     if(chainID === 56) setMarketArray(binanceFreeMarketArray)
     if(chainID === 97) setMarketArray(binanceTestFreeMarketArray)
     else if(chainID === 137) setMarketArray(polygonFreeMarketArray)
-    else if(chainID === 80001) setMarketArray(polygonFreeMarketArray)
+    else if(chainID === 80001) setMarketArray(polygonTestFreeMarketArray)
   },[chainID])
     const borderColor = useColorModeValue('#DEE6ED', '#324D68');
     return (

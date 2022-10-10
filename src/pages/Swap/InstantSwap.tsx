@@ -85,7 +85,7 @@ const InstantSwap = () => {
   const [signatureFromDataBase, setSignatureFromDataBase] = useState(false)
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [selectedFrequency, setSelectedFrequency] = useState("5")
-  const [marketType, setMarketType] = useState(location.search.includes("bsc_test") ? "Smartswap" : location.search.includes("bsc") ? "Pancakeswap" : "Smartswap")
+  const [marketType, setMarketType] = useState(location.search.includes("bsc_test") || location.search.includes("pn_mumbai") ? "Smartswap" : location.search.includes("bsc") ? "Pancakeswap" : "Quickswap")
   const [percentageChange, setPercentageChange] = useState<string>("0")
   const [approvalForFee, setApprovalForFee] = useState("")
   const [fee, setFee] = useState("")
@@ -519,7 +519,7 @@ const handleMaxInput = async () => {
    
     if (response && value) {
      
-      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/instant`, {
+      const response = await fetch(`http://localhost:7000/auto/instant`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -568,6 +568,9 @@ const handleMaxInput = async () => {
             trxState: TrxState.TransactionSuccessful,
           })
         );
+        setDataSignature({mess:"",signature:""})
+        setTransactionSigned(false)
+        setSignatureFromDataBase(false)
         dispatch(
           addToast({
             message: `Swap ${formattedAmounts[Field.INPUT]} ${
@@ -585,10 +588,11 @@ const handleMaxInput = async () => {
           })
         ); 
       }
-      GSuccessfullyTransaction("instant_swap","swapping transaction in the database",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
+      GFailedTransaction("instant_swap","swapping transaction in the database","error",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
   
-      onUserInput(Field.INPUT, "");
-      setSignatureFromDataBase(true)
+      setDataSignature({mess:"",signature:""})
+      setTransactionSigned(false)
+      setSignatureFromDataBase(false)
       // setCheckedItem(false)
       setShowNewChangesText(false);
     }

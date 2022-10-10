@@ -300,8 +300,11 @@ export const binanceFreeMarketArray = [
   { name: "Pancakeswap", image: "Pancakeswap.png" },
 ];
 
-export const polygonFreeMarketArray = [
+export const polygonTestFreeMarketArray = [
   { name: "Smartswap", image: "Smartswap.png" },
+  { name: "Quickswap", image: "Quickswap.png" },
+];
+export const polygonFreeMarketArray = [
   { name: "Quickswap", image: "Quickswap.png" },
 ];
 
