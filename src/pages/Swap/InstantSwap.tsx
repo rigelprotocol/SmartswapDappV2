@@ -562,12 +562,7 @@ const handleMaxInput = async () => {
           res.information.transactionHash,
           ExplorerDataType.TRANSACTION
         );
-        dispatch(
-          setOpenModal({
-            message: `Swap Successful.`,
-            trxState: TrxState.TransactionSuccessful,
-          })
-        );
+       
         setDataSignature({mess:"",signature:""})
         setTransactionSigned(false)
         setSignatureFromDataBase(false)
@@ -579,7 +574,21 @@ const handleMaxInput = async () => {
             URL: explorerLink,
           })
         );
-       
+//         setTimeout(()=>{
+// dispatch(
+//           setOpenModal({
+//             message: `Swap Successful.`,
+//             trxState: TrxState.TransactionSuccessful,
+//           })
+//         );
+//         },4000)
+dispatch(
+  setOpenModal({
+    message: `Swap Successful.`,
+    trxState: TrxState.TransactionSuccessful,
+  })
+);
+        
       }else{
         dispatch(
           setOpenModal({

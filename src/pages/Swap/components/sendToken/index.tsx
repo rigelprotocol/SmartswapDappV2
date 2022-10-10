@@ -476,8 +476,11 @@ const SendToken = () => {
               : ethers.utils.parseUnits(format3, 9).toString(),
         }
       );
+      console.log({sendTransaction},"wiiwi",sendTransaction.hash)
       const { confirmations, events } = await sendTransaction.wait(3);
+
       const { hash } = sendTransaction;
+      console.log({confirmations,events,hash})
       const outputAmount = await getOutPutDataFromEvent(
         to,
         events,
@@ -496,12 +499,12 @@ const SendToken = () => {
           hash,
           ExplorerDataType.TRANSACTION
         );
-        dispatch(
-          setOpenModal({
-            message: `Swap Successful.`,
-            trxState: TrxState.TransactionSuccessful,
-          })
-        );
+        // dispatch(
+        //   setOpenModal({
+        //     message: `Swap Successful.`,
+        //     trxState: TrxState.TransactionSuccessful,
+        //   })
+        // );
         dispatch(
           addToast({
             message: `Swap ${inputAmount} ${
