@@ -519,7 +519,7 @@ const handleMaxInput = async () => {
    
     if (response && value) {
      
-      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/instant`, {
+      const response = await fetch(`http://localhost:7000/auto/instant`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -539,7 +539,7 @@ const handleMaxInput = async () => {
           toNumberOfDecimals: currencies[Field.OUTPUT]?.isNative ? 18 : currencies[Field.OUTPUT]?.wrapped.decimals,
           fromPrice: `${value}`,
           currentToPrice: formattedAmounts[Field.OUTPUT],
-          orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) + 1 : parseInt(orderID.toString()) + 1,
+          orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1,
           slippage:Number(allowedSlippage / 100),
           pathArray,
           minimum,
