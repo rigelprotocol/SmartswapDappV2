@@ -9,7 +9,6 @@ import {
   selectMarketFactory,
 } from "./actions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
-import { ParsedQs } from "qs";
 import { useCurrency } from "../../hooks/Tokens";
 import { useDispatch, useSelector } from "react-redux";
 import { Currency } from "@uniswap/sdk-core";
@@ -19,7 +18,6 @@ import { isAddress, ParseFloat } from "../../utils";
 import { ethers } from "ethers";
 import { SupportedChainSymbols } from "../../utils/constants/chains";
 import { useSwap } from "../../hooks/useSwap";
-import { ZERO_ADDRESS } from "../../constants";
 import { parseUnits } from "@ethersproject/units";
 import useParsedQueryString from "../../hooks/useParsedQueryString";
 import JSBI from "jsbi";
@@ -256,7 +254,10 @@ function parseCurrencyFromURLParameter(urlParam: any, symbol = ""): string {
   }
   return urlParam ?? "";
 }
-function queryParametersToSwapState(parsedQs: any, chainId: number) {
+function queryParametersToSwapState(
+  parsedQs: any,
+  chainId: number | undefined
+) {
   let inputCurrency = parseCurrencyFromURLParameter(parsedQs.inputCurrency);
   let outputCurrency = parseCurrencyFromURLParameter(parsedQs.outputCurrency);
   const symbol = SupportedChainSymbols[chainId ?? 56];
@@ -314,8 +315,8 @@ export const binanceTestFreeMarketArray = [
 
 // updates the swap state to use the defaults for a given network
 export function useDefaultsFromURLSearch() {
-  const { chainId, account } = useActiveWeb3React();
-  const [, Symbol] = useNativeBalance();
+  const { account, chainId } = useActiveWeb3React();
+  const ChainId = useSelector((state) => state.chainId.chainId);
   const dispatch = useDispatch<AppDispatch>();
   const parsedQs = useParsedQueryString();
   const [result, setResult] = useState<
@@ -327,8 +328,8 @@ export function useDefaultsFromURLSearch() {
   >();
 
   useEffect(() => {
-    if (!chainId) return;
-    const parsed = queryParametersToSwapState(parsedQs, chainId);
+    if (!ChainId) return;
+    const parsed = queryParametersToSwapState(parsedQs, ChainId);
     dispatch(
       replaceSwapState({
         typedValue: parsed.typedValue,
@@ -342,6 +343,6 @@ export function useDefaultsFromURLSearch() {
       inputCurrencyId: parsed[Field.INPUT].currencyId,
       outputCurrencyId: parsed[Field.OUTPUT].currencyId,
     });
-  }, [dispatch, chainId, account]);
+  }, [dispatch, ChainId]);
   return result;
 }

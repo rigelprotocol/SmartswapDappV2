@@ -5,14 +5,14 @@ import { Currency, Token } from "@uniswap/sdk-core";
 import { Web3Provider } from "@ethersproject/providers";
 import JSBI from "jsbi";
 import { ParseFloat } from "..";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import useDebounce from "../../hooks/useDebounce";
 import { useAllTokens } from "../../hooks/Tokens";
 import { ExtendedEther, useToken } from "../../hooks/Tokens";
 import { useNativeBalance } from "./useBalances";
 import { useWeb3React } from "@web3-react/core";
 import { filterTokens } from "../../components/Tokens/filtering";
-// import { Currency } from "@uniswap/sdk";
+import { useSelector } from "react-redux";
 
 export const getBalance = async (
   currency: Currency,
@@ -70,29 +70,29 @@ export const useUpdateBalance = (searchQuery: string) => {
     });
 
     const newResultArray = result.length > 0 ? [...result] : [];
-    result.length > 0 && newResultArray.unshift(RGP[0]);
+    result.length > 0 && account && newResultArray.unshift(RGP[0]);
 
     return newResultArray;
   };
 
-  const [TokenList] = useTokenBalance(filteredTokens, "");
+  const { TokenList } = useTokenBalance(filteredTokens, "");
 
   const sortedTokenList = sortTokens(TokenList);
 
-  return [sortedTokenList];
+  return { sortedTokenList };
 };
 
 export const useTokenBalance = (
   filteredTokens: Token[],
   searchQuery: string
 ) => {
-  const { chainId, library, account } = useWeb3React();
-  const allTokens = useAllTokens();
+  const { library, account } = useWeb3React();
+  const ChainId: number = useSelector((state) => state.chainId.chainId);
   const debouncedQuery = useDebounce(searchQuery, 300);
   const searchToken = useToken(debouncedQuery);
   const [Balance, Symbol, Name, Logo] = useNativeBalance();
-  const ether = chainId && ExtendedEther(chainId, Symbol, Name, Logo);
-  const [TokenList, SetTokenList] = useState([]);
+  const ether = ChainId && ExtendedEther(ChainId, Symbol, Name, Logo);
+  const [TokenList, setTokenList] = useState([]);
   const [Native, setNative] = useState<
     | 0
     | {
@@ -114,7 +114,7 @@ export const useTokenBalance = (
         tokens[i],
         Balance,
         library,
-        chainId,
+        ChainId,
         account
       );
 
@@ -154,39 +154,15 @@ export const useTokenBalance = (
   };
 
   useMemo(() => {
-    const tokenA = [];
     const getBalances = async () => {
-      const tokenA = [];
       if (account) {
         const tokens = await filteredTokenListWithETH(filteredTokens);
-
-        SetTokenList(tokens);
+        setTokenList(tokens);
       }
     };
 
     getBalances();
-  }, [account, chainId, Symbol, Name]);
+  }, [ChainId, Symbol, Name]);
 
-  return [TokenList];
-};
-
-export const loopCurrencies = async (
-  tokens: Currency[],
-  Balance: string,
-  library: Web3Provider,
-  chainId: number,
-  account: string
-) => {
-  const balances = [];
-  for (let i = 0; i < tokens.length; i++) {
-    const balance = await getBalance(
-      tokens[i],
-      Balance,
-      library,
-      chainId,
-      account
-    );
-    balances.push(balance);
-  }
-  return balances;
+  return { TokenList };
 };

@@ -26,11 +26,7 @@ import {
   smartFactory,
 } from "../../../../utils/Contracts";
 import { useActiveWeb3React } from "../../../../utils/hooks/useActiveWeb3React";
-import {
-  SMARTSWAPNFTSALES,
-  SMARTSWAPROUTER,
-  WNATIVEADDRESSES,
-} from "../../../../utils/addresses";
+import { SMARTSWAPROUTER, WNATIVEADDRESSES } from "../../../../utils/addresses";
 import {
   ExplorerDataType,
   getExplorerLink,
@@ -166,7 +162,6 @@ const SendToken = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentToPrice, setCurrentToPrice] = useState("");
   const [showNewChangesText, setShowNewChangesText] = useState(false);
-  // const [one, setOne] = useState([]);
 
   const { onCurrencySelection, onUserInput, onSwitchTokens } =
     useSwapActionHandlers();
@@ -327,7 +322,7 @@ const SendToken = () => {
   };
   // useTokenBalance()
   useEffect(() => {
-    if (!inputError) {
+    if (!inputError && account) {
       checkApproval();
     }
   }, [inputError, formattedAmounts[Field.INPUT], currencies[Field.INPUT]]);
