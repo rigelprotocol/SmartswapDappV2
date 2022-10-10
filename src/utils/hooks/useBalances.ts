@@ -24,6 +24,10 @@ export const useNativeBalance = () => {
   const trxState = useSelector<RootState>(
     (state) => state.application.modal?.trxState
   );
+
+  const refresh = useSelector<RootState>(
+    (state) => state.application.refresh
+  );
   const stateChanged: boolean = trxState === 2;
 
   useEffect(() => {
@@ -58,6 +62,9 @@ export const useRGPBalance = () => {
 
   const trxState = useSelector<RootState>(
     (state) => state.application.modal?.trxState
+  );
+  const refresh = useSelector<RootState>(
+    (state) => state.application.refresh
   );
   const stateChanged: boolean = trxState === 2;
 
