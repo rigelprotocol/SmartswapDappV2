@@ -56,16 +56,10 @@ export const useRGPBalance = () => {
   const { chainId, account, library } = useActiveWeb3React();
   const [RGPBalance, setRGPBalance] = useState("");
 
-<<<<<<< HEAD
-  const trxState = useSelector<RootState>((state) => state.application.modal?.trxState); 
-  const refresh = useSelector<RootState>((state) => state.application.refresh);
-  const stateChanged : boolean = trxState === 2;
-=======
   const trxState = useSelector<RootState>(
     (state) => state.application.modal?.trxState
   );
   const stateChanged: boolean = trxState === 2;
->>>>>>> develop
 
   useEffect(() => {
     const getBalance = async () => {
