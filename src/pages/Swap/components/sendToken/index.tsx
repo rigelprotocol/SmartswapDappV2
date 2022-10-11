@@ -477,7 +477,6 @@ const SendToken = () => {
               : ethers.utils.parseUnits(format3, 9).toString(),
         }
       );
-      console.log({sendTransaction},"wiiwi",sendTransaction.hash)
       const { confirmations, events } = await sendTransaction.wait(3);
 
       const { hash } = sendTransaction;
