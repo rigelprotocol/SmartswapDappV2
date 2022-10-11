@@ -519,7 +519,7 @@ const handleMaxInput = async () => {
    
     if (response && value) {
      
-      const response = await fetch(`http://localhost:7000/auto/instant`, {
+      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/instant`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -550,10 +550,16 @@ const handleMaxInput = async () => {
       let res =await response.json()
       console.log({res}) 
          dispatch(refreshTransactionTab({ refresh:Math.random() }))
-        dispatch(setRefresh())
-      if(res.type==="success"){
-     
+        dispatch(setRefresh()) 
+        dispatch(
+          setOpenModal({
+            message: `Swap Successful.`,
+            trxState: TrxState.TransactionSuccessful,
+          })
+        );
          
+      if(res.type==="success"){
+       
          onUserInput(Field.INPUT, "");
         setShowNewChangesText(false);
         setHasBeenApproved(true);
@@ -582,12 +588,7 @@ const handleMaxInput = async () => {
 //           })
 //         );
 //         },4000)
-dispatch(
-  setOpenModal({
-    message: `Swap Successful.`,
-    trxState: TrxState.TransactionSuccessful,
-  })
-);
+
         
       }else{
         dispatch(

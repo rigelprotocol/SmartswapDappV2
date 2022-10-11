@@ -108,6 +108,7 @@ export const calculateGas = async (
   const format1 = ethers.utils.formatUnits(addPriorityFee.toString(), 9);
   const format2 = ethers.utils.formatUnits(maxFee.toString(), 9);
   const format3 = ethers.utils.formatUnits(addGasFee.toString(), 9);
+  console.log({format1, format2, format3})
   return { format1, format2, format3 };
 };
 
@@ -554,6 +555,8 @@ const SendToken = () => {
         library,
         chainId as number
       );
+      console.log({ format1, format2, format3 });
+      console.log(ethers.utils.parseUnits(format1, 9).toString(),ethers.utils.parseUnits(format2, 9).toString(),ethers.utils.parseUnits(format3, 9).toString())
 
       const isEIP1559 = await library?.getFeeData();
       const sendTransaction = await route.swapETHForExactTokens(
@@ -580,6 +583,7 @@ const SendToken = () => {
               : ethers.utils.parseUnits(format3, 9).toString(),
         }
       );
+
       const { hash } = sendTransaction;
       const { confirmations, events } = await sendTransaction.wait(3);
 
