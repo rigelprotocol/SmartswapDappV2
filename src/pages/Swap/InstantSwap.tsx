@@ -483,6 +483,7 @@ const handleMaxInput = async () => {
           currencies[Field.OUTPUT]?.symbol
         }`,
         trxState: TrxState.WaitingForConfirmation,
+        text:"Processing"
       })
     );
     let currentDate = new Date();
@@ -569,9 +570,9 @@ const handleMaxInput = async () => {
           ExplorerDataType.TRANSACTION
         );
        
-        setDataSignature({mess:"",signature:""})
-        setTransactionSigned(false)
-        setSignatureFromDataBase(false)
+        // setDataSignature({mess:"",signature:""})
+        // setTransactionSigned(false)
+        // setSignatureFromDataBase(false)
         dispatch(
           addToast({
             message: `Swap ${formattedAmounts[Field.INPUT]} ${
@@ -600,9 +601,9 @@ const handleMaxInput = async () => {
       }
       GFailedTransaction("instant_swap","swapping transaction in the database","error",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
   
-      setDataSignature({mess:"",signature:""})
-      setTransactionSigned(false)
-      setSignatureFromDataBase(false)
+      // setDataSignature({mess:"",signature:""})
+      // setTransactionSigned(false)
+      // setSignatureFromDataBase(false)
       // setCheckedItem(false)
       setShowNewChangesText(false);
     }
