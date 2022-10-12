@@ -787,7 +787,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                     hash,
                     ExplorerDataType.TRANSACTION
                 );
-                GFarmingSuccessTransaction("farming", "unstake", val,"v2")
+                GFarmingSuccessTransaction("Farm", "unstake", val,"v2")
                 dispatch(
                     setOpenModal({
                         trxState: TrxState.TransactionSuccessful,
@@ -810,7 +810,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                 //callRefreshFarm(confirmations, status);
             } catch (e:any) {
                 console.log(e);
-                GFarmingFailedTransaction("farming", "unstake", e.message, val,"v2")
+                GFarmingFailedTransaction("Farm", "unstake", e.message, val,"v2")
                 dispatch(
                     setOpenModal({
                         trxState: TrxState.TransactionFailed,
@@ -956,7 +956,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                     const { hash } = withdraw;
 
                     if (confirmations >= 1 && status) {
-                        GFarmingSuccessTransaction("farming", "harvest", "RGP","v2")
+                        GFarmingSuccessTransaction("Farm", "harvest", "RGP","v2")
                         dispatch(
                             setOpenModal({
                                 trxState: TrxState.TransactionSuccessful,

@@ -152,7 +152,7 @@ export const slides = [
         backgroundImage: "/images/slides/slide7.png",
     },
     {
-        tittle: "Farming Pool available for NFTs",
+        tittle: "Farm Pool available for NFTs",
         backgroundImage: "/images/slides/slide6.png",
     }
     ,

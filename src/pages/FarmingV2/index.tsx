@@ -1851,7 +1851,7 @@ export function Index() {
         justifyContent={"space-between"}
         alignItems={"center"}
       >
-        <Heading fontSize={"24px"}>Farming</Heading>
+        <Heading fontSize={"24px"}>Farm</Heading>
         <Link
           href="https://docs.google.com/forms/d/e/1FAIpQLSdJGAuABrJd6d0WSprUWB140we9hGqa-IwIbonx9ZJhxN2zsg/viewform"
           _hover={{ textDecoration: "none" }}
@@ -2301,7 +2301,7 @@ export function Index() {
                         >
                           <Text fontSize="14px">
                             {selected === farmSection.PRODUCT_FARM
-                              ? "Auto-Period Product"
+                              ? "AutoTrade Product"
                               : "Deposit"}
                           </Text>
                           <Text ml={4} fontSize="14px">

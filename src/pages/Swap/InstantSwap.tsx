@@ -11,7 +11,7 @@ import {
   useSwapActionHandlers,
   useSwapState,
 } from '../../state/swap/hooks';
-import { binanceTestMarketArray,polygonMarketArray,binanceMarketArray } from "../../state/swap/hooks"
+import { binanceTestFreeMarketArray,binanceFreeMarketArray,polygonFreeMarketArray } from "../../state/swap/hooks"
 import { getERC20Token } from '../../utils/utilsFunctions';
 import { Field } from '../../state/swap/actions';
 import Web3 from 'web3';
@@ -48,22 +48,26 @@ import { useUserSlippageTolerance } from "../../state/user/hooks";
 import { useSelector,useDispatch } from 'react-redux';
 import { RootState } from "../../state";
 import { autoSwapV2, rigelToken } from '../../utils/Contracts';
-import { RGPADDRESSES, OTHERMARKETADDRESSES,MARKETAUTOSWAPADDRESSES, OTHERMARKETFACTORYADDRESSES, RGP } from '../../utils/addresses';
-import { setOpenModal, TrxState } from "../../state/application/reducer";
-import { changeFrequencyTodays } from '../../utils/utilsFunctions';
+import { RGPADDRESSES, OTHERMARKETADDRESSES,MARKETFREESWAPADDRESSES, OTHERMARKETFACTORYADDRESSES, RGP } from '../../utils/addresses';
+import { setOpenModal, setRefresh, TrxState } from "../../state/application/reducer";
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { refreshTransactionTab } from '../../state/transaction/actions';
-import MarketDropDown from '../../components/MarketDropDown';
 import { GButtonClick, GFailedTransaction, GSuccessfullyTransaction } from '../../components/G-analytics/gIndex';
 import { useHistory, useLocation } from 'react-router-dom';
 import { GetAddressTokenBalance } from '../../state/wallet/hooks';
+import { addToast } from '../../components/Toast/toastSlice';
+import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink';
+import { maxAmountSpend } from '../../utils/maxAmountSpend';
+import MarketFreeDropDown from '../../components/MarketFreeDropdown';
 
 
 
-const SetPrice = () => {
+const InstantSwap = () => {
   const [isMobileDevice] = useMediaQuery('(max-width: 750px)');
   const dispatch = useDispatch();
-  const location = useLocation().pathname;
+  const location = useLocation();
+  const pathname = useLocation().pathname
+  console.log({location},location.search.includes("bsc_test"))
   const borderColor = useColorModeValue('#DEE6ED', '#324D68');
   const iconColor = useColorModeValue('#666666', '#DCE6EF');
   const textColorOne = useColorModeValue('#333333', '#F1F5F8');
@@ -81,7 +85,7 @@ const SetPrice = () => {
   const [signatureFromDataBase, setSignatureFromDataBase] = useState(false)
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [selectedFrequency, setSelectedFrequency] = useState("5")
-  const [marketType, setMarketType] = useState("Smartswap")
+  const [marketType, setMarketType] = useState(location.search.includes("bsc_test") || location.search.includes("pn_mumbai") ? "Smartswap" : location.search.includes("bsc") ? "Pancakeswap" : "Quickswap")
   const [percentageChange, setPercentageChange] = useState<string>("0")
   const [approvalForFee, setApprovalForFee] = useState("")
   const [fee, setFee] = useState("")
@@ -106,6 +110,7 @@ const SetPrice = () => {
     currencies,
     bestTrade,
     parsedAmount,
+    getMaxValue,
     inputError,
     showWrap,
     pathSymbol,
@@ -126,13 +131,13 @@ const SetPrice = () => {
     [onUserInput]
   );
  useEffect(()=>{
-   let market = location.split("/").length===3? location.split("/")[2]:""
+   let market = pathname.split("/").length===3? pathname.split("/")[2]:""
    checkIfMarketExists(market,chainId)
 
- },[location,chainId])
+ },[pathname,chainId])
 
   const switchMarket = (market:string)=>{
-    routerHistory.push(`/autotrade/${market}`)
+    routerHistory.push(`/freeswap/${market}`)
   }
   useEffect(() => {
     async function checkIfSignatureExists() {
@@ -144,18 +149,17 @@ const SetPrice = () => {
       checkIfSignatureExists()
       getFee()
     }
-  }, [account])
+  }, [account,chainId,marketType])
 
 
+  const refresh = useSelector<RootState>((state) => state.application.refresh);
   
-  const deadline = useSelector<RootState, number>(
-    (state) => state.user.userDeadline
-  );
   const [allowedSlippage] = useUserSlippageTolerance();
   const getFee =async () => {
-    const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
+    const autoSwapV2Contract = await autoSwapV2(MARKETFREESWAPADDRESSES[marketType][chainId as number], library);
     try{
       const amountToApprove = await autoSwapV2Contract.fee()
+      console.log({amountToApprove},MARKETFREESWAPADDRESSES[marketType][chainId as number])
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
     // const fee= "10"
     setFee(fee)
@@ -167,9 +171,9 @@ const SetPrice = () => {
   }
   const checkIfMarketExists = (market:string,chainId:number| undefined) => {
     let marketArray:any
-    if(chainId === 56) marketArray = binanceMarketArray
-    else if(chainId === 97) marketArray = binanceTestMarketArray
-    else if(chainId === 137) marketArray = polygonMarketArray
+    if(chainId === 56) marketArray = binanceFreeMarketArray
+    else if(chainId === 97) marketArray = binanceTestFreeMarketArray
+    else if(chainId === 137) marketArray = polygonFreeMarketArray
     if(marketArray && marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())){
       let item = marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())
       setMarketType(item.name.charAt(0).toUpperCase() + item.name.slice(1))
@@ -202,7 +206,7 @@ const SetPrice = () => {
   const [balance] = GetAddressTokenBalance(
     currencies[Field.INPUT] ?? undefined
   );
-  useEffect(async () => {
+  useEffect(() => {
     const checkBalance = async ()=>{
      if(currencies[Field.INPUT]?.symbol==="RGP"){
       let fee =await getFee()
@@ -221,7 +225,7 @@ const SetPrice = () => {
     } 
     }
     
-   await checkBalance()
+   checkBalance()
   }, [balance, formattedAmounts[Field.INPUT],totalNumberOfTransaction]);
   useEffect(() => {
     async function runCheck() {
@@ -247,7 +251,7 @@ const SetPrice = () => {
   const minimumAmountToReceive = useCallback(
     () =>{
       let data
-      if(percentageChange && userOutputPrice){
+      if(userOutputPrice){
        data = ((100 - Number(allowedSlippage / 100)) / 100) * userOutputPrice
       }else{
         data=0
@@ -282,18 +286,17 @@ const SetPrice = () => {
 
  
   
-    useEffect(async () => {      
+    useEffect(() => {      
       onMarketSelection(OTHERMARKETFACTORYADDRESSES[marketType][chainId as number],OTHERMARKETADDRESSES[marketType][chainId as number])
     // }
   }, [chainId,marketType])
   
   const checkForApproval = async () => {
-    const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
+    const autoSwapV2Contract = await autoSwapV2(MARKETFREESWAPADDRESSES[marketType][chainId as number], library);
     
     // check approval for RGP and the other token
     const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
     const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
-    console.log({tokenBalance,RGPBalance})
     const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
     // const fee ="10"
@@ -317,7 +320,6 @@ const SetPrice = () => {
     } else{
       setApprovalForToken(currencies[Field.INPUT]?.wrapped?.symbol ?? "")
     }
-    console.log(parseFloat(RGPBalance),parseFloat(tokenBalance),parseFloat(formattedAmounts[Field.INPUT]) * frequency)
     if (parseFloat(RGPBalance) < parseFloat(fee) || (parseFloat(tokenBalance) < parseFloat(formattedAmounts[Field.INPUT]) * frequency && (!currencies[Field.INPUT]?.isNative && currencies[Field.INPUT]?.wrapped?.symbol === "RGP" ))) {
       setHasBeenApproved(false)
       setApprovalForFee("RGP")
@@ -340,8 +342,8 @@ const SetPrice = () => {
     if (account !== undefined) {
       // try {
         let web3 = new Web3(Web3.givenProvider);
-        const permitHash = process.env.REACT_APP_PERMIT_HASH;
-
+        const permitHash = "0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9";
+        // const permitHash = process.env.REACT_APP_PERMIT_HASH;
          const mess = permitHash &&  web3.utils.soliditySha3(permitHash)
         
          if(account && mess){
@@ -361,7 +363,6 @@ const SetPrice = () => {
     }
 
   }
-
   const approveOneOrTwoTokens = async (tokenApprovingFor:string) => {
     if (currencies[Field.INPUT]?.isNative) {
       setHasBeenApproved(true);
@@ -391,7 +392,7 @@ const SetPrice = () => {
           console.log({amountToApprove,walletBal,walletBalString})
           
           const approveTransaction = await rgp.approve(
-            MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
+            MARKETFREESWAPADDRESSES[marketType][chainId as number],
             ethers.utils.parseUnits(amountToApprove.toString(),currencies[Field.INPUT]?.decimals).toString(),
             {
               from: account,
@@ -419,7 +420,7 @@ const SetPrice = () => {
           const amountToApprove = walletBalString > parseFloat(formattedAmounts[Field.INPUT]) * frequency ? walletBalString : parseFloat(formattedAmounts[Field.INPUT]) * frequency
           console.log({amountToApprove,walletBal})
           const approveTransaction = token && await token?.approve(
-            MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
+            MARKETFREESWAPADDRESSES[marketType][chainId as number],
             ethers.utils.parseUnits(amountToApprove.toString(),currencies[Field.INPUT]?.decimals).toString(),
             {
               from: account,
@@ -435,10 +436,10 @@ const SetPrice = () => {
             );
           }
           
-          GSuccessfullyTransaction("auto_period","Approval",currencies[Field.INPUT]?.symbol)
+          GSuccessfullyTransaction("freeswap","Approval",currencies[Field.INPUT]?.symbol)
         }
       }catch(e:any){
-        GFailedTransaction("straight_swap","approval",e.message,currencies[Field.INPUT]?.symbol)
+        GFailedTransaction("freeswap","approval",e.message,currencies[Field.INPUT]?.symbol)
       }
         setApprovalForToken("")
       
@@ -459,27 +460,40 @@ const setQuantityValue =() =>{
  return value
 }
 
+const handleMaxInput = async () => {
+  const value = await getMaxValue(currencies[Field.INPUT], library);
+  const maxAmountInput = maxAmountSpend(value, currencies[Field.INPUT]);
+  if (maxAmountInput) {
+    onUserInput(Field.INPUT, maxAmountInput);
+  }
+};
+
   const sendTransactionToDatabase = async () => {
     GButtonClick("auto_period","sending transaction to database",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
     try{
       
      
-    const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
+    const autoSwapV2Contract = await autoSwapV2(MARKETFREESWAPADDRESSES[marketType][chainId as number], library);
+    let value = setQuantityValue()
     dispatch(
       setOpenModal({
-        message: `Signing initial transaction between ${currencies[Field.INPUT]?.symbol} and ${currencies[Field.OUTPUT]?.symbol}`,
+        message: `Swapping ${formattedAmounts[Field.INPUT]} ${
+          currencies[Field.INPUT]?.symbol
+        } for ${formattedAmounts[Field.OUTPUT]} ${
+          currencies[Field.OUTPUT]?.symbol
+        }`,
         trxState: TrxState.WaitingForConfirmation,
+        text:"Processing"
       })
     );
     let currentDate = new Date();
-    let futureDate = currentDate.getTime() + deadline;
+    let futureDate = currentDate.getTime() + 20;
     let data, response
-    let value = setQuantityValue()
     try{ 
        
        if (currencies[Field.INPUT]?.isNative) {
    
-      
+      console.log({value},Web3.utils.toWei(value.toString(), 'ether'),"uuuu",futureDate,pathArray)
       data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
         pathArray,
         futureDate,
@@ -499,25 +513,14 @@ const setQuantityValue =() =>{
     }
     }catch(e){
       console.log({e})
-      dispatch(
-      setOpenModal({
-        message: "Signing initial transaction",
-        trxState: TrxState.TransactionFailed,
-      })
-    );
+    
     }
     // setQuantity(quantity)
     let orderID = await autoSwapV2Contract.orderCount()
    
     if (response && value) {
-      dispatch(
-        setOpenModal({
-          message: "Storing Transaction",
-          trxState: TrxState.WaitingForConfirmation,
-        })
-      );
-      const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)//
-      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/add`, {
+     
+      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/instant`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -529,42 +532,78 @@ const setQuantityValue =() =>{
         body: JSON.stringify({
           address: account,
           chainID: chainId,
-          frequency: selectedFrequency,
-          frequencyNumber: changeFrequencyToday.days,
-          presentDate: changeFrequencyToday.today,
-          presentInterval: changeFrequencyToday.interval,
           fromAddress: currencies[Field.INPUT]?.isNative ? "native" : currencies[Field.INPUT]?.wrapped.address,
           toAddress: currencies[Field.OUTPUT]?.isNative ? "native" : currencies[Field.OUTPUT]?.wrapped.address,
           dataSignature,
-          percentageChange,
           fromNumberOfDecimals: currencies[Field.INPUT]?.isNative ? 18 : currencies[Field.INPUT]?.wrapped.decimals,
+          type:"free",
           toNumberOfDecimals: currencies[Field.OUTPUT]?.isNative ? 18 : currencies[Field.OUTPUT]?.wrapped.decimals,
           fromPrice: `${value}`,
           currentToPrice: formattedAmounts[Field.OUTPUT],
           orderID: currencies[Field.INPUT]?.isNative ? parseInt(orderID.toString()) : parseInt(orderID.toString()) + 1,
-          type: "Auto Time",
-          userExpectedPrice: userOutputPrice,
-          totalNumberOfTransaction:parseInt(totalNumberOfTransaction),
           slippage:Number(allowedSlippage / 100),
           pathArray,
           minimum,
-          situation,
           pathSymbol,
           market:marketType
         })
       })
       let res =await response.json()
-      console.log({res})
-      dispatch(
-        setOpenModal({
-          message: "Successfully stored Transaction",
-          trxState: TrxState.TransactionSuccessful,
-        })
-      );
-      GSuccessfullyTransaction("auto_period","storing transaction to the database",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
-      dispatch(refreshTransactionTab({ refresh:Math.random() }))
-      onUserInput(Field.INPUT, "");
-      setSignatureFromDataBase(true)
+      console.log({res}) 
+         dispatch(refreshTransactionTab({ refresh:Math.random() }))
+        dispatch(setRefresh()) 
+        dispatch(
+          setOpenModal({
+            message: `Swap Successful.`,
+            trxState: TrxState.TransactionSuccessful,
+          })
+        );
+         
+      if(res.type==="success"){
+       
+         onUserInput(Field.INPUT, "");
+        setShowNewChangesText(false);
+        setHasBeenApproved(true);
+        const explorerLink = getExplorerLink(
+          chainId as number,
+          res.information.transactionHash,
+          ExplorerDataType.TRANSACTION
+        );
+       
+        // setDataSignature({mess:"",signature:""})
+        // setTransactionSigned(false)
+        // setSignatureFromDataBase(false)
+        dispatch(
+          addToast({
+            message: `Swap ${formattedAmounts[Field.INPUT]} ${
+              currencies[Field.INPUT]?.symbol
+            } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol}`,
+            URL: explorerLink,
+          })
+        );
+//         setTimeout(()=>{
+// dispatch(
+//           setOpenModal({
+//             message: `Swap Successful.`,
+//             trxState: TrxState.TransactionSuccessful,
+//           })
+//         );
+//         },4000)
+
+        
+      }else{
+        dispatch(
+          setOpenModal({
+            message: `Swap Failed.`,
+            trxState: TrxState.TransactionFailed,
+          })
+        ); 
+      }
+      GFailedTransaction("instant_swap","swapping transaction in the database","error",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
+  
+      // setDataSignature({mess:"",signature:""})
+      // setTransactionSigned(false)
+      // setSignatureFromDataBase(false)
       // setCheckedItem(false)
       setShowNewChangesText(false);
     }
@@ -573,7 +612,7 @@ const setQuantityValue =() =>{
     GFailedTransaction("auto_period","storing transaction to database","error",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
     dispatch(
       setOpenModal({
-        message: "Storing Transaction failed",
+        message: "Swapping Transaction failed",
         trxState: TrxState.TransactionFailed,
       })
     );
@@ -590,7 +629,7 @@ const setQuantityValue =() =>{
       const status = await getERC20Token(tokenAddress, library);
       const check = await status.allowance(
         account,
-        MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
+        MARKETFREESWAPADDRESSES[marketType][chainId as number],
         {
           from: account,
         }
@@ -610,7 +649,7 @@ const setQuantityValue =() =>{
       const status = await rigelToken(tokenAddress, library);
       const check = await status.allowance(
         account,
-        MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
+        MARKETFREESWAPADDRESSES[marketType][chainId as number],
         {
           from: account,
         }
@@ -648,31 +687,32 @@ const setQuantityValue =() =>{
             >
               <SwapSettings />
               <From
-                onUserInput={handleTypeInput}
-                onCurrencySelection={onCurrencySelection}
-                currency={currencies[Field.INPUT]}
-                otherCurrency={currencies[Field.OUTPUT]}
-                value={typedValue}
-              />
+          onUserInput={handleTypeInput}
+          onCurrencySelection={onCurrencySelection}
+          currency={currencies[Field.INPUT]}
+          otherCurrency={currencies[Field.OUTPUT]}
+          onMax={handleMaxInput}
+          value={formattedAmounts[Field.INPUT]}
+          placeholder="0.0"
+        />
               <Flex justifyContent="center" onClick={onSwitchTokens}>
                 <SwitchIcon />
               </Flex>
               <Box borderColor={borderColor} borderWidth="1px" borderRadius="6px"  px={3} py={3}  mt={4}>
 
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={1} width="100%">
-                  <To
-                    onUserOutput={handleTypeOutput}
-                    onCurrencySelection={onCurrencySelection}
-                    currency={currencies[Field.OUTPUT]}
-                    otherCurrency={currencies[Field.INPUT]}
-                    value=""
-                    disable={true}
-                    display={true}
-                  />
+                <To
+          onCurrencySelection={onCurrencySelection}
+          currency={currencies[Field.OUTPUT]}
+          otherCurrency={currencies[Field.INPUT]}
+          value={formattedAmounts[Field.OUTPUT]}
+          onUserOutput={handleTypeOutput}
+          placeholder="0.0"
+        />
                 </Box>
                 <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={routerBgcolor}>
                   <Flex>
-                  <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
+                  <MarketFreeDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
 
                     <Spacer />
                     <VStack>
@@ -687,142 +727,10 @@ const setQuantityValue =() =>{
                 </Box>
               </Box>
 
-              <Box mt={5}>
-                <Center borderColor={iconColor} borderWidth="1px" borderRadius={4} w="20px" h="20px" cursor="pointer">
-                  <VectorIcon />
-                </Center>
-                <Spacer />
-                {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
-                  <>
-                    <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.INPUT]?.symbol} = {unitAmount && parseFloat(unitAmount) >0 ? unitAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.OUTPUT]?.symbol}
-                    </Text>
-                    <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount && parseFloat(oppositeAmount)>0 ? oppositeAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.INPUT]?.symbol}
-                    </Text>
-                    <ExclamationIcon />
-                  </>
-
-                }
-
-              </Box>
-              <Box display="flex" mt={5}>
-                <VStack>
-                  <Flex>
-                    <Text fontSize="14px" mr={2}>
-                      Swap if price changes by
-                    </Text>
-                    <ExclamationIcon />
-                  </Flex>
-                  <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
-                    <Input placeholder="0" w="60px" value={percentageChange} type="number" onChange={e => {
-                      if (parseFloat(e.target.value) > 100) {
-                        setPercentageChange("100")
-                      } else {
-                        setPercentageChange(e.target.value)
-                      }
-
-                    }} />
-                    <InputRightAddon children="%" fontSize="16px" />
-                  </InputGroup>
-                </VStack>
-                <Spacer />
-                <VStack>
-                  <Flex>
-                    <Text fontSize="14px" mr={2}>
-                      Swap Every
-                    </Text>
-                    <ExclamationIcon />
-                  </Flex>
-                  <Menu>
-      <MenuButton
-        variant="ghost"
-        as={Button}
-        transition="all 0.2s"
-        rightIcon={<ChevronDownIcon />}
-        fontWeight={200}
-        _focus={{ color: "#319EF6" }}
-        fontSize="13px"
-        textTransform={'capitalize'}
-        border ="1px solid white"
-      >
-      5 minutes
-      </MenuButton>
-      <MenuList>
-        {["5","30","60","daily","weekly","monthly"].map((item:string,index)=>(
-          <MenuItem key={index} _focus={{ color: "#319EF6" }} onClick={(e) => setSelectedFrequency(item)} fontSize="13px">
-         {parseInt(item) ? `${item} minutes` : item}
-        </MenuItem>
-        ))
-
-        }
-        
-      </MenuList>
-    </Menu>
-                </VStack>
-              </Box>
-              <Flex mt={5} justifyContent="space-between">
-                <VStack>
-                  <Flex>
-                  <Text fontSize="14px" mr={2} ml="-63px">
-                      Range
-                    </Text>
-                    <ExclamationIcon />
-                  </Flex>
-                  <Box>
-                    <Tabs
-            colorScheme="#2D276A"
-            background="#F2F5F8"
-            borderRadius="4px"
-            // ml="-63px"
-          >
-            <TabList>
-              <Tab
-                // padding="8px 34px"
-                padding="7px"
-                background={situation==="above" ? "#319EF6" : ""}
-                color={situation!=="above" ? "#319EF6" : ""}
-                borderRadius="4px"
-                border="none"
-                onClick={() => setSituation('above')}
-                                isDisabled ={parseFloat(percentageChange)<=0 || percentageChange ===""?true:false}
-              >
-                Above
-              </Tab>
-              <Tab
-                padding="7px"
-                background={situation==="below" ? "#319EF6" : ""}
-                color={situation!=="below" ? "#319EF6" : ""}
-                border="none"
-                borderRadius="4px"
-                onClick={() => setSituation('below')}
-                                isDisabled ={parseFloat(percentageChange)<=0 || percentageChange ===""?true:false}
-              >
-                Below
-              </Tab>
-            </TabList>
-          </Tabs>
-                  </Box>
-          
-                </VStack>
-                <Flex mt={10} justifyContent="space-between">
-                  <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{fee} RGP</Text>
+              <Flex mt={10} justifyContent="space-between">
+                  <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{currencies[Field.INPUT]?.isNative ? "Not Free" : "Free"}</Text>
                 </Flex>
-                <VStack>
-                  <Flex>
-                    <Text fontSize="14px" mr={2}>
-                      Frequency
-                    </Text>
-                    <ExclamationIcon />
-                  </Flex>
-                  <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
-                    <Input placeholder="0" w="80px" value={totalNumberOfTransaction} type="number" onChange={e => {
-                      setTotalNumberOfTransaction(e.target.value)
-                    }} />
-                    <InputRightAddon children="times" fontSize="16px"padding="3px" />
-                  </InputGroup>
-                </VStack>
-              </Flex>
+            
               <Box mt={5}>
               {insufficientBalance || inputError ?( 
             <Button
@@ -942,12 +850,14 @@ const setQuantityValue =() =>{
             >
               <SwapSettings />
               <From
-                onUserInput={handleTypeInput}
-                onCurrencySelection={onCurrencySelection}
-                currency={currencies[Field.INPUT]}
-                otherCurrency={currencies[Field.OUTPUT]}
-                value={typedValue}
-              />
+          onUserInput={handleTypeInput}
+          onCurrencySelection={onCurrencySelection}
+          currency={currencies[Field.INPUT]}
+          otherCurrency={currencies[Field.OUTPUT]}
+          onMax={handleMaxInput}
+          value={formattedAmounts[Field.INPUT]}
+          placeholder="0.0"
+        />
               <Flex justifyContent="center" onClick={onSwitchTokens}>
                 <SwitchIcon />
               </Flex>
@@ -956,165 +866,36 @@ const setQuantityValue =() =>{
 
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
 
-                  <To
-                    onUserOutput={handleTypeOutput}
-                    onCurrencySelection={onCurrencySelection}
-                    currency={currencies[Field.OUTPUT]}
-                    otherCurrency={currencies[Field.INPUT]}
-                    display={true}
-                    value=""
-                  />
+                <To
+          onCurrencySelection={onCurrencySelection}
+          currency={currencies[Field.OUTPUT]}
+          otherCurrency={currencies[Field.INPUT]}
+          value={formattedAmounts[Field.OUTPUT]}
+          onUserOutput={handleTypeOutput}
+          placeholder="0.0"
+        />
+
                 </Box>
 
               
                 <Box  borderColor={borderTwo} borderWidth="2px" borderRadius="6px" mt={5} pt={4} pb={4} pr={2} pl={2} bg={routerBgcolor}>
                   <Flex>
-                  <MarketDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
+                  <MarketFreeDropDown marketType={marketType} setMarketType={setMarketType} chainID={chainId} switchMarket={switchMarket}/>
 
                     <Spacer />
                     <VStack>
-                      <Text fontSize="24px" color={textColorOne} textAlign="right" isTruncated width="160px" >
+                      {/* <Text fontSize="24px" color={textColorOne} textAlign="right" isTruncated width="160px" >
                       {formattedAmounts[Field.OUTPUT]}
-                      </Text>
+                      </Text> */}
                     </VStack>
                   </Flex>
                 </Box>
               </Box>
 
-              <Box mt={5}>
-              {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
-                  <>
-                    <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.INPUT]?.symbol} = {unitAmount && parseFloat(unitAmount) >0 ? unitAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.OUTPUT]?.symbol}
-                    </Text>
-                    <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount && parseFloat(oppositeAmount)>0 ? oppositeAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.INPUT]?.symbol}
-                    </Text>
-                    <ExclamationIcon />
-                  </>
-
-                }
-
-
-              </Box>
-              <Box display="flex" mt={5}>
-                <VStack>
-                  <Flex>
-                    <Text fontSize="14px" mr={2}>
-                      Swap if price changes by
-                    </Text>
-                    <ExclamationIcon />
-                  </Flex>
-                  <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
-                    <Input placeholder="0" w="60px" value={percentageChange} type="number" onChange={e => {
-                      if (parseFloat(e.target.value) > 100) {
-                        setPercentageChange("100")
-                      } else {
-                        setPercentageChange(e.target.value)
-                      }
-
-                    }} />
-                    <InputRightAddon children="%" fontSize="16px" />
-                  </InputGroup>
-                </VStack>
-                <Spacer />
-                <VStack>
-                  <Flex>
-                    <Text fontSize="14px" mr={2}>
-                      Swap Every
-                    </Text>
-                    <ExclamationIcon />
-                  </Flex>
-                  <Menu>
-      <MenuButton
-        variant="ghost"
-        as={Button}
-        transition="all 0.2s"
-        rightIcon={<ChevronDownIcon />}
-        fontWeight={200}
-        _focus={{ color: "#319EF6" }}
-        fontSize="13px"
-        textTransform={'capitalize'}
-        border ="1px solid white"
-        padding={1}
-      >
-      {parseInt(selectedFrequency) ? `${selectedFrequency} minutes` : selectedFrequency}
-      </MenuButton>
-      <MenuList>
-        {["5","10","30","60","daily","weekly","monthly"].map((item:string,index)=>(
-          <MenuItem key={index} _focus={{ color: "#319EF6" }} onClick={(e) => setSelectedFrequency(item)} fontSize="13px">
-         {parseInt(item) ? `${item} minutes` : item}
-        </MenuItem>
-        ))
-
-        }
-        
-      </MenuList>
-    </Menu>
-                </VStack>
-              </Box>
-              <Flex mt={5} justifyContent="space-between">
-                <VStack>
-                  <Flex>
-                  <Text fontSize="14px" mr={2} ml="-63px">
-                      Range
-                    </Text>
-                    <ExclamationIcon />
-                  </Flex>
-                  <Box>
-                    <Tabs
-            colorScheme="#2D276A"
-            background="#F2F5F8"
-            borderRadius="4px"
-            // ml="-63px"
-          >
-            <TabList>
-              <Tab
-                // padding="8px 34px"
-                padding="7px"
-                background={situation==="above" ? "#319EF6" : ""}
-                color={situation!=="above" ? "#319EF6" : ""}
-                borderRadius="4px"
-                border="none"
-                onClick={() => setSituation('above')}
-                                isDisabled ={parseFloat(percentageChange)<=0 || percentageChange ===""?true:false}
-              >
-                Above
-              </Tab>
-              <Tab
-                padding="7px"
-                background={situation==="below" ? "#319EF6" : ""}
-                color={situation!=="below" ? "#319EF6" : ""}
-                border="none"
-                borderRadius="4px"
-                onClick={() => setSituation('below')}
-                                isDisabled ={parseFloat(percentageChange)<=0 || percentageChange ===""?true:false}
-              >
-                Below
-              </Tab>
-            </TabList>
-          </Tabs>
-                  </Box>
-          
-                </VStack>
-                <Flex mt={10} justifyContent="space-between">
-                  <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{fee} RGP</Text>
+             
+               <Flex mt={10} justifyContent="space-between">
+               <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{currencies[Field.INPUT]?.isNative ? "Not Free" : "Free"}</Text>
                 </Flex>
-                <VStack>
-                  <Flex>
-                    <Text fontSize="14px" mr={2}>
-                      Frequency
-                    </Text>
-                    <ExclamationIcon />
-                  </Flex>
-                  <InputGroup size="md" borderRadius="4px" borderColor={borderColor}>
-                    <Input placeholder="0" w="80px" value={totalNumberOfTransaction} type="number" onChange={e => {
-                      setTotalNumberOfTransaction(e.target.value)
-                    }} />
-                    <InputRightAddon children="times" fontSize="16px"padding="3px" />
-                  </InputGroup>
-                </VStack>
-              </Flex>
               <Box mt={5}>
                 {insufficientBalance || inputError ?( 
             <Button
@@ -1222,12 +1003,10 @@ const setQuantityValue =() =>{
         setShowModal={setShowModal}
         from={currencies[Field.INPUT]?.symbol}
         to={currencies[Field.OUTPUT]?.symbol}
-        title="Confirm Auto time"
+        title="Confirm Freeswap"
         inputLogo={currencies[Field.INPUT]?.logoURI}
+        instant={true}
         outputLogo={currencies[Field.OUTPUT]?.logoURI}
-        frequency={selectedFrequency}
-        numberOfTransaction={totalNumberOfTransaction}
-        percentageChange={percentageChange}
         buttonText={signatureFromDataBase ? "Send Transaction" : "Sign Wallet"}
         fromDeposited={formattedAmounts[Field.INPUT]}
         toDeposited={userOutputPrice.toString()}
@@ -1236,7 +1015,6 @@ const setQuantityValue =() =>{
         slippage={Number(allowedSlippage / 100)}
         showNewChangesText={showNewChangesText}
         pathSymbol={pathSymbol}
-        situation={situation}
         quantity={currencies[Field.INPUT]?.isNative ? quantity : ""}
         market={marketType}
       />
@@ -1244,4 +1022,4 @@ const setQuantityValue =() =>{
   )
 }
 
-export default SetPrice
+export default InstantSwap

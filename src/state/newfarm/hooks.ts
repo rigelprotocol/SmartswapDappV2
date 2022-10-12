@@ -671,7 +671,7 @@ const getUserValue = async ()=> {
       console.log({tokenStaked},tokenStaked.toString(),Web3.utils.fromWei(tokenStaked.toString()))
 
       return {
-        feature:"Auto Period",
+        feature:"AutoTrade",
         percentageProfitShare:"25%",
         profitTimeLine:"6 months",
         totalLiquidity:"188839",

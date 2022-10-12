@@ -99,7 +99,7 @@ export default function Carousel() {
           <SliderTab title={'AUTOMATED LIQUIDITY FOR NFTs'} sideImage={Exchange} background={apeKing} smallText={'Easy sell for cash'}  widthSize={'65%'}/>
           <SliderTab title={'ART GETTING FEATURES IN OUR METAVERSE WORLD.'} background={art} widthSize={'75%'}/>
           <SliderTab title={'RENT NFTs'} background={rent} />
-          <SliderTab title={'FARMING POOL AVAILABLE FOR NFTs'} background={pool} widthSize={'65%'}/>
+          <SliderTab title={'FARM POOL AVAILABLE FOR NFTs'} background={pool} widthSize={'65%'}/>
       </Slider>
     </Box>
   );

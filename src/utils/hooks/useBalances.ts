@@ -24,6 +24,10 @@ export const useNativeBalance = () => {
   const trxState = useSelector<RootState>(
     (state) => state.application.modal?.trxState
   );
+
+  const refresh = useSelector<RootState>(
+    (state) => state.application.refresh
+  );
   const stateChanged: boolean = trxState === 2;
 
   useEffect(() => {
@@ -47,7 +51,7 @@ export const useNativeBalance = () => {
       }
     };
     getBalance();
-  }, [account, library, chainId, stateChanged]);
+  }, [account, library, chainId, stateChanged,refresh]);
 
   return [Balance, Symbol, Name, Logo];
 };
@@ -58,6 +62,9 @@ export const useRGPBalance = () => {
 
   const trxState = useSelector<RootState>(
     (state) => state.application.modal?.trxState
+  );
+  const refresh = useSelector<RootState>(
+    (state) => state.application.refresh
   );
   const stateChanged: boolean = trxState === 2;
 
@@ -81,7 +88,7 @@ export const useRGPBalance = () => {
     };
 
     getBalance();
-  }, [account, chainId, stateChanged]);
+  }, [account, chainId, stateChanged,refresh]);
 
   return [RGPBalance];
 };

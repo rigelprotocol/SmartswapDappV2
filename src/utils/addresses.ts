@@ -177,18 +177,43 @@ export const MARKETAUTOSWAPADDRESSES: {
   [key: string]: { [key: string]: string };
 } = {
   Smartswap: {
-    "56": "0x599cdB1A76b5cc3906585de2ED6c790a8bAA528f",
+    "56": "0xd74FcF75e4F3a81fa215d8585A73B2e1f5714638",
     "97": "0xc1F5014098DBb6CCCc28F9365316533905f591EB",
-    "137": "0xd4d76dDAA597aE0B8B20d801EE7e528DE2E9f033",
+    "137": "0x4eEDB8D37bEbB42642d248E76de1d5718dDbBe8a",
   },
   Pancakeswap: {
-    "56": "0xffD1e82d1B46B0d5D6Caf1BCdF5edb6FCA0A2455",
+    "56": "0x5C2f68392a4035df67800EbeDfD0Bb8FbF3CA61b",
     "97": "0x",
   },
   Quickswap: {
-    "137": "0x8F83C8012e705B04141FDF6A2fc2f7a8243A2345",
+    "137": "0x748CDf88B4e3f42A00650949E7A16bc90B2C4c3a",
   },
 };
+export const MARKETFREESWAPADDRESSES: {
+  [key: string]: { [key: string]: string };
+} = {
+  Smartswap: {
+    "56": "0x",
+    "97": "0x0Fb048390D8344039473E3C460eD4D2368c0cDDd",
+    "137": "0x",
+    "80001":"0x832c868A31DA33D40f69AF0c599E2C420a6e86c2"
+  },
+  Pancakeswap: {
+    "56": "0x7A3B6A66b6a4a74EeF3C0a291fa5621Ec252529b",
+    "97": "0x",
+  },
+  Quickswap: {
+    "137": "0x7c366961554c0E628C078FC990Df585b261b92f9",
+  },
+};
+
+export const FREESWAPACCOUNT: { [key: string]: string } = {
+  "56": "0xeBD0329E00B92898C9Ad614b001FdBD1d0e3E19D",
+  "97": "0x2fd48250aEdFE45D6BB9c22e4893F75A655D8e79",
+  "80001": "0x2fd48250aEdFE45D6BB9c22e4893F75A655D8e79",
+  "137": "0xeBD0329E00B92898C9Ad614b001FdBD1d0e3E19D",
+  
+}
 export const OTHERMARKETADDRESSES: {
   [key: string]: { [key: string]: string };
 } = {
