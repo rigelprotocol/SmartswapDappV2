@@ -123,7 +123,7 @@ const Index = () => {
                   <BridgeDropdown />
                   <EarnDropdown />
                   {/* <Nav label="Liquidity" to="/pool" active={location === '/add' || location === '/remove' ? true : false} />
-                  <Nav label="Farming" to="/farming-v2"  /> */}
+                  <Nav label="Farm" to="/farm-v2"  /> */}
                   <Nav label="NFTs" to={`/nft${search}`} />
                   <Nav label="SmartBid" to={`/smartbid${search}`} />
                 </Flex>

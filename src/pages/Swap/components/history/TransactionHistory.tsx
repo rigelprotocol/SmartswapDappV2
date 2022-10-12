@@ -78,14 +78,14 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
        
         <Flex py={2}>
           <Flex mr={4}>
-            <img src={data.token1Icon || TokenIcon} width={25} height={25} alt="logo" />
+            <img src={data.token1Icon || TokenIcon} width={25} height={25} alt="l" />
             <Text fontSize="sm" color={activeTabColor} ml={2}>
               {data.amountIn} <span>{data.token1.symbol}</span>
             </Text>
           </Flex>
           <ArrowRightIcon />
           <Flex ml={4}>
-            <img src={data.token2Icon || TokenIcon} width={25} height={25} alt="logo" />
+            <img src={data.token2Icon || TokenIcon} width={25} height={25} alt="l" />
             <Text fontSize="sm" color={activeTabColor} ml={2}>
             {data.amountOut} <span>{data.token2.symbol}</span>
             </Text>
@@ -104,7 +104,7 @@ const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: 
               Type
             </Text>
             <Text color={activeTabColor} fontSize="14px" fontWeight="regular">
-              {data.name ? data.name : "Straight Swap"}
+              {data.name ? data.name : "Swap"}
             </Text>
           </Box>
           <Box>
