@@ -121,7 +121,6 @@ export const CHAIN_INFO: ChainInfo = {
   [SupportedChainId.AVALANCHE_FUJI]: {
     docs: "",
     explorer: "https://testnet.snowtrace.io/",
-    // explorer: "https://api.avax-test.network/ext/bc/C/rpc",
     infoLink: "",
     label: "Avalanche Fuji Testnet",
     nativeCurrency: { name: "Avalanche", symbol: "AVAX", decimals: 18 },

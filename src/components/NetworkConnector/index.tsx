@@ -129,9 +129,11 @@ function NetworkIndicator() {
               <Img w="30px" src={OASISLOGO} />
             ) : info.label == "Oasis Emerald Mainnet" ? (
               <Img w="30px" src={OASISLOGO} />
-            ) : info.label.toLowerCase() === "Avalanche Fuji TestNet".toLowerCase() ? (
-              <Img w="30px" src={AVAXLOGO} />
-            ) : (
+            ) 
+            // : info.label.toLowerCase() === "Avalanche Fuji TestNet".toLowerCase() ? (
+            //   <Img w="30px" src={AVAXLOGO} />
+            // )
+             : (
               <EthereumIcon />
             )}
           </Box>
@@ -275,7 +277,7 @@ function NetworkIndicator() {
                 <Box>{CHAIN_INFO[43114].label}</Box>
               </Flex>
             </Flex>
-            <Flex
+            {/* <Flex
               backgroundColor={mode === "dark" ? "#15202B" : "#FFFFFF"}
               border={
                 mode === "dark" ? "1px solid #324D68" : "1px solid #DEE6ED"
@@ -285,7 +287,7 @@ function NetworkIndicator() {
               py={4}
               mb={4}
               cursor="pointer"
-              onClick={() => changeNetwork("0xA86A", 43113)}
+              onClick={() => changeNetwork("0xA869", 43113)}
             >
               <Flex>
                 <Box px={2}>
@@ -293,7 +295,7 @@ function NetworkIndicator() {
                 </Box>
                 <Box>{CHAIN_INFO[43113].label}</Box>
               </Flex>
-            </Flex>
+            </Flex> */}
           </Flex>
         </ModalContent>
       </Modal>
