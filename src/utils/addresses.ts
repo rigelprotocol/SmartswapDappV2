@@ -107,7 +107,7 @@ export const WNATIVEADDRESSES: { [key: string]: string } = {
   "80001": "0x9d91d1f8Ac4CF6C698a1a15c738323E2ad6F23E4",
   "42261": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
   "42262": "0x21C718C22D52d0F3a789b752D4c2fD5908a8A733",
-  "43114":"0x",
+  "43114":"0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
   "43113":"0x9F34cca17962be33DEDDF0FD9EB6409744535e9b", // testnet fuji
 };
 
@@ -120,7 +120,7 @@ export const WNATIVEADDRESSESSYMBOL: { [key: string]: string } = {
   "80001": "0x9d91d1f8Ac4CF6C698a1a15c738323E2ad6F23E4",
   "42261": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
   "42262": "0x21C718C22D52d0F3a789b752D4c2fD5908a8A733",
-  "43114":"0x",
+  "43114":"0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
   "43113":"0x9F34cca17962be33DEDDF0FD9EB6409744535e9b", // testnet fuji
 };
 
@@ -142,7 +142,8 @@ export const SYMBOLS: { [key: string]: { [key: string]: string } } = {
     "42262": "0x21C718C22D52d0F3a789b752D4c2fD5908a8A733",
   },
   AVAX: {
-    "43114":"0x",
+    "43114":"0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+    "43113":"0x9F34cca17962be33DEDDF0FD9EB6409744535e9b", // testnet fuji
   },
 };
 
@@ -216,6 +217,10 @@ export const MARKETAUTOSWAPADDRESSES: {
   Quickswap: {
     "137": "0x8F83C8012e705B04141FDF6A2fc2f7a8243A2345",
   },
+  Tradejoe: {
+    "43114":"0xFf672dB2558c8A78813EA3F61303460fcec656F7",
+    "43113":"0x" // testnet fuji
+  }
 };
 export const OTHERMARKETADDRESSES: {
   [key: string]: { [key: string]: string };
@@ -238,6 +243,10 @@ export const OTHERMARKETADDRESSES: {
     "42262": "0xFf672dB2558c8A78813EA3F61303460fcec656F7",
     "43114":"0x"
   },
+  Tradejoe: {
+    "43114":"0x60aE616a2155Ee3d9A68541Ba4544862310933d4",
+    "43113":"0x" // testnet fuji
+  }
   // "Sushiswap":{
   //   "56": "0x",
   //   "97": "0x"

@@ -200,6 +200,7 @@ export function useDerivedSwapInfo(): {
   }
 
   if (!inputCurrency || !outputCurrency || !address) {
+    console.log({inputCurrency, outputCurrency, address})
     inputError = inputError ?? "Select a Token";
   }
 

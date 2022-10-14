@@ -7119,7 +7119,7 @@
         "decimals": 18,
         "name": "Wrapped AVAX",
         "symbol": "WAVAX",
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/avax.jpg"
+        "logoURI": "https://snowtrace.io/token/images/avax_32.png"
       },
       {
         "chainId": 43114,
@@ -7145,6 +7145,7 @@
         "decimals": 18,
         "logoURI": "https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/ethereum/assets/0x3405A1bd46B85c5C029483FbECf2F3E611026e45/logo.png"
       },
+
       {
         "name": "Dai Stablecoin",
         "address": "0xcB1e72786A6eb3b44C2a2429e317c8a2462CFeb1",
