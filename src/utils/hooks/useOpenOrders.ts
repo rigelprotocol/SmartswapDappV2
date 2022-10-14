@@ -37,7 +37,7 @@ const useOpenOrders = (socket:any) => {
     const [openOrderData, setopenOrderData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")
+    const [URL, setURL] = useState("http://localhost:7000")
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const refreshPage = useSelector((state: RootState) => state.transactions.refresh);
     const location = useLocation().pathname;
@@ -49,7 +49,7 @@ const useOpenOrders = (socket:any) => {
     }
     useEffect(() => {
        
-        if (location.includes("auto-period")) {
+        if (location.includes("autotrade")) {
             setLocationData("auto")
             setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])

@@ -36,7 +36,7 @@ const History = () => {
 
   useEffect(
     () => {
-  setSocket(io("https://autoswap-server.herokuapp.com"));//https://autoswap-server.herokuapp.com
+  setSocket(io("http://localhost:7000"));//http://localhost:7000
   
     },
     []
@@ -50,7 +50,7 @@ const History = () => {
   const [notification, setNotification] = useState(0);
   const location = useLocation().pathname;
   const [address, setAddress] = useState("");
-  const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//https://autoswap-server.herokuapp.com
+  const [URL, setURL] = useState("http://localhost:7000")//http://localhost:7000
   const [showOrder, setShowOrder] = useState(false);
   const [type, setType] = useState("");
 
@@ -77,7 +77,7 @@ const History = () => {
 
   }, []);
   useEffect(() => {
-    if (location.includes("auto-period") || location.includes("set-price")) {
+    if (location.includes("autotrade") || location.includes("set-price")) {
         setOpen(true)
     }
 }, [location, chainId])
@@ -179,14 +179,14 @@ const History = () => {
       border="1px"
       borderColor={borderColor}
       borderRadius="6px"
-      display={sideBarRemoved && "none"}
+      display={sideBarRemoved ? "none":"block"}
       alignItems="center"
 
     >
       <Box w="100%" pl={3} my={4} pr={3}>
         <Flex alignItems="center" justifyContent="space-between" px={1}>
           <Flex>
-          {locationData!=="swap" &&   <Text
+          {locationData!=="swap" && !locationData.includes("freeswap") &&   <Text
               fontWeight="400"
               mr={3}
               fontSize="16px"
@@ -218,7 +218,7 @@ const History = () => {
                 
               }}
             >
-              {locationData==="swap" ?"Transaction History" : "Orders"} 
+              {locationData==="swap" || locationData.includes("freeswap") ?"Transaction History" : "Orders"} 
               {/* {locationData ==="swap" && autoTimeNotification>0 ? <Flex background={nonActiveTabColor}
               width="20px" 
               height="20px" 
@@ -311,7 +311,7 @@ const History = () => {
         </Flex>
 
       </Box>
-      <Box
+     {!locationData.includes("freeswap") ? <Box
         overflowY={'scroll'}
         maxHeight={'80vh'}
       >
@@ -337,7 +337,10 @@ const History = () => {
         )): openOrderData.length===0 && showOrder && open &&
         <Text pl={4} py={3}>No open order at the moment</Text>
         }
-      </Box>
+      </Box>:<>
+     {open && <Text ml="10px">coming soon...</Text>}
+      </>
+      }
       <ConfirmationModal
         showModal={showModal}
         setShowModal={setShowModal}

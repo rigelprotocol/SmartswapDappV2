@@ -133,11 +133,10 @@ const Index = () => {
                   {/* <Nav label="Liquidity" to="/pool" active={location === '/add' || location === '/remove' ? true : false} />
                   <Nav label="Farming" to="/farming-v2"  /> */}
                   
-                    <Nav label="NFTs" to={`/nft${search}`} />
-                  
-                  <Tooltip label={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI && "coming soon"}  bg="gray.300" color="black">
+                  {/* <Nav label="Farm" to="/farm-v2"  />  */}
+                  <Nav label="NFTs" to={`/nft${search}`} />
                   <Nav label="SmartBid" to={`/smartbid${search}`} />
-                  </Tooltip>
+                 
                 </Flex>
               </Flex>
               <Spacer />

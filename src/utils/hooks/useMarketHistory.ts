@@ -38,7 +38,7 @@ const useMarketHistory = (socket:any) => {
     const [marketHistoryData, setMarketHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//
+    const [URL, setURL] = useState("http://localhost:7000")//
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
 
     const api = APIENDPOINT[chainId as number];
@@ -52,7 +52,7 @@ const useMarketHistory = (socket:any) => {
         return decoder
     }
     useEffect(() => {
-        if (location.includes("auto-period")) {
+        if (location.includes("autotrade")) {
             setLocationData("auto")
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
         } else if (location.includes("set-price")) {
@@ -160,7 +160,7 @@ const useMarketHistory = (socket:any) => {
 
                    
     
-                }else if ( location.includes("auto-period") || location.includes("set-price")){
+                }else if ( location.includes("autotrade") || location.includes("set-price")){
                     const transaction = await getTransactionFromDatabase()
                     if (transaction.length > 0) {
                         let result = []

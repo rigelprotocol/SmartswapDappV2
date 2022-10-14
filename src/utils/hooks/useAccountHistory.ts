@@ -5,10 +5,11 @@ import TokenLogo from '../../assets/Null-24.svg';
 import { getERC20Token } from "../utilsFunctions";
 import { ethers } from 'ethers';
 import SmartSwapRouter02 from '../abis/swapAbiForDecoder.json';
+import FreeswapContract from "../abis/autoswap.json"
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../state";
+import { RootState } from "../../state";
 import { useLocation } from 'react-router-dom';
-import { SMARTSWAPROUTER, AUTOSWAPV2ADDRESSES, RGPADDRESSES, WNATIVEADDRESSES, AUTOSWAPSTATEADDRESSES } from "../addresses";
+import { SMARTSWAPROUTER, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES, AUTOSWAPSTATEADDRESSES, MARKETFREESWAPADDRESSES, FREESWAPACCOUNT } from "../addresses";
 import Web3 from 'web3';
 import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { ParseFloat } from '..';
@@ -40,6 +41,8 @@ export const APIENDPOINT: { [key: string]: string } = {
     "80001": "api-testnet.polygonscan.com/api",
     "42261": "testnet.explorer.emerald.oasis.dev/api",
     "42262": "explorer.emerald.oasis.dev/api",
+    "43114": "api.avax-test.network/ext/bc/C/rpc",
+    "43113": "api.avax.network/ext/bc/C/rpc",
 };
 
 export const APIKEY: { [key: string]: string } = {
@@ -51,6 +54,8 @@ export const APIKEY: { [key: string]: string } = {
     "80001": "89B4F6NVVEVGC8EMDCJVRJMVGSCVHHZTR7",
     "42261": "",
     "42262": "",
+    "43114": "",
+    "43113": "",
 };
 
 interface DataIncoming {
@@ -103,7 +108,7 @@ const useAccountHistory = (socket:any) => {
     const [historyData, setHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//
+    const [URL, setURL] = useState("http://localhost:7000")//
     const dispatch =useDispatch()
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const tokenList = async (addressName: string) => {
@@ -134,7 +139,7 @@ const useAccountHistory = (socket:any) => {
     const location = useLocation().pathname;
     const [, Symbol, Name,] = useNativeBalance()
     useEffect(() => {
-        if (location.includes("auto-period")) {
+        if (location.includes("autotrade")) {
             setLocationData("auto")
             setStateAccount(AUTOSWAPSTATEADDRESSES[chainId as number])
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
@@ -142,6 +147,13 @@ const useAccountHistory = (socket:any) => {
             setLocationData("price")
             setStateAccount(AUTOSWAPSTATEADDRESSES[chainId as number])
             setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
+        } else if(location.includes("freeswap")){
+            setLocationData("freeswap")
+            setStateAccount(account)
+            console.log(location,location.split("/"))
+     let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : "Pancakeswap" 
+     console.log(MARKETFREESWAPADDRESSES[market][chainId as number],market)
+            setContractAddress(MARKETFREESWAPADDRESSES[market][chainId as number])
         } else {
             setLocationData("swap")
             setStateAccount(account)
@@ -231,7 +243,62 @@ const useAccountHistory = (socket:any) => {
                     market:"",
                     orderID:"",
                 }));
-            } else if ( location.includes("auto-period") || location.includes("set-price")) {
+            }else if(location.includes("freeswap")){
+                const uri = `https://${api}?module=account&action=txlist&address=${FREESWAPACCOUNT[chainId ?? 56]}&startblock=0
+                &endblock=latest&sort=desc&apikey=${apikey}`;
+
+                const data = await fetch(uri);
+                const jsondata = await data.json();
+                const SwapTrx = jsondata.result.filter((item: any) => item.to.toLowerCase() == contractAddress.toLowerCase());
+                console.log({SwapTrx,contractAddress,jsondata},FREESWAPACCOUNT[chainId ?? 56],)
+                const dataFiltered = SwapTrx
+                .filter((items: any) => decodeInput(items.input, FreeswapContract) !== undefined) 
+                .map((items: any) => (
+                    {
+                    value: items.value,
+                    transactionObj: decodeInput(items.input, SmartSwapRouter02).params,
+                    timestamp: items.timeStamp,
+                    transactionFee: items.gasPrice * items.gasUsed,
+                    // name: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).name,
+                    transactionHash: items.hash,
+                    status: 10,
+                    chainID:items.chainID ,
+                    market:"",
+                    orderID:"",
+                }));
+
+            const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(0, 5) : dataFiltered;
+            userData = dataToUse.map((data: any) => ({
+                inputAmount:
+                    Number(data.value) > 0 ? data.value : data.transactionObj[3].value,
+                outputAmount:
+                    Number(data.value) > 0
+                        ? data.transactionObj[0].value
+                        : data.transactionObj[1].value,
+                tokenIn:
+                    Number(data.value) > 0
+                        ? data.transactionObj[1].value[0]
+                        : data.transactionObj[2].value[0],
+                tokenOut:
+                    Number(data.value) > 0
+                        ? data.transactionObj[1].value[data.transactionObj[1].value.length - 1]
+                        : data.transactionObj[2].value[data.transactionObj[2].value.length - 1],
+                time: timeConverter(data.timestamp),
+                // name: data.name,
+                frequency: "--",
+                id: "",
+                transactionHash: data.transactionHash,
+                error: [],
+                status: "10",
+                situation:"",
+                chainID:chainId,
+                market:"",
+                orderID:"",
+            }));
+            console.log({userData,dataToUse})
+            }
+
+             else if ( location.includes("autotrade") || location.includes("set-price")) {
                 const { transaction, database } = await getTransactionFromDatabase(account)
                 if (transaction.length > 0) {
                     
@@ -317,6 +384,7 @@ const useAccountHistory = (socket:any) => {
                     totalTransaction:data.totalTransaction                    
                 })),
             );
+            console.log({swapDataForWallet})
             const userSwapHistory = swapDataForWallet.map((data: any) => ({
                 token1Icon:
                     getTokenSymbol(data.tokenIn.symbol),
@@ -344,6 +412,7 @@ const useAccountHistory = (socket:any) => {
                 market:data.market,
                 orderID:data.orderID,
             }));
+            console.log({userSwapHistory})
             setHistoryData(userSwapHistory);
 
             setLoading(false);

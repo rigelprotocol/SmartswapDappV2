@@ -2683,7 +2683,7 @@
         "name": "USD Coin",
         "symbol": "USDC",
         "decimals": 6,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
       },
       {
         "address": "0x1c48f86ae57291F7686349F12601910BD8D470bb",
@@ -2715,7 +2715,7 @@
         "name": "Tether USD",
         "symbol": "USDT",
         "decimals": 6,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
       },
       {
         "address": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD",
@@ -3138,7 +3138,7 @@
         "symbol": "USDC",
         "decimals": 6,
         "chainId": 3,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
       },
       {
         "name": "Tether",
@@ -3974,7 +3974,7 @@
         "address": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
         "chainId": 56,
         "decimals": 18,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
       },
       {
         "name": "Rigel Protocol",
@@ -3990,7 +3990,7 @@
         "address": "0x55d398326f99059fF775485246999027B3197955",
         "chainId": 56,
         "decimals": 18,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
       },
       {
         "name": "USDX",
@@ -4278,7 +4278,7 @@
         "symbol": "USDC",
         "decimals": 18,
         "chainId": 66,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
       },
       {
         "name": "USDK",
@@ -4294,7 +4294,7 @@
         "symbol": "USDT",
         "decimals": 18,
         "chainId": 66,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
       },
       {
         "name": "WBTC",
@@ -4334,7 +4334,7 @@
         "address": "0x6b9A9df1e6a29F17BFC79040A8f505Aaa8866b6e",
         "chainId": 97,
         "decimals": 18,
-        "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/USDT-6D8/logo.png"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
       },
       {
         "name": "BUSD Token",
@@ -4358,7 +4358,7 @@
         "address": "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd",
         "chainId": 97,
         "decimals": 18,
-        "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/USDT-6D8/logo.png"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
       },
       {
         "name": "WBNB Token",
@@ -4462,7 +4462,7 @@
         "symbol": "USDC",
         "decimals": 6,
         "chainId": 100,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
       },
       {
         "name": "Tether on xDai",
@@ -4470,7 +4470,7 @@
         "symbol": "USDT",
         "decimals": 6,
         "chainId": 100,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
       },
       {
         "name": "Wrapped BTC on xDai",
@@ -4574,7 +4574,7 @@
         "symbol": "USDC",
         "decimals": 6,
         "chainId": 122,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
       },
       {
         "name": "Tether USD on Fuse",
@@ -4582,7 +4582,7 @@
         "symbol": "USDT",
         "decimals": 6,
         "chainId": 122,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/tether.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
       },
       {
         "name": "Wrapped BTC on Fuse",
@@ -5798,7 +5798,7 @@
         "symbol": "USDC",
         "decimals": 6,
         "chainId": 137,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
       },
       {
         "name": "Tether USD",
@@ -5806,7 +5806,7 @@
         "symbol": "USDT",
         "decimals": 6,
         "chainId": 137,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
       },
       {
         "chainId": 137,
@@ -6086,7 +6086,7 @@
         "symbol": "fUSDT",
         "decimals": 6,
         "chainId": 250,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
       },
       {
         "name": "fWTI Oil",
@@ -6174,7 +6174,7 @@
         "symbol": "USDC",
         "decimals": 6,
         "chainId": 250,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
       },
       {
         "name": "Wrapped Bitcoin",
@@ -6366,7 +6366,7 @@
         "address": "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D",
         "decimals": 6,
         "chainId": 1285,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
       },
       {
         "name": "Tether USD",
@@ -6374,7 +6374,7 @@
         "symbol": "USDT",
         "decimals": 6,
         "chainId": 1285,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
       },
       {
         "name": "WBNB Token",
@@ -6790,7 +6790,7 @@
         "name": "USD Coin",
         "symbol": "USDC",
         "decimals": 6,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
       },
       {
         "address": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
@@ -6798,7 +6798,7 @@
         "name": "Tether USD",
         "symbol": "USDT",
         "decimals": 6,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
       },
       {
         "chainId": 42161,
@@ -6998,7 +6998,7 @@
         "symbol": "USDC",
         "decimals": 6,
         "chainId": 42220,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
       },
       {
         "name": "Optics USDT",
@@ -7006,7 +7006,7 @@
         "symbol": "USDT",
         "decimals": 6,
         "chainId": 42220,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
       },
       {
         "name": "Optics WBTC",
@@ -7071,7 +7071,7 @@
         "decimals": 6,
         "name": "Old Tether USD",
         "symbol": "oldUSDT",
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
       },
       {
         "chainId": 43114,
@@ -7103,7 +7103,7 @@
         "decimals": 6,
         "name": "USD Coin",
         "symbol": "USDC",
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
       },
       {
         "chainId": 43114,
@@ -7111,7 +7111,7 @@
         "decimals": 6,
         "name": "Tether USD",
         "symbol": "USDT",
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
       },
       {
         "chainId": 43114,
@@ -7171,12 +7171,28 @@
         "logoURI": "https://bscscan.com/token/images/rigelprotocol_32.png"
       },
       {
+        "name": "Dreamr Platform Token",
+        "address": "0x955CE23f20217a6Aa205620b40EdE4C9E83d325f",
+        "symbol": "DMR",
+        "decimals": 18,
+        "chainId": 137,
+        "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/11897.png"
+      },
+      {
+        "name": "Dreamr Platform Token",
+        "address": "0x4DDE4C82c47325d18A79309d0ac0d23a3e831867",
+        "symbol": "DMR",
+        "decimals": 18,
+        "chainId": 80001,
+        "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/11897.png"
+      },
+      {
         "name": "USDCToken",
         "address": "0xd22c5DbE967C2f9ac302729354fE32eB88b6B645",
         "symbol": "USDC",
         "decimals": 18,
         "chainId": 80001,
-        "logoURI": "https://etherscan.io/token/images/centre-usdc_28.png"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
       },
       {
         "name": "USDTToken",
@@ -7384,7 +7400,7 @@
         "symbol": "USDC",
         "name": "USD Coin",
         "decimals": 6,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
       },
       {
         "chainId": 1666600000,
@@ -7392,7 +7408,7 @@
         "symbol": "USDT",
         "name": "Tether USD",
         "decimals": 6,
-        "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+        "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
       },
       {
         "chainId": 1666600000,

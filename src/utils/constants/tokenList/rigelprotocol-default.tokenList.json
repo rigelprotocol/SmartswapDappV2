@@ -40,7 +40,7 @@
       "address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
       "chainId": 56,
       "decimals": 18,
-      "logoURI": "https://pancakeswap.finance/images/tokens/0xe9e7cea3dedca5984780bafc599bd69add087d56.png"
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/BUSD-BD1/logo.png"
     },
     {
       "name": "Axie Infinity Shard",
@@ -56,7 +56,7 @@
       "address": "0x55d398326f99059fF775485246999027B3197955",
       "chainId": 56,
       "decimals": 18,
-      "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+      "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
     },
     {
       "name": "AXSToken",
@@ -88,7 +88,7 @@
       "address": "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd",
       "chainId": 97,
       "decimals": 18,
-      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/USDT-6D8/logo.png"
+      "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
     },
     {
       "name": "WBNB Token",
@@ -128,7 +128,7 @@
       "symbol": "USDT",
       "decimals": 6,
       "chainId": 137,
-      "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+      "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
     },
     {
       "name": "USD Coin",
@@ -136,7 +136,7 @@
       "symbol": "USDC",
       "decimals": 6,
       "chainId": 137,
-      "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdc.jpg"
+      "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
     },
     {
       "name": "Wrapped Matic",
@@ -152,7 +152,7 @@
       "symbol": "DMR",
       "decimals": 18,
       "chainId": 137,
-      "logoURI": ""
+      "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/11897.png"
     },
     {
       "name": "Dreamr Platform Token",
@@ -160,7 +160,7 @@
       "symbol": "DMR",
       "decimals": 18,
       "chainId": 80001,
-      "logoURI": ""
+      "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/11897.png"
     },
     {
       "name": "Rigel Token",
@@ -176,7 +176,7 @@
       "symbol": "USDC",
       "decimals": 18,
       "chainId": 80001,
-      "logoURI": "https://etherscan.io/token/images/centre-usdc_28.png"
+      "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
     },
     {
       "name": "USDTToken",
@@ -184,7 +184,7 @@
       "symbol": "USDT",
       "decimals": 18,
       "chainId": 80001,
-      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png"
+      "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
     },
 
     {
@@ -209,7 +209,7 @@
       "name": "Tether USD",
       "symbol": "USDT",
       "decimals": 6,
-      "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+      "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
     },
     {
       "name": "RigelToken",
@@ -225,7 +225,7 @@
       "symbol": "USDC",
       "decimals": 6,
       "chainId": 3,
-      "logoURI": "https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png"
+      "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
     },
     {
       "name": "Tether",
@@ -265,7 +265,7 @@
       "symbol": "USDT",
       "decimals": 6,
       "chainId": 42261,
-      "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+      "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
     },
     {
       "name": "Wrapped ROSE",
@@ -297,7 +297,7 @@
       "symbol": "USDT",
       "decimals": 6,
       "chainId": 42262,
-      "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/usdt.jpg"
+      "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
     },
     {
       "name": "PlaceWar Governance Token",

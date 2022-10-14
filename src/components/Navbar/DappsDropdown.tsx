@@ -53,9 +53,9 @@ function DappsDropdown() {
       isExternal: false,
     },
     {
-      name: "Auto Period",
+      name: "AutoTrade",
       text: "Auto invest in any crypto of your choice",
-      link: "https://smartswap.rigelprotocol.com/#/auto-period",
+      link: "https://smartswap.rigelprotocol.com/#/autotrade",
       icon: <Img src={Autoperiod} />,
       isExternal: true,
     },

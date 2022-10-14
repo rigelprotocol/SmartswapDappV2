@@ -83,7 +83,7 @@ export const initialState: farmStateInterface = {
   ],
   productFarm :[
     {
-      feature:"Auto Period",
+      feature:"AutoTrade",
       percentageProfitShare:"25%",
       profitTimeLine:"6 months",
       totalLiquidity:"",

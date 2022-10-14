@@ -19,7 +19,7 @@ export const RPC = {
     "https://eth-goerli.alchemyapi.io/v2/Dkk5d02QjttYEoGmhZnJG37rKt8Yl3Im",
   [SupportedChainId.KOVAN]:
     "https://eth-kovan.alchemyapi.io/v2/6OVAa_B_rypWWl9HqtiYK26IRxXiYqER",
-  [SupportedChainId.POLYGON]: `https://rpc-mainnet.matic.network`,
+  [SupportedChainId.POLYGON]: `https://rpc-mainnet.maticvigil.com`,
   [SupportedChainId.POLYGONTEST]: "https://rpc-mumbai.matic.today",
   [SupportedChainId.OASISTEST]: "https://testnet.emerald.oasis.dev",
   [SupportedChainId.OASISMAINNET]: "https://emerald.oasis.dev",

@@ -8,6 +8,8 @@ import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { checkSupportedIds } from "../../connectors";
 import JSBI from "jsbi";
 import { ParseFloat } from "../../utils";
+import { useSelector } from "react-redux";
+import { RootState } from "..";
 
 export const GetAddressTokenBalance = (currency: Currency | undefined) => {
   const { chainId, account, library } = useActiveWeb3React();
@@ -15,6 +17,9 @@ export const GetAddressTokenBalance = (currency: Currency | undefined) => {
     string | number | void | CurrencyAmount<Token>
   >("");
   const [Balance] = useNativeBalance();
+  const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
+  const refresh = useSelector<RootState>((state) => state.application.refresh);
+  const stateChanged : boolean = trxState === 2;
   useEffect(() => {
     const getBalance = async (currency: Currency) => {
       if (account && chainId && checkSupportedIds(chainId)) {
@@ -33,7 +38,7 @@ export const GetAddressTokenBalance = (currency: Currency | undefined) => {
               const amountValue = parseFloat(
                 ethers.utils.formatUnits(amount.toString(), currency.decimals)
               );
-
+                console.log({amountValue})
               amountValue === 0
                 ? setBalance("0")
                 : setBalance(ParseFloat(amountValue, 4));
@@ -43,31 +48,11 @@ export const GetAddressTokenBalance = (currency: Currency | undefined) => {
           setBalance("");
           console.log(err);
         }
-      } else {
-        console.log("Connect wallet");
       }
     };
 
     getBalance(currency);
-  }, [account, chainId, currency, Balance]);
+  }, [account, chainId, currency, stateChanged,Balance,refresh]);
 
   return [balance];
-};
-
-export const ExtendedEther = (
-  chainId: number = 56,
-  symbol: string,
-  name: string,
-  logo: string
-) => {
-  let native = {
-    chainId: chainId,
-    decimals: 18,
-    isNative: true,
-    isToken: false,
-    name,
-    symbol,
-    logoURI: logo,
-  };
-  return native;
 };

@@ -34,14 +34,13 @@ export type IModal = {
     outputLogo: string;
     pathSymbol: string;
     signSignature: () => void;
-    frequency: string;
-    percentageChange: string;
-    situation: string;
+    frequency?: string;
+    percentageChange?: string;
+    situation?: string;
     buttonText: string;
-    setCheckedItem: Function;
-    checkedItem: boolean;
   showNewChangesText:boolean;
-  numberOfTransaction:string;
+  instant?:boolean;
+  numberOfTransaction?:string;
   quantity:string | number | undefined;
   market:string
 };
@@ -63,14 +62,13 @@ const AutoTimeModal: React.FC<IModal> = ({
     percentageChange,
     situation,
     buttonText,
-    // setCheckedItem,
-    // checkedItem,
     slippage,
     minimumAmountToRecieve,
     showNewChangesText,
     numberOfTransaction,
     quantity,
-    market
+    market,
+    instant
 }) => {
     const bgColor = useColorModeValue("#FFF", "#15202B");
     const lightTextColor = useColorModeValue("#666666", "#DCE6EF");
@@ -158,7 +156,7 @@ const AutoTimeModal: React.FC<IModal> = ({
                                 <Text fontSize='16px' color={lightTextColor}>
                                     To
                                 </Text>
-                                <Text fontSize='11px' mt='1'>{situation}</Text>
+                               {situation&& <Text fontSize='11px' mt='1'>{situation}</Text>}
                             </Flex>
 
                             <Flex justifyContent='space-between' mt='2'>
@@ -193,12 +191,12 @@ const AutoTimeModal: React.FC<IModal> = ({
                             fontSize='14px'
                             margin='15px 0'
                         >
-                            <Flex justifyContent='space-between'>
+                           {frequency && <Flex justifyContent='space-between'>
                                 <Box color={lightTextColor}>
                                     Frequency <InfoOutlineIcon />
                                 </Box>
                                 <Text color={heavyTextColor}>{frequency === "5" || frequency === "30" ? `${frequency} minutes` : `${frequency}`}</Text>
-                            </Flex>
+                            </Flex>}
                            
                             <Flex justifyContent='space-between' my='4'>
                                 <Box color={lightTextColor}>
@@ -214,14 +212,14 @@ const AutoTimeModal: React.FC<IModal> = ({
                                 </Box>
                                 <Text color={heavyTextColor}>{quantity}</Text>
                             </Flex>}
-                            <Flex justifyContent='space-between' my='4'>
+                          {numberOfTransaction &&  <Flex justifyContent='space-between' my='4'>
                                 <Box color={lightTextColor}>
                                     Number of transaction <InfoOutlineIcon />
                                 </Box>
                                 <Text color={heavyTextColor} fontWeight='500'>
                                     {numberOfTransaction}
                                 </Text>
-                            </Flex>
+                            </Flex>}
                             <Flex justifyContent='space-between' my='4'>
                                 <Box color={lightTextColor}>
                                    Market Router <InfoOutlineIcon />
@@ -246,12 +244,12 @@ const AutoTimeModal: React.FC<IModal> = ({
                                     {minimumAmountToRecieve}
                                 </Text>
                             </Flex>
-                            <Flex justifyContent='space-between'>
+                           {percentageChange && <Flex justifyContent='space-between'>
                                 <Box color={lightTextColor}>
                                     Percentage Change <InfoOutlineIcon />
                                 </Box>
                                 <Text color={heavyTextColor}>{percentageChange}%</Text>
-                            </Flex>
+                            </Flex>}
 
                         </Box>
                         <Box
@@ -264,7 +262,7 @@ const AutoTimeModal: React.FC<IModal> = ({
                             margin='15px 0'
                         >
                             <Text>Signing this transaction means you are giving us access to swap on your behalf. The swapping will be done based on the parameters you inputted. </Text>
-                            <Text>The swap will occur   <Text as='span' color={textColor}>{frequency === "5" || frequency === "30" ? `${frequency} minutes` : `${frequency}`}</Text> only when the <Text as='span' color={textColor}>{to}</Text> price is greater than or equal to the current <Text as='span' color={textColor}>{to}</Text>  price plus <Text as='span' color={textColor}>{percentageChange}</Text>  % of the <Text as='span' color={textColor}>{to}</Text>  price.</Text>
+                          {!instant &&  <Text>The swap will occur   <Text as='span' color={textColor}>{frequency === "5" || frequency === "30" ? `${frequency} minutes` : `${frequency}`}</Text> only when the <Text as='span' color={textColor}>{to}</Text> price is greater than or equal to the current <Text as='span' color={textColor}>{to}</Text>  price plus <Text as='span' color={textColor}>{percentageChange}</Text>  % of the <Text as='span' color={textColor}>{to}</Text>  price.</Text>}
                         </Box>
                         <Box mb="1">
                             <Checkbox

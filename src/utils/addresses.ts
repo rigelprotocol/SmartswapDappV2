@@ -7,7 +7,7 @@ export const RGPADDRESSES: { [key: string]: string } = {
   "80001": "0x8E62F88FD28F95cE0dD0557c8419215b5599CE64",
   "42261": "0x2d2cd8ED2ec05A55162308332C40C3eF1994F59D",
   "42262": "0x4AF5ff1A60a6eF6C7c8f9C4E304cD9051fCa3Ec0",
-  "43114":"0x",
+  "43114":"0x4AF5ff1A60a6eF6C7c8f9C4E304cD9051fCa3Ec0",
   "43113":"0x59F48ce93eb317f4628C68BbcF6CB7937a25662D" //fuji testnet
 };
 
@@ -204,24 +204,61 @@ export const MARKETAUTOSWAPADDRESSES: {
   [key: string]: { [key: string]: string };
 } = {
   Smartswap: {
-    "56": "0x599cdB1A76b5cc3906585de2ED6c790a8bAA528f",
+    "56": "0xd74FcF75e4F3a81fa215d8585A73B2e1f5714638",
     "97": "0xc1F5014098DBb6CCCc28F9365316533905f591EB",
-    "137": "0xd4d76dDAA597aE0B8B20d801EE7e528DE2E9f033",
-    "43114":"0x",
-    "43113":"0x013f3d0EF4D2EcDFF943C5Cd4f11F340E57dec65" // testnet fuji
+    "137": "0x4eEDB8D37bEbB42642d248E76de1d5718dDbBe8a",
   },
   Pancakeswap: {
-    "56": "0xffD1e82d1B46B0d5D6Caf1BCdF5edb6FCA0A2455",
+    "56": "0x5C2f68392a4035df67800EbeDfD0Bb8FbF3CA61b",
     "97": "0x",
   },
   Quickswap: {
-    "137": "0x8F83C8012e705B04141FDF6A2fc2f7a8243A2345",
+    "137": "0x748CDf88B4e3f42A00650949E7A16bc90B2C4c3a",
   },
   Tradejoe: {
     "43114":"0xFf672dB2558c8A78813EA3F61303460fcec656F7",
     "43113":"0x" // testnet fuji
+  },
+  Lydia:{
+    "43114":"0x",
+    "43113":"0x" // testnet fuji
   }
 };
+export const MARKETFREESWAPADDRESSES: {
+  [key: string]: { [key: string]: string };
+} = {
+  Smartswap: {
+    "56": "0x",
+    "97": "0x0Fb048390D8344039473E3C460eD4D2368c0cDDd",
+    "137": "0x",
+    "80001":"0x832c868A31DA33D40f69AF0c599E2C420a6e86c2"
+  },
+  Pancakeswap: {
+    "56": "0x7A3B6A66b6a4a74EeF3C0a291fa5621Ec252529b",
+    "97": "0x",
+  },
+  Quickswap: {
+    "137": "0x7c366961554c0E628C078FC990Df585b261b92f9",
+  },
+  Tradejoe: {
+    "43114":"0xCE2ca7C47813E86008B0f9D5d5661356c130997f",
+    "43113":"0x" // testnet fuji
+  },
+  Lydia:{
+    "43114":"0x",
+    "43113":"0x" // testnet fuji
+  }
+};
+
+export const FREESWAPACCOUNT: { [key: string]: string } = {
+  "56": "0xeBD0329E00B92898C9Ad614b001FdBD1d0e3E19D",
+  "97": "0x2fd48250aEdFE45D6BB9c22e4893F75A655D8e79",
+  "80001": "0x2fd48250aEdFE45D6BB9c22e4893F75A655D8e79",
+  "137": "0xeBD0329E00B92898C9Ad614b001FdBD1d0e3E19D",
+  "43113": "0x2fd48250aEdFE45D6BB9c22e4893F75A655D8e79",
+  "43114": "0xeBD0329E00B92898C9Ad614b001FdBD1d0e3E19D",
+  
+}
 export const OTHERMARKETADDRESSES: {
   [key: string]: { [key: string]: string };
 } = {
@@ -273,6 +310,10 @@ export const OTHERMARKETFACTORYADDRESSES: {
     "42262": "0xCE2ca7C47813E86008B0f9D5d5661356c130997f",
     "43114":"0x"
   },
+  Tradejoe: {
+    "43114":"0x9Ad6C38BE94206cA50bb0d90783181662f0Cfa10",
+    "43113":"0x" // testnet fuji
+  }
   // "Sushiswap":{
   //   "56": "0x",
   //   "97": "0x"

@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from "react"
 import { ChevronDownIcon } from "@chakra-ui/icons"
 import { Button, Flex, Img, Menu, MenuButton, MenuItem, MenuList, Text, useColorModeValue } from "@chakra-ui/react"
-import { binanceTestMarketArray,polygonMarketArray,binanceMarketArray, AvalancheMarketArray } from "../state/swap/hooks"
+import { AvalancheFreeMarketArray, binanceFreeMarketArray, binanceTestFreeMarketArray, polygonFreeMarketArray, polygonTestFreeMarketArray } from "../state/swap/hooks"
+import { useLocation } from "react-router-dom"
 
-const MarketDropDown = ({marketType,setMarketType,chainID,switchMarket}:{marketType:string,setMarketType:React.Dispatch<React.SetStateAction<string>>,chainID:number | undefined,switchMarket:(market:string)=>void}) => {
-  const [marketArray,setMarketArray] = useState(binanceMarketArray)
+
+const MarketFreeDropDown = ({marketType,setMarketType,chainID,switchMarket,type}:{marketType:string,setMarketType:React.Dispatch<React.SetStateAction<string>>,chainID:number | undefined,switchMarket:(market:string)=>void,type?:string}) => {
+  const location = useLocation()
+  console.log({location},location.search.includes("bsc_test"))
+  const [marketArray,setMarketArray] = useState(location.search.includes("bsc_test")? binanceTestFreeMarketArray : binanceFreeMarketArray)
   useEffect(()=>{
-    if(chainID === 56) setMarketArray(binanceMarketArray)
-    else if(chainID === 43113 || chainID === 43114) setMarketArray(AvalancheMarketArray)
-    else if(chainID === 97) setMarketArray(binanceTestMarketArray)
-    else if(chainID === 137) setMarketArray(polygonMarketArray)
+    console.log({type})
+    if(chainID === 56) setMarketArray(binanceFreeMarketArray)
+    if(chainID === 97) setMarketArray(binanceTestFreeMarketArray)
+    else if(chainID === 137) setMarketArray(polygonFreeMarketArray)
+    else if(chainID === 43113 || chainID === 43114) setMarketArray(AvalancheFreeMarketArray)
+    else if(chainID === 80001) setMarketArray(polygonTestFreeMarketArray)
   },[chainID])
     const borderColor = useColorModeValue('#DEE6ED', '#324D68');
     return (
@@ -36,8 +42,10 @@ const MarketDropDown = ({marketType,setMarketType,chainID,switchMarket}:{marketT
             key={index}
             _focus={{ color: "#319EF6" }}
             onClick={() => {
-              setMarketType(item.name)
-              switchMarket(item.name.toLowerCase())
+              
+              console.log({item,marketArray})
+              // setMarketType(item.name)
+              // switchMarket(item.name.toLowerCase())
               }} fontSize="13px">
            <Img 
            src={`./images/${item.image}`} 
@@ -57,4 +65,4 @@ const MarketDropDown = ({marketType,setMarketType,chainID,switchMarket}:{marketT
 }
 
 
-export default MarketDropDown
+export default MarketFreeDropDown
