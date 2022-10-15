@@ -26,10 +26,10 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
   const [ purchaseModal,setOpenPerchaseModal] = useState(false);
     const [isMobileDevice] = useMediaQuery("(max-width: 767px)");
 
-  const { firstToken, secondToken ,prices, unsoldItems , nftId, loadData} = useNft(id);
+  const { firstToken, secondToken ,prices, unsoldItems , nftId, loadData,mint,nftNameInfo} = useNft(id);
   const { account } = useActiveWeb3React();
 
-  const {name, nftImage, loading} = useNftName(id);
+  const {name, nftImage, loading} = useNftName(id,nftNameInfo);
 
   const rgpPrice = (100.54 * parseFloat(prices.firstTokenPrice)).toFixed(2);
 
@@ -84,7 +84,7 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
             <Flex mt="2" justifyContent="space-between" alignContent="center">
               <Text textColor={lightTextColor}>Sold:</Text>
                 {loadData ?  <Skeleton height={'20px'} w={'80px'}/> :
-              <Text  color={textColor}>{unsoldItems - nftId[0]} of {nftId.length}</Text> }
+              <Text  color={textColor}>{unsoldItems} of {nftId.length}</Text> }
             </Flex>
   
             <Flex mt="2" justifyContent="space-between" alignContent="center">
@@ -137,6 +137,7 @@ export const Nft = function ({ nftName, image, number, id, priceUSD, priceRGP, i
                                id={id}
                                image={nftImage}
                                name={name}
+                               mint={mint}
               />
         </Box>
     )

@@ -44,6 +44,17 @@ export const SMARTSWAPROUTER: { [key: string]: string } = {
   "42262": "0xFf672dB2558c8A78813EA3F61303460fcec656F7",
 };
 
+export const IPFS: { [key: string]: string } = {
+  "1": "0x",
+  "3": "",
+  "56": "QmVSMnx4BSYEfnbZSNTENXZSELVLGTM4KgCyFcN7SEKGqP",
+  "97": "QmVSMnx4BSYEfnbZSNTENXZSELVLGTM4KgCyFcN7SEKGqP",
+  "137": "QmUDyQPMoRsRZ7jUUrn1Sz5sFrzrZA9kYxjrZ6Xo9JXfgv",
+  "80001": "QmUDyQPMoRsRZ7jUUrn1Sz5sFrzrZA9kYxjrZ6Xo9JXfgv",
+  "42261": "",
+  "42262": "",
+};
+
 //SmartSwapNFT
 
 export const SMARTSWAPNFTSALES: { [key: string]: string } = {

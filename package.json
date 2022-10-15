@@ -93,6 +93,7 @@
     ]
   },
   "devDependencies": {
-    "@types/gtag.js": "0.0.10"
+    "@types/gtag.js": "0.0.10",
+    "@types/react-lazy-load-image-component": "^1.5.2"
   }
 }

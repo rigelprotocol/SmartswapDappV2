@@ -15,6 +15,13 @@ import {useActiveWeb3React} from "../../../utils/hooks/useActiveWeb3React";
 import {useDispatch} from "react-redux";
 import {RigelNFT} from "../../../utils/Contracts";
 import { GNFTFailedApprovalTransaction, GNFTFailedTransaction, GNFTSuccessfullyApprovalTransaction, GNFTSuccessfullyTransaction } from '../../../components/G-analytics/gNFTs';
+import { Web3Provider } from '@ethersproject/providers';
+import { createAlchemyWeb3 } from '@alch/alchemy-web3';
+import { Percent } from '@uniswap/sdk-core';
+import JSBI from 'jsbi';
+import { ethers } from 'ethers';
+import { useUserGasPricePercentage } from '../../../state/gas/hooks';
+import { calculateGas } from '../../Swap/components/sendToken';
 
 
 type comfirmPurchaseModalProps = {
@@ -22,11 +29,12 @@ type comfirmPurchaseModalProps = {
     close: () => void,
     id: number,
     image: string,
-    name: string
+    name: string,
+    mint?:boolean
 }
 
 const ComfirmPurchase = ({ isOpen,
-                             close, id, image, name }:
+                             close, id, image, name, mint }:
                              comfirmPurchaseModalProps) => {
     const { chainId, library, account } = useActiveWeb3React();
     const textColor = useColorModeValue("#333333", "#F1F5F8");
@@ -34,14 +42,11 @@ const ComfirmPurchase = ({ isOpen,
     const [currency, setCurrency] = useState('');
     const [checkTokenApproval, setCheckTokenApproval] = useState(0);
     const dispatch = useDispatch();
-
     const {firstToken, secondToken, prices, unsoldItems, nftId} = useNft(id);
-
-
-    const {hasTokenABeenApproved, hasTokenBBeenApproved, loadInfo} = useNFTAllowance(checkTokenApproval, prices.firstTokenPrice,
-        prices.secondTokenPrice, currency, nftId[0]);
+    const {hasTokenABeenApproved, hasTokenBBeenApproved, loadInfo} = useNFTAllowance(checkTokenApproval, prices.firstTokenPrice, currency, nftId[0],firstToken.address,secondToken.address);
 
      const [error, setError] = useState('');
+
 
      useEffect(() => {
          if (currency === firstToken.symbol && parseFloat(firstToken.balance) < parseFloat(prices.firstTokenPrice)) {
@@ -52,6 +57,9 @@ const ComfirmPurchase = ({ isOpen,
              setError('')
          }
      }, [currency]);
+
+
+     
 
 
     const approveTokens = async (address: string, symbol: string) => {
@@ -100,7 +108,7 @@ const ComfirmPurchase = ({ isOpen,
                         })
                     );
                 }
-            } catch (err) {
+            } catch (err:any) {
                 console.log(err);
                 GNFTFailedApprovalTransaction(
                     "NFT",
@@ -126,9 +134,18 @@ const ComfirmPurchase = ({ isOpen,
                         trxState: TrxState.WaitingForConfirmation,
                     })
                 );
-                const nftContract = await RigelNFT(SMARTSWAPNFTSALES[chainId as number], library);
+                console.log({firstToken,secondToken})
 
-                const data = await nftContract.buy(unsoldItems, currency === 'USDT' ?  secondToken.address : firstToken.address);
+                const isEIP1559 = await library?.getFeeData();
+                // const { format1, format2, format3 } = await calculateGas(
+                //     useUserGasPricePercentage,
+                //     library,
+                //     chainId as number
+                //   );
+                const nftContract = await RigelNFT(SMARTSWAPNFTSALES[chainId as number], library);
+                // const data = await nftContract._mintBatch(account,["1"],["1"], "0x0000000000000000000000000000000000000000000000000000000000000000")
+                console.log({firstToken,secondToken})
+                const data = await nftContract.mint(id, currency === 'USDT' ?  secondToken.address : firstToken.address)
 
                 const { confirmations } = await data.wait(3);
                 const { hash } = data;
@@ -155,7 +172,7 @@ const ComfirmPurchase = ({ isOpen,
 
                     dispatch(
                         addToast({
-                            message: `Successfully Purchased RIGEL GIFT CARD ${unsoldItems} NFT`,
+                            message: `Successfully Purchased RIGEL GIFT CARD ${id} NFT`,
                             URL: explorerLink,
                         })
                     );
@@ -163,7 +180,7 @@ const ComfirmPurchase = ({ isOpen,
                 }
 
 
-            } catch (e) {
+            } catch (e:any) {
                 console.log(e);
                 GNFTFailedTransaction(
                     "NFT",
@@ -208,7 +225,7 @@ const ComfirmPurchase = ({ isOpen,
                             <Image width={54} height={54} src={image} alt="logo" />
                             <Text paddingTop={3} fontSize={20} color={textColor} >{name}</Text>
 
-                            <Text paddingTop={3} fontSize={20} color={textColor} >NFT ID: {unsoldItems}</Text>
+                            <Text paddingTop={3} fontSize={20} color={textColor} >NFT ID: {id}</Text>
 
                             <Text paddingTop={2} textColor={textColor} > <span style={{color: lightTextColor}}>Created by:</span>  RigelProtocol</Text>
                         </Flex>
@@ -256,7 +273,10 @@ const ComfirmPurchase = ({ isOpen,
                             <Text color={lightTextColor} > ≈ </Text>
                         </Flex>
                     </Box>
-                    {error ?  <Button
+                    {
+                    error 
+                    ? 
+                     <Button
                                 mt={5}
                                 mb={2}
                                 w={'full'}
@@ -271,7 +291,8 @@ const ComfirmPurchase = ({ isOpen,
                                 {error}
                             </Button>
 
-                            : currency === firstToken.symbol && !hasTokenABeenApproved ?
+                        : 
+                        currency === firstToken.symbol && !hasTokenABeenApproved ?
                             <Button
                                 mt={5}
                                 mb={2}
@@ -320,7 +341,7 @@ const ComfirmPurchase = ({ isOpen,
                                 w={'full'}
                                 variant='brand'
                                 color={'white'}
-                                disabled={currency === '' || error !== ''}
+                                disabled={currency === '' || error !== '' || !mint}
                                 boxShadow={'0 5px 20px 0px rgba(24, 39, 75, 0.06),'}
                                 _hover={{bg: 'blue.500'}}
                                 _focus={{bg: 'blue.500'}}
@@ -336,4 +357,4 @@ const ComfirmPurchase = ({ isOpen,
     )
 };
 
-export default ComfirmPurchase
+export default React.memo(ComfirmPurchase)
