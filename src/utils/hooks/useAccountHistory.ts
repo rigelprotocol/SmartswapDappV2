@@ -243,60 +243,61 @@ const useAccountHistory = (socket:any) => {
                     market:"",
                     orderID:"",
                 }));
-            }else if(location.includes("freeswap")){
-                const uri = `https://${api}?module=account&action=txlist&address=${FREESWAPACCOUNT[chainId ?? 56]}&startblock=0
-                &endblock=latest&sort=desc&apikey=${apikey}`;
-
-                const data = await fetch(uri);
-                const jsondata = await data.json();
-                const SwapTrx = jsondata.result.filter((item: any) => item.to.toLowerCase() == contractAddress.toLowerCase());
-                console.log({SwapTrx,contractAddress,jsondata},FREESWAPACCOUNT[chainId ?? 56],)
-                const dataFiltered = SwapTrx
-                .filter((items: any) => decodeInput(items.input, FreeswapContract) !== undefined) 
-                .map((items: any) => (
-                    {
-                    value: items.value,
-                    transactionObj: decodeInput(items.input, SmartSwapRouter02).params,
-                    timestamp: items.timeStamp,
-                    transactionFee: items.gasPrice * items.gasUsed,
-                    // name: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).name,
-                    transactionHash: items.hash,
-                    status: 10,
-                    chainID:items.chainID ,
-                    market:"",
-                    orderID:"",
-                }));
-
-            const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(0, 5) : dataFiltered;
-            userData = dataToUse.map((data: any) => ({
-                inputAmount:
-                    Number(data.value) > 0 ? data.value : data.transactionObj[3].value,
-                outputAmount:
-                    Number(data.value) > 0
-                        ? data.transactionObj[0].value
-                        : data.transactionObj[1].value,
-                tokenIn:
-                    Number(data.value) > 0
-                        ? data.transactionObj[1].value[0]
-                        : data.transactionObj[2].value[0],
-                tokenOut:
-                    Number(data.value) > 0
-                        ? data.transactionObj[1].value[data.transactionObj[1].value.length - 1]
-                        : data.transactionObj[2].value[data.transactionObj[2].value.length - 1],
-                time: timeConverter(data.timestamp),
-                // name: data.name,
-                frequency: "--",
-                id: "",
-                transactionHash: data.transactionHash,
-                error: [],
-                status: "10",
-                situation:"",
-                chainID:chainId,
-                market:"",
-                orderID:"",
-            }));
-            console.log({userData,dataToUse})
             }
+            // else if(location.includes("freeswap")){
+            //     const uri = `https://${api}?module=account&action=txlist&address=${FREESWAPACCOUNT[chainId ?? 56]}&startblock=0
+            //     &endblock=latest&sort=desc&apikey=${apikey}`;
+
+            //     const data = await fetch(uri);
+            //     const jsondata = await data.json();
+            //     const SwapTrx = jsondata.result.filter((item: any) => item.to.toLowerCase() == contractAddress.toLowerCase());
+            //     console.log({SwapTrx,contractAddress,jsondata},FREESWAPACCOUNT[chainId ?? 56],)
+            //     const dataFiltered = SwapTrx
+            //     .filter((items: any) => decodeInput(items.input, FreeswapContract) !== undefined) 
+            //     .map((items: any) => (
+            //         {
+            //         value: items.value,
+            //         transactionObj: decodeInput(items.input, SmartSwapRouter02).params,
+            //         timestamp: items.timeStamp,
+            //         transactionFee: items.gasPrice * items.gasUsed,
+            //         // name: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).name,
+            //         transactionHash: items.hash,
+            //         status: 10,
+            //         chainID:items.chainID ,
+            //         market:"",
+            //         orderID:"",
+            //     }));
+
+            // const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(0, 5) : dataFiltered;
+            // userData = dataToUse.map((data: any) => ({
+            //     inputAmount:
+            //         Number(data.value) > 0 ? data.value : data.transactionObj[3].value,
+            //     outputAmount:
+            //         Number(data.value) > 0
+            //             ? data.transactionObj[0].value
+            //             : data.transactionObj[1].value,
+            //     tokenIn:
+            //         Number(data.value) > 0
+            //             ? data.transactionObj[1].value[0]
+            //             : data.transactionObj[2].value[0],
+            //     tokenOut:
+            //         Number(data.value) > 0
+            //             ? data.transactionObj[1].value[data.transactionObj[1].value.length - 1]
+            //             : data.transactionObj[2].value[data.transactionObj[2].value.length - 1],
+            //     time: timeConverter(data.timestamp),
+            //     // name: data.name,
+            //     frequency: "--",
+            //     id: "",
+            //     transactionHash: data.transactionHash,
+            //     error: [],
+            //     status: "10",
+            //     situation:"",
+            //     chainID:chainId,
+            //     market:"",
+            //     orderID:"",
+            // }));
+            // console.log({userData,dataToUse})
+            // }
 
              else if ( location.includes("autotrade") || location.includes("set-price")) {
                 const { transaction, database } = await getTransactionFromDatabase(account)

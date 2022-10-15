@@ -63,7 +63,6 @@ const useSwap = (
   const [pathArray, setPath] = useState<string[] | undefined>(undefined);
   const [pathSymbol, setPathSymbol] = useState("");
   const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
-console.log({marketFactory,marketRouterAddress})
   const { prov } = useProvider();
   const lib = library ? library : prov;
 
@@ -96,21 +95,17 @@ console.log({marketFactory,marketRouterAddress})
           ? marketFactory
           : SMARTSWAPFACTORYADDRESSES[ChainId as number];
       }
-console.log({validSmartAddress})
-      // try {
+      try {
         const SmartFactory = await smartFactory(
           validSmartAddress
             ? validSmartAddress
             : SMARTSWAPFACTORYADDRESSES[ChainId as number],
           lib
         );
-        console.log({SmartFactory,tokenOneAddress,tokenTwoAddress})
         const pairAddress = await SmartFactory.getPair(
           tokenOneAddress,
           tokenTwoAddress
         );
-        console.log('jejjejjej')
-        console.log({pairAddress},"lolkekke")
         setAddress(pairAddress);
 
         if (wrappable) {
@@ -582,11 +577,11 @@ console.log({validSmartAddress})
           setPathSymbol("");
           setPath([]);
         }
-      // } catch (e) {
-      //   console.log({ e });
-      //   console.log(`Error occurs here: ${e}`);
-      //   setAmount("");
-      // }
+      } catch (e) {
+        console.log({ e });
+        console.log(`Error occurs here: ${e}`);
+        setAmount("");
+      }
     };
 
     var interval: any;

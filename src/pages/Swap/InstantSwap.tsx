@@ -497,7 +497,7 @@ const handleMaxInput = async () => {
     try{ 
        
        if (currencies[Field.INPUT]?.isNative) {
-   
+   console.log(currencies[Field.INPUT],currencies)
       console.log({value},Web3.utils.toWei(value.toString(), 'ether'),"uuuu",futureDate,pathArray)
       data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
         pathArray,
