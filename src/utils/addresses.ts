@@ -44,14 +44,25 @@ export const SMARTSWAPROUTER: { [key: string]: string } = {
   "42262": "0xFf672dB2558c8A78813EA3F61303460fcec656F7",
 };
 
+export const IPFS: { [key: string]: string } = {
+  "1": "0x",
+  "3": "",
+  "56": "QmVSMnx4BSYEfnbZSNTENXZSELVLGTM4KgCyFcN7SEKGqP",
+  "97": "QmVSMnx4BSYEfnbZSNTENXZSELVLGTM4KgCyFcN7SEKGqP",
+  "137": "QmUDyQPMoRsRZ7jUUrn1Sz5sFrzrZA9kYxjrZ6Xo9JXfgv",
+  "80001": "QmUDyQPMoRsRZ7jUUrn1Sz5sFrzrZA9kYxjrZ6Xo9JXfgv",
+  "42261": "",
+  "42262": "",
+};
+
 //SmartSwapNFT
 
 export const SMARTSWAPNFTSALES: { [key: string]: string } = {
   "1": "0x",
   "3": "0x",
-  "56": "0x6f3BB73e30a24412C1202f58439f4fe5Cb712979",
+  "56": "0x36934959D480865674E59e07494a21f63297EA22",
   "97": "0x4aEFdbed61128de1483D2B9e739251466DCa29Bb",
-  "137": "0xA5c488716f83A6C74bAC8712a457b7BeCF7C3DD5",
+  "137": "0xb6f05A0C3b03423E99e3FA6c50BF98e0bffdd6f5",
   "80001": "0xB15f7A4bA76B702e49FA3233FD455C5F13CB01d8",
 };
 
