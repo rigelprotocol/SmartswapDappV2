@@ -52,40 +52,40 @@ export const getNftToken = (id: number) => {
 export const getNftTokenPolygon = (id: number) => {
     switch (id) {
         case 1:
-            return Array.from({length: 25}, (_, i) => i + 1);
+            return Array.from({length: 17}, (_, i) => i + 1);
 
         case 2:
-            return Array.from({length: 25}, (_, i) => i + 26);
+            return Array.from({length: 17}, (_, i) => i + 26);
 
         case 3:
-            return Array.from({length: 25}, (_, i) => i + 51);
+            return Array.from({length: 17}, (_, i) => i + 51);
 
         case 4:
-            return Array.from({length: 25}, (_, i) => i + 76);
+            return Array.from({length: 17}, (_, i) => i + 76);
 
         case 5:
-            return Array.from({length: 300}, (_, i) => i + 101);
+            return Array.from({length: 180}, (_, i) => i + 101);
 
         case 6:
-            return Array.from({length: 300}, (_, i) => i + 401);
+            return Array.from({length: 180}, (_, i) => i + 401);
 
         case 7:
-            return Array.from({length: 300}, (_, i) => i + 701);
+            return Array.from({length: 180}, (_, i) => i + 701);
 
         case 8:
-            return Array.from({length: 500}, (_, i) => i + 1001);
+            return Array.from({length: 350}, (_, i) => i + 1001);
 
         case 9:
-            return Array.from({length: 500}, (_, i) => i + 1501);
+            return Array.from({length: 300}, (_, i) => i + 1501);
 
         case 10:
-            return Array.from({length: 500}, (_, i) => i + 2001);
+            return Array.from({length: 300}, (_, i) => i + 2001);
 
         case 11:
-            return Array.from({length: 500}, (_, i) => i + 2501);
+            return Array.from({length:300}, (_, i) => i + 2501);
 
         case 12:
-            return Array.from({length: 1000}, (_, i) => i + 3001);
+            return Array.from({length: 700}, (_, i) => i + 3001);
 
         default:
             return Array.from({length: 25}, (_, i) => i + 1);
