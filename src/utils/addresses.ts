@@ -190,16 +190,7 @@ export const MASTERCHEFNEWLPADDRESSES: { [key: string]: string | any } = {
   },
 };
 
-export const AUTOSWAPV2ADDRESSES: { [key: string]: string } = {
-  "1": "0x",
-  "3": "0x",
-  "56": "0x8eAc699588e46E7426375D945dD0330b0ad11814",
-  "97": "0xc1F5014098DBb6CCCc28F9365316533905f591EB",
-  "137": "0xCA4f379b674e2d72c8144b5c521BdD24657C8949",
-  "80001": "0x",  
-  "43114":"0x",
-  "43113":"0x013f3d0EF4D2EcDFF943C5Cd4f11F340E57dec65" // testnet fuji
-};
+
 export const MARKETAUTOSWAPADDRESSES: {
   [key: string]: { [key: string]: string };
 } = {
@@ -220,7 +211,7 @@ export const MARKETAUTOSWAPADDRESSES: {
     "43113":"0x" // testnet fuji
   },
   Lydia:{
-    "43114":"0x",
+    "43114":"0x276F105b707d54100c279098Ad1D7B08D2481956",
     "43113":"0x" // testnet fuji
   }
 };
@@ -283,6 +274,10 @@ export const OTHERMARKETADDRESSES: {
   Tradejoe: {
     "43114":"0x60aE616a2155Ee3d9A68541Ba4544862310933d4",
     "43113":"0x" // testnet fuji
+  },
+  Lydia:{
+    "43114":"0xA52aBE4676dbfd04Df42eF7755F01A3c41f28D27",
+    "43113":"0x" // testnet fuji
   }
   // "Sushiswap":{
   //   "56": "0x",
@@ -312,6 +307,10 @@ export const OTHERMARKETFACTORYADDRESSES: {
   },
   Tradejoe: {
     "43114":"0x9Ad6C38BE94206cA50bb0d90783181662f0Cfa10",
+    "43113":"0x" // testnet fuji
+  },
+  Lydia:{
+    "43114":"0xe0C1bb6DF4851feEEdc3E14Bd509FEAF428f7655",
     "43113":"0x" // testnet fuji
   }
   // "Sushiswap":{

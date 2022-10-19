@@ -129,6 +129,8 @@ function NetworkIndicator() {
               <Img w="30px" src={OASISLOGO} />
             ) : info.label == "Oasis Emerald Mainnet" ? (
               <Img w="30px" src={OASISLOGO} />
+            ) : info.label == "Avalanche" ? (
+              <Img w="30px" src={AVAXLOGO} />
             ) 
             // : info.label.toLowerCase() === "Avalanche Fuji TestNet".toLowerCase() ? (
             //   <Img w="30px" src={AVAXLOGO} />

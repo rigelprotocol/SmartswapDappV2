@@ -106,6 +106,7 @@ const useSwap = (
           tokenOneAddress,
           tokenTwoAddress
         );
+        console.log({pairAddress})
         setAddress(pairAddress);
 
         if (wrappable) {
@@ -133,6 +134,7 @@ const useSwap = (
                     tokenOneAddress,
                     tokenTwoAddress,
                   ]);
+                  console.log({tokenOneAddress,tokenTwoAddress})
 
             const output = formatAmount(amountOut[1], currencyB.decimals);
 
@@ -159,7 +161,7 @@ const useSwap = (
             setAmount("");
           }
           // setLoading(false)
-        } else if (!wrappable && address === ZERO_ADDRESS) {
+        } else if (!wrappable && address === ZERO_ADDRESS && pairAddress === ZERO_ADDRESS ) {
           //   setWrap(true);
           setWrap(false);
           // RGP BNB BUSD USDT
@@ -576,6 +578,7 @@ const useSwap = (
           setAmount("");
           setPathSymbol("");
           setPath([]);
+          setOppositeAmount("")
         }
       } catch (e) {
         console.log({ e });
@@ -601,12 +604,12 @@ const useSwap = (
     wrap,
     tokenOneAddress,
     tokenTwoAddress,
-    tokenA,
-    tokenB,
+    // tokenA,
+    // tokenB,
     independentFieldString,
     oppositeAmount,
     marketFactory,
-    marketRouterAddress,
+    // marketRouterAddress,
     // account
   ]);
 

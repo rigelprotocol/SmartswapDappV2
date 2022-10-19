@@ -62,7 +62,7 @@ const OutputCurrecy = ({
   );
 };
 
-export default OutputCurrecy;
+export default React.memo(OutputCurrecy);
 
 // interface OutputCurrecyProps {
 //   pairAvailable: boolean;

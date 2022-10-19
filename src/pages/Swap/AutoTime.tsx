@@ -7,6 +7,7 @@ import SwapSettings from './components/sendToken/SwapSettings';
 import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
 import { VectorIcon, ExclamationIcon, SwitchIcon } from '../../theme/components/Icons';
 import {
+  AvalancheMarketArray,
   useDerivedSwapInfo,
   useSwapActionHandlers,
   useSwapState,
@@ -81,7 +82,7 @@ const SetPrice = () => {
   const [signatureFromDataBase, setSignatureFromDataBase] = useState(false)
   const [transactionSigned, setTransactionSigned] = useState(false)
   const [selectedFrequency, setSelectedFrequency] = useState("5")
-  const [marketType, setMarketType] = useState("Smartswap")
+  const [marketType, setMarketType] = useState(chainId === 43114 ? "Tradejoe" :"Smartswap")
   const [percentageChange, setPercentageChange] = useState<string>("0")
   const [approvalForFee, setApprovalForFee] = useState("")
   const [fee, setFee] = useState("")
@@ -126,6 +127,7 @@ const SetPrice = () => {
     [onUserInput]
   );
  useEffect(()=>{
+  setMarketType(chainId === 43114 ? "Tradejoe" :"Smartswap")
    let market = location.split("/").length===3? location.split("/")[2]:""
    checkIfMarketExists(market,chainId)
 
@@ -141,8 +143,9 @@ const SetPrice = () => {
         setSignatureFromDataBase(false)
     }
     if (account) {
-      checkIfSignatureExists()
-      getFee()
+      setMarketType(chainId === 43114 ? "Tradejoe" :"Smartswap")
+      // checkIfSignatureExists()
+      getFee(chainId === 43114 ? "Tradejoe" :"Smartswap")
     }
   }, [account])
 
@@ -152,7 +155,8 @@ const SetPrice = () => {
     (state) => state.user.userDeadline
   );
   const [allowedSlippage] = useUserSlippageTolerance();
-  const getFee =async () => {
+  const getFee =async (marketType:string="Smartswap") => {
+    console.log(marketType,MARKETAUTOSWAPADDRESSES[marketType][chainId as number],"Kekek")
     const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
     try{
       const amountToApprove = await autoSwapV2Contract.fee()
@@ -170,6 +174,7 @@ const SetPrice = () => {
     if(chainId === 56) marketArray = binanceMarketArray
     else if(chainId === 97) marketArray = binanceTestMarketArray
     else if(chainId === 137) marketArray = polygonMarketArray
+    else if(chainId ===43114) marketArray= AvalancheMarketArray
     if(marketArray && marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())){
       let item = marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())
       setMarketType(item.name.charAt(0).toUpperCase() + item.name.slice(1))
@@ -205,7 +210,7 @@ const SetPrice = () => {
   useEffect(async () => {
     const checkBalance = async ()=>{
      if(currencies[Field.INPUT]?.symbol==="RGP"){
-      let fee =await getFee()
+      let fee = await getFee(chainId === 43114 ? "Tradejoe" :"Smartswap")
       let amount = fee ? parseFloat(formattedAmounts[Field.INPUT]) + parseFloat(fee) : parseFloat(formattedAmounts[Field.INPUT])
       if(amount > parseFloat(balance) ){
         setInsufficientBalance(true);
@@ -223,14 +228,14 @@ const SetPrice = () => {
     
    await checkBalance()
   }, [balance, formattedAmounts[Field.INPUT],totalNumberOfTransaction]);
-  useEffect(() => {
-    async function runCheck() {
-      if (!inputError) {
-        await checkForApproval()
-      }
-    }
-    runCheck()
-  }, [inputError, formattedAmounts[Field.INPUT], currencies[Field.INPUT],totalNumberOfTransaction])
+  // useEffect(() => {
+  //   async function runCheck() {
+  //     if (!inputError) {
+  //       await checkForApproval()
+  //     }
+  //   }
+  //   runCheck()
+  // }, [inputError, formattedAmounts[Field.INPUT], currencies[Field.INPUT],totalNumberOfTransaction])
 
   useMemo(() => {
     if(parseFloat(percentageChange) >0 && formattedAmounts[Field.OUTPUT]){
@@ -282,21 +287,20 @@ const SetPrice = () => {
 
  
   
-    useEffect(async () => {      
+    useEffect(() => {      
       onMarketSelection(OTHERMARKETFACTORYADDRESSES[marketType][chainId as number],OTHERMARKETADDRESSES[marketType][chainId as number])
     // }
   }, [chainId,marketType])
   
-  const checkForApproval = async () => {
-    const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
-    
+  useEffect(()=>{
+    let active = true
+  checkForApproval()
+  return () => { active = false }
+    async function checkForApproval()  {
+    if(!inputError && account){
     // check approval for RGP and the other token
     const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
     const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
-    console.log({tokenBalance,RGPBalance})
-    const amountToApprove = await autoSwapV2Contract.fee()
-    const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
-    // const fee ="10"
     const frequency = parseInt(totalNumberOfTransaction) > 1 ? parseInt(totalNumberOfTransaction) : 1
     if (parseFloat(RGPBalance) >= parseFloat(fee)) {
       setHasBeenApproved(true)
@@ -305,7 +309,7 @@ const SetPrice = () => {
     }else{
       setApprovalForFee("RGP")
     }
-    if((parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT]) * frequency)+parseFloat(fee)) && currencies[Field.INPUT]?.wrapped?.symbol === "RGP"){
+    if((parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT]) * frequency)+parseFloat(fee))&& currencies[Field.INPUT]?.wrapped?.symbol === "RGP"){// 
       setHasBeenApproved(true)
       // setApprovalForFee("")
       setApprovalForToken("")
@@ -328,7 +332,10 @@ const SetPrice = () => {
      
       setApprovalForToken(currencies[Field.INPUT]?.wrapped?.symbol ?? "")
     }
+    if (!active) { return }
   }
+  }
+  } ,[inputError, typedValue,totalNumberOfTransaction,marketType,transactionSigned])
 
   const runTransaction = () =>{
     setShowModal(!showModal);
@@ -380,19 +387,22 @@ const SetPrice = () => {
 
         if (tokenApprovingFor === "RGP") {
           const address = RGPADDRESSES[chainId as number];
-          const rgp = await rigelToken(RGP[chainId as number], library);
-          const token = await getERC20Token(address, library);
+          const rgp = await rigelToken(RGPADDRESSES[chainId as number], library);
+          console.log({rgp})
+          // const token = await getERC20Token(address, library);
+          const rgpDecimal = await rgp.decimals();
 
         const frequency = parseInt(totalNumberOfTransaction) > 1 ? parseInt(totalNumberOfTransaction) : 1
-          const walletBal = (await token.balanceOf(account));
-         let walletBalString = parseFloat(ethers.utils.formatUnits(walletBal.toString(), currencies[Field.INPUT]?.decimals)) 
+          const walletBal = (await rgp.balanceOf(account));
+          console.log({walletBal,rgpDecimal})
+         let walletBalString = parseFloat(ethers.utils.formatUnits(walletBal.toString(), rgpDecimal)) 
 
                    const amountToApprove = walletBalString > parseFloat(formattedAmounts[Field.INPUT]) * frequency ? walletBalString : parseFloat(formattedAmounts[Field.INPUT]) * frequency
           console.log({amountToApprove,walletBal,walletBalString})
           
           const approveTransaction = await rgp.approve(
             MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
-            ethers.utils.parseUnits(amountToApprove.toString(),currencies[Field.INPUT]?.decimals).toString(),
+            ethers.utils.parseUnits(amountToApprove.toString(),rgpDecimal).toString(),
             {
               from: account,
             }
@@ -517,7 +527,7 @@ const setQuantityValue =() =>{
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)//
-      const response = await fetch(`http://localhost:7000/auto/add`, {
+      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/add`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached

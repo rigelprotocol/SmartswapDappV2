@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { timeConverter, getTokenSymbol, formatAmount,  } from "./useAccountHistory";
-import { AUTOSWAPV2ADDRESSES, SMARTSWAPROUTER, WNATIVEADDRESSES } from "../addresses";
+import {  MARKETAUTOSWAPADDRESSES, SMARTSWAPROUTER, WNATIVEADDRESSES } from "../addresses";
 import { getERC20Token } from '../utilsFunctions';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../state';
@@ -37,7 +37,7 @@ const useOpenOrders = (socket:any) => {
     const [openOrderData, setopenOrderData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("http://localhost:7000")
+    const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const refreshPage = useSelector((state: RootState) => state.transactions.refresh);
     const location = useLocation().pathname;
@@ -52,11 +52,13 @@ const useOpenOrders = (socket:any) => {
         if (location.includes("autotrade")) {
             setLocationData("auto")
             setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
-            setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
+             let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : "Pancakeswap" 
+            setContractAddress(MARKETAUTOSWAPADDRESSES[market][chainId as number])
         } else if (location.includes("set-price")) {
             setLocationData("price")
-            setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
-            setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
+            setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85") 
+            let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : "Pancakeswap" 
+            setContractAddress(MARKETAUTOSWAPADDRESSES[market][chainId as number])
         } else {
             setLocationData("swap")
             setStateAccount(account)

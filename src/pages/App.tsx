@@ -56,7 +56,7 @@ import InstantSwap from "./Swap/InstantSwap";
           <TransactionStateModal />
           <ErrorBoundary>
             <Switch>
-              {/* <Route exact strict path="/swap" component={Swap} />
+              <Route exact strict path="/swap" component={Swap} />
               <Route exact strict path="/pool" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : Pool} />
 
               <Route exact strict path="/find" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : FindPool} />
@@ -90,7 +90,7 @@ import InstantSwap from "./Swap/InstantSwap";
               <Route path="/farm" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : FarmingV2} />
               <Route path="/farm/:deposit" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : YieldFarm} />
               <Route exact strict path={'/smartbid'} component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap :SmartBid}/>
-              <Route path={'/smartbid/:id'} component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : BidDetails}/> */}
+              <Route path={'/smartbid/:id'} component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : BidDetails}/>
 
 <Route exact strict path="/freeswap" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId === SupportedChainId.POLYGONTEST || chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI || chainId===undefined  ? InstantSwap : Swap } />
               <Route exact strict path="/freeswap/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId === SupportedChainId.POLYGONTEST || chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI || chainId===undefined  ? InstantSwap : Swap } />

@@ -37,6 +37,7 @@ export interface DataType {
 }
 
 const TransactionHistory = ({ data, deleteData }: { data: DataType, deleteData: (data: DataType,value:number,type:string)=>void }) => {
+  console.log(data.market.toLowerCase() ==="lydia" &&{data})
   const activeTabColor = useColorModeValue('#333333', '#F1F5F8');
   const nonActiveTabColor = useColorModeValue('#666666', '#4A739B');
   const borderColor = useColorModeValue('#DEE5ED', '#324D68');

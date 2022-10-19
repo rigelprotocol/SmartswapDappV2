@@ -22,6 +22,7 @@ import { parseUnits } from "@ethersproject/units";
 import useParsedQueryString from "../../hooks/useParsedQueryString";
 import JSBI from "jsbi";
 import { Web3Provider } from "@ethersproject/providers";
+import { ZERO_ADDRESS } from "../../constants";
 
 export function tryParseAmount<T extends Currency>(
   value?: string,
@@ -201,8 +202,11 @@ export function useDerivedSwapInfo(): {
     console.log({inputCurrency, outputCurrency, address})
     inputError = inputError ?? "Select a Token";
   }
-
+console.log({pathArray})
   if (parseFloat(typedValue) > 0 && pathArray?.length === 0 && !wrap) {
+    inputError = "Insufficient Liquidity for this Trade.";
+  }
+  if (address === ZERO_ADDRESS ) {
     inputError = "Insufficient Liquidity for this Trade.";
   }
 
@@ -298,7 +302,8 @@ export const binanceTestMarketArray = [
   { name: "Smartswap", image: "Smartswap.png" },
 ];
 export const AvalancheMarketArray = [
-  { name: "Tradejoe", image: "Pangolin.png" },
+  { name: "Tradejoe", image: "tradejoe.png" },
+  { name: "Lydia", image: "lydia.png" },
 ];
 export const binanceFreeMarketArray = [
   // { name: "Smartswap", image: "Smartswap.png" },

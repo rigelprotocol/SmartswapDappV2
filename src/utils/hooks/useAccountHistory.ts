@@ -9,7 +9,7 @@ import FreeswapContract from "../abis/autoswap.json"
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../state";
 import { useLocation } from 'react-router-dom';
-import { SMARTSWAPROUTER, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES, AUTOSWAPSTATEADDRESSES, MARKETFREESWAPADDRESSES, FREESWAPACCOUNT } from "../addresses";
+import { SMARTSWAPROUTER, WNATIVEADDRESSES, AUTOSWAPSTATEADDRESSES, MARKETFREESWAPADDRESSES, FREESWAPACCOUNT, MARKETAUTOSWAPADDRESSES } from "../addresses";
 import Web3 from 'web3';
 import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { ParseFloat } from '..';
@@ -108,7 +108,7 @@ const useAccountHistory = (socket:any) => {
     const [historyData, setHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("http://localhost:7000")//
+    const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//
     const dispatch =useDispatch()
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const tokenList = async (addressName: string) => {
@@ -142,11 +142,13 @@ const useAccountHistory = (socket:any) => {
         if (location.includes("autotrade")) {
             setLocationData("auto")
             setStateAccount(AUTOSWAPSTATEADDRESSES[chainId as number])
-            setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
+            let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : "Pancakeswap" 
+            setContractAddress(MARKETAUTOSWAPADDRESSES[market][chainId as number])
         } else if (location.includes("set-price")) {
             setLocationData("price")
-            setStateAccount(AUTOSWAPSTATEADDRESSES[chainId as number])
-            setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
+            setStateAccount(AUTOSWAPSTATEADDRESSES[chainId as number]) 
+            let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : "Pancakeswap" 
+            setContractAddress(MARKETAUTOSWAPADDRESSES[market][chainId as number])
         } else if(location.includes("freeswap")){
             setLocationData("freeswap")
             setStateAccount(account)
@@ -182,6 +184,7 @@ const useAccountHistory = (socket:any) => {
         const trans = await fetch(`${URL}/auto`)
         const transaction = await data.json()
         const database = await trans.json()
+        console.log({database,transaction})
         return { transaction, database }
     }
     const api = APIENDPOINT[chainId as number];
