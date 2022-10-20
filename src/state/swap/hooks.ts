@@ -199,10 +199,8 @@ export function useDerivedSwapInfo(): {
   }
 
   if (!inputCurrency || !outputCurrency || !address) {
-    console.log({inputCurrency, outputCurrency, address})
     inputError = inputError ?? "Select a Token";
   }
-console.log({pathArray})
   if (parseFloat(typedValue) > 0 && pathArray?.length === 0 && !wrap) {
     inputError = "Insufficient Liquidity for this Trade.";
   }

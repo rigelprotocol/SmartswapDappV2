@@ -106,7 +106,6 @@ const useSwap = (
           tokenOneAddress,
           tokenTwoAddress
         );
-        console.log({pairAddress})
         setAddress(pairAddress);
 
         if (wrappable) {
@@ -134,7 +133,6 @@ const useSwap = (
                     tokenOneAddress,
                     tokenTwoAddress,
                   ]);
-                  console.log({tokenOneAddress,tokenTwoAddress})
 
             const output = formatAmount(amountOut[1], currencyB.decimals);
 

@@ -49,7 +49,7 @@ import { useUserSlippageTolerance } from "../../state/user/hooks";
 import { useSelector,useDispatch } from 'react-redux';
 import { RootState } from "../../state";
 import { autoSwapV2, rigelToken } from '../../utils/Contracts';
-import { RGPADDRESSES, OTHERMARKETADDRESSES,MARKETAUTOSWAPADDRESSES, OTHERMARKETFACTORYADDRESSES, RGP } from '../../utils/addresses';
+import { RGPADDRESSES, OTHERMARKETADDRESSES,MARKETAUTOSWAPADDRESSES, OTHERMARKETFACTORYADDRESSES, RGP, USDT } from '../../utils/addresses';
 import { setOpenModal, TrxState } from "../../state/application/reducer";
 import { changeFrequencyTodays } from '../../utils/utilsFunctions';
 import { ChevronDownIcon } from '@chakra-ui/icons';
@@ -209,7 +209,7 @@ const SetPrice = () => {
   );
   useEffect(async () => {
     const checkBalance = async ()=>{
-     if(currencies[Field.INPUT]?.symbol==="RGP"){
+     if(currencies[Field.INPUT]?.symbol==="USDT"){
       let fee = await getFee(chainId === 43114 ? "Tradejoe" :"Smartswap")
       let amount = fee ? parseFloat(formattedAmounts[Field.INPUT]) + parseFloat(fee) : parseFloat(formattedAmounts[Field.INPUT])
       if(amount > parseFloat(balance) ){
@@ -299,7 +299,8 @@ const SetPrice = () => {
     async function checkForApproval()  {
     if(!inputError && account){
     // check approval for RGP and the other token
-    const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
+    // const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
+    const RGPBalance = await checkApprovalForRGP(USDT[chainId as number]) ?? "0"
     const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
     const frequency = parseInt(totalNumberOfTransaction) > 1 ? parseInt(totalNumberOfTransaction) : 1
     if (parseFloat(RGPBalance) >= parseFloat(fee)) {
@@ -307,9 +308,9 @@ const SetPrice = () => {
       setApprovalForFee("")
       // setApprovalForToken("")
     }else{
-      setApprovalForFee("RGP")
+      setApprovalForFee("USDT")
     }
-    if((parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT]) * frequency)+parseFloat(fee))&& currencies[Field.INPUT]?.wrapped?.symbol === "RGP"){// 
+    if((parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT]) * frequency)+parseFloat(fee))&& currencies[Field.INPUT]?.wrapped?.symbol === "USDT"){// 
       setHasBeenApproved(true)
       // setApprovalForFee("")
       setApprovalForToken("")
@@ -322,12 +323,12 @@ const SetPrice = () => {
       setApprovalForToken(currencies[Field.INPUT]?.wrapped?.symbol ?? "")
     }
     console.log(parseFloat(RGPBalance),parseFloat(tokenBalance),parseFloat(formattedAmounts[Field.INPUT]) * frequency)
-    if (parseFloat(RGPBalance) < parseFloat(fee) || (parseFloat(tokenBalance) < parseFloat(formattedAmounts[Field.INPUT]) * frequency && (!currencies[Field.INPUT]?.isNative && currencies[Field.INPUT]?.wrapped?.symbol === "RGP" ))) {
+    if (parseFloat(RGPBalance) < parseFloat(fee) || (parseFloat(tokenBalance) < parseFloat(formattedAmounts[Field.INPUT]) * frequency && (!currencies[Field.INPUT]?.isNative && currencies[Field.INPUT]?.wrapped?.symbol === "USDT" ))) {
       setHasBeenApproved(false)
-      setApprovalForFee("RGP")
-      setApprovalForToken("RGP")
+      setApprovalForFee("USDT")
+      setApprovalForToken("USDT")
     }
-    if (parseFloat(tokenBalance) < parseFloat(formattedAmounts[Field.INPUT]) * frequency && (!currencies[Field.INPUT]?.isNative &&currencies[Field.INPUT]?.wrapped.symbol !== "RGP")) {
+    if (parseFloat(tokenBalance) < parseFloat(formattedAmounts[Field.INPUT]) * frequency && (!currencies[Field.INPUT]?.isNative &&currencies[Field.INPUT]?.wrapped.symbol !== "USDT")) {
       setHasBeenApproved(false)
      
       setApprovalForToken(currencies[Field.INPUT]?.wrapped?.symbol ?? "")
@@ -385,13 +386,12 @@ const SetPrice = () => {
         );
         try{
 
-        if (tokenApprovingFor === "RGP") {
-          const address = RGPADDRESSES[chainId as number];
-          const rgp = await rigelToken(RGPADDRESSES[chainId as number], library);
+        if (tokenApprovingFor === "USDT") {
+          const rgp = await getERC20Token(USDT[chainId as number], library);
           console.log({rgp})
           // const token = await getERC20Token(address, library);
           const rgpDecimal = await rgp.decimals();
-
+          console.log({rgpDecimal})
         const frequency = parseInt(totalNumberOfTransaction) > 1 ? parseInt(totalNumberOfTransaction) : 1
           const walletBal = (await rgp.balanceOf(account));
           console.log({walletBal,rgpDecimal})
@@ -527,7 +527,7 @@ const setQuantityValue =() =>{
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)//
-      const response = await fetch(`http://localhost:7000/auto/add`, {
+      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/add`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -617,7 +617,9 @@ const setQuantityValue =() =>{
   const checkApprovalForRGP = async (tokenAddress: string) => {
 
     try {
-      const status = await rigelToken(tokenAddress, library);
+      // const status = await rigelToken(tokenAddress, library);
+      const status = await getERC20Token(tokenAddress, library);
+      const decimals = await status.decimals()
       const check = await status.allowance(
         account,
         MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
@@ -625,7 +627,8 @@ const setQuantityValue =() =>{
           from: account,
         }
       )
-      const approveBalance = ethers.utils.formatEther(check).toString()
+      const approveBalance = ethers.utils.formatUnits(check,decimals).toString()
+      console.log({approveBalance})
       return approveBalance
     } catch (e) {
       console.log(e)
@@ -816,7 +819,7 @@ const setQuantityValue =() =>{
           
                 </VStack>
                 <Flex mt={10} justifyContent="space-between">
-                  <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{fee} RGP</Text>
+                  <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{fee} USDT</Text>
                 </Flex>
                 <VStack>
                   <Flex>
@@ -852,7 +855,7 @@ const setQuantityValue =() =>{
             >
               {inputError
                 ? inputError
-                : `Insufficient ${currencies[Field.INPUT]?.symbol} Balance ${currencies[Field.INPUT]?.symbol==="RGP" ? "for fee":""}`}
+                : `Insufficient ${currencies[Field.INPUT]?.symbol} Balance ${currencies[Field.INPUT]?.symbol==="RGP" ? "for USDT":""}`}
             </Button>) : !transactionSigned ? <Button
                     w="100%"
                     borderRadius="6px"
@@ -902,7 +905,7 @@ const setQuantityValue =() =>{
                     boxShadow={lightmode ? 'base' : 'lg'}
                     _hover={{ bgColor: buttonBgcolor }}
                   >
-                    Approve RGP for fee
+                    Approve USDT for fee
                   </Button> : <Button
                     w="100%"
                     borderRadius="6px"
@@ -1108,7 +1111,7 @@ const setQuantityValue =() =>{
           
                 </VStack>
                 <Flex mt={10} justifyContent="space-between">
-                  <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{fee} RGP</Text>
+                  <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{fee} USDT</Text>
                 </Flex>
                 <VStack>
                   <Flex>
@@ -1194,7 +1197,7 @@ const setQuantityValue =() =>{
                     boxShadow={lightmode ? 'base' : 'lg'}
                     _hover={{ bgColor: buttonBgcolor }}
                   >
-                    Approve RGP for fee
+                    Approve USDT for fee
                   </Button> : <Button
                     w="100%"
                     borderRadius="6px"

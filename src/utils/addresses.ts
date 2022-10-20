@@ -11,6 +11,7 @@ export const RGPADDRESSES: { [key: string]: string } = {
   "43113":"0x59F48ce93eb317f4628C68BbcF6CB7937a25662D" //fuji testnet
 };
 
+
 export const CHAINDETAILS = {
   "1": "eth",
   "3": "eth_test",
@@ -506,7 +507,7 @@ export const USDT: { [key: string]: string } = {
   "80001": "0x7E1cF971de65eB065A72595B3Ac9e1b9Cc630564",
   "42262": "0xdC19A122e268128B5eE20366299fc7b5b199C8e3",
   "42261": "0xa30b641533D2509089CeF6F097a5BFB62dF7BC8b",
-  "43114":"0x"
+  "43114":"0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7"
 };
 
 export const USDC: { [key: string]: string } = {

@@ -37,7 +37,7 @@ const useOpenOrders = (socket:any) => {
     const [openOrderData, setopenOrderData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("http://localhost:7000")
+    const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const refreshPage = useSelector((state: RootState) => state.transactions.refresh);
     const location = useLocation().pathname;
@@ -60,11 +60,29 @@ const useOpenOrders = (socket:any) => {
             let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : "Pancakeswap" 
             setContractAddress(MARKETAUTOSWAPADDRESSES[market][chainId as number])
         } else {
+       
+        }
+    }, [location, chainId])
+    useEffect(() => {
+        if (location.includes("autotrade")) {
+            setLocationData("auto")
+            setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
+            let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : chainId ===43114? "Tradejoe" :  "Pancakeswap" 
+            console.log({market})
+            setContractAddress(MARKETAUTOSWAPADDRESSES[market][chainId as number])
+        } else if (location.includes("set-price")) {
+            setLocationData("price")
+            setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85") 
+            let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : chainId ===43114? "Tradejoe" :  "Pancakeswap" 
+            console.log({market})
+            setContractAddress(MARKETAUTOSWAPADDRESSES[market][chainId as number])
+        }else {
             setLocationData("swap")
             setStateAccount(account)
             setContractAddress(SMARTSWAPROUTER[chainId as number])
         }
-    }, [location, chainId])
+    }, [chainId, account,location, contractAddress,refreshPage,locationData]);
+   
     useEffect(() => {
         getOpenOrders();
     }, [chainId, account, contractAddress,refreshPage,locationData]);
