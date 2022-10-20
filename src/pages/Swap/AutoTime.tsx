@@ -345,7 +345,6 @@ const SetPrice = () => {
   }
 
   const signTransaction = async () => {
-    alert(1)
       try {
         if(account !== undefined) {
         let web3 = new Web3(Web3.givenProvider);
