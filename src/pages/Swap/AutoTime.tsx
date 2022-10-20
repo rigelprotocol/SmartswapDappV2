@@ -1244,7 +1244,7 @@ const setQuantityValue =() =>{
         buttonText={signatureFromDataBase ? "Send Transaction" : "Sign Wallet"}
         fromDeposited={formattedAmounts[Field.INPUT]}
         toDeposited={userOutputPrice.toString()}
-        signSignature={signatureFromDataBase ? sendTransactionToDatabase : signTransaction}
+        signSignature={signTransaction}
         minimumAmountToRecieve={minimum}
         slippage={Number(allowedSlippage / 100)}
         showNewChangesText={showNewChangesText}
