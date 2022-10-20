@@ -36,7 +36,7 @@ const History = () => {
 
   useEffect(
     () => {
-  setSocket(io("https://autoswap-server.herokuapp.com"));//https://autoswap-server.herokuapp.com
+  setSocket(io("http://localhost:7000"));//http://localhost:7000
   
     },
     []
@@ -50,7 +50,7 @@ const History = () => {
   const [notification, setNotification] = useState(0);
   const location = useLocation().pathname;
   const [address, setAddress] = useState("");
-  const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//https://autoswap-server.herokuapp.com
+  const [URL, setURL] = useState("http://localhost:7000")//http://localhost:7000
   const [showOrder, setShowOrder] = useState(false);
   const [type, setType] = useState("");
 

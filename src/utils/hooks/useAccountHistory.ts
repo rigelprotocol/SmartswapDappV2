@@ -108,7 +108,7 @@ const useAccountHistory = (socket:any) => {
     const [historyData, setHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//
+    const [URL, setURL] = useState("http://localhost:7000")//
     const dispatch =useDispatch()
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const tokenList = async (addressName: string) => {
@@ -142,18 +142,20 @@ const useAccountHistory = (socket:any) => {
         if (location.includes("autotrade")) {
             setLocationData("auto")
             setStateAccount(AUTOSWAPSTATEADDRESSES[chainId as number])
-            let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : "Pancakeswap" 
+            let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : chainId ===43114? "Tradejoe" :  "Pancakeswap" 
+            console.log({market})
             setContractAddress(MARKETAUTOSWAPADDRESSES[market][chainId as number])
         } else if (location.includes("set-price")) {
             setLocationData("price")
             setStateAccount(AUTOSWAPSTATEADDRESSES[chainId as number]) 
-            let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : "Pancakeswap" 
+            let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : chainId ===43114? "Tradejoe" :  "Pancakeswap" 
+            console.log({market})
             setContractAddress(MARKETAUTOSWAPADDRESSES[market][chainId as number])
         } else if(location.includes("freeswap")){
             setLocationData("freeswap")
             setStateAccount(account)
-            console.log(location,location.split("/"))
-     let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : "Pancakeswap" 
+     let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1): chainId ===43114? "Tradejoe" :  "Pancakeswap" 
+     console.log({market})
      console.log(MARKETFREESWAPADDRESSES[market][chainId as number],market)
             setContractAddress(MARKETFREESWAPADDRESSES[market][chainId as number])
         } else {
@@ -304,6 +306,7 @@ const useAccountHistory = (socket:any) => {
 
              else if ( location.includes("autotrade") || location.includes("set-price")) {
                 const { transaction, database } = await getTransactionFromDatabase(account)
+                console.log({transaction,database})
                 if (transaction.length > 0) {
                     
                     dispatch(notificationTab({ 
@@ -349,6 +352,7 @@ const useAccountHistory = (socket:any) => {
                         }
                     })
                     )
+                    console.log({userData})
                 }
 
 
