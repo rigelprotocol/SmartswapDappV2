@@ -345,8 +345,9 @@ const SetPrice = () => {
   }
 
   const signTransaction = async () => {
-    if (account !== undefined) {
-      // try {
+    
+      try {
+        if(account !== undefined) {
         let web3 = new Web3(Web3.givenProvider);
         const permitHash = process.env.REACT_APP_PERMIT_HASH;
 
@@ -367,6 +368,9 @@ const SetPrice = () => {
         })
       );
     }
+  }catch(e){
+    console.log(e)
+  }
 
   }
 
