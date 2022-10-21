@@ -38,7 +38,7 @@ const useMarketHistory = (socket:any) => {
     const [marketHistoryData, setMarketHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//
+    const [URL, setURL] = useState("http://localhost:7000")//
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
 
     const api = APIENDPOINT[chainId as number];

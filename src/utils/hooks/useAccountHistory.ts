@@ -108,7 +108,7 @@ const useAccountHistory = (socket:any) => {
     const [historyData, setHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//
+    const [URL, setURL] = useState("http://localhost:7000")//
     const dispatch =useDispatch()
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const tokenList = async (addressName: string) => {
@@ -192,7 +192,7 @@ const useAccountHistory = (socket:any) => {
     const api = APIENDPOINT[chainId as number];
     const apikey = APIKEY[chainId as number];
     const loadAccountHistory = async () => {
-        if (account && contractAddress && locationData) {
+        if (account && locationData) {
             setLoading(true);
             try {
             let userData = []
