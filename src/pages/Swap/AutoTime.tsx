@@ -129,25 +129,25 @@ const SetPrice = () => {
  useEffect(()=>{
   setMarketType(chainId === 43114 ? "Tradejoe" :"Smartswap")
    let market = location.split("/").length===3? location.split("/")[2]:""
-   checkIfMarketExists(market,chainId)
-
- },[location,chainId])
+   let item =checkIfMarketExists(market,chainId)
+   console.log({item})
+   if (account) {
+    if(item){
+      setMarketType(item.name)
+      getFee(item.name)
+    }else{
+        setMarketType(chainId === 43114 ? "Tradejoe" :"Smartswap")
+    // checkIfSignatureExists()
+    console.log({marketType})
+    getFee(chainId === 43114 ? "Tradejoe" :"Smartswap")
+    }
+  
+  }
+ },[location,chainId,marketType,account])
 
   const switchMarket = (market:string)=>{
     routerHistory.push(`/autotrade/${market}`)
   }
-  useEffect(() => {
-    async function checkIfSignatureExists() {
-      
-        setTransactionSigned(false)
-        setSignatureFromDataBase(false)
-    }
-    if (account) {
-      setMarketType(chainId === 43114 ? "Tradejoe" :"Smartswap")
-      // checkIfSignatureExists()
-      getFee(chainId === 43114 ? "Tradejoe" :"Smartswap")
-    }
-  }, [account])
 
 
   
@@ -160,7 +160,8 @@ const SetPrice = () => {
     const autoSwapV2Contract = await autoSwapV2(MARKETAUTOSWAPADDRESSES[marketType][chainId as number], library);
     try{
       const amountToApprove = await autoSwapV2Contract.fee()
-    const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
+      console.log({amountToApprove},amountToApprove.toString())
+    const fee = ethers.utils.formatUnits(amountToApprove.toString(), 6)
     // const fee= "10"
     setFee(fee)
     return fee 
@@ -178,7 +179,9 @@ const SetPrice = () => {
     if(marketArray && marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())){
       let item = marketArray.find((item:any)=> item.name.toLowerCase() ===market.toLowerCase())
       setMarketType(item.name.charAt(0).toUpperCase() + item.name.slice(1))
+      return item
     }
+    return null
   }
   const parsedAmounts = useMemo(
     () =>
@@ -710,13 +713,13 @@ const setQuantityValue =() =>{
                   <VectorIcon />
                 </Center>
                 <Spacer />
-                {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
+                {currencies[Field.INPUT] && currencies[Field.OUTPUT] && 
                   <>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.INPUT]?.symbol} = {unitAmount && parseFloat(unitAmount) >0 ? unitAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.OUTPUT]?.symbol}
+                      1 {currencies[Field.INPUT]?.symbol} = {unitAmount && parseFloat(unitAmount) >0 ? unitAmount :inputError==="Insufficient Liquidity for this Trade." ? "--" :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.OUTPUT]?.symbol}
                     </Text>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount && parseFloat(oppositeAmount)>0 ? oppositeAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.INPUT]?.symbol}
+                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount && parseFloat(oppositeAmount)>0 ? oppositeAmount :inputError==="Insufficient Liquidity for this Trade." ? "--" :    <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.INPUT]?.symbol}
                     </Text>
                     <ExclamationIcon />
                   </>
@@ -1000,13 +1003,13 @@ const setQuantityValue =() =>{
               </Box>
 
               <Box mt={5}>
-              {currencies[Field.INPUT] && currencies[Field.OUTPUT] &&
+              {currencies[Field.INPUT] && currencies[Field.OUTPUT] && 
                   <>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.INPUT]?.symbol} = {unitAmount && parseFloat(unitAmount) >0 ? unitAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.OUTPUT]?.symbol}
+                      1 {currencies[Field.INPUT]?.symbol} = {unitAmount && parseFloat(unitAmount) >0 ? unitAmount :inputError==="Insufficient Liquidity for this Trade." ? "--" :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.OUTPUT]?.symbol}
                     </Text>
                     <Text fontSize="14px" mr={2} color={textColorOne}>
-                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount && parseFloat(oppositeAmount)>0 ? oppositeAmount :  <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.INPUT]?.symbol}
+                      1 {currencies[Field.OUTPUT]?.symbol} = {oppositeAmount && parseFloat(oppositeAmount)>0 ? oppositeAmount :inputError==="Insufficient Liquidity for this Trade." ? "--" :    <Spinner speed='0.65s' color='#999999' size="xs" />} {currencies[Field.INPUT]?.symbol}
                     </Text>
                     <ExclamationIcon />
                   </>
