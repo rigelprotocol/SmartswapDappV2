@@ -149,6 +149,7 @@ const ShowYieldFarmDetails = ({
   const {loadingState} = useUpdateFarm({reload, setReload, content});
 
   useFetchYieldFarmDetails({content, section, setLoading, loading});
+  console.log({content})
 
   //const {loadingFarm} = useUpdateNewFarm({reload, setReload, content});
 
@@ -194,6 +195,7 @@ useEffect(()=>{
   checkEnoughApproval(content.poolAllowance,content.availableToken)
 },[depositTokenValue])
   useEffect(() => {
+    console.log({content})
     const poolAllowance = async (contract: Contract) => {
       if (account) {
         const rgpApproval = await contract.allowance(
@@ -378,6 +380,8 @@ useEffect(()=>{
   };
 
   const checkUser = async (val :string) => {
+    alert(1)
+    console.log({content})
     if (content.deposit === "RGP" && Number(content.id) === 1) {
       await RGPSpecialPoolV1Approval();
       setApproveValueForOtherToken(true);

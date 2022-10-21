@@ -482,7 +482,6 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
             parseFloat(ethers.utils.formatUnits(RGPBallance)) * rgpPrice;
 
           const yeaRate = await specialPool.YEAR_RATE();
-
           //this is temporal
 
           handleUpdateSpecialPool([
