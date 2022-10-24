@@ -69,15 +69,13 @@ import {
 } from "../../utils/addresses";
 import {clearInputInfo, convertFromWei, convertToNumber} from "../../utils";
 import {useRGPBalance} from "../../utils/hooks/useBalances";
-import {updateFarmAllowances} from "../../state/farm/actions";
+import { updateFarmAllowances } from "../../state/newfarm/actions";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 import Joyride from "react-joyride";
 import {steps} from "../../components/Onboarding/YieldSteps";
 import {Contract} from "@ethersproject/contracts";
 import {calculateGas} from "../Swap/components/sendToken";
 import {useUserGasPricePercentage} from "../../state/gas/hooks";
-
-import {useFetchYieldFarmDetails, useUpdateFarm} from "../../state/newfarm/hooks";
 import {useNewYieldFarmDetails, useUpdateNewFarm} from "../../state/LPFarm/hooks";
 import {
     GButtonClicked,

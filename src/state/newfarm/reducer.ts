@@ -1,12 +1,13 @@
 import { createReducer } from "@reduxjs/toolkit";
 import { stat } from "fs";
-import farm from "../farm";
 import {
   updateAllowance,
   updateFarms,
   updateLoadingState,
   updateSpecialPool,
   updateChainId,
+  updateFarmAllowances,
+  updateFarmProductAllowances,
 } from "./actions";
 
 export interface farmDataInterface {
@@ -44,14 +45,80 @@ export interface farmDataInterface {
         address: string;
       }>
     | undefined;
+  productFarm: {
+      feature:string,
+      percentageProfitShare:string,
+      profitTimeLine:string,
+      totalLiquidity:string,
+      estimatedTotalProfit:string,
+      deposit: string,
+      pid:number,
+      poolAllowance: string,
+      type:string,
+      tokenStaked:string
+      RGPStaked:string
+      }[]
 }
-
+export interface farmStateInterface {
+  loadingValue?: boolean;
+  error?: any;
+  contents: Array<{
+    id: string;
+    img: string;
+    deposit: string;
+    earn: string;
+    ARYValue: any;
+    type?: string;
+    totalLiquidity: any;
+    tokensStaked: Array<string>;
+    RGPEarned?: string;
+    availableToken: string;
+    inflationPerDay?: number;
+    tokenPrice?: number;
+    totalVolumePerPool?: number;
+    farmingFee?: number;
+    pId?: number;
+    poolAllowance?: any;
+    poolVersion?: string;
+  }>;
+  productFarm: {
+    feature:string,
+    percentageProfitShare:string,
+    profitTimeLine:string,
+    totalLiquidity:string,
+    estimatedTotalProfit:string,
+    deposit: string,
+    pid:number,
+    poolAllowance: string,
+    type:string,
+    tokenStaked:string
+    RGPStaked:string
+    }[]
+}
 const initialState: farmDataInterface = {
   loading: false,
   contents: undefined,
   specialPool: undefined,
   chainId: 56,
+  productFarm :[
+    {
+      feature:"AutoTrade",
+      percentageProfitShare:"25%",
+      profitTimeLine:"6 months",
+      totalLiquidity:"",
+      estimatedTotalProfit:"1774000",
+      deposit: "RGP",
+      pid:93903,
+      poolAllowance: "",
+      type:"AT",
+      RGPStaked:"",
+      tokenStaked:""
+    }
+  ]
 };
+
+
+
 
 export default createReducer(initialState, (builder) =>
   builder
@@ -65,6 +132,7 @@ export default createReducer(initialState, (builder) =>
         };
       }
     })
+    
 
     .addCase(updateSpecialPool, (state, action) => {
       const farms = action.payload.value;
@@ -84,6 +152,21 @@ export default createReducer(initialState, (builder) =>
         ...state,
         chainId: chainId,
       };
+    })
+    .addCase(updateFarmAllowances, (state, action) => {
+      const allowances = action.payload;
+      console.log(allowances.length,allowances)
+      // allowances.forEach((item, index) => {
+      //   state?.contents[index].poolAllowance = item;
+      // });
+    })
+
+    .addCase(updateFarmProductAllowances, (state, action) => {
+      const allowances = action.payload;
+      console.log({allowances})
+      allowances.forEach((item, index) => {
+        state.productFarm[index].poolAllowance = item;
+      });
     })
 
     // .addCase(updateSpecialPool, (state, action) => {

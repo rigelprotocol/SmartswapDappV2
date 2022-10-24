@@ -16,6 +16,10 @@ export const updateNewFilterResult = createAction<{
     farmData: [] | undefined;
 }>("newFarming/updateNewFilterResult");
 
+export const updateSelectedField = createAction<{ value: any }>(
+    "farming/updateSelectedField"
+);
+
 export const clearSearchResult = createAction("newFarming/clearSearchResult");
 
 export const updateYieldFarmDetails = createAction<{ value: any[] }>(

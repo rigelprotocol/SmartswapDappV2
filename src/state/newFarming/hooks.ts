@@ -6,7 +6,8 @@ import {
     updateFilterResult,
     clearAllFarms,
 } from "./action";
-import { useFarms } from "../farm/hooks";
+import { useFarmData } from "../newfarm/hooks";
+import { useFarms } from "../newfarm/hooks";
 import { useNewLPData } from "../LPFarm/hooks";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import { useWeb3React } from "@web3-react/core";

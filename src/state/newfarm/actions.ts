@@ -16,6 +16,9 @@ export const updateChainId = createAction<{ value: number }>(
   "newfarm/updateChainId"
 );
 
+export const updateFarmAllowances = createAction<any[]>('newfarm/updateFarmAllowances');
+export const updateFarmProductAllowances = createAction<any[]>('newfarm/updateFarmProductAllowances');
+
 export const updateAllowance = createAction<{
   value: any;
 }>("newfarm/updateAllowance");

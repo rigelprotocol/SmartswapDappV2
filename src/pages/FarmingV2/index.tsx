@@ -40,7 +40,7 @@ import { ChevronDownIcon, HamburgerIcon, SearchIcon } from "@chakra-ui/icons";
 
 import { useDispatch, useSelector } from "react-redux";
 import bigNumber from "bignumber.js";
-import { useFarms } from "../../state/farm/hooks";
+import { useFarms } from "../../state/newfarm/hooks";
 import { shortenCode } from "../../utils";
 import { RootState } from "../../state";
 import { SupportedChainId } from "../../constants/chains";
@@ -54,22 +54,30 @@ import CryptoJS from "crypto-js";
 import { useUpdateUserGasPreference } from "../../state/gas/hooks";
 import Filter from "../../components/Farming/Modals/Filter";
 import { filterFarms } from "../../utils/utilsFunctions";
-import { farmStateInterface } from "../../state/farm/reducer";
-import {
+import { farmStateInterface } from "../../state/newfarm/reducer";
+// import {
+//   useClearFarm,
+//   useFarmSearch,
+//   useFilterFarms,
+//   usePrevious,
+//   useSearch,
+//   useSearchResults,
+// } from "../../state/farming/hooks";
+import { 
   useClearFarm,
   useFarmSearch,
   useFilterFarms,
   usePrevious,
   useSearch,
   useSearchResults,
-} from "../../state/farming/hooks";
+} from "../../state/newFarming/hooks";
 import FarmTab from "./FarmTab";
 import FarmHeader from "./FarmHeader";
-import {
-  clearSearchResult,
+import { clearSearchResult,
   updateSearchResult,
   updateSelectedField,
-} from "../../state/farming/action";
+  clearAllFarms
+} from "../../state/newFarming/action";
 import { useGetFarmData } from "../../utils/hooks/useGetFarmData";
 import { useGetNewFarms } from "../../utils/hooks/useGetNewFarms";
 
@@ -82,7 +90,6 @@ import {
 } from "../../components/G-analytics/gFarming";
 import { ZERO_ADDRESS } from "../../constants";
 import { State } from "../../state/types";
-import { clearAllFarms } from "../../state/newFarming/action";
 
 export const BIG_TEN = new bigNumber(10);
 export const V1 = "v1";
@@ -146,7 +153,7 @@ export function Index() {
 
   const filter = useSearch();
   useClearFarm();
-  const selector = useSelector((state: State) => state.farming.selectedField);
+  const selector = useSelector((state: RootState) => state.newFarming.selectedField);
 
   const [searchedDataResult] = useFarmSearch({
     keyword,
@@ -211,12 +218,12 @@ export function Index() {
 
   const data = useFarmData();
   const newLP = useNewLPData();
-  const farms = useSelector((state) => state.farming.content);
-  const recentFarms = useSelector((state) => state.newFarming.content);
-  const searchSection = useSelector((state) => state.farming);
-  const newSearchSection = useSelector((state) => state.newFarming);
+  const farms = useSelector((state:RootState) => state.newFarming.content);
+  const recentFarms = useSelector((state:RootState) => state.newFarming.content);
+  const searchSection = useSelector((state:RootState) => state.newFarming);
+  const newSearchSection = useSelector((state:RootState) => state.newFarming);
 
-  const { specialPool } = useSelector((state) => state.newfarm);
+  const { specialPool } = useSelector((state:RootState) => state.newfarm);
 
   console.log({specialPool})
 

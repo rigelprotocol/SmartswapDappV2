@@ -32,7 +32,6 @@ import {DARK_THEME, farmSection} from "./index";
 import {addToast} from "../../components/Toast/toastSlice";
 import {useDispatch, useSelector} from "react-redux";
 import {setOpenModal, TrxState} from "../../state/application/reducer";
-import { setLoadingState } from "../../state/farm/actions";
 import {ExplorerDataType, getExplorerLink} from "../../utils/getExplorerLink";
 import {
   MasterChefV2Contract,
@@ -51,7 +50,7 @@ import {
 } from "../../utils/addresses";
 import {clearInputInfo, convertFromWei, convertToNumber} from "../../utils";
 import {useRGPBalance} from "../../utils/hooks/useBalances";
-import {updateFarmAllowances} from "../../state/farm/actions";
+import { updateFarmAllowances } from "../../state/newfarm/actions";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 import Joyride from "react-joyride";
 import {steps} from "../../components/Onboarding/YieldSteps";
@@ -144,7 +143,7 @@ const ShowYieldFarmDetails = ({
   const [loading, setLoading] = useState(true);
 
   // const data = useGetFarmData(reload, setReload);
-
+console.log({content},"jjjdjjdjjdj")
 
   const {loadingState} = useUpdateFarm({reload, setReload, content});
 
@@ -234,10 +233,11 @@ useEffect(()=>{
     const checkForApproval = async () => {
       const rgp = await rigelToken(RGP[chainId as number], library);
       const rgpApproval = await poolAllowance(rgp);
+      console.log({content})
       if (content.deposit === "RGP" && Number(content.id) === 1) {
         const specialPoolV1Approval = await specialPoolV1Allowance(rgp);
         changeApprovalButton(true, specialPoolV1Approval);
-      } else if (content.deposit === "RGP" && Number(content.id) === 13) {
+      } else if (content.deposit === "RGP" && Number(content.id) === 0) {
        
         const specialPoolV2Approval = await specialPoolV2Allowance(rgp);
 
@@ -386,7 +386,7 @@ useEffect(()=>{
       await RGPSpecialPoolV1Approval();
       setApproveValueForOtherToken(true);
       setApproveValueForRGP(true);
-    } else if (content.deposit === "RGP" && Number(content.id) === 13) {
+    } else if (content.deposit === "RGP" && Number(content.id) === 0) {
       await RGPSpecialPoolV2Approval();
       setApproveValueForOtherToken(true);
       setApproveValueForRGP(true);

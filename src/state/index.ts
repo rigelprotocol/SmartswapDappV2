@@ -9,9 +9,8 @@ import user from "./user/reducer";
 import blockReducer from "./block";
 import transactions from "./transaction/reducer";
 import mint from "./mint/reducer";
-import farms from "./farm/reducer";
 import gas from "./gas/reducer";
-import farming from "./farming/reducer";
+// import farming from "./farming/reducer";
 import newfarm from "./newfarm/reducer";
 import lpfarm from "./LPFarm/reducer";
 import newFarming from "./newFarming/reducer";
@@ -34,9 +33,8 @@ const store = configureStore({
 
     lists,
 
-    farms,
     gas,
-    farming,
+    // farming,
     newfarm,
     lpfarm,
     newFarming,

@@ -32,7 +32,7 @@ import {RootState} from "../index";
 import {farmSection} from "../../pages/FarmingV2";
 
 export const useNewLPData = (): farmDataInterface => {
-    const farms = useSelector((state: State) => state.lpfarm);
+    const farms = useSelector((state: RootState) => state.lpfarm);
     return farms;
 };
 
@@ -93,9 +93,9 @@ export const useUpdateNewFarm = ({
                                   content, contractID, section
                               }: updateFarmInterface) => {
     const data = useNewLPData();
-    const searchSection = useSelector((state) => state.newFarming);
+    const searchSection = useSelector((state:RootState) => state.newFarming);
 
-    const selectedField = useSelector((state: State) => state.farming.selectedField);
+    const selectedField = useSelector((state: RootState) => state.newFarming.selectedField);
     const selected = selectedField === farmSection.SECOND_NEW_LP;
     const mainLP = selectedField === farmSection.NEW_LP;
 
@@ -412,14 +412,14 @@ interface FetchYieldFarmDetails {
 
 export const useNewYieldFarmDetails = ({content, section, loading, setLoading, contractID}: FetchYieldFarmDetails) => {
     const data = useNewLPData();
-    const searchSection = useSelector((state) => state.newFarming);
+    const searchSection = useSelector((state:RootState) => state.newFarming);
     const { account, chainId, library } = useWeb3React();
     // const [loading, setLoading] = useState(true);
 
     const trxState = useSelector<RootState>((state) => state.application.modal?.trxState);
     const stateChanged : boolean = trxState === 2;
 
-    const selectedField = useSelector((state: State) => state.farming.selectedField);
+    const selectedField = useSelector((state: RootState) => state.newFarming.selectedField);
     const selected = selectedField === farmSection.SECOND_NEW_LP;
     const mainLP = selectedField === farmSection.NEW_LP;
 

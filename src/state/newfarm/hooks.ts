@@ -1,5 +1,5 @@
 import { State } from "../types";
-import { farmDataInterface } from "./reducer";
+import { farmDataInterface, farmStateInterface } from "./reducer";
 import { useSelector } from "react-redux";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useDispatch } from "react-redux";
@@ -25,18 +25,20 @@ import {
 import { getERC20Token } from "../../utils/utilsFunctions";
 import { ethers } from "ethers";
 import { updateFarms } from "./actions";
-import {
+
+import { 
   updateFilterResult,
-  updateSearchResult,
-  updateYieldFarmDetails,
-  updateNewFilterResult,
-  updateNewSearchResult,
-  updateProductFarmDetails,
-} from "../farming/action";
+    updateSearchResult,
+    updateYieldFarmDetails,
+    updateNewFilterResult,
+    updateNewSearchResult,
+    updateProductFarmDetails,
+ } from "../newFarming/action";
 import Web3 from "web3";
+import { RootState } from "..";
 
 export const useFarmData = (): farmDataInterface => {
-  const farms = useSelector((state: State) => state.newfarm);
+  const farms = useSelector((state: RootState) => state.newfarm);
   return farms;
 };
 
@@ -54,19 +56,26 @@ interface updateFarmInterface {
     totalLiquidity: number;
     APY: number;
     address: string;
-  };
-  section: string;
-  address: string;
+  } | any;
+  section?: string;
+  address?: string;
 }
+
+export const useFarms = (): farmStateInterface => {
+  const farms = useSelector((state: RootState) => state.newFarming)
+  console.log({farms})
+  return farms
+}
+
 
 export const useUpdateFarm = ({
   reload,
   setReload,
   content,
-  section, address
+  section
 }: updateFarmInterface) => {
   const data = useFarmData();
-  const searchSection = useSelector((state) => state.farming);
+  const searchSection = useSelector((state:RootState) => state.newFarming);
 
   const { account, chainId, library } = useWeb3React();
   const [loadingState, setLoadingState] = useState(false);
@@ -204,7 +213,6 @@ export const useUpdateFarm = ({
       console.log(err);
     }
   };
-
   const calculateLiquidityAndApy = async (reward: number | undefined) => {
     try {
       const masterchef = await MasterChefV2Contract(
@@ -349,7 +357,7 @@ interface FetchYieldFarmDetails {
     totalLiquidity: number;
     APY: number;
     address: string;
-  };
+  } | any;
   section: string;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -362,7 +370,7 @@ export const useFetchYieldFarmDetails = ({
   setLoading
 }: FetchYieldFarmDetails) => {
   const data = useFarmData();
-  const searchSection = useSelector((state) => state.farming);
+  const searchSection = useSelector((state:RootState) => state.newFarming);
   const { account, chainId, library } = useWeb3React();
   // const [loading, setLoading] = useState(true);
 
@@ -438,11 +446,7 @@ export const useFetchYieldFarmDetails = ({
           getERC20Token(token0Address, library),
           getERC20Token(token1Address, library),
         ]);
-        const [symbol0, symbol1] = await Promise.all([
-          token0Contract.symbol(),
-          token1Contract.symbol(),
-        ]);
-
+      
         const [decimal0, decimal1] = await Promise.all([
           token0Contract.decimals(),
           token1Contract.decimals(),
@@ -604,7 +608,7 @@ export const useFetchYieldFarmDetails = ({
         section === "search"
           ? searchSection.newSearchResult !== undefined
             ? [...searchSection.newSearchResult]
-            : [...searchSection.searchResult]
+            : [...searchSection?.searchResult]
           : section === "filter"
           ? searchSection.newFilterResult !== undefined
             ? [...searchSection.newFilterResult]
@@ -626,7 +630,6 @@ export const useFetchYieldFarmDetails = ({
 
       newArray[index] = updatedFarm;
 
-      console.log("updatedd", newArray);
 
       handleUpdateFarms(newArray);
 
@@ -668,7 +671,6 @@ const getUserValue = async ()=> {
           productFarm.userData(account),
         ]);
       const tokenStaked = await FarmTokenBalance.tokenQuantity
-      console.log({tokenStaked},tokenStaked.toString(),Web3.utils.fromWei(tokenStaked.toString()))
 
       return {
         feature:"AutoTrade",
@@ -701,7 +703,6 @@ export const useUpdateProductFarm = ({
   section,
 }: updateFarmInterface) => {
   const data = useFarmData();
-  const searchSection = useSelector((state) => state.farming);
 
   const { account, chainId, library } = useWeb3React();
   const [loadingState, setLoadingState] = useState(true);

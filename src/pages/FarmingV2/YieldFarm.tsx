@@ -69,6 +69,7 @@ const YieldFarm = ({
   section: string;
   contractID: number;
 }) => {
+  console.log({content,content2})
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
   const { chainId, library } = useWeb3React();
   const active = chainId && library;
@@ -80,7 +81,7 @@ const YieldFarm = ({
   const symbolName = params.split("/");
 
   const selectedField = useSelector(
-    (state: State) => state.farming.selectedField
+    (state: RootState) => state.newFarming.selectedField
   );
   const selectedBSC = selectedField === farmSection.NEW_LP;
   const selected =
@@ -104,8 +105,8 @@ const YieldFarm = ({
   const totalLiquidityValue = () => {
     if (farmDataLoading) return <Spinner speed="0.65s" color="#333333" />;
 
-    if (content.totalLiquidity) {
-      return ` ${formatAmount(content.totalLiquidity)}`;
+    if (content?.totalLiquidity) {
+      return ` ${formatAmount(content?.totalLiquidity)}`;
     }
   };
 

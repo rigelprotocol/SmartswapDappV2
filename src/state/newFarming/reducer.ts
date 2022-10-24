@@ -7,9 +7,17 @@ import {
     updateNewSearchResult,
     updateProductFarmDetails,
     updateSearchResult,
+    updateSelectedField,
     updateYieldFarmDetails
 } from "./action";
 
+enum farmSection {
+    LIQUIDITY,
+    STAKING,
+    PRODUCT_FARM,
+    NEW_LP,
+    SECOND_NEW_LP,
+}
 export interface FarmingSearchState {
     searchResult: [] | undefined;
     filterResult: [] | undefined;
@@ -32,20 +40,23 @@ export interface FarmingSearchState {
         LPLocked: number;
     }>
         | undefined;
-    productFarm:
-        | Array<{
-        feature:string,
-        percentageProfitShare:string,
-        profitTimeLine:string,
-        totalLiquidity:string,
-        estimatedTotalProfit:string,
-        deposit: string,
-        pid:number,
-        poolAllowance: string,
-        type:string,
-        tokenStaked:string
-    }>
-        | undefined;
+        productFarm: {
+            feature:string,
+            percentageProfitShare:string,
+            profitTimeLine:string,
+            totalLiquidity:string,
+            estimatedTotalProfit:string,
+            deposit: string,
+            pid:number,
+            poolAllowance: string,
+            type:string,
+            tokenStaked:string
+            RGPStaked:string
+            }[];
+            
+    selectedField: farmSection
+        // productFarm:any
+        
 }
 
 const initialState: FarmingSearchState = {
@@ -54,7 +65,21 @@ const initialState: FarmingSearchState = {
     filterResult: undefined,
     newFilterResult: undefined,
     content: undefined,
-    productFarm:undefined
+    selectedField: farmSection.LIQUIDITY,
+    productFarm:[{
+        feature:"AutoTrade",
+        percentageProfitShare:"25%",
+        profitTimeLine:"6 months",
+        totalLiquidity:"",
+        estimatedTotalProfit:"1774000",
+        deposit: "RGP",
+        pid:93903,
+        poolAllowance: "",
+        type:"AT",
+        RGPStaked:"",
+        tokenStaked:""
+    }],
+    // selectedField: farmSection.LIQUIDITY
 };
 
 export default createReducer(initialState, (builder) =>
@@ -97,6 +122,13 @@ export default createReducer(initialState, (builder) =>
                     content: value,
                 };
             }
+        })
+        .addCase(updateSelectedField, (farming, {payload: { value }}) => {
+            return {
+                ...farming,
+                selectedField: value
+  
+            };
         })
         .addCase(updateProductFarmDetails, (farming, { payload: { value } }) => {
             // const farms = action.payload.farmData;

@@ -55,7 +55,7 @@ import {
   useUserGasPricePercentage,
   useUpdateUserGasPreference,
 } from "../../state/gas/hooks";
-import { clearSearchResult } from "../../state/farming/action";
+import { clearSearchResult } from "../../state/newFarming/action";
 import {
   GFailedTransaction,
   GSuccessfullyTransaction,

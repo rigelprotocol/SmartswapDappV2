@@ -1,4 +1,4 @@
-import { SerializedFarmsState } from "./farm/types";
+import { SerializedFarmsState } from './newfarm/types';
 import { TokenInfo, TokenList, Tags } from '@uniswap/token-lists'
 import {Token} from "@uniswap/sdk";
 

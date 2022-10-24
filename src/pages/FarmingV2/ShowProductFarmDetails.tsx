@@ -37,7 +37,7 @@ import {
 } from "../../utils/addresses";
 import { clearInputInfo, convertFromWei, convertToNumber } from "../../utils";
 import { useRGPBalance } from "../../utils/hooks/useBalances";
-import { updateFarmProductAllowances } from "../../state/farm/actions";
+import { updateFarmProductAllowances } from "../../state/newfarm/actions";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import { Contract } from "@ethersproject/contracts";
 import { formatAmount, getERC20Token } from "../../utils/utilsFunctions";
