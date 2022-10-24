@@ -236,7 +236,7 @@ const InstantSwap = () => {
       }
     }
     runCheck()
-  }, [inputError, formattedAmounts[Field.INPUT], currencies[Field.INPUT],totalNumberOfTransaction])
+  }, [inputError, formattedAmounts[Field.INPUT],totalNumberOfTransaction,transactionSigned])
 
   useMemo(() => {
     if(parseFloat(percentageChange) >0 && formattedAmounts[Field.OUTPUT]){
@@ -295,7 +295,7 @@ const InstantSwap = () => {
     // }
   }, [chainId,marketType])
   
-  const checkForApproval = async () => {
+  const checkForApproval = async () => { 
     const autoSwapV2Contract = await autoSwapV2(MARKETFREESWAPADDRESSES[marketType][chainId as number], library);
     
     // check approval for RGP and the other token
@@ -304,6 +304,7 @@ const InstantSwap = () => {
     const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
     const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
+    
     // const fee ="10"
     const frequency = parseInt(totalNumberOfTransaction) > 1 ? parseInt(totalNumberOfTransaction) : 1
     if (parseFloat(RGPBalance) >= parseFloat(fee)) {
@@ -525,7 +526,7 @@ const handleMaxInput = async () => {
    
     if (response && value) {
      
-      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/instant`, {
+      const response = await fetch(`http://localhost:7000/auto/instant`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
