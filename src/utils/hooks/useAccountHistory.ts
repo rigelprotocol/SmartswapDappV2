@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import mainToken from '../../utils/main-token.json';
+// import mainToken from '../../utils/main-token.json';
+import mainToken from "../../utils/constants/tokenList/rigelprotocol-main-tokenlist.json"
 import TokenLogo from '../../assets/Null-24.svg';
 import { getERC20Token } from "../utilsFunctions";
 import { ethers } from 'ethers';
@@ -90,7 +91,7 @@ export const formatAmount = (number: string, decimals: any) => {
 
 export const getTokenSymbol = (symbol: string) => {
     const tokenList = mainToken;
-    let tokenIcon = tokenList.find(token => token.symbol === symbol);
+    let tokenIcon = tokenList.tokens.find(token => token.symbol === symbol);
 
     if (!tokenIcon) {
         return TokenLogo
@@ -108,7 +109,7 @@ const useAccountHistory = (socket:any) => {
     const [historyData, setHistoryData] = useState({} as any);
     const [stateAccount, setStateAccount] = useState(account)
     const [locationData, setLocationData] = useState("swap")
-    const [URL, setURL] = useState("http://localhost:7000")//
+    const [URL, setURL] = useState("https://autoswap-server.herokuapp.com")//
     const dispatch =useDispatch()
     const [contractAddress, setContractAddress] = useState(SMARTSWAPROUTER[chainId as number])
     const tokenList = async (addressName: string) => {

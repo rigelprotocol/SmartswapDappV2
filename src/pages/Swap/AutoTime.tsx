@@ -535,7 +535,7 @@ const setQuantityValue =() =>{
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)//
-      const response = await fetch(`http://localhost:7000/auto/add`, {
+      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/add`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -582,7 +582,7 @@ const setQuantityValue =() =>{
       GSuccessfullyTransaction("auto_period","storing transaction to the database",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
       dispatch(refreshTransactionTab({ refresh:Math.random() }))
       onUserInput(Field.INPUT, "");
-      setSignatureFromDataBase(true)
+      // setSignatureFromDataBase(true)
       // setCheckedItem(false)
       setShowNewChangesText(false);
     }
