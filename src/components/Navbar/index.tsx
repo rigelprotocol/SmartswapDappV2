@@ -134,8 +134,8 @@ const Index = () => {
                   <Nav label="Farming" to="/farming-v2"  /> */}
                   
                   {/* <Nav label="Farm" to="/farm-v2"  />  */}
-                  <Nav label="NFTs" to={`/nft${search}`} />
-                  <Nav label="SmartBid" to={`/smartbid${search}`} />
+                  <Nav label="NFTs" to={chainId ===43114?"/freeswap":`/nft${search}`} />
+                  <Nav label="SmartBid" to={chainId ===43114?"/freeswap":`/smartbid${search}`} />
                  
                 </Flex>
               </Flex>

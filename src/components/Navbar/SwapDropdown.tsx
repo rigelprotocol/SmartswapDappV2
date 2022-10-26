@@ -115,7 +115,7 @@ borderRadius="6px"
 boxSizing="border-box"
 padding="16px 16px 24px 16px"
     background={background}>
-       <Tooltip label={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI && "coming soon"}  bg="gray.300" color="black">
+       <Tooltip label={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? "coming soon":""}  bg={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ?"gray.300":"transparent"} color="black">
       <MenuItem cursor="pointer" _focus={{ color: "#319EF6" }}
       py="10px"
       _hover={{background:`${bg}`,boxShadow:`${boxShadow}`,borderRadius:"6px"}}
@@ -148,12 +148,12 @@ padding="16px 16px 24px 16px"
           </Nav>
       </MenuItem>
       </Tooltip>
-       <Tooltip label={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI && "coming soon"}  bg="gray.300" color="black">
+       <Tooltip label={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? "coming soon" :""}  bg="gray.300" color="black">
       <MenuItem _focus={{ color: "#319EF6" }} mt="20px"
        py="10px"
        _hover={{background:`${bg}`,boxShadow:`${boxShadow}`,borderRadius:"6px"}}
       >
-        <Nav to="/bridge/router">
+        <Nav to={chainId ===43114?"/freeswap":"/bridge/router"}>
           <Flex justifyContent="space-between" w="360px">
   <Flex>
         <Box>

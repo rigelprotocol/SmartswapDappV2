@@ -58,6 +58,7 @@ import MarketDropDown from '../../components/MarketDropDown';
 import { GButtonClick, GFailedTransaction, GSuccessfullyTransaction } from '../../components/G-analytics/gIndex';
 import { useHistory, useLocation } from 'react-router-dom';
 import { GetAddressTokenBalance } from '../../state/wallet/hooks';
+import BridgeCard from './components/bridgeCard';
 
 
 
@@ -827,7 +828,7 @@ const setQuantityValue =() =>{
           
                 </VStack>
                 <Flex mt={10} justifyContent="space-between">
-                  <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{fee} USDT</Text>
+                  <Text fontSize="13px">Fee:</Text> <Text fontSize="13px" opacity="0.7" ml={1}>{fee} USDT</Text>
                 </Flex>
                 <VStack>
                   <Flex>
@@ -940,6 +941,7 @@ const setQuantityValue =() =>{
                 }
 
               </Box>
+            <BridgeCard />
             </Box>
 
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
@@ -1119,7 +1121,7 @@ const setQuantityValue =() =>{
           
                 </VStack>
                 <Flex mt={10} justifyContent="space-between">
-                  <Text fontSize="16px">Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{fee} USDT</Text>
+                  <Text>Fee:</Text> <Text fontSize="16px" opacity="0.7" ml={1}>{fee} USDT</Text>
                 </Flex>
                 <VStack>
                   <Flex>
@@ -1230,8 +1232,9 @@ const setQuantityValue =() =>{
                 }
 
               </Box>
-            </Box>
-
+         
+                <BridgeCard/>  
+                 </Box>
             <Box mx={5} w={['100%', '100%', '45%', '29.5%']} mb={4}>
               <History />
             </Box>

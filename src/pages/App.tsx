@@ -56,19 +56,19 @@ import InstantSwap from "./Swap/InstantSwap";
           <TransactionStateModal />
           <ErrorBoundary>
             <Switch>
-              <Route exact strict path="/swap" component={Swap} />
-              <Route exact strict path="/pool" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : Pool} />
+              <Route exact strict path="/swap" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? AutoTime : Swap} />
+              <Route exact strict path="/pool" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? AutoTime : Pool} />
 
-              <Route exact strict path="/find" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : FindPool} />
+              <Route exact strict path="/find" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? AutoTime : FindPool} />
               
-              <Route exact strict path="/nft" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : Nft} />
+              <Route exact strict path="/nft" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? AutoTime : Nft} />
               
-              <Route exact strict path="/nfts/:id" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : ViewNFT} />
-              <Route exact path="/add" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : AddLiquidity} />
+              <Route exact strict path="/nfts/:id" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? AutoTime : ViewNFT} />
+              <Route exact path="/add" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? AutoTime : AddLiquidity} />
               <Route
                 exact
                 path="/add/:currencyIdA/:currencyIdB"
-                component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : AddLiquidity}
+                component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? AutoTime : AddLiquidity}
               />
 
               <Route exact strict path="/set-price" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI || chainId===undefined  ? SetPrice : Swap } />

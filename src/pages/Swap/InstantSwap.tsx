@@ -59,6 +59,7 @@ import { addToast } from '../../components/Toast/toastSlice';
 import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink';
 import { maxAmountSpend } from '../../utils/maxAmountSpend';
 import MarketFreeDropDown from '../../components/MarketFreeDropdown';
+import BridgeCard from './components/bridgeCard';
 
 
 
@@ -833,6 +834,7 @@ const handleMaxInput = async () => {
                 }
 
               </Box>
+              <BridgeCard/> 
             </Box>
 
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
@@ -996,6 +998,7 @@ const handleMaxInput = async () => {
                 }
 
               </Box>
+              <BridgeCard /> 
             </Box>
 
             <Box mx={5} w={['100%', '100%', '45%', '29.5%']} mb={4}>
