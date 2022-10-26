@@ -71,7 +71,7 @@ export const useRGPBalance = () => {
   useEffect(() => {
     const getBalance = async () => {
       if (account) {
-        try {
+        // try {
           const token = await getERC20Token(
             RGPADDRESSES[chainId as number],
             library
@@ -80,10 +80,10 @@ export const useRGPBalance = () => {
           setRGPBalance(
             parseFloat(ethers.utils.formatEther(balance)).toFixed(4)
           );
-        } catch (err) {
-          setRGPBalance("");
-          console.log(err);
-        }
+        // } catch (err) {
+        //   setRGPBalance("");
+        //   console.log(err);
+        // }
       }
     };
 

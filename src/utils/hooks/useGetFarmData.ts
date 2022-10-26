@@ -27,9 +27,11 @@ import {
 
 import { RootState } from "../../state";
 import { SupportedChainId } from "../../constants/chains";
+import { useActiveWeb3React } from "./useActiveWeb3React";
+import { useRGPBalance } from "./useBalances";
 
 export const useGetFarmData = (reload?: boolean, setReload?: any) => {
-  const { library } = useWeb3React();
+  const { library,account } = useActiveWeb3React();
   const [loadingState, setLoading] = useState(true);
   const [farmdata, setFarmData] = useState<
     Array<{
@@ -45,6 +47,7 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
       address: string;
     }>
   >([]);
+  const [RGPBalance] = useRGPBalance();
 
   const dispatch = useDispatch();
   const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
@@ -379,6 +382,14 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
             RGPSPECIALPOOLADDRESSES2[ChainId as number]
           );
 
+          const RGPStaked = await specialPool.userInfo(account);
+console.log("n3kkkkkkkkkkkkkkkkkk")
+          const RGPStakedValue = ethers.utils.formatUnits(RGPStaked._amountStaked, 18);
+          const RGPUserReward = ethers.utils.formatUnits(RGPStaked._userReward, 18);
+          const availableToken = ethers.utils.formatUnits(RGPBallance, 18);
+
+          console.log({RGPStakedValue,RGPUserReward,availableToken,RGPBalance})
+
           const RGPLiquidity =
             parseFloat(ethers.utils.formatUnits(RGPBallance)) * rgpPrice;
 
@@ -397,9 +408,9 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
               ARYValue: ethers.utils.formatUnits(yeaRate),
               totalLiquidity: RGPLiquidity,
               // main issue 206432
-              tokensStaked: ["RGP", "300000"],
-              RGPEarned: "0",
-              availableToken: "",
+              tokensStaked: ["RGP", parseFloat(RGPStakedValue).toFixed(4)],
+              RGPEarned: parseFloat(RGPUserReward).toFixed(4),
+              availableToken:RGPBalance,
               inflationPerDay: 0,
               tokenPrice: 0,
               totalVolumePerPool: 0,

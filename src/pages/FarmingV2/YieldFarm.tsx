@@ -69,7 +69,6 @@ const YieldFarm = ({
   section: string;
   contractID: number;
 }) => {
-  console.log({content,content2})
   const mode = useColorModeValue(LIGHT_THEME, DARK_THEME);
   const { chainId, library } = useWeb3React();
   const active = chainId && library;

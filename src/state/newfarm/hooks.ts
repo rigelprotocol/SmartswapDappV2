@@ -63,7 +63,7 @@ interface updateFarmInterface {
 
 export const useFarms = (): farmStateInterface => {
   const farms = useSelector((state: RootState) => state.newFarming)
-  console.log({farms})
+  // console.log({farms})
   return farms
 }
 

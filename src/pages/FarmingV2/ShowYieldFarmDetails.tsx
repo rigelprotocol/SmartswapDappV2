@@ -143,12 +143,10 @@ const ShowYieldFarmDetails = ({
   const [loading, setLoading] = useState(true);
 
   // const data = useGetFarmData(reload, setReload);
-console.log({content},"jjjdjjdjjdj")
 
   const {loadingState} = useUpdateFarm({reload, setReload, content});
 
   useFetchYieldFarmDetails({content, section, setLoading, loading});
-  console.log({content})
 
   //const {loadingFarm} = useUpdateNewFarm({reload, setReload, content});
 
@@ -194,7 +192,6 @@ useEffect(()=>{
   checkEnoughApproval(content.poolAllowance,content.availableToken)
 },[depositTokenValue])
   useEffect(() => {
-    console.log({content})
     const poolAllowance = async (contract: Contract) => {
       if (account) {
         const rgpApproval = await contract.allowance(
@@ -225,7 +222,6 @@ useEffect(()=>{
           account,
           RGPSPECIALPOOLADDRESSES2[chainId as number]
         );
-        console.log({rgpApproval})
         return !(rgpApproval.toString() <= 0);
       }
     };
@@ -233,7 +229,6 @@ useEffect(()=>{
     const checkForApproval = async () => {
       const rgp = await rigelToken(RGP[chainId as number], library);
       const rgpApproval = await poolAllowance(rgp);
-      console.log({content})
       if (content.deposit === "RGP" && Number(content.id) === 1) {
         const specialPoolV1Approval = await specialPoolV1Allowance(rgp);
         changeApprovalButton(true, specialPoolV1Approval);
@@ -245,7 +240,6 @@ useEffect(()=>{
       } else {
         const pool = await smartSwapLPTokenPoolTwo(content.address, library);
         const approvalForRGPBNB = await poolAllowance(pool);
-        console.log({approvalForRGPBNB,rgpApproval})
         changeApprovalButton(approvalForRGPBNB, rgpApproval);
       }
     };
@@ -381,7 +375,6 @@ useEffect(()=>{
 
   const checkUser = async (val :string) => {
     alert(1)
-    console.log({content})
     if (content.deposit === "RGP" && Number(content.id) === 1) {
       await RGPSpecialPoolV1Approval();
       setApproveValueForOtherToken(true);
@@ -630,7 +623,7 @@ useEffect(()=>{
       if (account) {
         if (val === "RGP" && Number(content.id) === 1) {
           await RGPUnstake(val);
-        } else if (val === "RGP" && Number(content.id) === 13) {
+        } else if (val === "RGP" && Number(content.id) === 0) {
           await RGPUnstakeV2(val);
         } else {
           tokensWithdrawal(content.id,val);
@@ -1241,6 +1234,7 @@ useEffect(()=>{
           RGPSPECIALPOOLADDRESSES2[chainId as number],
           library
         );
+        alert(1)
         const { format1, format2, format3 } = await calculateGas(
           userGasPricePercentage,
           library,
