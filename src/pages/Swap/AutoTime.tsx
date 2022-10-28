@@ -305,34 +305,38 @@ const SetPrice = () => {
     // check approval for RGP and the other token
     // const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
     const RGPBalance = await checkApprovalForRGP(USDT[chainId as number]) ?? "0"
-    const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
+    const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped?.address)
     const frequency = parseInt(totalNumberOfTransaction) > 1 ? parseInt(totalNumberOfTransaction) : 1
-    if (parseFloat(RGPBalance) >= parseFloat(fee)) {
+    if (parseFloat(RGPBalance) >= parseFloat(fee)*frequency) {
       setHasBeenApproved(true)
       setApprovalForFee("")
       // setApprovalForToken("")
     }else{
       setApprovalForFee("USDT")
     }
-    if((parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT]) * frequency)+parseFloat(fee))&& currencies[Field.INPUT]?.wrapped?.symbol === "USDT"){// 
+    if(currencies[Field.INPUT]?.wrapped?.symbol === "USDT" &&(tokenBalance >= (parseFloat(formattedAmounts[Field.INPUT]) * frequency)+(parseFloat(fee)*frequency))){// 
       setHasBeenApproved(true)
       // setApprovalForFee("")
       setApprovalForToken("")
     }
-    if(parseFloat(tokenBalance) >= (parseFloat(formattedAmounts[Field.INPUT]) * frequency) || currencies[Field.INPUT]?.isNative ){
+    if(tokenBalance >= (parseFloat(formattedAmounts[Field.INPUT]) * frequency) || currencies[Field.INPUT]?.isNative ){
       setHasBeenApproved(true)
       // setApprovalForFee("")
       setApprovalForToken("")
     } else{
       setApprovalForToken(currencies[Field.INPUT]?.wrapped?.symbol ?? "")
     }
-    console.log(parseFloat(RGPBalance),parseFloat(tokenBalance),parseFloat(formattedAmounts[Field.INPUT]) * frequency)
-    if (parseFloat(RGPBalance) < parseFloat(fee) || (parseFloat(tokenBalance) < parseFloat(formattedAmounts[Field.INPUT]) * frequency && (!currencies[Field.INPUT]?.isNative && currencies[Field.INPUT]?.wrapped?.symbol === "USDT" ))) {
+    console.log(parseFloat(RGPBalance),tokenBalance,parseFloat(formattedAmounts[Field.INPUT]) * frequency)
+    if ( 
+      (!currencies[Field.INPUT]?.isNative && currencies[Field.INPUT]?.wrapped?.symbol === "USDT" )
+       && (parseFloat(RGPBalance) < (parseFloat(fee)*frequency)||
+          (tokenBalance < parseFloat(formattedAmounts[Field.INPUT]) * frequency))
+        ) {
       setHasBeenApproved(false)
       setApprovalForFee("USDT")
       setApprovalForToken("USDT")
     }
-    if (parseFloat(tokenBalance) < parseFloat(formattedAmounts[Field.INPUT]) * frequency && (!currencies[Field.INPUT]?.isNative &&currencies[Field.INPUT]?.wrapped.symbol !== "USDT")) {
+    if ( (!currencies[Field.INPUT]?.isNative &&currencies[Field.INPUT]?.wrapped.symbol !== "USDT") && (tokenBalance < parseFloat(formattedAmounts[Field.INPUT]) * frequency)) {
       setHasBeenApproved(false)
      
       setApprovalForToken(currencies[Field.INPUT]?.wrapped?.symbol ?? "")
@@ -384,33 +388,33 @@ const SetPrice = () => {
       setApprovalForToken("")
     }
     
-    GButtonClick("auto_period",`Approve ${tokenApprovingFor} ${tokenApprovingFor ==="RGP" ? "for fee" : ""}`,currencies[Field.INPUT]?.symbol)
+    GButtonClick("auto_period",`Approve ${tokenApprovingFor} ${tokenApprovingFor ==="USDT" ? "for fee" : ""}`,currencies[Field.INPUT]?.symbol)
 
         dispatch(
           setOpenModal({
-            message: `Approve ${tokenApprovingFor} ${tokenApprovingFor ==="RGP" ? "for fee" : ""}`,
+            message: `Approve ${tokenApprovingFor} ${tokenApprovingFor ==="USDT" ? "for fee" : ""}`,
             trxState: TrxState.WaitingForConfirmation,
           })
         );
         try{
 
         if (tokenApprovingFor === "USDT") {
-          const rgp = await getERC20Token(USDT[chainId as number], library);
-          console.log({rgp})
+          const usdt = await getERC20Token(USDT[chainId as number], library);
+          console.log({usdt})
           // const token = await getERC20Token(address, library);
-          const rgpDecimal = await rgp.decimals();
-          console.log({rgpDecimal})
+          const usdtDecimal = await usdt.decimals();
+          console.log({usdtDecimal})
         const frequency = parseInt(totalNumberOfTransaction) > 1 ? parseInt(totalNumberOfTransaction) : 1
-          const walletBal = (await rgp.balanceOf(account));
-          console.log({walletBal,rgpDecimal})
-         let walletBalString = parseFloat(ethers.utils.formatUnits(walletBal.toString(), rgpDecimal)) 
+          const walletBal = (await usdt.balanceOf(account));
+          console.log({walletBal,usdtDecimal})
+         let walletBalString = parseFloat(ethers.utils.formatUnits(walletBal.toString(), usdtDecimal)) 
 
                    const amountToApprove = walletBalString > parseFloat(formattedAmounts[Field.INPUT]) * frequency ? walletBalString : parseFloat(formattedAmounts[Field.INPUT]) * frequency
           console.log({amountToApprove,walletBal,walletBalString})
           
-          const approveTransaction = await rgp.approve(
+          const approveTransaction = await usdt.approve(
             MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
-            ethers.utils.parseUnits(amountToApprove.toString(),rgpDecimal).toString(),
+            ethers.utils.parseUnits(amountToApprove.toString(),usdtDecimal).toString(),
             {
               from: account,
             }
@@ -425,7 +429,7 @@ const SetPrice = () => {
               })
             );
           }
-          GSuccessfullyTransaction("auto_period",`Approval ${tokenApprovingFor} ${tokenApprovingFor ==="RGP" ? "for fee" : ""}`,currencies[Field.INPUT]?.symbol)
+          GSuccessfullyTransaction("auto_period",`Approval ${tokenApprovingFor} ${tokenApprovingFor ==="USDT" ? "for fee" : ""}`,currencies[Field.INPUT]?.symbol)
             setApprovalForFee("")
           // setArr && setApproval(setArr)
         } else {
@@ -601,12 +605,13 @@ const setQuantityValue =() =>{
   }
 
 
-  const checkApproval = async (tokenAddress: string):Promise<string | void> => {
+  const checkApproval = async (tokenAddress?: string):Promise<string | void> => {
     if (currencies[Field.INPUT]?.isNative) {
       return setHasBeenApproved(true);
     }
     try {
-      const status = await getERC20Token(tokenAddress, library);
+      if(tokenAddress){
+         const status = await getERC20Token(tokenAddress, library);
       const check = await status.allowance(
         account,
         MARKETAUTOSWAPADDRESSES[marketType][chainId as number],
@@ -617,7 +622,9 @@ const setQuantityValue =() =>{
       let frequency = parseInt(totalNumberOfTransaction) > 1 ? parseInt(totalNumberOfTransaction) : 1
 
       const approveBalance = ethers.utils.formatUnits(check.toString(), currencies[Field.INPUT]?.decimals) 
-      return parseFloat(approveBalance)
+      return approveBalance
+      }
+     
     } catch (e) {
       console.log(e)
     }

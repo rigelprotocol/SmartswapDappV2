@@ -224,7 +224,7 @@ export const MARKETAUTOSWAPADDRESSES: {
     "43113":"0x" // testnet fuji
   },
   Lydia:{
-    "43114":"0xbb0fa753Ae6Fddb78BB66D70Fc223e4a10D5F4d4",
+    "43114":"0x84bcBBE6Ff81cb58d80c85171A78fbB8835c4596",
     "43113":"0x" // testnet fuji
   }
 };
