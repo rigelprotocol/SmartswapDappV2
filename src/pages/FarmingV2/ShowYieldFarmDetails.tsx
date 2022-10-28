@@ -176,6 +176,7 @@ const ShowYieldFarmDetails = ({
     }
   };
 useEffect(()=>{
+  console.log({content})
   const checkEnoughApproval = (allowance: any, balance: any) => {
     // console.log("checkEnoughApproval",allowance.toString(),balance);
     if (allowance && balance) {
@@ -786,7 +787,7 @@ useEffect(()=>{
               })
             );
           }
-        } else if (id === 10793) {
+        } else if (id === "special") {
           const specialPool = await RGPSpecialPool2(
             RGPSPECIALPOOLADDRESSES2[chainId as number],
             library
@@ -1043,7 +1044,7 @@ useEffect(()=>{
       if (account) {
         if (val === "RGP" && Number(content.id) === 1) {
           await RGPuseStake();
-        } else if (val === "RGP" && Number(content.id) === 13) {
+        } else if (val === "RGP" && content.id=== "special") {
           await RGPuseStakeV2();
         } else {
           LPDeposit(content.id,val);
@@ -1632,7 +1633,7 @@ useEffect(()=>{
                       disabled={parseFloat(content.RGPEarned) <= 0}
                       onClick={() => {
                         harvestTokens(
-                          content.deposit === "RGP" ? content.pId : content.id
+                        content.id
                         );
                       }}
                       className={"harvest"}
@@ -1671,7 +1672,7 @@ useEffect(()=>{
                       disabled={parseFloat(content.RGPEarned) <= 0}
                       onClick={() => {
                         harvestTokens(
-                          content.deposit === "RGP" ? content.pId : content.id
+                          content.id
                         );
                       }}
                       className={"harvest"}
@@ -1883,7 +1884,7 @@ useEffect(()=>{
                       disabled={parseFloat(content.RGPEarned) <= 0}
                       onClick={() => {
                         harvestTokens(
-                          content.deposit === "RGP" ? content.pId : content.id
+                         content.id
                         );
                       }}
                       className={"harvest"}
@@ -1921,9 +1922,7 @@ useEffect(()=>{
                       _hover={{ color: "white" }}
                       disabled={parseFloat(content.RGPEarned) <= 0}
                       onClick={() => {
-                        harvestTokens(
-                          content.deposit === "RGP" ? content.pId : content.id
-                        );
+                        harvestTokens(content.id);
                       }}
                       className={"harvest"}
                     >

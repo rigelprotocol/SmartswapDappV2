@@ -237,7 +237,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
             if (content.deposit === "RGP" && Number(content.id) === 1) {
                 const specialPoolV1Approval = await specialPoolV1Allowance(rgp);
                 changeApprovalButton(true, specialPoolV1Approval);
-            } else if (content.deposit === "RGP" && Number(content.id) === 13) {
+            } else if (content.deposit === "RGP" && content.id === "special") {
                 const specialPoolV2Approval = await specialPoolV2Allowance(rgp);
                 changeApprovalButton(true, specialPoolV2Approval);
             } else {
@@ -380,12 +380,12 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
             await RGPSpecialPoolV1Approval();
             setApproveValueForOtherToken(true);
             setApproveValueForRGP(true);
-        } else if (content.deposit === "RGP" && Number(content.id) === 13) {
+        } else if (content.deposit === "RGP" && content.id === "special") {
             await RGPSpecialPoolV2Approval();
             setApproveValueForOtherToken(true);
             setApproveValueForRGP(true);
         } else {
-            const pool = await smartSwapLPTokenPoolTwo(content.address, library);
+            const pool = await smartSwapLPTokenPoolTwo(content?.address, library);
             if (!approveValueForOtherToken && !approveValueForRGP) {
                 await RGPApproval();
                 await LPApproval(pool,content.deposit);
@@ -874,7 +874,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                             })
                         );
                     }
-                } else if (id === 10793) {
+                } else if (id === "special") {
                     const specialPool = await RGPSpecialPool2(
                         RGPSPECIALPOOLADDRESSES2[chainId as number],
                         library
@@ -1100,7 +1100,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                     GFarmingSuccessTransaction("farming", "stake", val,"v2")
                     setDeposited(true);
                     setReload(true);
-                    setContentId(content.deposit === "RGP" ? undefined : content.id);
+                    // setContentId(content.deposit === "RGP" ? undefined : content.id);
                     //  callRefreshFarm(confirmations, status);
                 }
             } catch (error: any) {
@@ -1746,8 +1746,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                                             _hover={{ color: "white" }}
                                             disabled={parseFloat(content.RGPEarned) <= 0}
                                             onClick={() => {
-                                                harvestTokens(
-                                                    content.deposit === "RGP" ? content.pId : content.id
+                                                harvestTokens(content.id
                                                 );
                                             }}
                                             className={"harvest"}
@@ -1958,9 +1957,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                                             _hover={{ color: "white" }}
                                             disabled={parseFloat(content.RGPEarned) <= 0}
                                             onClick={() => {
-                                                harvestTokens(
-                                                    content.deposit === "RGP" ? content.pId : content.id
-                                                );
+                                                harvestTokens(content.id);
                                             }}
                                             className={"harvest"}
                                         >
@@ -1997,9 +1994,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                                             _hover={{ color: "white" }}
                                             disabled={parseFloat(content.RGPEarned) <= 0}
                                             onClick={() => {
-                                                harvestTokens(
-                                                    content.deposit === "RGP" ? content.pId : content.id
-                                                );
+                                                harvestTokens(content.id);
                                             }}
                                             className={"harvest"}
                                         >

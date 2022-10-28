@@ -399,7 +399,7 @@ console.log("n3kkkkkkkkkkkkkkkkkk")
 
           handleUpdateSpecialPool([
             {
-              id: "0",
+              id: "special",
               img: "rgp.svg",
               // deposit: 'RGP',
               deposit: "RGP",
