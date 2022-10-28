@@ -520,7 +520,7 @@ const handleMaxInput = async () => {
    
     if (response && value) {
      
-      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/instant`, {
+      const response = await fetch(`http://localhost:7000/auto/instant`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
