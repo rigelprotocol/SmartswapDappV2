@@ -377,6 +377,7 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
             RGPSPECIALPOOLADDRESSES2[ChainId as number],
             lib
           );
+          console.log("here....")
           const rgp = await getERC20Token(RGPADDRESSES[ChainId as number], lib);
           const RGPBallance = await rgp.balanceOf(
             RGPSPECIALPOOLADDRESSES2[ChainId as number]

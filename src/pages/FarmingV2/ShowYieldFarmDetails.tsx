@@ -233,7 +233,7 @@ useEffect(()=>{
       if (content.deposit === "RGP" && Number(content.id) === 1) {
         const specialPoolV1Approval = await specialPoolV1Allowance(rgp);
         changeApprovalButton(true, specialPoolV1Approval);
-      } else if (content.deposit === "RGP" && Number(content.id) === 0) {
+      } else if (content.deposit === "RGP" && content.id=== "special") {
        
         const specialPoolV2Approval = await specialPoolV2Allowance(rgp);
 
@@ -380,7 +380,7 @@ useEffect(()=>{
       await RGPSpecialPoolV1Approval();
       setApproveValueForOtherToken(true);
       setApproveValueForRGP(true);
-    } else if (content.deposit === "RGP" && Number(content.id) === 0) {
+    } else if (content.deposit === "RGP" && content.id === "special") {
       await RGPSpecialPoolV2Approval();
       setApproveValueForOtherToken(true);
       setApproveValueForRGP(true);
@@ -624,7 +624,7 @@ useEffect(()=>{
       if (account) {
         if (val === "RGP" && Number(content.id) === 1) {
           await RGPUnstake(val);
-        } else if (val === "RGP" && Number(content.id) === 0) {
+        } else if (val === "RGP" && content.id === "special") {
           await RGPUnstakeV2(val);
         } else {
           tokensWithdrawal(content.id,val);

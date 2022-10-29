@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { updateAllowance } from "./actions";
 import { useWeb3React } from "@web3-react/core";
-import { useGetFarmData } from "../../utils/hooks/useGetFarmData";
 import { id } from "ethers/lib/utils";
 import {
   MasterChefV2Contract,
