@@ -2,7 +2,6 @@ import { createReducer } from "@reduxjs/toolkit";
 import {
     updateFarms,
     updateLoadingState,
-    updateSpecialPool,
     updateChainId,
 } from "./actions";
 
@@ -26,28 +25,11 @@ export interface farmDataInterface {
         | undefined;
     loading: boolean;
     chainId: number | undefined;
-    specialPool:
-        | Array<{
-        id: number;
-        img: string;
-        deposit: string;
-        earn: string;
-        type: string;
-        totalLiquidity: number;
-        APY: number;
-        tokenStaked: string[];
-        RGPEarned: string;
-        availableToken: string;
-        allowance: string;
-        address: string;
-    }>
-        | undefined;
 }
 
 const initialState: farmDataInterface = {
     loading: false,
     contents: undefined,
-    specialPool: undefined,
     chainId: undefined,
 };
 
@@ -64,17 +46,6 @@ export default createReducer(initialState, (builder) =>
             }
         })
 
-        .addCase(updateSpecialPool, (state, action) => {
-            const farms = action.payload.value;
-            if (farms !== undefined) {
-                return {
-                    ...state,
-                    specialPool: farms,
-                    loading: false,
-                };
-            }
-        })
-
         .addCase(updateChainId, (state, action) => {
             const chainId = action.payload.value;
 
@@ -83,18 +54,6 @@ export default createReducer(initialState, (builder) =>
                 chainId: chainId,
             };
         })
-
-        // .addCase(updateSpecialPool, (state, action) => {
-        //   const farms = action.payload.value;
-        //   if (farms !== undefined) {
-        //     return {
-        //       ...state,
-        //       specialPool: farms,
-        //       loading: false,
-        //     };
-        //   }
-        // })
-
         .addCase(updateLoadingState, (state, action) => {
             if (state.contents !== undefined) {
                 return {

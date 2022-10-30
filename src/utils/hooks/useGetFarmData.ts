@@ -48,6 +48,7 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
     }>
   >([]);
   const [RGPBalance] = useRGPBalance();
+  console.log({RGPBalance},"kkkkkkkkkkkkkkkkkkkkkkk")
 
   const dispatch = useDispatch();
   const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
@@ -56,6 +57,7 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
 
   const handleUpdateFarms = useCallback(
     (value) => {
+    console.log({value})
       dispatch(updateFarms({ value }));
     },
     [dispatch]
@@ -63,7 +65,9 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
 
   const handleUpdateSpecialPool = useCallback(
     (value) => {
-      dispatch(updateSpecialPool({ value }));
+      console.log({ value }, "value");
+      alert(3)
+      dispatch(updateSpecialPool({value}));
     },
     [dispatch]
   );
@@ -382,18 +386,19 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
           const RGPBallance = await rgp.balanceOf(
             RGPSPECIALPOOLADDRESSES2[ChainId as number]
           );
-
+            console.log({RGPBallance})
           const RGPStaked = await specialPool.userInfo(account);
 console.log("n3kkkkkkkkkkkkkkkkkk")
+
           const RGPStakedValue = ethers.utils.formatUnits(RGPStaked._amountStaked, 18);
           const RGPUserReward = ethers.utils.formatUnits(RGPStaked._userReward, 18);
           const availableToken = ethers.utils.formatUnits(RGPBallance, 18);
 
-          console.log({RGPStakedValue,RGPUserReward,availableToken,RGPBalance})
+          console.log({RGPStakedValue,RGPUserReward,availableToken})
 
           const RGPLiquidity =
             parseFloat(ethers.utils.formatUnits(RGPBallance)) * rgpPrice;
-
+            alert(123)
 
           const yeaRate = await specialPool.YEAR_RATE();
           //this is temporal
@@ -409,7 +414,7 @@ console.log("n3kkkkkkkkkkkkkkkkkk")
               ARYValue: ethers.utils.formatUnits(yeaRate),
               totalLiquidity: RGPLiquidity,
               // main issue 206432
-              tokensStaked: ["RGP", parseFloat(RGPStakedValue).toFixed(4)],
+              tokenStaked: ["RGP", parseFloat(RGPStakedValue).toFixed(4)],
               RGPEarned: parseFloat(RGPUserReward).toFixed(4),
               availableToken:RGPBalance,
               inflationPerDay: 0,

@@ -22,6 +22,10 @@ export const updateSelectedField = createAction<{ value: any }>(
 
 export const clearSearchResult = createAction("newFarming/clearSearchResult");
 
+export const updateSpecialPool = createAction<{ value: any[] }>(
+    "newfarm/updateSpecialPool"
+  );
+
 export const updateYieldFarmDetails = createAction<{ value: any[] }>(
     "newFarming/updateYieldFarmDetails"
 );

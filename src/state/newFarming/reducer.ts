@@ -8,6 +8,7 @@ import {
     updateProductFarmDetails,
     updateSearchResult,
     updateSelectedField,
+    updateSpecialPool,
     updateYieldFarmDetails
 } from "./action";
 
@@ -40,6 +41,27 @@ export interface FarmingSearchState {
         LPLocked: number;
     }>
         | undefined;
+        specialPool:
+    | Array<{
+        id: number | string;
+        img: string;
+        deposit: string;
+        earn: string;
+        type: string;
+        totalLiquidity: number | string;
+        tokenStaked: string[];
+        RGPEarned: string;
+        availableToken: string;
+        ARYValue: number | string;
+        inflationPerDay: number | string; 
+        tokenPrice: number;
+        totalVolumePerPool: number;
+        farmingFee: number;
+        pId:number;
+        poolAllowance: string;
+        poolVersion:string; 
+      }>
+    | undefined;
         productFarm: {
             feature:string,
             percentageProfitShare:string,
@@ -65,6 +87,29 @@ const initialState: FarmingSearchState = {
     filterResult: undefined,
     newFilterResult: undefined,
     content: undefined,
+     specialPool: [
+    {
+      id: "special",
+      img: "rgp.svg",
+      // deposit: 'RGP',
+      deposit: "RGP",
+      earn: "RGP",
+      type: "RGP",
+      ARYValue:0,
+      totalLiquidity: "",
+      // main issue 206432
+      tokenStaked: ["RGP",""],
+      RGPEarned: "",
+      availableToken: "",
+      inflationPerDay: 0,
+      tokenPrice: 0,
+      totalVolumePerPool: 0,
+      farmingFee: 0,
+      pId: 10793,
+      poolAllowance: "",
+      poolVersion: "2",
+    }
+  ],
     selectedField: farmSection.LIQUIDITY,
     productFarm:[{
         feature:"AutoTrade",
@@ -139,6 +184,19 @@ export default createReducer(initialState, (builder) =>
                 };
             }
         })
+
+        .addCase(updateSpecialPool, (state, action) => {
+            console.log({action},action.payload)
+            const farms = action.payload.value;
+            console.log({farms})
+            if (farms !== undefined) {
+              return {
+                ...state,
+                specialPool: farms,
+                loading: false,
+              };
+            }
+          })
 
         .addCase(updateFilterResult, (farming, { payload: { farmData } }) => {
             return {

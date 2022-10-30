@@ -77,6 +77,7 @@ export const useRGPBalance = () => {
             library
           );
           const balance = await token.balanceOf(account);
+          console.log({balance},balance.toString()) 
           setRGPBalance(
             parseFloat(ethers.utils.formatEther(balance)).toFixed(4)
           );

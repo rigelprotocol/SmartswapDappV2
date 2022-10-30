@@ -40,7 +40,7 @@ const YieldFarm = ({
     img: string;
     ARYValue: string;
     lpSymbol: string;
-    tokensStaked: string[];
+    tokenStaked: string[];
     availableToken: string;
     deposit: string;
     poolAllowance: any;

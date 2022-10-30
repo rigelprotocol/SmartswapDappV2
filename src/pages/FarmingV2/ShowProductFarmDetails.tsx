@@ -679,11 +679,11 @@ return (
         >
           {/* <Tooltip
             hasArrow
-            label={content.tokensStaked[1]}
+            label={content.tokenStaked[1]}
             bg='gray.300'
             color='black'
           >
-            {parseFloat(content.tokensStaked[1]).toFixed(4)}
+            {parseFloat(content.tokenStaked[1]).toFixed(4)}
           </Tooltip> */}
           {content.RGPStaked}
         </Text>

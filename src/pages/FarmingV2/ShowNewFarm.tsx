@@ -96,7 +96,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
         img: string;
         ARYValue: string;
         lpSymbol: string;
-        tokensStaked: string[];
+        tokenStaked: string[];
         availableToken: string;
         deposit: string;
         poolAllowance: any;
@@ -620,7 +620,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                 return;
             } else if (
                 Number(content.poolVersion) === 2 &&
-                parseFloat(content.tokensStaked[1]) <= 0 &&
+                parseFloat(content.tokenStaked[1]) <= 0 &&
                 Number(depositTokenValue) < Number(minimumStakeAmount)
             ) {
                 setDepositInputHasError(true);
@@ -665,9 +665,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
             if (
                 parseFloat(unstakeToken) >
                 parseFloat(
-                    content.deposit === "RGP"
-                        ? content.tokensStaked[1]
-                        : content.tokenStaked[1]
+                   content.tokenStaked[1]
                 )
             ) {
                 setInputHasError(true);
@@ -683,11 +681,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                 GButtonClicked(`max_button for ${input}`,content.deposit,"v2")
                 setDepositTokenValue(content.availableToken);
             } else if (input === "unstake") {
-                setUnstakeToken(
-                    content.deposit === "RGP"
-                        ? content.tokensStaked[1]
-                        : content.tokenStaked[1]
-                );
+                setUnstakeToken(content.tokenStaked[1]);
             }
         } catch (e) {
             console.log(
@@ -1593,11 +1587,11 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                                         >
                                             <Tooltip
                                                 hasArrow
-                                                label={content.tokensStaked[1]}
+                                                label={content.tokenStaked[1]}
                                                 bg='gray.300'
                                                 color='black'
                                             >
-                                                {parseFloat(content.tokensStaked[1]).toFixed(4)}
+                                                {parseFloat(content.tokenStaked[1]).toFixed(4)}
                                             </Tooltip>
                                         </Text>
                                         <Text
@@ -1621,7 +1615,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                                             disabled={
                                                 approveValueForRGP &&
                                                 approveValueForOtherToken &&
-                                                parseFloat(content.tokensStaked[1]) <= 0
+                                                parseFloat(content.tokenStaked[1]) <= 0
                                             }
                                             padding='10px 40px'
                                             cursor='pointer'
@@ -1836,7 +1830,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                                                 label={
                                                     content?.type !== "RGP"
                                                         ? content?.tokenStaked[1]
-                                                        : content.tokensStaked[1]
+                                                        : content.tokenStaked[1]
                                                 }
                                                 bg='gray.300'
                                                 color='black'
@@ -1844,7 +1838,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                                                 {parseFloat(
                                                     content.type !== "RGP"
                                                         ? content?.tokenStaked[1]
-                                                        : content.tokensStaked[1]
+                                                        : content.tokenStaked[1]
                                                 ).toFixed(4)}
                                             </Tooltip>
                                         </Text>
@@ -1871,7 +1865,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                                                 parseFloat(
                                                     content.type !== "RGP"
                                                         ? content.tokenStaked[1]
-                                                        : content.tokensStaked[1]
+                                                        : content.tokenStaked[1]
                                                 ) <= 0
                                             }
                                             padding='10px 40px'
@@ -2510,7 +2504,7 @@ const ShowNewFarm = ({content, wallet, URLReferrerAddress, LoadingState, section
                                 <Text color='gray.400' align='right' mb={3}>
                                     {`${
                                         content.type === "RGP"
-                                            ? content.tokensStaked[1]
+                                            ? content.tokenStaked[1]
                                             : content.tokenStaked[1]
                                     }
                ${content.deposit} Staked `}

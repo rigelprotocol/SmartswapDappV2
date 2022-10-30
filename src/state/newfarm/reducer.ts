@@ -29,22 +29,27 @@ export interface farmDataInterface {
     | undefined;
   loading: boolean;
   chainId: number;
-  specialPool:
-    | Array<{
-        id: number;
-        img: string;
-        deposit: string;
-        earn: string;
-        type: string;
-        totalLiquidity: number;
-        APY: number;
-        tokenStaked: string[];
-        RGPEarned: string;
-        availableToken: string;
-        allowance: string;
-        address: string;
-      }>
-    | undefined;
+  // specialPool:
+  //   | Array<{
+  //       id: number | string;
+  //       img: string;
+  //       deposit: string;
+  //       earn: string;
+  //       type: string;
+  //       totalLiquidity: number | string;
+  //       tokenStaked: string[];
+  //       RGPEarned: string;
+  //       availableToken: string;
+  //       ARYValue: number | string;
+  //       inflationPerDay: number | string; 
+  //       tokenPrice: number;
+  //       totalVolumePerPool: number;
+  //       farmingFee: number;
+  //       pId:number;
+  //       poolAllowance: string;
+  //       poolVersion:string; 
+  //     }>
+  //   | undefined;
   productFarm: {
       feature:string,
       percentageProfitShare:string,
@@ -70,7 +75,7 @@ export interface farmStateInterface {
     ARYValue: any;
     type?: string;
     totalLiquidity: any;
-    tokensStaked: Array<string>;
+    tokenStaked: Array<string>;
     RGPEarned?: string;
     availableToken: string;
     inflationPerDay?: number;
@@ -98,7 +103,29 @@ export interface farmStateInterface {
 const initialState: farmDataInterface = {
   loading: false,
   contents: undefined,
-  specialPool: undefined,
+  // specialPool: [
+  //   {
+  //     id: "special",
+  //     img: "rgp.svg",
+  //     // deposit: 'RGP',
+  //     deposit: "RGP",
+  //     earn: "RGP",
+  //     type: "RGP",
+  //     ARYValue:0,
+  //     totalLiquidity: "",
+  //     // main issue 206432
+  //     tokenStaked: ["RGP",""],
+  //     RGPEarned: "",
+  //     availableToken: "",
+  //     inflationPerDay: 0,
+  //     tokenPrice: 0,
+  //     totalVolumePerPool: 0,
+  //     farmingFee: 0,
+  //     pId: 10793,
+  //     poolAllowance: "",
+  //     poolVersion: "2",
+  //   }
+  // ],
   chainId: 56,
   productFarm :[
     {
@@ -123,6 +150,7 @@ const initialState: farmDataInterface = {
 export default createReducer(initialState, (builder) =>
   builder
     .addCase(updateFarms, (state, action) => {
+      console.log(action.payload)
       const farms = action.payload.value;
       if (farms !== undefined) {
         return {
@@ -135,7 +163,9 @@ export default createReducer(initialState, (builder) =>
     
 
     .addCase(updateSpecialPool, (state, action) => {
+      console.log({action},action.payload)
       const farms = action.payload.value;
+      console.log({farms})
       if (farms !== undefined) {
         return {
           ...state,
@@ -169,16 +199,6 @@ export default createReducer(initialState, (builder) =>
       });
     })
 
-    // .addCase(updateSpecialPool, (state, action) => {
-    //   const farms = action.payload.value;
-    //   if (farms !== undefined) {
-    //     return {
-    //       ...state,
-    //       specialPool: farms,
-    //       loading: false,
-    //     };
-    //   }
-    // })
 
     .addCase(updateLoadingState, (state, action) => {
       if (state.contents !== undefined) {
