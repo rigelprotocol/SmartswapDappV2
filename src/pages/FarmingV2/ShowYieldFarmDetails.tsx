@@ -142,23 +142,14 @@ const ShowYieldFarmDetails = ({
   const [contentid, setContentId] = useState(undefined);
   const [loading, setLoading] = useState(true);
 
-  // const data = useGetFarmData(reload, setReload);
-
   const {loadingState} = useUpdateFarm({reload, setReload, content});
 
   useFetchYieldFarmDetails({content, section, setLoading, loading});
-
-  //const {loadingFarm} = useUpdateNewFarm({reload, setReload, content});
-
- // useNewYieldFarmDetails({content, section, setLoading, loading});
-
-
 
   const closeModal = () => {
     GButtonIntialized("close unstaked",content.deposit,"v2")
     modal2Disclosure.onClose();
   };
-  // useUpdate(reload, setReload, contentid, setContentId);
   const [userGasPricePercentage] = useUserGasPricePercentage();
   const handleSetReferralField = () => {
     if (showReferrerField === true && URLReferrerAddress === "") {
@@ -176,9 +167,8 @@ const ShowYieldFarmDetails = ({
     }
   };
 useEffect(()=>{
-  console.log({content})
   const checkEnoughApproval = (allowance: any, balance: any) => {
-    // console.log("checkEnoughApproval",allowance.toString(),balance);
+    console.log({allowance,balance})
     if (allowance && balance) {
 
       let approve = parseFloat(allowance) >= parseFloat(depositTokenValue);
@@ -596,11 +586,7 @@ useEffect(()=>{
         GButtonClicked(`max_button for ${input}`,content.deposit,"v2")
         setDepositTokenValue(content.availableToken);
       } else if (input === "unstake") {
-        setUnstakeToken(
-          content.deposit === "RGP"
-            ? content.tokenStaked[1]
-            : content.tokenStaked[1]
-        );
+        setUnstakeToken(content.tokenStaked[1]);
       }
     } catch (e) {
       console.log(
@@ -1273,8 +1259,6 @@ useEffect(()=>{
         );
         
         refreshSpecialData()
-        // dispatch the getTokenStaked action from here when data changes
-        //  callRefreshFarm(confirmations, status);
       } catch (error:any) {
         GFarmingFailedTransaction("special pool", "unstake", error.message, "RGP","v2")
         dispatch(

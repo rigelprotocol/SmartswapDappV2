@@ -209,7 +209,7 @@ export function Index() {
   const { account, chainId, library } = useActiveWeb3React();
   const dispatch = useDispatch();
   const FarmData = useFarms();
-  const { farmdata, loadingState } = useGetFarmData();
+  const { farmdata, loadingState } = useGetFarmData(refreshSpecialPool);
   const { LPData, loadingLP } = useGetNewFarms(
     selected === farmSection.SECOND_NEW_LP ? 2 : 1
   );
@@ -223,7 +223,7 @@ export function Index() {
   const searchSection = useSelector((state:RootState) => state.newFarming);
   const newSearchSection = useSelector((state:RootState) => state.newFarming);
 
-  const { specialPool } = useSelector((state:RootState) => state.newfarm);
+  const { specialPool } = useSelector((state:RootState) => state.newFarming);
 
   console.log({specialPool})
 

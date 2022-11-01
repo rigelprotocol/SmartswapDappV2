@@ -22,8 +22,9 @@ import {
   updateChainId,
   updateFarms,
   updateLoadingState,
-  updateSpecialPool,
+  // updateSpecialPool,
 } from "../../state/newfarm/actions";
+import { updateSpecialPool } from "../../state/newFarming/action";
 
 import { RootState } from "../../state";
 import { SupportedChainId } from "../../constants/chains";
@@ -47,8 +48,6 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
       address: string;
     }>
   >([]);
-  const [RGPBalance] = useRGPBalance();
-  console.log({RGPBalance},"kkkkkkkkkkkkkkkkkkkkkkk")
 
   const dispatch = useDispatch();
   const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
@@ -57,7 +56,6 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
 
   const handleUpdateFarms = useCallback(
     (value) => {
-    console.log({value})
       dispatch(updateFarms({ value }));
     },
     [dispatch]
@@ -65,8 +63,6 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
 
   const handleUpdateSpecialPool = useCallback(
     (value) => {
-      console.log({ value }, "value");
-      alert(3)
       dispatch(updateSpecialPool({value}));
     },
     [dispatch]
@@ -383,22 +379,27 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
           );
           console.log("here....")
           const rgp = await getERC20Token(RGPADDRESSES[ChainId as number], lib);
+         
+          const balance = await rgp.balanceOf(account);
+          console.log({balance},balance.toString()) 
+          const bal= parseFloat(ethers.utils.formatEther(balance)).toFixed(4)
           const RGPBallance = await rgp.balanceOf(
             RGPSPECIALPOOLADDRESSES2[ChainId as number]
           );
             console.log({RGPBallance})
           const RGPStaked = await specialPool.userInfo(account);
-console.log("n3kkkkkkkkkkkkkkkkkk")
 
           const RGPStakedValue = ethers.utils.formatUnits(RGPStaked._amountStaked, 18);
           const RGPUserReward = ethers.utils.formatUnits(RGPStaked._userReward, 18);
-          const availableToken = ethers.utils.formatUnits(RGPBallance, 18);
+          const allowance = await rgp.allowance(
+            account,
+            RGPSPECIALPOOLADDRESSES2[ChainId as number]
+          );
+          const allowanceValue = ethers.utils.formatUnits(allowance, 18);
 
-          console.log({RGPStakedValue,RGPUserReward,availableToken})
-
+            console.log({allowanceValue})
           const RGPLiquidity =
             parseFloat(ethers.utils.formatUnits(RGPBallance)) * rgpPrice;
-            alert(123)
 
           const yeaRate = await specialPool.YEAR_RATE();
           //this is temporal
@@ -416,13 +417,13 @@ console.log("n3kkkkkkkkkkkkkkkkkk")
               // main issue 206432
               tokenStaked: ["RGP", parseFloat(RGPStakedValue).toFixed(4)],
               RGPEarned: parseFloat(RGPUserReward).toFixed(4),
-              availableToken:RGPBalance,
+              availableToken:bal,
               inflationPerDay: 0,
               tokenPrice: 0,
               totalVolumePerPool: 0,
               farmingFee: 0,
               pId: 10793,
-              poolAllowance: "",
+              poolAllowance: allowanceValue,
               poolVersion: "2",
             },
           ]);
