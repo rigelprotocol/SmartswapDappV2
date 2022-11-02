@@ -83,7 +83,7 @@ const TransactionStateModal: React.FC = () => {
 
                         <Text fontSize="20px" fontWeight="normal" color={textColour}>
                             {modalDetails?.trxState === TrxState.TransactionSuccessful ?
-                                "Transaction Succesful" :
+                                "Transaction Successful" :
                                 modalDetails?.trxState === TrxState.WaitingForConfirmation ?
                                     modalDetails?.text ?? " Waiting for Confirmation" :
                                     modalDetails?.trxState === TrxState.TransactionFailed ?

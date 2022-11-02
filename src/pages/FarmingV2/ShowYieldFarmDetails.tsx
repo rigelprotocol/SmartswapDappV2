@@ -365,7 +365,6 @@ useEffect(()=>{
   };
 
   const checkUser = async (val :string) => {
-    alert(1)
     if (content.deposit === "RGP" && Number(content.id) === 1) {
       await RGPSpecialPoolV1Approval();
       setApproveValueForOtherToken(true);
@@ -1131,7 +1130,6 @@ useEffect(()=>{
         await fetchTransactionData(data);
         GFarmingSuccessTransaction("special pool", "stake", "RGP","v2") //122
       
-      refreshSpecialData()
         
         dispatch(
           setOpenModal({
@@ -1139,6 +1137,8 @@ useEffect(()=>{
             message: `Successfully staked ${depositTokenValue} RGP `,
           })
         );
+        
+      // refreshSpecialData()
         // callRefreshFarm(confirmations, status);
         setReload(true); 
       } catch (error:any) {
@@ -1190,7 +1190,6 @@ useEffect(()=>{
                 : ethers.utils.parseUnits(format3, 9).toString(),
           }
         );
-        const { confirmations, status } = await fetchTransactionData(data);
         GFarmingSuccessTransaction("special pool", "unstake", "RGP","v1")
         dispatch(
           setOpenModal({
@@ -1199,6 +1198,7 @@ useEffect(()=>{
           })
         );
         refreshSpecialData()
+        // setReload(true)
         // dispatch the getTokenStaked action from here when data changes
         //  callRefreshFarm(confirmations, status);
       } catch (e:any) {
@@ -1221,7 +1221,6 @@ useEffect(()=>{
           RGPSPECIALPOOLADDRESSES2[chainId as number],
           library
         );
-        alert(1)
         const { format1, format2, format3 } = await calculateGas(
           userGasPricePercentage,
           library,
@@ -1401,16 +1400,16 @@ useEffect(()=>{
     <Button
       my='2'
       mx='auto'
-      color='rgba(190, 190, 190, 1)'
+      color="#FFF"
       width='100%'
-      background='rgba(64, 186, 213, 0.15)'
+      background="#319EF6"
       cursor='pointer'
       border='none'
       borderRadius='0px'
       padding='10px'
       height='50px'
       fontSize='16px'
-      _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
+      _hover={{ background: '#319df677' }}
       onClick={() => {
         GButtonIntialized("approval",content.deposit,"v2")
         approveLPToken(LPToken)}}
@@ -1778,11 +1777,7 @@ useEffect(()=>{
                       disabled={
                         approveValueForRGP &&
                         approveValueForOtherToken &&
-                        parseFloat(
-                          content.type !== "RGP"
-                            ? content.tokenStaked[1]
-                            : content.tokenStaked[1]
-                        ) <= 0
+                        parseFloat(content.tokenStaked[1]) <= 0
                       }
                       padding='10px 40px'
                       cursor='pointer'
@@ -2109,7 +2104,6 @@ useEffect(()=>{
                   <Box mt={4}>
                     {depositInputHasError || refAddressHasError ? (
                       <>
-                        {/* Show Error Button */}
                         <Button
                           my='2'
                           variant='brand'
@@ -2172,7 +2166,7 @@ useEffect(()=>{
                             fontSize='16px'
                             _hover={
                               depositValue === "Confirm"
-                                ? { background: "rgba(64, 186, 213, 0.15)" }
+                                ? { background: "#299efd8d" }
                                 : { background: "#444159" }
                             }
                             onClick={() => confirmDeposit(content.deposit)}
@@ -2200,7 +2194,7 @@ useEffect(()=>{
                         )}
                       </>
                     )}
-                  </Box>
+                  </Box> 
                 </ModalBody>
               </ModalContent>
             </Modal>
