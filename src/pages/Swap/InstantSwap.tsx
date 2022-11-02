@@ -44,6 +44,7 @@ import {
   Spinner
 } from '@chakra-ui/react';
 import AutoTimeModal from './modals/autoTimeModal';
+import { io } from "socket.io-client";
 import { useUserSlippageTolerance } from "../../state/user/hooks";
 import { useSelector,useDispatch } from 'react-redux';
 import { RootState } from "../../state";
@@ -85,7 +86,7 @@ const InstantSwap = () => {
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
   const [signatureFromDataBase, setSignatureFromDataBase] = useState(false)
   const [transactionSigned, setTransactionSigned] = useState(false)
-  const [selectedFrequency, setSelectedFrequency] = useState("5")
+  const [socket,setSocket] = useState <any>(null)
   const [marketType, setMarketType] = useState(location.search.includes("bsc_test") || location.search.includes("pn_mumbai") ? "Smartswap" : location.search.includes("bsc") ? "Pancakeswap" : location.search.includes("avalanche") ?"Tradejoe" : "Quickswap")
   const [percentageChange, setPercentageChange] = useState<string>("0")
   const [approvalForFee, setApprovalForFee] = useState("")
@@ -153,10 +154,49 @@ const InstantSwap = () => {
       getFee()
     }
   }, [account,chainId,marketType])
-
-
-  const refresh = useSelector<RootState>((state) => state.application.refresh);
+  useEffect(
+    () => {
+  setSocket(io("https://autoswap-server.herokuapp.com"));//https://autoswap-server.herokuapp.com
   
+    },
+    []
+  )
+
+  useEffect(() => {
+    socket?.on("instant",(res:any)=>{
+        setShowNewChangesText(false);
+        setHasBeenApproved(true);
+        const explorerLink = getExplorerLink(
+          chainId as number,
+          res.transactionHash,
+          ExplorerDataType.TRANSACTION
+        );
+        console.log({formattedAmounts,currencies,Field})
+       
+        // setDataSignature({mess:"",signature:""})
+        // setTransactionSigned(false)
+        // setSignatureFromDataBase(false)
+      
+        // dispatch(
+        //   addToast({
+        //     message: `Swap ${formattedAmounts[Field.INPUT]} ${
+        //       currencies[Field.INPUT]?.symbol
+        //     } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol}`,
+        //     URL: explorerLink,
+        //   })
+        // );
+            // onUserInput(Field.INPUT, "");
+        dispatch(
+          setOpenModal({
+            message: `Swap Successful.`,
+            trxState: TrxState.TransactionSuccessful,
+          })
+        )
+       console.log({res})
+    })
+    
+}, [socket]);
+
   const [allowedSlippage] = useUserSlippageTolerance();
   const getFee =async () => {
     const autoSwapV2Contract = await autoSwapV2(MARKETFREESWAPADDRESSES[marketType][chainId as number], library);
@@ -527,7 +567,7 @@ const handleMaxInput = async () => {
    
     if (response && value) {
      
-      const response = await fetch(`http://localhost:7000/auto/instant`, {
+      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/instant`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -555,66 +595,35 @@ const handleMaxInput = async () => {
           market:marketType
         })
       })
-      let res =await response.json()
-      console.log({res}) 
-         dispatch(refreshTransactionTab({ refresh:Math.random() }))
-        dispatch(setRefresh()) 
-        dispatch(
-          setOpenModal({
-            message: `Swap Successful.`,
-            trxState: TrxState.TransactionSuccessful,
-          })
-        );
+      // let res =await response.json()
+      // console.log({res}) 
+        //  dispatch(refreshTransactionTab({ refresh:Math.random() }))
+        // dispatch(setRefresh()) 
+        // dispatch(
+        //   setOpenModal({
+        //     message: `Swap Successful.`,
+        //     trxState: TrxState.TransactionSuccessful,
+        //   })
+        // );
          
-      if(res.type==="success"){
-       
-         onUserInput(Field.INPUT, "");
-        setShowNewChangesText(false);
-        setHasBeenApproved(true);
-        const explorerLink = getExplorerLink(
-          chainId as number,
-          res.information.transactionHash,
-          ExplorerDataType.TRANSACTION
-        );
-       
-        // setDataSignature({mess:"",signature:""})
-        // setTransactionSigned(false)
-        // setSignatureFromDataBase(false)
-        dispatch(
-          addToast({
-            message: `Swap ${formattedAmounts[Field.INPUT]} ${
-              currencies[Field.INPUT]?.symbol
-            } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol}`,
-            URL: explorerLink,
-          })
-        );
-//         setTimeout(()=>{
-// dispatch(
-//           setOpenModal({
-//             message: `Swap Successful.`,
-//             trxState: TrxState.TransactionSuccessful,
-//           })
-//         );
-//         },4000)
+  
 
         
-      }else{
-        dispatch(
-          setOpenModal({
-            message: `Swap Failed.`,
-            trxState: TrxState.TransactionFailed,
-          })
-        ); 
-      }
-      GFailedTransaction("instant_swap","swapping transaction in the database","error",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
+      // else{
+      //   dispatch(
+      //     setOpenModal({
+      //       message: `Swap Failed.`,
+      //       trxState: TrxState.TransactionFailed,
+      //     })
+      //   ); 
+      // }
+      // GFailedTransaction("instant_swap","swapping transaction in the database","error",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
   
-      // setDataSignature({mess:"",signature:""})
-      // setTransactionSigned(false)
-      // setSignatureFromDataBase(false)
-      // setCheckedItem(false)
-      setShowNewChangesText(false);
+     
+      // setShowNewChangesText(false);
     }
-  }catch(e){
+  }
+  catch(e){
     console.log({e})
     GFailedTransaction("auto_period","storing transaction to database","error",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
     dispatch(

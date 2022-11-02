@@ -115,6 +115,7 @@ const SetPrice = () => {
     oppositeAmount,
     unitAmount
   } = useDerivedSwapInfo();
+
   const handleTypeInput = useCallback(
     (value: string) => {
       onUserInput(Field.INPUT, value);
@@ -540,7 +541,7 @@ const setQuantityValue =() =>{
         })
       );
       const changeFrequencyToday = changeFrequencyTodays(selectedFrequency)//
-      const response = await fetch(`http://localhost:7000/auto/add`, {
+      const response = await fetch(`https://autoswap-server.herokuapp.com/auto/add`, {
         method: "POST",
         mode: "cors",
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
