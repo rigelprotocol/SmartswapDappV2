@@ -192,7 +192,6 @@ const InstantSwap = () => {
             trxState: TrxState.TransactionSuccessful,
           })
         )
-       console.log({res})
     })
     
 }, [socket]);
@@ -595,8 +594,8 @@ const handleMaxInput = async () => {
           market:marketType
         })
       })
-      // let res =await response.json()
-      // console.log({res}) 
+      let resi =await response.json()
+      console.log({resi}) 
         //  dispatch(refreshTransactionTab({ refresh:Math.random() }))
         // dispatch(setRefresh()) 
         // dispatch(
@@ -624,14 +623,14 @@ const handleMaxInput = async () => {
     }
   }
   catch(e){
-    console.log({e})
+    console.log({e},"koo4ok4koo4")
     GFailedTransaction("auto_period","storing transaction to database","error",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
-    dispatch(
-      setOpenModal({
-        message: "Swapping Transaction failed",
-        trxState: TrxState.TransactionFailed,
-      })
-    );
+    // dispatch(
+    //   setOpenModal({
+    //     message: "Swapping Transaction failed",
+    //     trxState: TrxState.TransactionFailed,
+    //   })
+    // );
   }
 
   }
