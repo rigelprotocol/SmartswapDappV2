@@ -96,6 +96,7 @@ const SetPrice = () => {
   const [quantity,setQuantity] = useState< string>("0")
   const [showNewChangesText,setShowNewChangesText] = useState(false)
   const [insufficientBalance, setInsufficientBalance] = useState(false);
+  const [insufficientFee, setInsufficientFee] = useState(false);
   const [dataSignature,setDataSignature] = useState<{mess:string,signature:string}>({
     mess:"",
     signature:""
@@ -212,8 +213,25 @@ const SetPrice = () => {
   const [balance] = GetAddressTokenBalance(
     currencies[Field.INPUT] ?? undefined
   );
-  useEffect(async () => {
+  useEffect(() => {
     const checkBalance = async ()=>{
+    
+      if(chainId === 43114){
+        let fee = await getFee(chainId === 43114 ? "Tradejoe" :"Smartswap")
+        const token = await getERC20Token(
+          USDT[chainId as number],
+          library
+        );
+        const value = await token.balanceOf(account);
+        const usdtBalance = ethers.utils.formatUnits(value.toString(), 6);
+        console.log({usdtBalance},"kkeoke")
+        if(fee && parseFloat(usdtBalance) < parseFloat(fee)){
+          setInsufficientFee(true)
+        }else{
+          setInsufficientFee(false)
+        }
+      }
+    
      if(currencies[Field.INPUT]?.symbol==="USDT"){
       let fee = await getFee(chainId === 43114 ? "Tradejoe" :"Smartswap")
       let amount = fee ? parseFloat(formattedAmounts[Field.INPUT]) + parseFloat(fee) : parseFloat(formattedAmounts[Field.INPUT])
@@ -231,8 +249,8 @@ const SetPrice = () => {
     } 
     }
     
-   await checkBalance()
-  }, [balance, formattedAmounts[Field.INPUT],totalNumberOfTransaction]);
+   checkBalance()
+  }, [balance, formattedAmounts[Field.INPUT],totalNumberOfTransaction,chainId]);
   // useEffect(() => {
   //   async function runCheck() {
   //     if (!inputError) {
@@ -873,7 +891,23 @@ const setQuantityValue =() =>{
               {inputError
                 ? inputError
                 : `Insufficient ${currencies[Field.INPUT]?.symbol} Balance ${currencies[Field.INPUT]?.symbol==="RGP" ? "for USDT":""}`}
-            </Button>) : !transactionSigned ? <Button
+            </Button>) :  insufficientFee ?  <Button
+              w='100%'
+              borderRadius='6px'
+              border={lightmode ? "2px" : "none"}
+              borderColor={borderColor}
+              h='48px'
+              p='5px'
+              mt={1}
+              disabled={inputError !== undefined || insufficientFee}
+              color={insufficientFee ? color : "#FFFFFF"}
+              bgColor={insufficientFee ? switchBgcolor : buttonBgcolor}
+              fontSize='18px'
+              boxShadow={lightmode ? "base" : "lg"}
+              _hover={{ bgColor: buttonBgcolor }}
+            >
+Insufficient USDT for fee
+            </Button> :  !transactionSigned ? <Button
                     w="100%"
                     borderRadius="6px"
                     border={lightmode ? '2px' : 'none'}
@@ -1166,7 +1200,23 @@ const setQuantityValue =() =>{
               {inputError
                 ? inputError
                 : `Insufficient ${currencies[Field.INPUT]?.symbol} Balance ${currencies[Field.INPUT]?.symbol==="RGP" && "for fee"}`}
-            </Button>) : !transactionSigned ? <Button
+            </Button>): insufficientFee ?  <Button
+              w='100%'
+              borderRadius='6px'
+              border={lightmode ? "2px" : "none"}
+              borderColor={borderColor}
+              h='48px'
+              p='5px'
+              mt={1}
+              disabled={inputError !== undefined || insufficientFee}
+              color={insufficientFee ? color : "#FFFFFF"}
+              bgColor={insufficientFee ? switchBgcolor : buttonBgcolor}
+              fontSize='18px'
+              boxShadow={lightmode ? "base" : "lg"}
+              _hover={{ bgColor: buttonBgcolor }}
+            >
+Insufficient USDT for fee
+            </Button>  : !transactionSigned ? <Button
                     w="100%"
                     borderRadius="6px"
                     border={lightmode ? '2px' : 'none'}
@@ -1216,7 +1266,7 @@ const setQuantityValue =() =>{
                     _hover={{ bgColor: buttonBgcolor }}
                   >
                     Approve USDT for fee
-                  </Button> : <Button
+                  </Button>: <Button
                     w="100%"
                     borderRadius="6px"
                     border={lightmode ? '2px' : 'none'}
