@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { timeConverter, getTokenSymbol, formatAmount,  } from "./useAccountHistory";
-import { AUTOSWAPV2ADDRESSES, SMARTSWAPROUTER, WNATIVEADDRESSES } from "../addresses";
+import {  MARKETAUTOSWAPADDRESSES, SMARTSWAPROUTER, WNATIVEADDRESSES } from "../addresses";
 import { getERC20Token } from '../utilsFunctions';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../state';
@@ -52,17 +52,37 @@ const useOpenOrders = (socket:any) => {
         if (location.includes("autotrade")) {
             setLocationData("auto")
             setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
-            setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
+             let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : "Pancakeswap" 
+            setContractAddress(MARKETAUTOSWAPADDRESSES[market][chainId as number])
         } else if (location.includes("set-price")) {
             setLocationData("price")
-            setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
-            setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
+            setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85") 
+            let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : "Pancakeswap" 
+            setContractAddress(MARKETAUTOSWAPADDRESSES[market][chainId as number])
         } else {
+       
+        }
+    }, [location, chainId])
+    useEffect(() => {
+        if (location.includes("autotrade")) {
+            setLocationData("auto")
+            setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85")
+            let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : chainId ===43114? "Tradejoe" :  "Pancakeswap" 
+            console.log({market})
+            setContractAddress(MARKETAUTOSWAPADDRESSES[market][chainId as number])
+        } else if (location.includes("set-price")) {
+            setLocationData("price")
+            setStateAccount("0x97C982a4033d5fceD06Eedbee1Be10778E811D85") 
+            let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : chainId ===43114? "Tradejoe" :  "Pancakeswap" 
+            console.log({market})
+            setContractAddress(MARKETAUTOSWAPADDRESSES[market][chainId as number])
+        }else {
             setLocationData("swap")
             setStateAccount(account)
             setContractAddress(SMARTSWAPROUTER[chainId as number])
         }
-    }, [location, chainId])
+    }, [chainId, account,location, contractAddress,refreshPage,locationData]);
+   
     useEffect(() => {
         getOpenOrders();
     }, [chainId, account, contractAddress,refreshPage,locationData]);

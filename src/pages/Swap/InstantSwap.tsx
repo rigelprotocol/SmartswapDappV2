@@ -44,6 +44,7 @@ import {
   Spinner
 } from '@chakra-ui/react';
 import AutoTimeModal from './modals/autoTimeModal';
+import { io } from "socket.io-client";
 import { useUserSlippageTolerance } from "../../state/user/hooks";
 import { useSelector,useDispatch } from 'react-redux';
 import { RootState } from "../../state";
@@ -59,6 +60,7 @@ import { addToast } from '../../components/Toast/toastSlice';
 import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink';
 import { maxAmountSpend } from '../../utils/maxAmountSpend';
 import MarketFreeDropDown from '../../components/MarketFreeDropdown';
+import BridgeCard from './components/bridgeCard';
 
 
 
@@ -84,8 +86,8 @@ const InstantSwap = () => {
   const [hasBeenApproved, setHasBeenApproved] = useState(false)
   const [signatureFromDataBase, setSignatureFromDataBase] = useState(false)
   const [transactionSigned, setTransactionSigned] = useState(false)
-  const [selectedFrequency, setSelectedFrequency] = useState("5")
-  const [marketType, setMarketType] = useState(location.search.includes("bsc_test") || location.search.includes("pn_mumbai") ? "Smartswap" : location.search.includes("bsc") ? "Pancakeswap" : "Quickswap")
+  const [socket,setSocket] = useState <any>(null)
+  const [marketType, setMarketType] = useState(location.search.includes("bsc_test") || location.search.includes("pn_mumbai") ? "Smartswap" : location.search.includes("bsc") ? "Pancakeswap" : location.search.includes("avalanche") ?"Tradejoe" : "Quickswap")
   const [percentageChange, setPercentageChange] = useState<string>("0")
   const [approvalForFee, setApprovalForFee] = useState("")
   const [fee, setFee] = useState("")
@@ -118,6 +120,7 @@ const InstantSwap = () => {
     oppositeAmount,
     unitAmount
   } = useDerivedSwapInfo();
+ 
   const handleTypeInput = useCallback(
     (value: string) => {
       onUserInput(Field.INPUT, value);
@@ -131,6 +134,7 @@ const InstantSwap = () => {
     [onUserInput]
   );
  useEffect(()=>{
+  setMarketType(location.search.includes("bsc_test") || location.search.includes("pn_mumbai") ? "Smartswap" : location.search.includes("bsc") ? "Pancakeswap" : location.search.includes("avalanche") ?"Tradejoe" : "Quickswap")
    let market = pathname.split("/").length===3? pathname.split("/")[2]:""
    checkIfMarketExists(market,chainId)
 
@@ -150,10 +154,48 @@ const InstantSwap = () => {
       getFee()
     }
   }, [account,chainId,marketType])
-
-
-  const refresh = useSelector<RootState>((state) => state.application.refresh);
+  useEffect(
+    () => {
+  setSocket(io("https://autoswap-server.herokuapp.com"));//https://autoswap-server.herokuapp.com
   
+    },
+    []
+  )
+
+  useEffect(() => {
+    socket?.on("instant",(res:any)=>{
+        setShowNewChangesText(false);
+        setHasBeenApproved(true);
+        const explorerLink = getExplorerLink(
+          chainId as number,
+          res.transactionHash,
+          ExplorerDataType.TRANSACTION
+        );
+        console.log({formattedAmounts,currencies,Field})
+       
+        // setDataSignature({mess:"",signature:""})
+        // setTransactionSigned(false)
+        // setSignatureFromDataBase(false)
+      
+        // dispatch(
+        //   addToast({
+        //     message: `Swap ${formattedAmounts[Field.INPUT]} ${
+        //       currencies[Field.INPUT]?.symbol
+        //     } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol}`,
+        //     URL: explorerLink,
+        //   })
+        // );
+            // onUserInput(Field.INPUT, "");
+        dispatch(
+          setOpenModal({
+            message: `Swap Successful.`,
+            trxState: TrxState.TransactionSuccessful,
+          })
+        )
+    })
+    
+}, [socket]);
+
   const [allowedSlippage] = useUserSlippageTolerance();
   const getFee =async () => {
     const autoSwapV2Contract = await autoSwapV2(MARKETFREESWAPADDRESSES[marketType][chainId as number], library);
@@ -234,7 +276,7 @@ const InstantSwap = () => {
       }
     }
     runCheck()
-  }, [inputError, formattedAmounts[Field.INPUT], currencies[Field.INPUT],totalNumberOfTransaction])
+  }, [inputError, formattedAmounts[Field.INPUT],totalNumberOfTransaction,transactionSigned])
 
   useMemo(() => {
     if(parseFloat(percentageChange) >0 && formattedAmounts[Field.OUTPUT]){
@@ -287,18 +329,22 @@ const InstantSwap = () => {
  
   
     useEffect(() => {      
+      console.log({marketType})
+      console.log(OTHERMARKETFACTORYADDRESSES[marketType][chainId as number],OTHERMARKETADDRESSES[marketType][chainId as number])
       onMarketSelection(OTHERMARKETFACTORYADDRESSES[marketType][chainId as number],OTHERMARKETADDRESSES[marketType][chainId as number])
     // }
   }, [chainId,marketType])
   
-  const checkForApproval = async () => {
+  const checkForApproval = async () => { 
     const autoSwapV2Contract = await autoSwapV2(MARKETFREESWAPADDRESSES[marketType][chainId as number], library);
     
     // check approval for RGP and the other token
-    const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
+    // const RGPBalance = await checkApprovalForRGP(RGPADDRESSES[chainId as number]) ?? "0"
+    const RGPBalance = "10" ?? "0"
     const tokenBalance = currencies[Field.INPUT]?.isNative ? 1 : await checkApproval(currencies[Field.INPUT]?.wrapped.address)
     const amountToApprove = await autoSwapV2Contract.fee()
     const fee = Web3.utils.fromWei(amountToApprove.toString(), "ether")
+    
     // const fee ="10"
     const frequency = parseInt(totalNumberOfTransaction) > 1 ? parseInt(totalNumberOfTransaction) : 1
     if (parseFloat(RGPBalance) >= parseFloat(fee)) {
@@ -492,7 +538,7 @@ const handleMaxInput = async () => {
     try{ 
        
        if (currencies[Field.INPUT]?.isNative) {
-   
+   console.log(currencies[Field.INPUT],currencies)
       console.log({value},Web3.utils.toWei(value.toString(), 'ether'),"uuuu",futureDate,pathArray)
       data = await autoSwapV2Contract.setPeriodToSwapETHForTokens(
         pathArray,
@@ -548,74 +594,43 @@ const handleMaxInput = async () => {
           market:marketType
         })
       })
-      let res =await response.json()
-      console.log({res}) 
-         dispatch(refreshTransactionTab({ refresh:Math.random() }))
-        dispatch(setRefresh()) 
-        dispatch(
-          setOpenModal({
-            message: `Swap Successful.`,
-            trxState: TrxState.TransactionSuccessful,
-          })
-        );
+      let resi =await response.json()
+      console.log({resi}) 
+        //  dispatch(refreshTransactionTab({ refresh:Math.random() }))
+        // dispatch(setRefresh()) 
+        // dispatch(
+        //   setOpenModal({
+        //     message: `Swap Successful.`,
+        //     trxState: TrxState.TransactionSuccessful,
+        //   })
+        // );
          
-      if(res.type==="success"){
-       
-         onUserInput(Field.INPUT, "");
-        setShowNewChangesText(false);
-        setHasBeenApproved(true);
-        const explorerLink = getExplorerLink(
-          chainId as number,
-          res.information.transactionHash,
-          ExplorerDataType.TRANSACTION
-        );
-       
-        // setDataSignature({mess:"",signature:""})
-        // setTransactionSigned(false)
-        // setSignatureFromDataBase(false)
-        dispatch(
-          addToast({
-            message: `Swap ${formattedAmounts[Field.INPUT]} ${
-              currencies[Field.INPUT]?.symbol
-            } for ${formattedAmounts[Field.OUTPUT]} ${currencies[Field.OUTPUT]?.symbol}`,
-            URL: explorerLink,
-          })
-        );
-//         setTimeout(()=>{
-// dispatch(
-//           setOpenModal({
-//             message: `Swap Successful.`,
-//             trxState: TrxState.TransactionSuccessful,
-//           })
-//         );
-//         },4000)
+  
 
         
-      }else{
-        dispatch(
-          setOpenModal({
-            message: `Swap Failed.`,
-            trxState: TrxState.TransactionFailed,
-          })
-        ); 
-      }
-      GFailedTransaction("instant_swap","swapping transaction in the database","error",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
+      // else{
+      //   dispatch(
+      //     setOpenModal({
+      //       message: `Swap Failed.`,
+      //       trxState: TrxState.TransactionFailed,
+      //     })
+      //   ); 
+      // }
+      // GFailedTransaction("instant_swap","swapping transaction in the database","error",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
   
-      // setDataSignature({mess:"",signature:""})
-      // setTransactionSigned(false)
-      // setSignatureFromDataBase(false)
-      // setCheckedItem(false)
-      setShowNewChangesText(false);
+     
+      // setShowNewChangesText(false);
     }
-  }catch(e){
-    console.log({e})
+  }
+  catch(e){
+    console.log({e},"koo4ok4koo4")
     GFailedTransaction("auto_period","storing transaction to database","error",currencies[Field.INPUT]?.symbol,currencies[Field.OUTPUT]?.symbol)
-    dispatch(
-      setOpenModal({
-        message: "Swapping Transaction failed",
-        trxState: TrxState.TransactionFailed,
-      })
-    );
+    // dispatch(
+    //   setOpenModal({
+    //     message: "Swapping Transaction failed",
+    //     trxState: TrxState.TransactionFailed,
+    //   })
+    // );
   }
 
   }
@@ -827,6 +842,7 @@ const handleMaxInput = async () => {
                 }
 
               </Box>
+              <BridgeCard/> 
             </Box>
 
             <Box mx={4} w={['100%', '100%', '45%', '29.5%']} mb={4}>
@@ -990,6 +1006,7 @@ const handleMaxInput = async () => {
                 }
 
               </Box>
+              <BridgeCard /> 
             </Box>
 
             <Box mx={5} w={['100%', '100%', '45%', '29.5%']} mb={4}>

@@ -99,12 +99,28 @@
       "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png"
     },
     {
+      "name": "WAVAX Token",
+      "symbol": "WAVAX",
+      "address": "0x9F34cca17962be33DEDDF0FD9EB6409744535e9b",
+      "chainId": 43113,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png"
+    },
+    {
+      "chainId": 43114,
+      "address": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+      "decimals": 18,
+      "name": "Wrapped AVAX",
+      "symbol": "WAVAX",
+      "logoURI": "https://snowtrace.io/token/images/avax_32.png"
+    },
+    {
       "name": "Wrapped Matic",
       "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
       "symbol": "WMATIC",
       "decimals": 18,
       "chainId": 137,
-      "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/polygon.jpg"
+      "logoURI": "https://raw.githubusercontent.com/sushiswap/list/master/logos/token-logos/token/polygon.jpg"
     },
     {
       "name": "Tether USD",
@@ -185,7 +201,7 @@
       "name": "Wrapped Ether",
       "symbol": "WETH",
       "decimals": 18,
-      "logoURI": "https://raw.githubusercontent.com/sushiswap/icons/master/token/eth.jpg"
+      "logoURI": "https://raw.githubusercontent.com/sushiswap/list/master/logos/token-logos/token/eth.jpg"
     },
     {
       "address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
@@ -369,6 +385,78 @@
       "symbol": "WARS",
       "decimals": 18,
       "chainId": 97,
+      "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13105.png"
+    },
+    {
+      "name": "Rigel Protocol",
+      "address": "0x59F48ce93eb317f4628C68BbcF6CB7937a25662D",
+      "symbol": "RGP",
+      "decimals": 18,
+      "chainId": 43113,
+      "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13105.png"
+    },
+    {
+      "name": "USD Coin",
+      "address": "0x1Ad483798422423E3471d2fa8a7eF6EB83BD4926",
+      "symbol": "USDC",
+      "decimals": 6,
+      "chainId": 43113,
+      "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
+    },
+    {
+      "name": "Rigel Protocol",
+      "address": "0x4AF5ff1A60a6eF6C7c8f9C4E304cD9051fCa3Ec0",
+      "symbol": "RGP",
+      "decimals": 18,
+      "chainId": 43114,
+      "logoURI": "https://bscscan.com/token/images/rigelprotocol_32.png"
+    },
+    {
+      "name": "TetherToken",
+      "address": "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7",
+      "symbol": "USDT",
+      "decimals": 6,
+      "chainId": 43114,
+      "logoURI": "https://snowtrace.io/token/images/tether_32.png"
+    },
+    {
+      "name": "TetherToken",
+      "address": "0xc7198437980c041c805A1EDcbA50c1Ce5db95118",
+      "symbol": "USDT.e",
+      "decimals": 6,
+      "chainId": 43114,
+      "logoURI": "https://snowtrace.io/token/images/tether_32.png"
+    },
+    {
+      "name": "USD Coin",
+      "address": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+      "symbol": "USDC",
+      "decimals": 6,
+      "chainId": 43114,
+      "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
+    },
+    {
+      "name": "USD Coin",
+      "address": "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
+      "symbol": "USDC.e",
+      "decimals": 6,
+      "chainId": 43114,
+      "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
+    },
+    {
+      "name": "wETHUSDC 14th-october-2022 1350Call wETH Colateral",
+      "address": "0x35B0ba83B69776acB02935bA3268A6116685C2aC",
+      "symbol": "wETHUSDC",
+      "decimals": 8,
+      "chainId": 43113,
+      "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDC.svg"
+    },
+    {
+      "name": "WAVAXUSDC 30-September-2022 12Put USDC Collateral",
+      "address": "0x4e6915bF261fc99C73575e616AE8766ecd36b9ad",
+      "symbol": "wAvAXUSDC",
+      "decimals": 8,
+      "chainId": 43113,
       "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/13105.png"
     },
     {

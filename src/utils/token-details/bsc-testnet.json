@@ -20,6 +20,16 @@
       "supply":"5,470,235"
     },
     {
+      "name": "WAVAX Token",
+      "symbol": "WAVAX",
+      "address": "0x9F34cca17962be33DEDDF0FD9EB6409744535e9b",
+      "chainId": 43113,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png",
+      "description":"Avalanche is a high throughput smart contract blockchain platform. Validators secure the network through a proof-of-stake consensus protocol. It is said to be fast, low cost, and environmental friendly. Mainnet was launched in September 21, 2020. Since then, the platform has grown to secure over 100+ individual projects, $1.4M+ of AVAX burned (reducing supply), 950+ individual block-producing validators, and over 500k+ community members around the globe. Decentralized finance (DeFi) applications can be found on Avalanche such as Pangolin, TraderJoe, and more.",
+      "supply":"410,829,983"
+    },
+    {
       "name": "BNB",
       "symbol": "BNB",
       "address": "0x23967E68bB6FeA03fcc3676F8E55272106F44A4A",

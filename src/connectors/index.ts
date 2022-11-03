@@ -23,6 +23,8 @@ export const RPC = {
   [SupportedChainId.POLYGONTEST]: "https://rpc-mumbai.matic.today",
   [SupportedChainId.OASISTEST]: "https://testnet.emerald.oasis.dev",
   [SupportedChainId.OASISMAINNET]: "https://emerald.oasis.dev",
+  [SupportedChainId.AVALANCHE]: "https://api.avax.network/ext/bc/C/rpc",
+  [SupportedChainId.AVALANCHE_FUJI]: "https://api.avax-test.network/ext/bc/C/rpc",
 };
 
 export enum ConnectorNames {
@@ -56,7 +58,7 @@ export function getNetworkLibrary(): Web3Provider {
 export const injected = new InjectedConnector({
   supportedChainIds: ALL_SUPPORTED_CHAIN_IDS,
 });
-const supportedChainIds = [3, 4, 56, 97, 80001, 137, 42261, 42262];
+const supportedChainIds = [3, 4, 56, 97, 80001, 137, 42261, 42262, 43114, 43113];
 export const checkSupportedIds = (chainID: number) =>
   supportedChainIds.some((id) => id === chainID);
 export const bscConnector = new BscConnector({

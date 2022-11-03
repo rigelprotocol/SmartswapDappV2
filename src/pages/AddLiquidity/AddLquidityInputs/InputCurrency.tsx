@@ -64,7 +64,7 @@ const InputCurrency = ({
   );
 };
 
-export default InputCurrency;
+export default React.memo(InputCurrency);
 
 // const InputCurrency = ({
 //   pairAvailable,

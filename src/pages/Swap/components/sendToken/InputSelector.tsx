@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   Flex,
   Input,
@@ -61,7 +61,7 @@ const InputSelector = ({
   };
 
   const [balance] = GetAddressTokenBalance(currency ?? undefined);
-  console.log({balance})
+ 
   return (
     <>
       <Flex alignItems='center' mt={3} justifyContent='space-between'>

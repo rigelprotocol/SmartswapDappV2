@@ -63,7 +63,6 @@ const useSwap = (
   const [pathArray, setPath] = useState<string[] | undefined>(undefined);
   const [pathSymbol, setPathSymbol] = useState("");
   const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
-
   const { prov } = useProvider();
   const lib = library ? library : prov;
 
@@ -91,12 +90,11 @@ const useSwap = (
     const getPairs = async () => {
       const wrappable: boolean = tokenOneAddress == tokenTwoAddress;
       let validSmartAddress: string | undefined;
-      if (SMARTSWAPFACTORYADDRESSES[ChainId as number] !== "0x") {
+      if (SMARTSWAPFACTORYADDRESSES[ChainId as number]) {
         validSmartAddress = isAddress(marketFactory)
           ? marketFactory
           : SMARTSWAPFACTORYADDRESSES[ChainId as number];
       }
-
       try {
         const SmartFactory = await smartFactory(
           validSmartAddress
@@ -161,7 +159,7 @@ const useSwap = (
             setAmount("");
           }
           // setLoading(false)
-        } else if (!wrappable && address === ZERO_ADDRESS) {
+        } else if (!wrappable && address === ZERO_ADDRESS && pairAddress === ZERO_ADDRESS ) {
           //   setWrap(true);
           setWrap(false);
           // RGP BNB BUSD USDT
@@ -578,6 +576,7 @@ const useSwap = (
           setAmount("");
           setPathSymbol("");
           setPath([]);
+          setOppositeAmount("")
         }
       } catch (e) {
         console.log({ e });
@@ -603,12 +602,12 @@ const useSwap = (
     wrap,
     tokenOneAddress,
     tokenTwoAddress,
-    tokenA,
-    tokenB,
+    // tokenA,
+    // tokenB,
     independentFieldString,
     oppositeAmount,
     marketFactory,
-    marketRouterAddress,
+    // marketRouterAddress,
     // account
   ]);
 

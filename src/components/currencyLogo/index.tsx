@@ -36,7 +36,7 @@ const BLOCKCHAIN = {
 export function getCurrencyLogoUrls(currency) {
   const urls = [];
   urls.push(
-    `https://raw.githubusercontent.com/sushiswap/icons/master/token/${getCurrencySymbol(
+    `https://raw.githubusercontent.com/sushiswap/list/master/logos/token-logos/token/${getCurrencySymbol(
       currency
     )}.jpg`
   );
@@ -57,9 +57,9 @@ export function getCurrencyLogoUrls(currency) {
 }
 
 const BinanceCoinLogo =
-  "https://raw.githubusercontent.com/sushiswap/icons/master/token/bnb.jpg";
+  "https://raw.githubusercontent.com/sushiswap/list/master/logos/token-logos/token/bnb.jpg";
 const EthereumLogo =
-  "https://raw.githubusercontent.com/sushiswap/icons/master/token/eth.jpg";
+  "https://raw.githubusercontent.com/sushiswap/list/master/logos/token-logos/token/eth.jpg";
 const LOGO = SupportedChainLogo;
 
 interface CurrencyLogoProps {
@@ -71,7 +71,7 @@ interface CurrencyLogoProps {
   marginRight?: number;
 }
 const unknown =
-  "https://raw.githubusercontent.com/sushiswap/icons/master/token/unknown.png";
+  "https://raw.githubusercontent.com/sushiswap/list/master/logos/token-logos/token/unknown.png";
 // const unknown = NULL24LOGO
 
 const CurrencyLogo: FunctionComponent<CurrencyLogoProps> = ({

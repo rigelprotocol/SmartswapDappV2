@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react"
 import { ChevronDownIcon } from "@chakra-ui/icons"
 import { Button, Flex, Img, Menu, MenuButton, MenuItem, MenuList, Text, useColorModeValue } from "@chakra-ui/react"
-import { binanceTestMarketArray,polygonMarketArray,binanceMarketArray } from "../state/swap/hooks"
+import { binanceTestMarketArray,polygonMarketArray,binanceMarketArray, AvalancheMarketArray } from "../state/swap/hooks"
 
 const MarketDropDown = ({marketType,setMarketType,chainID,switchMarket}:{marketType:string,setMarketType:React.Dispatch<React.SetStateAction<string>>,chainID:number | undefined,switchMarket:(market:string)=>void}) => {
   const [marketArray,setMarketArray] = useState(binanceMarketArray)
   useEffect(()=>{
     if(chainID === 56) setMarketArray(binanceMarketArray)
-    if(chainID === 97) setMarketArray(binanceTestMarketArray)
+    else if(chainID === 43113 || chainID === 43114) setMarketArray(AvalancheMarketArray)
+    else if(chainID === 97) setMarketArray(binanceTestMarketArray)
     else if(chainID === 137) setMarketArray(polygonMarketArray)
   },[chainID])
     const borderColor = useColorModeValue('#DEE6ED', '#324D68');
