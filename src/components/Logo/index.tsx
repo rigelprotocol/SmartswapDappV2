@@ -32,7 +32,7 @@ const Logo: FC<LogoProps> = ({ srcs, width, height,alt='',squared, mr, mb, ...re
         if (src) BAD_SRCS[src] = true;
         refresh((i) => i + 1)
       }}
-      borderRadius={squared ? width : 0}   src={src || 'https://raw.githubusercontent.com/sushiswap/icons/master/token/unknown.png'} />
+      borderRadius={squared ? width : 0}   src={src || 'https://raw.githubusercontent.com/sushiswap/list/master/logos/token-logos/token/unknown.png'} />
     </div>
   )
 };

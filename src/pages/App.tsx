@@ -56,53 +56,45 @@ import InstantSwap from "./Swap/InstantSwap";
           <TransactionStateModal />
           <ErrorBoundary>
             <Switch>
-              <Route exact strict path="/swap" component={Swap} />
-              <Route exact strict path="/pool" component={Pool} />
+              <Route exact strict path="/swap" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? AutoTime : Swap} />
+              <Route exact strict path="/pool" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? AutoTime : Pool} />
 
-              <Route exact strict path="/find" component={FindPool} />
+              <Route exact strict path="/find" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? AutoTime : FindPool} />
               
-              <Route exact strict path="/nft" component={Nft} />
+              <Route exact strict path="/nft" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? AutoTime : Nft} />
               
-              <Route exact strict path="/nfts/:id" component={ViewNFT} />
-              <Route exact path="/add" component={AddLiquidity} />
+              <Route exact strict path="/nfts/:id" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? AutoTime : ViewNFT} />
+              <Route exact path="/add" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? AutoTime : AddLiquidity} />
               <Route
                 exact
                 path="/add/:currencyIdA/:currencyIdB"
-                component={AddLiquidity}
+                component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? AutoTime : AddLiquidity}
               />
 
-              <Route exact strict path="/set-price" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? SetPrice : Swap } />
+              <Route exact strict path="/set-price" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI || chainId===undefined  ? SetPrice : Swap } />
 
-              <Route exact strict path="/set-price/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? SetPrice : Swap } />
-              <Route exact strict path="/autotrade" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? AutoTime : Swap } />
-              <Route exact strict path="/freeswap" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId === SupportedChainId.POLYGONTEST || chainId===undefined  ? InstantSwap : Swap } />
-              <Route exact strict path="/autotrade/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined  ? AutoTime : Swap } />
-              <Route exact strict path="/freeswap/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId === SupportedChainId.POLYGONTEST || chainId===undefined  ? InstantSwap : Swap } />
-              <Route exact strict path="/bridge/router" component={ROuterBridge} />
-              <Route exact strict path="/bridge/spherium" component={SpheriumBridge} />
+              <Route exact strict path="/set-price/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId===undefined || chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? SetPrice : Swap } />
+              <Route exact strict path="/autotrade" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI || chainId===undefined  ? AutoTime : Swap } />
+              <Route exact strict path="/autotrade/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI || chainId===undefined  ? AutoTime : Swap } />
+              <Route exact strict path="/bridge/router" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : ROuterBridge} />
+              <Route exact strict path="/bridge/spherium" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : SpheriumBridge} />
+              <Route exact strict path="/freeswap" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId === SupportedChainId.POLYGONTEST || chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI || chainId===undefined  ? InstantSwap : Swap } />
+              <Route exact strict path="/freeswap/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId === SupportedChainId.POLYGONTEST || chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI || chainId===undefined  ? InstantSwap : Swap } />
               <Route
                 exact
                 strict
                 path="/remove/:currencyIdA/:currencyIdB"
-                component={RemoveLiquidity}
-              />
-              {/*<Route*/}
-              {/*  exact*/}
-              {/*  strict*/}
-              {/*  path="/farm-V2/staking-RGP"*/}
-              {/*  component={FarmsV2}*/}
-              {/*/>*/}
-              {/*<Route*/}
-              {/*  exact*/}
-              {/*  strict*/}
-              {/*  path="/farms-V2/product-farm"*/}
-              {/*  component={FarmsV2}*/}
-              {/*/>*/}
-              <Route exact path="/farms" component={FarmingV1} />
-              <Route path="/farm" component={FarmingV2} />
-              <Route path="/farm/:deposit" component={YieldFarm} />
-              <Route exact strict path={'/smartbid'} component={SmartBid}/>
-              <Route path={'/smartbid/:id'} component={BidDetails}/>
+                component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : RemoveLiquidity}
+              /> 
+              <Route exact path="/farming" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : FarmingV1} />
+              <Route path="/farm" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : FarmingV2} />
+              <Route path="/farm/:deposit" component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : YieldFarm} />
+              <Route exact strict path={'/smartbid'} component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap :SmartBid}/>
+              <Route path={'/smartbid/:id'} component={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI ? Swap : BidDetails}/>
+
+<Route exact strict path="/freeswap" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId === SupportedChainId.POLYGONTEST || chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI || chainId===undefined  ? InstantSwap : Swap } />
+              <Route exact strict path="/freeswap/:router" component={chainId === SupportedChainId.BINANCETEST || chainId === SupportedChainId.BINANCE || chainId === SupportedChainId.POLYGON || chainId === SupportedChainId.POLYGONTEST || chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI || chainId===undefined  ? InstantSwap : Swap } />
+              
 
               {/* <Route path="*">
                 <Redirect to="/swap" />
