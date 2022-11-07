@@ -89,6 +89,7 @@ export const calculateGas = async (
         : GasPrice
     )
     .quotient.toString();
+    console.log({baseFeeThirtyPercent,percentage},new Percent(percentage.toString(), "100"))
 
   const addPriorityFee = JSBI.add(
     JSBI.BigInt(maxPriorityPerGasFormatted),
@@ -477,6 +478,7 @@ const SendToken = () => {
               : ethers.utils.parseUnits(format3, 9).toString(),
         }
       );
+      console.log({sendTransaction})
       const { confirmations, events } = await sendTransaction.wait(3);
 
       const { hash } = sendTransaction;

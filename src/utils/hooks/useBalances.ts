@@ -34,6 +34,7 @@ export const useNativeBalance = () => {
     const getBalance = async () => {
       if (account && chainId) {
         try {
+          console.log("refresh")
           const balance = await library?.getBalance(account as string);
           setBalance(
             parseFloat(ethers.utils.formatEther(balance as any)).toFixed(4)
@@ -81,10 +82,17 @@ export const useRGPBalance = () => {
           setRGPBalance(
             parseFloat(ethers.utils.formatEther(balance)).toFixed(4)
           );
+<<<<<<< HEAD
         // } catch (err) {
         //   setRGPBalance("");
         //   console.log(err);
         // }
+=======
+        } catch (err) {
+          setRGPBalance("");
+          console.log(err,"iruruuru");
+        }
+>>>>>>> develop
       }
     };
 

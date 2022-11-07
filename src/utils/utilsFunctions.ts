@@ -259,6 +259,17 @@ export const switchNetwork = async (
     rpcUrls: ["https://bsc-dataseed.binance.org"],
     blockExplorerUrls: ["https://bscscan.com"],
   };
+  const AvalancheParams = {
+    chainId: "0xA86A",
+    chainName: "Avalanche Network",
+    nativeCurrency: {
+      name: "AVAX",
+      symbol: "AVAX",
+      decimals: 18,
+    },
+    rpcUrls: ["https://api.avax.network/ext/bc/C/rpc"],
+    blockExplorerUrls: ["https://snowtrace.io/"],
+  };
   const oasisParams = {
     chainId: "0xa516",
     chainName: "Emerald Mainnet",
@@ -295,7 +306,31 @@ export const switchNetwork = async (
       console.error(`Switch chain error ${switchError}`);
       // handle other "switch" errors
     }
-  } else if (chainId === "0x38") {
+  }else if (chainId === "0xA86A") {
+    try {
+      await library?.send("wallet_switchEthereumChain", [
+        { chainId: "0xA86A" },
+        account,
+      ]);
+    } catch (switchError) {
+      if (switchError.code === 4902) {
+        try {
+          await library?.send("wallet_addEthereumChain", [
+            AvalancheParams,
+            account,
+          ]);
+        } catch (addError) {
+          // handle "add" error
+          console.error(`Add chain error ${addError}`);
+        }
+      } else if (switchError.code === 4001) {
+        throw new Error("User rejected this request");
+      }
+      console.error(`Switch chain error ${switchError}`);
+      // handle other "switch" errors
+    }
+  }
+   else if (chainId === "0xA86A8") {
     try {
       await library?.send("wallet_switchEthereumChain", [
         { chainId: "0x38" },

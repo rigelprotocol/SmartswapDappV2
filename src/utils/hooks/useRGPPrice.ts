@@ -11,9 +11,10 @@ export const useRGPPrice = () => {
   useEffect(() => {
     const getRGPprice = async () => {
       try {
-        const RGPBUSDToken = await smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number], library);
-        const reserves = await RGPBUSDToken.getReserves();
-        setRGPPrice(ethers.utils.formatUnits(reserves[0].mul(10000).div(reserves[1]), 4));
+        const RGPBUSDToken = chainId ===43114 || chainId ===43113 ? null : await smartSwapLPTokenPoolOne(SMARTSWAPLP_TOKEN1ADDRESSES[chainId as number], library);
+        const reserves =RGPBUSDToken ===null ? 0 : await RGPBUSDToken?.getReserves();
+        setRGPPrice(ethers.utils.formatUnits(reserves[0]?.mul(10000)?.div(reserves[1]), 4) ?? "0");
+        
       } catch (error) {
         setRGPPrice(0);
         console.log(error)

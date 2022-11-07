@@ -43,6 +43,19 @@ export function getExplorerLink(
         return `https://polygonscan.com`;
     }
   }
+  if (chainId === SupportedChainId.AVALANCHE) {
+    switch (type) {
+      case ExplorerDataType.TRANSACTION:
+        return `https://snowtrace.io/tx/${data}`;
+      case ExplorerDataType.ADDRESS:
+      case ExplorerDataType.TOKEN:
+        return `https://snowtrace.io/address/${data}`;
+      case ExplorerDataType.BLOCK:
+        return `https://snowtrace.io/block/${data}`;
+      default:
+        return `https://snowtrace.io`;
+    }
+  }
 
   if (chainId === SupportedChainId.POLYGONTEST) {
     switch (type) {

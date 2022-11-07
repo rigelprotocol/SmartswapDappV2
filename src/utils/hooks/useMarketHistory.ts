@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import SmartSwapRouter02 from '../abis/swapAbiForDecoder.json';
 import { timeConverter, getTokenSymbol, formatAmount, APIENDPOINT, APIKEY } from "./useAccountHistory";
-import { AUTOSWAPSTATEADDRESSES, AUTOSWAPV2ADDRESSES, SMARTSWAPROUTER, WNATIVEADDRESSES } from "../addresses";
+import {  MARKETAUTOSWAPADDRESSES, SMARTSWAPROUTER, WNATIVEADDRESSES } from "../addresses";
 import { getERC20Token } from '../utilsFunctions';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../state';
@@ -53,11 +53,13 @@ const useMarketHistory = (socket:any) => {
     }
     useEffect(() => {
         if (location.includes("autotrade")) {
-            setLocationData("auto")
-            setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
+            setLocationData("auto") 
+            let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : "Pancakeswap" 
+            setContractAddress(MARKETAUTOSWAPADDRESSES[market][chainId as number])
         } else if (location.includes("set-price")) {
             setLocationData("price")
-            setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
+            let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : "Pancakeswap" 
+            setContractAddress(MARKETAUTOSWAPADDRESSES[market][chainId as number])
         } else {
             setLocationData("swap")
             setStateAccount(account)

@@ -8,6 +8,7 @@ import {
   useColorModeValue,
   useMediaQuery,
   Text,
+  Tooltip,
 } from "@chakra-ui/react";
 import { NavLink, useLocation } from "react-router-dom";
 import { ColorModeSwitcher } from "../ColorModeSwitcher";
@@ -20,6 +21,8 @@ import DarkLogo from "./../../assets/logo/logo-dark.svg";
 import MobileNavDrawer from "./MobileNavDrawer";
 import NetworkConnector from "../NetworkConnector";
 import EarnDropdown from "./EarnDropdown";
+import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
+import { SupportedChainId } from "../../constants/chains";
 
 export const Nav = ({
   to,
@@ -32,8 +35,10 @@ export const Nav = ({
   active?: boolean;
   img?: any;
 }) => {
+  const {chainId} = useActiveWeb3React()
   const mobileNavColor = useColorModeValue("#FFFFFF", "#15202B");
   return (
+    <Tooltip label={chainId === SupportedChainId.AVALANCHE || chainId=== SupportedChainId.AVALANCHE_FUJI && "coming soon"}  bg="gray.300" color="black">
     <NavLink
       to={to}
       activeStyle={{
@@ -49,6 +54,7 @@ export const Nav = ({
         </Text>
       </Flex>
     </NavLink>
+    </Tooltip>
   );
 };
 
@@ -59,6 +65,8 @@ const Index = () => {
   const mobileNavColor = useColorModeValue("#FFFFFF", "#15202B");
   const mobileNavBorderColor = useColorModeValue("#DEE5ED", "#324D68");
   const { search } = useLocation();
+  
+  const {chainId} = useActiveWeb3React()
 
   return (
     <>
@@ -123,9 +131,12 @@ const Index = () => {
                   <BridgeDropdown />
                   <EarnDropdown />
                   {/* <Nav label="Liquidity" to="/pool" active={location === '/add' || location === '/remove' ? true : false} />
-                  <Nav label="Farm" to="/farm-v2"  /> */}
-                  <Nav label="NFTs" to={`/nft${search}`} />
-                  <Nav label="SmartBid" to={`/smartbid${search}`} />
+                  <Nav label="Farming" to="/farming-v2"  /> */}
+                  
+                  {/* <Nav label="Farm" to="/farm-v2"  />  */}
+                  <Nav label="NFTs" to={chainId ===43114?"/freeswap":`/nft${search}`} />
+                  <Nav label="SmartBid" to={chainId ===43114?"/freeswap":`/smartbid${search}`} />
+                 
                 </Flex>
               </Flex>
               <Spacer />

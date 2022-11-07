@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import mainToken from '../../utils/main-token.json';
+// import mainToken from '../../utils/main-token.json';
+import mainToken from "../../utils/constants/tokenList/rigelprotocol-main-tokenlist.json"
 import TokenLogo from '../../assets/Null-24.svg';
 import { getERC20Token } from "../utilsFunctions";
 import { ethers } from 'ethers';
@@ -9,7 +10,7 @@ import FreeswapContract from "../abis/autoswap.json"
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../state";
 import { useLocation } from 'react-router-dom';
-import { SMARTSWAPROUTER, AUTOSWAPV2ADDRESSES, WNATIVEADDRESSES, AUTOSWAPSTATEADDRESSES, MARKETFREESWAPADDRESSES, FREESWAPACCOUNT } from "../addresses";
+import { SMARTSWAPROUTER, WNATIVEADDRESSES, AUTOSWAPSTATEADDRESSES, MARKETFREESWAPADDRESSES, FREESWAPACCOUNT, MARKETAUTOSWAPADDRESSES } from "../addresses";
 import Web3 from 'web3';
 import { useNativeBalance } from "../../utils/hooks/useBalances";
 import { ParseFloat } from '..';
@@ -41,6 +42,8 @@ export const APIENDPOINT: { [key: string]: string } = {
     "80001": "api-testnet.polygonscan.com/api",
     "42261": "testnet.explorer.emerald.oasis.dev/api",
     "42262": "explorer.emerald.oasis.dev/api",
+    "43114": "api.avax-test.network/ext/bc/C/rpc",
+    "43113": "api.avax.network/ext/bc/C/rpc",
 };
 
 export const APIKEY: { [key: string]: string } = {
@@ -52,6 +55,8 @@ export const APIKEY: { [key: string]: string } = {
     "80001": "89B4F6NVVEVGC8EMDCJVRJMVGSCVHHZTR7",
     "42261": "",
     "42262": "",
+    "43114": "",
+    "43113": "",
 };
 
 interface DataIncoming {
@@ -86,7 +91,7 @@ export const formatAmount = (number: string, decimals: any) => {
 
 export const getTokenSymbol = (symbol: string) => {
     const tokenList = mainToken;
-    let tokenIcon = tokenList.find(token => token.symbol === symbol);
+    let tokenIcon = tokenList.tokens.find(token => token.symbol === symbol);
 
     if (!tokenIcon) {
         return TokenLogo
@@ -138,16 +143,20 @@ const useAccountHistory = (socket:any) => {
         if (location.includes("autotrade")) {
             setLocationData("auto")
             setStateAccount(AUTOSWAPSTATEADDRESSES[chainId as number])
-            setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
+            let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : chainId ===43114? "Tradejoe" :  "Pancakeswap" 
+            console.log({market})
+            setContractAddress(MARKETAUTOSWAPADDRESSES[market][chainId as number])
         } else if (location.includes("set-price")) {
             setLocationData("price")
-            setStateAccount(AUTOSWAPSTATEADDRESSES[chainId as number])
-            setContractAddress(AUTOSWAPV2ADDRESSES[chainId as number])
+            setStateAccount(AUTOSWAPSTATEADDRESSES[chainId as number]) 
+            let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : chainId ===43114? "Tradejoe" :  "Pancakeswap" 
+            console.log({market})
+            setContractAddress(MARKETAUTOSWAPADDRESSES[market][chainId as number])
         } else if(location.includes("freeswap")){
             setLocationData("freeswap")
             setStateAccount(account)
-            console.log(location,location.split("/"))
-     let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1) : "Pancakeswap" 
+     let market =location.split("/").length >= 3 ?  location.split("/")[2].charAt(0).toUpperCase() + location.split("/")[2].slice(1): chainId ===43114? "Tradejoe" :  "Pancakeswap" 
+     console.log({market})
      console.log(MARKETFREESWAPADDRESSES[market][chainId as number],market)
             setContractAddress(MARKETFREESWAPADDRESSES[market][chainId as number])
         } else {
@@ -178,12 +187,13 @@ const useAccountHistory = (socket:any) => {
         const trans = await fetch(`${URL}/auto`)
         const transaction = await data.json()
         const database = await trans.json()
+        console.log({database,transaction})
         return { transaction, database }
     }
     const api = APIENDPOINT[chainId as number];
     const apikey = APIKEY[chainId as number];
     const loadAccountHistory = async () => {
-        if (account && contractAddress && locationData) {
+        if (account && locationData) {
             setLoading(true);
             try {
             let userData = []
@@ -239,63 +249,65 @@ const useAccountHistory = (socket:any) => {
                     market:"",
                     orderID:"",
                 }));
-            }else if(location.includes("freeswap")){
-                const uri = `https://${api}?module=account&action=txlist&address=${FREESWAPACCOUNT[chainId ?? 56]}&startblock=0
-                &endblock=latest&sort=desc&apikey=${apikey}`;
-
-                const data = await fetch(uri);
-                const jsondata = await data.json();
-                const SwapTrx = jsondata.result.filter((item: any) => item.to.toLowerCase() == contractAddress.toLowerCase());
-                console.log({SwapTrx,contractAddress,jsondata},FREESWAPACCOUNT[chainId ?? 56],)
-                const dataFiltered = SwapTrx
-                .filter((items: any) => decodeInput(items.input, FreeswapContract) !== undefined) 
-                .map((items: any) => (
-                    {
-                    value: items.value,
-                    transactionObj: decodeInput(items.input, SmartSwapRouter02).params,
-                    timestamp: items.timeStamp,
-                    transactionFee: items.gasPrice * items.gasUsed,
-                    // name: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).name,
-                    transactionHash: items.hash,
-                    status: 10,
-                    chainID:items.chainID ,
-                    market:"",
-                    orderID:"",
-                }));
-
-            const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(0, 5) : dataFiltered;
-            userData = dataToUse.map((data: any) => ({
-                inputAmount:
-                    Number(data.value) > 0 ? data.value : data.transactionObj[3].value,
-                outputAmount:
-                    Number(data.value) > 0
-                        ? data.transactionObj[0].value
-                        : data.transactionObj[1].value,
-                tokenIn:
-                    Number(data.value) > 0
-                        ? data.transactionObj[1].value[0]
-                        : data.transactionObj[2].value[0],
-                tokenOut:
-                    Number(data.value) > 0
-                        ? data.transactionObj[1].value[data.transactionObj[1].value.length - 1]
-                        : data.transactionObj[2].value[data.transactionObj[2].value.length - 1],
-                time: timeConverter(data.timestamp),
-                // name: data.name,
-                frequency: "--",
-                id: "",
-                transactionHash: data.transactionHash,
-                error: [],
-                status: "10",
-                situation:"",
-                chainID:chainId,
-                market:"",
-                orderID:"",
-            }));
-            console.log({userData,dataToUse})
             }
+            // else if(location.includes("freeswap")){
+            //     const uri = `https://${api}?module=account&action=txlist&address=${FREESWAPACCOUNT[chainId ?? 56]}&startblock=0
+            //     &endblock=latest&sort=desc&apikey=${apikey}`;
+
+            //     const data = await fetch(uri);
+            //     const jsondata = await data.json();
+            //     const SwapTrx = jsondata.result.filter((item: any) => item.to.toLowerCase() == contractAddress.toLowerCase());
+            //     console.log({SwapTrx,contractAddress,jsondata},FREESWAPACCOUNT[chainId ?? 56],)
+            //     const dataFiltered = SwapTrx
+            //     .filter((items: any) => decodeInput(items.input, FreeswapContract) !== undefined) 
+            //     .map((items: any) => (
+            //         {
+            //         value: items.value,
+            //         transactionObj: decodeInput(items.input, SmartSwapRouter02).params,
+            //         timestamp: items.timeStamp,
+            //         transactionFee: items.gasPrice * items.gasUsed,
+            //         // name: decodeInput(items.input, locationData === "auto" ? AUTOSWAP : SmartSwapRouter02).name,
+            //         transactionHash: items.hash,
+            //         status: 10,
+            //         chainID:items.chainID ,
+            //         market:"",
+            //         orderID:"",
+            //     }));
+
+            // const dataToUse = dataFiltered.length > 5 ? dataFiltered.splice(0, 5) : dataFiltered;
+            // userData = dataToUse.map((data: any) => ({
+            //     inputAmount:
+            //         Number(data.value) > 0 ? data.value : data.transactionObj[3].value,
+            //     outputAmount:
+            //         Number(data.value) > 0
+            //             ? data.transactionObj[0].value
+            //             : data.transactionObj[1].value,
+            //     tokenIn:
+            //         Number(data.value) > 0
+            //             ? data.transactionObj[1].value[0]
+            //             : data.transactionObj[2].value[0],
+            //     tokenOut:
+            //         Number(data.value) > 0
+            //             ? data.transactionObj[1].value[data.transactionObj[1].value.length - 1]
+            //             : data.transactionObj[2].value[data.transactionObj[2].value.length - 1],
+            //     time: timeConverter(data.timestamp),
+            //     // name: data.name,
+            //     frequency: "--",
+            //     id: "",
+            //     transactionHash: data.transactionHash,
+            //     error: [],
+            //     status: "10",
+            //     situation:"",
+            //     chainID:chainId,
+            //     market:"",
+            //     orderID:"",
+            // }));
+            // console.log({userData,dataToUse})
+            // }
 
              else if ( location.includes("autotrade") || location.includes("set-price")) {
                 const { transaction, database } = await getTransactionFromDatabase(account)
+                console.log({transaction,database})
                 if (transaction.length > 0) {
                     
                     dispatch(notificationTab({ 
@@ -341,6 +353,7 @@ const useAccountHistory = (socket:any) => {
                         }
                     })
                     )
+                    console.log({userData})
                 }
 
 
