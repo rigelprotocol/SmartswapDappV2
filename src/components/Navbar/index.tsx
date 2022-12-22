@@ -16,8 +16,10 @@ import SocialMedia from "./SocialMedia";
 import DappsDropdown from "./DappsDropdown";
 import WalletConnection from "./WalletConnection";
 import { SwapDropdown, BridgeDropdown } from "./SwapDropdown";
-import LightLogo from "./../../assets/logo/logo-light.svg";
-import DarkLogo from "./../../assets/logo/logo-dark.svg";
+// import LightLogo from "./../../assets/logo/logo-light.svg";
+// import DarkLogo from "./../../assets/logo/logo-dark.svg";
+import ChristmasLightLogo from "./../../assets/logo/ChristmasSmartSwapLightLogo.svg";
+import ChristmasDarkLogo from "./../../assets/logo/ChristmasSmartSwapDarkLogo.svg";
 import MobileNavDrawer from "./MobileNavDrawer";
 import NetworkConnector from "../NetworkConnector";
 import EarnDropdown from "./EarnDropdown";
@@ -61,7 +63,8 @@ export const Nav = ({
 const Index = () => {
   const [isMobileDevice] = useMediaQuery("(max-width: 750px)");
   const location = useLocation().pathname;
-  const Logo = useColorModeValue(LightLogo, DarkLogo);
+  // const Logo = useColorModeValue(LightLogo, DarkLogo);
+  const Logo = useColorModeValue(ChristmasLightLogo,ChristmasDarkLogo);
   const mobileNavColor = useColorModeValue("#FFFFFF", "#15202B");
   const mobileNavBorderColor = useColorModeValue("#DEE5ED", "#324D68");
   const { search } = useLocation();
