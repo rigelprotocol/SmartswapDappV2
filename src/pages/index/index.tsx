@@ -546,24 +546,14 @@ setMinNav3(!minNav3)
 <ul>
  <li><a href="https://smartswap.rigelprotocol.com/" target="_blank">SmartSwap</a></li>
  <li><a href="https://gift.rigelprotocol.com/" target="_blank">Gift DApp</a> </li>
- <li> <a
-  data-toggle="tooltip"
-  data-placement="bottom"
-  title="coming soon"
-  href="#"
-  >Leverage Exchange
+ <li> <a href="https://smartswap.rigelprotocol.com/autotrade?chain=bsc" target="_blank"
+  >Autotrade
 </a></li>
  <li> <a
-  data-toggle="tooltip"
-  data-placement="bottom"
-  title="coming soon"
-  href="#"
+   target="_blank" href="https://smartswap.rigelprotocol.com/smartbid?chain=bsc"
   >SmartBid</a></li>
  <li><a
-  data-toggle="tooltip"
-  data-placement="bottom"
-  title="coming soon"
-  href="#">LaunchPad</a></li>
+  href="https://launchpad.rigelprotocol.com/"  target="_blank">LaunchPad</a></li>
 </ul>
 </div>
 <div>
@@ -588,6 +578,7 @@ setMinNav3(!minNav3)
  <li><a href="https://rigelprotocol.com/design-compliance.html" target="_blank">Design Compliance</a> </li>
  <li><a href="https://rigelprotocol.com/privacy-policy.html" target="_blank">Private Policy</a> </li>
  <li><a href="https://rigelprotocol.com/terms-and-condition.html" target="_blank">Terms & Conditions</a> </li>
+ <li><a href="https://rigelprotocol.com/AML" target="_blank">Anti-Money Laundering Policy</a> </li>
 </ul>
 </div>
         </div> 
