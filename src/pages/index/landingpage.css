@@ -154,7 +154,8 @@ li {
   padding: 20px 0px;
 }
 .logo {
-  margin-top: -2px;
+  /* margin-top: -2px; */
+  margin-top: -10px;
 }
 
 .menuToggle {
@@ -643,7 +644,8 @@ footer .footer__top p {
   }
   .logo {
     font-size: 45px;
-    margin-top: 30px;
+    /* margin-top: 30px; */
+    margin-top: 21px;
     padding: 0;
   }
   /* SECTION__1 */
