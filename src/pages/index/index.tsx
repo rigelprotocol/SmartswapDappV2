@@ -3,8 +3,8 @@
 import { Box, Flex } from '@chakra-ui/layout';
 import { Text,Img } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-// import DarkLogo from '../../assets/logo/LogoRGPImage.svg';
-import DarkLogo from '../../assets/logo/ChristmasRigelLogo.svg';
+import DarkLogo from '../../assets/logo/LogoRGPImage.svg';
+// import DarkLogo from '../../assets/logo/ChristmasRigelLogo.svg';
 import External from '../../assets/external.svg';
 import SmartSwap from '../../assets/smartswap-dark.svg';
 import Swap from '../../assets/swap.svg';
