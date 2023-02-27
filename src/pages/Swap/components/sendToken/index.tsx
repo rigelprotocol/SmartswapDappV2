@@ -55,7 +55,7 @@ import { useUpdateUserGasPreference } from "../../../../state/gas/hooks";
 import { useUserGasPricePercentage } from "../../../../state/gas/hooks";
 import { Web3Provider } from "@ethersproject/providers";
 import NetworkModal from "./../../../../components/Navbar/modals/networkModal";
-import { clearSearchResult } from "../../../../state/farming/action";
+import { clearSearchResult } from "../../../../state/newFarming/action";
 import {
   GButtonClick,
   GFailedTransaction,

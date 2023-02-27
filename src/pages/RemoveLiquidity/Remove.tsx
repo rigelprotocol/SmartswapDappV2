@@ -45,7 +45,7 @@ import {
   useUpdateUserGasPreference,
   useUserGasPricePercentage,
 } from "../../state/gas/hooks";
-import { clearSearchResult } from "../../state/farming/action";
+import { clearSearchResult } from "../../state/newFarming/action";
 import { GFailedTransaction, GSuccessfullyTransaction } from "../../components/G-analytics/gIndex";
 
 const Remove = () => {

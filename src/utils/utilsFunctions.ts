@@ -6,7 +6,7 @@ import detectEthereumProvider from "@metamask/detect-provider";
 import { ethers } from "ethers";
 import { escapeRegExp } from ".";
 import { inputRegex } from "../components/Farming/Modals/Filter";
-import { farmStateInterface } from "../state/farm/reducer";
+import { farmStateInterface } from "../state/newfarm/reducer";
 import { useSelector } from "react-redux";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { RootState } from "../state";

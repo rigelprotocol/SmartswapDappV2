@@ -35,7 +35,7 @@ export const useGetNewFarms = (
   const { library } = useWeb3React();
   const [loadingLP, setLoading] = useState(true);
   const selectedField = useSelector<RootState>(
-    (state) => state.farming.selectedField
+    (state) => state.newFarming.selectedField
   );
   const selected = selectedField === farmSection.SECOND_NEW_LP;
   const [LPData, setLPData] = useState<

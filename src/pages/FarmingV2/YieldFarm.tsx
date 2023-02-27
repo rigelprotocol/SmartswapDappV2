@@ -40,7 +40,7 @@ const YieldFarm = ({
     img: string;
     ARYValue: string;
     lpSymbol: string;
-    tokensStaked: string[];
+    tokenStaked: string[];
     availableToken: string;
     deposit: string;
     poolAllowance: any;
@@ -80,7 +80,7 @@ const YieldFarm = ({
   const symbolName = params.split("/");
 
   const selectedField = useSelector(
-    (state: State) => state.farming.selectedField
+    (state: RootState) => state.newFarming.selectedField
   );
   const selectedBSC = selectedField === farmSection.NEW_LP;
   const selected =
@@ -104,8 +104,8 @@ const YieldFarm = ({
   const totalLiquidityValue = () => {
     if (farmDataLoading) return <Spinner speed="0.65s" color="#333333" />;
 
-    if (content.totalLiquidity) {
-      return ` ${formatAmount(content.totalLiquidity)}`;
+    if (content?.totalLiquidity) {
+      return ` ${formatAmount(content?.totalLiquidity)}`;
     }
   };
 

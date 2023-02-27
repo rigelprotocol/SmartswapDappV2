@@ -32,7 +32,6 @@ import {DARK_THEME, farmSection} from "./index";
 import {addToast} from "../../components/Toast/toastSlice";
 import {useDispatch, useSelector} from "react-redux";
 import {setOpenModal, TrxState} from "../../state/application/reducer";
-import { setLoadingState } from "../../state/farm/actions";
 import {ExplorerDataType, getExplorerLink} from "../../utils/getExplorerLink";
 import {
   MasterChefV2Contract,
@@ -51,7 +50,7 @@ import {
 } from "../../utils/addresses";
 import {clearInputInfo, convertFromWei, convertToNumber} from "../../utils";
 import {useRGPBalance} from "../../utils/hooks/useBalances";
-import {updateFarmAllowances} from "../../state/farm/actions";
+import { updateFarmAllowances } from "../../state/newfarm/actions";
 import {useActiveWeb3React} from "../../utils/hooks/useActiveWeb3React";
 import Joyride from "react-joyride";
 import {steps} from "../../components/Onboarding/YieldSteps";
@@ -87,7 +86,7 @@ const ShowYieldFarmDetails = ({
     img: string;
     ARYValue: string;
     lpSymbol: string;
-    tokensStaked: string[];
+    tokenStaked: string[];
     availableToken: string;
     deposit: string;
     poolAllowance: any;
@@ -143,24 +142,14 @@ const ShowYieldFarmDetails = ({
   const [contentid, setContentId] = useState(undefined);
   const [loading, setLoading] = useState(true);
 
-  // const data = useGetFarmData(reload, setReload);
-
-
   const {loadingState} = useUpdateFarm({reload, setReload, content});
 
   useFetchYieldFarmDetails({content, section, setLoading, loading});
-
-  //const {loadingFarm} = useUpdateNewFarm({reload, setReload, content});
-
- // useNewYieldFarmDetails({content, section, setLoading, loading});
-
-
 
   const closeModal = () => {
     GButtonIntialized("close unstaked",content.deposit,"v2")
     modal2Disclosure.onClose();
   };
-  // useUpdate(reload, setReload, contentid, setContentId);
   const [userGasPricePercentage] = useUserGasPricePercentage();
   const handleSetReferralField = () => {
     if (showReferrerField === true && URLReferrerAddress === "") {
@@ -179,7 +168,7 @@ const ShowYieldFarmDetails = ({
   };
 useEffect(()=>{
   const checkEnoughApproval = (allowance: any, balance: any) => {
-    // console.log("checkEnoughApproval",allowance.toString(),balance);
+    console.log({allowance,balance})
     if (allowance && balance) {
 
       let approve = parseFloat(allowance) >= parseFloat(depositTokenValue);
@@ -224,7 +213,6 @@ useEffect(()=>{
           account,
           RGPSPECIALPOOLADDRESSES2[chainId as number]
         );
-        console.log({rgpApproval})
         return !(rgpApproval.toString() <= 0);
       }
     };
@@ -235,7 +223,7 @@ useEffect(()=>{
       if (content.deposit === "RGP" && Number(content.id) === 1) {
         const specialPoolV1Approval = await specialPoolV1Allowance(rgp);
         changeApprovalButton(true, specialPoolV1Approval);
-      } else if (content.deposit === "RGP" && Number(content.id) === 13) {
+      } else if (content.deposit === "RGP" && content.id=== "special") {
        
         const specialPoolV2Approval = await specialPoolV2Allowance(rgp);
 
@@ -243,7 +231,6 @@ useEffect(()=>{
       } else {
         const pool = await smartSwapLPTokenPoolTwo(content.address, library);
         const approvalForRGPBNB = await poolAllowance(pool);
-        console.log({approvalForRGPBNB,rgpApproval})
         changeApprovalButton(approvalForRGPBNB, rgpApproval);
       }
     };
@@ -382,7 +369,7 @@ useEffect(()=>{
       await RGPSpecialPoolV1Approval();
       setApproveValueForOtherToken(true);
       setApproveValueForRGP(true);
-    } else if (content.deposit === "RGP" && Number(content.id) === 13) {
+    } else if (content.deposit === "RGP" && content.id === "special") {
       await RGPSpecialPoolV2Approval();
       setApproveValueForOtherToken(true);
       setApproveValueForRGP(true);
@@ -535,7 +522,7 @@ useEffect(()=>{
         return;
       } else if (
         Number(content.poolVersion) === 2 &&
-        parseFloat(content.tokensStaked[1]) <= 0 &&
+        parseFloat(content.tokenStaked[1]) <= 0 &&
         Number(depositTokenValue) < Number(minimumStakeAmount)
       ) {
         setDepositInputHasError(true);
@@ -581,7 +568,7 @@ useEffect(()=>{
         parseFloat(unstakeToken) >
         parseFloat(
           content.deposit === "RGP"
-            ? content.tokensStaked[1]
+            ? content.tokenStaked[1]
             : content.tokenStaked[1]
         )
       ) {
@@ -598,11 +585,7 @@ useEffect(()=>{
         GButtonClicked(`max_button for ${input}`,content.deposit,"v2")
         setDepositTokenValue(content.availableToken);
       } else if (input === "unstake") {
-        setUnstakeToken(
-          content.deposit === "RGP"
-            ? content.tokensStaked[1]
-            : content.tokenStaked[1]
-        );
+        setUnstakeToken(content.tokenStaked[1]);
       }
     } catch (e) {
       console.log(
@@ -626,7 +609,7 @@ useEffect(()=>{
       if (account) {
         if (val === "RGP" && Number(content.id) === 1) {
           await RGPUnstake(val);
-        } else if (val === "RGP" && Number(content.id) === 13) {
+        } else if (val === "RGP" && content.id === "special") {
           await RGPUnstakeV2(val);
         } else {
           tokensWithdrawal(content.id,val);
@@ -789,7 +772,7 @@ useEffect(()=>{
               })
             );
           }
-        } else if (id === 10793) {
+        } else if (id === "special") {
           const specialPool = await RGPSpecialPool2(
             RGPSPECIALPOOLADDRESSES2[chainId as number],
             library
@@ -1046,7 +1029,7 @@ useEffect(()=>{
       if (account) {
         if (val === "RGP" && Number(content.id) === 1) {
           await RGPuseStake();
-        } else if (val === "RGP" && Number(content.id) === 13) {
+        } else if (val === "RGP" && content.id=== "special") {
           await RGPuseStakeV2();
         } else {
           LPDeposit(content.id,val);
@@ -1147,7 +1130,6 @@ useEffect(()=>{
         await fetchTransactionData(data);
         GFarmingSuccessTransaction("special pool", "stake", "RGP","v2") //122
       
-      refreshSpecialData()
         
         dispatch(
           setOpenModal({
@@ -1155,6 +1137,8 @@ useEffect(()=>{
             message: `Successfully staked ${depositTokenValue} RGP `,
           })
         );
+        
+      // refreshSpecialData()
         // callRefreshFarm(confirmations, status);
         setReload(true); 
       } catch (error:any) {
@@ -1206,7 +1190,6 @@ useEffect(()=>{
                 : ethers.utils.parseUnits(format3, 9).toString(),
           }
         );
-        const { confirmations, status } = await fetchTransactionData(data);
         GFarmingSuccessTransaction("special pool", "unstake", "RGP","v1")
         dispatch(
           setOpenModal({
@@ -1215,6 +1198,7 @@ useEffect(()=>{
           })
         );
         refreshSpecialData()
+        // setReload(true)
         // dispatch the getTokenStaked action from here when data changes
         //  callRefreshFarm(confirmations, status);
       } catch (e:any) {
@@ -1274,8 +1258,6 @@ useEffect(()=>{
         );
         
         refreshSpecialData()
-        // dispatch the getTokenStaked action from here when data changes
-        //  callRefreshFarm(confirmations, status);
       } catch (error:any) {
         GFarmingFailedTransaction("special pool", "unstake", error.message, "RGP","v2")
         dispatch(
@@ -1418,16 +1400,16 @@ useEffect(()=>{
     <Button
       my='2'
       mx='auto'
-      color='rgba(190, 190, 190, 1)'
+      color="#FFF"
       width='100%'
-      background='rgba(64, 186, 213, 0.15)'
+      background="#319EF6"
       cursor='pointer'
       border='none'
       borderRadius='0px'
       padding='10px'
       height='50px'
       fontSize='16px'
-      _hover={{ background: "rgba(64, 186, 213, 0.15)" }}
+      _hover={{ background: '#319df677' }}
       onClick={() => {
         GButtonIntialized("approval",content.deposit,"v2")
         approveLPToken(LPToken)}}
@@ -1519,11 +1501,11 @@ useEffect(()=>{
                     >
                       <Tooltip
                         hasArrow
-                        label={content.tokensStaked[1]}
+                        label={content.tokenStaked[1]}
                         bg='gray.300'
                         color='black'
                       >
-                        {parseFloat(content.tokensStaked[1]).toFixed(4)}
+                        {parseFloat(content.tokenStaked[1]).toFixed(4)}
                       </Tooltip>
                     </Text>
                     <Text
@@ -1547,7 +1529,7 @@ useEffect(()=>{
                       disabled={
                         approveValueForRGP &&
                         approveValueForOtherToken &&
-                        parseFloat(content.tokensStaked[1]) <= 0
+                        parseFloat(content.tokenStaked[1]) <= 0
                       }
                       padding='10px 40px'
                       cursor='pointer'
@@ -1634,7 +1616,7 @@ useEffect(()=>{
                       disabled={parseFloat(content.RGPEarned) <= 0}
                       onClick={() => {
                         harvestTokens(
-                          content.deposit === "RGP" ? content.pId : content.id
+                        content.id
                         );
                       }}
                       className={"harvest"}
@@ -1673,7 +1655,7 @@ useEffect(()=>{
                       disabled={parseFloat(content.RGPEarned) <= 0}
                       onClick={() => {
                         harvestTokens(
-                          content.deposit === "RGP" ? content.pId : content.id
+                          content.id
                         );
                       }}
                       className={"harvest"}
@@ -1763,7 +1745,7 @@ useEffect(()=>{
                         label={
                           content?.type !== "RGP"
                             ? content?.tokenStaked[1]
-                            : content.tokensStaked[1]
+                            : content.tokenStaked[1]
                         }
                         bg='gray.300'
                         color='black'
@@ -1771,7 +1753,7 @@ useEffect(()=>{
                         {parseFloat(
                           content.type !== "RGP"
                             ? content?.tokenStaked[1]
-                            : content.tokensStaked[1]
+                            : content.tokenStaked[1]
                         ).toFixed(4)}
                       </Tooltip>
                     </Text>
@@ -1795,11 +1777,7 @@ useEffect(()=>{
                       disabled={
                         approveValueForRGP &&
                         approveValueForOtherToken &&
-                        parseFloat(
-                          content.type !== "RGP"
-                            ? content.tokenStaked[1]
-                            : content.tokensStaked[1]
-                        ) <= 0
+                        parseFloat(content.tokenStaked[1]) <= 0
                       }
                       padding='10px 40px'
                       cursor='pointer'
@@ -1885,7 +1863,7 @@ useEffect(()=>{
                       disabled={parseFloat(content.RGPEarned) <= 0}
                       onClick={() => {
                         harvestTokens(
-                          content.deposit === "RGP" ? content.pId : content.id
+                         content.id
                         );
                       }}
                       className={"harvest"}
@@ -1923,9 +1901,7 @@ useEffect(()=>{
                       _hover={{ color: "white" }}
                       disabled={parseFloat(content.RGPEarned) <= 0}
                       onClick={() => {
-                        harvestTokens(
-                          content.deposit === "RGP" ? content.pId : content.id
-                        );
+                        harvestTokens(content.id);
                       }}
                       className={"harvest"}
                     >
@@ -2128,7 +2104,6 @@ useEffect(()=>{
                   <Box mt={4}>
                     {depositInputHasError || refAddressHasError ? (
                       <>
-                        {/* Show Error Button */}
                         <Button
                           my='2'
                           variant='brand'
@@ -2191,7 +2166,7 @@ useEffect(()=>{
                             fontSize='16px'
                             _hover={
                               depositValue === "Confirm"
-                                ? { background: "rgba(64, 186, 213, 0.15)" }
+                                ? { background: "#299efd8d" }
                                 : { background: "#444159" }
                             }
                             onClick={() => confirmDeposit(content.deposit)}
@@ -2219,7 +2194,7 @@ useEffect(()=>{
                         )}
                       </>
                     )}
-                  </Box>
+                  </Box> 
                 </ModalBody>
               </ModalContent>
             </Modal>
@@ -2423,7 +2398,7 @@ useEffect(()=>{
                 <Text color='gray.400' align='right' mb={3}>
                   {`${
                     content.type === "RGP"
-                      ? content.tokensStaked[1]
+                      ? content.tokenStaked[1]
                       : content.tokenStaked[1]
                   }
                ${content.deposit} Staked `}

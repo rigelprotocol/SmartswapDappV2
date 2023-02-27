@@ -4,9 +4,6 @@ export const updateFarms = createAction<{ value: any[] }>(
   "newfarm/updateFarms"
 );
 
-export const updateSpecialPool = createAction<{ value: any[] }>(
-  "newfarm/updateSpecialPool"
-);
 
 export const updateLoadingState = createAction<{ value: boolean }>(
   "newfarm/updateLoadingState"
@@ -15,6 +12,9 @@ export const updateLoadingState = createAction<{ value: boolean }>(
 export const updateChainId = createAction<{ value: number }>(
   "newfarm/updateChainId"
 );
+
+export const updateFarmAllowances = createAction<any[]>('newfarm/updateFarmAllowances');
+export const updateFarmProductAllowances = createAction<any[]>('newfarm/updateFarmProductAllowances');
 
 export const updateAllowance = createAction<{
   value: any;

@@ -14,7 +14,7 @@ import Joyride from "react-joyride";
 import { tourSteps } from "../../components/Onboarding/LiquiditySteps";
 import WelcomeModal from "../../components/Onboarding/WelcomeModal";
 import { useUpdateUserGasPreference } from "../../state/gas/hooks";
-import { clearSearchResult } from "../../state/farming/action";
+import { clearSearchResult } from "../../state/newFarming/action";
 import { useDispatch } from "react-redux";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import { GClickedAddLiquidity, GClickedAddNewLiquidity } from "../../components/G-analytics/gLiquidity";

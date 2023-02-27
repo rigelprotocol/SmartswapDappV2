@@ -6,7 +6,7 @@ export const contents = [
     ARYValue: "30,000",
     earn: "RGP",
     lpSymbol: "RGB",
-    tokensStaked: ["RGP", "2"],
+    tokenStaked: ["RGP", "2"],
     availableToken: "3.747948393",
   },
   {
@@ -16,7 +16,7 @@ export const contents = [
     ARYValue: "30,000",
     earn: "RGP",
     lpSymbol: "RGB - BNB",
-    tokensStaked: ["RGP-BNB", "3"],
+    tokenStaked: ["RGP-BNB", "3"],
     availableToken: "3.747948393",
   },
   {
@@ -26,7 +26,7 @@ export const contents = [
     ARYValue: "30,000",
     earn: "RGP",
     lpSymbol: "RBG - BUSD",
-    tokensStaked: ["RGP-BUSD", "0"],
+    tokenStaked: ["RGP-BUSD", "0"],
     availableToken: "3.747948393",
   },
   {
@@ -36,7 +36,7 @@ export const contents = [
     ARYValue: "30,000",
     earn: "RGP",
     lpSymbol: "RGP - ETH",
-    tokensStaked: ["RGP-ETH", "0"],
+    tokenStaked: ["RGP-ETH", "0"],
     availableToken: "3.747948393",
   },
   {
@@ -46,7 +46,7 @@ export const contents = [
     ARYValue: "30,000",
     earn: "RGP",
     lpSymbol: "RGP - AXD",
-    tokensStaked: ["RGP-AXD", "0"],
+    tokenStaked: ["RGP-AXD", "0"],
     availableToken: "3.747948393",
   },
   {
@@ -56,7 +56,7 @@ export const contents = [
     ARYValue: "30,000",
     earn: "RGP",
     lpSymbol: "RGP - POL",
-    tokensStaked: ["RGP-POL", "0"],
+    tokenStaked: ["RGP-POL", "0"],
     availableToken: "3.747948393",
   },
 ];

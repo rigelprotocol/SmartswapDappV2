@@ -6,10 +6,12 @@ import {
     updateFilterResult,
     clearAllFarms,
 } from "./action";
-import { useFarms } from "../farm/hooks";
+import { useFarmData } from "../newfarm/hooks";
+import { useFarms } from "../newfarm/hooks";
 import { useNewLPData } from "../LPFarm/hooks";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
 import { useWeb3React } from "@web3-react/core";
+import { RootState } from "..";
 
 interface FilterFarms {
     newestToOldest: boolean;
@@ -20,12 +22,12 @@ interface FilterFarms {
 }
 
 export const useSearch = () => {
-    const farms = useSelector((state: State) => state.newFarming.filterResult);
+    const farms = useSelector((state: RootState) => state.newFarming.filterResult);
     return farms;
 };
 
 export const useSearchResults = () => {
-    const farms = useSelector((state: State) => state.newFarming);
+    const farms = useSelector((state: RootState) => state.newFarming);
     return farms;
 };
 
