@@ -231,8 +231,7 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
     address: string,
     rgpPrice: number | undefined,
     pid?: number,
-    reward?: number,
-    Lp?: boolean
+    reward?: number
   ) => {
     try {
       const masterchef = await MasterChefV2Contract(
@@ -290,18 +289,6 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
           parseFloat(totalAllocPoint.toString())) *
         reward;
       const APY = (rgpPrice * poolReward * 365 * 100) / totalLiquidity;
-      // const [tokenEarned, userInfo, FarmTokenBalance, allowance] =
-      //   await Promise.all([
-      //     masterchef.pendingRigel(pid, account),
-      //     masterchef.userInfo(pid, account),
-      //     LPInstance.balanceOf(account),
-      //     LPInstance.allowance(
-      //       account,
-      //       MASTERCHEFV2ADDRESSES[ChainId as number]
-      //     ),
-      //   ]);
-      // const tokenStaked = await userInfo.amount;
-
       return {
         id: pid,
         img: "rgp.svg",
@@ -315,13 +302,6 @@ export const useGetFarmData = (reload?: boolean, setReload?: any) => {
         totalLiquidity,
         APY,
         allocPoint: parseFloat(allocPoint.toString()),
-        // tokenStaked: [
-        //   `${await formatSymbol(symbol0)}-${await formatSymbol(symbol1)}`,
-        //   ethers.utils.formatEther(tokenStaked.toString()),
-        // ],
-        // RGPEarned: ethers.utils.formatEther(tokenEarned.toString()),
-        // availableToken: ethers.utils.formatEther(FarmTokenBalance.toString()),
-        // poolAllowance: ethers.utils.formatEther(allowance.toString()),
         address: address,
       };
     } catch (err) {

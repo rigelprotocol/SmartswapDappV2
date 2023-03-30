@@ -15,6 +15,7 @@
     "@ethersproject/abi": "^5.5.0",
     "@ethersproject/address": "^5.5.0",
     "@ethersproject/providers": "^5.4.5",
+    "@indexed-finance/multicall": "^2.0.0",
     "@metamask/detect-provider": "^1.2.0",
     "@reduxjs/toolkit": "^1.6.1",
     "@rigelprotocol_01/default-token-list": "2.0.1",

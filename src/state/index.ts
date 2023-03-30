@@ -37,10 +37,8 @@ const store = configureStore({
     farms,
     gas,
     farming,
-    newfarm,
-    lpfarm,
-    newFarming,
-    chainId
+
+    chainId,
   },
   middleware: [
     ...getDefaultMiddleware({ thunk: true }),

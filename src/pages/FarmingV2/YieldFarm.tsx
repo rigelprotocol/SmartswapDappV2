@@ -87,6 +87,8 @@ const YieldFarm = ({
     selectedField === farmSection.NEW_LP ||
     selectedField === farmSection.SECOND_NEW_LP;
 
+  console.log("selected", selected);
+
   // useEffect(() => {
   //   const getSingleFarm = async () => {
   //     await content2;
@@ -102,7 +104,7 @@ const YieldFarm = ({
   // }, [symbolName, params]);
 
   const totalLiquidityValue = () => {
-    if (farmDataLoading) return <Spinner speed="0.65s" color="#333333" />;
+    if (farmDataLoading) return <Spinner speed='0.65s' color='#333333' />;
 
     if (content.totalLiquidity) {
       return ` ${formatAmount(content.totalLiquidity)}`;
@@ -115,9 +117,9 @@ const YieldFarm = ({
     <>
       <Flex
         ref={myRef}
-        justifyContent="space-between"
+        justifyContent='space-between'
         flexDirection={["column", "column", "row"]}
-        border="1px solid #DEE5ED"
+        border='1px solid #DEE5ED'
         background={
           mode === LIGHT_THEME
             ? "#FFFFFF !important"
@@ -139,22 +141,22 @@ const YieldFarm = ({
             ? "#213345 !important"
             : "#F2F5F8 !important"
         }
-        padding="15px 20px"
+        padding='15px 20px'
         width={["100%", "100%", "100%"]}
       >
-        <Flex justifyContent="space-between" width="100%">
+        <Flex justifyContent='space-between' width='100%'>
           <Box
-            marginTop="15px"
-            align="left"
+            marginTop='15px'
+            align='left'
             display={["block", "block", "none"]}
-            opacity="0.5"
+            opacity='0.5'
           >
             Deposit
           </Box>
           <Flex
             justifyContent={"space-between"}
-            marginTop="15px"
-            align="left"
+            marginTop='15px'
+            align='left'
             alignItems={"center"}
           >
             {content?.type === "RGP" ? content.deposit : content2?.deposit}
@@ -189,62 +191,62 @@ const YieldFarm = ({
             ) : null}
           </Flex>
         </Flex>
-        <Flex justifyContent="space-between" width="100%">
+        <Flex justifyContent='space-between' width='100%'>
           <Box
-            marginTop="15px"
-            align="left"
+            marginTop='15px'
+            align='left'
             display={["block", "block", "none"]}
-            opacity="0.5"
+            opacity='0.5'
           >
             Earn
           </Box>
           <Flex
-            justifyContent="space-between"
-            marginTop="15px"
-            paddingLeft="30px"
+            justifyContent='space-between'
+            marginTop='15px'
+            paddingLeft='30px'
             // align='left'
-            alignItems="center"
+            alignItems='center'
           >
             {/* <RGPIcon />  */}
-            <Img w="24px" src={Darklogo} />{" "}
-            <Text marginLeft="10px">
+            <Img w='24px' src={Darklogo} />{" "}
+            <Text marginLeft='10px'>
               {content?.type === "RGP" ? content.earn : content2?.earn}
             </Text>
           </Flex>
         </Flex>
-        <Flex justifyContent="space-between" width="100%">
+        <Flex justifyContent='space-between' width='100%'>
           <Box
-            marginTop="15px"
-            align="left"
+            marginTop='15px'
+            align='left'
             display={["block", "block", "none"]}
-            opacity="0.5"
+            opacity='0.5'
           >
             APY
           </Box>
-          <Box marginTop="15px" paddingLeft="50px" align="left">
+          <Box marginTop='15px' paddingLeft='50px' align='left'>
             {content?.type === "RGP"
               ? `${formatAmount(content.ARYValue)}%`
               : `${formatAmount(content2?.APY.toFixed(2))}%`}
           </Box>
         </Flex>
         <Flex
-          justifyContent="space-between"
-          width="100%"
+          justifyContent='space-between'
+          width='100%'
           marginBottom={["10px", "10px", "0"]}
         >
           <Box
-            marginTop="15px"
-            align="left"
+            marginTop='15px'
+            align='left'
             display={["block", "block", "none"]}
-            opacity="0.5"
+            opacity='0.5'
           >
             Total Liquidity
           </Box>
           <Box
-            marginTop="15px"
-            paddingLeft="65px"
-            align="right"
-            alignItems="center"
+            marginTop='15px'
+            paddingLeft='65px'
+            align='right'
+            alignItems='center'
           >
             ${" "}
             {content?.type === "RGP"
@@ -254,33 +256,33 @@ const YieldFarm = ({
         </Flex>
         {selected && (
           <Flex
-            justifyContent="space-between"
-            width="100%"
+            justifyContent='space-between'
+            width='100%'
             marginBottom={["10px", "10px", "0"]}
           >
             <Box
-              marginTop="15px"
-              align="left"
+              marginTop='15px'
+              align='left'
               display={["block", "block", "none"]}
-              opacity="0.5"
+              opacity='0.5'
             >
               LP Locked
             </Box>
             <Box
-              marginTop="15px"
-              paddingLeft="65px"
-              align="right"
-              alignItems="center"
+              marginTop='15px'
+              paddingLeft='65px'
+              align='right'
+              alignItems='center'
             >
               {content2?.LPLocked}
             </Box>
           </Flex>
         )}
-        <Box align="right" mt={["4", "0"]} ml="2">
+        <Box align='right' mt={["4", "0"]} ml='2'>
           <Button
             w={["100%", "100%", "146px"]}
-            h="40px"
-            border="2px solid #319EF6"
+            h='40px'
+            border='2px solid #319EF6'
             background={
               mode === LIGHT_THEME && active
                 ? "#FFFFFF !important"
@@ -314,8 +316,8 @@ const YieldFarm = ({
                 ? "#4CAFFF !important"
                 : "#319EF6 !important"
             }
-            borderRadius="6px"
-            mb="4"
+            borderRadius='6px'
+            mb='4'
             _hover={{ color: "#423a85" }}
             onClick={() => {
               if (!showYieldfarm) {
