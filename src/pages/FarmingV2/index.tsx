@@ -70,11 +70,9 @@ import {
   updateSearchResult,
   updateSelectedField,
 } from "../../state/farming/action";
-import { useGetFarmData } from "../../utils/hooks/useGetFarmData";
-import { useGetNewFarms } from "../../utils/hooks/useGetNewFarms";
+// import { useGetFarmData } from "../../utils/hooks/useGetFarmData";
+// import { useGetNewFarms } from "../../utils/hooks/useGetNewFarms";
 
-import { useFarmData } from "../../state/newfarm/hooks";
-import { useNewLPData } from "../../state/LPFarm/hooks";
 import {
   GFarmingClickListYourProject,
   GFarmingInputSearchFarm,
@@ -83,6 +81,12 @@ import {
 import { ZERO_ADDRESS } from "../../constants";
 import { State } from "../../state/types";
 import { clearAllFarms } from "../../state/newFarming/action";
+import {
+  useFetchFarm,
+  useFetchQuickSwap,
+  useFetchStable,
+  useSpecialPool,
+} from "../../utils/hooks/useFarm";
 
 export const BIG_TEN = new bigNumber(10);
 export const V1 = "v1";
@@ -159,17 +163,15 @@ export function Index() {
   );
 
   // 👇 look here
-  const previousKeyword = usePrevious(keyword);
-
-  const filter = useSearch();
-  useClearFarm();
   const selector = useSelector((state: State) => state.farming.selectedField);
 
-  const [searchedDataResult] = useFarmSearch({
-    keyword,
-    previousKeyword,
-    searchData: filter,
-  });
+  const farms = useSelector((state: any) => state.farms);
+
+  const { loading: LpfarmLoading } = useFetchFarm();
+  const { loading: quickswapLoading } = useFetchQuickSwap();
+  const { loading: stableFarmLoading } = useFetchStable();
+  useSpecialPool();
+
   useEffect(() => {
     if (location && location.includes("RGPv2")) {
       // setSelected(STAKING);
@@ -270,21 +272,25 @@ export function Index() {
   const dispatch = useDispatch();
   let match = useRouteMatch("/farm/RGPv2");
   const FarmData = useFarms();
-  const { farmdata, loadingState } = useGetFarmData();
-  const { LPData, loadingLP } = useGetNewFarms(
-    selected === farmSection.SECOND_NEW_LP ? 2 : 1
-  );
+  // const { farmdata, loadingState } = useGetFarmData();
+  // const { LPData, loadingLP } = useGetNewFarms(
+  //   selected === farmSection.SECOND_NEW_LP ? 2 : 1
+  // );
+
+  const loadingState = false;
+  const loadingLP = false;
+
   const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
   const { search } = useLocation();
 
-  const data = useFarmData();
-  const newLP = useNewLPData();
-  const farms = useSelector((state) => state.farming.content);
-  const recentFarms = useSelector((state) => state.newFarming.content);
-  const searchSection = useSelector((state) => state.farming);
-  const newSearchSection = useSelector((state) => state.newFarming);
+  // const data = useFarmData();
+  // const newLP = useNewLPData();
+  // const farms = useSelector((state) => state.farming.content);
+  // const recentFarms = useSelector((state) => state.newFarming.content);
+  // const searchSection = useSelector((state) => state.farming);
+  // const newSearchSection = useSelector((state) => state.newFarming);
 
-  const { specialPool } = useSelector((state) => state.newfarm);
+  // const { specialPool } = useSelector((state) => state.newfarm);
 
   useEffect(() => {
     dispatch(clearAllFarms());
@@ -299,17 +305,17 @@ export function Index() {
     setKeyword("");
   }, [ChainId]);
 
-  const handleUpdateSearch = useCallback((searchedDataResult) => {
-    dispatch(
-      updateSearchResult({
-        farmData: searchedDataResult,
-      })
-    );
-  }, []);
+  // const handleUpdateSearch = useCallback((searchedDataResult) => {
+  //   dispatch(
+  //     updateSearchResult({
+  //       farmData: searchedDataResult,
+  //     })
+  //   );
+  // }, []);
 
-  useMemo(() => {
-    handleUpdateSearch(searchedDataResult);
-  }, [searchedDataResult]);
+  // useMemo(() => {
+  //   handleUpdateSearch(searchedDataResult);
+  // }, [searchedDataResult]);
 
   const [Balance, Symbol] = useNativeBalance();
   const wallet = {
@@ -442,6 +448,15 @@ export function Index() {
   }
 
   return (
+    // <YieldFarm
+    //                         farmDataLoading={farmDataLoading}
+    //                         content2={content}
+    //                         key={content?.id}
+    //                         refreshSpecialData={refreshSpecialData}
+    //                         section={"normal"}
+    //                         wallet={wallet}
+    //                         LoadingState={loadingState}
+    //                       />
     <Box>
       <Joyride
         steps={steps}
@@ -466,7 +481,7 @@ export function Index() {
           setWelcomeModal((state) => !state);
         }}
         textHeader={"Welcome to SmartSwap Farming"}
-        welcomeText="With farming, you can maximize the rate of return on capital and generate rewards on your cryptocurrency holdings."
+        welcomeText='With farming, you can maximize the rate of return on capital and generate rewards on your cryptocurrency holdings.'
       />
 
       {!showAlert || tabIndex === 0 ? null : (tabIndex === 1 &&
@@ -474,35 +489,35 @@ export function Index() {
         tabIndex === 2 ? (
         <Box mx={[5, 10, 15, 20]} my={4}>
           <Alert
-            color="#FFFFFF"
+            color='#FFFFFF'
             background={mode === DARK_THEME ? "#319EF6" : "#319EF6"}
-            borderRadius="8px"
+            borderRadius='8px'
           >
             <AlertSvg />
             <AlertDescription
-              fontFamily="Inter"
+              fontFamily='Inter'
               fontSize={{ base: "12px", md: "14px", lg: "16px" }}
-              fontWeight="500"
-              lineHeight="24px"
-              letterSpacing="0em"
-              textAlign="left"
-              padding="8px"
+              fontWeight='500'
+              lineHeight='24px'
+              letterSpacing='0em'
+              textAlign='left'
+              padding='8px'
             >
               {chainId && library ? (
-                <Box display="flex">
+                <Box display='flex'>
                   Your referral link is {hostName}?ref=
                   {shortenCode(referralCode)}
                   <Tooltip
                     hasArrow
                     label={hasCopied ? "Copied!" : "Copy"}
-                    bg="gray.300"
-                    color="black"
+                    bg='gray.300'
+                    color='black'
                   >
                     <IconButton
                       onClick={onCopy}
-                      aria-label="Copy referral link"
+                      aria-label='Copy referral link'
                       icon={<CopyIcon />}
-                      colorScheme="ghost"
+                      colorScheme='ghost'
                       pl={3}
                     />
                   </Tooltip>
@@ -514,1336 +529,19 @@ export function Index() {
             </AlertDescription>
 
             <CloseButton
-              position="absolute"
-              margin="2px"
-              height="14px"
-              width="14px"
-              background="#319EF6"
-              color="#fff"
-              right="20px"
-              textAign="center"
+              position='absolute'
+              margin='2px'
+              height='14px'
+              width='14px'
+              background='#319EF6'
+              color='#fff'
+              right='20px'
+              textAign='center'
               onClick={handleAlert}
             />
           </Alert>
         </Box>
       ) : null}
-
-      {/*<Tabs*/}
-      {/*  defaultIndex={match ? STAKING_INDEX : LIQUIDITY_INDEX}*/}
-      {/*  index={tabIndex}*/}
-      {/*  onChange={handleTabsChange}*/}
-      {/*  // isManual*/}
-      {/*  variant="enclosed"*/}
-      {/*  mx={[5, 10, 15, 20]}*/}
-      {/*  my={4}*/}
-      {/*  isFitted={isMobileDevice}*/}
-      {/*>*/}
-      {/*  <Flex justifyContent="space-between" mt={10}>*/}
-      {/*    <TabList*/}
-      {/*      h={isMobileDevice ? undefined : 14}*/}
-      {/*      borderBottom={0}*/}
-      {/*      width={"100%"}*/}
-      {/*    >*/}
-      {/*      <Tab*/}
-      {/*        display="flex"*/}
-      {/*        flex-direction="row"*/}
-      {/*        justify-content="center"*/}
-      {/*        align-items="center"*/}
-      {/*        flexWrap={isMobileDevice ? "wrap" : undefined}*/}
-      {/*        padding={isMobileDevice ? "2px 4px" : undefined}*/}
-      {/*        border="1px solid #DEE5ED"*/}
-      {/*        background={*/}
-      {/*          selected === farmSection.LIQUIDITY*/}
-      {/*            ? useSelectedBackgroundColor*/}
-      {/*            : useNotSelectedBackgroundColor*/}
-      {/*        }*/}
-      {/*        color={useSelectedColor}*/}
-      {/*        value={farmSection.LIQUIDITY}*/}
-      {/*        fontSize={isMobileDevice ? "12px" : "14px"}*/}
-      {/*        onClick={() => handleSelect(farmSection.LIQUIDITY)}*/}
-      {/*        borderRadius={isMobileDevice ? "10px 0px 0px 10px" : 0}*/}
-      {/*      >*/}
-      {/*        <Text className={"liquidity"} color={titleColor}>*/}
-      {/*          Liquidity Pools*/}
-      {/*        </Text>*/}
-      {/*        {Number(ChainId) === Number(SupportedChainId.POLYGON) ||*/}
-      {/*        Number(ChainId) === Number(SupportedChainId.POLYGONTEST) ||*/}
-      {/*        Number(ChainId) ===*/}
-      {/*          Number(SupportedChainId.OASISMAINNET) ? null : (*/}
-      {/*          <Select*/}
-      {/*            size={isMobileDevice ? undefined : "sm"}*/}
-      {/*            borderColor={*/}
-      {/*              selected === farmSection.LIQUIDITY*/}
-      {/*                ? useNotSelectedBorderColor*/}
-      {/*                : useSelectedBorderColor*/}
-      {/*            }*/}
-      {/*            color={*/}
-      {/*              selected === farmSection.LIQUIDITY*/}
-      {/*                ? useNotSelectedTextColor*/}
-      {/*                : useSelectedTextColor*/}
-      {/*            }*/}
-      {/*            onChange={handleLiquidityTab}*/}
-      {/*            background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}*/}
-      {/*            cursor="pointer"*/}
-      {/*            border=" 1px solid #008DFF"*/}
-      {/*            box-sizing="border-box"*/}
-      {/*            borderRadius="50px"*/}
-      {/*            width={isMobileDevice ? undefined : "fit-content"}*/}
-      {/*            flex="none"*/}
-      {/*            order="1"*/}
-      {/*            onClick={(e) => e.stopPropagation()}*/}
-      {/*            flex-grow="0"*/}
-      {/*            margin={isMobileDevice ? "5px 12px" : "10px 16px"}*/}
-      {/*          >*/}
-      {/*            <option value={0}>V2</option>*/}
-      {/*            <option value={2}>V1</option>*/}
-      {/*          </Select>*/}
-      {/*        )}*/}
-      {/*      </Tab>*/}
-      {/*      <Tab*/}
-      {/*        display="flex"*/}
-      {/*        flex-direction="row"*/}
-      {/*        justify-content="center"*/}
-      {/*        align-items="center"*/}
-      {/*        flexWrap={isMobileDevice ? "wrap" : undefined}*/}
-      {/*        padding={isMobileDevice ? "4px 12px" : undefined}*/}
-      {/*        border="1px solid #DEE5ED"*/}
-      {/*        borderRadius={0}*/}
-      {/*        // border={`1px solid ${borderColor}`}*/}
-      {/*        background={*/}
-      {/*          selected === farmSection.STAKING*/}
-      {/*            ? useSelectedBackgroundColor*/}
-      {/*            : useNotSelectedBackgroundColor*/}
-      {/*        }*/}
-      {/*        color={useSelectedColor}*/}
-      {/*        fontSize={isMobileDevice ? "12px" : "14px"}*/}
-      {/*        onClick={() => {*/}
-      {/*          handleSelect(farmSection.STAKING);*/}
-      {/*        }}*/}
-      {/*      >*/}
-      {/*        <Text className={"staking"} color={titleColor}>*/}
-      {/*          Staking*/}
-      {/*        </Text>*/}
-      {/*        {Number(ChainId) === Number(SupportedChainId.POLYGON) ||*/}
-      {/*        Number(ChainId) === Number(SupportedChainId.POLYGONTEST) ||*/}
-      {/*        Number(ChainId) ===*/}
-      {/*          Number(SupportedChainId.OASISMAINNET) ? null : (*/}
-      {/*          <Select*/}
-      {/*            size={isMobileDevice ? undefined : "sm"}*/}
-      {/*            borderColor={*/}
-      {/*              selected === farmSection.LIQUIDITY*/}
-      {/*                ? useNotSelectedBorderColor*/}
-      {/*                : useSelectedBorderColor*/}
-      {/*            }*/}
-      {/*            color={*/}
-      {/*              selected === farmSection.LIQUIDITY*/}
-      {/*                ? useNotSelectedTextColor*/}
-      {/*                : useSelectedTextColor*/}
-      {/*            }*/}
-      {/*            onChange={handleStakingTab}*/}
-      {/*            background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}*/}
-      {/*            onClick={(e) => e.stopPropagation()}*/}
-      {/*            border=" 1px solid #008DFF"*/}
-      {/*            box-sizing="border-box"*/}
-      {/*            borderRadius="50px"*/}
-      {/*            width={isMobileDevice ? undefined : "fit-content"}*/}
-      {/*            flex="none"*/}
-      {/*            order="1"*/}
-      {/*            flex-grow="0"*/}
-      {/*            margin={isMobileDevice ? "5px 12px" : "10px 16px"}*/}
-      {/*          >*/}
-      {/*            <option value={1}>V2</option>*/}
-      {/*            <option value={3}>V1</option>*/}
-      {/*          </Select>*/}
-      {/*        )}*/}
-      {/*      </Tab>*/}
-      {/*      {Number(ChainId) === Number(SupportedChainId.OASISTEST) ||*/}
-      {/*      Number(ChainId) === Number(SupportedChainId.OASISMAINNET) ? null : (*/}
-      {/*        <Tab*/}
-      {/*          border="1px solid #DEE5ED"*/}
-      {/*          borderRadius={0}*/}
-      {/*          background={*/}
-      {/*            selected === farmSection.PRODUCT_FARM*/}
-      {/*              ? useSelectedBackgroundColor*/}
-      {/*              : useNotSelectedBackgroundColor*/}
-      {/*          }*/}
-      {/*          color={useSelectedColor}*/}
-      {/*          // px={5}*/}
-      {/*          // py={4}*/}
-      {/*          // minWidth={{ base: "none", md: "200px", lg: "200px" }}*/}
-      {/*          onClick={() => handleSelect(farmSection.PRODUCT_FARM)}*/}
-      {/*        >*/}
-      {/*          <Menu>*/}
-      {/*            <MenuButton*/}
-      {/*              // mr={1}*/}
-      {/*              variant="ghost"*/}
-      {/*              fontSize={isMobileDevice ? "12px" : "14px"}*/}
-      {/*              as={Button}*/}
-      {/*              whiteSpace={"wrap"}*/}
-      {/*              transition="all 0.2s"*/}
-      {/*              borderRadius="md"*/}
-      {/*              _hover={{ bg: "none" }}*/}
-      {/*              _focus={{ boxShadow: "none" }}*/}
-      {/*              rightIcon={!isMobileDevice && <ChevronDownIcon />}*/}
-      {/*            >*/}
-      {/*              Product Farm*/}
-      {/*            </MenuButton>*/}
-      {/*            <MenuList>*/}
-      {/*              <MenuItem>*/}
-      {/*                <Stack direction={"column"} spacing={0}>*/}
-      {/*                  <Text my={2}>Product Farm</Text>*/}
-      {/*                </Stack>*/}
-      {/*              </MenuItem>*/}
-      {/*              <MenuItem disabled={true} cursor="not-allowed">*/}
-      {/*                <Tooltip label="launching soon">*/}
-      {/*                  <Stack direction={"column"} spacing={0}>*/}
-      {/*                    <Text my={2} color={placeholderTextColor}>*/}
-      {/*                      Other Farm*/}
-      {/*                    </Text>*/}
-      {/*                  </Stack>*/}
-      {/*                </Tooltip>*/}
-      {/*              </MenuItem>*/}
-      {/*            </MenuList>*/}
-      {/*          </Menu>*/}
-      {/*        </Tab>*/}
-      {/*      )}*/}
-
-      {/*      {Number(ChainId) === Number(SupportedChainId.OASISTEST) ||*/}
-      {/*      Number(ChainId) === Number(SupportedChainId.OASISMAINNET) ? null : (*/}
-      {/*        <Tab*/}
-      {/*          border="1px solid #DEE5ED"*/}
-      {/*          background={*/}
-      {/*            selected === farmSection.NEW_LP ||*/}
-      {/*            selected === farmSection.SECOND_NEW_LP*/}
-      {/*              ? useSelectedBackgroundColor*/}
-      {/*              : useNotSelectedBackgroundColor*/}
-      {/*          }*/}
-      {/*          color={useSelectedColor}*/}
-      {/*          display="flex"*/}
-      {/*          flex-direction="row"*/}
-      {/*          justify-content="center"*/}
-      {/*          align-items="center"*/}
-      {/*          flexWrap={isMobileDevice ? "wrap" : undefined}*/}
-      {/*          padding={isMobileDevice ? "2px 4px" : undefined}*/}
-      {/*          fontSize={isMobileDevice ? "12px" : "14px"}*/}
-      {/*          borderRadius={isMobileDevice ? "0px 10px 10px 0px" : 0}*/}
-      {/*        >*/}
-      {/*          {isMobileDevice ? (*/}
-      {/*            <Menu>*/}
-      {/*              <MenuButton*/}
-      {/*                variant="ghost"*/}
-      {/*                fontSize={"14px"}*/}
-      {/*                as={Button}*/}
-      {/*                transition="all 0.2s"*/}
-      {/*                borderRadius="md"*/}
-      {/*                _hover={{ bg: "none" }}*/}
-      {/*                _focus={{ boxShadow: "none" }}*/}
-      {/*              >*/}
-      {/*                <HamburgerIcon w={6} h={6} color={titleColor} />*/}
-      {/*              </MenuButton>*/}
-      {/*              <MenuList>*/}
-      {/*                <MenuItem*/}
-      {/*                  onClick={() => handleSelect(farmSection.NEW_LP)}*/}
-      {/*                >*/}
-      {/*                  <Stack direction={"column"} spacing={0}>*/}
-      {/*                    <Text my={2}>*/}
-      {/*                      {Number(ChainId) ===*/}
-      {/*                        Number(SupportedChainId.POLYGONTEST) ||*/}
-      {/*                      Number(ChainId) === Number(SupportedChainId.POLYGON)*/}
-      {/*                        ? "QuickSwap"*/}
-      {/*                        : "Pancake LP"}*/}
-      {/*                    </Text>*/}
-      {/*                  </Stack>*/}
-      {/*                </MenuItem>*/}
-
-      {/*                <MenuItem*/}
-      {/*                  onClick={() => handleSelect(farmSection.SECOND_NEW_LP)}*/}
-      {/*                >*/}
-      {/*                  <Stack direction={"column"} spacing={0}>*/}
-      {/*                    <Text my={2}>Stable LP</Text>*/}
-      {/*                  </Stack>*/}
-      {/*                </MenuItem>*/}
-      {/*              </MenuList>*/}
-      {/*            </Menu>*/}
-      {/*          ) : (*/}
-      {/*            <>*/}
-      {/*              <Text color={titleColor}>New Farms</Text>*/}
-      {/*              <Select*/}
-      {/*                size={isMobileDevice ? undefined : "sm"}*/}
-      {/*                borderColor={*/}
-      {/*                  selected === farmSection.NEW_LP*/}
-      {/*                    ? useNotSelectedBorderColor*/}
-      {/*                    : useSelectedBorderColor*/}
-      {/*                }*/}
-      {/*                color={*/}
-      {/*                  selected === farmSection.NEW_LP*/}
-      {/*                    ? useNotSelectedTextColor*/}
-      {/*                    : useSelectedTextColor*/}
-      {/*                }*/}
-      {/*                onChange={handleNewFarmTab}*/}
-      {/*                background={mode === LIGHT_THEME ? "#f7f7f8" : "#15202B"}*/}
-      {/*                onClick={(e) => e.stopPropagation()}*/}
-      {/*                border=" 1px solid #008DFF"*/}
-      {/*                box-sizing="border-box"*/}
-      {/*                borderRadius="50px"*/}
-      {/*                width={isMobileDevice ? undefined : "fit-content"}*/}
-      {/*                flex="none"*/}
-      {/*                order="1"*/}
-      {/*                flex-grow="0"*/}
-      {/*                margin="10px 16px"*/}
-      {/*              >*/}
-      {/*                <option value={5}>*/}
-      {/*                  {Number(ChainId) ===*/}
-      {/*                    Number(SupportedChainId.POLYGONTEST) ||*/}
-      {/*                  Number(ChainId) === Number(SupportedChainId.POLYGON)*/}
-      {/*                    ? "QuickSwap"*/}
-      {/*                    : "Pancake LP"}*/}
-      {/*                </option>*/}
-      {/*                <option value={6}>Stable LP</option>*/}
-      {/*              </Select>*/}
-      {/*            </>*/}
-      {/*          )}*/}
-      {/*        </Tab>*/}
-      {/*      )}*/}
-      {/*    </TabList>*/}
-      {/*    <Flex*/}
-      {/*      ml={5}*/}
-      {/*      display={isMobileDevice ? "none" : undefined}*/}
-      {/*      justifyContent="space-between"*/}
-      {/*      width={"60%"}*/}
-      {/*    >*/}
-      {/*      <Filter*/}
-      {/*        oldestToNewest={oldestToNewest}*/}
-      {/*        setOldestToNewset={setOldestToNewest}*/}
-      {/*        setNewestToOldest={setNewestToOldest}*/}
-      {/*        newestToOldest={newestToOldest}*/}
-      {/*        range0={range0}*/}
-      {/*        range1={range1}*/}
-      {/*        setRange0={setRange0}*/}
-      {/*        setRange1={setRange1}*/}
-      {/*        FilterFarm={() => FilterFarm()}*/}
-      {/*        showPopOver={showPopOver}*/}
-      {/*        setShowPopover={setShowPopover}*/}
-      {/*        setSavedChanges={setSavedChanges}*/}
-      {/*      />*/}
-
-      {/*      <InputGroup w="40%" mx={"10px"}>*/}
-      {/*        <InputLeftAddon*/}
-      {/*          bgColor="transparent"*/}
-      {/*          borderColor={filterBorderColor}*/}
-      {/*          // border={0}*/}
-      {/*          w="2%"*/}
-      {/*          children={<SearchIcon mr={4} />}*/}
-      {/*        />*/}
-      {/*        <Input*/}
-      {/*          textAlign="left"*/}
-      {/*          fontSize="14px"*/}
-      {/*          placeholder="Search for farms"*/}
-      {/*          _placeholder={{ color: placeholderTextColor }}*/}
-      {/*          value={keyword}*/}
-      {/*          onChange={(e) => {*/}
-      {/*            GFarmingInputSearchFarm(true);*/}
-      {/*            const formattedValue = e.target.value.toUpperCase();*/}
-      {/*            setKeyword(formattedValue);*/}
-      {/*          }}*/}
-      {/*          borderLeft={0}*/}
-      {/*          borderColor={filterBorderColor}*/}
-      {/*          _focus={{ borderColor: "none" }}*/}
-      {/*        />*/}
-      {/*      </InputGroup>*/}
-      {/*      <Link*/}
-      {/*        href="https://docs.google.com/forms/d/e/1FAIpQLSdJGAuABrJd6d0WSprUWB140we9hGqa-IwIbonx9ZJhxN2zsg/viewform"*/}
-      {/*        // position={{ base: "relative", md: "absolute" }}*/}
-
-      {/*        _hover={{ textDecoration: "none" }}*/}
-      {/*        _active={{ textDecoration: "none" }}*/}
-      {/*        isExternal*/}
-      {/*      >*/}
-      {/*        <Button*/}
-      {/*          background="#4CAFFF"*/}
-      {/*          boxShadow="0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)"*/}
-      {/*          borderRadius="6px"*/}
-      {/*          // mx={[5, 10, 15, 20]}*/}
-      {/*          padding=" 12px 32px"*/}
-      {/*          // mt={3}*/}
-      {/*          variant="brand"*/}
-      {/*          display={isMobileDevice ? "none" : undefined}*/}
-      {/*          className={"list"}*/}
-      {/*        >*/}
-      {/*          List your project*/}
-      {/*        </Button>*/}
-      {/*      </Link>*/}
-      {/*    </Flex>*/}
-      {/*  </Flex>*/}
-
-      {/*  <TabPanels padding="0px">*/}
-      {/*    <TabPanel padding="0px">*/}
-      {/*      <Flex*/}
-      {/*        justifyContent="center"*/}
-      {/*        alignItems="center"*/}
-      {/*        rounded="lg"*/}
-      {/*        mb={4}*/}
-      {/*      >*/}
-      {/*        <Box*/}
-      {/*          bg="#120136"*/}
-      {/*          minHeight="89vh"*/}
-      {/*          w={["100%", "100%", "100%"]}*/}
-      {/*          background={*/}
-      {/*            mode === LIGHT_THEME && selected === farmSection.STAKING*/}
-      {/*              ? "#FFFFFF !important"*/}
-      {/*              : mode === DARK_THEME && selected === farmSection.LIQUIDITY*/}
-      {/*              ? "#15202B !important"*/}
-      {/*              : mode === DARK_THEME && selected === farmSection.STAKING*/}
-      {/*              ? "#15202B !important"*/}
-      {/*              : mode === LIGHT_THEME && selected === farmSection.LIQUIDITY*/}
-      {/*              ? "#FFFFFF !important"*/}
-      {/*              : "#FFFFFF !important"*/}
-      {/*          }*/}
-      {/*          rounded="lg"*/}
-      {/*        >*/}
-      {/*          <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">*/}
-      {/*            <Flex*/}
-      {/*              alignItems="center"*/}
-      {/*              justifyContent="space-between"*/}
-      {/*              px={4}*/}
-      {/*              py={4}*/}
-      {/*              background={*/}
-      {/*                mode === LIGHT_THEME && selected === farmSection.LIQUIDITY*/}
-      {/*                  ? "#F2F5F8  !important"*/}
-      {/*                  : mode === DARK_THEME &&*/}
-      {/*                    selected === farmSection.LIQUIDITY*/}
-      {/*                  ? "#213345"*/}
-      {/*                  : mode === DARK_THEME &&*/}
-      {/*                    selected === farmSection.STAKING*/}
-      {/*                  ? "#213345"*/}
-      {/*                  : mode === LIGHT_THEME &&*/}
-      {/*                    selected === farmSection.STAKING*/}
-      {/*                  ? "#F2F5F8"*/}
-      {/*                  : "#F2F5F8 !important"*/}
-      {/*              }*/}
-      {/*              color={*/}
-      {/*                mode === LIGHT_THEME && selected === farmSection.LIQUIDITY*/}
-      {/*                  ? "#333333"*/}
-      {/*                  : mode === DARK_THEME &&*/}
-      {/*                    selected === farmSection.STAKING*/}
-      {/*                  ? "#F1F5F8"*/}
-      {/*                  : mode === DARK_THEME &&*/}
-      {/*                    selected === farmSection.LIQUIDITY*/}
-      {/*                  ? "#F1F5F8"*/}
-      {/*                  : mode === LIGHT_THEME &&*/}
-      {/*                    selected === farmSection.STAKING*/}
-      {/*                  ? "#333333"*/}
-      {/*                  : "#333333"*/}
-      {/*              }*/}
-      {/*              w={["100%", "100%", "100%"]}*/}
-      {/*              align="left"*/}
-      {/*              border={*/}
-      {/*                mode === LIGHT_THEME*/}
-      {/*                  ? "1px solid #DEE5ED !important"*/}
-      {/*                  : mode === DARK_THEME*/}
-      {/*                  ? "1px solid #324D68 !important"*/}
-      {/*                  : "1px solid #324D68"*/}
-      {/*              }*/}
-      {/*              display={{ base: "none", md: "flex", lg: "flex" }}*/}
-      {/*            >*/}
-      {/*              <Text>Deposit</Text>*/}
-      {/*              <Text>Earn</Text>*/}
-      {/*              <Text>APY</Text>*/}
-      {/*              <Text>Total Liquidity</Text>*/}
-      {/*              <Text />*/}
-      {/*            </Flex>*/}
-
-      {/*            {loadingState ? (*/}
-      {/*              <Stack mt={2}>*/}
-      {/*                {new Array(5).fill("1").map((item, index) => {*/}
-      {/*                  return (*/}
-      {/*                    <Box*/}
-      {/*                      p={isMobileDevice ? "3" : "6"}*/}
-      {/*                      h={isMobileDevice ? undefined : 20}*/}
-      {/*                      border="1px"*/}
-      {/*                      borderColor={filterBorderColor}*/}
-      {/*                    >*/}
-      {/*                      <Flex*/}
-      {/*                        flexDirection={isMobileDevice ? "column" : "row"}*/}
-      {/*                        justifyContent={*/}
-      {/*                          isMobileDevice ? "center" : "space-between"*/}
-      {/*                        }*/}
-      {/*                        alignItems={isMobileDevice ? "center" : undefined}*/}
-      {/*                      >*/}
-      {/*                        {new Array(5).fill("1").map((item, index) => {*/}
-      {/*                          return (*/}
-      {/*                            <Flex*/}
-      {/*                              ml={isMobileDevice ? undefined : 2}*/}
-      {/*                              mt={isMobileDevice ? 2 : undefined}*/}
-      {/*                              flexDirection="column"*/}
-      {/*                            >*/}
-      {/*                              <Skeleton*/}
-      {/*                                background="red.300"*/}
-      {/*                                height="20px"*/}
-      {/*                                w={isMobileDevice ? "320px" : "208px"}*/}
-      {/*                              />*/}
-      {/*                            </Flex>*/}
-      {/*                          );*/}
-      {/*                        })}*/}
-      {/*                      </Flex>*/}
-      {/*                    </Box>*/}
-      {/*                  );*/}
-      {/*                })}*/}
-      {/*              </Stack>*/}
-      {/*            ) : // </Stack>*/}
-      {/*            keyword &&*/}
-      {/*              searchResults.searchResult === undefined ? null : keyword &&*/}
-      {/*              searchResults.searchResult !== undefined ? (*/}
-      {/*              searchSection.newSearchResult === undefined ? (*/}
-      {/*                searchResults.searchResult.map(*/}
-      {/*                  (content: any, index: number) => (*/}
-      {/*                    <YieldFarm*/}
-      {/*                      farmDataLoading={farmDataLoading}*/}
-      {/*                      content2={content}*/}
-      {/*                      key={content?.id}*/}
-      {/*                      section={"search"}*/}
-      {/*                      refreshSpecialData={refreshSpecialData}*/}
-      {/*                      wallet={wallet}*/}
-      {/*                      LoadingState={loadingState}*/}
-      {/*                    />*/}
-      {/*                  )*/}
-      {/*                )*/}
-      {/*              ) : (*/}
-      {/*                searchSection.newSearchResult.map(*/}
-      {/*                  (content: any, index: number) => (*/}
-      {/*                    <YieldFarm*/}
-      {/*                      farmDataLoading={farmDataLoading}*/}
-      {/*                      content2={content}*/}
-      {/*                      key={content?.id}*/}
-      {/*                      refreshSpecialData={refreshSpecialData}*/}
-      {/*                      section={"search"}*/}
-      {/*                      wallet={wallet}*/}
-      {/*                      LoadingState={loadingState}*/}
-      {/*                    />*/}
-      {/*                  )*/}
-      {/*                )*/}
-      {/*              )*/}
-      {/*            ) : searchResults.filterResult !== undefined ? (*/}
-      {/*              searchSection.newFilterResult === undefined ? (*/}
-      {/*                searchResults.filterResult.map(*/}
-      {/*                  (content: any, index: number) => (*/}
-      {/*                    <YieldFarm*/}
-      {/*                      farmDataLoading={farmDataLoading}*/}
-      {/*                      content2={content}*/}
-      {/*                      section={"filter"}*/}
-      {/*                      refreshSpecialData={refreshSpecialData}*/}
-      {/*                      key={content?.id}*/}
-      {/*                      wallet={wallet}*/}
-      {/*                      LoadingState={loadingState}*/}
-      {/*                    />*/}
-      {/*                  )*/}
-      {/*                )*/}
-      {/*              ) : (*/}
-      {/*                searchSection.newFilterResult.map(*/}
-      {/*                  (content: any, index: number) => (*/}
-      {/*                    <YieldFarm*/}
-      {/*                      farmDataLoading={farmDataLoading}*/}
-      {/*                      content2={content}*/}
-      {/*                      key={content?.id}*/}
-      {/*                      refreshSpecialData={refreshSpecialData}*/}
-      {/*                      section={"filter"}*/}
-      {/*                      wallet={wallet}*/}
-      {/*                      LoadingState={loadingState}*/}
-      {/*                    />*/}
-      {/*                  )*/}
-      {/*                )*/}
-      {/*              )*/}
-      {/*            ) : searchResults.filterResult === undefined ? (*/}
-      {/*              farms === undefined ? (*/}
-      {/*                data.contents?.map((content: any, index: number) => (*/}
-      {/*                  <YieldFarm*/}
-      {/*                    farmDataLoading={farmDataLoading}*/}
-      {/*                    content2={content}*/}
-      {/*                    key={content?.id}*/}
-      {/*                    refreshSpecialData={refreshSpecialData}*/}
-      {/*                    section={"normal"}*/}
-      {/*                    wallet={wallet}*/}
-      {/*                    LoadingState={loadingState}*/}
-      {/*                  />*/}
-      {/*                ))*/}
-      {/*              ) : (*/}
-      {/*                farms.map((content: any, index: number) => (*/}
-      {/*                  <YieldFarm*/}
-      {/*                    farmDataLoading={farmDataLoading}*/}
-      {/*                    content2={content}*/}
-      {/*                    key={content?.id}*/}
-      {/*                    refreshSpecialData={refreshSpecialData}*/}
-      {/*                    section={"normal"}*/}
-      {/*                    wallet={wallet}*/}
-      {/*                    LoadingState={loadingState}*/}
-      {/*                  />*/}
-      {/*                ))*/}
-      {/*              )*/}
-      {/*            ) : null}*/}
-      {/*          </Box>*/}
-      {/*        </Box>*/}
-      {/*      </Flex>*/}
-      {/*    </TabPanel>*/}
-      {/*    //STAKING V2 PANEL*/}
-      {/*    <TabPanel padding="0px">*/}
-      {/*      <Flex*/}
-      {/*        justifyContent="center"*/}
-      {/*        alignItems="center"*/}
-      {/*        rounded="lg"*/}
-      {/*        mb={4}*/}
-      {/*      >*/}
-      {/*        <Box*/}
-      {/*          bg="#120136"*/}
-      {/*          minHeight="89vh"*/}
-      {/*          w={["100%", "100%", "100%"]}*/}
-      {/*          background={*/}
-      {/*            mode === LIGHT_THEME*/}
-      {/*              ? "#FFFFFF !important"*/}
-      {/*              : mode === DARK_THEME*/}
-      {/*              ? "#15202B !important"*/}
-      {/*              : "#FFFFFF !important"*/}
-      {/*          }*/}
-      {/*          rounded="lg"*/}
-      {/*        >*/}
-      {/*          <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">*/}
-      {/*            <Flex*/}
-      {/*              alignItems="center"*/}
-      {/*              justifyContent="space-between"*/}
-      {/*              px={4}*/}
-      {/*              py={4}*/}
-      {/*              background={*/}
-      {/*                mode === DARK_THEME*/}
-      {/*                  ? "#213345"*/}
-      {/*                  : mode === LIGHT_THEME*/}
-      {/*                  ? "#F2F5F8"*/}
-      {/*                  : "#F2F5F8 !important"*/}
-      {/*              }*/}
-      {/*              color={*/}
-      {/*                mode === LIGHT_THEME*/}
-      {/*                  ? "#333333"*/}
-      {/*                  : mode === DARK_THEME*/}
-      {/*                  ? "#F1F5F8"*/}
-      {/*                  : "#333333"*/}
-      {/*              }*/}
-      {/*              w={["100%", "100%", "100%"]}*/}
-      {/*              align="left"*/}
-      {/*              border={*/}
-      {/*                mode === LIGHT_THEME*/}
-      {/*                  ? "1px solid #DEE5ED !important"*/}
-      {/*                  : mode === DARK_THEME*/}
-      {/*                  ? "1px solid #324D68 !important"*/}
-      {/*                  : "1px solid #324D68"*/}
-      {/*              }*/}
-      {/*              display={{ base: "none", md: "flex", lg: "flex" }}*/}
-      {/*            >*/}
-      {/*              <Text>Deposit</Text>*/}
-      {/*              <Text>Earn</Text>*/}
-      {/*              <Text>APY</Text>*/}
-      {/*              <Text>Total Liquidity</Text>*/}
-      {/*              <Text />*/}
-      {/*            </Flex>*/}
-      {/*            {specialPool?.map((content: any, index: number) => (*/}
-      {/*              <YieldFarm*/}
-      {/*                farmDataLoading={farmDataLoading}*/}
-      {/*                content={content}*/}
-      {/*                refreshSpecialData={refreshSpecialData}*/}
-      {/*                key={content.pid}*/}
-      {/*                wallet={wallet}*/}
-      {/*                URLReferrerAddress={refAddress}*/}
-      {/*              />*/}
-      {/*            ))}*/}
-      {/*          </Box>*/}
-      {/*        </Box>*/}
-      {/*      </Flex>*/}
-      {/*    </TabPanel>*/}
-      {/*    // PRODUCT FARM PANEL*/}
-      {/*    <TabPanel padding="0px">*/}
-      {/*      <Flex*/}
-      {/*        justifyContent="center"*/}
-      {/*        alignItems="center"*/}
-      {/*        rounded="lg"*/}
-      {/*        mb={4}*/}
-      {/*      >*/}
-      {/*        <Box*/}
-      {/*          bg="#120136"*/}
-      {/*          minHeight="89vh"*/}
-      {/*          w={["100%", "100%", "100%"]}*/}
-      {/*          background={*/}
-      {/*            mode === LIGHT_THEME*/}
-      {/*              ? "#FFFFFF !important"*/}
-      {/*              : mode === DARK_THEME*/}
-      {/*              ? "#15202B !important"*/}
-      {/*              : "#FFFFFF !important"*/}
-      {/*          }*/}
-      {/*          rounded="lg"*/}
-      {/*        >*/}
-      {/*          <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">*/}
-      {/*            <Grid*/}
-      {/*              templateColumns={[*/}
-      {/*                "repeat(1,1fr)",*/}
-      {/*                "repeat(1,1fr)",*/}
-      {/*                "repeat(6,1fr)",*/}
-      {/*              ]}*/}
-      {/*              px={4}*/}
-      {/*              py={4}*/}
-      {/*              background={*/}
-      {/*                mode === DARK_THEME*/}
-      {/*                  ? "#213345"*/}
-      {/*                  : mode === LIGHT_THEME*/}
-      {/*                  ? "#F2F5F8"*/}
-      {/*                  : "#F2F5F8 !important"*/}
-      {/*              }*/}
-      {/*              color={*/}
-      {/*                mode === LIGHT_THEME*/}
-      {/*                  ? "#333333"*/}
-      {/*                  : mode === DARK_THEME*/}
-      {/*                  ? "#F1F5F8"*/}
-      {/*                  : "#333333"*/}
-      {/*              }*/}
-      {/*              w={["100%", "100%", "100%"]}*/}
-      {/*              align="left"*/}
-      {/*              border={*/}
-      {/*                mode === LIGHT_THEME*/}
-      {/*                  ? "1px solid #DEE5ED !important"*/}
-      {/*                  : mode === DARK_THEME*/}
-      {/*                  ? "1px solid #324D68 !important"*/}
-      {/*                  : "1px solid #324D68"*/}
-      {/*              }*/}
-      {/*              display={isMobileDevice ? "none" : "grid"}*/}
-      {/*            >*/}
-      {/*              <Text fontSize="14px">*/}
-      {/*                {selected === farmSection.PRODUCT_FARM*/}
-      {/*                  ? "Auto-Period Product"*/}
-      {/*                  : "Deposit"}*/}
-      {/*              </Text>*/}
-      {/*              <Text ml={4} fontSize="14px">*/}
-      {/*                {selected === farmSection.PRODUCT_FARM*/}
-      {/*                  ? "Percentage Profit Share"*/}
-      {/*                  : "Earn"}*/}
-      {/*              </Text>*/}
-      {/*              <Text ml={4} fontSize="14px">*/}
-      {/*                {selected === farmSection.PRODUCT_FARM*/}
-      {/*                  ? "Profit Timeline"*/}
-      {/*                  : "APY"}*/}
-      {/*              </Text>*/}
-      {/*              <Text ml={4} fontSize="14px">*/}
-      {/*                Total Liquidity*/}
-      {/*              </Text>*/}
-      {/*              {selected === farmSection.PRODUCT_FARM && (*/}
-      {/*                <Text ml={4} fontSize="14px">*/}
-      {/*                  Estimated Total Profits*/}
-      {/*                </Text>*/}
-      {/*              )}*/}
-      {/*              <Text />*/}
-      {/*            </Grid>*/}
-      {/*            {FarmData.productFarm.map((content: any, index: number) =>*/}
-      {/*              index === 0 ? (*/}
-      {/*                <ProductFarm*/}
-      {/*                  farmDataLoading={farmDataLoading}*/}
-      {/*                  content={content}*/}
-      {/*                  key={content.pid}*/}
-      {/*                  refreshSpecialData={refreshSpecialData}*/}
-      {/*                  wallet={wallet}*/}
-      {/*                  URLReferrerAddress={refAddress}*/}
-      {/*                />*/}
-      {/*              ) : null*/}
-      {/*            )}*/}
-      {/*          </Box>*/}
-      {/*        </Box>*/}
-      {/*      </Flex>*/}
-      {/*    </TabPanel>*/}
-      {/*    <TabPanel padding="0px">*/}
-      {/*      <Flex*/}
-      {/*        justifyContent="center"*/}
-      {/*        alignItems="center"*/}
-      {/*        rounded="lg"*/}
-      {/*        mb={4}*/}
-      {/*      >*/}
-      {/*        <Box*/}
-      {/*          bg="#120136"*/}
-      {/*          minHeight="89vh"*/}
-      {/*          w={["100%", "100%", "100%"]}*/}
-      {/*          background={*/}
-      {/*            mode === LIGHT_THEME*/}
-      {/*              ? "#FFFFFF !important"*/}
-      {/*              : mode === DARK_THEME*/}
-      {/*              ? "#15202B !important"*/}
-      {/*              : "#FFFFFF !important"*/}
-      {/*          }*/}
-      {/*          rounded="lg"*/}
-      {/*        >*/}
-      {/*          <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">*/}
-      {/*            <Flex*/}
-      {/*              alignItems="center"*/}
-      {/*              justifyContent="space-between"*/}
-      {/*              px={4}*/}
-      {/*              py={4}*/}
-      {/*              background={*/}
-      {/*                mode === DARK_THEME*/}
-      {/*                  ? "#213345"*/}
-      {/*                  : mode === LIGHT_THEME*/}
-      {/*                  ? "#F2F5F8"*/}
-      {/*                  : "#F2F5F8 !important"*/}
-      {/*              }*/}
-      {/*              color={*/}
-      {/*                mode === LIGHT_THEME*/}
-      {/*                  ? "#333333"*/}
-      {/*                  : mode === DARK_THEME*/}
-      {/*                  ? "#F1F5F8"*/}
-      {/*                  : "#333333"*/}
-      {/*              }*/}
-      {/*              w={["100%", "100%", "100%"]}*/}
-      {/*              align="left"*/}
-      {/*              border={*/}
-      {/*                mode === LIGHT_THEME*/}
-      {/*                  ? "1px solid #DEE5ED !important"*/}
-      {/*                  : mode === DARK_THEME*/}
-      {/*                  ? "1px solid #324D68 !important"*/}
-      {/*                  : "1px solid #324D68"*/}
-      {/*              }*/}
-      {/*              display={{ base: "none", md: "flex", lg: "flex" }}*/}
-      {/*            >*/}
-      {/*              <Text>Deposit</Text>*/}
-      {/*              <Text>Earn</Text>*/}
-      {/*              <Text>APY</Text>*/}
-      {/*              <Text>Total Liquidity</Text>*/}
-      {/*              <Text />*/}
-      {/*            </Flex>*/}
-      {/*            {FarmData.contents.map((content: any, index: number) =>*/}
-      {/*              index === 0 ? (*/}
-      {/*                <YieldFarm*/}
-      {/*                  farmDataLoading={farmDataLoading}*/}
-      {/*                  content={content}*/}
-      {/*                  key={content.pid}*/}
-      {/*                  refreshSpecialData={refreshSpecialData}*/}
-      {/*                  wallet={wallet}*/}
-      {/*                />*/}
-      {/*              ) : null*/}
-      {/*            )}*/}
-      {/*          </Box>*/}
-      {/*        </Box>*/}
-      {/*      </Flex>*/}
-      {/*    </TabPanel>*/}
-      {/*    /!* special *!/*/}
-      {/*    <TabPanel padding="0px">*/}
-      {/*      <Flex*/}
-      {/*        justifyContent="center"*/}
-      {/*        alignItems="center"*/}
-      {/*        rounded="lg"*/}
-      {/*        mb={4}*/}
-      {/*      >*/}
-      {/*        <Box*/}
-      {/*          bg="#120136"*/}
-      {/*          minHeight="89vh"*/}
-      {/*          w={["100%", "100%", "100%"]}*/}
-      {/*          background={*/}
-      {/*            mode === LIGHT_THEME && selected === farmSection.STAKING*/}
-      {/*              ? "#FFFFFF !important"*/}
-      {/*              : mode === DARK_THEME && selected === farmSection.LIQUIDITY*/}
-      {/*              ? "#15202B !important"*/}
-      {/*              : mode === DARK_THEME && selected === farmSection.STAKING*/}
-      {/*              ? "#15202B !important"*/}
-      {/*              : mode === LIGHT_THEME && selected === farmSection.LIQUIDITY*/}
-      {/*              ? "#FFFFFF !important"*/}
-      {/*              : "#FFFFFF !important"*/}
-      {/*          }*/}
-      {/*          rounded="lg"*/}
-      {/*        >*/}
-      {/*          <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">*/}
-      {/*            <Flex*/}
-      {/*              alignItems="center"*/}
-      {/*              justifyContent="space-between"*/}
-      {/*              px={4}*/}
-      {/*              py={4}*/}
-      {/*              background={*/}
-      {/*                mode === LIGHT_THEME && selected === farmSection.LIQUIDITY*/}
-      {/*                  ? "#F2F5F8  !important"*/}
-      {/*                  : mode === DARK_THEME &&*/}
-      {/*                    selected === farmSection.LIQUIDITY*/}
-      {/*                  ? "#213345"*/}
-      {/*                  : mode === DARK_THEME &&*/}
-      {/*                    selected === farmSection.STAKING*/}
-      {/*                  ? "#213345"*/}
-      {/*                  : mode === LIGHT_THEME &&*/}
-      {/*                    selected === farmSection.STAKING*/}
-      {/*                  ? "#F2F5F8"*/}
-      {/*                  : "#F2F5F8 !important"*/}
-      {/*              }*/}
-      {/*              color={*/}
-      {/*                mode === LIGHT_THEME && selected === farmSection.LIQUIDITY*/}
-      {/*                  ? "#333333"*/}
-      {/*                  : mode === DARK_THEME &&*/}
-      {/*                    selected === farmSection.STAKING*/}
-      {/*                  ? "#F1F5F8"*/}
-      {/*                  : mode === DARK_THEME &&*/}
-      {/*                    selected === farmSection.LIQUIDITY*/}
-      {/*                  ? "#F1F5F8"*/}
-      {/*                  : mode === LIGHT_THEME &&*/}
-      {/*                    selected === farmSection.STAKING*/}
-      {/*                  ? "#333333"*/}
-      {/*                  : "#333333"*/}
-      {/*              }*/}
-      {/*              w={["100%", "100%", "100%"]}*/}
-      {/*              align="left"*/}
-      {/*              border={*/}
-      {/*                mode === LIGHT_THEME*/}
-      {/*                  ? "1px solid #DEE5ED !important"*/}
-      {/*                  : mode === DARK_THEME*/}
-      {/*                  ? "1px solid #324D68 !important"*/}
-      {/*                  : "1px solid #324D68"*/}
-      {/*              }*/}
-      {/*              display={{ base: "none", md: "flex", lg: "flex" }}*/}
-      {/*            >*/}
-      {/*              <Text>*/}
-      {/*                Please Migrate your LP token farming from farming V1 to*/}
-      {/*                this V2*/}
-      {/*              </Text>*/}
-      {/*            </Flex>*/}
-
-      {/*            <Link*/}
-      {/*              href="https://smartswapv1.rigelprotocol.com/farming"*/}
-      {/*              isExternal*/}
-      {/*            >*/}
-      {/*              <Button*/}
-      {/*                background="#4CAFFF"*/}
-      {/*                boxShadow="0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)"*/}
-      {/*                borderRadius="6px"*/}
-      {/*                mx={[5, 10, 15, 20]}*/}
-      {/*                position={{ base: "relative", md: "absolute" }}*/}
-      {/*                padding=" 12px 32px"*/}
-      {/*                mt={3}*/}
-      {/*                variant="brand"*/}
-      {/*              >*/}
-      {/*                Go to farming V1*/}
-      {/*              </Button>*/}
-      {/*            </Link>*/}
-      {/*          </Box>*/}
-      {/*        </Box>*/}
-      {/*      </Flex>*/}
-      {/*    </TabPanel>*/}
-      {/*    <TabPanel padding="0px">*/}
-      {/*      <Flex*/}
-      {/*        justifyContent="center"*/}
-      {/*        alignItems="center"*/}
-      {/*        rounded="lg"*/}
-      {/*        mb={4}*/}
-      {/*      >*/}
-      {/*        <Box*/}
-      {/*          bg="#120136"*/}
-      {/*          minHeight="89vh"*/}
-      {/*          w={["100%", "100%", "100%"]}*/}
-      {/*          background={*/}
-      {/*            mode === LIGHT_THEME && selected === farmSection.STAKING*/}
-      {/*              ? "#FFFFFF !important"*/}
-      {/*              : mode === DARK_THEME && selected === farmSection.NEW_LP*/}
-      {/*              ? "#15202B !important"*/}
-      {/*              : mode === DARK_THEME && selected === farmSection.STAKING*/}
-      {/*              ? "#15202B !important"*/}
-      {/*              : mode === LIGHT_THEME && selected === farmSection.NEW_LP*/}
-      {/*              ? "#FFFFFF !important"*/}
-      {/*              : "#FFFFFF !important"*/}
-      {/*          }*/}
-      {/*          rounded="lg"*/}
-      {/*        >*/}
-      {/*          <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">*/}
-      {/*            <Flex*/}
-      {/*              alignItems="center"*/}
-      {/*              justifyContent="space-around"*/}
-      {/*              px={4}*/}
-      {/*              py={4}*/}
-      {/*              background={*/}
-      {/*                mode === LIGHT_THEME && selected === farmSection.NEW_LP*/}
-      {/*                  ? "#F2F5F8  !important"*/}
-      {/*                  : mode === DARK_THEME && selected === farmSection.NEW_LP*/}
-      {/*                  ? "#213345"*/}
-      {/*                  : mode === DARK_THEME &&*/}
-      {/*                    selected === farmSection.STAKING*/}
-      {/*                  ? "#213345"*/}
-      {/*                  : mode === LIGHT_THEME &&*/}
-      {/*                    selected === farmSection.STAKING*/}
-      {/*                  ? "#F2F5F8"*/}
-      {/*                  : "#F2F5F8 !important"*/}
-      {/*              }*/}
-      {/*              color={*/}
-      {/*                mode === LIGHT_THEME && selected === farmSection.NEW_LP*/}
-      {/*                  ? "#333333"*/}
-      {/*                  : mode === DARK_THEME &&*/}
-      {/*                    selected === farmSection.STAKING*/}
-      {/*                  ? "#F1F5F8"*/}
-      {/*                  : mode === DARK_THEME && selected === farmSection.NEW_LP*/}
-      {/*                  ? "#F1F5F8"*/}
-      {/*                  : mode === LIGHT_THEME &&*/}
-      {/*                    selected === farmSection.STAKING*/}
-      {/*                  ? "#333333"*/}
-      {/*                  : "#333333"*/}
-      {/*              }*/}
-      {/*              w={["100%", "100%", "100%"]}*/}
-      {/*              align="left"*/}
-      {/*              border={*/}
-      {/*                mode === LIGHT_THEME*/}
-      {/*                  ? "1px solid #DEE5ED !important"*/}
-      {/*                  : mode === DARK_THEME*/}
-      {/*                  ? "1px solid #324D68 !important"*/}
-      {/*                  : "1px solid #324D68"*/}
-      {/*              }*/}
-      {/*              display={{ base: "none", md: "flex", lg: "flex" }}*/}
-      {/*            >*/}
-      {/*              <Text>Deposit</Text>*/}
-      {/*              <Text>Earn</Text>*/}
-      {/*              <Text>APY</Text>*/}
-      {/*              <Text>Total Liquidity</Text>*/}
-      {/*              <Text>LP Locked</Text>*/}
-      {/*              <Text />*/}
-      {/*            </Flex>*/}
-
-      {/*            {loadingLP ? (*/}
-      {/*              <Stack mt={2}>*/}
-      {/*                {new Array(4).fill("1").map((item, index) => {*/}
-      {/*                  return (*/}
-      {/*                    <Box*/}
-      {/*                      p={isMobileDevice ? "3" : "6"}*/}
-      {/*                      h={isMobileDevice ? undefined : 20}*/}
-      {/*                      border="1px"*/}
-      {/*                      borderColor={filterBorderColor}*/}
-      {/*                    >*/}
-      {/*                      <Flex*/}
-      {/*                        flexDirection={isMobileDevice ? "column" : "row"}*/}
-      {/*                        justifyContent={*/}
-      {/*                          isMobileDevice ? "center" : "space-between"*/}
-      {/*                        }*/}
-      {/*                        alignItems={isMobileDevice ? "center" : undefined}*/}
-      {/*                      >*/}
-      {/*                        {new Array(5).fill("1").map((item, index) => {*/}
-      {/*                          return (*/}
-      {/*                            <Flex*/}
-      {/*                              ml={isMobileDevice ? undefined : 2}*/}
-      {/*                              mt={isMobileDevice ? 2 : undefined}*/}
-      {/*                              flexDirection="column"*/}
-      {/*                            >*/}
-      {/*                              <Skeleton*/}
-      {/*                                background="red.300"*/}
-      {/*                                height="20px"*/}
-      {/*                                w={isMobileDevice ? "320px" : "208px"}*/}
-      {/*                              />*/}
-      {/*                            </Flex>*/}
-      {/*                          );*/}
-      {/*                        })}*/}
-      {/*                      </Flex>*/}
-      {/*                    </Box>*/}
-      {/*                  );*/}
-      {/*                })}*/}
-      {/*              </Stack>*/}
-      {/*            ) : // </Stack>*/}
-      {/*            keyword &&*/}
-      {/*              searchResults.searchResult === undefined ? null : keyword &&*/}
-      {/*              searchResults.searchResult !== undefined ? (*/}
-      {/*              newSearchSection.newSearchResult === undefined ? (*/}
-      {/*                searchResults.searchResult.map(*/}
-      {/*                  (content: any, index: number) => (*/}
-      {/*                    <YieldFarm*/}
-      {/*                      farmDataLoading={farmDataLoading}*/}
-      {/*                      content2={content}*/}
-      {/*                      key={content?.id}*/}
-      {/*                      section={"search"}*/}
-      {/*                      wallet={wallet}*/}
-      {/*                      LoadingState={loadingLP}*/}
-      {/*                      refreshSpecialData={refreshSpecialData}*/}
-      {/*                    />*/}
-      {/*                  )*/}
-      {/*                )*/}
-      {/*              ) : (*/}
-      {/*                newSearchSection.newSearchResult.map(*/}
-      {/*                  (content: any, index: number) => (*/}
-      {/*                    <YieldFarm*/}
-      {/*                      farmDataLoading={farmDataLoading}*/}
-      {/*                      content2={content}*/}
-      {/*                      key={content?.id}*/}
-      {/*                      section={"search"}*/}
-      {/*                      wallet={wallet}*/}
-      {/*                      LoadingState={loadingLP}*/}
-      {/*                      refreshSpecialData={refreshSpecialData}*/}
-      {/*                    />*/}
-      {/*                  )*/}
-      {/*                )*/}
-      {/*              )*/}
-      {/*            ) : searchResults.filterResult !== undefined ? (*/}
-      {/*              newSearchSection.newFilterResult === undefined ? (*/}
-      {/*                searchResults.filterResult.map(*/}
-      {/*                  (content: any, index: number) => (*/}
-      {/*                    <YieldFarm*/}
-      {/*                      farmDataLoading={farmDataLoading}*/}
-      {/*                      content2={content}*/}
-      {/*                      section={"filter"}*/}
-      {/*                      key={content?.id}*/}
-      {/*                      wallet={wallet}*/}
-      {/*                      LoadingState={loadingLP}*/}
-      {/*                      refreshSpecialData={refreshSpecialData}*/}
-      {/*                    />*/}
-      {/*                  )*/}
-      {/*                )*/}
-      {/*              ) : (*/}
-      {/*                newSearchSection.newFilterResult.map(*/}
-      {/*                  (content: any, index: number) => (*/}
-      {/*                    <YieldFarm*/}
-      {/*                      farmDataLoading={farmDataLoading}*/}
-      {/*                      content2={content}*/}
-      {/*                      key={content?.id}*/}
-      {/*                      section={"filter"}*/}
-      {/*                      wallet={wallet}*/}
-      {/*                      LoadingState={loadingLP}*/}
-      {/*                      refreshSpecialData={refreshSpecialData}*/}
-      {/*                    />*/}
-      {/*                  )*/}
-      {/*                )*/}
-      {/*              )*/}
-      {/*            ) : searchResults.filterResult === undefined ? (*/}
-      {/*              recentFarms === undefined ? (*/}
-      {/*                newLP.contents?.map((content: any, index: number) => (*/}
-      {/*                  <YieldFarm*/}
-      {/*                    farmDataLoading={farmDataLoading}*/}
-      {/*                    content2={content}*/}
-      {/*                    key={content?.id}*/}
-      {/*                    section={"normal"}*/}
-      {/*                    wallet={wallet}*/}
-      {/*                    LoadingState={loadingLP}*/}
-      {/*                    contractID={1}*/}
-      {/*                    refreshSpecialData={refreshSpecialData}*/}
-      {/*                  />*/}
-      {/*                ))*/}
-      {/*              ) : (*/}
-      {/*                recentFarms.map((content: any, index: number) => (*/}
-      {/*                  <YieldFarm*/}
-      {/*                    farmDataLoading={farmDataLoading}*/}
-      {/*                    content2={content}*/}
-      {/*                    key={content?.id}*/}
-      {/*                    section={"normal"}*/}
-      {/*                    wallet={wallet}*/}
-      {/*                    LoadingState={loadingLP}*/}
-      {/*                    contractID={1}*/}
-      {/*                    refreshSpecialData={refreshSpecialData}*/}
-      {/*                  />*/}
-      {/*                ))*/}
-      {/*              )*/}
-      {/*            ) : null}*/}
-      {/*          </Box>*/}
-      {/*        </Box>*/}
-      {/*      </Flex>*/}
-      {/*    </TabPanel>*/}
-      {/*    <TabPanel padding="0px">*/}
-      {/*      <Flex*/}
-      {/*        justifyContent="center"*/}
-      {/*        alignItems="center"*/}
-      {/*        rounded="lg"*/}
-      {/*        mb={4}*/}
-      {/*      >*/}
-      {/*        <Box*/}
-      {/*          bg="#120136"*/}
-      {/*          minHeight="89vh"*/}
-      {/*          w={["100%", "100%", "100%"]}*/}
-      {/*          background={*/}
-      {/*            mode === LIGHT_THEME && selected === farmSection.STAKING*/}
-      {/*              ? "#FFFFFF !important"*/}
-      {/*              : mode === DARK_THEME &&*/}
-      {/*                selected === farmSection.SECOND_NEW_LP*/}
-      {/*              ? "#15202B !important"*/}
-      {/*              : mode === DARK_THEME && selected === farmSection.STAKING*/}
-      {/*              ? "#15202B !important"*/}
-      {/*              : mode === LIGHT_THEME &&*/}
-      {/*                selected === farmSection.SECOND_NEW_LP*/}
-      {/*              ? "#FFFFFF !important"*/}
-      {/*              : "#FFFFFF !important"*/}
-      {/*          }*/}
-      {/*          rounded="lg"*/}
-      {/*        >*/}
-      {/*          <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">*/}
-      {/*            <Flex*/}
-      {/*              alignItems="center"*/}
-      {/*              justifyContent="space-around"*/}
-      {/*              px={4}*/}
-      {/*              py={4}*/}
-      {/*              background={*/}
-      {/*                mode === LIGHT_THEME &&*/}
-      {/*                selected === farmSection.SECOND_NEW_LP*/}
-      {/*                  ? "#F2F5F8  !important"*/}
-      {/*                  : mode === DARK_THEME &&*/}
-      {/*                    selected === farmSection.SECOND_NEW_LP*/}
-      {/*                  ? "#213345"*/}
-      {/*                  : mode === DARK_THEME &&*/}
-      {/*                    selected === farmSection.STAKING*/}
-      {/*                  ? "#213345"*/}
-      {/*                  : mode === LIGHT_THEME &&*/}
-      {/*                    selected === farmSection.STAKING*/}
-      {/*                  ? "#F2F5F8"*/}
-      {/*                  : "#F2F5F8 !important"*/}
-      {/*              }*/}
-      {/*              color={*/}
-      {/*                mode === LIGHT_THEME &&*/}
-      {/*                selected === farmSection.SECOND_NEW_LP*/}
-      {/*                  ? "#333333"*/}
-      {/*                  : mode === DARK_THEME &&*/}
-      {/*                    selected === farmSection.STAKING*/}
-      {/*                  ? "#F1F5F8"*/}
-      {/*                  : mode === DARK_THEME &&*/}
-      {/*                    selected === farmSection.SECOND_NEW_LP*/}
-      {/*                  ? "#F1F5F8"*/}
-      {/*                  : mode === LIGHT_THEME &&*/}
-      {/*                    selected === farmSection.STAKING*/}
-      {/*                  ? "#333333"*/}
-      {/*                  : "#333333"*/}
-      {/*              }*/}
-      {/*              w={["100%", "100%", "100%"]}*/}
-      {/*              align="left"*/}
-      {/*              border={*/}
-      {/*                mode === LIGHT_THEME*/}
-      {/*                  ? "1px solid #DEE5ED !important"*/}
-      {/*                  : mode === DARK_THEME*/}
-      {/*                  ? "1px solid #324D68 !important"*/}
-      {/*                  : "1px solid #324D68"*/}
-      {/*              }*/}
-      {/*              display={{ base: "none", md: "flex", lg: "flex" }}*/}
-      {/*            >*/}
-      {/*              <Text>Deposit</Text>*/}
-      {/*              <Text>Earn</Text>*/}
-      {/*              <Text>APY</Text>*/}
-      {/*              <Text>Total Liquidity</Text>*/}
-      {/*              <Text>LP Locked</Text>*/}
-      {/*              <Text />*/}
-      {/*            </Flex>*/}
-
-      {/*            {loadingLP ? (*/}
-      {/*              <Stack mt={2}>*/}
-      {/*                {new Array(4).fill("1").map((item, index) => {*/}
-      {/*                  return (*/}
-      {/*                    <Box*/}
-      {/*                      p={isMobileDevice ? "3" : "6"}*/}
-      {/*                      h={isMobileDevice ? undefined : 20}*/}
-      {/*                      border="1px"*/}
-      {/*                      borderColor={filterBorderColor}*/}
-      {/*                    >*/}
-      {/*                      <Flex*/}
-      {/*                        flexDirection={isMobileDevice ? "column" : "row"}*/}
-      {/*                        justifyContent={*/}
-      {/*                          isMobileDevice ? "center" : "space-between"*/}
-      {/*                        }*/}
-      {/*                        alignItems={isMobileDevice ? "center" : undefined}*/}
-      {/*                      >*/}
-      {/*                        {new Array(4).fill("1").map((item, index) => {*/}
-      {/*                          return (*/}
-      {/*                            <Flex*/}
-      {/*                              ml={isMobileDevice ? undefined : 2}*/}
-      {/*                              mt={isMobileDevice ? 2 : undefined}*/}
-      {/*                              flexDirection="column"*/}
-      {/*                            >*/}
-      {/*                              <Skeleton*/}
-      {/*                                background="red.300"*/}
-      {/*                                height="20px"*/}
-      {/*                                w={isMobileDevice ? "320px" : "208px"}*/}
-      {/*                              />*/}
-      {/*                            </Flex>*/}
-      {/*                          );*/}
-      {/*                        })}*/}
-      {/*                      </Flex>*/}
-      {/*                    </Box>*/}
-      {/*                  );*/}
-      {/*                })}*/}
-      {/*              </Stack>*/}
-      {/*            ) : keyword &&*/}
-      {/*              searchResults.searchResult === undefined ? null : keyword &&*/}
-      {/*              searchResults.searchResult !== undefined ? (*/}
-      {/*              newSearchSection.newSearchResult === undefined ? (*/}
-      {/*                searchResults.searchResult.map(*/}
-      {/*                  (content: any, index: number) => (*/}
-      {/*                    <YieldFarm*/}
-      {/*                      farmDataLoading={farmDataLoading}*/}
-      {/*                      content2={content}*/}
-      {/*                      key={content?.id}*/}
-      {/*                      section={"search"}*/}
-      {/*                      wallet={wallet}*/}
-      {/*                      LoadingState={loadingLP}*/}
-      {/*                      refreshSpecialData={refreshSpecialData}*/}
-      {/*                    />*/}
-      {/*                  )*/}
-      {/*                )*/}
-      {/*              ) : (*/}
-      {/*                newSearchSection.newSearchResult.map(*/}
-      {/*                  (content: any, index: number) => (*/}
-      {/*                    <YieldFarm*/}
-      {/*                      farmDataLoading={farmDataLoading}*/}
-      {/*                      content2={content}*/}
-      {/*                      key={content?.id}*/}
-      {/*                      section={"search"}*/}
-      {/*                      wallet={wallet}*/}
-      {/*                      refreshSpecialData={refreshSpecialData}*/}
-      {/*                      LoadingState={loadingLP}*/}
-      {/*                    />*/}
-      {/*                  )*/}
-      {/*                )*/}
-      {/*              )*/}
-      {/*            ) : searchResults.filterResult !== undefined ? (*/}
-      {/*              newSearchSection.newFilterResult === undefined ? (*/}
-      {/*                searchResults.filterResult.map(*/}
-      {/*                  (content: any, index: number) => (*/}
-      {/*                    <YieldFarm*/}
-      {/*                      farmDataLoading={farmDataLoading}*/}
-      {/*                      content2={content}*/}
-      {/*                      section={"filter"}*/}
-      {/*                      key={content?.id}*/}
-      {/*                      wallet={wallet}*/}
-      {/*                      refreshSpecialData={refreshSpecialData}*/}
-      {/*                      LoadingState={loadingLP}*/}
-      {/*                    />*/}
-      {/*                  )*/}
-      {/*                )*/}
-      {/*              ) : (*/}
-      {/*                newSearchSection.newFilterResult.map(*/}
-      {/*                  (content: any, index: number) => (*/}
-      {/*                    <YieldFarm*/}
-      {/*                      farmDataLoading={farmDataLoading}*/}
-      {/*                      content2={content}*/}
-      {/*                      key={content?.id}*/}
-      {/*                      section={"filter"}*/}
-      {/*                      wallet={wallet}*/}
-      {/*                      refreshSpecialData={refreshSpecialData}*/}
-      {/*                      LoadingState={loadingLP}*/}
-      {/*                    />*/}
-      {/*                  )*/}
-      {/*                )*/}
-      {/*              )*/}
-      {/*            ) : searchResults.filterResult === undefined ? (*/}
-      {/*              recentFarms === undefined ? (*/}
-      {/*                newLP.contents?.map((content: any, index: number) => (*/}
-      {/*                  <YieldFarm*/}
-      {/*                    farmDataLoading={farmDataLoading}*/}
-      {/*                    content2={content}*/}
-      {/*                    key={content?.id}*/}
-      {/*                    section={"normal"}*/}
-      {/*                    wallet={wallet}*/}
-      {/*                    LoadingState={loadingLP}*/}
-      {/*                    contractID={2}*/}
-      {/*                    refreshSpecialData={refreshSpecialData}*/}
-      {/*                  />*/}
-      {/*                ))*/}
-      {/*              ) : (*/}
-      {/*                recentFarms.map((content: any, index: number) => (*/}
-      {/*                  <YieldFarm*/}
-      {/*                    farmDataLoading={farmDataLoading}*/}
-      {/*                    content2={content}*/}
-      {/*                    key={content?.id}*/}
-      {/*                    section={"normal"}*/}
-      {/*                    wallet={wallet}*/}
-      {/*                    LoadingState={loadingLP}*/}
-      {/*                    refreshSpecialData={refreshSpecialData}*/}
-      {/*                    contractID={2}*/}
-      {/*                  />*/}
-      {/*                ))*/}
-      {/*              )*/}
-      {/*            ) : null}*/}
-      {/*          </Box>*/}
-      {/*        </Box>*/}
-      {/*      </Flex>*/}
-      {/*    </TabPanel>*/}
-      {/*  </TabPanels>*/}
-      {/*</Tabs>*/}
 
       <Flex
         mx={[5, 10, 15, 20]}
@@ -1853,17 +551,17 @@ export function Index() {
       >
         <Heading fontSize={"24px"}>Farm</Heading>
         <Link
-          href="https://docs.google.com/forms/d/e/1FAIpQLSdJGAuABrJd6d0WSprUWB140we9hGqa-IwIbonx9ZJhxN2zsg/viewform"
+          href='https://docs.google.com/forms/d/e/1FAIpQLSdJGAuABrJd6d0WSprUWB140we9hGqa-IwIbonx9ZJhxN2zsg/viewform'
           _hover={{ textDecoration: "none" }}
           _active={{ textDecoration: "none" }}
           isExternal
         >
           <Button
-            background="#4CAFFF"
-            boxShadow="0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)"
-            borderRadius="6px"
-            padding="12px 16px"
-            variant="brand"
+            background='#4CAFFF'
+            boxShadow='0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)'
+            borderRadius='6px'
+            padding='12px 16px'
+            variant='brand'
             leftIcon={<SmallAddIcon color={"white"} />}
             display={isMobileDevice ? "none" : undefined}
             className={"list"}
@@ -1874,7 +572,7 @@ export function Index() {
       </Flex>
 
       <Tabs
-        variant="line"
+        variant='line'
         mx={[5, 10, 15, 20]}
         my={4}
         isFitted={isMobileDevice}
@@ -1894,7 +592,7 @@ export function Index() {
 
         <TabPanels>
           <TabPanel>
-            <Tabs isFitted variant="unstyled" onChange={() => handleSelect(0)}>
+            <Tabs isFitted variant='unstyled' onChange={() => handleSelect(0)}>
               <FarmTab
                 oldestToNewest={oldestToNewest}
                 setOldestToNewset={setOldestToNewest}
@@ -1921,15 +619,15 @@ export function Index() {
               <TabPanels>
                 <TabPanel px={0} py={"40px"}>
                   <FarmHeader />
-                  <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">
-                    {loadingState ? (
+                  <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
+                    {LpfarmLoading ? (
                       <Stack mt={2}>
                         {new Array(4).fill("1").map((item, index) => {
                           return (
                             <Box
                               p={isMobileDevice ? "3" : "6"}
                               h={isMobileDevice ? undefined : 20}
-                              border="1px"
+                              border='1px'
                               borderColor={filterBorderColor}
                             >
                               <Flex
@@ -1948,11 +646,11 @@ export function Index() {
                                     <Flex
                                       ml={isMobileDevice ? undefined : 2}
                                       mt={isMobileDevice ? 2 : undefined}
-                                      flexDirection="column"
+                                      flexDirection='column'
                                     >
                                       <Skeleton
-                                        background="red.300"
-                                        height="20px"
+                                        background='red.300'
+                                        height='20px'
                                         w={isMobileDevice ? "320px" : "208px"}
                                       />
                                     </Flex>
@@ -1963,96 +661,19 @@ export function Index() {
                           );
                         })}
                       </Stack>
-                    ) : keyword &&
-                      searchResults.searchResult ===
-                        undefined ? null : keyword &&
-                      searchResults.searchResult !== undefined ? (
-                      searchSection.newSearchResult === undefined ? (
-                        searchResults.searchResult.map(
-                          (content: any, index: number) => (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content2={content}
-                              key={content?.id}
-                              section={"search"}
-                              refreshSpecialData={refreshSpecialData}
-                              wallet={wallet}
-                              LoadingState={loadingState}
-                            />
-                          )
-                        )
-                      ) : (
-                        searchSection.newSearchResult.map(
-                          (content: any, index: number) => (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content2={content}
-                              key={content?.id}
-                              refreshSpecialData={refreshSpecialData}
-                              section={"search"}
-                              wallet={wallet}
-                              LoadingState={loadingState}
-                            />
-                          )
-                        )
-                      )
-                    ) : searchResults.filterResult !== undefined ? (
-                      searchSection.newFilterResult === undefined ? (
-                        searchResults.filterResult.map(
-                          (content: any, index: number) => (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content2={content}
-                              section={"filter"}
-                              refreshSpecialData={refreshSpecialData}
-                              key={content?.id}
-                              wallet={wallet}
-                              LoadingState={loadingState}
-                            />
-                          )
-                        )
-                      ) : (
-                        searchSection.newFilterResult.map(
-                          (content: any, index: number) => (
-                            <YieldFarm
-                              farmDataLoading={farmDataLoading}
-                              content2={content}
-                              key={content?.id}
-                              refreshSpecialData={refreshSpecialData}
-                              section={"filter"}
-                              wallet={wallet}
-                              LoadingState={loadingState}
-                            />
-                          )
-                        )
-                      )
-                    ) : searchResults.filterResult === undefined ? (
-                      farms === undefined ? (
-                        data.contents?.map((content: any, index: number) => (
-                          <YieldFarm
-                            farmDataLoading={farmDataLoading}
-                            content2={content}
-                            key={content?.id}
-                            refreshSpecialData={refreshSpecialData}
-                            section={"normal"}
-                            wallet={wallet}
-                            LoadingState={loadingState}
-                          />
-                        ))
-                      ) : (
-                        farms.map((content: any, index: number) => (
-                          <YieldFarm
-                            farmDataLoading={farmDataLoading}
-                            content2={content}
-                            key={content?.id}
-                            refreshSpecialData={refreshSpecialData}
-                            section={"normal"}
-                            wallet={wallet}
-                            LoadingState={loadingState}
-                          />
-                        ))
-                      )
-                    ) : null}
+                    ) : (
+                      farms?.LpFarm.map((content: any) => (
+                        <YieldFarm
+                          farmDataLoading={farmDataLoading}
+                          content2={content}
+                          key={content?.id}
+                          refreshSpecialData={refreshSpecialData}
+                          section={"normal"}
+                          wallet={wallet}
+                          LoadingState={LpfarmLoading}
+                        />
+                      ))
+                    )}
                   </Box>
                 </TabPanel>
                 {Number(ChainId) === Number(SupportedChainId.POLYGON) ||
@@ -2061,14 +682,14 @@ export function Index() {
                   Number(SupportedChainId.OASISMAINNET) ? null : (
                   <TabPanel px={0} py={"40px"}>
                     <Flex
-                      justifyContent="center"
-                      alignItems="center"
-                      rounded="lg"
+                      justifyContent='center'
+                      alignItems='center'
+                      rounded='lg'
                       mb={4}
                     >
                       <Box
-                        bg="#120136"
-                        minHeight="89vh"
+                        bg='#120136'
+                        minHeight='89vh'
                         w={["100%", "100%", "100%"]}
                         background={
                           mode === LIGHT_THEME &&
@@ -2085,12 +706,12 @@ export function Index() {
                             ? "#FFFFFF !important"
                             : "#FFFFFF !important"
                         }
-                        rounded="lg"
+                        rounded='lg'
                       >
-                        <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">
+                        <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
                           <Flex
-                            alignItems="center"
-                            justifyContent="space-between"
+                            alignItems='center'
+                            justifyContent='space-between'
                             px={4}
                             py={4}
                             background={
@@ -2124,7 +745,7 @@ export function Index() {
                                 : "#333333"
                             }
                             w={["100%", "100%", "100%"]}
-                            align="left"
+                            align='left'
                             border={
                               mode === LIGHT_THEME
                                 ? "1px solid #DEE5ED !important"
@@ -2140,18 +761,18 @@ export function Index() {
                           </Flex>
 
                           <Link
-                            href="https://smartswapv1.rigelprotocol.com/farming"
+                            href='https://smartswapv1.rigelprotocol.com/farming'
                             isExternal
                           >
                             <Button
-                              background="#4CAFFF"
-                              boxShadow="0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)"
-                              borderRadius="6px"
+                              background='#4CAFFF'
+                              boxShadow='0px 4px 6px -4px rgba(24, 39, 75, 0.12), 0px 8px 8px -4px rgba(24, 39, 75, 0.08)'
+                              borderRadius='6px'
                               mx={[5, 10, 15, 20]}
                               position={{ base: "relative", md: "absolute" }}
-                              padding=" 12px 32px"
+                              padding=' 12px 32px'
                               mt={3}
-                              variant="brand"
+                              variant='brand'
                             >
                               Go to farming V1
                             </Button>
@@ -2167,7 +788,7 @@ export function Index() {
           <TabPanel px={0} py={"40px"}>
             <Tabs
               isFitted
-              variant="unstyled"
+              variant='unstyled'
               onChange={(index) => handleSelect(1)}
             >
               <FarmTab
@@ -2185,34 +806,12 @@ export function Index() {
                 setSavedChanges={setSavedChanges}
                 tabOneName={"Version 2"}
                 setKeyword={searchSingleFarm}
-                // tabOneName={"Version 1"}
-                //  tabTwoName={
-                //    Number(ChainId) === Number(SupportedChainId.POLYGON) ||
-                //    Number(ChainId) === Number(SupportedChainId.POLYGONTEST) ||
-                //    Number(ChainId) === Number(SupportedChainId.OASISMAINNET)
-                //      ? null
-                //      : "Version 2"
-                //  }
               />
               <TabPanels>
-                {/*<TabPanel px={0} py={"40px"}>*/}
-                {/*  <FarmHeader />*/}
-                {/*  {FarmData.contents.map((content: any, index: number) =>*/}
-                {/*    index === 0 ? (*/}
-                {/*      <YieldFarm*/}
-                {/*        farmDataLoading={farmDataLoading}*/}
-                {/*        content={content}*/}
-                {/*        key={content.pid}*/}
-                {/*        refreshSpecialData={refreshSpecialData}*/}
-                {/*        wallet={wallet}*/}
-                {/*      />*/}
-                {/*    ) : null*/}
-                {/*  )}*/}
-                {/*</TabPanel>*/}
-
                 <TabPanel px={0} py={"40px"}>
                   <FarmHeader />
-                  {specialPool?.map((content: any, index: number) => (
+
+                  {farms?.SpecialPool?.map((content: any, index: number) => (
                     <YieldFarm
                       farmDataLoading={farmDataLoading}
                       content={content}
@@ -2227,7 +826,7 @@ export function Index() {
             </Tabs>
           </TabPanel>
           <TabPanel>
-            <Tabs isFitted variant="unstyled" onChange={() => handleSelect(2)}>
+            <Tabs isFitted variant='unstyled' onChange={() => handleSelect(2)}>
               <FarmTab
                 oldestToNewest={oldestToNewest}
                 setOldestToNewset={setOldestToNewest}
@@ -2247,14 +846,14 @@ export function Index() {
               <TabPanels>
                 <TabPanel px={0} py={"40px"}>
                   <Flex
-                    justifyContent="center"
-                    alignItems="center"
-                    rounded="lg"
+                    justifyContent='center'
+                    alignItems='center'
+                    rounded='lg'
                     mb={4}
                   >
                     <Box
-                      bg="#120136"
-                      minHeight="89vh"
+                      bg='#120136'
+                      minHeight='89vh'
                       w={["100%", "100%", "100%"]}
                       background={
                         mode === LIGHT_THEME
@@ -2263,9 +862,9 @@ export function Index() {
                           ? "#15202B !important"
                           : "#FFFFFF !important"
                       }
-                      rounded="lg"
+                      rounded='lg'
                     >
-                      <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">
+                      <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
                         <Grid
                           templateColumns={[
                             "repeat(1,1fr)",
@@ -2289,7 +888,7 @@ export function Index() {
                               : "#333333"
                           }
                           w={["100%", "100%", "100%"]}
-                          align="left"
+                          align='left'
                           border={
                             mode === LIGHT_THEME
                               ? "1px solid #DEE5ED !important"
@@ -2299,26 +898,26 @@ export function Index() {
                           }
                           display={isMobileDevice ? "none" : "grid"}
                         >
-                          <Text fontSize="14px">
+                          <Text fontSize='14px'>
                             {selected === farmSection.PRODUCT_FARM
                               ? "AutoTrade Product"
                               : "Deposit"}
                           </Text>
-                          <Text ml={4} fontSize="14px">
+                          <Text ml={4} fontSize='14px'>
                             {selected === farmSection.PRODUCT_FARM
                               ? "Percentage Profit Share"
                               : "Earn"}
                           </Text>
-                          <Text ml={4} fontSize="14px">
+                          <Text ml={4} fontSize='14px'>
                             {selected === farmSection.PRODUCT_FARM
                               ? "Profit Timeline"
                               : "APY"}
                           </Text>
-                          <Text ml={4} fontSize="14px">
+                          <Text ml={4} fontSize='14px'>
                             Total Liquidity
                           </Text>
                           {selected === farmSection.PRODUCT_FARM && (
-                            <Text ml={4} fontSize="14px">
+                            <Text ml={4} fontSize='14px'>
                               Estimated Total Profits
                             </Text>
                           )}
@@ -2347,7 +946,7 @@ export function Index() {
           <TabPanel>
             <Tabs
               isFitted
-              variant="unstyled"
+              variant='unstyled'
               onChange={(index) => handleSelect(index + 3)}
             >
               <FarmTab
@@ -2375,14 +974,14 @@ export function Index() {
               <TabPanels>
                 <TabPanel px={0} py={"40px"}>
                   <Flex
-                    justifyContent="center"
-                    alignItems="center"
-                    rounded="lg"
+                    justifyContent='center'
+                    alignItems='center'
+                    rounded='lg'
                     mb={4}
                   >
                     <Box
-                      bg="#120136"
-                      minHeight="89vh"
+                      bg='#120136'
+                      minHeight='89vh'
                       w={["100%", "100%", "100%"]}
                       background={
                         mode === LIGHT_THEME && selected === farmSection.STAKING
@@ -2398,12 +997,12 @@ export function Index() {
                           ? "#FFFFFF !important"
                           : "#FFFFFF !important"
                       }
-                      rounded="lg"
+                      rounded='lg'
                     >
-                      <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">
+                      <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
                         <Flex
-                          alignItems="center"
-                          justifyContent="space-around"
+                          alignItems='center'
+                          justifyContent='space-around'
                           px={4}
                           py={4}
                           background={
@@ -2437,7 +1036,7 @@ export function Index() {
                               : "#333333"
                           }
                           w={["100%", "100%", "100%"]}
-                          align="left"
+                          align='left'
                           border={
                             mode === LIGHT_THEME
                               ? "1px solid #DEE5ED !important"
@@ -2455,14 +1054,14 @@ export function Index() {
                           <Text />
                         </Flex>
 
-                        {loadingLP ? (
+                        {quickswapLoading ? (
                           <Stack mt={2}>
                             {new Array(4).fill("1").map((item, index) => {
                               return (
                                 <Box
                                   p={isMobileDevice ? "3" : "6"}
                                   h={isMobileDevice ? undefined : 20}
-                                  border="1px"
+                                  border='1px'
                                   borderColor={filterBorderColor}
                                 >
                                   <Flex
@@ -2485,11 +1084,11 @@ export function Index() {
                                           <Flex
                                             ml={isMobileDevice ? undefined : 2}
                                             mt={isMobileDevice ? 2 : undefined}
-                                            flexDirection="column"
+                                            flexDirection='column'
                                           >
                                             <Skeleton
-                                              background="red.300"
-                                              height="20px"
+                                              background='red.300'
+                                              height='20px'
                                               w={
                                                 isMobileDevice
                                                   ? "320px"
@@ -2504,114 +1103,34 @@ export function Index() {
                               );
                             })}
                           </Stack>
-                        ) : keyword &&
-                          searchResults.searchResult ===
-                            undefined ? null : keyword &&
-                          searchResults.searchResult !== undefined ? (
-                          newSearchSection.newSearchResult === undefined ? (
-                            searchResults.searchResult.map(
-                              (content: any, index: number) => (
-                                <YieldFarm
-                                  farmDataLoading={farmDataLoading}
-                                  content2={content}
-                                  key={content?.id}
-                                  section={"search"}
-                                  wallet={wallet}
-                                  LoadingState={loadingLP}
-                                  refreshSpecialData={refreshSpecialData}
-                                />
-                              )
-                            )
-                          ) : (
-                            newSearchSection.newSearchResult.map(
-                              (content: any, index: number) => (
-                                <YieldFarm
-                                  farmDataLoading={farmDataLoading}
-                                  content2={content}
-                                  key={content?.id}
-                                  section={"search"}
-                                  wallet={wallet}
-                                  LoadingState={loadingLP}
-                                  refreshSpecialData={refreshSpecialData}
-                                />
-                              )
-                            )
-                          )
-                        ) : searchResults.filterResult !== undefined ? (
-                          newSearchSection.newFilterResult === undefined ? (
-                            searchResults.filterResult.map(
-                              (content: any, index: number) => (
-                                <YieldFarm
-                                  farmDataLoading={farmDataLoading}
-                                  content2={content}
-                                  section={"filter"}
-                                  key={content?.id}
-                                  wallet={wallet}
-                                  LoadingState={loadingLP}
-                                  refreshSpecialData={refreshSpecialData}
-                                />
-                              )
-                            )
-                          ) : (
-                            newSearchSection.newFilterResult.map(
-                              (content: any, index: number) => (
-                                <YieldFarm
-                                  farmDataLoading={farmDataLoading}
-                                  content2={content}
-                                  key={content?.id}
-                                  section={"filter"}
-                                  wallet={wallet}
-                                  LoadingState={loadingLP}
-                                  refreshSpecialData={refreshSpecialData}
-                                />
-                              )
-                            )
-                          )
-                        ) : searchResults.filterResult === undefined ? (
-                          recentFarms === undefined ? (
-                            newLP.contents?.map(
-                              (content: any, index: number) => (
-                                <YieldFarm
-                                  farmDataLoading={farmDataLoading}
-                                  content2={content}
-                                  key={content?.id}
-                                  section={"normal"}
-                                  wallet={wallet}
-                                  LoadingState={loadingLP}
-                                  contractID={1}
-                                  refreshSpecialData={refreshSpecialData}
-                                />
-                              )
-                            )
-                          ) : (
-                            recentFarms.map((content: any, index: number) => (
-                              <YieldFarm
-                                farmDataLoading={farmDataLoading}
-                                content2={content}
-                                key={content?.id}
-                                section={"normal"}
-                                wallet={wallet}
-                                LoadingState={loadingLP}
-                                contractID={1}
-                                refreshSpecialData={refreshSpecialData}
-                              />
-                            ))
-                          )
-                        ) : null}
+                        ) : (
+                          farms?.QuickswapFarm.map((content: any) => (
+                            <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content2={content}
+                              key={content?.id}
+                              section={"normal"}
+                              wallet={wallet}
+                              LoadingState={quickswapLoading}
+                              contractID={1}
+                              refreshSpecialData={refreshSpecialData}
+                            />
+                          ))
+                        )}
                       </Box>
                     </Box>
                   </Flex>
                 </TabPanel>
                 <TabPanel px={0} py={"40px"}>
                   <Flex
-                    justifyContent="center"
-                    alignItems="center"
-                    rounded="lg"
+                    justifyContent='center'
+                    alignItems='center'
+                    rounded='lg'
                     mb={4}
                   >
                     <Box
-                      bg="#120136"
-                      minHeight="89vh"
+                      bg='#120136'
+                      minHeight='89vh'
                       w={["100%", "100%", "100%"]}
                       background={
                         mode === LIGHT_THEME && selected === farmSection.STAKING
@@ -2627,12 +1146,12 @@ export function Index() {
                           ? "#FFFFFF !important"
                           : "#FFFFFF !important"
                       }
-                      rounded="lg"
+                      rounded='lg'
                     >
-                      <Box mx="auto" w={["100%", "100%", "100%"]} pb="70px">
+                      <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
                         <Flex
-                          alignItems="center"
-                          justifyContent="space-around"
+                          alignItems='center'
+                          justifyContent='space-around'
                           px={4}
                           py={4}
                           background={
@@ -2660,7 +1179,7 @@ export function Index() {
                               : "#333333"
                           }
                           w={["100%", "100%", "100%"]}
-                          align="left"
+                          align='left'
                           border={
                             mode === LIGHT_THEME
                               ? "1px solid #DEE5ED !important"
@@ -2678,14 +1197,14 @@ export function Index() {
                           <Text />
                         </Flex>
 
-                        {loadingLP ? (
+                        {stableFarmLoading ? (
                           <Stack mt={2}>
                             {new Array(4).fill("1").map((item, index) => {
                               return (
                                 <Box
                                   p={isMobileDevice ? "3" : "6"}
                                   h={isMobileDevice ? undefined : 20}
-                                  border="1px"
+                                  border='1px'
                                   borderColor={filterBorderColor}
                                 >
                                   <Flex
@@ -2708,11 +1227,11 @@ export function Index() {
                                           <Flex
                                             ml={isMobileDevice ? undefined : 2}
                                             mt={isMobileDevice ? 2 : undefined}
-                                            flexDirection="column"
+                                            flexDirection='column'
                                           >
                                             <Skeleton
-                                              background="red.300"
-                                              height="20px"
+                                              background='red.300'
+                                              height='20px'
                                               w={
                                                 isMobileDevice
                                                   ? "320px"
@@ -2727,100 +1246,20 @@ export function Index() {
                               );
                             })}
                           </Stack>
-                        ) : keyword &&
-                          searchResults.searchResult ===
-                            undefined ? null : keyword &&
-                          searchResults.searchResult !== undefined ? (
-                          newSearchSection.newSearchResult === undefined ? (
-                            searchResults.searchResult.map(
-                              (content: any, index: number) => (
-                                <YieldFarm
-                                  farmDataLoading={farmDataLoading}
-                                  content2={content}
-                                  key={content?.id}
-                                  section={"search"}
-                                  wallet={wallet}
-                                  LoadingState={loadingLP}
-                                  refreshSpecialData={refreshSpecialData}
-                                />
-                              )
-                            )
-                          ) : (
-                            newSearchSection.newSearchResult.map(
-                              (content: any, index: number) => (
-                                <YieldFarm
-                                  farmDataLoading={farmDataLoading}
-                                  content2={content}
-                                  key={content?.id}
-                                  section={"search"}
-                                  wallet={wallet}
-                                  refreshSpecialData={refreshSpecialData}
-                                  LoadingState={loadingLP}
-                                />
-                              )
-                            )
-                          )
-                        ) : searchResults.filterResult !== undefined ? (
-                          newSearchSection.newFilterResult === undefined ? (
-                            searchResults.filterResult.map(
-                              (content: any, index: number) => (
-                                <YieldFarm
-                                  farmDataLoading={farmDataLoading}
-                                  content2={content}
-                                  section={"filter"}
-                                  key={content?.id}
-                                  wallet={wallet}
-                                  refreshSpecialData={refreshSpecialData}
-                                  LoadingState={loadingLP}
-                                />
-                              )
-                            )
-                          ) : (
-                            newSearchSection.newFilterResult.map(
-                              (content: any, index: number) => (
-                                <YieldFarm
-                                  farmDataLoading={farmDataLoading}
-                                  content2={content}
-                                  key={content?.id}
-                                  section={"filter"}
-                                  wallet={wallet}
-                                  refreshSpecialData={refreshSpecialData}
-                                  LoadingState={loadingLP}
-                                />
-                              )
-                            )
-                          )
-                        ) : searchResults.filterResult === undefined ? (
-                          recentFarms === undefined ? (
-                            newLP.contents?.map(
-                              (content: any, index: number) => (
-                                <YieldFarm
-                                  farmDataLoading={farmDataLoading}
-                                  content2={content}
-                                  key={content?.id}
-                                  section={"normal"}
-                                  wallet={wallet}
-                                  LoadingState={loadingLP}
-                                  contractID={2}
-                                  refreshSpecialData={refreshSpecialData}
-                                />
-                              )
-                            )
-                          ) : (
-                            recentFarms.map((content: any, index: number) => (
-                              <YieldFarm
-                                farmDataLoading={farmDataLoading}
-                                content2={content}
-                                key={content?.id}
-                                section={"normal"}
-                                wallet={wallet}
-                                LoadingState={loadingLP}
-                                refreshSpecialData={refreshSpecialData}
-                                contractID={2}
-                              />
-                            ))
-                          )
-                        ) : null}
+                        ) : (
+                          farms?.StableFarm.map((content: any) => (
+                            <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content2={content}
+                              key={content?.id}
+                              section={"normal"}
+                              wallet={wallet}
+                              LoadingState={stableFarmLoading}
+                              refreshSpecialData={refreshSpecialData}
+                              contractID={2}
+                            />
+                          ))
+                        )}
                       </Box>
                     </Box>
                   </Flex>
