@@ -12,6 +12,7 @@ import {
   MASTERCHEFNEWLPADDRESSES,
   SMARTSWAPLP_TOKEN3ADDRESSES,
   SYMBOLS,
+  RGPSPECIALPOOLADDRESSES2,
 } from "../addresses";
 import LiquidityPairAbi from "../../utils/abis/smartSwapLPToken.json";
 import ERC20TokenAbi from "../../utils/abis/erc20.json";
@@ -19,14 +20,17 @@ import smartFactoryAbi from "../../utils/abis/SmartSwapFactoryForSwap.json";
 import { useSelector } from "react-redux";
 import { RootState } from "../../state";
 import { ethers } from "ethers";
-import { smartSwapLPTokenPoolThree } from "../Contracts";
+import { RGPSpecialPool2, smartSwapLPTokenPoolThree } from "../Contracts";
 import smartswapLpTokenThreeAbi from "../abis/SmartSwapLPTokenThree.json";
 import {
   updateLpFarm,
   updateQuickSwapFarm,
+  updateSpecialPool,
   updateStableFarm,
 } from "../../state/farm/actions";
 import { useDispatch } from "react-redux";
+import { SupportedChainId } from "../../constants/chains";
+import { getERC20Token, useProvider } from "../utilsFunctions";
 
 type FarmData = Array<{
   id: number | undefined;
@@ -42,7 +46,10 @@ type FarmData = Array<{
 }>;
 
 export const useFetchFarm = () => {
-  const { account, library, chainId } = useWeb3React();
+  const { account, library: lib, chainId } = useWeb3React();
+  const { prov } = useProvider();
+  const library = lib ? lib : prov;
+  const [loading, setLoading] = useState(true);
 
   const dispatch = useDispatch();
 
@@ -143,11 +150,7 @@ export const useFetchFarm = () => {
               APY,
               allocPoint: parseFloat(allocPoint.toString()),
               address: pools[i].poolAddress,
-              tokenStaked: [
-                `${formatSymbol(reserves[i]?.symbol0)}-${formatSymbol(
-                  reserves[i]?.symbol1
-                )}`,
-              ],
+              farm: "lp",
             });
           }
         }
@@ -362,10 +365,6 @@ export const useFetchFarm = () => {
       const token0 = await multi.multiCall(token0Inputs);
       const token1 = await multi.multiCall(token1Inputs);
 
-      console.log(reserves[1]);
-
-      console.log("token0", token0);
-
       for (let i = 0; i < token0[1].length; i++) {
         symbol0Inputs.push({
           interface: ERC20TokenAbi,
@@ -430,8 +429,6 @@ export const useFetchFarm = () => {
         });
       }
 
-      console.log("Lpreserves", LpReserves);
-
       return LpReserves;
     } catch (err) {
       console.log(err);
@@ -440,71 +437,74 @@ export const useFetchFarm = () => {
 
   useEffect(() => {
     const fetchPools = async () => {
-      if (account) {
-        try {
-          console.log("started");
-          const multi = new MultiCall(library);
+      try {
+        setLoading(true);
 
-          const poolAddresses = [];
+        const multi = new MultiCall(library);
 
-          const rgpPrice = await calculateRigelPrice();
+        const poolAddresses = [];
 
-          const poolLength = await multi.multiCall([
+        const rgpPrice = await calculateRigelPrice();
+
+        const poolLength = await multi.multiCall([
+          {
+            interface: MasterChefAbi,
+            args: [],
+            target: MASTERCHEFV2ADDRESSES[chainId as number],
+            function: "poolLength",
+          },
+        ]);
+
+        for (let i = 0; i < parseFloat(poolLength[1][0].toString()); i++) {
+          const poolInfo = await multi.multiCall([
             {
               interface: MasterChefAbi,
-              args: [],
+              args: [i],
               target: MASTERCHEFV2ADDRESSES[chainId as number],
-              function: "poolLength",
+              function: "poolInfo",
             },
           ]);
 
-          console.log("poolLength", poolLength);
-
-          for (let i = 0; i < parseFloat(poolLength[1][0].toString()); i++) {
-            const poolInfo = await multi.multiCall([
-              {
-                interface: MasterChefAbi,
-                args: [i],
-                target: MASTERCHEFV2ADDRESSES[chainId as number],
-                function: "poolInfo",
-              },
-            ]);
-
-            poolAddresses.push({
-              poolAddress: poolInfo[1][0]?.lpToken,
-              allocPoint: poolInfo[1][0]?.allocPoint,
-            });
-          }
-
-          const farm = await calculateLiquidityandApy(
-            poolAddresses,
-            rgpPrice,
-            ChainId === 137 || ChainId === 80001
-              ? 2014.83125
-              : ChainId === 56 || ChainId === 97
-              ? 4300
-              : ChainId === 42262 || ChainId === 42261
-              ? 1343.220833
-              : undefined
-          );
-
-          if (farm) {
-            dispatch(updateLpFarm(farm));
-          }
-
-          console.log("useFarm", farm);
-        } catch (err) {
-          console.log(err);
+          poolAddresses.push({
+            poolAddress: poolInfo[1][0]?.lpToken,
+            allocPoint: poolInfo[1][0]?.allocPoint,
+          });
         }
+
+        const farm = await calculateLiquidityandApy(
+          poolAddresses,
+          rgpPrice,
+          ChainId === 137 || ChainId === 80001
+            ? 2014.83125
+            : ChainId === 56 || ChainId === 97
+            ? 4300
+            : ChainId === 42262 || ChainId === 42261
+            ? 1343.220833
+            : undefined
+        );
+
+        if (farm) {
+          dispatch(updateLpFarm(farm));
+        }
+
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+        console.log(err);
       }
     };
 
     fetchPools();
-  }, [account, ChainId]);
+  }, [account, ChainId, library]);
+
+  return { loading };
 };
 
 export const useFetchQuickSwap = () => {
-  const { account, library, chainId } = useWeb3React();
+  const { account, library: lib, chainId } = useWeb3React();
+  const { prov } = useProvider();
+  const library = lib ? lib : prov;
+  const [loading, setLoading] = useState(true);
 
   const dispatch = useDispatch();
 
@@ -625,6 +625,7 @@ export const useFetchQuickSwap = () => {
               allocPoint: parseFloat(allocPoint.toString()),
               address: pools[i].poolAddress,
               LPLocked: newLiquidity.toFixed(2),
+              farm: "quick",
             });
           }
         }
@@ -849,9 +850,6 @@ export const useFetchQuickSwap = () => {
       const lockedSupplyInputs = [];
 
       for (let i = 0; i < pools.length; i++) {
-        console.log("before-anything", [
-          MASTERCHEFNEWLPADDRESSES[ChainId as number][1],
-        ]);
         reservesInputs.push({
           interface: LiquidityPairAbi,
           args: [],
@@ -895,20 +893,13 @@ export const useFetchQuickSwap = () => {
         });
       }
 
-      console.log("got here", pools);
-
       const reserves = await multi.multiCall(reservesInputs);
 
-      console.log("reserves", reserves);
       const poolInfo = await multi.multiCall(poolInfoInputs);
       const token0 = await multi.multiCall(token0Inputs);
       const token1 = await multi.multiCall(token1Inputs);
       const totalSupply = await multi.multiCall(totalSupplyInputs);
       const lockedSupply = await multi.multiCall(lockedSupplyInputs);
-
-      console.log(reserves[1]);
-
-      console.log("token0", token0);
 
       for (let i = 0; i < token0[1].length; i++) {
         symbol0Inputs.push({
@@ -981,8 +972,6 @@ export const useFetchQuickSwap = () => {
         });
       }
 
-      console.log("Lpreserves", LpReserves);
-
       return LpReserves;
     } catch (err) {
       console.log(err);
@@ -991,80 +980,80 @@ export const useFetchQuickSwap = () => {
 
   useEffect(() => {
     const fetchPools = async () => {
-      if (account) {
-        try {
-          console.log("started");
-          const multi = new MultiCall(library);
+      try {
+        setLoading(true);
 
-          const poolAddresses = [];
+        const multi = new MultiCall(library);
 
-          const rgpPrice = await calculateRigelPrice();
+        const poolAddresses = [];
 
-          const BNBPrice = await getBNBPrice();
+        const rgpPrice = await calculateRigelPrice();
 
-          const poolLength = await multi.multiCall([
+        const BNBPrice = await getBNBPrice();
+
+        const poolLength = await multi.multiCall([
+          {
+            interface: MasterChefAbi,
+            args: [],
+            target: MASTERCHEFNEWLPADDRESSES[chainId as number][1],
+            function: "poolLength",
+          },
+        ]);
+
+        for (let i = 0; i < parseFloat(poolLength[1][0].toString()); i++) {
+          const poolInfo = await multi.multiCall([
             {
               interface: MasterChefAbi,
-              args: [],
+              args: [i],
               target: MASTERCHEFNEWLPADDRESSES[chainId as number][1],
-              function: "poolLength",
+              function: "poolInfo",
             },
           ]);
 
-          console.log("poolLength", poolLength);
-
-          for (let i = 0; i < parseFloat(poolLength[1][0].toString()); i++) {
-            const poolInfo = await multi.multiCall([
-              {
-                interface: MasterChefAbi,
-                args: [i],
-                target: MASTERCHEFNEWLPADDRESSES[chainId as number][1],
-                function: "poolInfo",
-              },
-            ]);
-
-            console.log("before fail", poolInfo[1][0]);
-
-            poolInfo[1][0]?.lpToken !== undefined &&
-              poolAddresses.push({
-                pid: i,
-                poolAddress: poolInfo[1][0]?.lpToken,
-                allocPoint: poolInfo[1][0]?.allocPoint,
-              });
-          }
-
-          console.log("before fail", poolAddresses);
-
-          const farm = await calculateLiquidityandApy(
-            poolAddresses,
-            rgpPrice,
-            BNBPrice,
-            ChainId === 137 || ChainId === 80001
-              ? 2014.83125
-              : ChainId === 56 || ChainId === 97
-              ? 4300
-              : ChainId === 42262 || ChainId === 42261
-              ? 1343.220833
-              : undefined
-          );
-
-          if (farm) {
-            dispatch(updateQuickSwapFarm(farm));
-          }
-
-          console.log("useFarm-quick", farm);
-        } catch (err) {
-          console.log(err);
+          poolInfo[1][0]?.lpToken !== undefined &&
+            poolAddresses.push({
+              pid: i,
+              poolAddress: poolInfo[1][0]?.lpToken,
+              allocPoint: poolInfo[1][0]?.allocPoint,
+            });
         }
+
+        const farm = await calculateLiquidityandApy(
+          poolAddresses,
+          rgpPrice,
+          BNBPrice,
+          ChainId === 137 || ChainId === 80001
+            ? 2014.83125
+            : ChainId === 56 || ChainId === 97
+            ? 4300
+            : ChainId === 42262 || ChainId === 42261
+            ? 1343.220833
+            : undefined
+        );
+
+        if (farm) {
+          dispatch(updateQuickSwapFarm(farm));
+        }
+
+        setLoading(false);
+      } catch (err) {
+        console.log(err);
+        setLoading(false);
       }
     };
 
     fetchPools();
-  }, [account, ChainId]);
+  }, [account, ChainId, library]);
+
+  return { loading };
 };
 
 export const useFetchStable = () => {
-  const { account, library, chainId } = useWeb3React();
+  const { account, library: lib, chainId } = useWeb3React();
+  const { prov } = useProvider();
+  const library = lib ? lib : prov;
+
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
   const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
@@ -1184,11 +1173,7 @@ export const useFetchStable = () => {
               allocPoint: parseFloat(allocPoint.toString()),
               address: pools[i].poolAddress,
               LPLocked: newLiquidity.toFixed(2),
-              tokenStaked: [
-                `${await formatSymbol(
-                  reserves[i]?.symbol0
-                )}-${await formatSymbol(reserves[i]?.symbol1)}`,
-              ],
+              farm: "stable",
             });
           }
         }
@@ -1456,20 +1441,13 @@ export const useFetchStable = () => {
         });
       }
 
-      console.log("got here", pools);
-
       const reserves = await multi.multiCall(reservesInputs);
 
-      console.log("reserves", reserves);
       const poolInfo = await multi.multiCall(poolInfoInputs);
       const token0 = await multi.multiCall(token0Inputs);
       const token1 = await multi.multiCall(token1Inputs);
       const totalSupply = await multi.multiCall(totalSupplyInputs);
       const lockedSupply = await multi.multiCall(lockedSupplyInputs);
-
-      console.log(reserves[1]);
-
-      console.log("token0", token0);
 
       for (let i = 0; i < token0[1].length; i++) {
         symbol0Inputs.push({
@@ -1534,15 +1512,9 @@ export const useFetchStable = () => {
           symbol1: symbol1[1][i],
           totalSupply: totalSupply[1][i],
           lockedSupply: lockedSupply[1][i],
-          tokenStaked: [
-            `${await formatSymbol(symbol0[1][i])}-${await formatSymbol(
-              symbol1[1][i]
-            )}`,
-          ],
+          farm: "stable",
         });
       }
-
-      console.log("Lpreserves", LpReserves);
 
       return LpReserves;
     } catch (err) {
@@ -1552,70 +1524,298 @@ export const useFetchStable = () => {
 
   useEffect(() => {
     const fetchPools = async () => {
-      if (account) {
-        try {
-          console.log("started");
-          const multi = new MultiCall(library);
+      try {
+        setLoading(true);
 
-          const poolAddresses = [];
+        const multi = new MultiCall(library);
 
-          const rgpPrice = await calculateRigelPrice();
+        const poolAddresses = [];
 
-          const BNBPrice = await getBNBPrice();
+        const rgpPrice = await calculateRigelPrice();
 
-          const poolLength = await multi.multiCall([
+        const BNBPrice = await getBNBPrice();
+
+        const poolLength = await multi.multiCall([
+          {
+            interface: MasterChefAbi,
+            args: [],
+            target: MASTERCHEFNEWLPADDRESSES[chainId as number][2],
+            function: "poolLength",
+          },
+        ]);
+
+        for (let i = 0; i < parseFloat(poolLength[1][0].toString()); i++) {
+          const poolInfo = await multi.multiCall([
             {
               interface: MasterChefAbi,
-              args: [],
+              args: [i],
               target: MASTERCHEFNEWLPADDRESSES[chainId as number][2],
-              function: "poolLength",
+              function: "poolInfo",
             },
           ]);
 
-          console.log("poolLength", poolLength);
-
-          for (let i = 0; i < parseFloat(poolLength[1][0].toString()); i++) {
-            const poolInfo = await multi.multiCall([
-              {
-                interface: MasterChefAbi,
-                args: [i],
-                target: MASTERCHEFNEWLPADDRESSES[chainId as number][2],
-                function: "poolInfo",
-              },
-            ]);
-
-            poolInfo[1][0]?.lpToken !== undefined &&
-              poolAddresses.push({
-                pid: i,
-                poolAddress: poolInfo[1][0]?.lpToken,
-                allocPoint: poolInfo[1][0]?.allocPoint,
-              });
-          }
-
-          const farm = await calculateLiquidityandApy(
-            poolAddresses,
-            rgpPrice,
-            BNBPrice,
-            ChainId === 137 || ChainId === 80001
-              ? 2014.83125
-              : ChainId === 56 || ChainId === 97
-              ? 4300
-              : ChainId === 42262 || ChainId === 42261
-              ? 1343.220833
-              : undefined
-          );
-
-          if (farm) {
-            dispatch(updateStableFarm(farm));
-          }
-
-          console.log("useFarm-quick", farm);
-        } catch (err) {
-          console.log(err);
+          poolInfo[1][0]?.lpToken !== undefined &&
+            poolAddresses.push({
+              pid: i,
+              poolAddress: poolInfo[1][0]?.lpToken,
+              allocPoint: poolInfo[1][0]?.allocPoint,
+            });
         }
+
+        const farm = await calculateLiquidityandApy(
+          poolAddresses,
+          rgpPrice,
+          BNBPrice,
+          ChainId === 137 || ChainId === 80001
+            ? 2014.83125
+            : ChainId === 56 || ChainId === 97
+            ? 4300
+            : ChainId === 42262 || ChainId === 42261
+            ? 1343.220833
+            : undefined
+        );
+
+        if (farm) {
+          dispatch(updateStableFarm(farm));
+        }
+        setLoading(false);
+      } catch (err) {
+        console.log(err);
+        setLoading(false);
       }
     };
 
     fetchPools();
-  }, [account, ChainId]);
+  }, [account, ChainId, library]);
+
+  return { loading };
+};
+
+export const useSpecialPool = () => {
+  const { account, library } = useWeb3React();
+  const ChainId = useSelector<RootState>((state) => state.chainId.chainId);
+
+  const { prov } = useProvider();
+  const lib = library ? library : prov;
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        if (
+          ChainId !== SupportedChainId.OASISMAINNET &&
+          ChainId !== SupportedChainId.OASISTEST
+        ) {
+          const specialPool = await RGPSpecialPool2(
+            RGPSPECIALPOOLADDRESSES2[ChainId as number],
+            lib
+          );
+          const rgp = await getERC20Token(RGPADDRESSES[ChainId as number], lib);
+          const RGPBallance = await rgp.balanceOf(
+            RGPSPECIALPOOLADDRESSES2[ChainId as number]
+          );
+
+          const calculateRigelPrice = async () => {
+            try {
+              const multi = new MultiCall(library);
+              let rgpPrice;
+
+              if (ChainId === 56 || ChainId === 97) {
+                const pairAddress = await multi.multiCall([
+                  {
+                    interface: smartFactoryAbi,
+                    args: [
+                      RGPADDRESSES[ChainId as number],
+                      BUSD[ChainId as number],
+                    ],
+                    target: SMARTSWAPFACTORYADDRESSES[ChainId as number],
+                    function: "getPair",
+                  },
+                ]);
+                const token0Address = await multi.multiCall([
+                  {
+                    interface: LiquidityPairAbi,
+                    args: [],
+                    target: pairAddress[1][0],
+                    function: "token0",
+                  },
+                ]);
+                const token1Address = await multi.multiCall([
+                  {
+                    interface: LiquidityPairAbi,
+                    args: [],
+                    target: pairAddress[1][0],
+                    function: "token1",
+                  },
+                ]);
+
+                const decimal0 = await multi.multiCall([
+                  {
+                    interface: ERC20TokenAbi,
+                    args: [],
+                    target: token0Address[1][0],
+                    function: "decimals",
+                  },
+                ]);
+
+                const decimal1 = await multi.multiCall([
+                  {
+                    interface: ERC20TokenAbi,
+                    args: [],
+                    target: token1Address[1][0],
+                    function: "decimals",
+                  },
+                ]);
+
+                const reserves = await multi.multiCall([
+                  {
+                    interface: LiquidityPairAbi,
+                    args: [],
+                    target: pairAddress[1][0],
+                    function: "getReserves",
+                  },
+                ]);
+                const totalBUSD: number | any = ethers.utils.formatUnits(
+                  token0Address[1][0] === BUSD[ChainId as number]
+                    ? reserves[1][0][0]
+                    : reserves[1][0][1],
+                  token0Address[1][0] === BUSD[ChainId as number]
+                    ? decimal0[1][0]
+                    : decimal1[1][0]
+                );
+
+                const totalRGP: number | any = ethers.utils.formatUnits(
+                  token0Address[1][0] === BUSD[ChainId as number]
+                    ? reserves[1][0][1]
+                    : reserves[1][0][0],
+                  token0Address[1][0] === BUSD[ChainId as number]
+                    ? decimal1[1][0]
+                    : decimal0[1][0]
+                );
+
+                rgpPrice = totalBUSD / totalRGP;
+              } else {
+                const pairAddress = await multi.multiCall([
+                  {
+                    interface: smartFactoryAbi,
+                    args: [
+                      RGPADDRESSES[ChainId as number],
+                      USDT[ChainId as number],
+                    ],
+                    target: SMARTSWAPFACTORYADDRESSES[ChainId as number],
+                    function: "getPair",
+                  },
+                ]);
+
+                const token0Address = await multi.multiCall([
+                  {
+                    interface: LiquidityPairAbi,
+                    args: [],
+                    target: pairAddress[1][0],
+                    function: "token0",
+                  },
+                ]);
+                const token1Address = await multi.multiCall([
+                  {
+                    interface: LiquidityPairAbi,
+                    args: [],
+                    target: pairAddress[1][0],
+                    function: "token1",
+                  },
+                ]);
+                const decimal0 = await multi.multiCall([
+                  {
+                    interface: ERC20TokenAbi,
+                    args: [],
+                    target: token0Address[1][0],
+                    function: "decimals",
+                  },
+                ]);
+
+                const decimal1 = await multi.multiCall([
+                  {
+                    interface: ERC20TokenAbi,
+                    args: [],
+                    target: token1Address[1][0],
+                    function: "decimals",
+                  },
+                ]);
+                const reserves = await multi.multiCall([
+                  {
+                    interface: LiquidityPairAbi,
+                    args: [],
+                    target: pairAddress[1][0],
+                    function: "getReserves",
+                  },
+                ]);
+                const totalUSDT: number | any = ethers.utils.formatUnits(
+                  token0Address[1][0] === USDT[ChainId as number]
+                    ? reserves[1][0][0]
+                    : reserves[1][0][1],
+                  token0Address[1][0] === USDT[ChainId as number]
+                    ? decimal0[1][0]
+                    : decimal1[1][0]
+                );
+                const totalRGP: number | any = ethers.utils.formatUnits(
+                  token0Address[1][0] === USDT[ChainId as number]
+                    ? reserves[1][0][1]
+                    : reserves[1][0][0],
+                  token0Address[1][0] === USDT[ChainId as number]
+                    ? decimal1[1][0]
+                    : decimal0[1][0]
+                );
+                rgpPrice = totalUSDT / totalRGP;
+              }
+
+              return rgpPrice;
+            } catch (err) {
+              console.log(err);
+            }
+          };
+
+          const rgpPrice = await calculateRigelPrice();
+
+          const RGPLiquidity =
+            parseFloat(ethers.utils.formatUnits(RGPBallance)) *
+            (rgpPrice as number);
+
+          const yeaRate = await specialPool.YEAR_RATE();
+
+          //this is temporal
+
+          dispatch(
+            updateSpecialPool([
+              {
+                id: "0",
+                img: "rgp.svg",
+                // deposit: 'RGP',
+                deposit: "RGP",
+                earn: "RGP",
+                type: "RGP",
+                ARYValue: ethers.utils.formatUnits(yeaRate),
+                totalLiquidity: RGPLiquidity,
+                tokensStaked: ["RGP", "0"],
+                RGPEarned: "0",
+                availableToken: "",
+                inflationPerDay: 0,
+                tokenPrice: rgpPrice,
+                totalVolumePerPool: 0,
+                farmingFee: 0,
+                pId: 10793,
+                poolAllowance: "",
+                poolVersion: "2",
+                version: "v2",
+                farm: "special",
+                address: RGPSPECIALPOOLADDRESSES2[ChainId as number],
+              },
+            ])
+          );
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetch();
+  }, [ChainId, account, lib]);
 };

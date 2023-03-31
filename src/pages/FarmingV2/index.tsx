@@ -85,6 +85,7 @@ import {
   useFetchFarm,
   useFetchQuickSwap,
   useFetchStable,
+  useSpecialPool,
 } from "../../utils/hooks/useFarm";
 
 export const BIG_TEN = new bigNumber(10);
@@ -166,9 +167,10 @@ export function Index() {
 
   const farms = useSelector((state: any) => state.farms);
 
-  useFetchFarm();
-  useFetchQuickSwap();
-  useFetchStable();
+  const { loading: LpfarmLoading } = useFetchFarm();
+  const { loading: quickswapLoading } = useFetchQuickSwap();
+  const { loading: stableFarmLoading } = useFetchStable();
+  useSpecialPool();
 
   useEffect(() => {
     if (location && location.includes("RGPv2")) {
@@ -618,7 +620,7 @@ export function Index() {
                 <TabPanel px={0} py={"40px"}>
                   <FarmHeader />
                   <Box mx='auto' w={["100%", "100%", "100%"]} pb='70px'>
-                    {loadingState ? (
+                    {LpfarmLoading ? (
                       <Stack mt={2}>
                         {new Array(4).fill("1").map((item, index) => {
                           return (
@@ -668,7 +670,7 @@ export function Index() {
                           refreshSpecialData={refreshSpecialData}
                           section={"normal"}
                           wallet={wallet}
-                          LoadingState={loadingState}
+                          LoadingState={LpfarmLoading}
                         />
                       ))
                     )}
@@ -808,8 +810,8 @@ export function Index() {
               <TabPanels>
                 <TabPanel px={0} py={"40px"}>
                   <FarmHeader />
-                  <Text>Special pool</Text>
-                  {/* {specialPool?.map((content: any, index: number) => (
+
+                  {farms?.SpecialPool?.map((content: any, index: number) => (
                     <YieldFarm
                       farmDataLoading={farmDataLoading}
                       content={content}
@@ -818,7 +820,7 @@ export function Index() {
                       wallet={wallet}
                       URLReferrerAddress={refAddress}
                     />
-                  ))} */}
+                  ))}
                 </TabPanel>
               </TabPanels>
             </Tabs>
@@ -1052,7 +1054,7 @@ export function Index() {
                           <Text />
                         </Flex>
 
-                        {loadingLP ? (
+                        {quickswapLoading ? (
                           <Stack mt={2}>
                             {new Array(4).fill("1").map((item, index) => {
                               return (
@@ -1101,18 +1103,20 @@ export function Index() {
                               );
                             })}
                           </Stack>
-                        ) : null}
-
-                        {/* <YieldFarm
-                                  farmDataLoading={farmDataLoading}
-                                  content2={content}
-                                  key={content?.id}
-                                  section={"normal"}
-                                  wallet={wallet}
-                                  LoadingState={loadingLP}
-                                  contractID={1}
-                                  refreshSpecialData={refreshSpecialData}
-                                /> */}
+                        ) : (
+                          farms?.QuickswapFarm.map((content: any) => (
+                            <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content2={content}
+                              key={content?.id}
+                              section={"normal"}
+                              wallet={wallet}
+                              LoadingState={quickswapLoading}
+                              contractID={1}
+                              refreshSpecialData={refreshSpecialData}
+                            />
+                          ))
+                        )}
                       </Box>
                     </Box>
                   </Flex>
@@ -1193,7 +1197,7 @@ export function Index() {
                           <Text />
                         </Flex>
 
-                        {loadingLP ? (
+                        {stableFarmLoading ? (
                           <Stack mt={2}>
                             {new Array(4).fill("1").map((item, index) => {
                               return (
@@ -1242,18 +1246,20 @@ export function Index() {
                               );
                             })}
                           </Stack>
-                        ) : null}
-
-                        {/* <YieldFarm
-                                farmDataLoading={farmDataLoading}
-                                content2={content}
-                                key={content?.id}
-                                section={"normal"}
-                                wallet={wallet}
-                                LoadingState={loadingLP}
-                                refreshSpecialData={refreshSpecialData}
-                                contractID={2}
-                              /> */}
+                        ) : (
+                          farms?.StableFarm.map((content: any) => (
+                            <YieldFarm
+                              farmDataLoading={farmDataLoading}
+                              content2={content}
+                              key={content?.id}
+                              section={"normal"}
+                              wallet={wallet}
+                              LoadingState={stableFarmLoading}
+                              refreshSpecialData={refreshSpecialData}
+                              contractID={2}
+                            />
+                          ))
+                        )}
                       </Box>
                     </Box>
                   </Flex>

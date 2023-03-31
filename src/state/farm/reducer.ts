@@ -13,6 +13,7 @@ import {
   updateLpFarm,
   updateQuickSwapFarm,
   updateStableFarm,
+  updateSpecialPool,
 } from "./actions";
 
 export interface farmStateInterface {
@@ -41,6 +42,7 @@ export interface farmStateInterface {
   LpFarm: any;
   QuickswapFarm: any;
   StableFarm: any;
+  SpecialPool: any;
 }
 
 export const initialState: farmStateInterface = {
@@ -85,6 +87,7 @@ export const initialState: farmStateInterface = {
   LpFarm: [],
   QuickswapFarm: [],
   StableFarm: [],
+  SpecialPool: [],
 };
 
 export default createReducer(initialState, (builder) =>
@@ -192,5 +195,9 @@ export default createReducer(initialState, (builder) =>
 
     .addCase(updateStableFarm, (state, action) => {
       state.StableFarm = action.payload;
+    })
+
+    .addCase(updateSpecialPool, (state, action) => {
+      state.SpecialPool = action.payload;
     })
 );

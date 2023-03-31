@@ -38,3 +38,4 @@ export const updateQuickSwapFarm = createAction<any[]>(
   "farm/updateQuickSwapFarm"
 );
 export const updateStableFarm = createAction<any[]>("farm/updateStableFarm");
+export const updateSpecialPool = createAction<any[]>("farm/updateSpecialPool");

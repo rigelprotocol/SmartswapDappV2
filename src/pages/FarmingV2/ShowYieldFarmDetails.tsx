@@ -147,13 +147,13 @@ const ShowYieldFarmDetails = ({
   const signer = library?.getSigner();
   const [reload, setReload] = useState(false);
   const [contentid, setContentId] = useState(undefined);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // const data = useGetFarmData(reload, setReload);
 
   const { loadingState } = useUpdateFarm({ reload, setReload, content });
 
-  useFetchYieldFarmDetails({ content, section, setLoading, loading });
+  useFetchYieldFarmDetails({ content, section, setLoading, loading, reload });
 
   //const {loadingFarm} = useUpdateNewFarm({reload, setReload, content});
 
@@ -236,10 +236,10 @@ const ShowYieldFarmDetails = ({
     const checkForApproval = async () => {
       const rgp = await rigelToken(RGP[chainId as number], library);
       const rgpApproval = await poolAllowance(rgp);
-      if (content.deposit === "RGP" && Number(content.id) === 1) {
+      if (content.deposit === "RGP" && content.version === "v1") {
         const specialPoolV1Approval = await specialPoolV1Allowance(rgp);
         changeApprovalButton(true, specialPoolV1Approval);
-      } else if (content.deposit === "RGP" && Number(content.id) === 13) {
+      } else if (content.deposit === "RGP" && content.version === "v2") {
         const specialPoolV2Approval = await specialPoolV2Allowance(rgp);
 
         changeApprovalButton(true, specialPoolV2Approval);
@@ -305,6 +305,7 @@ const ShowYieldFarmDetails = ({
               message: `Successful RGP Approval`,
             })
           );
+          setReload(true);
         }
         getAllowances();
       } catch (error: any) {
@@ -360,6 +361,7 @@ const ShowYieldFarmDetails = ({
             })
           );
         }
+        setReload(true);
         getAllowances();
       } catch (error: any) {
         console.error(error);
@@ -393,11 +395,11 @@ const ShowYieldFarmDetails = ({
   };
 
   const checkUser = async (val: string) => {
-    if (content.deposit === "RGP" && Number(content.id) === 1) {
+    if (content.deposit === "RGP" && content.version === "v1") {
       await RGPSpecialPoolV1Approval();
       setApproveValueForOtherToken(true);
       setApproveValueForRGP(true);
-    } else if (content.deposit === "RGP" && Number(content.id) === 13) {
+    } else if (content.deposit === "RGP" && content.version === "v2") {
       await RGPSpecialPoolV2Approval();
       setApproveValueForOtherToken(true);
       setApproveValueForRGP(true);
@@ -622,10 +624,11 @@ const ShowYieldFarmDetails = ({
       );
 
       if (account) {
-        if (val === "RGP" && Number(content.id) === 1) {
-          await RGPUnstake(val);
-        } else if (val === "RGP" && Number(content.id) === 13) {
-          await RGPUnstakeV2(val);
+        console.log("id", content.id);
+        if (val === "RGP" && content?.version === "v1") {
+          await RGPUnstake(RGPSPECIALPOOLADDRESSES[chainId as number]);
+        } else if (val === "RGP" && content?.version === "v2") {
+          await RGPUnstake(RGPSPECIALPOOLADDRESSES2[chainId as number]);
         } else {
           tokensWithdrawal(content.id, val);
         }
@@ -959,9 +962,9 @@ const ShowYieldFarmDetails = ({
                     : ethers.utils.parseUnits(format3, 9).toString(),
               }
             );
-            const { confirmations, status, logs } = await fetchTransactionData(
-              data
-            );
+            const receipt = await data.wait(3);
+            setDeposited(true);
+            setReload(!reload);
             GFarmingSuccessTransaction("farming", "stake", val, "v2");
             dispatch(
               setOpenModal({
@@ -972,7 +975,6 @@ const ShowYieldFarmDetails = ({
 
             //callRefreshFarm(confirmations, status);
             //temporal
-            setDeposited(true);
           }
         } else {
           const lpTokens = await MasterChefV2Contract(
@@ -1017,9 +1019,10 @@ const ShowYieldFarmDetails = ({
               message: `Successfully deposited`,
             })
           );
+          setReload(!reload);
           GFarmingSuccessTransaction("farming", "stake", val, "v2");
           setDeposited(true);
-          setReload(true);
+
           setContentId(content.deposit === "RGP" ? undefined : content.id);
           //  callRefreshFarm(confirmations, status);
         }
@@ -1045,11 +1048,12 @@ const ShowYieldFarmDetails = ({
     );
     try {
       if (account) {
-        if (val === "RGP" && Number(content.id) === 1) {
-          await RGPuseStake();
-        } else if (val === "RGP" && Number(content.id) === 13) {
-          await RGPuseStakeV2();
+        if (val === "RGP" && content?.version === "v1") {
+          await RGPuseStakeV2(RGPSPECIALPOOLADDRESSES[chainId as number]);
+        } else if (val === "RGP" && content?.version === "v2") {
+          await RGPuseStakeV2(RGPSPECIALPOOLADDRESSES2[chainId as number]);
         } else {
+          console.log("deposit lp");
           LPDeposit(content.id, val);
         }
       }
@@ -1132,13 +1136,10 @@ const ShowYieldFarmDetails = ({
       }
     }
   };
-  const RGPuseStakeV2 = async () => {
+  const RGPuseStakeV2 = async (poolAddress: string) => {
     if (account) {
       try {
-        const specialPool = await RGPSpecialPool2(
-          RGPSPECIALPOOLADDRESSES2[chainId as number],
-          library
-        );
+        const specialPool = await RGPSpecialPool2(poolAddress, library);
         GFarmingSpecialPoolReferral(
           referrerAddress === ZERO_ADDRESS ? false : true
         );
@@ -1184,13 +1185,10 @@ const ShowYieldFarmDetails = ({
   };
 
   // withdrawal of funds
-  const RGPUnstake = async () => {
+  const RGPUnstake = async (poolAddress: string) => {
     if (account) {
       try {
-        const specialPool = await RGPSpecialPool(
-          RGPSPECIALPOOLADDRESSES[chainId as number],
-          library
-        );
+        const specialPool = await RGPSpecialPool(poolAddress, library);
         const { format1, format2, format3 } = await calculateGas(
           userGasPricePercentage,
           library,
@@ -1219,14 +1217,23 @@ const ShowYieldFarmDetails = ({
           }
         );
         const { confirmations, status } = await fetchTransactionData(data);
-        GFarmingSuccessTransaction("special pool", "unstake", "RGP", "v1");
-        dispatch(
-          setOpenModal({
-            trxState: TrxState.TransactionSuccessful,
-            message: `Successfully unstaked ${unstakeToken} RGP `,
-          })
-        );
-        refreshSpecialData();
+        if (confirmations > 1) {
+          GFarmingSuccessTransaction(
+            "special pool",
+            "unstake",
+            "RGP",
+            content?.version
+          );
+          dispatch(
+            setOpenModal({
+              trxState: TrxState.TransactionSuccessful,
+              message: `Successfully unstaked ${unstakeToken} RGP `,
+            })
+          );
+
+          refreshSpecialData();
+          setReload(true);
+        }
         // dispatch the getTokenStaked action from here when data changes
         //  callRefreshFarm(confirmations, status);
       } catch (e: any) {
@@ -2382,7 +2389,10 @@ const ShowYieldFarmDetails = ({
                                 ? { background: "rgba(64, 186, 213, 0.15)" }
                                 : { background: "#444159" }
                             }
-                            onClick={() => confirmDeposit(content.deposit)}
+                            onClick={() => {
+                              console.log("confirm");
+                              confirmDeposit(content.deposit);
+                            }}
                           >
                             {depositValue}
                           </Button>
