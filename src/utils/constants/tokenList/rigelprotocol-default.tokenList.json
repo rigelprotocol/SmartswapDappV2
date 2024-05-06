@@ -35,6 +35,23 @@
       "logoURI": "https://pancakeswap.finance/images/tokens/0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c.png"
     },
     {
+      "name": "Tether USD",
+      "symbol": "USDT",
+      "address": "0x55d398326f99059fF775485246999027B3197955",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
+    },
+
+    {
+      "name": "FDUSD Token",
+      "symbol": "FDUSD",
+      "address": "0x14f4F032998326365943D326bFA2e31Ed716bfC5",
+      "chainId": 56,
+      "decimals": 18,
+      "logoURI": "https://www.bscscan.com/token/images/fdusd_32.png"
+    },
+    {
       "name": "BUSD Token",
       "symbol": "BUSD",
       "address": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
@@ -42,6 +59,7 @@
       "decimals": 18,
       "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/assets/BUSD-BD1/logo.png"
     },
+
     {
       "name": "Axie Infinity Shard",
       "symbol": "AXS",
@@ -50,14 +68,7 @@
       "logoURI": "https://www.bscscan.com/token/images/axieinfinity_32.png",
       "address": "0x715D400F88C167884bbCc41C5FeA407ed4D2f8A0"
     },
-    {
-      "name": "Tether USD",
-      "symbol": "USDT",
-      "address": "0x55d398326f99059fF775485246999027B3197955",
-      "chainId": 56,
-      "decimals": 18,
-      "logoURI": "https://raw.githubusercontent.com/compound-finance/token-list/master/assets/asset_USDT.svg"
-    },
+
     {
       "name": "AXSToken",
       "symbol": "AXS",

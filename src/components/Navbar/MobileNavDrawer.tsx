@@ -98,7 +98,7 @@ const MobileNavDrawer = () => {
                   activeStyle={{
                     color: "#319EF6",
                   }}
-                  to={chainId ===43114?"/freeswap":"/swap"}
+                  to={chainId === 43114 ? "/freeswap" : "/swap"}
                 >
                   <Flex
                     mb={2}
@@ -110,7 +110,11 @@ const MobileNavDrawer = () => {
                     bgColor={isOn ? SwapBgColor : "transparent"}
                   >
                     <Flex ml={6}>
-                      <Nav label="Swap" to={chainId ===43114?"/freeswap":"/swap"} img={<Img src={SwapIcon} />} />
+                      <Nav
+                        label="Swap"
+                        to={chainId === 43114 ? "/freeswap" : "/swap"}
+                        img={<Img src={SwapIcon} />}
+                      />
                     </Flex>
                     {isOn ? (
                       <ChevronUpIcon mr={2} />
@@ -131,28 +135,60 @@ const MobileNavDrawer = () => {
                       mb={2}
                       onClick={onClose}
                     >
-                      <Nav label="Swap" to={chainId ===43114?"/freeswap":`/swap${search}`} />
+                      <Nav
+                        label="Swap"
+                        to={chainId === 43114 ? "/freeswap" : `/swap${search}`}
+                      />
                     </Text>
                     <Text
                       _hover={{ color: "#319EF6" }}
                       mb={2}
                       onClick={onClose}
                     >
-                                <Nav label="AutoTrade" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON  ? '#' : `/autotrade${search}`} />
+                      <Nav
+                        label="AutoTrade"
+                        to={
+                          chainId !== SupportedChainId.BINANCETEST &&
+                          chainId !== SupportedChainId.BINANCE &&
+                          chainId !== SupportedChainId.POLYGON
+                            ? "#"
+                            : `/autotrade${search}`
+                        }
+                      />
                     </Text>
                     <Text
                       _hover={{ color: "#319EF6" }}
                       mb={2}
                       onClick={onClose}
                     >
-                                <Nav label="Set Price" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON && chainId !== SupportedChainId.AVALANCHE  ? '#' :`/set-price${search}`} />
+                      <Nav
+                        label="Auto Limit"
+                        to={
+                          chainId !== SupportedChainId.BINANCETEST &&
+                          chainId !== SupportedChainId.BINANCE &&
+                          chainId !== SupportedChainId.POLYGON &&
+                          chainId !== SupportedChainId.AVALANCHE
+                            ? "#"
+                            : `/set-price${search}`
+                        }
+                      />
                     </Text>
                     <Text
                       _hover={{ color: "#319EF6" }}
                       mb={2}
                       onClick={onClose}
                     >
-                                  <Nav label="Freeswap" to={chainId !== SupportedChainId.BINANCETEST && chainId !== SupportedChainId.BINANCE && chainId !== SupportedChainId.POLYGON && chainId !== SupportedChainId.AVALANCHE  ? '#' :`/freeswap${search}`} />
+                      <Nav
+                        label="Freeswap"
+                        to={
+                          chainId !== SupportedChainId.BINANCETEST &&
+                          chainId !== SupportedChainId.BINANCE &&
+                          chainId !== SupportedChainId.POLYGON &&
+                          chainId !== SupportedChainId.AVALANCHE
+                            ? "#"
+                            : `/freeswap${search}`
+                        }
+                      />
                     </Text>
                   </Flex>
                 </Collapse>
@@ -173,7 +209,11 @@ const MobileNavDrawer = () => {
                     bgColor={isOnFarm ? SwapBgColor : "transparent"}
                   >
                     <Flex ml={6}>
-                      <Nav label="Farm" to="/swap" img={<Img src={FarmingIcon} />} />
+                      <Nav
+                        label="Farm"
+                        to="/swap"
+                        img={<Img src={FarmingIcon} />}
+                      />
                     </Flex>
                     {isOnFarm ? (
                       <ChevronUpIcon mr={2} />
@@ -189,12 +229,20 @@ const MobileNavDrawer = () => {
                     ml={10}
                     mb={3}
                   >
-                          <Flex ml={6} mb={3} onClick={onClose}>
-                  <Nav label="Liquidity" to={chainId ===43114?"/freeswap":"/pool"} active={location === '/add' || location === '/remove' ? true : false} />
-                </Flex>
-                <Flex ml={6} mb={3} onClick={onClose}>
-                  <Nav label="Farm" to={`/farm${search}`} />
-                </Flex>
+                    <Flex ml={6} mb={3} onClick={onClose}>
+                      <Nav
+                        label="Liquidity"
+                        to={chainId === 43114 ? "/freeswap" : "/pool"}
+                        active={
+                          location === "/add" || location === "/remove"
+                            ? true
+                            : false
+                        }
+                      />
+                    </Flex>
+                    <Flex ml={6} mb={3} onClick={onClose}>
+                      <Nav label="Farm" to={`/farm${search}`} />
+                    </Flex>
                   </Flex>
                 </Collapse>
 
@@ -214,7 +262,11 @@ const MobileNavDrawer = () => {
                     bgColor={isOnBridge ? SwapBgColor : "transparent"}
                   >
                     <Flex ml={6}>
-                      <Nav label="Bridge" to="#" img={<Img src={BridgeIcon} />} />
+                      <Nav
+                        label="Bridge"
+                        to="#"
+                        img={<Img src={BridgeIcon} />}
+                      />
                     </Flex>
                     {isOnBridge ? (
                       <ChevronUpIcon mr={2} />
@@ -230,18 +282,24 @@ const MobileNavDrawer = () => {
                     ml={10}
                     mb={3}
                   >
-                          <Flex ml={6} mb={3} onClick={onClose}>
-                  <Nav label="Bridge RGPs on Spherium" to="#" />
-                </Flex>
-                <Flex ml={6} mb={3} onClick={onClose}>
-                  <Nav label="Bridge RGPs on Router" to={chainId ===43114?"/freeswap":"/bridge/router"} />
-                </Flex>
+                    <Flex ml={6} mb={3} onClick={onClose}>
+                      <Nav label="Bridge RGPs on Spherium" to="#" />
+                    </Flex>
+                    <Flex ml={6} mb={3} onClick={onClose}>
+                      <Nav
+                        label="Bridge RGPs on Router"
+                        to={chainId === 43114 ? "/freeswap" : "/bridge/router"}
+                      />
+                    </Flex>
                   </Flex>
                 </Collapse>
 
-
                 <Flex ml={6} mb={3} onClick={onClose}>
-                  <Nav label="NFTs" to={chainId ===43114?"/freeswap":"/nft"} img={<Img src={NFTIcon} />} />
+                  <Nav
+                    label="NFTs"
+                    to={chainId === 43114 ? "/freeswap" : "/nft"}
+                    img={<Img src={NFTIcon} />}
+                  />
                 </Flex>
                 {/* <Flex ml={6} mb={3}>
                   <Link href="#" isExternal onClick={onClose}>
@@ -249,11 +307,11 @@ const MobileNavDrawer = () => {
                   </Link>
                 </Flex> */}
                 <Flex ml={6} color="#999999" mt={5} fontSize="16px" mb={2}>
-                <Img src={DappIcon} mr={4}/>  DAPPS
+                  <Img src={DappIcon} mr={4} /> DAPPS
                 </Flex>
                 <Flex ml={6} mb={3}>
                   <Link href="#">
-                      <Text>SmartSwap</Text>
+                    <Text>SmartSwap</Text>
                   </Link>
                 </Flex>
                 <Flex ml={6} mb={3}>
@@ -262,8 +320,8 @@ const MobileNavDrawer = () => {
                   </Link>
                 </Flex>
                 <Flex ml={6} mb={3}>
-                <Link href="https://smartswap.rigelprotocol.com/smartbid?chain=bsc_test">
-                  <Text>Smart Bid</Text>
+                  <Link href="https://smartswap.rigelprotocol.com/smartbid?chain=bsc_test">
+                    <Text>Smart Bid</Text>
                   </Link>
                 </Flex>
                 {/* <Flex ml={6} mb={3}>
@@ -271,8 +329,8 @@ const MobileNavDrawer = () => {
                 </Flex> */}
 
                 <Flex ml={6} mb={3}>
-                <Link href="https://launchpad.rigelprotocol.com/" isExternal>
-                  <Text>LaunchPad</Text>
+                  <Link href="https://launchpad.rigelprotocol.com/" isExternal>
+                    <Text>LaunchPad</Text>
                   </Link>
                 </Flex>
               </Flex>

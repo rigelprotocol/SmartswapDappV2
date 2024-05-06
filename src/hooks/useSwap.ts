@@ -31,7 +31,6 @@ export function tryParseAmount<T extends Currency>(
     return undefined;
   }
   try {
-    // console.log(currency);
     const typedValueParsed = ethers.utils
       .parseUnits(value, decimals)
       .toString();
@@ -159,7 +158,11 @@ const useSwap = (
             setAmount("");
           }
           // setLoading(false)
-        } else if (!wrappable && address === ZERO_ADDRESS && pairAddress === ZERO_ADDRESS ) {
+        } else if (
+          !wrappable &&
+          address === ZERO_ADDRESS &&
+          pairAddress === ZERO_ADDRESS
+        ) {
           //   setWrap(true);
           setWrap(false);
           // RGP BNB BUSD USDT
@@ -216,14 +219,6 @@ const useSwap = (
               WNATIVEADDRESSES[ChainId as number]
             ),
           ]);
-          // console.log({  RGPTOKENA,
-          //             RGPTOKENB,
-          //             NATIVETOKENA,
-          //             NATIVETOKENB,
-          //             BUSDTOKENA,
-          //             BUSDTOKENB,
-          //             USDTTOKENA,
-          //             USDTTOKENB,USDTRGP, USDTNATIVE})
           try {
             if (USDTTOKENA !== ZERO_ADDRESS && USDTTOKENB !== ZERO_ADDRESS) {
               if (amountIn !== undefined) {
@@ -576,11 +571,10 @@ const useSwap = (
           setAmount("");
           setPathSymbol("");
           setPath([]);
-          setOppositeAmount("")
+          setOppositeAmount("");
         }
       } catch (e) {
         console.log({ e });
-        console.log(`Error occurs here: ${e}`);
         setAmount("");
       }
     };

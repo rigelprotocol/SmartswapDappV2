@@ -266,7 +266,6 @@ export default function AddLiquidity({
           );
         }
       } catch (err) {
-        console.log(err);
         dispatch(
           setOpenModal({
             message: `${symbol} Approval`,
@@ -402,7 +401,6 @@ export default function AddLiquidity({
           );
         }
       } catch (err) {
-        console.log(err);
         GFailedTransaction(
           "liquidity",
           "liquidity supplied failed",
@@ -534,7 +532,6 @@ export default function AddLiquidity({
           );
         }
       } catch (err: any) {
-        console.log(err);
         GFailedTransaction(
           "liquidity",
           "liquidity supplied failed",

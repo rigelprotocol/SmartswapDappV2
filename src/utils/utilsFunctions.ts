@@ -154,7 +154,6 @@ export const changeFrequencyTodays = (
     today = today + 1;
   } else if (frequency === "monthly") {
     days = 30;
-    // interval = days * 24 * 60
     today = today + 1;
   } else if (frequency === "30" || frequency === "5") {
     interval = parseInt(frequency);
@@ -306,7 +305,7 @@ export const switchNetwork = async (
       console.error(`Switch chain error ${switchError}`);
       // handle other "switch" errors
     }
-  }else if (chainId === "0xA86A") {
+  } else if (chainId === "0xA86A") {
     try {
       await library?.send("wallet_switchEthereumChain", [
         { chainId: "0xA86A" },
@@ -329,8 +328,7 @@ export const switchNetwork = async (
       console.error(`Switch chain error ${switchError}`);
       // handle other "switch" errors
     }
-  }
-   else if (chainId === "0xA86A8") {
+  } else if (chainId === "0xA86A8") {
     try {
       await library?.send("wallet_switchEthereumChain", [
         { chainId: "0x38" },

@@ -14,6 +14,14 @@
     "address": "0xFA262F303Aa244f9CC66f312F0755d89C3793192"
   },
   {
+    "name": "FDUSD Token",
+    "symbol": "FDUSD",
+    "address": "0x14f4F032998326365943D326bFA2e31Ed716bfC5",
+    "chainId": 56,
+    "decimals": 18,
+    "logoURI": "https://www.bscscan.com/token/images/fdusd_32.png"
+  },
+  {
     "symbol": "BNB",
     "available": true,
     "imported": false,

@@ -87,20 +87,6 @@ const YieldFarm = ({
     selectedField === farmSection.NEW_LP ||
     selectedField === farmSection.SECOND_NEW_LP;
 
-  // useEffect(() => {
-  //   const getSingleFarm = async () => {
-  //     await content2;
-  //
-  //     if (symbolName[2] === content2?.deposit) {
-  //       myRef.current.scrollIntoView({behavior: 'smooth'});
-  //       setShowYieldFarm(true)
-  //     }
-  //
-  //   };
-  //   getSingleFarm();
-  //
-  // }, [symbolName, params]);
-
   const totalLiquidityValue = () => {
     if (farmDataLoading) return <Spinner speed="0.65s" color="#333333" />;
 
@@ -108,8 +94,6 @@ const YieldFarm = ({
       return ` ${formatAmount(content.totalLiquidity)}`;
     }
   };
-
-  // console.log(loading);
 
   return (
     <>
