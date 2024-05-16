@@ -204,7 +204,7 @@ export function useDerivedSwapInfo(): {
   if (parseFloat(typedValue) > 0 && pathArray?.length === 0 && !wrap) {
     inputError = "Insufficient Liquidity for this Trade.";
   }
-  if (address === ZERO_ADDRESS ) {
+  if (address === ZERO_ADDRESS) {
     inputError = "Insufficient Liquidity for this Trade.";
   }
 
@@ -252,15 +252,17 @@ function validatedRecipient(recipient: any): string | null {
 function parseCurrencyFromURLParameter(urlParam: any, symbol = ""): string {
   if (typeof urlParam === "string") {
     const valid = isAddress(urlParam);
+    console.log({ valid });
     if (valid) return valid;
     if (valid === false) return symbol;
   }
   return urlParam ?? "";
 }
-function queryParametersToSwapState(
+export function queryParametersToSwapState(
   parsedQs: any,
   chainId: number | undefined
 ) {
+  console.log({ parsedQs });
   let inputCurrency = parseCurrencyFromURLParameter(parsedQs.inputCurrency);
   let outputCurrency = parseCurrencyFromURLParameter(parsedQs.outputCurrency);
   const symbol = SupportedChainSymbols[chainId ?? 56];
@@ -323,8 +325,7 @@ export const binanceTestFreeMarketArray = [
 export const AvalancheFreeMarketArray = [
   { name: "Tradejoe", image: "tradejoe.png" },
   // { name: "Pangolin", image: "Pangolin.png" },
-
-]
+];
 
 // updates the swap state to use the defaults for a given network
 export function useDefaultsFromURLSearch() {
@@ -352,6 +353,10 @@ export function useDefaultsFromURLSearch() {
         recipient: null,
       })
     );
+    console.log({
+      inputCurrencyId: parsed[Field.INPUT].currencyId,
+      outputCurrencyId: parsed[Field.OUTPUT].currencyId,
+    });
     setResult({
       inputCurrencyId: parsed[Field.INPUT].currencyId,
       outputCurrencyId: parsed[Field.OUTPUT].currencyId,

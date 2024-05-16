@@ -17,7 +17,10 @@ import { useUpdateUserGasPreference } from "../../state/gas/hooks";
 import { clearSearchResult } from "../../state/farming/action";
 import { useDispatch } from "react-redux";
 import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
-import { GClickedAddLiquidity, GClickedAddNewLiquidity } from "../../components/G-analytics/gLiquidity";
+import {
+  GClickedAddLiquidity,
+  GClickedAddNewLiquidity,
+} from "../../components/G-analytics/gLiquidity";
 
 const Index = () => {
   const mode = useColorModeValue("light", "dark");
@@ -92,39 +95,39 @@ const Index = () => {
         startToure={startWelcomeRide}
         openModal={welcomeModal}
         closeModal={() => {
-      window.localStorage.setItem("firstLiquidtyVisit", "2");
-          setWelcomeModal((state) => !state)
+          window.localStorage.setItem("firstLiquidtyVisit", "2");
+          setWelcomeModal((state) => !state);
         }}
         textHeader={"Welcome to RigelProtocol SmartSwap"}
-        welcomeText='With liquidity, you have the option of earning more by depositing tokens to join liquidity pools and receive LP tokens.'
+        welcomeText="With liquidity, you have the option of earning more by depositing tokens to join liquidity pools and receive LP tokens."
       />
       <Flex
         mx={5}
-        justifyContent='center'
-        alignItems='center'
-        flexDirection='column'
-        minHeight='70vh'
-        rounded='lg'
+        justifyContent="center"
+        alignItems="center"
+        flexDirection="column"
+        minHeight="70vh"
+        rounded="lg"
         mb={["110px", "110px", "4"]}
       >
         <Box
-          minHeight='100%'
+          minHeight="100%"
           w={["100%", "100%", "29.5%", "29.5%"]}
-          rounded='lg'
+          rounded="lg"
         >
           <Box
             mt={5}
             p={5}
             backgroundColor={mode === "dark" ? "#15202B" : "#FFFFFF"}
             border={mode === "dark" ? "1px solid #324D68" : "1px solid #DEE6ED"}
-            borderRadius='6px'
+            borderRadius="6px"
           >
-            <Flex justifyContent='left' mb={4} flexDirection='column'>
-              <Flex justifyContent='space-between'>
+            <Flex justifyContent="left" mb={4} flexDirection="column">
+              <Flex justifyContent="space-between">
                 <Text
-                  fontSize='16px'
+                  fontSize="16px"
                   color={mode === "dark" ? "#F1F5F8" : "rgba(51, 51, 51, 1)"}
-                  className='Liquidity'
+                  className="Liquidity"
                 >
                   Liquidity
                 </Text>
@@ -137,59 +140,59 @@ const Index = () => {
               </Flex>
 
               <Text
-                fontSize='14px'
+                fontSize="14px"
                 color={mode === "dark" ? "#DCE5EF" : "#666666"}
                 mt={2}
-                cursor='pointer'
+                cursor="pointer"
               >
                 Join liquidity pools to receive LP tokens
               </Text>
             </Flex>
 
             <Flex
-              justifyContent='space-between'
+              justifyContent="space-between"
               flexDirection={["column", "column", "column", "column"]}
             >
-              <Link to='/add'>
+              <Link to="/add">
                 <Button
-                  d='block'
+                  d="block"
                   w={["100%", "100%", "100%", "100%"]}
                   marginTop={["20px", "0px", "20px", "0px"]}
-                  className='AddLiquidity'
-                  h='50px'
+                  className="AddLiquidity"
+                  h="50px"
                   my={4}
-                  border='none'
-                  fontSize='lg'
-                  cursor='pointer'
-                  boxShadow='0px 1px 7px rgba(41, 45, 50, 0.08)'
-                  lineHeight='24px'
-                  color='#FFFFFF'
-                  bg='#319EF6'
-                  borderRadius='6px'
+                  border="none"
+                  fontSize="lg"
+                  cursor="pointer"
+                  boxShadow="0px 1px 7px rgba(41, 45, 50, 0.08)"
+                  lineHeight="24px"
+                  color="#FFFFFF"
+                  bg="#319EF6"
+                  borderRadius="6px"
                   _hover={{ outline: "none", background: "#319EF6" }}
                   _active={{ outline: "none", background: "#319EF6" }}
-                  onClick={()=>GClickedAddLiquidity()}
+                  onClick={() => GClickedAddLiquidity()}
                 >
                   Add Liquidity
                 </Button>
               </Link>
-              <Link to='/add'>
+              <Link to="/add">
                 <Button
-                  d='block'
+                  d="block"
                   w={["100%", "100%", "100%", "100%"]}
                   marginTop={["20px", "0px", "20px", "0px"]}
                   _hover={{ bgColor: "transparent" }}
                   _active={{ bgColor: "transparent" }}
-                  h='50px'
+                  h="50px"
                   my={4}
-                  color='#319EF6'
-                  fontSize='lg'
-                  cursor='pointer'
-                  lineHeight='24px'
-                  borderRadius='6px'
-                  bg='transparent'
-                  border=' 2px solid #319EF6'
-                  className='CreatePair'
+                  color="#319EF6"
+                  fontSize="lg"
+                  cursor="pointer"
+                  lineHeight="24px"
+                  borderRadius="6px"
+                  bg="transparent"
+                  border=" 2px solid #319EF6"
+                  className="CreatePair"
                   onClick={() => GClickedAddNewLiquidity()}
                 >
                   Create a pair
@@ -197,57 +200,57 @@ const Index = () => {
               </Link>
             </Flex>
 
-            <Flex justifyContent='center' mx={5} my={4} className='importPools'>
+            <Flex justifyContent="center" mx={5} my={4} className="importPools">
               <Text
-                fontSize='sm'
+                fontSize="sm"
                 color={mode === "dark" ? "#DCE5EF" : "#666666"}
               >
                 Dont see a pool you joined?
               </Text>
-              <Text fontSize='sm' color='blue.300' ml={3} cursor='pointer'>
-                <Link to='/find'> Import it </Link>
+              <Text fontSize="sm" color="blue.300" ml={3} cursor="pointer">
+                <Link to="/find"> Import it </Link>
               </Text>
             </Flex>
           </Box>
           <Box
             backgroundColor={mode === "dark" ? "#15202B" : "#FFFFFF"}
             border={mode === "dark" ? "1px solid #324D68" : "1px solid #DEE6ED"}
-            borderRadius='6px'
+            borderRadius="6px"
             my={4}
-            w='100%'
-            className='LiquidityPosition'
+            w="100%"
+            className="LiquidityPosition"
           >
             <Flex
               mx={5}
-              justifyContent='space-between'
-              alignItems='center'
-              rounded='lg'
+              justifyContent="space-between"
+              alignItems="center"
+              rounded="lg"
               my={4}
             >
               <Text
                 color={mode === "dark" ? "#F1F5F8" : "#000000"}
-                fontSize='md'
+                fontSize="md"
               >
                 My Liquidity Positions
               </Text>
             </Flex>
             {loading ? (
               <Flex
-                color='#fff'
-                h='100px'
-                mb='10px'
-                justifyContent='center'
-                alignItems='center'
+                color="#fff"
+                h="100px"
+                mb="10px"
+                justifyContent="center"
+                alignItems="center"
                 px={4}
                 mx={5}
                 backgroundColor={mode === "dark" ? "#213345" : "#F2F5F8"}
                 border={
                   mode === "dark" ? "1px solid #324D68" : "1px solid #DEE6ED"
                 }
-                borderRadius='6px'
+                borderRadius="6px"
               >
                 <Text
-                  fontSize='sm'
+                  fontSize="sm"
                   color={mode === "dark" ? "#DCE5EF" : "#666666"}
                 >
                   Loading...
@@ -255,29 +258,29 @@ const Index = () => {
               </Flex>
             ) : liquidityLength === 0 ? (
               <Flex
-                color='#fff'
-                h='100px'
-                mb='10px'
-                justifyContent='center'
-                alignItems='center'
+                color="#fff"
+                h="100px"
+                mb="10px"
+                justifyContent="center"
+                alignItems="center"
                 px={3}
                 mx={5}
                 backgroundColor={mode === "dark" ? "#213345" : "#F2F5F8"}
                 border={
                   mode === "dark" ? "1px solid #324D68" : "1px solid #DEE6ED"
                 }
-                borderRadius='6px'
+                borderRadius="6px"
               >
                 <Text
-                  fontSize='sm'
+                  fontSize="sm"
                   color={mode === "dark" ? "#DCE5EF" : "#666666"}
                 >
                   No Liquidity Found.
                 </Text>
               </Flex>
             ) : (
-              <Flex mb={5} justify='center'>
-                <Box w='100%'>
+              <Flex mb={5} justify="center">
+                <Box w="100%">
                   {liquidities?.map((liquid, index) => (
                     <Liquidities key={`${index}key`} pair={liquid} />
                   ))}

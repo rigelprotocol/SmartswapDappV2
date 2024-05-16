@@ -758,16 +758,18 @@ const InstantSwap = () => {
             }),
           }
         );
-        let resi = await response.json();
-        console.log({ resi });
-        //  dispatch(refreshTransactionTab({ refresh:Math.random() }))
-        // dispatch(setRefresh())
-        // dispatch(
-        //   setOpenModal({
-        //     message: `Swap Successful.`,
-        //     trxState: TrxState.TransactionSuccessful,
-        //   })
-        // );
+        let instantSwapResponse = await response.json();
+        console.log({ instantSwapResponse });
+        if (instantSwapResponse.transaction) {
+          dispatch(refreshTransactionTab({ refresh: Math.random() }));
+          dispatch(setRefresh());
+          dispatch(
+            setOpenModal({
+              message: `Swap Successful.`,
+              trxState: TrxState.TransactionSuccessful,
+            })
+          );
+        }
 
         // else{
         //   dispatch(

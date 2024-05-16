@@ -1,11 +1,12 @@
-import { createReducer } from '@reduxjs/toolkit';
+import { createReducer } from "@reduxjs/toolkit";
 import {
   Field,
   resetMintState,
   typeInput,
   selectCurrency,
   replaceMintState,
-} from './actions';
+  replaceLiquidityState,
+} from "./actions";
 
 export interface MintState {
   readonly independentField: Field;
@@ -22,15 +23,15 @@ export interface MintState {
 
 export const initialState: MintState = {
   independentField: Field.INPUT,
-  typedValue: '',
+  typedValue: "",
   [Field.INPUT]: {
-    currencyId: '',
+    currencyId: "",
   },
   [Field.OUTPUT]: {
-    currencyId: '',
+    currencyId: "",
   },
   recipient: null,
-  otherTypedValue: '',
+  otherTypedValue: "",
 };
 
 // const initialState: MintState = {
@@ -82,6 +83,43 @@ export const initialState: MintState = {
 
 export default createReducer<MintState>(initialState, (builder) =>
   builder
+    .addCase(
+      replaceLiquidityState,
+      (
+        state,
+        {
+          payload: {
+            typedValue,
+            recipient,
+            field,
+            inputCurrencyId,
+            outputCurrencyId,
+          },
+        }
+      ) => {
+        console.log({
+          typedValue,
+          recipient,
+          field,
+          inputCurrencyId,
+          outputCurrencyId,
+        });
+        // return {
+        //   ...state,
+        //   [Field.INPUT]: {
+        //     currencyId: inputCurrencyId,
+        //   },
+        //   [Field.OUTPUT]: {
+        //     currencyId: outputCurrencyId,
+        //   },
+        //   independentField: field,
+        //   typedValue,
+        //   recipient,
+        //   percentageChange:"0",
+        // };
+      }
+    )
+
     .addCase(replaceMintState, (state, { payload: { inputCurrencyId } }) => {
       return {
         ...state,
@@ -129,7 +167,7 @@ export default createReducer<MintState>(initialState, (builder) =>
           ...state,
           independentField: field,
           typedValue,
-          otherTypedValue: '',
+          otherTypedValue: "",
         };
       }
     })
