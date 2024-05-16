@@ -10,13 +10,15 @@ export const selectCurrency = createAction<{
   currencyId: string | undefined;
 }>("swap/selectCurrency");
 export const selectMarketFactory = createAction<{
-  marketFactory: string | undefined,marketRouterAddress: string | undefined
+  marketFactory: string | undefined;
+  marketRouterAddress: string | undefined;
 }>("swap/selectMarketFactory");
 export const selectMarketRouterAddress = createAction<{
   marketRouterAddress: string | undefined;
 }>("swap/selectMarketRouterAddress");
-export const typeInput =
-  createAction<{ field: Field; typedValue: string }>("swap/typeInput");
+export const typeInput = createAction<{ field: Field; typedValue: string }>(
+  "swap/typeInput"
+);
 export const switchCurrencies = createAction<void>("swap/switchCurrencies");
 
 export const replaceSwapState = createAction<{

@@ -11,9 +11,16 @@ import { Currency, Fraction } from "@uniswap/sdk-core";
 import { WNATIVEADDRESSES } from "../addresses";
 import JSBI from "jsbi";
 import { useActiveWeb3React } from "./useActiveWeb3React";
-import { Web3Provider} from '@ethersproject/providers'
+import { Web3Provider } from "@ethersproject/providers";
 import { convertFromWei } from "..";
 import { GFindLiquidity } from "../../components/G-analytics/gLiquidity";
+
+import useParsedQueryString from "../../hooks/useParsedQueryString";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../state";
+import { queryParametersToSwapState } from "../../state/swap/hooks";
+import { Field } from "../../state/swap/actions";
+import { replaceLiquidityState } from "../../state/mint/actions";
 
 export const useGetUserLiquidities = async () => {
   const { account, chainId, library } = useActiveWeb3React();
@@ -57,6 +64,44 @@ export const useGetUserLiquidities = async () => {
 
   return { liquidities, liquidityLength, Loading };
 };
+
+export function useDefaultsFromURLLiquiduitySearch() {
+  const { account, chainId } = useActiveWeb3React();
+  const ChainId = useSelector((state: RootState) => state.chainId.chainId);
+  const dispatch = useDispatch<AppDispatch>();
+  const parsedQs = useParsedQueryString();
+  const [result, setResult] = useState<
+    | {
+        inputCurrencyId: string | undefined;
+        outputCurrencyId: string | undefined;
+      }
+    | undefined
+  >();
+
+  useEffect(() => {
+    if (!ChainId) return;
+    const parsed = queryParametersToSwapState(parsedQs, ChainId);
+    console.log({ parsed, parsedQs, ChainId }, 999999999);
+    dispatch(
+      replaceLiquidityState({
+        typedValue: parsed.typedValue,
+        field: parsed.independentField,
+        inputCurrencyId: parsed[Field.INPUT].currencyId,
+        outputCurrencyId: parsed[Field.OUTPUT].currencyId,
+        recipient: null,
+      })
+    );
+    console.log({
+      inputCurrencyId: parsed[Field.INPUT].currencyId,
+      outputCurrencyId: parsed[Field.OUTPUT].currencyId,
+    });
+    setResult({
+      inputCurrencyId: parsed[Field.INPUT].currencyId,
+      outputCurrencyId: parsed[Field.OUTPUT].currencyId,
+    });
+  }, [dispatch, ChainId]);
+  return result;
+}
 
 const getAllPairs = (length: number, allPairs: any): any[] => {
   const pairs = [];
@@ -231,7 +276,7 @@ export const filterPools = ({
   let tokenA = getAddress(TokenA);
   let tokenB = getAddress(TokenB);
 
-  GFindLiquidity(tokenA,tokenB)
+  GFindLiquidity(tokenA, tokenB);
   return liquidities?.filter(
     (liquidity) =>
       (liquidity.path[0].fromPath === tokenA &&
@@ -441,8 +486,8 @@ export const useAllowance = (
   CurrencyA: Currency | undefined,
   CurrencyB: Currency | undefined,
   checkTokenApproval: number,
-  inputA:string,
-  inputB:string
+  inputA: string,
+  inputB: string
 ) => {
   const { account, chainId, library } = useActiveWeb3React();
   const [hasTokenABeenApproved, setHasTokenABeenApproved] = useState(false);
@@ -460,21 +505,33 @@ export const useAllowance = (
         tokenA.allowance(account, SMARTSWAPROUTER[chainId as number]),
         tokenB.allowance(account, SMARTSWAPROUTER[chainId as number]),
         tokenA.decimals(),
-        tokenB.decimals()
+        tokenB.decimals(),
       ]);
 
-      const isTokenOneApproved = CurrencyA.isNative ? true :
-          parseFloat(ethers.utils.formatUnits(allowanceA, decimalsA).toString()) > parseFloat(inputA);
+      const isTokenOneApproved = CurrencyA.isNative
+        ? true
+        : parseFloat(
+            ethers.utils.formatUnits(allowanceA, decimalsA).toString()
+          ) > parseFloat(inputA);
 
-      const isTokenTwoApproved = CurrencyB.isNative ? true :
-          parseFloat(ethers.utils.formatUnits(allowanceB, decimalsB).toString()) > parseFloat(inputB);
+      const isTokenTwoApproved = CurrencyB.isNative
+        ? true
+        : parseFloat(
+            ethers.utils.formatUnits(allowanceB, decimalsB).toString()
+          ) > parseFloat(inputB);
 
       setHasTokenABeenApproved(isTokenOneApproved);
       setHasTokenBBeenApproved(isTokenTwoApproved);
-
     }
-      
-  }, [CurrencyB, CurrencyA, account, chainId, checkTokenApproval,inputA,inputB]);
+  }, [
+    CurrencyB,
+    CurrencyA,
+    account,
+    chainId,
+    checkTokenApproval,
+    inputA,
+    inputB,
+  ]);
 
   return { hasTokenABeenApproved, hasTokenBBeenApproved };
 };

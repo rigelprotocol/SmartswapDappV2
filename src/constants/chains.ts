@@ -49,7 +49,7 @@ export const L1_CHAIN_IDS = [
   SupportedChainId.AVALANCHE_FUJI,
 ] as const;
 
-export type SupportedL1ChainId = typeof L1_CHAIN_IDS[number];
+export type SupportedL1ChainId = (typeof L1_CHAIN_IDS)[number];
 
 export interface L1ChainInfo {
   readonly blockWaitMsBeforeWarning?: number;
@@ -177,3 +177,18 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrency: { name: "ROSE", symbol: "ROSE", decimals: 18 },
   },
 };
+
+const environment = "development";
+const prod = {
+  url: {
+    API_URL: process.env.REACT_APP_PRODUCTION_AUTO_SWAP_SERVER,
+    API_URL_USERS: "",
+  },
+};
+const dev = {
+  url: {
+    API_URL: process.env.REACT_APP_TEST_AUTO_SWAP_SERVER,
+  },
+};
+
+export const SERVER_ENV = process.env.NODE_ENV === "development" ? dev : prod;

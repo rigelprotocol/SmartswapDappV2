@@ -1,27 +1,27 @@
-import {Currency} from '@uniswap/sdk-core';
+import { Currency } from "@uniswap/sdk-core";
 
-import JSBI from 'jsbi';
-import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../index';
+import JSBI from "jsbi";
+import { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../index";
 
-import { Field, selectCurrency, typeInput } from './actions';
-import { useActiveWeb3React } from '../../utils/hooks/useActiveWeb3React';
-import { AppDispatch } from '../index';
-import { useNativeBalance } from '../../utils/hooks/useBalances';
-import { useCurrency } from '../../hooks/Tokens';
-import { getERC20Token } from '../../utils/utilsFunctions';
-import { isAddress, ParseFloat } from '../../utils';
-import { ethers } from 'ethers';
-import { parseUnits } from '@ethersproject/units';
+import { Field, selectCurrency, typeInput } from "./actions";
+import { useActiveWeb3React } from "../../utils/hooks/useActiveWeb3React";
+import { AppDispatch } from "../index";
+import { useNativeBalance } from "../../utils/hooks/useBalances";
+import { useCurrency } from "../../hooks/Tokens";
+import { getERC20Token } from "../../utils/utilsFunctions";
+import { isAddress, ParseFloat } from "../../utils";
+import { ethers } from "ethers";
+import { parseUnits } from "@ethersproject/units";
 // import {useMint}
-import { useMint } from '../../hooks/useMint';
-import { ZERO_ADDRESS } from '../../constants';
-import {Web3Provider} from "@ethersproject/providers";
+import { useMint } from "../../hooks/useMint";
+import { ZERO_ADDRESS } from "../../constants";
+import { Web3Provider } from "@ethersproject/providers";
 const ZERO = JSBI.BigInt(0);
 
-export function useMintState(): RootState['mint'] {
-  return useSelector<RootState, RootState['mint']>((state) => state.mint);
+export function useMintState(): RootState["mint"] {
+  return useSelector<RootState, RootState["mint"]>((state) => state.mint);
 }
 
 export function tryParseAmount<T extends Currency>(
@@ -33,7 +33,7 @@ export function tryParseAmount<T extends Currency>(
   }
   try {
     const typedValueParsed = parseUnits(value, currency.decimals).toString();
-    if (typedValueParsed !== '0') {
+    if (typedValueParsed !== "0") {
       return typedValueParsed;
     }
   } catch (error) {
@@ -45,8 +45,8 @@ export function tryParseAmount<T extends Currency>(
 }
 
 export function useMintActionHandlers(): {
-  onCurrencyFor: (currencyAddress: string,field: Field, ) => void;
-   onCurrencySelection: (field: Field, currency: Currency) => void;
+  onCurrencyFor: (currencyAddress: string, field: Field) => void;
+  onCurrencySelection: (field: Field, currency: Currency) => void;
   onUserInput: (field: Field, typedValue: string, no: boolean) => void;
 } {
   const { chainId, account, library } = useActiveWeb3React();
@@ -69,20 +69,16 @@ export function useMintActionHandlers(): {
             ? currency.address
             : currency.isNative
             ? currency.symbol
-            : '',
+            : "",
         })
       );
     },
     [dispatch]
   );
 
-
   const onCurrencyFor = useCallback(
-    ( currencyAddress: string,field: Field,) => {
-      dispatch(
-        selectCurrency( {field: field,
-          currencyId: currencyAddress})
-      );
+    (currencyAddress: string, field: Field) => {
+      dispatch(selectCurrency({ field: field, currencyId: currencyAddress }));
     },
     [dispatch]
   );
@@ -96,8 +92,8 @@ export function useMintActionHandlers(): {
   return {
     onCurrencySelection,
     onUserInput,
-    onCurrencyFor
-    };
+    onCurrencyFor,
+  };
 }
 
 export function useDerivedMintInfo(): {
@@ -150,12 +146,19 @@ export function useDerivedMintInfo(): {
       return balance ? JSBI.BigInt(balance.toString()) : undefined;
     } else if (isAddress(currency.address)) {
       const token = await getERC20Token(
-        currency.address ? currency.address : '', library
+        currency.address ? currency.address : "",
+        library
       );
-      const [balance, decimals] = await Promise.all([token.balanceOf(account), token.decimals()]);
-      const amount = ParseFloat(ethers.utils.formatUnits(balance.toString(), decimals),4);
-      console.log({amount})
-      return amount === '0.0' ? '0' :  amount;
+      const [balance, decimals] = await Promise.all([
+        token.balanceOf(account),
+        token.decimals(),
+      ]);
+      const amount = ParseFloat(
+        ethers.utils.formatUnits(balance.toString(), decimals),
+        4
+      );
+      console.log({ amount });
+      return amount === "0.0" ? "0" : amount;
     }
   };
 
@@ -165,6 +168,6 @@ export function useDerivedMintInfo(): {
     bestTrade,
     parsedAmount,
     showWrap,
-    address
+    address,
   };
 }

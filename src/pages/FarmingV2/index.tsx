@@ -197,14 +197,6 @@ export function Index() {
     }
   }, [location, selector]);
 
-  // console.log(count);
-
-  // useMemo(() => {
-  //   if (searchedDataResult !== undefined) {
-  //     setSearchedFarmData(searchedDataResult);
-  //   }
-  // }, [searchedDataResult]);
-
   useUpdateUserGasPreference();
 
   useFilterFarms({

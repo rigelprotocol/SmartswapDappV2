@@ -29,6 +29,7 @@ import {
   usePriceForNewPool,
   useMintedLiquidity,
   getAddress,
+  useDefaultsFromURLLiquiduitySearch,
 } from "../../utils/hooks/usePools";
 import { maxAmountSpend } from "../../utils/maxAmountSpend";
 import {
@@ -60,6 +61,7 @@ import {
   GFailedTransaction,
   GSuccessfullyTransaction,
 } from "../../components/G-analytics/gIndex";
+import { useCurrency } from "../../hooks/Tokens";
 
 export default function AddLiquidity({
   match: {
@@ -101,9 +103,17 @@ export default function AddLiquidity({
     currencies[Field.OUTPUT]
   );
 
+  const loadedUrlParams = useDefaultsFromURLLiquiduitySearch();
+
   useUpdateUserGasPreference();
   const [userGasPricePercentage, setUserGasPricePercentage] =
     useUserGasPricePercentage();
+
+  const [loadedInputCurrency, loadedOutputCurrency] = [
+    useCurrency(loadedUrlParams?.inputCurrencyId),
+    useCurrency(loadedUrlParams?.outputCurrencyId),
+  ];
+  console.log({ loadedUrlParams, loadedInputCurrency, loadedOutputCurrency });
 
   const [balanceA, setBalanceA] = useState("");
   const [balanceB, setBalanceB] = useState("");
@@ -266,7 +276,6 @@ export default function AddLiquidity({
           );
         }
       } catch (err) {
-        console.log(err);
         dispatch(
           setOpenModal({
             message: `${symbol} Approval`,
@@ -402,7 +411,6 @@ export default function AddLiquidity({
           );
         }
       } catch (err) {
-        console.log(err);
         GFailedTransaction(
           "liquidity",
           "liquidity supplied failed",
@@ -534,7 +542,6 @@ export default function AddLiquidity({
           );
         }
       } catch (err: any) {
-        console.log(err);
         GFailedTransaction(
           "liquidity",
           "liquidity supplied failed",

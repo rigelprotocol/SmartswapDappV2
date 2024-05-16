@@ -52,6 +52,7 @@ function NetworkIndicator() {
   }
   let query = useQuery();
   const param = query.get("chain");
+  console.log({ param });
 
   const info = chainId ? CHAIN_INFO[chainId] : CHAIN_INFO[ChainId as number];
   const connect = window.localStorage.getItem(connectorKey);
@@ -68,13 +69,30 @@ function NetworkIndicator() {
   }, [chainId]);
 
   useEffect(() => {
-    if (!param && !chainId) {
-      history.push(`${location.pathname}?chain=bsc`);
+    // if (!param && !chainId) {
+    //   history.push(`${location.pathname}?chain=bsc`);
+    // }
+
+    const url = window.location.href;
+    console.log({ url });
+
+    const parsedUrl = new URL(url);
+    // const searchParams = new URLSearchParams(parsedUrl.search);
+    const searchParams = parsedUrl.searchParams;
+    console.log({ searchParams });
+
+    // Append the new parameter
+    if (!param) {
+      searchParams.append("chain", chainId ? CHAINDETAILS[chainId] : "bsc");
     }
 
-    if (chainId) {
-      history.push(`${location.pathname}?chain=${CHAINDETAILS[chainId]}`);
-    }
+    // Update the URL with the new search params
+    parsedUrl.search = searchParams.toString();
+    console.log({ daa: parsedUrl.pathname + parsedUrl.search });
+
+    history.push(parsedUrl.pathname + parsedUrl.search);
+
+    console.log("no chainID");
 
     if (!connect && param) {
       if (param === "bsc") {
@@ -87,7 +105,8 @@ function NetworkIndicator() {
         history.push(`${location.pathname}?chain=bsc`);
       }
     }
-  }, [param, chainId]);
+    // }, [param, chainId]);
+  }, [chainId]);
 
   const changeNetwork = async (network: string, id: number) => {
     onClose();
@@ -131,11 +150,10 @@ function NetworkIndicator() {
               <Img w="30px" src={OASISLOGO} />
             ) : info.label == "Avalanche" ? (
               <Img w="30px" src={AVAXLOGO} />
-            ) 
-            // : info.label.toLowerCase() === "Avalanche Fuji TestNet".toLowerCase() ? (
-            //   <Img w="30px" src={AVAXLOGO} />
-            // )
-             : (
+            ) : (
+              // : info.label.toLowerCase() === "Avalanche Fuji TestNet".toLowerCase() ? (
+              //   <Img w="30px" src={AVAXLOGO} />
+              // )
               <EthereumIcon />
             )}
           </Box>

@@ -1,21 +1,20 @@
 import { createAction } from "@reduxjs/toolkit";
+import { Field } from "../swap/actions";
 
-export const updateFarms = createAction<{ value: any[] }>(
-    "lpfarm/updateFarms"
-);
+export const updateFarms = createAction<{ value: any[] }>("lpfarm/updateFarms");
 
 export const updateSpecialPool = createAction<{ value: any[] }>(
-    "lpfarm/updateSpecialPool"
+  "lpfarm/updateSpecialPool"
 );
 
 export const updateLoadingState = createAction<{ value: boolean }>(
-    "lpfarm/updateLoadingState"
+  "lpfarm/updateLoadingState"
 );
 
 export const updateChainId = createAction<{ value: number }>(
-    "lpfarm/updateChainId"
+  "lpfarm/updateChainId"
 );
 
 export const updateAllowance = createAction<{
-    value: any;
+  value: any;
 }>("lpfarm/updateAllowance");

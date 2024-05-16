@@ -92,60 +92,60 @@ const Filter = ({
             <PopoverTrigger>
               <Flex
                 h={10}
-                border='1px'
-                borderRadius='4px'
+                border="1px"
+                borderRadius="4px"
                 borderColor={filterButton}
-                cursor='pointer'
+                cursor="pointer"
                 px={4}
-                alignItems='center'
+                alignItems="center"
               >
                 <Icon mr={2} as={FiFilter} />
-                <Text fontSize='14px'>Filters</Text>
+                <Text fontSize="14px">Filters</Text>
               </Flex>
             </PopoverTrigger>
 
             <PopoverContent
-              borderRadius='6px'
+              borderRadius="6px"
               bg={bgColor}
               borderColor={borderColor}
-              mt='0px'
-              zIndex='1'
+              mt="0px"
+              zIndex="1"
             >
-              <PopoverHeader ml={3} color={textColor} borderBottom='none'>
+              <PopoverHeader ml={3} color={textColor} borderBottom="none">
                 Filters
               </PopoverHeader>
               <PopoverCloseButton
-                bg='none'
+                bg="none"
                 size={"sm"}
                 mt={2}
                 mr={3}
-                cursor='pointer'
+                cursor="pointer"
                 _focus={{ outline: "none" }}
                 p={"7px"}
                 border={"1px solid"}
                 borderColor={textColorTwo}
               />
               <PopoverBody>
-                <Flex mx={2} fontSize='14px' flexDirection='column'>
+                <Flex mx={2} fontSize="14px" flexDirection="column">
                   <Flex
                     mt={3}
-                    cursor='pointer'
-                    border='1px'
+                    cursor="pointer"
+                    border="1px"
                     borderColor={
                       newestToOldest ? filterBorderColor : inactiveButtonBorder
                     }
-                    borderRadius='6px'
+                    borderRadius="6px"
                     p={3}
-                    justifyContent='space-between'
-                    alignItems='center'
+                    justifyContent="space-between"
+                    alignItems="center"
                     bgColor={buttonBgColor}
-                    onClick={() =>{
-                      GFarmingFilterSearch(true)
+                    onClick={() => {
+                      GFarmingFilterSearch(true);
                       handleNewestToOldest(
                         setNewestToOldest,
                         setOldestToNewset,
                         oldestToNewest
-                      )
+                      );
                     }}
                   >
                     <Text>Newest to Oldest</Text>
@@ -155,24 +155,24 @@ const Filter = ({
                     />
                   </Flex>
                   <Flex
-                    cursor='pointer'
+                    cursor="pointer"
                     mt={4}
                     bgColor={buttonBgColor}
-                    border='1px'
+                    border="1px"
                     borderColor={
                       oldestToNewest ? filterBorderColor : inactiveButtonBorder
                     }
-                    borderRadius='6px'
+                    borderRadius="6px"
                     p={3}
-                    justifyContent='space-between'
-                    alignItems='center'
-                    onClick={() =>{
-                      GFarmingFilterSearch(true)
+                    justifyContent="space-between"
+                    alignItems="center"
+                    onClick={() => {
+                      GFarmingFilterSearch(true);
                       handleOldestToNewest(
                         setNewestToOldest,
                         setOldestToNewset,
                         newestToOldest
-                      )
+                      );
                     }}
                   >
                     <Text>Oldest to Newest </Text>
@@ -181,13 +181,12 @@ const Filter = ({
                       color={checkIconColor}
                     />
                   </Flex>
-                  <Flex p={3} flexDirection='column'>
+                  <Flex p={3} flexDirection="column">
                     <Text my={3}>APY Value</Text>
 
                     <RangeSlider
                       onChange={(value) => {
-                          GFarmingFilterSearch(true)
-                        console.log(value);
+                        GFarmingFilterSearch(true);
                         setRange0(value[0]);
                         setRange1(value[1]);
                       }}
@@ -212,18 +211,18 @@ const Filter = ({
                   </Flex>
                   <Flex
                     my={3}
-                    alignItems='center'
-                    justifyContent='space-between'
+                    alignItems="center"
+                    justifyContent="space-between"
                   >
                     <Input
                       value={range0}
                       onChange={(e) => {
                         handleRangeChange(setRange0, e, false);
                       }}
-                      borderRadius='6px'
+                      borderRadius="6px"
                       py={3}
                       px={3}
-                      w='45%'
+                      w="45%"
                       bgColor={buttonBgColor}
                     />
                     -
@@ -232,10 +231,10 @@ const Filter = ({
                       onChange={(e) => {
                         handleRangeChange(setRange1, e, true);
                       }}
-                      borderRadius='6px'
+                      borderRadius="6px"
                       py={3}
                       px={3}
-                      w='45%'
+                      w="45%"
                       bgColor={buttonBgColor}
                     />
                   </Flex>
@@ -243,11 +242,11 @@ const Filter = ({
                     my={3}
                     color={lastButtonColor}
                     bgColor={lastButtonBgColor}
-                    cursor='pointer'
-                    borderRadius='6px'
+                    cursor="pointer"
+                    borderRadius="6px"
                     p={3}
-                    justifyContent='center'
-                    alignItems='center'
+                    justifyContent="center"
+                    alignItems="center"
                     onClick={() => {
                       // FilterFarm();
                       setSavedChanges(true);

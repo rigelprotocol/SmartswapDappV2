@@ -46,7 +46,6 @@ export const getOutPutDataFromEvent = async (
   });
 
   if (duplicateArray.length != 0) {
-    console.log("duplicate data", duplicateArray[0].data.toString());
     const convertedInput = (
       parseInt(duplicateArray[0].data, 16) /
       10 ** seconddecimal

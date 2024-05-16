@@ -44,5 +44,5 @@ Smartswap of Rigel Protocol is available on https://smartswap.rigelprotocol.com/
 - Linkedin: [rigelprotocol](https://www.linkedin.com/company/rigelprotocol)
 - Discord: [rigelprotocol](https://discord.com/invite/j86NH95GDD)
 - Email: [support@rigelprotocol](mailto:support@rigelprotocol.com)
-- Telegram: [rigel protocol](https://www.t.me/rigelprotocol)
+- Telegram: [rigeldao](https://t.me/rigeldao)
 - Whitepaper: [Link](www.rigelprotocol.com/whitepaper)
